@@ -7,19 +7,30 @@ import {IOperatorRegistry} from "../../interfaces/IOperatorRegistry.sol";
 import {KeyRegistry} from "../../KeyRegistry.sol";
 import {BaseMiddleware} from "../../BaseMiddleware.sol";
 import {Stake} from "../../Stake.sol";
-import {SimpleEpoch} from "../SimpleEpoch.sol";
-import {SimpleOperatorSet} from "../SimpleOperatorSet.sol";
+import {ScheduledEpoch} from "../ScheduledEpoch.sol";
+import {CheckpointedOperatorSet} from "../CheckpointedOperatorSet.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
 contract SimpleMiddleware is BaseMiddleware {
-    constructor(address _network, address _operatorRegistry)
-        BaseMiddleware(_network, _operatorRegistry, address(new SimpleEpoch()), address(new SimpleOperatorSet()))
+    constructor(
+        address _network,
+        address _operatorRegistry,
+        uint48 _epochStart,
+        uint48 _epochDuration,
+        uint256 _firstEpoch
+    )
+        BaseMiddleware(
+            _network,
+            _operatorRegistry,
+            address(new ScheduledEpoch(_epochStart, _epochDuration, _firstEpoch)),
+            address(new CheckpointedOperatorSet(_network))
+        )
     {}
 
     // this function is only for offchain calls so it's unoptimized
-    function getValidatorSet(uint256 _epoch) external override returns (OperatorData[] memory operatorsData) {
+    function getValidatorSet(uint256 _epoch) external view override returns (OperatorData[] memory operatorsData) {
         uint48 captureTimestamp = epoch.epochToTimestamp(_epoch);
-        address[] memory operators = operatorSet.getAll(captureTimestamp);
+        address[] memory operators = operatorSet.get(captureTimestamp);
         uint256 operatorsLen = operators.length;
         uint256[] memory stakes = new uint256[](operatorsLen);
         bytes[][] memory keys = new bytes[][](operatorsLen);
@@ -46,7 +57,7 @@ contract SimpleMiddleware is BaseMiddleware {
         return operatorsData;
     }
 
-    function votingPower(uint256 stake) public override returns (uint256) {
+    function votingPower(uint256 stake) public view override returns (uint256) {
         return stake;
     }
 }

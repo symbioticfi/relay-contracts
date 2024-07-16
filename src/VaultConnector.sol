@@ -7,13 +7,13 @@ import {IOperatorRegistry} from "./interfaces/IOperatorRegistry.sol";
 import {BitMaps} from "./utils/BitMaps.sol";
 import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
-import {console} from "forge-std/Test.sol";
 
 abstract contract VaultConnector {
     using BitMaps for BitMaps.BitMap;
 
     address internal immutable networkVC;
     address[] public vaults;
+    mapping(address => uint256) public vaultIdx;
     mapping(address => BitMaps.BitMap) internal operatorVaults;
 
     constructor(address _network) {
@@ -50,6 +50,21 @@ abstract contract VaultConnector {
                     _vaults[vaultsLen++] = vaults[i + bucket * 256];
                 }
             }
+        }
+    }
+
+    function addVaults(address[] memory _vaults) external {
+        if (msg.sender != networkVC) {
+            revert();
+        }
+
+        for (uint256 i = 0; i < _vaults.length; ++i) {
+            address vault = _vaults[i];
+            if (vaultIdx[vault] != 0 || (vaults.length > 0 && vaults[0] == vault)) {
+                revert();
+            }
+            vaultIdx[vault] = vaults.length;
+            vaults.push(vault);
         }
     }
 

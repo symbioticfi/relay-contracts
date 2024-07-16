@@ -108,6 +108,7 @@ library BitMaps {
                 bucketsLen++;
             }
         }
+
         buckets = new uint256[](bucketsLen);
         data = new uint256[](bucketsLen);
         curBucket = idxs[0] / 256;
@@ -120,7 +121,7 @@ library BitMaps {
                 curBucket = idx / 256;
                 buckets[bucketIdx] = curBucket;
             }
-            uint256 mask = 1 << (idx % i);
+            uint256 mask = 1 << (idx % 256);
             data[bucketIdx] |= mask;
         }
     }

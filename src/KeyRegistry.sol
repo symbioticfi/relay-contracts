@@ -7,19 +7,18 @@ import {IOperatorRegistry} from "./interfaces/IOperatorRegistry.sol";
 import {Arrays} from "./utils/Arrays.sol";
 import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
-import {console} from "forge-std/Test.sol";
 
 abstract contract KeyRegistry {
     using Arrays for Arrays.CheckpointedBytesArray;
 
     address internal immutable networkKR;
-    IOperatorRegistry internal immutable _operatorRegistry;
+    IOperatorRegistry internal immutable operatorRegistry;
     mapping(address => Arrays.CheckpointedBytesArray) internal operatorKeys;
     mapping(bytes => address) public keyOperator;
 
-    constructor(address network_, address operatorRegistry_) {
+    constructor(address network_, address _operatorRegistry) {
         networkKR = network_;
-        _operatorRegistry = IOperatorRegistry(operatorRegistry_);
+        operatorRegistry = IOperatorRegistry(_operatorRegistry);
     }
 
     function getAllOperatorKeys(address operator) external view returns (bytes[] memory) {
@@ -33,7 +32,7 @@ abstract contract KeyRegistry {
     // TODO mb we need to define keys types and prove posession with signature,
     // could be frontrunned by anyone who registers as operators
     function registerKeys(bytes[] calldata _keys) external {
-        if (!_operatorRegistry.isEntity(msg.sender)) {
+        if (!operatorRegistry.isEntity(msg.sender)) {
             revert();
         }
         operatorKeys[msg.sender].add(_keys);
@@ -42,18 +41,10 @@ abstract contract KeyRegistry {
         }
     }
 
-    function acceptKeys(address operator, uint256[] calldata buckets, uint256[] calldata data) external {
-        if (msg.sender != networkKR || !_operatorRegistry.isEntity(operator)) {
+    function setActiveKeys(address operator, uint256[] calldata buckets, uint256[] calldata data) external {
+        if (msg.sender != networkKR || !operatorRegistry.isEntity(operator)) {
             revert();
         }
         operatorKeys[operator].setActive(buckets, data);
-    }
-
-    function removePrefixKeys(address operator, uint256 newRemovedPrefixKeys) external {
-        if (msg.sender != networkKR) {
-            revert();
-        }
-
-        operatorKeys[operator].removePrefix(newRemovedPrefixKeys);
     }
 }

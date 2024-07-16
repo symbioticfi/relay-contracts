@@ -15,7 +15,6 @@ abstract contract BaseMiddleware is KeyRegistry, VaultConnector, Stake {
     address internal immutable network;
     IEpoch public immutable epoch;
     IOperatorSet public immutable operatorSet;
-    IOperatorRegistry internal immutable operatorRegistry;
 
     struct OperatorData {
         uint256 votingPower;
@@ -34,13 +33,12 @@ abstract contract BaseMiddleware is KeyRegistry, VaultConnector, Stake {
         VaultConnector(_network)
     {
         network = _network;
-        operatorRegistry = IOperatorRegistry(_operatorRegistry);
         epoch = IEpoch(_epoch);
         operatorSet = IOperatorSet(_operatorSet);
     }
 
     // this function is only for offchain calls so it's unoptimized
-    function getValidatorSet(uint256 epoch) external virtual returns (OperatorData[] memory);
+    function getValidatorSet(uint256 epoch) external view virtual returns (OperatorData[] memory);
 
-    function votingPower(uint256 stake) public virtual returns (uint256);
+    function votingPower(uint256 stake) public view virtual returns (uint256);
 }
