@@ -6,6 +6,8 @@ import {ISlasher} from "./interfaces/ISlasher.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 abstract contract Slash {
+    uint64 constant INSTANT_SLASH_TYPE = 0;
+
     event InstantSlash(
         address indexed operator, address indexed vault, uint256 requested, uint256 slashed, uint48 captureTimestamp
     );
@@ -13,36 +15,31 @@ abstract contract Slash {
         address indexed operator, address indexed vault, uint256 requestIdx, uint256 requested, uint48 captureTimestamp
     );
 
-    function slash(address network, address operator, address[] memory vaults, uint48 captureTimestamp, uint256 amount)
-        internal
-        returns (uint256[] memory amounts)
-    {
-        // get stakes, divide equally lol
-        // call each vault
-        if (amount == 0) {
+    function slash(
+        address network,
+        address operator,
+        address[] memory vaults,
+        uint256[] memory amounts,
+        uint48 captureTimestamp
+    ) internal {
+        if (vaults.length == amounts.length) {
             revert();
         }
-        uint256 totalSlashableStake = 0;
         ISlasher[] memory slashers = new ISlasher[](vaults.length);
         for (uint256 i = 0; i < vaults.length; ++i) {
+            if (amounts[i] == 0) {
+                continue;
+            }
             slashers[i] = ISlasher(IVault(vaults[i]).slasher());
             if (address(slashers[i]) == address(0)) {
-                continue;
+                revert();
             }
-            amounts[i] = slashers[i].slashableStake(network, operator, captureTimestamp);
-            totalSlashableStake += amounts[i];
-        }
-
-        if (totalSlashableStake < amount) {
-            amount = totalSlashableStake;
-        }
-
-        for (uint256 i = 0; i < vaults.length; ++i) {
-            if (address(slashers[i]) == address(0) || amounts[i] == 0) {
-                continue;
+            uint256 slashableStake = slashers[i].slashableStake(network, operator, captureTimestamp);
+            if (slashableStake < amounts[i]) {
+                revert(); // or just slash slashableStake?
             }
-            amounts[i] = Math.mulDiv(amounts[i], amount, totalSlashableStake);
-            if (slashers[i].TYPE() == 0) {
+
+            if (slashers[i].TYPE() == INSTANT_SLASH_TYPE) {
                 uint256 slashedAmount = slashers[i].slash(network, operator, amounts[i], captureTimestamp);
                 emit InstantSlash(operator, vaults[i], amounts[i], slashedAmount, captureTimestamp);
                 continue;
