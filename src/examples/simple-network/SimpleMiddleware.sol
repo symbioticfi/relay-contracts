@@ -86,6 +86,14 @@ contract SimpleMiddleware is SimpleKeyRegistry32, VaultConnector, Ownable {
         return _getOperatorVaults(operator, epochStartTs);
     }
 
+    function setSubnetworks(uint256 _subnetworks) external onlyOwner {
+        if (subnetworks >= _subnetworks) {
+            revert InvalidSubnetworksCnt();
+        }
+
+        _setSubnetworks(_subnetworks);
+    }
+
     function registerOperator(address operator, bytes32 key) external onlyOwner {
         if (operators.contains(operator)) {
             revert OperatorAlreadyRegistred();

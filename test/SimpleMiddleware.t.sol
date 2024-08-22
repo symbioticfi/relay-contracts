@@ -3,7 +3,7 @@ pragma solidity 0.8.25;
 
 import {Test, console2} from "forge-std/Test.sol";
 
-import {SimpleMiddleware} from "src/examples/SimpleMiddleware.sol";
+import {SimpleMiddleware} from "src/examples/simple-network/SimpleMiddleware.sol";
 
 import {VaultFactory} from "@symbiotic/contracts/VaultFactory.sol";
 import {DelegatorFactory} from "@symbiotic/contracts/DelegatorFactory.sol";
@@ -142,8 +142,9 @@ contract SimpleMiddlewareTest is Test {
         vm.warp(blockTimestamp);
 
         address network = address(11_111);
-        simpleMiddleware =
-            new SimpleMiddleware(network, address(operatorRegistry), address(vaultFactory), alice, 1 days, 3 days);
+        simpleMiddleware = new SimpleMiddleware(
+            network, address(operatorRegistry), address(vaultFactory), address(vaultFactory), alice, 1 days, 3 days
+        );
 
         _registerNetwork(network, address(simpleMiddleware));
 
@@ -154,9 +155,11 @@ contract SimpleMiddlewareTest is Test {
 
         uint256 vaultsN = 3;
         Vault[] memory vaults = new Vault[](vaultsN);
+        address[] memory _vaults = new address[](vaultsN);
         for (uint256 i; i < vaultsN; ++i) {
             (Vault vault,,) = _getVaultAndDelegatorAndSlasher(7 days, 1 days);
             vaults[i] = vault;
+            _vaults[i] = address(vault);
 
             vm.startPrank(alice);
             simpleMiddleware.registerVault(address(vault));
@@ -194,7 +197,7 @@ contract SimpleMiddlewareTest is Test {
                 _optInOperatorVault(operator, vault);
             }
 
-            simpleMiddleware.enableVaults(operator, vaults);
+            simpleMiddleware.enableVaults(operator, _vaults);
 
             for (uint96 j; j < subnetworksN; ++j) {
                 for (uint256 k; k < vaultsN; ++k) {
@@ -233,7 +236,7 @@ contract SimpleMiddlewareTest is Test {
                 operatorStake += Math.min(vaultStake, data.deposits[j]);
             }
 
-            assertEq(operatorStake, simpleMiddleware.operatorStake(operator, 0));
+            assertEq(operatorStake, simpleMiddleware.getOperatorStake(operator, 0));
         }
     }
 
