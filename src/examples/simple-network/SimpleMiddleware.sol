@@ -3,7 +3,7 @@ pragma solidity 0.8.25;
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 import {IRegistry} from "@symbiotic/interfaces/common/IRegistry.sol";
 import {IEntity} from "@symbiotic/interfaces/common/IEntity.sol";
@@ -14,21 +14,23 @@ import {IOptInService} from "@symbiotic/interfaces/service/IOptInService.sol";
 import {IEntity} from "@symbiotic/interfaces/common/IEntity.sol";
 import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
 
-import {SimpleKeyRegistry32} from "../../SimpleKeyRegistry32.sol";
 import {VaultConnector} from "../../VaultConnector.sol";
-import {MapWithTimeData} from "../../libraries/MapWithTimeData.sol";
+import {KeyRegistry32} from "../../KeyRegistry32.sol";
+import {BitMaps} from "../../libraries/BitMaps.sol";
+import {Subsets} from "../../libraries/Subsets.sol";
 
-contract SimpleMiddleware is SimpleKeyRegistry32, VaultConnector, Ownable {
-    using EnumerableMap for EnumerableMap.AddressToUintMap;
-    using MapWithTimeData for EnumerableMap.AddressToUintMap;
+contract SimpleMiddleware is VaultConnector, Ownable {
+    using EnumerableSet for EnumerableSet.AddressSet;
+    using KeyRegistry32 for KeyRegistry32.Registry;
+    using BitMaps for BitMaps.BitMap;
     using Subnetwork for address;
 
     error NotOperator();
-
     error OperatorNotOptedIn();
     error OperatorNotRegistred();
     error OperarorGracePeriodNotPassed();
     error OperatorAlreadyRegistred();
+    error NotOperatorKey();
 
     error SlashingWindowTooShort();
 
@@ -43,7 +45,9 @@ contract SimpleMiddleware is SimpleKeyRegistry32, VaultConnector, Ownable {
     uint48 public immutable EPOCH_DURATION;
     uint48 public immutable START_TIME;
 
-    EnumerableMap.AddressToUintMap private operators;
+    EnumerableSet.AddressSet private operators;
+    BitMaps.BitMap internal operatorsStatus;
+    KeyRegistry32.Registry private keyRegistry;
 
     constructor(
         address _network,
@@ -77,13 +81,30 @@ contract SimpleMiddleware is SimpleKeyRegistry32, VaultConnector, Ownable {
         return getEpochAtTs(Time.timestamp());
     }
 
-    function getOperatorVaults(address operator, uint48 epoch)
-        internal
-        view
-        returns (address[] memory _operatorVaults)
-    {
+    function getEnabledVaults(uint48 epoch) external view returns (address[] memory _operatorVaults) {
         uint48 epochStartTs = getEpochStartTs(epoch);
-        return _getOperatorVaults(operator, epochStartTs);
+        return _getEnabledSharedVaults(epochStartTs);
+    }
+
+    function getEnabledOperators(uint48 epoch) public view returns (address[] memory _operatorVaults) {
+        uint48 epochStartTs = getEpochStartTs(epoch);
+        return Subsets.getEnabledEnumerableAddressSubset(operators, operatorsStatus, epochStartTs);
+    }
+
+    function getOperatorByKey(bytes32 key) public view returns (address) {
+        return keyRegistry.getOperatorByKey(key);
+    }
+
+    function getCurrentOperatorKey(address operator) public view returns (bytes32) {
+        return getOperatorKeyAt(operator, Time.timestamp());
+    }
+
+    function getOperatorKeyAt(address operator, uint48 timestamp) public view returns (bytes32) {
+        bytes32[] memory keys = keyRegistry.getEnabledOperatorKeysAt(operator, timestamp);
+        if (keys.length == 0) {
+            return bytes32(0);
+        }
+        return keys[0];
     }
 
     function setSubnetworks(uint256 _subnetworks) external onlyOwner {
@@ -107,10 +128,11 @@ contract SimpleMiddleware is SimpleKeyRegistry32, VaultConnector, Ownable {
             revert OperatorNotOptedIn();
         }
 
-        _updateKey(operator, key);
+        keyRegistry.registerOperatorKey(operator, key);
+        keyRegistry.enableOperatorKey(operator, 0);
 
         operators.add(operator);
-        operators.enable(operator);
+        Subsets.enable(operatorsStatus, operators.length() - 1, operators.length());
     }
 
     function updateOperatorKey(address operator, bytes32 key) external onlyOwner {
@@ -118,37 +140,49 @@ contract SimpleMiddleware is SimpleKeyRegistry32, VaultConnector, Ownable {
             revert OperatorNotRegistred();
         }
 
-        _updateKey(operator, key);
-    }
+        address keyOperator = getOperatorByKey(key);
 
-    function pauseOperator(address operator) external onlyOwner {
-        operators.disable(operator);
-    }
-
-    function unpauseOperator(address operator) external onlyOwner {
-        operators.enable(operator);
-    }
-
-    function unregisterOperator(address operator) external onlyOwner {
-        (, uint48 disabledTime) = operators.getTimes(operator);
-
-        if (disabledTime == 0 || disabledTime + SLASHING_WINDOW > Time.timestamp()) {
-            revert OperarorGracePeriodNotPassed();
+        if (keyOperator == address(0)) {
+            keyRegistry.registerOperatorKey(operator, key);
+            keyRegistry.enableOperatorKey(operator, 0);
+            return;
         }
 
-        operators.remove(operator);
+        if (keyOperator != operator) {
+            revert NotOperatorKey();
+        }
+
+        bytes32 currentKey = getCurrentOperatorKey(operator);
+        uint256 currenyKeyPosition = keyRegistry.getKeyPosition(currentKey);
+        keyRegistry.disableOperatorKey(operator, currenyKeyPosition);
+
+        uint256 position = keyRegistry.getKeyPosition(key);
+        keyRegistry.enableOperatorKey(operator, position);
+    }
+
+    function enableOperator(address operator) external onlyOwner {
+        uint256 position = operators._inner._positions[bytes32(uint256(uint160(operator)))] - 1;
+        Subsets.enable(operatorsStatus, position, operators.length());
+    }
+
+    function disableOperator(address operator) external onlyOwner {
+        uint256 position = operators._inner._positions[bytes32(uint256(uint160(operator)))] - 1;
+        Subsets.disable(operatorsStatus, position, operators.length());
     }
 
     function registerVault(address vault) external onlyOwner {
-        _registerVault(vault);
+        _registerVault(vault, true);
+        Subsets.enable(sharedVaultsStatus, sharedVaults.length() - 1, sharedVaults.length());
     }
 
-    function enableVaults(address operator, address[] memory _vaults) external onlyOwner {
-        _enableVaults(operator, _vaults);
+    function enableVault(address vault) external onlyOwner {
+        uint256 position = sharedVaults._inner._positions[bytes32(uint256(uint160(vault)))] - 1;
+        Subsets.enable(sharedVaultsStatus, position, sharedVaults.length());
     }
 
-    function disableVaults(address operator, address[] memory _vaults) external onlyOwner {
-        _disableVaults(operator, _vaults);
+    function disableVault(address vault) external onlyOwner {
+        uint256 position = sharedVaults._inner._positions[bytes32(uint256(uint160(vault)))] - 1;
+        Subsets.disable(sharedVaultsStatus, position, sharedVaults.length());
     }
 
     function getOperatorStake(address operator, uint48 epoch) public view returns (uint256 stake) {
@@ -159,7 +193,6 @@ contract SimpleMiddleware is SimpleKeyRegistry32, VaultConnector, Ownable {
     function getTotalStake(uint48 epoch) public view returns (uint256 totalStake) {
         uint48 epochStartTs = getEpochStartTs(epoch);
 
-        // for epoch older than SLASHING_WINDOW total stake can be invalidated (use cache)
         if (epochStartTs < Time.timestamp() - SLASHING_WINDOW) {
             revert TooOldEpoch();
         }
@@ -168,15 +201,10 @@ contract SimpleMiddleware is SimpleKeyRegistry32, VaultConnector, Ownable {
             revert InvalidEpoch();
         }
 
-        for (uint256 i; i < operators.length(); ++i) {
-            (address operator, bool wasActiveAt) = operators.atWithStatus(i, epochStartTs);
+        address[] memory _operators = getEnabledOperators(epoch);
 
-            // just skip operator if it was added after the target epoch or paused
-            if (!wasActiveAt) {
-                continue;
-            }
-
-            uint256 operatorStake = _getOperatorStake(operator, epochStartTs);
+        for (uint256 i; i < _operators.length; ++i) {
+            uint256 operatorStake = _getOperatorStake(_operators[i], epochStartTs);
             totalStake += operatorStake;
         }
     }
@@ -186,14 +214,10 @@ contract SimpleMiddleware is SimpleKeyRegistry32, VaultConnector, Ownable {
 
         validatorsData = new ValidatorData[](operators.length());
         uint256 valIdx = 0;
+        address[] memory _operators = getEnabledOperators(epoch);
 
-        for (uint256 i; i < operators.length(); ++i) {
-            (address operator, bool wasActiveAt) = operators.atWithStatus(i, epochStartTs);
-
-            // just skip operator if it was added after the target epoch or paused
-            if (!wasActiveAt) {
-                continue;
-            }
+        for (uint256 i; i < _operators.length; ++i) {
+            address operator = _operators[i];
 
             bytes32 key = getOperatorKeyAt(operator, epochStartTs);
             if (key == bytes32(0)) {

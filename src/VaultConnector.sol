@@ -14,6 +14,7 @@ import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
 import {BitMaps} from "./libraries/BitMaps.sol";
+import {Subsets} from "./libraries/Subsets.sol";
 
 abstract contract VaultConnector {
     using EnumerableSet for EnumerableSet.AddressSet;
@@ -25,6 +26,7 @@ abstract contract VaultConnector {
     error VaultAlreadyRegistred();
     error VaultGracePeriodNotPassed();
     error VaultEpochTooShort();
+    error InvalidVaultsPositions();
 
     error TooOldEpoch();
     error InvalidEpoch();
@@ -40,8 +42,10 @@ abstract contract VaultConnector {
     uint48 public constant INSTANT_SLASHER_TYPE = 0;
     uint48 public constant VETO_SLASHER_TYPE = 1;
     uint256 public subnetworks;
-    EnumerableSet.AddressSet internal vaults;
-    mapping(address => BitMaps.BitMap) internal operatorVaults;
+    EnumerableSet.AddressSet internal sharedVaults;
+    BitMaps.BitMap internal sharedVaultsStatus;
+    EnumerableSet.AddressSet internal operatorVaults;
+    mapping(address => BitMaps.BitMap) internal operatorVaultsStatus;
 
     constructor(address _network, address _vaultRegistry, uint48 _slashingWindow) {
         NETWORK = _network;
@@ -50,29 +54,45 @@ abstract contract VaultConnector {
         subnetworks = 1;
     }
 
-    function getVaults() external view returns (address[] memory) {
-        return vaults.values();
+    function getOperatorVaults() external view returns (address[] memory) {
+        return operatorVaults.values();
     }
 
-    function _getOperatorVaults(address operator, uint48 epochStartTs)
+    function getSharedVaults() external view returns (address[] memory) {
+        return sharedVaults.values();
+    }
+
+    function _getEnabledSharedVaults(uint48 timestamp) internal view returns (address[] memory vaults) {
+        return Subsets.getEnabledEnumerableAddressSubset(sharedVaults, sharedVaultsStatus, timestamp);
+    }
+
+    // TODO this merge allocated less memory than two times to call to Subsets library and merge
+    function _getEnabledOperatorVaults(address operator, uint48 timestamp)
         internal
         view
-        returns (address[] memory _operatorVaults)
+        returns (address[] memory vaults)
     {
-        _operatorVaults = vaults.values();
-        uint256 length = 0;
-        for (uint256 pos; pos < _operatorVaults.length; ++pos) {
-            if (!operatorVaults[operator].get(pos, epochStartTs)) {
-                continue;
+        uint256 operatorVaultsLen;
+        for (uint256 pos; pos < operatorVaults.length(); ++pos) {
+            if (operatorVaultsStatus[operator].get(pos, timestamp)) {
+                operatorVaultsLen++;
             }
-            _operatorVaults[length++] = _operatorVaults[pos];
         }
 
-        // shrink array to skip unused slots
-        /// @solidity memory-safe-assembly
-        assembly {
-            mstore(_operatorVaults, length)
+        vaults = new address[](sharedVaults.length() + operatorVaultsLen);
+        uint256 idx = 0;
+
+        for (uint256 pos; pos < operatorVaults.length(); ++pos) {
+            if (operatorVaultsStatus[operator].get(pos, timestamp)) {
+                vaults[idx++] = operatorVaults.at(pos);
+            }
         }
+
+        for (uint256 pos; pos < sharedVaults.length(); ++pos) {
+            vaults[idx++] = sharedVaults.at(pos);
+        }
+
+        return vaults;
     }
 
     function _setSubnetworks(uint256 _subnetworks) internal {
@@ -83,8 +103,8 @@ abstract contract VaultConnector {
         subnetworks = _subnetworks;
     }
 
-    function _registerVault(address vault) internal {
-        if (vaults.contains(vault)) {
+    function _registerVault(address vault, bool isSharedVault) internal {
+        if (operatorVaults.contains(vault) || sharedVaults.contains(vault)) {
             revert VaultAlreadyRegistred();
         }
 
@@ -103,92 +123,81 @@ abstract contract VaultConnector {
             revert VaultEpochTooShort();
         }
 
-        vaults.add(vault);
-    }
-
-    function _enableVaults(address operator, address[] memory _vaults) internal {
-        for (uint256 i = 0; i < _vaults.length; ++i) {
-            uint256 pos = vaults._inner._positions[bytes32(uint256(uint160(_vaults[i])))];
-            if (pos == 0) {
-                revert NotExistVault();
-            }
-
-            operatorVaults[operator].set(pos);
+        if (isSharedVault) {
+            sharedVaults.add(vault);
+        } else {
+            operatorVaults.add(vault);
         }
     }
 
-    function _disableVaults(address operator, address[] memory _vaults) internal {
-        for (uint256 i = 0; i < _vaults.length; ++i) {
-            uint256 pos = vaults._inner._positions[bytes32(uint256(uint160(_vaults[i])))];
-            if (pos == 0) {
-                revert NotExistVault();
-            }
-
-            operatorVaults[operator].unset(pos);
-        }
+    function _enableSharedVaults(uint256[] memory positions) internal {
+        Subsets.enableSubset(sharedVaultsStatus, positions, sharedVaults.length());
     }
 
-    function _getOperatorStake(address operator, uint48 epochStartTs) internal view returns (uint256 stake) {
-        for (uint256 pos; pos < vaults.length(); ++pos) {
-            if (!operatorVaults[operator].get(pos, epochStartTs)) {
-                continue;
-            }
+    function _disableSharedVaults(uint256[] memory positions) internal {
+        Subsets.disableSubset(sharedVaultsStatus, positions, sharedVaults.length());
+    }
 
-            for (uint96 i = 0; i < subnetworks; ++i) {
-                bytes32 subnetwork = NETWORK.subnetwork(i);
-                address vault = vaults.at(pos);
-                stake += IBaseDelegator(IVault(vault).delegator()).stakeAt(subnetwork, operator, epochStartTs, "");
+    function _enableOperatorVaults(address operator, uint256[] memory positions) internal {
+        Subsets.enableSubset(operatorVaultsStatus[operator], positions, operatorVaults.length());
+    }
+
+    function _disableOperatorVaults(address operator, uint256[] memory positions) internal {
+        Subsets.disableSubset(operatorVaultsStatus[operator], positions, operatorVaults.length());
+    }
+
+    function _getOperatorStake(address operator, uint48 timestamp) internal view returns (uint256 stake) {
+        address[] memory vaults = _getEnabledOperatorVaults(operator, timestamp);
+
+        for (uint256 i; i < vaults.length; ++i) {
+            address vault = vaults[i];
+            for (uint96 subnet = 0; subnet < subnetworks; ++subnet) {
+                bytes32 subnetwork = NETWORK.subnetwork(subnet);
+                stake += IBaseDelegator(IVault(vault).delegator()).stakeAt(subnetwork, operator, timestamp, "");
             }
         }
 
         return stake;
     }
 
-    function _calcTotalStake(uint48 epochStartTs, address[] memory operators)
-        internal
-        view
-        returns (uint256 totalStake)
-    {
-        // for epoch older than SLASHING_WINDOW total stake can be invalidated (use cache)
-        if (epochStartTs < Time.timestamp() - SLASHING_WINDOW) {
+    function _calcTotalStake(uint48 timestamp, address[] memory operators) internal view returns (uint256 totalStake) {
+        if (timestamp < Time.timestamp() - SLASHING_WINDOW) {
             revert TooOldEpoch();
         }
 
-        if (epochStartTs > Time.timestamp()) {
+        if (timestamp > Time.timestamp()) {
             revert InvalidEpoch();
         }
 
         for (uint256 i; i < operators.length; ++i) {
-            uint256 operatorStake = _getOperatorStake(operators[i], epochStartTs);
+            uint256 operatorStake = _getOperatorStake(operators[i], timestamp);
             totalStake += operatorStake;
         }
     }
 
-    function _slash(uint48 epochStartTs, address operator, uint256 amount) internal {
-        if (epochStartTs < Time.timestamp() - SLASHING_WINDOW) {
+    function _slash(uint48 timestamp, address operator, uint256 amount) internal {
+        if (timestamp < Time.timestamp() - SLASHING_WINDOW) {
             revert TooOldEpoch();
         }
 
-        uint256 totalOperatorStake = _getOperatorStake(operator, epochStartTs);
+        uint256 totalOperatorStake = _getOperatorStake(operator, timestamp);
 
         if (totalOperatorStake < amount) {
             revert TooBigSlashAmount();
         }
 
         // simple pro-rata slasher
-        for (uint256 pos; pos < vaults.length(); ++pos) {
-            if (!operatorVaults[operator].get(pos, epochStartTs)) {
-                continue;
-            }
+        address[] memory vaults = _getEnabledOperatorVaults(operator, timestamp);
 
-            for (uint96 i = 0; i < subnetworks; ++i) {
-                bytes32 subnetwork = NETWORK.subnetwork(i);
-                address vault = vaults.at(pos);
+        for (uint256 i = 0; i < vaults.length; ++i) {
+            for (uint96 subnet = 0; subnet < subnetworks; ++subnet) {
+                bytes32 subnetwork = NETWORK.subnetwork(subnet);
+                address vault = vaults[i];
 
                 uint256 vaultStake =
-                    IBaseDelegator(IVault(vault).delegator()).stakeAt(subnetwork, operator, epochStartTs, "");
+                    IBaseDelegator(IVault(vault).delegator()).stakeAt(subnetwork, operator, timestamp, "");
 
-                _slashVault(epochStartTs, vault, subnetwork, operator, amount * vaultStake / totalOperatorStake);
+                _slashVault(timestamp, vault, subnetwork, operator, amount * vaultStake / totalOperatorStake);
             }
         }
     }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v5.0.0) (utils/structs/BitMaps.sol)
 pragma solidity ^0.8.25;
 
 import {Checkpoints} from "@openzeppelin/contracts/utils/structs/Checkpoints.sol";
@@ -14,7 +13,8 @@ library BitMaps {
 
     function get(BitMap storage bitmap, uint256 index, uint48 timestamp) internal view returns (bool) {
         uint256 bucket = index / 208;
-        uint208 mask = uint208(1 << (index & 0xd0));
+        index %= 208;
+        uint208 mask = uint208(1 << index);
         return bitmap._data[bucket].upperLookupRecent(timestamp) & mask != 0;
     }
 
@@ -34,7 +34,8 @@ library BitMaps {
      */
     function set(BitMap storage bitmap, uint256 index) internal {
         uint256 bucket = index / 208;
-        uint208 mask = uint208(1 << (index & 0xd0));
+        index %= 208;
+        uint208 mask = uint208(1 << index);
         bitmap._data[bucket].push(Time.timestamp(), bitmap._data[bucket].latest() | mask);
     }
 
@@ -43,7 +44,8 @@ library BitMaps {
      */
     function unset(BitMap storage bitmap, uint256 index) internal {
         uint256 bucket = index / 208;
-        uint208 mask = uint208(1 << (index & 0xd0));
+        index %= 208;
+        uint208 mask = uint208(1 << index);
         bitmap._data[bucket].push(Time.timestamp(), bitmap._data[bucket].latest() & ~mask);
     }
 }
