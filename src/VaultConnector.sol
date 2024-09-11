@@ -12,6 +12,7 @@ import {IVetoSlasher} from "@symbiotic/interfaces/slasher/IVetoSlasher.sol";
 
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {BitMaps} from "./libraries/BitMaps.sol";
 import {Subsets} from "./libraries/Subsets.sol";
@@ -33,7 +34,6 @@ abstract contract VaultConnector {
 
     error InvalidSubnetworksCnt();
 
-    error TooBigSlashAmount();
     error UnknownSlasherType();
 
     address public immutable NETWORK;
@@ -63,33 +63,27 @@ abstract contract VaultConnector {
     }
 
     function _getEnabledSharedVaults(uint48 timestamp) internal view returns (address[] memory vaults) {
-        return Subsets.getEnabledEnumerableAddressSubset(sharedVaults, sharedVaultsStatus, timestamp);
+        return Subsets.getEnabledSubset(sharedVaults, sharedVaultsStatus, timestamp);
     }
 
-    // TODO this merge allocated less memory than two times to call to Subsets library and merge
     function _getEnabledOperatorVaults(address operator, uint48 timestamp)
         internal
         view
         returns (address[] memory vaults)
     {
-        uint256 operatorVaultsLen;
-        for (uint256 pos; pos < operatorVaults.length(); ++pos) {
-            if (operatorVaultsStatus[operator].get(pos, timestamp)) {
-                operatorVaultsLen++;
-            }
+        address[] memory enabledSharedVaults = _getEnabledSharedVaults(timestamp);
+        address[] memory enabledOperatorVaults =
+            Subsets.getEnabledSubset(operatorVaults, operatorVaultsStatus[operator], timestamp);
+        vaults = new address[](enabledSharedVaults.length + enabledOperatorVaults.length);
+
+        for (uint256 i = 0; i < enabledSharedVaults.length; ++i) {
+            vaults[i] = enabledSharedVaults[i];
         }
 
-        vaults = new address[](sharedVaults.length() + operatorVaultsLen);
-        uint256 idx = 0;
+        uint256 sharedVaultsLen = enabledSharedVaults.length;
 
-        for (uint256 pos; pos < operatorVaults.length(); ++pos) {
-            if (operatorVaultsStatus[operator].get(pos, timestamp)) {
-                vaults[idx++] = operatorVaults.at(pos);
-            }
-        }
-
-        for (uint256 pos; pos < sharedVaults.length(); ++pos) {
-            vaults[idx++] = sharedVaults.at(pos);
+        for (uint256 i = 0; i < enabledOperatorVaults.length; ++i) {
+            vaults[i + sharedVaultsLen] = enabledOperatorVaults[i + sharedVaultsLen];
         }
 
         return vaults;
@@ -182,9 +176,7 @@ abstract contract VaultConnector {
 
         uint256 totalOperatorStake = _getOperatorStake(operator, timestamp);
 
-        if (totalOperatorStake < amount) {
-            revert TooBigSlashAmount();
-        }
+        amount = Math.min(totalOperatorStake, amount);
 
         // simple pro-rata slasher
         address[] memory vaults = _getEnabledOperatorVaults(operator, timestamp);

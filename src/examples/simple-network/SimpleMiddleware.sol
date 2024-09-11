@@ -88,7 +88,7 @@ contract SimpleMiddleware is VaultConnector, Ownable {
 
     function getEnabledOperators(uint48 epoch) public view returns (address[] memory _operatorVaults) {
         uint48 epochStartTs = getEpochStartTs(epoch);
-        return Subsets.getEnabledEnumerableAddressSubset(operators, operatorsStatus, epochStartTs);
+        return Subsets.getEnabledSubset(operators, operatorsStatus, epochStartTs);
     }
 
     function getOperatorByKey(bytes32 key) public view returns (address) {
@@ -108,10 +108,6 @@ contract SimpleMiddleware is VaultConnector, Ownable {
     }
 
     function setSubnetworks(uint256 _subnetworks) external onlyOwner {
-        if (subnetworks >= _subnetworks) {
-            revert InvalidSubnetworksCnt();
-        }
-
         _setSubnetworks(_subnetworks);
     }
 
@@ -153,8 +149,8 @@ contract SimpleMiddleware is VaultConnector, Ownable {
         }
 
         bytes32 currentKey = getCurrentOperatorKey(operator);
-        uint256 currenyKeyPosition = keyRegistry.getKeyPosition(currentKey);
-        keyRegistry.disableOperatorKey(operator, currenyKeyPosition);
+        uint256 currentKeyPosition = keyRegistry.getKeyPosition(currentKey);
+        keyRegistry.disableOperatorKey(operator, currentKeyPosition);
 
         uint256 position = keyRegistry.getKeyPosition(key);
         keyRegistry.enableOperatorKey(operator, position);

@@ -41,7 +41,7 @@ library KeyRegistry32 {
     }
 
     function getEnabledOperatorKeys(Registry storage self, address operator) internal view returns (bytes32[] memory) {
-        return Subsets.getEnabledBytes32Subset(self.keys[operator], self.keysStatus[operator], Time.timestamp());
+        return Subsets.getEnabledSubset(self.keys[operator], self.keysStatus[operator], Time.timestamp());
     }
 
     function getEnabledOperatorKeysAt(Registry storage self, address operator, uint48 timestamp)
@@ -49,7 +49,7 @@ library KeyRegistry32 {
         view
         returns (bytes32[] memory)
     {
-        return Subsets.getEnabledBytes32Subset(self.keys[operator], self.keysStatus[operator], timestamp);
+        return Subsets.getEnabledSubset(self.keys[operator], self.keysStatus[operator], timestamp);
     }
 
     function registerOperatorKey(Registry storage self, address operator, bytes32 key) internal {

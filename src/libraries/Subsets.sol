@@ -36,16 +36,15 @@ library Subsets {
         setStatus.unset(position);
     }
 
-    function getEnabledEnumerableAddressSubset(
-        EnumerableSet.AddressSet storage set,
-        BitMaps.BitMap storage setStatus,
-        uint48 timestamp
-    ) external view returns (address[] memory) {
+    function getEnabledSubset(EnumerableSet.AddressSet storage set, BitMaps.BitMap storage setStatus, uint48 timestamp)
+        external
+        view
+        returns (address[] memory)
+    {
         address[] memory _set = set.values();
         uint256 length = 0;
         for (uint256 i = 0; i < _set.length; ++i) {
             if (setStatus.get(i, timestamp)) {
-                // console2.log("pos: ", i, "time: ", timestamp, "status: ", status);
                 _set[length++] = _set[i];
             }
         }
@@ -59,7 +58,7 @@ library Subsets {
         return _set;
     }
 
-    function getEnabledBytes32Subset(bytes32[] storage set, BitMaps.BitMap storage setStatus, uint48 timestamp)
+    function getEnabledSubset(bytes32[] storage set, BitMaps.BitMap storage setStatus, uint48 timestamp)
         external
         view
         returns (bytes32[] memory)
@@ -81,7 +80,7 @@ library Subsets {
         return _set;
     }
 
-    function getEnabledBytesSubset(bytes[] storage set, BitMaps.BitMap storage setStatus, uint48 timestamp)
+    function getEnabledSubset(bytes[] storage set, BitMaps.BitMap storage setStatus, uint48 timestamp)
         external
         view
         returns (bytes[] memory)
