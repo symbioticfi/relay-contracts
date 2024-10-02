@@ -11,13 +11,13 @@ import {ISlasher} from "@symbiotic/interfaces/slasher/ISlasher.sol";
 import {IVetoSlasher} from "@symbiotic/interfaces/slasher/IVetoSlasher.sol";
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {AddressWithTimes} from "./libraries/AddressWithTimes.sol";
+import {MiddlewareStorage} from "./MiddlewareStorage.sol";
+import {ArrayWithTimes} from "./libraries/ArrayWithTimes.sol";
 
-contract VaultManager is Ownable {
-    using AddressWithTimes for AddressWithTimes.Address;
+abstract contract VaultManager is MiddlewareStorage {
+    using ArrayWithTimes for ArrayWithTimes.AddressArray;
     using Subnetwork for address;
 
     error NotVault();
@@ -30,45 +30,23 @@ contract VaultManager is Ownable {
 
     error InvalidSubnetworksCnt();
 
-    error SlashPeriodNotPassed();
     error UnknownSlasherType();
 
-    address public immutable NETWORK;
-    address public immutable VAULT_REGISTRY;
-    uint48 public immutable SLASHING_WINDOW;
-    uint48 public constant INSTANT_SLASHER_TYPE = 0;
-    uint48 public constant VETO_SLASHER_TYPE = 1;
-    uint256 public subnetworks;
-    AddressWithTimes.Address[] public sharedVaults;
-    mapping(address => AddressWithTimes.Address[]) public operatorVaults;
-    mapping(address => uint256) public vaultPositions;
-
-    constructor(address owner, address network, address vaultRegistry, uint48 slashingWindow) Ownable(owner) {
-        NETWORK = network;
-        VAULT_REGISTRY = vaultRegistry;
-        SLASHING_WINDOW = slashingWindow;
-        subnetworks = 1;
-    }
+    ArrayWithTimes.AddressArray internal sharedVaults;
+    mapping(address => ArrayWithTimes.AddressArray) internal operatorVaults;
 
     function activeVaults(address operator, uint48 timestamp) public view returns (address[] memory) {
-        address[] memory vaults = new address[](sharedVaults.length + operatorVaults[operator].length);
+        address[] memory activeSharedVaults = sharedVaults.getActive(timestamp);
+        address[] memory activeOperatorVaults = operatorVaults[operator].getActive(timestamp);
+        // TODO how to optimize memory alloc
+        address[] memory vaults = new address[](activeSharedVaults.length + activeOperatorVaults.length);
         uint256 len = 0;
-        for (uint256 i; i < sharedVaults.length; ++i) {
-            if (!sharedVaults[i].wasActiveAt(timestamp)) {
-                continue;
-            }
-
-            vaults[len++] = sharedVaults[i].getAddress();
+        for (uint256 i; i < activeSharedVaults.length; ++i) {
+            vaults[len++] = activeSharedVaults[i];
         }
-
-        for (uint256 i; i < operatorVaults[operator].length; ++i) {
-            if (!operatorVaults[operator][i].wasActiveAt(timestamp)) {
-                continue;
-            }
-
-            vaults[len++] = operatorVaults[operator][i].getAddress();
+        for (uint256 i; i < activeOperatorVaults.length; ++i) {
+            vaults[len++] = activeOperatorVaults[i];
         }
-
         // shrink array to skip unused slots
         /// @solidity memory-safe-assembly
         assembly {
@@ -78,100 +56,38 @@ contract VaultManager is Ownable {
         return vaults;
     }
 
-    function setSubnetworks(uint256 _subnetworks) external onlyOwner {
-        if (subnetworks >= _subnetworks) {
-            revert InvalidSubnetworksCnt();
-        }
-
-        subnetworks = _subnetworks;
-    }
-
     function registerSharedVault(address vault) external onlyOwner {
-        if (vaultPositions[vault] != 0) {
-            revert VaultAlreadyRegistred();
-        }
-
-        _checkVault(vault);
-
-        uint256 pos = sharedVaults.length;
-        sharedVaults.push();
-        sharedVaults[pos].set(vault);
-        vaultPositions[vault] = pos + 1;
+        _validateVault(vault);
+        sharedVaults.register(vault);
     }
 
     function registerOperatorVault(address vault, address operator) external onlyOwner {
-        if (vaultPositions[vault] != 0) {
-            revert VaultAlreadyRegistred();
-        }
-
-        _checkVault(vault);
-
-        uint256 pos = operatorVaults[operator].length;
-        operatorVaults[operator].push();
-        operatorVaults[operator][pos].set(vault);
-        vaultPositions[vault] = pos + 1;
+        _validateVault(vault);
+        operatorVaults[operator].register(vault);
     }
 
     function pauseSharedVault(address vault) external onlyOwner {
-        if (vaultPositions[vault] == 0) {
-            revert VaultNotRegistered();
-        }
-
-        sharedVaults[vaultPositions[vault] - 1].disable();
+        sharedVaults.pause(vault);
     }
 
     function unpauseSharedVault(address vault) external onlyOwner {
-        if (vaultPositions[vault] == 0) {
-            revert VaultNotRegistered();
-        }
-
-        sharedVaults[vaultPositions[vault] - 1].checkUnpause(SLASHING_WINDOW);
-        sharedVaults[vaultPositions[vault] - 1].enable();
+        sharedVaults.unpause(vault, SLASHING_WINDOW);
     }
 
-    function pauseOperatorVault(address vault) external onlyOwner {
-        if (vaultPositions[vault] == 0) {
-            revert VaultNotRegistered();
-        }
-
-        sharedVaults[vaultPositions[vault] - 1].disable();
+    function pauseOperatorVault(address operator, address vault) external onlyOwner {
+        operatorVaults[operator].pause(vault);
     }
 
     function unpauseOperatorVault(address operator, address vault) external onlyOwner {
-        if (vaultPositions[vault] == 0) {
-            revert VaultNotRegistered();
-        }
-
-        operatorVaults[operator][vaultPositions[vault] - 1].checkUnpause(SLASHING_WINDOW);
-        operatorVaults[operator][vaultPositions[vault] - 1].enable();
+        operatorVaults[operator].unpause(vault, SLASHING_WINDOW);
     }
 
     function unregisterSharedVault(address vault) external onlyOwner {
-        if (vaultPositions[vault] == 0) {
-            revert VaultNotRegistered();
-        }
-
-        uint256 pos = vaultPositions[vault] - 1;
-        sharedVaults[pos].checkUnregister(SLASHING_WINDOW);
-        sharedVaults[pos] = sharedVaults[sharedVaults.length - 1];
-        sharedVaults.pop();
-
-        delete vaultPositions[vault];
-        vaultPositions[sharedVaults[pos].getAddress()] = pos + 1;
+        sharedVaults.unregister(vault, SLASHING_WINDOW);
     }
 
     function unregisterOperatorVault(address operator, address vault) external onlyOwner {
-        if (vaultPositions[vault] == 0) {
-            revert VaultNotRegistered();
-        }
-
-        uint256 pos = vaultPositions[vault] - 1;
-        operatorVaults[operator][pos].checkUnregister(SLASHING_WINDOW);
-        operatorVaults[operator][pos] = operatorVaults[operator][operatorVaults[operator].length - 1];
-        operatorVaults[operator].pop();
-
-        delete vaultPositions[vault];
-        vaultPositions[operatorVaults[operator][pos].getAddress()] = pos + 1;
+        operatorVaults[operator].unregister(vault, SLASHING_WINDOW);
     }
 
     function getOperatorStake(address operator, uint48 timestamp) public view returns (uint256 stake) {
@@ -201,11 +117,12 @@ contract VaultManager is Ownable {
             uint256 operatorStake = getOperatorStake(operators[i], timestamp);
             totalStake += operatorStake;
         }
+
+        return totalStake;
     }
 
-    // ONYL DELEGATECALL FROM MIDDLEWARE
     function slashVault(uint48 timestamp, address vault, bytes32 subnetwork, address operator, uint256 amount)
-        external
+        internal
     {
         address slasher = IVault(vault).slasher();
         uint256 slasherType = IEntity(slasher).TYPE();
@@ -218,7 +135,7 @@ contract VaultManager is Ownable {
         }
     }
 
-    function _checkVault(address vault) private view {
+    function _validateVault(address vault) private view {
         if (!IRegistry(VAULT_REGISTRY).isEntity(vault)) {
             revert NotVault();
         }
