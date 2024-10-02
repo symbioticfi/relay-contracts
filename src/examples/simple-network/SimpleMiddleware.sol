@@ -12,13 +12,12 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {VaultManager} from "../../VaultManager.sol";
 import {OperatorManager} from "../../OperatorManager.sol";
 import {KeyManager32} from "../../KeyManager32.sol";
+import {MiddlewareStorage} from "../..//MiddlewareStorage.sol";
 
-contract SimpleMiddleware is Ownable {
+contract SimpleMiddleware is VaultManager, OperatorManager, KeyManager32 {
     using Subnetwork for address;
 
     error SlashingWindowTooShort();
-    error TooOldEpoch();
-    error InvalidEpoch();
     error InvalidSlash();
 
     struct ValidatorData {
@@ -26,10 +25,8 @@ contract SimpleMiddleware is Ownable {
         bytes32 key;
     }
 
-    address public immutable NETWORK;
     uint48 public immutable EPOCH_DURATION;
     uint48 public immutable START_TIME;
-    uint48 public immutable SLASHING_WINDOW;
 
     address public immutable vaultManager;
     address public immutable operatorManager;
@@ -43,18 +40,11 @@ contract SimpleMiddleware is Ownable {
         address owner,
         uint48 epochDuration,
         uint48 slashingWindow
-    ) Ownable(owner) {
+    ) MiddlewareStorage(owner, network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin) {
         if (slashingWindow < epochDuration) {
             revert SlashingWindowTooShort();
         }
 
-        vaultManager = address(new VaultManager(owner, network, vaultRegistry, slashingWindow));
-        operatorManager =
-            address(new OperatorManager(owner, network, operatorRegistry, operatorNetOptin, slashingWindow));
-        keyManager = address(new KeyManager32(owner, slashingWindow));
-
-        NETWORK = network;
-        START_TIME = Time.timestamp();
         EPOCH_DURATION = epochDuration;
         SLASHING_WINDOW = slashingWindow;
     }
@@ -82,30 +72,32 @@ contract SimpleMiddleware is Ownable {
             revert InvalidEpoch();
         }
 
-        address[] memory operators = OperatorManager(operatorManager).activeOperators(epochStartTs);
+        address[] memory operators = activeOperators(epochStartTs);
 
         for (uint256 i; i < operators.length; ++i) {
-            uint256 operatorStake = VaultManager(vaultManager).getOperatorStake(operators[i], epochStartTs);
+            uint256 operatorStake = getOperatorStake(operators[i], epochStartTs);
             totalStake += operatorStake;
         }
+
+        return totalStake;
     }
 
     function getValidatorSet(uint48 epoch) public view returns (ValidatorData[] memory validatorSet) {
         uint48 epochStartTs = getEpochStartTs(epoch);
 
-        address[] memory operators = OperatorManager(operatorManager).activeOperators(epochStartTs);
+        address[] memory operators = activeOperators(epochStartTs);
         validatorSet = new ValidatorData[](operators.length);
         uint256 len = 0;
 
         for (uint256 i; i < operators.length; ++i) {
             address operator = operators[i];
 
-            bytes32 key = KeyManager32(keyManager).operatorKey(operator);
-            if (key == bytes32(0) || !KeyManager32(keyManager).keyWasActiveAt(key, epochStartTs)) {
+            bytes32 key = operatorKey(operator);
+            if (key == bytes32(0) || !keyWasActiveAt(key, epochStartTs)) {
                 continue;
             }
 
-            uint256 stake = VaultManager(vaultManager).getOperatorStake(operator, epochStartTs);
+            uint256 stake = getOperatorStake(operator, epochStartTs);
             validatorSet[len++] = ValidatorData(stake, key);
         }
 
@@ -119,25 +111,17 @@ contract SimpleMiddleware is Ownable {
     // just for example, our devnets don't support slashing
     function slash(uint48 epoch, address operator, uint256 amount) public onlyOwner {
         uint48 epochStartTs = getEpochStartTs(epoch);
-        uint256 totalStake = VaultManager(vaultManager).getOperatorStake(operator, epochStartTs);
-        address[] memory vaults = VaultManager(vaultManager).activeVaults(operator, epochStartTs);
+        uint256 totalStake = getOperatorStake(operator, epochStartTs);
+        address[] memory vaults = activeVaults(operator, epochStartTs);
 
         for (uint256 i; i < vaults.length; ++i) {
             address vault = vaults[i];
-            for (uint96 subnet = 0; subnet < VaultManager(vaultManager).subnetworks(); ++subnet) {
+            for (uint96 subnet = 0; subnet < subnetworks; ++subnet) {
                 bytes32 subnetwork = NETWORK.subnetwork(subnet);
                 uint256 stake =
                     IBaseDelegator(IVault(vault).delegator()).stakeAt(subnetwork, operator, epochStartTs, "");
                 uint256 slashAmount = Math.mulDiv(amount, stake, totalStake);
-                (bool success,) = vaultManager.delegatecall(
-                    abi.encodeWithSelector(
-                        VaultManager.slashVault.selector, epochStartTs, vault, subnetwork, operator, slashAmount
-                    )
-                );
-
-                if (!success) {
-                    revert InvalidSlash();
-                }
+                slashVault(epochStartTs, vault, subnetwork, operator, slashAmount);
             }
         }
     }

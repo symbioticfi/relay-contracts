@@ -2,34 +2,29 @@
 pragma solidity 0.8.25;
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
-import {AddressWithTimes} from "./libraries/AddressWithTimes.sol";
+import {MiddlewareStorage} from "./MiddlewareStorage.sol";
+import {ArrayWithTimes} from "./libraries/ArrayWithTimes.sol";
 
-contract KeyManager32 is Ownable {
-    using AddressWithTimes for AddressWithTimes.Address;
+abstract contract KeyManager32 is MiddlewareStorage {
+    using ArrayWithTimes for ArrayWithTimes.Address;
 
     error DuplicateKey();
     error NotExistKey();
     error NoOperatorKey();
 
     mapping(address => bytes32) public keys;
-    mapping(bytes32 => AddressWithTimes.Address) public keyData;
-    uint48 public immutable SLASHING_WINDOW;
+    mapping(bytes32 => ArrayWithTimes.Address) internal keyData;
 
-    constructor(address owner, uint48 slashingWindow) Ownable(owner) {
-        SLASHING_WINDOW = slashingWindow;
-    }
-
-    function operatorByKey(bytes32 key) external view returns (address) {
+    function operatorByKey(bytes32 key) public view returns (address) {
         return keyData[key].getAddress();
     }
 
-    function operatorKey(address operator) external view returns (bytes32) {
+    function operatorKey(address operator) public view returns (bytes32) {
         return keys[operator];
     }
 
-    function keyWasActiveAt(bytes32 key, uint48 timestamp) external view returns (bool) {
+    function keyWasActiveAt(bytes32 key, uint48 timestamp) public view returns (bool) {
         return keyData[key].wasActiveAt(timestamp);
     }
 
