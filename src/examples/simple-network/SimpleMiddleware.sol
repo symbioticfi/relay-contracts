@@ -11,14 +11,15 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {VaultManager} from "../../VaultManager.sol";
 import {OperatorManager} from "../../OperatorManager.sol";
-import {KeyManager32} from "../../KeyManager32.sol";
+import {KeyManager} from "../../KeyManager.sol";
 import {MiddlewareStorage} from "../..//MiddlewareStorage.sol";
 
-contract SimpleMiddleware is VaultManager, OperatorManager, KeyManager32 {
+contract SimpleMiddleware is VaultManager, OperatorManager, KeyManager {
     using Subnetwork for address;
 
     error SlashingWindowTooShort();
-    error InvalidSlash();
+    error InactiveKeySlash();
+    error NotExistKeySlash();
 
     struct ValidatorData {
         uint256 stake;
@@ -109,8 +110,18 @@ contract SimpleMiddleware is VaultManager, OperatorManager, KeyManager32 {
     }
 
     // just for example, our devnets don't support slashing
-    function slash(uint48 epoch, address operator, uint256 amount) public onlyOwner {
+    function slash(uint48 epoch, bytes32 key, uint256 amount) public onlyOwner {
         uint48 epochStartTs = getEpochStartTs(epoch);
+        address operator = operatorByKey(key);
+
+        if (operator == address(0)) {
+            revert NotExistKeySlash();
+        }
+
+        if (!keyWasActiveAt(key, epochStartTs)) {
+            revert InactiveKeySlash();
+        }
+
         uint256 totalStake = getOperatorStake(operator, epochStartTs);
         address[] memory vaults = activeVaults(operator, epochStartTs);
 

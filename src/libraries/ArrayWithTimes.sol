@@ -67,7 +67,7 @@ library ArrayWithTimes {
             revert NotRegistered();
         }
 
-        self.array[self.positions[addr] - 1].checkUnpause(immutablePeriod);
+        self.array[self.positions[addr] - 1].validateUnpause(immutablePeriod);
         self.array[self.positions[addr] - 1].enable();
     }
 
@@ -77,7 +77,7 @@ library ArrayWithTimes {
         }
 
         uint256 pos = self.positions[addr] - 1;
-        self.array[pos].checkUnregister(immutablePeriod);
+        self.array[pos].validateUnregister(immutablePeriod);
         self.array[pos] = self.array[self.array.length - 1];
         self.array.pop();
 
@@ -120,13 +120,13 @@ library ArrayWithTimes {
         return self.enabled != 0 && self.enabled <= timestamp && (self.disabled == 0 || self.disabled >= timestamp);
     }
 
-    function checkUnpause(Address storage self, uint48 slashingWindow) internal view {
+    function validateUnpause(Address storage self, uint48 slashingWindow) internal view {
         if (self.disabled + slashingWindow >= Time.timestamp()) {
             revert ImmutablePeriodNotPassed();
         }
     }
 
-    function checkUnregister(Address storage self, uint48 slashingWindow) internal view {
+    function validateUnregister(Address storage self, uint48 slashingWindow) internal view {
         if (self.disabled == 0 || self.disabled + slashingWindow >= Time.timestamp()) {
             revert ImmutablePeriodNotPassed();
         }

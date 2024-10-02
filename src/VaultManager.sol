@@ -38,19 +38,14 @@ abstract contract VaultManager is MiddlewareStorage {
     function activeVaults(address operator, uint48 timestamp) public view returns (address[] memory) {
         address[] memory activeSharedVaults = sharedVaults.getActive(timestamp);
         address[] memory activeOperatorVaults = operatorVaults[operator].getActive(timestamp);
-        // TODO how to optimize memory alloc
-        address[] memory vaults = new address[](activeSharedVaults.length + activeOperatorVaults.length);
-        uint256 len = 0;
-        for (uint256 i; i < activeSharedVaults.length; ++i) {
-            vaults[len++] = activeSharedVaults[i];
+
+        uint256 activeSharedVaultsLen = activeSharedVaults.length;
+        address[] memory vaults = new address[](activeSharedVaultsLen + activeOperatorVaults.length);
+        for (uint256 i; i < activeSharedVaultsLen; ++i) {
+            vaults[i] = activeSharedVaults[i];
         }
         for (uint256 i; i < activeOperatorVaults.length; ++i) {
-            vaults[len++] = activeOperatorVaults[i];
-        }
-        // shrink array to skip unused slots
-        /// @solidity memory-safe-assembly
-        assembly {
-            mstore(vaults, len)
+            vaults[activeSharedVaultsLen + i] = activeOperatorVaults[i];
         }
 
         return vaults;
