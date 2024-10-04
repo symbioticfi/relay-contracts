@@ -23,6 +23,14 @@ library ArrayWithTimes {
     error NotEnabled();
     error ImmutablePeriodNotPassed();
 
+    function length(AddressArray storage self) internal view returns (uint256) {
+        return self.array.length;
+    }
+
+    function at(AddressArray storage self, uint256 pos) internal view returns (address, uint48, uint48) {
+        return self.array[pos].get();
+    }
+
     function getActive(AddressArray storage self, uint48 timestamp) internal view returns (address[] memory) {
         address[] memory array = new address[](self.array.length);
         uint256 len = 0;
@@ -83,6 +91,10 @@ library ArrayWithTimes {
 
         delete self.positions[addr];
         self.positions[self.array[pos].getAddress()] = pos + 1;
+    }
+
+    function contains(AddressArray storage self, address addr) internal view returns (bool) {
+        return self.positions[addr] == 0;
     }
 
     function getAddress(Address storage self) internal view returns (address) {

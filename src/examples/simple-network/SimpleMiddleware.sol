@@ -20,6 +20,7 @@ contract SimpleMiddleware is VaultManager, OperatorManager, KeyManager {
     error SlashingWindowTooShort();
     error InactiveKeySlash();
     error NotExistKeySlash();
+    error InvalidHints();
 
     struct ValidatorData {
         uint256 stake;
@@ -62,25 +63,11 @@ contract SimpleMiddleware is VaultManager, OperatorManager, KeyManager {
         return getEpochAtTs(Time.timestamp());
     }
 
-    function getTotalStake(uint48 epoch) public view returns (uint256 totalStake) {
+    function getTotalStake(uint48 epoch) public view returns (uint256) {
         uint48 epochStartTs = getEpochStartTs(epoch);
-
-        if (epochStartTs < Time.timestamp() - SLASHING_WINDOW) {
-            revert TooOldEpoch();
-        }
-
-        if (epochStartTs > Time.timestamp()) {
-            revert InvalidEpoch();
-        }
-
         address[] memory operators = activeOperators(epochStartTs);
 
-        for (uint256 i; i < operators.length; ++i) {
-            uint256 operatorStake = getOperatorStake(operators[i], epochStartTs);
-            totalStake += operatorStake;
-        }
-
-        return totalStake;
+        return totalStake(epochStartTs, operators);
     }
 
     function getValidatorSet(uint48 epoch) public view returns (ValidatorData[] memory validatorSet) {
@@ -98,8 +85,8 @@ contract SimpleMiddleware is VaultManager, OperatorManager, KeyManager {
                 continue;
             }
 
-            uint256 stake = getOperatorStake(operator, epochStartTs);
-            validatorSet[len++] = ValidatorData(stake, key);
+            uint256 power = getOperatorPower(operator, epochStartTs);
+            validatorSet[len++] = ValidatorData(power, key);
         }
 
         // shrink array to skip unused slots
@@ -109,8 +96,14 @@ contract SimpleMiddleware is VaultManager, OperatorManager, KeyManager {
         }
     }
 
-    // just for example, our devnets don't support slashing
-    function slash(uint48 epoch, bytes32 key, uint256 amount) public onlyOwner {
+    // Here are the hints getter
+    // https://github.com/symbioticfi/core/blob/main/src/contracts/hints/SlasherHints.sol
+    // https://github.com/symbioticfi/core/blob/main/src/contracts/hints/DelegatorHints.sol
+    function slash(uint48 epoch, bytes32 key, uint256 amount, bytes[] calldata stakeHints, bytes[] calldata slashHints)
+        public
+        onlyOwner
+        returns (SlashResponse[] memory slashResponses)
+    {
         uint48 epochStartTs = getEpochStartTs(epoch);
         address operator = operatorByKey(key);
 
@@ -124,16 +117,34 @@ contract SimpleMiddleware is VaultManager, OperatorManager, KeyManager {
 
         uint256 totalStake = getOperatorStake(operator, epochStartTs);
         address[] memory vaults = activeVaults(operator, epochStartTs);
+        slashResponses = new SlashResponse[](vaults.length * subnetworks);
+        uint256 len = 0;
+
+        if (stakeHints.length != slashHints.length || stakeHints.length != vaults.length) {
+            revert InvalidHints();
+        }
 
         for (uint256 i; i < vaults.length; ++i) {
             address vault = vaults[i];
             for (uint96 subnet = 0; subnet < subnetworks; ++subnet) {
                 bytes32 subnetwork = NETWORK.subnetwork(subnet);
                 uint256 stake =
-                    IBaseDelegator(IVault(vault).delegator()).stakeAt(subnetwork, operator, epochStartTs, "");
+                    IBaseDelegator(IVault(vault).delegator()).stakeAt(subnetwork, operator, epochStartTs, stakeHints[i]);
+
                 uint256 slashAmount = Math.mulDiv(amount, stake, totalStake);
-                slashVault(epochStartTs, vault, subnetwork, operator, slashAmount);
+                if (slashAmount == 0) {
+                    continue;
+                }
+
+                slashResponses[len++] =
+                    slashVault(epochStartTs, vault, subnetwork, operator, slashAmount, slashHints[i]);
             }
+        }
+
+        // shrink array to skip unused slots
+        /// @solidity memory-safe-assembly
+        assembly {
+            mstore(slashResponses, len)
         }
     }
 }
