@@ -12,8 +12,8 @@ abstract contract MiddlewareStorage is Ownable {
     address public immutable OPERATOR_REGISTRY;
     address public immutable OPERATOR_NET_OPTIN;
 
-    uint48 public constant INSTANT_SLASHER_TYPE = 0;
-    uint48 public constant VETO_SLASHER_TYPE = 1;
+    uint64 public constant INSTANT_SLASHER_TYPE = 0;
+    uint64 public constant VETO_SLASHER_TYPE = 1;
 
     constructor(
         address owner,

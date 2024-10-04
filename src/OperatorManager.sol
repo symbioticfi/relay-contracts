@@ -21,6 +21,14 @@ abstract contract OperatorManager is MiddlewareStorage {
 
     ArrayWithTimes.AddressArray internal operators;
 
+    function operatorsLength() external view returns (uint256) {
+        return operators.length();
+    }
+
+    function operatorWithTimesAt(uint256 pos) external view returns (address, uint48, uint48) {
+        return operators.at(pos);
+    }
+
     function activeOperators(uint48 timestamp) public view returns (address[] memory) {
         return operators.getActive(timestamp);
     }

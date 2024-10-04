@@ -31,9 +31,38 @@ abstract contract VaultManager is MiddlewareStorage {
     error InvalidSubnetworksCnt();
 
     error UnknownSlasherType();
+    error NonVetoSlasher();
 
     ArrayWithTimes.AddressArray internal sharedVaults;
     mapping(address => ArrayWithTimes.AddressArray) internal operatorVaults;
+
+    struct SlashResponse {
+        address vault;
+        uint64 slasherType;
+        bytes32 subnetwork;
+        uint256 response; // if instant slashed amount else slash index
+    }
+
+    function sharedVaultsLength() external view returns (uint256) {
+        return sharedVaults.length();
+    }
+
+    function sharedVaultWithTimesAt(uint256 pos) external view returns (address, uint48, uint48) {
+        return sharedVaults.at(pos);
+    }
+
+    function operatorVaultsLength(address operator) external view returns (uint256) {
+        return operatorVaults[operator].length();
+    }
+
+    function opeartorVaultWithTimesAt(address operator, uint256 pos) external view returns (address, uint48, uint48) {
+        return operatorVaults[operator].at(pos);
+    }
+
+    // useful when vaults have different assets
+    function stakeToPower(address vault, uint256 stake) public view virtual returns (uint256) {
+        return stake;
+    }
 
     function activeVaults(address operator, uint48 timestamp) public view returns (address[] memory) {
         address[] memory activeSharedVaults = sharedVaults.getActive(timestamp);
@@ -99,7 +128,22 @@ abstract contract VaultManager is MiddlewareStorage {
         return stake;
     }
 
-    function calcTotalStake(uint48 timestamp, address[] memory operators) external view returns (uint256 totalStake) {
+    function getOperatorPower(address operator, uint48 timestamp) public view returns (uint256 power) {
+        address[] memory vaults = activeVaults(operator, timestamp);
+
+        for (uint256 i; i < vaults.length; ++i) {
+            address vault = vaults[i];
+            for (uint96 subnet = 0; subnet < subnetworks; ++subnet) {
+                bytes32 subnetwork = NETWORK.subnetwork(subnet);
+                uint256 stake = IBaseDelegator(IVault(vault).delegator()).stakeAt(subnetwork, operator, timestamp, "");
+                power += stakeToPower(vault, stake);
+            }
+        }
+
+        return power;
+    }
+
+    function totalStake(uint48 timestamp, address[] memory operators) internal view returns (uint256 stake) {
         if (timestamp < Time.timestamp() - SLASHING_WINDOW) {
             revert TooOldEpoch();
         }
@@ -110,24 +154,50 @@ abstract contract VaultManager is MiddlewareStorage {
 
         for (uint256 i; i < operators.length; ++i) {
             uint256 operatorStake = getOperatorStake(operators[i], timestamp);
-            totalStake += operatorStake;
+            stake += operatorStake;
         }
 
-        return totalStake;
+        return stake;
     }
 
-    function slashVault(uint48 timestamp, address vault, bytes32 subnetwork, address operator, uint256 amount)
-        internal
-    {
+    function slashVault(
+        uint48 timestamp,
+        address vault,
+        bytes32 subnetwork,
+        address operator,
+        uint256 amount,
+        bytes calldata hints
+    ) internal returns (SlashResponse memory resp) {
         address slasher = IVault(vault).slasher();
-        uint256 slasherType = IEntity(slasher).TYPE();
+        uint64 slasherType = IEntity(slasher).TYPE();
+        resp.vault = vault;
+        resp.slasherType = slasherType;
+        resp.subnetwork = subnetwork;
         if (slasherType == INSTANT_SLASHER_TYPE) {
-            ISlasher(slasher).slash(subnetwork, operator, amount, timestamp, new bytes(0));
+            resp.response = ISlasher(slasher).slash(subnetwork, operator, amount, timestamp, hints);
         } else if (slasherType == VETO_SLASHER_TYPE) {
-            IVetoSlasher(slasher).requestSlash(subnetwork, operator, amount, timestamp, new bytes(0));
+            resp.response = IVetoSlasher(slasher).requestSlash(subnetwork, operator, amount, timestamp, hints);
         } else {
             revert UnknownSlasherType();
         }
+    }
+
+    function executeSlash(address vault, uint256 slashIndex, bytes calldata hints)
+        external
+        onlyOwner
+        returns (uint256 slashedAmount)
+    {
+        if (!sharedVaults.contains(vault)) {
+            revert NotVault();
+        }
+
+        address slasher = IVault(vault).slasher();
+        uint64 slasherType = IEntity(slasher).TYPE();
+        if (slasherType != VETO_SLASHER_TYPE) {
+            revert NonVetoSlasher();
+        }
+
+        return IVetoSlasher(slasher).executeSlash(slashIndex, hints);
     }
 
     function _validateVault(address vault) private view {
