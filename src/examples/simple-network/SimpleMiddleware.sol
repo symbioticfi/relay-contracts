@@ -23,16 +23,12 @@ contract SimpleMiddleware is VaultManager, OperatorManager, KeyManager {
     error InvalidHints();
 
     struct ValidatorData {
-        uint256 stake;
+        uint256 power;
         bytes32 key;
     }
 
     uint48 public immutable EPOCH_DURATION;
     uint48 public immutable START_TIME;
-
-    address public immutable vaultManager;
-    address public immutable operatorManager;
-    address public immutable keyManager;
 
     constructor(
         address network,
@@ -51,29 +47,33 @@ contract SimpleMiddleware is VaultManager, OperatorManager, KeyManager {
         SLASHING_WINDOW = slashingWindow;
     }
 
-    function getEpochStartTs(uint48 epoch) public view returns (uint48 timestamp) {
+    function getEpochStart(uint48 epoch) public view returns (uint48 timestamp) {
         return START_TIME + epoch * EPOCH_DURATION;
     }
 
-    function getEpochAtTs(uint48 timestamp) public view returns (uint48 epoch) {
+    function getEpochAt(uint48 timestamp) public view returns (uint48 epoch) {
         return (timestamp - START_TIME) / EPOCH_DURATION;
     }
 
     function getCurrentEpoch() public view returns (uint48 epoch) {
-        return getEpochAtTs(Time.timestamp());
+        return getEpochAt(Time.timestamp());
     }
 
-    function getTotalStake(uint48 epoch) public view returns (uint256) {
-        uint48 epochStartTs = getEpochStartTs(epoch);
-        address[] memory operators = activeOperators(epochStartTs);
-
-        return totalStake(epochStartTs, operators);
+    function getCurrentEpochStart() public view returns (uint48 timestamp) {
+        return START_TIME + getCurrentEpoch() * EPOCH_DURATION;
     }
 
-    function getValidatorSet(uint48 epoch) public view returns (ValidatorData[] memory validatorSet) {
-        uint48 epochStartTs = getEpochStartTs(epoch);
+    function getTotalStake() public view returns (uint256) {
+        uint48 epochStart = getCurrentEpochStart();
+        address[] memory operators = activeOperators(epochStart);
 
-        address[] memory operators = activeOperators(epochStartTs);
+        return totalStake(epochStart, operators);
+    }
+
+    function getValidatorSet() public view returns (ValidatorData[] memory validatorSet) {
+        uint48 epochStart = getCurrentEpochStart();
+
+        address[] memory operators = activeOperators(epochStart);
         validatorSet = new ValidatorData[](operators.length);
         uint256 len = 0;
 
@@ -81,17 +81,15 @@ contract SimpleMiddleware is VaultManager, OperatorManager, KeyManager {
             address operator = operators[i];
 
             bytes32 key = operatorKey(operator);
-            if (key == bytes32(0) || !keyWasActiveAt(key, epochStartTs)) {
+            if (key == bytes32(0) || !keyWasActiveAt(key, epochStart)) {
                 continue;
             }
 
-            uint256 power = getOperatorPower(operator, epochStartTs);
+            uint256 power = getOperatorPower(operator, epochStart);
             validatorSet[len++] = ValidatorData(power, key);
         }
 
-        // shrink array to skip unused slots
-        /// @solidity memory-safe-assembly
-        assembly {
+        assembly ("memory-safe") {
             mstore(validatorSet, len)
         }
     }
@@ -99,25 +97,29 @@ contract SimpleMiddleware is VaultManager, OperatorManager, KeyManager {
     // Here are the hints getter
     // https://github.com/symbioticfi/core/blob/main/src/contracts/hints/SlasherHints.sol
     // https://github.com/symbioticfi/core/blob/main/src/contracts/hints/DelegatorHints.sol
-    function slash(uint48 epoch, bytes32 key, uint256 amount, bytes[] calldata stakeHints, bytes[] calldata slashHints)
-        public
-        onlyOwner
-        returns (SlashResponse[] memory slashResponses)
-    {
-        uint48 epochStartTs = getEpochStartTs(epoch);
+    function slash(
+        uint48 epoch,
+        bytes32 key,
+        uint256 amount,
+        bytes[][] calldata stakeHints,
+        bytes[] calldata slashHints
+    ) public onlyOwner returns (SlashResponse[] memory slashResponses) {
+        uint48 epochStart = getEpochStart(epoch);
         address operator = operatorByKey(key);
 
         if (operator == address(0)) {
             revert NotExistKeySlash();
         }
 
-        if (!keyWasActiveAt(key, epochStartTs)) {
+        if (!keyWasActiveAt(key, epochStart)) {
             revert InactiveKeySlash();
         }
 
-        uint256 totalStake = getOperatorStake(operator, epochStartTs);
-        address[] memory vaults = activeVaults(operator, epochStartTs);
-        slashResponses = new SlashResponse[](vaults.length * subnetworks);
+        uint256 totalStake = getOperatorStake(operator, epochStart);
+        address[] memory vaults = activeVaults(operator, epochStart);
+        uint160[] memory _subnetworks = activeSubnetworks(epochStart);
+
+        slashResponses = new SlashResponse[](vaults.length * _subnetworks.length);
         uint256 len = 0;
 
         if (stakeHints.length != slashHints.length || stakeHints.length != vaults.length) {
@@ -125,25 +127,27 @@ contract SimpleMiddleware is VaultManager, OperatorManager, KeyManager {
         }
 
         for (uint256 i; i < vaults.length; ++i) {
+            if (stakeHints[i].length != _subnetworks.length) {
+                revert InvalidHints();
+            }
+
             address vault = vaults[i];
-            for (uint96 subnet = 0; subnet < subnetworks; ++subnet) {
-                bytes32 subnetwork = NETWORK.subnetwork(subnet);
-                uint256 stake =
-                    IBaseDelegator(IVault(vault).delegator()).stakeAt(subnetwork, operator, epochStartTs, stakeHints[i]);
+            for (uint256 j = 0; j < _subnetworks.length; ++j) {
+                bytes32 subnetwork = NETWORK.subnetwork(uint96(_subnetworks[j]));
+                uint256 stake = IBaseDelegator(IVault(vault).delegator()).stakeAt(
+                    subnetwork, operator, epochStart, stakeHints[i][j]
+                );
 
                 uint256 slashAmount = Math.mulDiv(amount, stake, totalStake);
                 if (slashAmount == 0) {
                     continue;
                 }
 
-                slashResponses[len++] =
-                    slashVault(epochStartTs, vault, subnetwork, operator, slashAmount, slashHints[i]);
+                slashResponses[len++] = slashVault(epochStart, vault, subnetwork, operator, slashAmount, slashHints[i]);
             }
         }
 
-        // shrink array to skip unused slots
-        /// @solidity memory-safe-assembly
-        assembly {
+        assembly ("memory-safe") {
             mstore(slashResponses, len)
         }
     }

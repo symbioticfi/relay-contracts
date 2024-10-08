@@ -9,17 +9,17 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {MiddlewareStorage} from "./MiddlewareStorage.sol";
-import {ArrayWithTimes} from "./libraries/ArrayWithTimes.sol";
+import {EnumerableSetWithTimeData} from "./libraries/EnumerableSetWithTimeData.sol";
 
 abstract contract OperatorManager is MiddlewareStorage {
-    using ArrayWithTimes for ArrayWithTimes.AddressArray;
+    using EnumerableSetWithTimeData for EnumerableSetWithTimeData.AddressSet;
 
     error NotOperator();
     error OperatorNotOptedIn();
     error OperatorNotRegistered();
     error OperatorAlreadyRegistred();
 
-    ArrayWithTimes.AddressArray internal operators;
+    EnumerableSetWithTimeData.AddressSet internal operators;
 
     function operatorsLength() external view returns (uint256) {
         return operators.length();
