@@ -55,7 +55,7 @@ contract SimpleMiddleware is VaultManager, OperatorManager, KeyManager {
      */
     function getTotalStake() public view returns (uint256) {
         address[] memory operators = activeOperators(); // Get the list of active operators
-        return totalStake(getCurrentEpoch(), operators); // Return the total stake for the current epoch
+        return _totalStake(getCurrentEpoch(), operators); // Return the total stake for the current epoch
     }
 
     /* 
@@ -146,7 +146,7 @@ contract SimpleMiddleware is VaultManager, OperatorManager, KeyManager {
                     continue; // Skip if the slashing amount is zero
                 }
 
-                slashResponses[len++] = slashVault(epochStart, vault, subnetwork, operator, slashAmount, slashHints[i]); // Execute the slashing
+                slashResponses[len++] = _slashVault(epochStart, vault, subnetwork, operator, slashAmount, slashHints[i]); // Execute the slashing
             }
         }
 

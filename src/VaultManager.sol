@@ -32,8 +32,8 @@ abstract contract VaultManager is BaseMiddleware {
     error UnknownSlasherType();
     error NonVetoSlasher();
 
-    PauseableEnumerableSet.AddressSet internal sharedVaults;
-    mapping(address => PauseableEnumerableSet.AddressSet) internal operatorVaults;
+    PauseableEnumerableSet.AddressSet internal _sharedVaults;
+    mapping(address => PauseableEnumerableSet.AddressSet) internal _operatorVaults;
 
     struct SlashResponse {
         address vault;
@@ -46,8 +46,8 @@ abstract contract VaultManager is BaseMiddleware {
      * Returns the length of shared vaults.
      * @return The number of shared vaults.
      */
-    function sharedVaultsLength() external view returns (uint256) {
-        return sharedVaults.length();
+    function sharedVaultsLength() public view returns (uint256) {
+        return _sharedVaults.length();
     }
 
     /* 
@@ -55,8 +55,8 @@ abstract contract VaultManager is BaseMiddleware {
      * @param pos The index position in the shared vaults array.
      * @return The address, enabled epoch, and disabled epoch of the vault.
      */
-    function sharedVaultWithEpochsAt(uint256 pos) external view returns (address, uint48, uint48) {
-        return sharedVaults.at(pos);
+    function sharedVaultWithEpochsAt(uint256 pos) public view returns (address, uint48, uint48) {
+        return _sharedVaults.at(pos);
     }
 
     /* 
@@ -64,8 +64,8 @@ abstract contract VaultManager is BaseMiddleware {
      * @param operator The address of the operator.
      * @return The number of vaults associated with the operator.
      */
-    function operatorVaultsLength(address operator) external view returns (uint256) {
-        return operatorVaults[operator].length();
+    function operatorVaultsLength(address operator) public view returns (uint256) {
+        return _operatorVaults[operator].length();
     }
 
     /* 
@@ -74,8 +74,8 @@ abstract contract VaultManager is BaseMiddleware {
      * @param pos The index position in the operator vaults array.
      * @return The address, enabled epoch, and disabled epoch of the vault.
      */
-    function operatorVaultWithEpochsAt(address operator, uint256 pos) external view returns (address, uint48, uint48) {
-        return operatorVaults[operator].at(pos);
+    function operatorVaultWithEpochsAt(address operator, uint256 pos) public view returns (address, uint48, uint48) {
+        return _operatorVaults[operator].at(pos);
     }
 
     /* 
@@ -95,8 +95,8 @@ abstract contract VaultManager is BaseMiddleware {
      */
     function activeVaults(address operator) public view returns (address[] memory) {
         uint48 epoch = getCurrentEpoch();
-        address[] memory activeSharedVaults = sharedVaults.getActive(epoch);
-        address[] memory activeOperatorVaults = operatorVaults[operator].getActive(epoch);
+        address[] memory activeSharedVaults = _sharedVaults.getActive(epoch);
+        address[] memory activeOperatorVaults = _operatorVaults[operator].getActive(epoch);
 
         uint256 activeSharedVaultsLen = activeSharedVaults.length;
         address[] memory vaults = new address[](activeSharedVaultsLen + activeOperatorVaults.length);
@@ -114,9 +114,9 @@ abstract contract VaultManager is BaseMiddleware {
      * Registers a new shared vault.
      * @param vault The address of the vault to register.
      */
-    function registerSharedVault(address vault) external onlyOwner {
+    function registerSharedVault(address vault) public virtual onlyOwner {
         _validateVault(vault);
-        sharedVaults.register(getNextEpoch(), vault);
+        _sharedVaults.register(getNextEpoch(), vault);
     }
 
     /* 
@@ -124,25 +124,25 @@ abstract contract VaultManager is BaseMiddleware {
      * @param vault The address of the vault to register.
      * @param operator The address of the operator.
      */
-    function registerOperatorVault(address vault, address operator) external onlyOwner {
+    function registerOperatorVault(address vault, address operator) public virtual onlyOwner {
         _validateVault(vault);
-        operatorVaults[operator].register(getNextEpoch(), vault);
+        _operatorVaults[operator].register(getNextEpoch(), vault);
     }
 
     /* 
      * Pauses a shared vault.
      * @param vault The address of the vault to pause.
      */
-    function pauseSharedVault(address vault) external onlyOwner {
-        sharedVaults.pause(getNextEpoch(), vault);
+    function pauseSharedVault(address vault) public virtual onlyOwner {
+        _sharedVaults.pause(getNextEpoch(), vault);
     }
 
     /* 
      * Unpauses a shared vault.
      * @param vault The address of the vault to unpause.
      */
-    function unpauseSharedVault(address vault) external onlyOwner {
-        sharedVaults.unpause(getNextEpoch(), SLASHING_WINDOW, vault);
+    function unpauseSharedVault(address vault) public virtual onlyOwner {
+        _sharedVaults.unpause(getNextEpoch(), SLASHING_WINDOW, vault);
     }
 
     /* 
@@ -150,8 +150,8 @@ abstract contract VaultManager is BaseMiddleware {
      * @param operator The address of the operator.
      * @param vault The address of the vault to pause.
      */
-    function pauseOperatorVault(address operator, address vault) external onlyOwner {
-        operatorVaults[operator].pause(getNextEpoch(), vault);
+    function pauseOperatorVault(address operator, address vault) public virtual onlyOwner {
+        _operatorVaults[operator].pause(getNextEpoch(), vault);
     }
 
     /* 
@@ -159,16 +159,16 @@ abstract contract VaultManager is BaseMiddleware {
      * @param operator The address of the operator.
      * @param vault The address of the vault to unpause.
      */
-    function unpauseOperatorVault(address operator, address vault) external onlyOwner {
-        operatorVaults[operator].unpause(getNextEpoch(), SLASHING_WINDOW, vault);
+    function unpauseOperatorVault(address operator, address vault) public virtual onlyOwner {
+        _operatorVaults[operator].unpause(getNextEpoch(), SLASHING_WINDOW, vault);
     }
 
     /* 
      * Unregisters a shared vault.
      * @param vault The address of the vault to unregister.
      */
-    function unregisterSharedVault(address vault) external onlyOwner {
-        sharedVaults.unregister(getNextEpoch(), SLASHING_WINDOW, vault);
+    function unregisterSharedVault(address vault) public virtual onlyOwner {
+        _sharedVaults.unregister(getNextEpoch(), SLASHING_WINDOW, vault);
     }
 
     /* 
@@ -176,8 +176,8 @@ abstract contract VaultManager is BaseMiddleware {
      * @param operator The address of the operator.
      * @param vault The address of the vault to unregister.
      */
-    function unregisterOperatorVault(address operator, address vault) external onlyOwner {
-        operatorVaults[operator].unregister(getNextEpoch(), SLASHING_WINDOW, vault);
+    function unregisterOperatorVault(address operator, address vault) public virtual onlyOwner {
+        _operatorVaults[operator].unregister(getNextEpoch(), SLASHING_WINDOW, vault);
     }
 
     /* 
@@ -231,7 +231,7 @@ abstract contract VaultManager is BaseMiddleware {
      * @param operators The list of operator addresses.
      * @return The total stake of the operators.
      */
-    function totalStake(uint48 epoch, address[] memory operators) internal view returns (uint256 stake) {
+    function _totalStake(uint48 epoch, address[] memory operators) internal view returns (uint256 stake) {
         for (uint256 i; i < operators.length; ++i) {
             uint256 operatorStake = getOperatorStake(epoch, operators[i]);
             stake += operatorStake;
@@ -250,7 +250,7 @@ abstract contract VaultManager is BaseMiddleware {
      * @param hints Additional data for the slasher.
      * @return A struct containing information about the slash response.
      */
-    function slashVault(
+    function _slashVault(
         uint48 timestamp,
         address vault,
         bytes32 subnetwork,
@@ -258,7 +258,7 @@ abstract contract VaultManager is BaseMiddleware {
         uint256 amount,
         bytes calldata hints
     ) internal returns (SlashResponse memory resp) {
-        if (!sharedVaults.contains(vault)) {
+        if (!_sharedVaults.contains(vault)) {
             revert NotVault();
         }
 
@@ -285,11 +285,12 @@ abstract contract VaultManager is BaseMiddleware {
      * @return The amount that was slashed.
      */
     function executeSlash(address vault, address operator, uint256 slashIndex, bytes calldata hints)
-        external
+        public
+        virtual
         onlyOwner
         returns (uint256 slashedAmount)
     {
-        if (!(sharedVaults.contains(vault) || operatorVaults[operator].contains(vault))) {
+        if (!(_sharedVaults.contains(vault) || _operatorVaults[operator].contains(vault))) {
             revert NotVault();
         }
 
