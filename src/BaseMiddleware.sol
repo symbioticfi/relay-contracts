@@ -105,7 +105,7 @@ abstract contract BaseMiddleware is Ownable {
      * Returns the number of subnetworks registered.
      * @return The count of registered subnetworks.
      */
-    function subnetworksLength() external view returns (uint256) {
+    function subnetworksLength() public view returns (uint256) {
         return subnetworks.length();
     }
 
@@ -114,7 +114,7 @@ abstract contract BaseMiddleware is Ownable {
      * @param pos The index of the subnetwork.
      * @return The subnetwork details including address, enabled epoch, and disabled epoch.
      */
-    function subnetworkWithTimesAt(uint256 pos) external view returns (uint160, uint48, uint48) {
+    function subnetworkWithTimesAt(uint256 pos) public view returns (uint160, uint48, uint48) {
         return subnetworks.at(pos);
     }
 
@@ -130,7 +130,7 @@ abstract contract BaseMiddleware is Ownable {
      * Registers a new subnetwork.
      * @param subnetwork The identifier of the subnetwork to register.
      */
-    function registerSubnetwork(uint96 subnetwork) external onlyOwner {
+    function registerSubnetwork(uint96 subnetwork) public virtual onlyOwner {
         subnetworks.register(getNextEpoch(), uint160(subnetwork));
     }
 
@@ -138,7 +138,7 @@ abstract contract BaseMiddleware is Ownable {
      * Pauses a specified subnetwork.
      * @param subnetwork The identifier of the subnetwork to pause.
      */
-    function pauseSubnetwork(uint96 subnetwork) external onlyOwner {
+    function pauseSubnetwork(uint96 subnetwork) public virtual onlyOwner {
         subnetworks.pause(getNextEpoch(), uint160(subnetwork));
     }
 
@@ -146,7 +146,7 @@ abstract contract BaseMiddleware is Ownable {
      * Unpauses a specified subnetwork.
      * @param subnetwork The identifier of the subnetwork to unpause.
      */
-    function unpauseSubnetwork(uint96 subnetwork) external onlyOwner {
+    function unpauseSubnetwork(uint96 subnetwork) public virtual onlyOwner {
         subnetworks.unpause(getNextEpoch(), SLASHING_WINDOW, uint160(subnetwork));
     }
 
@@ -154,7 +154,7 @@ abstract contract BaseMiddleware is Ownable {
      * Unregisters a specified subnetwork.
      * @param subnetwork The identifier of the subnetwork to unregister.
      */
-    function unregisterSubnetwork(uint96 subnetwork) external onlyOwner {
+    function unregisterSubnetwork(uint96 subnetwork) public virtual onlyOwner {
         subnetworks.unregister(getNextEpoch(), SLASHING_WINDOW, uint160(subnetwork));
     }
 }
