@@ -9,10 +9,13 @@ import {PauseableEnumerableSet} from "./libraries/PauseableEnumerableSet.sol";
 abstract contract BaseMiddleware is Ownable {
     using PauseableEnumerableSet for PauseableEnumerableSet.Uint160Set;
 
-    error ZeroSlashingWindow(); // Error thrown when the slashing window is set to zero
+    error SlashingWindowTooShort(); // Error thrown when the slashing window is lower than epoch
 
     address public immutable NETWORK; // Address of the network
+    uint48 public immutable EPOCH_DURATION; // Duration of each epoch
+    uint48 public immutable START_TIME; // Start time of the epoch
     uint48 public immutable SLASHING_WINDOW; // Duration of the slashing window
+    uint48 public immutable IMMUTABLE_EPOCHS; // Duration of the state immutability in epochs
     address public immutable VAULT_REGISTRY; // Address of the vault registry
     address public immutable OPERATOR_REGISTRY; // Address of the operator registry
     address public immutable OPERATOR_NET_OPTIN; // Address of the operator network opt-in service
@@ -21,13 +24,10 @@ abstract contract BaseMiddleware is Ownable {
     uint64 public constant VETO_SLASHER_TYPE = 1; // Constant representing the veto slasher type
     uint96 public constant DEFAULT_SUBNETWORK = 0; // Default subnetwork identifier
 
-    uint48 public immutable EPOCH_DURATION; // Duration of each epoch
-    uint48 public immutable START_TIME; // Start time of the epoch
-
     PauseableEnumerableSet.Uint160Set subnetworks; // Set of active subnetworks
 
     /* 
-     * Constructor for initializing the BaseMiddleware contract.
+     * @notice Constructor for initializing the BaseMiddleware contract.
      * @param owner The address of the contract owner.
      * @param network The address of the network.
      * @param epochDuration The duration of each epoch.
@@ -45,13 +45,14 @@ abstract contract BaseMiddleware is Ownable {
         address operatorRegistry,
         address operatorNetOptIn
     ) Ownable(owner) {
-        if (SLASHING_WINDOW == 0) {
-            revert ZeroSlashingWindow();
+        if (slashingWindow < epochDuration) {
+            revert SlashingWindowTooShort();
         }
 
         NETWORK = network;
         EPOCH_DURATION = epochDuration;
         SLASHING_WINDOW = slashingWindow;
+        IMMUTABLE_EPOCHS = (slashingWindow + epochDuration - 1) / epochDuration;
         VAULT_REGISTRY = vaultRegistry;
         OPERATOR_REGISTRY = operatorRegistry;
         OPERATOR_NET_OPTIN = operatorNetOptIn;
@@ -60,25 +61,25 @@ abstract contract BaseMiddleware is Ownable {
     }
 
     /* 
-     * Returns the start timestamp of a given epoch.
+     * @notice Returns the start timestamp of a given epoch.
      * @param epoch The epoch number.
      * @return The start timestamp of the specified epoch.
      */
     function getEpochStart(uint48 epoch) public view returns (uint48 timestamp) {
-        return START_TIME + epoch * EPOCH_DURATION;
+        return START_TIME + (epoch - 1) * EPOCH_DURATION;
     }
 
     /* 
-     * Returns the epoch number corresponding to a given timestamp.
+     * @notice Returns the epoch number corresponding to a given timestamp.
      * @param timestamp The timestamp to convert to an epoch number.
      * @return The epoch number associated with the specified timestamp.
      */
     function getEpochAt(uint48 timestamp) public view returns (uint48 epoch) {
-        return (timestamp - START_TIME) / EPOCH_DURATION;
+        return (timestamp - START_TIME) / EPOCH_DURATION + 1;
     }
 
     /* 
-     * Returns the current epoch number based on the current timestamp.
+     * @notice Returns the current epoch number based on the current timestamp.
      * @return The current epoch number.
      */
     function getCurrentEpoch() public view returns (uint48 epoch) {
@@ -86,23 +87,15 @@ abstract contract BaseMiddleware is Ownable {
     }
 
     /* 
-     * Returns the next epoch number.
-     * @return The next epoch number.
-     */
-    function getNextEpoch() public view returns (uint48 epoch) {
-        return getCurrentEpoch() + 1;
-    }
-
-    /* 
-     * Returns the start timestamp of the current epoch.
+     * @notice Returns the start timestamp of the current epoch.
      * @return The start timestamp of the current epoch.
      */
     function getCurrentEpochStart() public view returns (uint48 timestamp) {
-        return START_TIME + getCurrentEpoch() * EPOCH_DURATION;
+        return START_TIME + (getCurrentEpoch() - 1) * EPOCH_DURATION;
     }
 
     /* 
-     * Returns the number of subnetworks registered.
+     * @notice Returns the number of subnetworks registered.
      * @return The count of registered subnetworks.
      */
     function subnetworksLength() external view returns (uint256) {
@@ -110,7 +103,7 @@ abstract contract BaseMiddleware is Ownable {
     }
 
     /* 
-     * Returns the subnetwork information at a specified position.
+     * @notice Returns the subnetwork information at a specified position.
      * @param pos The index of the subnetwork.
      * @return The subnetwork details including address, enabled epoch, and disabled epoch.
      */
@@ -119,7 +112,7 @@ abstract contract BaseMiddleware is Ownable {
     }
 
     /* 
-     * Returns an array of active subnetworks for the current epoch.
+     * @notice Returns an array of active subnetworks for the current epoch.
      * @return An array of active subnetwork addresses.
      */
     function activeSubnetworks() public view returns (uint160[] memory) {
@@ -127,34 +120,34 @@ abstract contract BaseMiddleware is Ownable {
     }
 
     /* 
-     * Registers a new subnetwork.
+     * @notice Registers a new subnetwork.
      * @param subnetwork The identifier of the subnetwork to register.
      */
     function registerSubnetwork(uint96 subnetwork) external onlyOwner {
-        subnetworks.register(getNextEpoch(), uint160(subnetwork));
+        subnetworks.register(getCurrentEpoch(), uint160(subnetwork));
     }
 
     /* 
-     * Pauses a specified subnetwork.
+     * @notice Pauses a specified subnetwork.
      * @param subnetwork The identifier of the subnetwork to pause.
      */
     function pauseSubnetwork(uint96 subnetwork) external onlyOwner {
-        subnetworks.pause(getNextEpoch(), uint160(subnetwork));
+        subnetworks.pause(getCurrentEpoch(), uint160(subnetwork));
     }
 
     /* 
-     * Unpauses a specified subnetwork.
+     * @notice Unpauses a specified subnetwork.
      * @param subnetwork The identifier of the subnetwork to unpause.
      */
     function unpauseSubnetwork(uint96 subnetwork) external onlyOwner {
-        subnetworks.unpause(getNextEpoch(), SLASHING_WINDOW, uint160(subnetwork));
+        subnetworks.unpause(getCurrentEpoch(), IMMUTABLE_EPOCHS, uint160(subnetwork));
     }
 
     /* 
-     * Unregisters a specified subnetwork.
+     * @notice Unregisters a specified subnetwork.
      * @param subnetwork The identifier of the subnetwork to unregister.
      */
     function unregisterSubnetwork(uint96 subnetwork) external onlyOwner {
-        subnetworks.unregister(getNextEpoch(), SLASHING_WINDOW, uint160(subnetwork));
+        subnetworks.unregister(getCurrentEpoch(), IMMUTABLE_EPOCHS, uint160(subnetwork));
     }
 }

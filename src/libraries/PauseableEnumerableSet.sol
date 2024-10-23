@@ -37,7 +37,7 @@ library PauseableEnumerableSet {
     error ImmutablePeriodNotPassed(); // Thrown when an action is attempted before immutable period passes.
 
     /* 
-     * Returns the length of the AddressSet.
+     * @notice Returns the length of the AddressSet.
      * @param self The AddressSet storage.
      * @return The number of elements in the set.
      */
@@ -46,7 +46,7 @@ library PauseableEnumerableSet {
     }
 
     /* 
-     * Returns the address and its active period at a given position in the AddressSet.
+     * @notice Returns the address and its active period at a given position in the AddressSet.
      * @param self The AddressSet storage.
      * @param pos The position in the set.
      * @return The address, enabled epoch, and disabled epoch at the position.
@@ -57,7 +57,7 @@ library PauseableEnumerableSet {
     }
 
     /* 
-     * Retrieves all active addresses at a given epoch.
+     * @notice Retrieves all active addresses at a given epoch.
      * @param self The AddressSet storage.
      * @param epoch The epoch to check.
      * @return An array of active addresses.
@@ -73,7 +73,7 @@ library PauseableEnumerableSet {
     }
 
     /* 
-     * Registers a new address at a given epoch.
+     * @notice Registers a new address at a given epoch.
      * @param self The AddressSet storage.
      * @param epoch The epoch when the address is added.
      * @param addr The address to register.
@@ -83,7 +83,7 @@ library PauseableEnumerableSet {
     }
 
     /* 
-     * Pauses an address at a given epoch.
+     * @notice Pauses an address at a given epoch.
      * @param self The AddressSet storage.
      * @param epoch The epoch when the address is paused.
      * @param addr The address to pause.
@@ -93,7 +93,7 @@ library PauseableEnumerableSet {
     }
 
     /* 
-     * Unpauses an address, re-enabling it after the immutable period.
+     * @notice Unpauses an address, re-enabling it after the immutable period.
      * @param self The AddressSet storage.
      * @param epoch The current epoch.
      * @param immutableEpochs The required immutable period before unpausing.
@@ -104,7 +104,7 @@ library PauseableEnumerableSet {
     }
 
     /* 
-     * Unregisters an address, removing it from the set.
+     * @notice Unregisters an address, removing it from the set.
      * @param self The AddressSet storage.
      * @param epoch The current epoch.
      * @param immutableEpochs The required immutable period before unregistering.
@@ -115,7 +115,7 @@ library PauseableEnumerableSet {
     }
 
     /* 
-     * Checks if an address is contained in the AddressSet.
+     * @notice Checks if an address is contained in the AddressSet.
      * @param self The AddressSet storage.
      * @param addr The address to check.
      * @return True if the address is in the set, false otherwise.
@@ -125,7 +125,7 @@ library PauseableEnumerableSet {
     }
 
     /* 
-     * Returns the number of elements in the Uint160Set.
+     * @notice Returns the number of elements in the Uint160Set.
      * @param self The Uint160Set storage.
      * @return The number of elements.
      */
@@ -134,7 +134,7 @@ library PauseableEnumerableSet {
     }
 
     /* 
-     * Returns the value and its active period at a given position in the Uint160Set.
+     * @notice Returns the value and its active period at a given position in the Uint160Set.
      * @param self The Uint160Set storage.
      * @param pos The position in the set.
      * @return The value, enabled epoch, and disabled epoch at the position.
@@ -144,7 +144,7 @@ library PauseableEnumerableSet {
     }
 
     /* 
-     * Retrieves all active values at a given epoch.
+     * @notice Retrieves all active values at a given epoch.
      * @param self The Uint160Set storage.
      * @param epoch The epoch to check.
      * @return An array of active values.
@@ -167,7 +167,7 @@ library PauseableEnumerableSet {
     }
 
     /* 
-     * Registers a new Uint160 value at a given epoch.
+     * @notice Registers a new Uint160 value at a given epoch.
      * @param self The Uint160Set storage.
      * @param epoch The epoch when the value is added.
      * @param value The Uint160 value to register.
@@ -184,7 +184,7 @@ library PauseableEnumerableSet {
     }
 
     /* 
-     * Pauses a Uint160 value at a given epoch.
+     * @notice Pauses a Uint160 value at a given epoch.
      * @param self The Uint160Set storage.
      * @param epoch The epoch when the value is paused.
      * @param value The Uint160 value to pause.
@@ -198,7 +198,7 @@ library PauseableEnumerableSet {
     }
 
     /* 
-     * Unpauses a Uint160 value after the immutable period.
+     * @notice Unpauses a Uint160 value after the immutable period.
      * @param self The Uint160Set storage.
      * @param epoch The current epoch.
      * @param immutableEpochs The required immutable period before unpausing.
@@ -214,7 +214,7 @@ library PauseableEnumerableSet {
     }
 
     /* 
-     * Unregisters a Uint160 value from the set.
+     * @notice Unregisters a Uint160 value from the set.
      * @param self The Uint160Set storage.
      * @param epoch The current epoch.
      * @param immutableEpochs The required immutable period before unregistering.
@@ -223,6 +223,12 @@ library PauseableEnumerableSet {
     function unregister(Uint160Set storage self, uint48 epoch, uint48 immutableEpochs, uint160 value) internal {
         if (self.positions[value] == 0) {
             revert NotRegistered();
+        }
+
+        if (self.array.length == 1 || self.array.length == self.positions[value]) {
+            delete self.positions[value];
+            self.array.pop();
+            return;
         }
 
         uint256 pos = self.positions[value] - 1;
@@ -235,7 +241,7 @@ library PauseableEnumerableSet {
     }
 
     /* 
-     * Checks if a Uint160 value is contained in the Uint160Set.
+     * @notice Checks if a Uint160 value is contained in the Uint160Set.
      * @param self The Uint160Set storage.
      * @param value The Uint160 value to check.
      * @return True if the value is in the set, false otherwise.
@@ -245,7 +251,7 @@ library PauseableEnumerableSet {
     }
 
     /* 
-     * Returns the address stored in the Inner struct.
+     * @notice Returns the address stored in the Inner struct.
      * @param self The Inner struct
     * @return The stored Uint160 as address
     */
@@ -254,7 +260,7 @@ library PauseableEnumerableSet {
     }
 
     /* 
-    * Returns the value and its active period from the Inner struct.
+    * @notice @notice Returns the value and its active period from the Inner struct.
     * @param self The Inner struct.
     * @return The value, enabled epoch, and disabled epoch.
     */
@@ -263,7 +269,7 @@ library PauseableEnumerableSet {
     }
 
     /* 
-    * Sets the value and marks it as enabled at a given epoch.
+    * @notice Sets the value and marks it as enabled at a given epoch.
     * @param self The Inner struct.
     * @param epoch The epoch when the value is set.
     * @param value The Uint160 value to store.
@@ -275,7 +281,7 @@ library PauseableEnumerableSet {
     }
 
     /* 
-    * Sets the address and marks it as enabled at a given epoch.
+    * @notice Sets the address and marks it as enabled at a given epoch.
     * @param self The Inner struct.
     * @param epoch The epoch when the address is set.
     * @param addr The address to store.
@@ -287,7 +293,7 @@ library PauseableEnumerableSet {
     }
 
     /* 
-    * Enables the value at a given epoch.
+    * @notice Enables the value at a given epoch.
     * @param self The Inner struct.
     * @param epoch The epoch when the value is enabled.
     */
@@ -301,7 +307,7 @@ library PauseableEnumerableSet {
     }
 
     /* 
-    * Disables the value at a given epoch.
+    * @notice Disables the value at a given epoch.
     * @param self The Inner struct.
     * @param epoch The epoch when the value is disabled.
     */
@@ -314,18 +320,18 @@ library PauseableEnumerableSet {
     }
 
     /* 
-    * Checks if the value was active at a given epoch.
+    * @notice Checks if the value was active at a given epoch.
     * @param self The Inner struct.
     * @param epoch The epoch to check.
     * @return True if the value was active at the epoch, false otherwise.
     */
     function wasActiveAt(Inner storage self, uint48 epoch) internal view returns (bool) {
-        return self.enabledEpoch != 0 && self.enabledEpoch <= epoch
+        return (self.enabledEpoch != 0 && self.enabledEpoch < epoch)
             && (self.disabledEpoch == 0 || self.disabledEpoch >= epoch);
     }
 
     /* 
-    * Validates whether the value can be unpaused at a given epoch.
+    * @notice Validates whether the value can be unpaused at a given epoch.
     * @param self The Inner struct.
     * @param epoch The current epoch.
     * @param immutableEpochs The immutable period that must pass before unpausing.
@@ -337,7 +343,7 @@ library PauseableEnumerableSet {
     }
 
     /* 
-    * Validates whether the value can be unregistered at a given epoch.
+    * @notice Validates whether the value can be unregistered at a given epoch.
     * @param self The Inner struct.
     * @param epoch The current epoch.
     * @param immutableEpochs The immutable period that must pass before unregistering.

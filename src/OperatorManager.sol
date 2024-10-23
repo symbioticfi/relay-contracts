@@ -22,7 +22,7 @@ abstract contract OperatorManager is BaseMiddleware {
     PauseableEnumerableSet.AddressSet internal operators;
 
     /* 
-     * Returns the length of the operators list.
+     * @notice Returns the length of the operators list.
      * @return The number of registered operators.
      */
     function operatorsLength() external view returns (uint256) {
@@ -30,7 +30,7 @@ abstract contract OperatorManager is BaseMiddleware {
     }
 
     /* 
-     * Returns the operator and their associated enabled and disabled times at a specific position.
+     * @notice Returns the operator and their associated enabled and disabled times at a specific position.
      * @param pos The index position in the operators array.
      * @return The address, enabled epoch, and disabled epoch of the operator.
      */
@@ -39,7 +39,7 @@ abstract contract OperatorManager is BaseMiddleware {
     }
 
     /* 
-     * Returns a list of active operators.
+     * @notice Returns a list of active operators.
      * @return An array of addresses representing the active operators.
      */
     function activeOperators() public view returns (address[] memory) {
@@ -47,7 +47,7 @@ abstract contract OperatorManager is BaseMiddleware {
     }
 
     /* 
-     * Registers a new operator.
+     * @notice Registers a new operator.
      * @param operator The address of the operator to register.
      */
     function registerOperator(address operator) external onlyOwner {
@@ -59,30 +59,30 @@ abstract contract OperatorManager is BaseMiddleware {
             revert OperatorNotOptedIn();
         }
 
-        operators.register(getNextEpoch(), operator);
+        operators.register(getCurrentEpoch(), operator);
     }
 
     /* 
-     * Pauses a registered operator.
+     * @notice Pauses a registered operator.
      * @param operator The address of the operator to pause.
      */
     function pauseOperator(address operator) external onlyOwner {
-        operators.pause(getNextEpoch(), operator);
+        operators.pause(getCurrentEpoch(), operator);
     }
 
     /* 
-     * Unpauses a paused operator.
+     * @notice Unpauses a paused operator.
      * @param operator The address of the operator to unpause.
      */
     function unpauseOperator(address operator) external onlyOwner {
-        operators.unpause(getNextEpoch(), SLASHING_WINDOW, operator);
+        operators.unpause(getCurrentEpoch(), IMMUTABLE_EPOCHS, operator);
     }
 
     /* 
-     * Unregisters an operator.
+     * @notice Unregisters an operator.
      * @param operator The address of the operator to unregister.
      */
     function unregisterOperator(address operator) external onlyOwner {
-        operators.unregister(getNextEpoch(), SLASHING_WINDOW, operator);
+        operators.unregister(getCurrentEpoch(), IMMUTABLE_EPOCHS, operator);
     }
 }
