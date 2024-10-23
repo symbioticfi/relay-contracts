@@ -16,7 +16,7 @@ abstract contract BLSKeyManager is BaseMiddleware {
     mapping(bytes => PauseableEnumerableSet.Inner) internal blsKeyData; // Mapping from BLS keys to their associated data
 
     /* 
-     * Returns the operator address associated with a given BLS key.
+     * @notice Returns the operator address associated with a given BLS key.
      * @param key The BLS key for which to find the associated operator.
      * @return The address of the operator linked to the specified BLS key.
      */
@@ -25,7 +25,7 @@ abstract contract BLSKeyManager is BaseMiddleware {
     }
 
     /* 
-     * Returns the current BLS key for a given operator. 
+     * @notice Returns the current BLS key for a given operator. 
      * If the key has changed in the current epoch, returns the previous key.
      * @param operator The address of the operator.
      * @return The BLS key associated with the specified operator.
@@ -39,7 +39,7 @@ abstract contract BLSKeyManager is BaseMiddleware {
     }
 
     /* 
-     * Checks if a given BLS key was active at a specified epoch.
+     * @notice Checks if a given BLS key was active at a specified epoch.
      * @param epoch The epoch to check for key activity.
      * @param key The BLS key to check.
      * @return A boolean indicating whether the BLS key was active at the specified epoch.
@@ -49,7 +49,7 @@ abstract contract BLSKeyManager is BaseMiddleware {
     }
 
     /* 
-     * Updates the BLS key associated with an operator. 
+     * @notice Updates the BLS key associated with an operator. 
      * If the new key already exists, a DuplicateBLSKey error is thrown.
      * @param operator The address of the operator whose BLS key is to be updated.
      * @param key The new BLS key to associate with the operator.
