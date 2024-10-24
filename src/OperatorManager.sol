@@ -59,7 +59,7 @@ abstract contract OperatorManager is BaseMiddleware {
             revert OperatorNotOptedIn();
         }
 
-        _operators.register(getNextEpoch(), operator);
+        _operators.register(getCurrentEpoch(), operator);
     }
 
     /* 

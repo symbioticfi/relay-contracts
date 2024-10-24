@@ -169,7 +169,7 @@ abstract contract VaultManager is BaseMiddleware {
      * @param vault The address of the vault to unregister.
      */
     function unregisterSharedVault(address vault) public virtual onlyOwner {
-        _sharedVaults.unregister(getNextEpoch(), IMMUTABLE_EPOCHS, vault);
+        _sharedVaults.unregister(getCurrentEpoch(), IMMUTABLE_EPOCHS, vault);
     }
 
     /* 
