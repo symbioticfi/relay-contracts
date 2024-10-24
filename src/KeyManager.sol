@@ -13,7 +13,7 @@ abstract contract KeyManager is BaseMiddleware {
 
     mapping(address => bytes32) public keys; // Mapping from operator addresses to their current keys
     mapping(address => bytes32) public prevKeys; // Mapping from operator addresses to their previous keys
-    mapping(bytes32 => PauseableEnumerableSet.Inner) internal keyData; // Mapping from keys to their associated data
+    mapping(bytes32 => PauseableEnumerableSet.Inner) internal _keyData; // Mapping from keys to their associated data
 
     /* 
      * @notice Returns the operator address associated with a given key.
@@ -21,7 +21,7 @@ abstract contract KeyManager is BaseMiddleware {
      * @return The address of the operator linked to the specified key.
      */
     function operatorByKey(bytes32 key) public view returns (address) {
-        return keyData[key].getAddress();
+        return _keyData[key].getAddress();
     }
 
     /* 
@@ -31,7 +31,7 @@ abstract contract KeyManager is BaseMiddleware {
      * @return The key associated with the specified operator.
      */
     function operatorKey(address operator) public view returns (bytes32) {
-        if (keyData[keys[operator]].enabledEpoch == getCurrentEpoch()) {
+        if (_keyData[keys[operator]].enabledEpoch == getCurrentEpoch()) {
             return prevKeys[operator];
         }
 
@@ -45,7 +45,7 @@ abstract contract KeyManager is BaseMiddleware {
      * @return A boolean indicating whether the key was active at the specified epoch.
      */
     function keyWasActiveAt(uint48 epoch, bytes32 key) public view returns (bool) {
-        return keyData[key].wasActiveAt(epoch);
+        return _keyData[key].wasActiveAt(epoch);
     }
 
     /* 
@@ -54,21 +54,21 @@ abstract contract KeyManager is BaseMiddleware {
      * @param operator The address of the operator whose key is to be updated.
      * @param key The new key to associate with the operator.
      */
-    function updateKey(address operator, bytes32 key) external onlyOwner {
+    function updateKey(address operator, bytes32 key) public virtual onlyOwner {
         uint48 epoch = getCurrentEpoch();
 
-        if (keyData[key].getAddress() != address(0)) {
+        if (_keyData[key].getAddress() != address(0)) {
             revert DuplicateKey();
         }
 
-        if (keys[operator] != ZERO_BYTES32 && keyData[keys[operator]].enabledEpoch != epoch) {
+        if (keys[operator] != ZERO_BYTES32 && _keyData[keys[operator]].enabledEpoch != epoch) {
             prevKeys[operator] = keys[operator];
         }
 
         keys[operator] = key;
 
         if (key != ZERO_BYTES32) {
-            keyData[key].set(epoch, operator);
+            _keyData[key].set(epoch, operator);
         }
     }
 }

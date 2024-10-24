@@ -13,7 +13,7 @@ abstract contract BLSKeyManager is BaseMiddleware {
 
     mapping(address => bytes) public blsKeys; // Mapping from operator addresses to their BLS keys
     mapping(address => bytes) public prevBLSKeys; // Mapping from operator addresses to their previous BLS keys
-    mapping(bytes => PauseableEnumerableSet.Inner) internal blsKeyData; // Mapping from BLS keys to their associated data
+    mapping(bytes => PauseableEnumerableSet.Inner) internal _blsKeyData; // Mapping from BLS keys to their associated data
 
     /* 
      * @notice Returns the operator address associated with a given BLS key.
@@ -21,7 +21,7 @@ abstract contract BLSKeyManager is BaseMiddleware {
      * @return The address of the operator linked to the specified BLS key.
      */
     function operatorByBLSKey(bytes memory key) public view returns (address) {
-        return blsKeyData[key].getAddress();
+        return _blsKeyData[key].getAddress();
     }
 
     /* 
@@ -31,7 +31,7 @@ abstract contract BLSKeyManager is BaseMiddleware {
      * @return The BLS key associated with the specified operator.
      */
     function operatorBLSKey(address operator) public view returns (bytes memory) {
-        if (blsKeyData[blsKeys[operator]].enabledEpoch == getCurrentEpoch()) {
+        if (_blsKeyData[blsKeys[operator]].enabledEpoch == getCurrentEpoch()) {
             return prevBLSKeys[operator];
         }
 
@@ -45,7 +45,7 @@ abstract contract BLSKeyManager is BaseMiddleware {
      * @return A boolean indicating whether the BLS key was active at the specified epoch.
      */
     function blsKeyWasActiveAt(uint48 epoch, bytes memory key) public view returns (bool) {
-        return blsKeyData[key].wasActiveAt(epoch);
+        return _blsKeyData[key].wasActiveAt(epoch);
     }
 
     /* 
@@ -54,21 +54,21 @@ abstract contract BLSKeyManager is BaseMiddleware {
      * @param operator The address of the operator whose BLS key is to be updated.
      * @param key The new BLS key to associate with the operator.
      */
-    function updateBLSKey(address operator, bytes memory key) external onlyOwner {
+    function updateBLSKey(address operator, bytes memory key) public virtual onlyOwner {
         uint48 epoch = getCurrentEpoch();
 
-        if (blsKeyData[key].getAddress() != address(0)) {
+        if (_blsKeyData[key].getAddress() != address(0)) {
             revert DuplicateBLSKey();
         }
 
-        if (keccak256(blsKeys[operator]) != ZERO_BYTES_HASH && blsKeyData[blsKeys[operator]].enabledEpoch != epoch) {
+        if (keccak256(blsKeys[operator]) != ZERO_BYTES_HASH && _blsKeyData[blsKeys[operator]].enabledEpoch != epoch) {
             prevBLSKeys[operator] = blsKeys[operator];
         }
 
         blsKeys[operator] = key;
 
         if (keccak256(key) != ZERO_BYTES_HASH) {
-            blsKeyData[key].set(epoch, operator);
+            _blsKeyData[key].set(epoch, operator);
         }
     }
 }
