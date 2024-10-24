@@ -136,6 +136,7 @@ contract SimpleMiddlewareTest is POCBaseTest {
         bytes32 newKey1 = keccak256("newKey1");
         vm.prank(owner);
         middleware.updateKey(operator1, newKey1);
+        assertEq(middleware.operatorKey(operator1), key1, "Operator1's key should not be updated yet");
 
         skipEpoch();
 
@@ -351,8 +352,7 @@ contract SimpleMiddlewareTest is POCBaseTest {
         assertFalse(foundVault, "Vault should be unregistered");
     }
 
-    function testValidatorSetWithMultipleSubnetworks() public {
-        skipEpoch();
+    function testValidatorSet() public {
         // Get validator set
         SimpleMiddleware.ValidatorData[] memory validatorSet = middleware.getValidatorSet();
 
