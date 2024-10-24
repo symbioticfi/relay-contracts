@@ -27,7 +27,7 @@ abstract contract BaseMiddleware is Ownable {
     PauseableEnumerableSet.Uint160Set subnetworks; // Set of active subnetworks
 
     /* 
-     * @notice Constructor for initializing the BaseMiddleware contract.
+     * @notice Constructor for initializing the BaseMiddleware contract. Epoch starts from 1.
      * @param owner The address of the contract owner.
      * @param network The address of the network.
      * @param epochDuration The duration of each epoch.
@@ -61,7 +61,7 @@ abstract contract BaseMiddleware is Ownable {
     }
 
     /* 
-     * @notice Returns the start timestamp of a given epoch.
+     * @notice Returns the start timestamp of a given epoch. Epoch starts from 1.
      * @param epoch The epoch number.
      * @return The start timestamp of the specified epoch.
      */
@@ -70,7 +70,7 @@ abstract contract BaseMiddleware is Ownable {
     }
 
     /* 
-     * @notice Returns the epoch number corresponding to a given timestamp.
+     * @notice Returns the epoch number corresponding to a given timestamp. Epoch starts from 1.
      * @param timestamp The timestamp to convert to an epoch number.
      * @return The epoch number associated with the specified timestamp.
      */
@@ -79,7 +79,7 @@ abstract contract BaseMiddleware is Ownable {
     }
 
     /* 
-     * @notice Returns the current epoch number based on the current timestamp.
+     * @notice Returns the current epoch number based on the current timestamp. Epoch starts from 1.
      * @return The current epoch number.
      */
     function getCurrentEpoch() public view returns (uint48 epoch) {
@@ -87,7 +87,7 @@ abstract contract BaseMiddleware is Ownable {
     }
 
     /* 
-     * @notice Returns the start timestamp of the current epoch.
+     * @notice Returns the start timestamp of the current epoch. Epoch starts from 1.
      * @return The start timestamp of the current epoch.
      */
     function getCurrentEpochStart() public view returns (uint48 timestamp) {
