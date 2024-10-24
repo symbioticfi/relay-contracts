@@ -27,7 +27,7 @@ abstract contract BaseMiddleware is Ownable {
     PauseableEnumerableSet.Uint160Set subnetworks; // Set of active subnetworks
 
     /* 
-     * @notice Constructor for initializing the BaseMiddleware contract. Epoch starts from 1.
+     * @notice Constructor for initializing the BaseMiddleware contract.
      * @param owner The address of the contract owner.
      * @param network The address of the network.
      * @param epochDuration The duration of each epoch.
@@ -61,25 +61,25 @@ abstract contract BaseMiddleware is Ownable {
     }
 
     /* 
-     * @notice Returns the start timestamp of a given epoch. Epoch starts from 1.
+     * @notice Returns the start timestamp of a given epoch.
      * @param epoch The epoch number.
      * @return The start timestamp of the specified epoch.
      */
     function getEpochStart(uint48 epoch) public view returns (uint48 timestamp) {
-        return START_TIME + (epoch - 1) * EPOCH_DURATION;
+        return START_TIME + epoch * EPOCH_DURATION;
     }
 
     /* 
-     * @notice Returns the epoch number corresponding to a given timestamp. Epoch starts from 1.
+     * @notice Returns the epoch number corresponding to a given timestamp.
      * @param timestamp The timestamp to convert to an epoch number.
      * @return The epoch number associated with the specified timestamp.
      */
     function getEpochAt(uint48 timestamp) public view returns (uint48 epoch) {
-        return (timestamp - START_TIME) / EPOCH_DURATION + 1;
+        return (timestamp - START_TIME) / EPOCH_DURATION;
     }
 
     /* 
-     * @notice Returns the current epoch number based on the current timestamp. Epoch starts from 1.
+     * @notice Returns the current epoch number based on the current timestamp.
      * @return The current epoch number.
      */
     function getCurrentEpoch() public view returns (uint48 epoch) {
@@ -87,11 +87,11 @@ abstract contract BaseMiddleware is Ownable {
     }
 
     /* 
-     * @notice Returns the start timestamp of the current epoch. Epoch starts from 1.
+     * @notice Returns the start timestamp of the current epoch.
      * @return The start timestamp of the current epoch.
      */
     function getCurrentEpochStart() public view returns (uint48 timestamp) {
-        return START_TIME + (getCurrentEpoch() - 1) * EPOCH_DURATION;
+        return START_TIME + getCurrentEpoch() * EPOCH_DURATION;
     }
 
     /* 
