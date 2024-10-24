@@ -26,12 +26,12 @@ abstract contract KeyManager is BaseMiddleware {
 
     /* 
      * @notice Returns the current key for a given operator. 
-     * If the key has changed in the current epoch, returns the previous key.
+     * If the key has changed in the previous epoch, returns the previous key.
      * @param operator The address of the operator.
      * @return The key associated with the specified operator.
      */
     function operatorKey(address operator) public view returns (bytes32) {
-        if (_keyData[keys[operator]].enabledEpoch == getCurrentEpoch()) {
+        if (_keyData[keys[operator]].enabledEpoch == getCurrentEpoch() + 1) {
             return prevKeys[operator];
         }
 
@@ -56,12 +56,13 @@ abstract contract KeyManager is BaseMiddleware {
      */
     function updateKey(address operator, bytes32 key) public virtual onlyOwner {
         uint48 epoch = getCurrentEpoch();
+        uint48 nextEpoch = epoch + 1;
 
         if (_keyData[key].getAddress() != address(0)) {
             revert DuplicateKey();
         }
 
-        if (keys[operator] != ZERO_BYTES32 && _keyData[keys[operator]].enabledEpoch != epoch) {
+        if (keys[operator] != ZERO_BYTES32 && _keyData[keys[operator]].enabledEpoch != nextEpoch) {
             prevKeys[operator] = keys[operator];
         }
 

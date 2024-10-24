@@ -276,7 +276,7 @@ library PauseableEnumerableSet {
     */
     function set(Inner storage self, uint48 epoch, uint160 value) internal {
         self.value = value;
-        self.enabledEpoch = epoch;
+        self.enabledEpoch = epoch + 1;
         self.disabledEpoch = 0;
     }
 
@@ -288,7 +288,7 @@ library PauseableEnumerableSet {
     */
     function set(Inner storage self, uint48 epoch, address addr) internal {
         self.value = uint160(addr);
-        self.enabledEpoch = epoch;
+        self.enabledEpoch = epoch + 1;
         self.disabledEpoch = 0;
     }
 
@@ -326,8 +326,8 @@ library PauseableEnumerableSet {
     * @return True if the value was active at the epoch, false otherwise.
     */
     function wasActiveAt(Inner storage self, uint48 epoch) internal view returns (bool) {
-        return (self.enabledEpoch != 0 && self.enabledEpoch < epoch)
-            && (self.disabledEpoch == 0 || self.disabledEpoch >= epoch);
+        return (self.enabledEpoch != 0 && self.enabledEpoch <= epoch)
+            && (self.disabledEpoch == 0 || self.disabledEpoch > epoch);
     }
 
     /* 
@@ -337,7 +337,7 @@ library PauseableEnumerableSet {
     * @param immutableEpochs The immutable period that must pass before unpausing.
     */
     function validateUnpause(Inner storage self, uint48 epoch, uint48 immutableEpochs) internal view {
-        if (self.disabledEpoch + immutableEpochs >= epoch) {
+        if (self.disabledEpoch + immutableEpochs > epoch) {
             revert ImmutablePeriodNotPassed();
         }
     }
@@ -349,7 +349,7 @@ library PauseableEnumerableSet {
     * @param immutableEpochs The immutable period that must pass before unregistering.
     */
     function validateUnregister(Inner storage self, uint48 epoch, uint48 immutableEpochs) internal view {
-        if (self.disabledEpoch == 0 || self.disabledEpoch + immutableEpochs >= epoch) {
+        if (self.disabledEpoch == 0 || self.disabledEpoch + immutableEpochs > epoch) {
             revert ImmutablePeriodNotPassed();
         }
     }
