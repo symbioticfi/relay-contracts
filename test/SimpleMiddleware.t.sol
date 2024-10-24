@@ -1,362 +1,443 @@
-// // SPDX-License-Identifier: MIT
-// pragma solidity 0.8.25;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.25;
 
-// import {Test, console2} from "forge-std/Test.sol";
+import {POCBaseTest} from "@symbiotic-test/POCBase.t.sol";
 
-// import {SimpleMiddleware} from "src/examples/simple-network/SimpleMiddleware.sol";
+import {SimpleMiddleware} from "../src/examples/simple-network/SimpleMiddleware.sol";
+import {IVault} from "@symbiotic/interfaces/vault/IVault.sol";
+import {IBaseDelegator} from "@symbiotic/interfaces/delegator/IBaseDelegator.sol";
+import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
+import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+import {BaseMiddleware} from "../src/BaseMiddleware.sol";
+import {PauseableEnumerableSet} from "../src/libraries/PauseableEnumerableSet.sol";
+import {KeyManager} from "../src/KeyManager.sol";
+import {OperatorManager} from "../src/OperatorManager.sol";
+import {VaultManager} from "../src/VaultManager.sol";
+import {Slasher} from "@symbiotic/contracts/slasher/Slasher.sol";
+import {VetoSlasher} from "@symbiotic/contracts/slasher/VetoSlasher.sol";
 
-// import {VaultFactory} from "@symbiotic/contracts/VaultFactory.sol";
-// import {DelegatorFactory} from "@symbiotic/contracts/DelegatorFactory.sol";
-// import {SlasherFactory} from "@symbiotic/contracts/SlasherFactory.sol";
-// import {NetworkRegistry} from "@symbiotic/contracts/NetworkRegistry.sol";
-// import {OperatorRegistry} from "@symbiotic/contracts/OperatorRegistry.sol";
-// import {MetadataService} from "@symbiotic/contracts/service/MetadataService.sol";
-// import {NetworkMiddlewareService} from "@symbiotic/contracts/service/NetworkMiddlewareService.sol";
-// import {OptInService} from "@symbiotic/contracts/service/OptInService.sol";
+contract SimpleMiddlewareTest is POCBaseTest {
+    using Subnetwork for bytes32;
+    using Subnetwork for address;
+    using Math for uint256;
 
-// import {Vault} from "@symbiotic/contracts/vault/Vault.sol";
-// import {NetworkRestakeDelegator} from "@symbiotic/contracts/delegator/NetworkRestakeDelegator.sol";
-// import {FullRestakeDelegator} from "@symbiotic/contracts/delegator/FullRestakeDelegator.sol";
-// import {Slasher} from "@symbiotic/contracts/slasher/Slasher.sol";
-// import {VetoSlasher} from "@symbiotic/contracts/slasher/VetoSlasher.sol";
+    address network = address(0x123);
 
-// import {Token} from "@symbiotic-test/mocks/Token.sol";
-// import {VaultConfigurator, IVaultConfigurator} from "@symbiotic/contracts/VaultConfigurator.sol";
-// import {IVault} from "@symbiotic/interfaces/IVaultConfigurator.sol";
-// import {INetworkRestakeDelegator} from "@symbiotic/interfaces/delegator/INetworkRestakeDelegator.sol";
-// import {IFullRestakeDelegator, IBaseDelegator} from "@symbiotic/interfaces/delegator/IFullRestakeDelegator.sol";
-// import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
+    SimpleMiddleware internal middleware;
 
-// import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-// import {IVaultStorage} from "@symbiotic/interfaces/vault/IVaultStorage.sol";
-// import {IVetoSlasher} from "@symbiotic/interfaces/slasher/IVetoSlasher.sol";
-// import {IBaseSlasher} from "@symbiotic/interfaces/slasher/IBaseSlasher.sol";
-// import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+    uint48 internal epochDuration = 600; // 10 minutes
+    uint48 internal slashingWindow = 1200; // 20 minutes
 
-// contract SimpleMiddlewareTest is Test {
-//     using Subnetwork for address;
+    address internal operator1;
+    address internal operator2;
+    address internal operator3;
 
-//     address owner;
-//     address alice;
-//     uint256 alicePrivateKey;
-//     address bob;
-//     uint256 bobPrivateKey;
+    bytes32 internal key1 = keccak256("key1");
+    bytes32 internal key2 = keccak256("key2");
+    bytes32 internal key3 = keccak256("key3");
 
-//     SimpleMiddleware simpleMiddleware;
+    uint96 internal subnetwork1 = 0;
+    uint96 internal subnetwork2 = 1;
 
-//     VaultFactory vaultFactory;
-//     DelegatorFactory delegatorFactory;
-//     SlasherFactory slasherFactory;
-//     NetworkRegistry networkRegistry;
-//     OperatorRegistry operatorRegistry;
-//     MetadataService operatorMetadataService;
-//     MetadataService networkMetadataService;
-//     NetworkMiddlewareService networkMiddlewareService;
-//     OptInService networkVaultOptInService;
-//     OptInService operatorVaultOptInService;
-//     OptInService operatorNetworkOptInService;
+    function setUp() public override {
+        vm.warp(1729690309);
 
-//     Token collateral;
-//     VaultConfigurator vaultConfigurator;
+        super.setUp();
 
-//     function setUp() public {
-//         owner = address(this);
-//         (alice, alicePrivateKey) = makeAddrAndKey("alice");
-//         (bob, bobPrivateKey) = makeAddrAndKey("bob");
+        vm.prank(network);
+        networkRegistry.registerNetwork();
 
-//         vaultFactory = new VaultFactory(owner);
-//         delegatorFactory = new DelegatorFactory(owner);
-//         slasherFactory = new SlasherFactory(owner);
-//         networkRegistry = new NetworkRegistry();
-//         operatorRegistry = new OperatorRegistry();
-//         operatorMetadataService = new MetadataService(address(operatorRegistry));
-//         networkMetadataService = new MetadataService(address(networkRegistry));
-//         networkMiddlewareService = new NetworkMiddlewareService(address(networkRegistry));
-//         operatorVaultOptInService = new OptInService(address(operatorRegistry), address(vaultFactory));
-//         operatorNetworkOptInService = new OptInService(address(operatorRegistry), address(networkRegistry));
+        // Set operators
+        operator1 = alice;
+        operator2 = bob;
+        operator3 = address(0x3); // A third operator
 
-//         address vaultImpl =
-//             address(new Vault(address(delegatorFactory), address(slasherFactory), address(vaultFactory)));
-//         vaultFactory.whitelist(vaultImpl);
+        // Register operator1
+        vm.startPrank(operator1);
+        operatorRegistry.registerOperator();
+        operatorNetworkOptInService.optIn(address(network));
+        vm.stopPrank();
 
-//         address networkRestakeDelegatorImpl = address(
-//             new NetworkRestakeDelegator(
-//                 address(networkRegistry),
-//                 address(vaultFactory),
-//                 address(operatorVaultOptInService),
-//                 address(operatorNetworkOptInService),
-//                 address(delegatorFactory),
-//                 delegatorFactory.totalTypes()
-//             )
-//         );
-//         delegatorFactory.whitelist(networkRestakeDelegatorImpl);
+        // Register operator2
+        vm.startPrank(operator2);
+        operatorRegistry.registerOperator();
+        operatorNetworkOptInService.optIn(address(network));
+        vm.stopPrank();
 
-//         address fullRestakeDelegatorImpl = address(
-//             new FullRestakeDelegator(
-//                 address(networkRegistry),
-//                 address(vaultFactory),
-//                 address(operatorVaultOptInService),
-//                 address(operatorNetworkOptInService),
-//                 address(delegatorFactory),
-//                 delegatorFactory.totalTypes()
-//             )
-//         );
-//         delegatorFactory.whitelist(fullRestakeDelegatorImpl);
+        // Register operator3
+        vm.startPrank(operator3);
+        operatorRegistry.registerOperator();
+        operatorNetworkOptInService.optIn(address(network));
+        vm.stopPrank();
 
-//         address slasherImpl = address(
-//             new Slasher(
-//                 address(vaultFactory),
-//                 address(networkMiddlewareService),
-//                 address(slasherFactory),
-//                 slasherFactory.totalTypes()
-//             )
-//         );
-//         slasherFactory.whitelist(slasherImpl);
+        // Opt-in operators to the vault
+        _optInOperatorVault(vault1, operator1);
+        _optInOperatorVault(vault1, operator2);
+        _optInOperatorVault(vault2, operator3);
+        _optInOperatorVault(vault2, operator1);
 
-//         address vetoSlasherImpl = address(
-//             new VetoSlasher(
-//                 address(vaultFactory),
-//                 address(networkMiddlewareService),
-//                 address(networkRegistry),
-//                 address(slasherFactory),
-//                 slasherFactory.totalTypes()
-//             )
-//         );
-//         slasherFactory.whitelist(vetoSlasherImpl);
+        // Set network limit and operator shares in the delegator
+        _setMaxNetworkLimit(address(delegator1), network, subnetwork1, type(uint256).max);
+        _setMaxNetworkLimit(address(delegator2), network, subnetwork1, type(uint256).max);
 
-//         vaultConfigurator =
-//             new VaultConfigurator(address(vaultFactory), address(delegatorFactory), address(slasherFactory));
+        _deposit(vault1, alice, 550 ether);
+        _deposit(vault2, alice, 500 ether);
 
-//         collateral = new Token("Token");
-//     }
+        _setNetworkLimitNetwork(delegator1, alice, address(network), 550 ether);
+        _setNetworkLimitFull(delegator2, alice, address(network), 450 ether);
 
-//     struct Data {
-//         uint256[3] deposits;
-//         uint256[3][2] networkLimits;
-//         uint256[3][3][2] operatorLimits;
-//     }
+        _setOperatorNetworkShares(delegator1, alice, address(network), operator1, 250 ether);
+        _setOperatorNetworkShares(delegator1, alice, address(network), operator2, 300 ether);
+        _setOperatorNetworkLimit(delegator2, alice, address(network), operator1, 250 ether);
+        _setOperatorNetworkLimit(delegator2, alice, address(network), operator3, 200 ether);
 
-//     function test_All(Data memory data) public {
-//         uint256 blockTimestamp = block.timestamp * block.timestamp / block.timestamp * block.timestamp / block.timestamp;
-//         blockTimestamp = blockTimestamp + 1_720_700_948;
-//         vm.warp(blockTimestamp);
+        // Initialize middleware contract
+        middleware = new SimpleMiddleware(
+            address(network),
+            address(operatorRegistry),
+            address(vaultFactory),
+            address(operatorNetworkOptInService),
+            owner,
+            epochDuration,
+            slashingWindow
+        );
 
-//         address network = address(11_111);
-//         simpleMiddleware = new SimpleMiddleware(
-//             network, address(operatorRegistry), address(vaultFactory), address(vaultFactory), alice, 1 days, 3 days
-//         );
+        // Register network middleware
+        vm.prank(network);
+        networkMiddlewareService.setMiddleware(address(middleware));
 
-//         _registerNetwork(network, address(simpleMiddleware));
+        // Register operators in the middleware
+        vm.startPrank(owner);
+        middleware.registerOperator(operator1);
+        middleware.registerOperator(operator2);
+        middleware.registerOperator(operator3);
 
-//         uint256 subnetworksN = 2;
-//         vm.startPrank(alice);
-//         simpleMiddleware.setSubnetworks(subnetworksN);
-//         vm.stopPrank();
+        // Update keys for operators
+        middleware.updateKey(operator1, key1);
+        middleware.updateKey(operator2, key2);
+        middleware.updateKey(operator3, key3);
 
-//         uint256 vaultsN = 3;
-//         Vault[] memory vaults = new Vault[](vaultsN);
-//         address[] memory _vaults = new address[](vaultsN);
-//         for (uint256 i; i < vaultsN; ++i) {
-//             (Vault vault,,) = _getVaultAndDelegatorAndSlasher(7 days, 1 days);
-//             vaults[i] = vault;
-//             _vaults[i] = address(vault);
+        // Register subnetworks
+        middleware.registerSubnetwork(subnetwork2);
 
-//             vm.startPrank(alice);
-//             simpleMiddleware.registerVault(address(vault));
-//             vm.stopPrank();
+        // Register vaults
+        middleware.registerSharedVault(address(vault1));
+        middleware.registerSharedVault(address(vault2));
 
-//             data.deposits[i] = bound(data.deposits[i], 1, 100 ether);
-//             _deposit(alice, vault, data.deposits[i]);
+        vm.stopPrank();
 
-//             for (uint96 j; j < subnetworksN; ++j) {
-//                 data.networkLimits[j][i] = bound(data.networkLimits[j][i], 1, type(uint256).max);
-//                 _setMaxNetworkLimit(network, FullRestakeDelegator(vault.delegator()), j, data.networkLimits[j][i]);
-//                 _setNetworkLimit(
-//                     alice, FullRestakeDelegator(vault.delegator()), network.subnetwork(j), data.networkLimits[j][i]
-//                 );
-//             }
-//         }
+        skipEpoch();
+    }
 
-//         simpleMiddleware.enableSharedVaults(_vaults);
+    function testUpdateKeys() public {
+        // Update operator1's key
+        bytes32 newKey1 = keccak256("newKey1");
+        vm.prank(owner);
+        middleware.updateKey(operator1, newKey1);
 
-//         uint256 operatorsN = 3;
-//         address[] memory operators = new address[](operatorsN);
-//         for (uint256 i; i < operatorsN; ++i) {
-//             address operator = address(uint160(111 + i));
-//             operators[i] = operator;
+        skipEpoch();
 
-//             _registerOperator(operator);
+        // Verify that the key is updated
+        bytes32 currentKey1 = middleware.operatorKey(operator1);
+        assertEq(currentKey1, newKey1, "Operator1's key was not updated correctly");
+    }
 
-//             _optInOperatorNetwork(operator, network);
+    function testPauseUnpauseOperator() public {
+        // Pause operator2
+        vm.prank(owner);
+        middleware.pauseOperator(operator2);
+        skipEpoch();
 
-//             vm.startPrank(alice);
-//             simpleMiddleware.registerOperator(operator, bytes32(uint256(uint160(operator))));
-//             vm.stopPrank();
+        // Verify operator2 is paused
+        address[] memory activeOperators = middleware.activeOperators();
+        bool foundOperator2 = false;
+        for (uint256 i = 0; i < activeOperators.length; i++) {
+            if (activeOperators[i] == operator2) {
+                foundOperator2 = true;
+            }
+        }
+        assertFalse(foundOperator2, "Operator2 should be paused");
 
-//             for (uint256 j; j < vaultsN; ++j) {
-//                 Vault vault = vaults[j];
+        // Unpause operator2
+        vm.prank(owner);
+        skipImmutablePeriod();
+        middleware.unpauseOperator(operator2);
+        skipEpoch();
 
-//                 _optInOperatorVault(operator, vault);
-//             }
+        // Verify operator2 is active again
+        activeOperators = middleware.activeOperators();
+        foundOperator2 = false;
+        for (uint256 i = 0; i < activeOperators.length; i++) {
+            if (activeOperators[i] == operator2) {
+                foundOperator2 = true;
+                break;
+            }
+        }
+        assertTrue(foundOperator2, "Operator2 should be active after unpausing");
+    }
 
-//             for (uint96 j; j < subnetworksN; ++j) {
-//                 for (uint256 k; k < vaultsN; ++k) {
-//                     Vault vault = vaults[k];
+    function testPauseUnpauseVault() public {
+        // Pause the vault
+        vm.prank(owner);
+        middleware.pauseSharedVault(address(vault1));
+        skipEpoch();
 
-//                     data.operatorLimits[j][k][i] = bound(data.operatorLimits[j][k][i], 1, type(uint256).max);
-//                     _setOperatorNetworkLimit(
-//                         alice,
-//                         FullRestakeDelegator(vault.delegator()),
-//                         network.subnetwork(j),
-//                         operator,
-//                         data.operatorLimits[j][k][i]
-//                     );
-//                 }
-//             }
-//         }
+        // Verify the vault is paused
+        address[] memory vaults = middleware.activeVaults(operator1);
+        bool foundVault = false;
+        for (uint256 i = 0; i < vaults.length; i++) {
+            if (vaults[i] == address(vault1)) {
+                foundVault = true;
+                break;
+            }
+        }
+        assertFalse(foundVault, "Vault should be paused");
 
-//         blockTimestamp = blockTimestamp + 1;
-//         vm.warp(blockTimestamp);
+        // Unpause the vault
+        vm.prank(owner);
+        skipImmutablePeriod();
+        middleware.unpauseSharedVault(address(vault1));
+        skipEpoch();
 
-//         for (uint256 i; i < operatorsN; ++i) {
-//             address operator = operators[i];
+        // Verify the vault is active again
+        vaults = middleware.activeVaults(operator1);
+        foundVault = false;
+        for (uint256 i = 0; i < vaults.length; i++) {
+            if (vaults[i] == address(vault1)) {
+                foundVault = true;
+                break;
+            }
+        }
+        assertTrue(foundVault, "Vault should be active after unpausing");
+    }
 
-//             uint256 operatorStake;
-//             for (uint256 j; j < vaultsN; ++j) {
-//                 Vault vault = Vault(vaults[j]);
+    function testPauseUnpauseSubnetwork() public {
+        // Pause subnetwork2
+        vm.prank(owner);
+        middleware.pauseSubnetwork(subnetwork2);
+        skipEpoch();
 
-//                 uint256 vaultStake;
-//                 for (uint96 k; k < subnetworksN; ++k) {
-//                     bytes32 subnetwork = network.subnetwork(k);
+        // Verify subnetwork2 is paused
+        uint160[] memory activeSubnetworks = middleware.activeSubnetworks();
+        bool foundSubnetwork2 = false;
+        for (uint256 i = 0; i < activeSubnetworks.length; i++) {
+            if (activeSubnetworks[i] == uint160(subnetwork2)) {
+                foundSubnetwork2 = true;
+                break;
+            }
+        }
+        assertFalse(foundSubnetwork2, "Subnetwork2 should be paused");
 
-//                     vaultStake +=
-//                         Math.min(Math.min(data.operatorLimits[k][j][i], data.networkLimits[k][j]), data.deposits[j]);
-//                 }
+        // Unpause subnetwork2
+        vm.prank(owner);
+        skipImmutablePeriod();
+        middleware.unpauseSubnetwork(subnetwork2);
+        skipEpoch();
 
-//                 operatorStake += Math.min(vaultStake, data.deposits[j]);
-//             }
+        // Verify subnetwork2 is active again
+        activeSubnetworks = middleware.activeSubnetworks();
+        foundSubnetwork2 = false;
+        for (uint256 i = 0; i < activeSubnetworks.length; i++) {
+            if (activeSubnetworks[i] == uint160(subnetwork2)) {
+                foundSubnetwork2 = true;
+                break;
+            }
+        }
+        assertTrue(foundSubnetwork2, "Subnetwork2 should be active after unpausing");
+    }
 
-//             assertEq(operatorStake, simpleMiddleware.getOperatorStake(operator, 0));
-//         }
-//     }
+    function testSlashOperator() public {
+        // Prepare hints (empty in this context)
+        uint256 vaultsLen = middleware.activeVaults(operator1).length;
+        bytes[][] memory stakeHints = new bytes[][](vaultsLen);
+        for (uint256 i; i < vaultsLen; i++) {
+            stakeHints[i] = new bytes[](middleware.activeSubnetworks().length);
+            for (uint256 j; j < stakeHints[i].length; j++) {
+                stakeHints[i][j] = "";
+            }
+        }
 
-//     function _getVaultAndDelegatorAndSlasher(uint48 epochDuration, uint48 vetoDuration)
-//         internal
-//         returns (Vault, FullRestakeDelegator, VetoSlasher)
-//     {
-//         address[] memory networkLimitSetRoleHolders = new address[](1);
-//         networkLimitSetRoleHolders[0] = alice;
-//         address[] memory operatorNetworkLimitSetRoleHolders = new address[](1);
-//         operatorNetworkLimitSetRoleHolders[0] = alice;
-//         (address vault_, address delegator_, address slasher_) = vaultConfigurator.create(
-//             IVaultConfigurator.InitParams({
-//                 version: vaultFactory.lastVersion(),
-//                 owner: alice,
-//                 vaultParams: IVault.InitParams({
-//                     collateral: address(collateral),
-//                     delegator: address(0),
-//                     slasher: address(0),
-//                     burner: address(0xdEaD),
-//                     epochDuration: epochDuration,
-//                     depositWhitelist: false,
-//                     defaultAdminRoleHolder: alice,
-//                     depositWhitelistSetRoleHolder: alice,
-//                     depositorWhitelistRoleHolder: alice
-//                 }),
-//                 delegatorIndex: 1,
-//                 delegatorParams: abi.encode(
-//                     IFullRestakeDelegator.InitParams({
-//                         baseParams: IBaseDelegator.BaseParams({
-//                             defaultAdminRoleHolder: alice,
-//                             hook: address(0),
-//                             hookSetRoleHolder: alice
-//                         }),
-//                         networkLimitSetRoleHolders: networkLimitSetRoleHolders,
-//                         operatorNetworkLimitSetRoleHolders: operatorNetworkLimitSetRoleHolders
-//                     })
-//                 ),
-//                 withSlasher: true,
-//                 slasherIndex: 1,
-//                 slasherParams: abi.encode(IVetoSlasher.InitParams({vetoDuration: vetoDuration, resolverSetEpochsDelay: 3}))
-//             })
-//         );
+        bytes[] memory slashHints = new bytes[](stakeHints.length);
 
-//         return (Vault(vault_), FullRestakeDelegator(delegator_), VetoSlasher(slasher_));
-//     }
+        skipEpoch();
+        uint48 epoch = middleware.getCurrentEpoch();
+        uint256 amount = 100 ether;
 
-//     function _deposit(address user, Vault vault, uint256 amount)
-//         internal
-//         returns (uint256 depositedAmount, uint256 mintedShares)
-//     {
-//         collateral.transfer(user, amount);
-//         vm.startPrank(user);
-//         collateral.approve(address(vault), amount);
-//         (depositedAmount, mintedShares) = vault.deposit(user, amount);
-//         vm.stopPrank();
-//     }
+        // Perform slash on operator1
+        vm.prank(owner);
+        SimpleMiddleware.SlashResponse[] memory responses =
+            middleware.slash(epoch, key1, amount, stakeHints, slashHints);
 
-//     function _setNetworkLimit(address user, FullRestakeDelegator delegator, bytes32 subnetwork, uint256 amount)
-//         internal
-//     {
-//         vm.startPrank(user);
-//         delegator.setNetworkLimit(subnetwork, amount);
-//         vm.stopPrank();
-//     }
+        // Check that the slashing occurred
+        assertEq(responses.length, 2, "Should have one slash response");
+        assertEq(responses[0].vault, address(vault1), "Incorrect vault in slash response");
+        assertEq(responses[0].slasherType, slasher1.TYPE(), "Incorrect slasher type");
+        assertEq(responses[0].response, amount / 2, "Incorrect slashed amount");
+        assertEq(responses[1].vault, address(vault2), "Incorrect vault in slash response");
+        assertEq(responses[1].slasherType, slasher2.TYPE(), "Incorrect slasher type");
+        assertEq(responses[1].response, amount / 2, "Incorrect slashed amount");
 
-//     function _setOperatorNetworkLimit(
-//         address user,
-//         FullRestakeDelegator delegator,
-//         bytes32 subnetwork,
-//         address operator,
-//         uint256 amount
-//     ) internal {
-//         vm.startPrank(user);
-//         delegator.setOperatorNetworkLimit(subnetwork, operator, amount);
-//         vm.stopPrank();
-//     }
+        // Verify that the operator's stake has decreased
+        uint256 remainingStake =
+            delegator1.stakeAt(network.subnetwork(subnetwork1), operator1, uint48(block.timestamp), "");
+        assertEq(remainingStake, 227272727272727272727, "Operator1 stake not reduced correctly");
+    }
 
-//     function _setMaxNetworkLimit(address user, FullRestakeDelegator delegator, uint96 identifier, uint256 amount)
-//         internal
-//     {
-//         vm.startPrank(user);
-//         delegator.setMaxNetworkLimit(identifier, amount);
-//         vm.stopPrank();
-//     }
+    function testUnregisterOperator() public {
+        // Unregister operator3
+        vm.startPrank(owner);
+        middleware.pauseOperator(operator3);
+        skipEpoch();
+        skipImmutablePeriod();
+        middleware.unregisterOperator(operator3);
+        vm.stopPrank();
+        skipEpoch();
 
-//     function _registerOperator(address user) internal {
-//         vm.startPrank(user);
-//         operatorRegistry.registerOperator();
-//         vm.stopPrank();
-//     }
+        // Verify operator3 is unregistered
+        address[] memory activeOperators = middleware.activeOperators();
+        bool foundOperator3 = false;
+        for (uint256 i = 0; i < activeOperators.length; i++) {
+            if (activeOperators[i] == operator3) {
+                foundOperator3 = true;
+                break;
+            }
+        }
+        assertFalse(foundOperator3, "Operator3 should be unregistered");
+    }
 
-//     function _registerNetwork(address user, address middleware) internal {
-//         vm.startPrank(user);
-//         networkRegistry.registerNetwork();
-//         networkMiddlewareService.setMiddleware(middleware);
-//         vm.stopPrank();
-//     }
+    function testUnregisterSubnetwork() public {
+        // Unregister subnetwork1
+        vm.startPrank(owner);
+        middleware.pauseSubnetwork(subnetwork1);
+        skipEpoch();
+        skipImmutablePeriod();
+        middleware.unregisterSubnetwork(subnetwork1);
+        vm.stopPrank();
+        skipEpoch();
 
-//     function _optInOperatorVault(address user, Vault vault) internal {
-//         vm.startPrank(user);
-//         operatorVaultOptInService.optIn(address(vault));
-//         vm.stopPrank();
-//     }
+        // Verify subnetwork1 is unregistered
+        uint160[] memory activeSubnetworks = middleware.activeSubnetworks();
+        bool foundSubnetwork1 = false;
+        for (uint256 i = 0; i < activeSubnetworks.length; i++) {
+            if (activeSubnetworks[i] == uint160(subnetwork1)) {
+                foundSubnetwork1 = true;
+                break;
+            }
+        }
+        assertFalse(foundSubnetwork1, "Subnetwork1 should be unregistered");
+    }
 
-//     function _optOutOperatorVault(address user, Vault vault) internal {
-//         vm.startPrank(user);
-//         operatorVaultOptInService.optOut(address(vault));
-//         vm.stopPrank();
-//     }
+    function testUnregisterVault() public {
+        // Unregister the vault
+        vm.startPrank(owner);
+        middleware.pauseSharedVault(address(vault1));
+        skipEpoch();
+        skipImmutablePeriod();
+        middleware.unregisterSharedVault(address(vault1));
+        vm.stopPrank();
+        skipEpoch();
 
-//     function _optInOperatorNetwork(address user, address network) internal {
-//         vm.startPrank(user);
-//         operatorNetworkOptInService.optIn(network);
-//         vm.stopPrank();
-//     }
+        // Verify the vault is unregistered
+        address[] memory vaults = middleware.activeVaults(operator1);
+        bool foundVault = false;
+        for (uint256 i = 0; i < vaults.length; i++) {
+            if (vaults[i] == address(vault1)) {
+                foundVault = true;
+                break;
+            }
+        }
+        assertFalse(foundVault, "Vault should be unregistered");
+    }
 
-//     function _optOutOperatorNetwork(address user, address network) internal {
-//         vm.startPrank(user);
-//         operatorNetworkOptInService.optOut(network);
-//         vm.stopPrank();
-//     }
-// }
+    function testValidatorSetWithMultipleSubnetworks() public {
+        skipEpoch();
+        // Get validator set
+        SimpleMiddleware.ValidatorData[] memory validatorSet = middleware.getValidatorSet();
+
+        // Expected validator set length is 3
+        assertEq(validatorSet.length, 3, "Validator set length should be 3");
+
+        // Verify each validator's power
+        for (uint256 i = 0; i < validatorSet.length; i++) {
+            SimpleMiddleware.ValidatorData memory validator = validatorSet[i];
+            if (validator.key == key1) {
+                assertEq(validator.power, 500 ether, "Operator1 power mismatch");
+            } else if (validator.key == key2) {
+                assertEq(validator.power, 300 ether, "Operator2 power mismatch");
+            } else if (validator.key == key3) {
+                assertEq(validator.power, 200 ether, "Operator3 power mismatch");
+            } else {
+                assert(false);
+            }
+        }
+    }
+
+    function testOperatorStakeAfterSlash() public {
+        // Prepare hints
+        uint256 vaultsLen = middleware.activeVaults(operator1).length;
+        bytes[][] memory stakeHints = new bytes[][](vaultsLen);
+        for (uint256 i; i < vaultsLen; i++) {
+            stakeHints[i] = new bytes[](middleware.activeSubnetworks().length);
+            for (uint256 j; j < stakeHints[i].length; j++) {
+                stakeHints[i][j] = "";
+            }
+        }
+
+        bytes[] memory slashHints = new bytes[](stakeHints.length);
+        slashHints[0] = "";
+
+        uint48 epoch = middleware.getCurrentEpoch();
+        uint256 amount = 100 ether;
+
+        // Perform a slash on operator1
+        vm.prank(owner);
+        middleware.slash(epoch, key1, amount, stakeHints, slashHints);
+
+        // Verify operator1's stake is reduced
+        uint256 remainingStake =
+            delegator1.stakeAt(network.subnetwork(subnetwork1), operator1, uint48(block.timestamp), "");
+        assertEq(remainingStake, 227272727272727272727, "Operator1 stake not reduced correctly");
+
+        // Verify total stake is updated
+        skipEpoch();
+        uint256 totalStake = middleware.getTotalStake();
+        uint256 expectedTotalStake = 950 ether - 1; // 1000 ether - 100 / 2 ether
+        assertEq(totalStake, expectedTotalStake, "Total stake not updated correctly");
+    }
+
+    function testRevertOnUnregisteredOperator() public {
+        // Attempt to register an operator not in the registry
+        address unregisteredOperator = address(0x4);
+        vm.expectRevert(OperatorManager.NotOperator.selector);
+        vm.prank(owner);
+        middleware.registerOperator(unregisteredOperator);
+    }
+
+    function testModifyStake() public {
+        // Increase operator1's stake
+        _deposit(vault1, operator1, 50 ether);
+
+        _setNetworkLimitNetwork(delegator1, operator1, address(network), 600 ether);
+        _setOperatorNetworkShares(delegator1, alice, address(network), operator1, 600 ether);
+
+        // Verify the stake is updated
+        uint256 newStake = delegator1.stakeAt(network.subnetwork(subnetwork1), operator1, uint48(block.timestamp), "");
+        assertEq(newStake, 400 ether, "Operator1's stake not updated correctly");
+
+        skipEpoch();
+        // Verify total stake is updated
+        uint256 totalStake = middleware.getTotalStake();
+        uint256 expectedTotalStake = 1050 ether; // Previous total + 50 ether
+        assertEq(totalStake, expectedTotalStake, "Total stake not updated correctly");
+    }
+
+    function skipEpoch() private {
+        vm.warp(block.timestamp + epochDuration);
+    }
+
+    function skipImmutablePeriod() private {
+        vm.warp(block.timestamp + slashingWindow);
+    }
+}

@@ -27,15 +27,14 @@ contract SimpleMiddleware is VaultManager, OperatorManager, KeyManager {
     }
 
     /* 
-     * Constructor for initializing the SimpleMiddleware contract.
+     * @notice Constructor for initializing the SimpleMiddleware contract.
      * @param network The address of the network.
      * @param operatorRegistry The address of the operator registry.
      * @param vaultRegistry The address of the vault registry.
      * @param operatorNetOptin The address of the operator network opt-in service.
      * @param owner The address of the contract owner.
      * @param epochDuration The duration of each epoch.
-     * @param slashingWindow The duration of the slashing window. It's an epochDuration multuplier
-     * slashingWindowDuration = slashingWindow * epochDuration
+     * @param slashingWindow The duration of the slashing window
      */
     constructor(
         address network,
@@ -50,7 +49,7 @@ contract SimpleMiddleware is VaultManager, OperatorManager, KeyManager {
     {}
 
     /* 
-     * Returns the total stake for the active operators in the current epoch.
+     * @notice Returns the total stake for the active operators in the current epoch.
      * @return The total stake amount.
      */
     function getTotalStake() public view returns (uint256) {
@@ -59,7 +58,7 @@ contract SimpleMiddleware is VaultManager, OperatorManager, KeyManager {
     }
 
     /* 
-     * Returns the current validator set as an array of ValidatorData.
+     * @notice Returns the current validator set as an array of ValidatorData.
      * @return An array of ValidatorData containing the power and key of each validator.
      */
     function getValidatorSet() public view returns (ValidatorData[] memory validatorSet) {
@@ -86,7 +85,7 @@ contract SimpleMiddleware is VaultManager, OperatorManager, KeyManager {
     }
 
     /* 
-     * Slashes a validator based on the provided parameters.
+     * @notice Slashes a validator based on the provided parameters.
      * Here are the hints getter
      * https://github.com/symbioticfi/core/blob/main/src/contracts/hints/SlasherHints.sol
      * https://github.com/symbioticfi/core/blob/main/src/contracts/hints/DelegatorHints.sol

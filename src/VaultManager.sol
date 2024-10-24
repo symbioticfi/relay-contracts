@@ -31,6 +31,7 @@ abstract contract VaultManager is BaseMiddleware {
     error InvalidSubnetworksCnt();
     error UnknownSlasherType();
     error NonVetoSlasher();
+    error TooOldTimestampSlash();
 
     PauseableEnumerableSet.AddressSet internal _sharedVaults;
     mapping(address => PauseableEnumerableSet.AddressSet) internal _operatorVaults;
@@ -43,7 +44,7 @@ abstract contract VaultManager is BaseMiddleware {
     }
 
     /* 
-     * Returns the length of shared vaults.
+     * @notice Returns the length of shared vaults.
      * @return The number of shared vaults.
      */
     function sharedVaultsLength() public view returns (uint256) {
@@ -51,7 +52,7 @@ abstract contract VaultManager is BaseMiddleware {
     }
 
     /* 
-     * Returns the address and epoch information of a shared vault at a specific position.
+     * @notice Returns the address and epoch information of a shared vault at a specific position.
      * @param pos The index position in the shared vaults array.
      * @return The address, enabled epoch, and disabled epoch of the vault.
      */
@@ -60,7 +61,7 @@ abstract contract VaultManager is BaseMiddleware {
     }
 
     /* 
-     * Returns the length of operator vaults for a specific operator.
+     * @notice Returns the length of operator vaults for a specific operator.
      * @param operator The address of the operator.
      * @return The number of vaults associated with the operator.
      */
@@ -69,7 +70,7 @@ abstract contract VaultManager is BaseMiddleware {
     }
 
     /* 
-     * Returns the address and epoch information of an operator vault at a specific position.
+     * @notice Returns the address and epoch information of an operator vault at a specific position.
      * @param operator The address of the operator.
      * @param pos The index position in the operator vaults array.
      * @return The address, enabled epoch, and disabled epoch of the vault.
@@ -79,7 +80,7 @@ abstract contract VaultManager is BaseMiddleware {
     }
 
     /* 
-     * Converts stake to power for a vault.
+     * @notice Converts stake to power for a vault.
      * @param vault The address of the vault.
      * @param stake The amount of stake to convert.
      * @return The power calculated from the stake.
@@ -89,7 +90,7 @@ abstract contract VaultManager is BaseMiddleware {
     }
 
     /* 
-     * Returns the list of active vaults for a specific operator.
+     * @notice Returns the list of active vaults for a specific operator.
      * @param operator The address of the operator.
      * @return An array of addresses representing the active vaults.
      */
@@ -111,77 +112,77 @@ abstract contract VaultManager is BaseMiddleware {
     }
 
     /* 
-     * Registers a new shared vault.
+     * @notice Registers a new shared vault.
      * @param vault The address of the vault to register.
      */
     function registerSharedVault(address vault) public virtual onlyOwner {
         _validateVault(vault);
-        _sharedVaults.register(getNextEpoch(), vault);
+        _sharedVaults.register(getCurrentEpoch(), vault);
     }
 
     /* 
-     * Registers a new operator vault.
+     * @notice Registers a new operator vault.
      * @param vault The address of the vault to register.
      * @param operator The address of the operator.
      */
     function registerOperatorVault(address vault, address operator) public virtual onlyOwner {
         _validateVault(vault);
-        _operatorVaults[operator].register(getNextEpoch(), vault);
+        _operatorVaults[operator].register(getCurrentEpoch(), vault);
     }
 
     /* 
-     * Pauses a shared vault.
+     * @notice Pauses a shared vault.
      * @param vault The address of the vault to pause.
      */
     function pauseSharedVault(address vault) public virtual onlyOwner {
-        _sharedVaults.pause(getNextEpoch(), vault);
+        _sharedVaults.pause(getCurrentEpoch(), vault);
     }
 
     /* 
-     * Unpauses a shared vault.
+     * @notice Unpauses a shared vault.
      * @param vault The address of the vault to unpause.
      */
     function unpauseSharedVault(address vault) public virtual onlyOwner {
-        _sharedVaults.unpause(getNextEpoch(), SLASHING_WINDOW, vault);
+        _sharedVaults.unpause(getCurrentEpoch(), IMMUTABLE_EPOCHS, vault);
     }
 
     /* 
-     * Pauses an operator vault.
+     * @notice Pauses an operator vault.
      * @param operator The address of the operator.
      * @param vault The address of the vault to pause.
      */
     function pauseOperatorVault(address operator, address vault) public virtual onlyOwner {
-        _operatorVaults[operator].pause(getNextEpoch(), vault);
+        _operatorVaults[operator].pause(getCurrentEpoch(), vault);
     }
 
     /* 
-     * Unpauses an operator vault.
+     * @notice Unpauses an operator vault.
      * @param operator The address of the operator.
      * @param vault The address of the vault to unpause.
      */
     function unpauseOperatorVault(address operator, address vault) public virtual onlyOwner {
-        _operatorVaults[operator].unpause(getNextEpoch(), SLASHING_WINDOW, vault);
+        _operatorVaults[operator].unpause(getCurrentEpoch(), IMMUTABLE_EPOCHS, vault);
     }
 
     /* 
-     * Unregisters a shared vault.
+     * @notice Unregisters a shared vault.
      * @param vault The address of the vault to unregister.
      */
     function unregisterSharedVault(address vault) public virtual onlyOwner {
-        _sharedVaults.unregister(getNextEpoch(), SLASHING_WINDOW, vault);
+        _sharedVaults.unregister(getNextEpoch(), IMMUTABLE_EPOCHS, vault);
     }
 
     /* 
-     * Unregisters an operator vault.
+     * @notice Unregisters an operator vault.
      * @param operator The address of the operator.
      * @param vault The address of the vault to unregister.
      */
     function unregisterOperatorVault(address operator, address vault) public virtual onlyOwner {
-        _operatorVaults[operator].unregister(getNextEpoch(), SLASHING_WINDOW, vault);
+        _operatorVaults[operator].unregister(getCurrentEpoch(), IMMUTABLE_EPOCHS, vault);
     }
 
     /* 
-     * Returns the stake of an operator at a specific epoch.
+     * @notice Returns the stake of an operator at a specific epoch.
      * @param epoch The epoch to check.
      * @param operator The address of the operator.
      * @return The stake of the operator.
@@ -203,7 +204,7 @@ abstract contract VaultManager is BaseMiddleware {
     }
 
     /* 
-     * Returns the power of an operator at a specific epoch.
+     * @notice Returns the power of an operator at a specific epoch.
      * @param epoch The epoch to check.
      * @param operator The address of the operator.
      * @return The power of the operator.
@@ -226,7 +227,7 @@ abstract contract VaultManager is BaseMiddleware {
     }
 
     /* 
-     * Returns the total stake of multiple operators at a specific epoch.
+     * @notice Returns the total stake of multiple operators at a specific epoch.
      * @param epoch The epoch to check.
      * @param operators The list of operator addresses.
      * @return The total stake of the operators.
@@ -241,7 +242,7 @@ abstract contract VaultManager is BaseMiddleware {
     }
 
     /* 
-     * Slashes a vault based on provided conditions.
+     * @notice Slashes a vault based on provided conditions.
      * @param timestamp The timestamp when the slash occurs.
      * @param vault The address of the vault.
      * @param subnetwork The subnetwork identifier.
@@ -262,6 +263,10 @@ abstract contract VaultManager is BaseMiddleware {
             revert NotVault();
         }
 
+        if (timestamp + SLASHING_WINDOW < Time.timestamp()) {
+            revert TooOldTimestampSlash();
+        }
+
         address slasher = IVault(vault).slasher();
         uint64 slasherType = IEntity(slasher).TYPE();
         resp.vault = vault;
@@ -277,7 +282,7 @@ abstract contract VaultManager is BaseMiddleware {
     }
 
     /* 
-     * Executes a veto-based slash for a vault.
+     * @notice Executes a veto-based slash for a vault.
      * @param vault The address of the vault.
      * @param operator The address of the operator.
      * @param slashIndex The index of the slash to execute.
@@ -304,7 +309,7 @@ abstract contract VaultManager is BaseMiddleware {
     }
 
     /* 
-     * Validates if the vault is properly initialized and registered.
+     * @notice Validates if the vault is properly initialized and registered.
      * @param vault The address of the vault to validate.
      */
     function _validateVault(address vault) private view {
