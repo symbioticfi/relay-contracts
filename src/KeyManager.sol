@@ -16,7 +16,7 @@ abstract contract KeyManager is BaseMiddleware {
     mapping(bytes32 => PauseableEnumerableSet.Inner) internal _keyData; // Mapping from keys to their associated data
 
     /* 
-     * Returns the operator address associated with a given key.
+     * @notice Returns the operator address associated with a given key.
      * @param key The key for which to find the associated operator.
      * @return The address of the operator linked to the specified key.
      */
@@ -25,7 +25,7 @@ abstract contract KeyManager is BaseMiddleware {
     }
 
     /* 
-     * Returns the current key for a given operator. 
+     * @notice Returns the current key for a given operator. 
      * If the key has changed in the current epoch, returns the previous key.
      * @param operator The address of the operator.
      * @return The key associated with the specified operator.
@@ -39,7 +39,7 @@ abstract contract KeyManager is BaseMiddleware {
     }
 
     /* 
-     * Checks if a given key was active at a specified epoch.
+     * @notice Checks if a given key was active at a specified epoch.
      * @param epoch The epoch to check for key activity.
      * @param key The key to check.
      * @return A boolean indicating whether the key was active at the specified epoch.
@@ -49,7 +49,7 @@ abstract contract KeyManager is BaseMiddleware {
     }
 
     /* 
-     * Updates the key associated with an operator. 
+     * @notice Updates the key associated with an operator. 
      * If the new key already exists, a DuplicateKey error is thrown.
      * @param operator The address of the operator whose key is to be updated.
      * @param key The new key to associate with the operator.
