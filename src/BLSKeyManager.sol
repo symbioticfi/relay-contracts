@@ -26,12 +26,12 @@ abstract contract BLSKeyManager is BaseMiddleware {
 
     /* 
      * @notice Returns the current BLS key for a given operator. 
-     * If the key has changed in the current epoch, returns the previous key.
+     * If the key has changed in the previous epoch, returns the previous key.
      * @param operator The address of the operator.
      * @return The BLS key associated with the specified operator.
      */
     function operatorBLSKey(address operator) public view returns (bytes memory) {
-        if (_blsKeyData[blsKeys[operator]].enabledEpoch == getCurrentEpoch()) {
+        if (_blsKeyData[blsKeys[operator]].enabledEpoch == getCurrentEpoch() - 1) {
             return prevBLSKeys[operator];
         }
 
@@ -56,12 +56,14 @@ abstract contract BLSKeyManager is BaseMiddleware {
      */
     function updateBLSKey(address operator, bytes memory key) public virtual onlyOwner {
         uint48 epoch = getCurrentEpoch();
+        uint48 nextEpoch = epoch + 1;
 
         if (_blsKeyData[key].getAddress() != address(0)) {
             revert DuplicateBLSKey();
         }
 
-        if (keccak256(blsKeys[operator]) != ZERO_BYTES_HASH && _blsKeyData[blsKeys[operator]].enabledEpoch != epoch) {
+        if (keccak256(blsKeys[operator]) != ZERO_BYTES_HASH && _blsKeyData[blsKeys[operator]].enabledEpoch != nextEpoch)
+        {
             prevBLSKeys[operator] = blsKeys[operator];
         }
 
