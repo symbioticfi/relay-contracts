@@ -31,7 +31,7 @@ abstract contract BLSKeyManager is BaseMiddleware {
      * @return The BLS key associated with the specified operator.
      */
     function operatorBLSKey(address operator) public view returns (bytes memory) {
-        if (_blsKeyData[blsKeys[operator]].enabledEpoch == getCurrentEpoch() - 1) {
+        if (_blsKeyData[blsKeys[operator]].enabledEpoch == getCurrentEpoch() + 1) {
             return prevBLSKeys[operator];
         }
 
