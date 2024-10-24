@@ -327,7 +327,7 @@ library PauseableEnumerableSet {
     */
     function wasActiveAt(Inner storage self, uint48 epoch) internal view returns (bool) {
         return (self.enabledEpoch != 0 && self.enabledEpoch <= epoch)
-            && (self.disabledEpoch == 0 || self.disabledEpoch > epoch);
+            && (self.disabledEpoch == 0 || self.disabledEpoch >= epoch);
     }
 
     /* 
