@@ -337,7 +337,7 @@ library PauseableEnumerableSet {
     * @param immutableEpochs The immutable period that must pass before unpausing.
     */
     function validateUnpause(Inner storage self, uint48 epoch, uint48 immutableEpochs) internal view {
-        if (self.disabledEpoch + immutableEpochs >= epoch) {
+        if (self.disabledEpoch + immutableEpochs > epoch) {
             revert ImmutablePeriodNotPassed();
         }
     }
@@ -349,7 +349,7 @@ library PauseableEnumerableSet {
     * @param immutableEpochs The immutable period that must pass before unregistering.
     */
     function validateUnregister(Inner storage self, uint48 epoch, uint48 immutableEpochs) internal view {
-        if (self.disabledEpoch == 0 || self.disabledEpoch + immutableEpochs >= epoch) {
+        if (self.disabledEpoch == 0 || self.disabledEpoch + immutableEpochs > epoch) {
             revert ImmutablePeriodNotPassed();
         }
     }
