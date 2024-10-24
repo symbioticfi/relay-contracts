@@ -259,7 +259,7 @@ abstract contract VaultManager is BaseMiddleware {
         uint256 amount,
         bytes calldata hints
     ) internal returns (SlashResponse memory resp) {
-        if (!_sharedVaults.contains(vault) || _operatorVaults[operator].contains(vault)) {
+        if (!(_sharedVaults.contains(vault) || _operatorVaults[operator].contains(vault))) {
             revert NotVault();
         }
 
