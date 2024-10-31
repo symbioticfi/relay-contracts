@@ -8,11 +8,13 @@ abstract contract BLSKeyManager is BaseMiddleware {
     using PauseableEnumerableSet for PauseableEnumerableSet.Inner;
 
     error DuplicateBLSKey();
+    error BLSKeyAlreadyEnabled();
 
     bytes32 private constant ZERO_BYTES_HASH = keccak256(""); // Constant representing an empty hash
 
     mapping(address => bytes) public blsKeys; // Mapping from operator addresses to their BLS keys
     mapping(address => bytes) public prevBLSKeys; // Mapping from operator addresses to their previous BLS keys
+    mapping(address => uint32) public blsKeyUpdateEpoch; // Mapping from operator addresses to the epoch of the last BLS key update
     mapping(bytes => PauseableEnumerableSet.Inner) internal _blsKeyData; // Mapping from BLS keys to their associated data
 
     /* 
@@ -31,7 +33,7 @@ abstract contract BLSKeyManager is BaseMiddleware {
      * @return The BLS key associated with the specified operator.
      */
     function operatorBLSKey(address operator) public view returns (bytes memory) {
-        if (_blsKeyData[blsKeys[operator]].enabledEpoch == getCurrentEpoch() + 1) {
+        if (blsKeyUpdateEpoch[operator] == getCurrentEpoch()) {
             return prevBLSKeys[operator];
         }
 
@@ -44,7 +46,7 @@ abstract contract BLSKeyManager is BaseMiddleware {
      * @param key The BLS key to check.
      * @return A boolean indicating whether the BLS key was active at the specified epoch.
      */
-    function blsKeyWasActiveAt(uint48 epoch, bytes memory key) public view returns (bool) {
+    function blsKeyWasActiveAt(uint32 epoch, bytes memory key) public view returns (bool) {
         return _blsKeyData[key].wasActiveAt(epoch);
     }
 
@@ -55,22 +57,25 @@ abstract contract BLSKeyManager is BaseMiddleware {
      * @param key The new BLS key to associate with the operator.
      */
     function updateBLSKey(address operator, bytes memory key) public virtual onlyOwner {
-        uint48 epoch = getCurrentEpoch();
-        uint48 nextEpoch = epoch + 1;
+        uint32 epoch = getCurrentEpoch();
 
-        if (_blsKeyData[key].getAddress() != address(0)) {
+        if (keccak256(blsKeys[operator]) == keccak256(key)) {
+            revert BLSKeyAlreadyEnabled();
+        }
+
+        if (_blsKeyData[key].getAddress() != address(0) && _blsKeyData[key].getAddress() != operator) {
             revert DuplicateBLSKey();
         }
 
-        if (keccak256(blsKeys[operator]) != ZERO_BYTES_HASH && _blsKeyData[blsKeys[operator]].enabledEpoch != nextEpoch)
-        {
+        if (keccak256(key) != ZERO_BYTES_HASH && _blsKeyData[key].getAddress() == address(0)) {
+            _blsKeyData[key].set(epoch, operator);
+        }
+
+        if (blsKeyUpdateEpoch[operator] != epoch) {
             prevBLSKeys[operator] = blsKeys[operator];
+            blsKeyUpdateEpoch[operator] = epoch;
         }
 
         blsKeys[operator] = key;
-
-        if (keccak256(key) != ZERO_BYTES_HASH) {
-            _blsKeyData[key].set(epoch, operator);
-        }
     }
 }

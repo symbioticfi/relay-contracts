@@ -62,7 +62,7 @@ contract SimpleMiddleware is VaultManager, OperatorManager, KeyManager {
      * @return An array of ValidatorData containing the power and key of each validator.
      */
     function getValidatorSet() public view returns (ValidatorData[] memory validatorSet) {
-        uint48 epoch = getCurrentEpoch(); // Get the current epoch
+        uint32 epoch = getCurrentEpoch(); // Get the current epoch
         address[] memory operators = activeOperators(); // Get the list of active operators
         validatorSet = new ValidatorData[](operators.length); // Initialize the validator set
         uint256 len = 0; // Length counter
@@ -96,13 +96,11 @@ contract SimpleMiddleware is VaultManager, OperatorManager, KeyManager {
      * @param slashHints Hints for the slashing process.
      * @return An array of SlashResponse indicating the results of the slashing.
      */
-    function slash(
-        uint48 epoch,
-        bytes32 key,
-        uint256 amount,
-        bytes[][] calldata stakeHints,
-        bytes[] calldata slashHints
-    ) public onlyOwner returns (SlashResponse[] memory slashResponses) {
+    function slash(uint32 epoch, bytes32 key, uint256 amount, bytes[][] memory stakeHints, bytes[] memory slashHints)
+        public
+        onlyOwner
+        returns (SlashResponse[] memory slashResponses)
+    {
         uint48 epochStart = getEpochStart(epoch); // Get the start timestamp for the epoch
         address operator = operatorByKey(key); // Get the operator associated with the key
 

@@ -8,11 +8,13 @@ abstract contract KeyManager is BaseMiddleware {
     using PauseableEnumerableSet for PauseableEnumerableSet.Inner;
 
     error DuplicateKey();
+    error KeyAlreadyEnabled();
 
     bytes32 private constant ZERO_BYTES32 = bytes32(0);
 
     mapping(address => bytes32) public keys; // Mapping from operator addresses to their current keys
     mapping(address => bytes32) public prevKeys; // Mapping from operator addresses to their previous keys
+    mapping(address => uint32) public keyUpdateEpoch; // Mapping from operator addresses to the epoch of the last key update
     mapping(bytes32 => PauseableEnumerableSet.Inner) internal _keyData; // Mapping from keys to their associated data
 
     /* 
@@ -31,7 +33,7 @@ abstract contract KeyManager is BaseMiddleware {
      * @return The key associated with the specified operator.
      */
     function operatorKey(address operator) public view returns (bytes32) {
-        if (_keyData[keys[operator]].enabledEpoch == getCurrentEpoch() + 1) {
+        if (keyUpdateEpoch[operator] == getCurrentEpoch()) {
             return prevKeys[operator];
         }
 
@@ -44,7 +46,7 @@ abstract contract KeyManager is BaseMiddleware {
      * @param key The key to check.
      * @return A boolean indicating whether the key was active at the specified epoch.
      */
-    function keyWasActiveAt(uint48 epoch, bytes32 key) public view returns (bool) {
+    function keyWasActiveAt(uint32 epoch, bytes32 key) public view returns (bool) {
         return _keyData[key].wasActiveAt(epoch);
     }
 
@@ -55,21 +57,25 @@ abstract contract KeyManager is BaseMiddleware {
      * @param key The new key to associate with the operator.
      */
     function updateKey(address operator, bytes32 key) public virtual onlyOwner {
-        uint48 epoch = getCurrentEpoch();
-        uint48 nextEpoch = epoch + 1;
+        uint32 epoch = getCurrentEpoch();
 
-        if (_keyData[key].getAddress() != address(0)) {
+        if (keys[operator] == key) {
+            revert KeyAlreadyEnabled();
+        }
+
+        if (_keyData[key].getAddress() != address(0) && _keyData[key].getAddress() != operator) {
             revert DuplicateKey();
         }
 
-        if (keys[operator] != ZERO_BYTES32 && _keyData[keys[operator]].enabledEpoch != nextEpoch) {
+        if (key != ZERO_BYTES32 && _keyData[key].getAddress() == address(0)) {
+            _keyData[key].set(epoch, operator);
+        }
+
+        if (keyUpdateEpoch[operator] != epoch) {
             prevKeys[operator] = keys[operator];
+            keyUpdateEpoch[operator] = epoch;
         }
 
         keys[operator] = key;
-
-        if (key != ZERO_BYTES32) {
-            _keyData[key].set(epoch, operator);
-        }
     }
 }

@@ -25,8 +25,9 @@ library PauseableEnumerableSet {
      */
     struct Inner {
         uint160 value; // The actual value.
-        uint48 enabledEpoch; // Epoch when the value was enabled.
-        uint48 disabledEpoch; // Epoch when the value was disabled.
+        uint32 enabledEpoch; // Epoch when the value was enabled.
+        uint32 disabledEpoch; // Epoch when the value was disabled.
+        uint32 prevEnabledEpoch; // Epoch when the value was enabled before disabled.
     }
 
     // Custom error messages
@@ -34,6 +35,7 @@ library PauseableEnumerableSet {
     error NotRegistered(); // Thrown when trying to modify a value that's not registered.
     error AlreadyEnabled(); // Thrown when enabling an already enabled value.
     error NotEnabled(); // Thrown when disabling a value that's not enabled.
+    error Enabled(); // Thrown when trying to disable a value that's enabled.
     error ImmutablePeriodNotPassed(); // Thrown when an action is attempted before immutable period passes.
 
     /* 
@@ -49,11 +51,11 @@ library PauseableEnumerableSet {
      * @notice Returns the address and its active period at a given position in the AddressSet.
      * @param self The AddressSet storage.
      * @param pos The position in the set.
-     * @return The address, enabled epoch, and disabled epoch at the position.
+     * @return The address, enabled epoch, disabled epoch and enabled before dsiabled epoch at the position.
      */
-    function at(AddressSet storage self, uint256 pos) internal view returns (address, uint48, uint48) {
-        (uint160 value, uint48 enabledEpoch, uint48 disabledEpoch) = self.set.at(pos);
-        return (address(value), enabledEpoch, disabledEpoch);
+    function at(AddressSet storage self, uint256 pos) internal view returns (address, uint32, uint32, uint32) {
+        (uint160 value, uint32 enabledEpoch, uint32 disabledEpoch, uint32 prevEnabled) = self.set.at(pos);
+        return (address(value), enabledEpoch, disabledEpoch, prevEnabled);
     }
 
     /* 
@@ -62,7 +64,7 @@ library PauseableEnumerableSet {
      * @param epoch The epoch to check.
      * @return An array of active addresses.
      */
-    function getActive(AddressSet storage self, uint48 epoch) internal view returns (address[] memory array) {
+    function getActive(AddressSet storage self, uint32 epoch) internal view returns (address[] memory array) {
         uint160[] memory uint160Array = self.set.getActive(epoch);
 
         assembly ("memory-safe") {
@@ -78,7 +80,7 @@ library PauseableEnumerableSet {
      * @param epoch The epoch when the address is added.
      * @param addr The address to register.
      */
-    function register(AddressSet storage self, uint48 epoch, address addr) internal {
+    function register(AddressSet storage self, uint32 epoch, address addr) internal {
         self.set.register(epoch, uint160(addr));
     }
 
@@ -88,7 +90,7 @@ library PauseableEnumerableSet {
      * @param epoch The epoch when the address is paused.
      * @param addr The address to pause.
      */
-    function pause(AddressSet storage self, uint48 epoch, address addr) internal {
+    function pause(AddressSet storage self, uint32 epoch, address addr) internal {
         self.set.pause(epoch, uint160(addr));
     }
 
@@ -99,7 +101,7 @@ library PauseableEnumerableSet {
      * @param immutableEpochs The required immutable period before unpausing.
      * @param addr The address to unpause.
      */
-    function unpause(AddressSet storage self, uint48 epoch, uint48 immutableEpochs, address addr) internal {
+    function unpause(AddressSet storage self, uint32 epoch, uint32 immutableEpochs, address addr) internal {
         self.set.unpause(epoch, immutableEpochs, uint160(addr));
     }
 
@@ -110,7 +112,7 @@ library PauseableEnumerableSet {
      * @param immutableEpochs The required immutable period before unregistering.
      * @param addr The address to unregister.
      */
-    function unregister(AddressSet storage self, uint48 epoch, uint48 immutableEpochs, address addr) internal {
+    function unregister(AddressSet storage self, uint32 epoch, uint32 immutableEpochs, address addr) internal {
         self.set.unregister(epoch, immutableEpochs, uint160(addr));
     }
 
@@ -137,9 +139,9 @@ library PauseableEnumerableSet {
      * @notice Returns the value and its active period at a given position in the Uint160Set.
      * @param self The Uint160Set storage.
      * @param pos The position in the set.
-     * @return The value, enabled epoch, and disabled epoch at the position.
+     * @return The value, enabled epoch, disabled epoch and enabled before disabled epoch at the position.
      */
-    function at(Uint160Set storage self, uint256 pos) internal view returns (uint160, uint48, uint48) {
+    function at(Uint160Set storage self, uint256 pos) internal view returns (uint160, uint32, uint32, uint32) {
         return self.array[pos].get();
     }
 
@@ -149,7 +151,7 @@ library PauseableEnumerableSet {
      * @param epoch The epoch to check.
      * @return An array of active values.
      */
-    function getActive(Uint160Set storage self, uint48 epoch) internal view returns (uint160[] memory) {
+    function getActive(Uint160Set storage self, uint32 epoch) internal view returns (uint160[] memory) {
         uint160[] memory array = new uint160[](self.array.length);
         uint256 len = 0;
         for (uint256 i; i < self.array.length; ++i) {
@@ -172,7 +174,7 @@ library PauseableEnumerableSet {
      * @param epoch The epoch when the value is added.
      * @param value The Uint160 value to register.
      */
-    function register(Uint160Set storage self, uint48 epoch, uint160 value) internal {
+    function register(Uint160Set storage self, uint32 epoch, uint160 value) internal {
         if (self.positions[value] != 0) {
             revert AlreadyRegistered();
         }
@@ -189,7 +191,7 @@ library PauseableEnumerableSet {
      * @param epoch The epoch when the value is paused.
      * @param value The Uint160 value to pause.
      */
-    function pause(Uint160Set storage self, uint48 epoch, uint160 value) internal {
+    function pause(Uint160Set storage self, uint32 epoch, uint160 value) internal {
         if (self.positions[value] == 0) {
             revert NotRegistered();
         }
@@ -204,7 +206,7 @@ library PauseableEnumerableSet {
      * @param immutableEpochs The required immutable period before unpausing.
      * @param value The Uint160 value to unpause.
      */
-    function unpause(Uint160Set storage self, uint48 epoch, uint48 immutableEpochs, uint160 value) internal {
+    function unpause(Uint160Set storage self, uint32 epoch, uint32 immutableEpochs, uint160 value) internal {
         if (self.positions[value] == 0) {
             revert NotRegistered();
         }
@@ -220,19 +222,20 @@ library PauseableEnumerableSet {
      * @param immutableEpochs The required immutable period before unregistering.
      * @param value The Uint160 value to unregister.
      */
-    function unregister(Uint160Set storage self, uint48 epoch, uint48 immutableEpochs, uint160 value) internal {
+    function unregister(Uint160Set storage self, uint32 epoch, uint32 immutableEpochs, uint160 value) internal {
         if (self.positions[value] == 0) {
             revert NotRegistered();
         }
 
-        if (self.array.length == 1 || self.array.length == self.positions[value]) {
+        uint256 pos = self.positions[value] - 1;
+        self.array[pos].validateUnregister(epoch, immutableEpochs);
+
+        if (self.array.length == 1 || self.array.length == pos + 1) {
             delete self.positions[value];
             self.array.pop();
             return;
         }
 
-        uint256 pos = self.positions[value] - 1;
-        self.array[pos].validateUnregister(epoch, immutableEpochs);
         self.array[pos] = self.array[self.array.length - 1];
         self.array.pop();
 
@@ -262,10 +265,10 @@ library PauseableEnumerableSet {
     /* 
     * @notice @notice Returns the value and its active period from the Inner struct.
     * @param self The Inner struct.
-    * @return The value, enabled epoch, and disabled epoch.
+    * @return The value, enabled epoch, disabled epoch and enabled before disabled epoch.
     */
-    function get(Inner storage self) internal view returns (uint160, uint48, uint48) {
-        return (self.value, self.enabledEpoch, self.disabledEpoch);
+    function get(Inner storage self) internal view returns (uint160, uint32, uint32, uint32) {
+        return (self.value, self.enabledEpoch, self.disabledEpoch, self.prevEnabledEpoch);
     }
 
     /* 
@@ -274,10 +277,9 @@ library PauseableEnumerableSet {
     * @param epoch The epoch when the value is set.
     * @param value The Uint160 value to store.
     */
-    function set(Inner storage self, uint48 epoch, uint160 value) internal {
+    function set(Inner storage self, uint32 epoch, uint160 value) internal {
         self.value = value;
         self.enabledEpoch = epoch + 1;
-        self.disabledEpoch = 0;
     }
 
     /* 
@@ -286,10 +288,9 @@ library PauseableEnumerableSet {
     * @param epoch The epoch when the address is set.
     * @param addr The address to store.
     */
-    function set(Inner storage self, uint48 epoch, address addr) internal {
+    function set(Inner storage self, uint32 epoch, address addr) internal {
         self.value = uint160(addr);
         self.enabledEpoch = epoch + 1;
-        self.disabledEpoch = 0;
     }
 
     /* 
@@ -297,13 +298,12 @@ library PauseableEnumerableSet {
     * @param self The Inner struct.
     * @param epoch The epoch when the value is enabled.
     */
-    function enable(Inner storage self, uint48 epoch) internal {
-        if (self.enabledEpoch != 0 && self.disabledEpoch == 0) {
+    function enable(Inner storage self, uint32 epoch) internal {
+        if (self.enabledEpoch != 0) {
             revert AlreadyEnabled();
         }
 
         self.enabledEpoch = epoch + 1;
-        self.disabledEpoch = 0;
     }
 
     /* 
@@ -311,11 +311,13 @@ library PauseableEnumerableSet {
     * @param self The Inner struct.
     * @param epoch The epoch when the value is disabled.
     */
-    function disable(Inner storage self, uint48 epoch) internal {
-        if (self.enabledEpoch == 0 || self.disabledEpoch != 0) {
+    function disable(Inner storage self, uint32 epoch) internal {
+        if (self.enabledEpoch == 0) {
             revert NotEnabled();
         }
 
+        self.prevEnabledEpoch = self.enabledEpoch;
+        self.enabledEpoch = 0;
         self.disabledEpoch = epoch;
     }
 
@@ -325,9 +327,9 @@ library PauseableEnumerableSet {
     * @param epoch The epoch to check.
     * @return True if the value was active at the epoch, false otherwise.
     */
-    function wasActiveAt(Inner storage self, uint48 epoch) internal view returns (bool) {
+    function wasActiveAt(Inner storage self, uint32 epoch) internal view returns (bool) {
         return (self.enabledEpoch != 0 && self.enabledEpoch <= epoch)
-            && (self.disabledEpoch == 0 || self.disabledEpoch >= epoch);
+            || (self.disabledEpoch >= epoch && self.prevEnabledEpoch <= epoch);
     }
 
     /* 
@@ -336,8 +338,8 @@ library PauseableEnumerableSet {
     * @param epoch The current epoch.
     * @param immutableEpochs The immutable period that must pass before unpausing.
     */
-    function validateUnpause(Inner storage self, uint48 epoch, uint48 immutableEpochs) internal view {
-        if (self.disabledEpoch + immutableEpochs > epoch) {
+    function validateUnpause(Inner storage self, uint32 epoch, uint32 immutableEpochs) internal view {
+        if (self.disabledEpoch + immutableEpochs - 1 > epoch) {
             revert ImmutablePeriodNotPassed();
         }
     }
@@ -348,8 +350,12 @@ library PauseableEnumerableSet {
     * @param epoch The current epoch.
     * @param immutableEpochs The immutable period that must pass before unregistering.
     */
-    function validateUnregister(Inner storage self, uint48 epoch, uint48 immutableEpochs) internal view {
-        if (self.disabledEpoch == 0 || self.disabledEpoch + immutableEpochs > epoch) {
+    function validateUnregister(Inner storage self, uint32 epoch, uint32 immutableEpochs) internal view {
+        if (self.enabledEpoch != 0 || self.disabledEpoch == 0) {
+            revert Enabled();
+        }
+
+        if (self.disabledEpoch + immutableEpochs > epoch) {
             revert ImmutablePeriodNotPassed();
         }
     }

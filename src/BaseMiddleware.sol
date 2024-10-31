@@ -15,7 +15,7 @@ abstract contract BaseMiddleware is Ownable {
     uint48 public immutable EPOCH_DURATION; // Duration of each epoch
     uint48 public immutable START_TIME; // Start time of the epoch
     uint48 public immutable SLASHING_WINDOW; // Duration of the slashing window
-    uint48 public immutable IMMUTABLE_EPOCHS; // Duration of the state immutability in epochs
+    uint32 public immutable IMMUTABLE_EPOCHS; // Duration of the state immutability in epochs
     address public immutable VAULT_REGISTRY; // Address of the vault registry
     address public immutable OPERATOR_REGISTRY; // Address of the operator registry
     address public immutable OPERATOR_NET_OPTIN; // Address of the operator network opt-in service
@@ -52,7 +52,7 @@ abstract contract BaseMiddleware is Ownable {
         NETWORK = network;
         EPOCH_DURATION = epochDuration;
         SLASHING_WINDOW = slashingWindow;
-        IMMUTABLE_EPOCHS = (slashingWindow + epochDuration - 1) / epochDuration;
+        IMMUTABLE_EPOCHS = uint32((slashingWindow + epochDuration - 1) / epochDuration);
         VAULT_REGISTRY = vaultRegistry;
         OPERATOR_REGISTRY = operatorRegistry;
         OPERATOR_NET_OPTIN = operatorNetOptIn;
@@ -65,7 +65,7 @@ abstract contract BaseMiddleware is Ownable {
      * @param epoch The epoch number.
      * @return The start timestamp of the specified epoch.
      */
-    function getEpochStart(uint48 epoch) public view returns (uint48 timestamp) {
+    function getEpochStart(uint32 epoch) public view returns (uint48 timestamp) {
         return START_TIME + epoch * EPOCH_DURATION;
     }
 
@@ -74,15 +74,15 @@ abstract contract BaseMiddleware is Ownable {
      * @param timestamp The timestamp to convert to an epoch number.
      * @return The epoch number associated with the specified timestamp.
      */
-    function getEpochAt(uint48 timestamp) public view returns (uint48 epoch) {
-        return (timestamp - START_TIME) / EPOCH_DURATION;
+    function getEpochAt(uint48 timestamp) public view returns (uint32 epoch) {
+        return uint32((timestamp - START_TIME) / EPOCH_DURATION);
     }
 
     /* 
      * @notice Returns the current epoch number based on the current timestamp.
      * @return The current epoch number.
      */
-    function getCurrentEpoch() public view returns (uint48 epoch) {
+    function getCurrentEpoch() public view returns (uint32 epoch) {
         return getEpochAt(Time.timestamp());
     }
 
@@ -105,9 +105,9 @@ abstract contract BaseMiddleware is Ownable {
     /* 
      * @notice Returns the subnetwork information at a specified position.
      * @param pos The index of the subnetwork.
-     * @return The subnetwork details including address, enabled epoch, and disabled epoch.
+     * @return The subnetwork details including address, enabled epoch, disabled epoch and enabled before disabled epoch.
      */
-    function subnetworkWithTimesAt(uint256 pos) public view returns (uint160, uint48, uint48) {
+    function subnetworkWithTimesAt(uint256 pos) public view returns (uint160, uint32, uint32, uint32) {
         return subnetworks.at(pos);
     }
 
