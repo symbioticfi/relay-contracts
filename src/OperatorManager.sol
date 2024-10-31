@@ -32,9 +32,9 @@ abstract contract OperatorManager is BaseMiddleware {
     /* 
      * @notice Returns the operator and their associated enabled and disabled times at a specific position.
      * @param pos The index position in the operators array.
-     * @return The address, enabled epoch, and disabled epoch of the operator.
+     * @return The address, enabled epoch, disabled epoch and enabled before disabled epoch of the operator.
      */
-    function operatorWithTimesAt(uint256 pos) public view returns (address, uint48, uint48) {
+    function operatorWithTimesAt(uint256 pos) public view returns (address, uint32, uint32, uint32) {
         return _operators.at(pos);
     }
 
