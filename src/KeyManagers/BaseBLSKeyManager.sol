@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.25;
 
-import {BaseMiddleware} from "./BaseMiddleware.sol";
-import {PauseableEnumerableSet} from "./libraries/PauseableEnumerableSet.sol";
+import {BaseMiddleware} from "../BaseMiddleware.sol";
+import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
-abstract contract BLSKeyManager is BaseMiddleware {
+abstract contract BaseBLSKeyManager is BaseMiddleware {
     using PauseableEnumerableSet for PauseableEnumerableSet.Inner;
 
     error DuplicateBLSKey();
@@ -56,7 +56,7 @@ abstract contract BLSKeyManager is BaseMiddleware {
      * @param operator The address of the operator whose BLS key is to be updated.
      * @param key The new BLS key to associate with the operator.
      */
-    function updateBLSKey(address operator, bytes memory key) public virtual onlyOwner {
+    function _updateBLSKey(address operator, bytes memory key) internal {
         uint32 epoch = getCurrentEpoch();
 
         if (keccak256(blsKeys[operator]) == keccak256(key)) {
