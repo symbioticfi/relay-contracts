@@ -37,8 +37,9 @@ contract SDKTest is POCBaseTest {
 
         super.setUp();
 
-        _deposit(vault1, alice, 550 ether);
-        _deposit(vault2, alice, 500 ether);
+        _deposit(vault1, alice, 1000 ether);
+        _deposit(vault2, alice, 1000 ether);
+        _deposit(vault3, alice, 1000 ether);
 
         // Initialize middleware contract
         middleware = new ExtendedSimpleMiddleware(
@@ -376,6 +377,9 @@ contract SDKTest is POCBaseTest {
         vm.expectRevert();
         middleware.registerSharedVault(address(vault2));
 
+        // can register to another operator if registered as operator's
+        middleware.registerOperatorVault(address(0x1339), address(vault2));
+
         // pause, unpause and unregister same as operators, subnetworks so don't test
         middleware.pauseSharedVault(vault);
         skipImmutablePeriod();
@@ -385,7 +389,7 @@ contract SDKTest is POCBaseTest {
         middleware.registerOperatorVault(operator, vault);
     }
 
-    function testStakes() public {
+    function testValidatorSet() public {
         address operator1 = address(0x1337);
         address operator2 = address(0x1338);
 
@@ -399,11 +403,183 @@ contract SDKTest is POCBaseTest {
         _optInOperatorVault(vault1, operator2);
         _optInOperatorVault(vault2, operator1);
         _optInOperatorVault(vault2, operator2);
+
+        _setMaxNetworkLimit(address(delegator1), network, 0, 1000 ether);
+        _setMaxNetworkLimit(address(delegator2), network, 0, 1000 ether);
+
+        _setNetworkLimitNetwork(delegator1, alice, network, 1000 ether);
+        _setNetworkLimitFull(delegator2, alice, network, 1000 ether);
+
+        _setOperatorNetworkShares(delegator1, alice, network, operator1, 500 ether);
+        _setOperatorNetworkShares(delegator1, alice, network, operator2, 500 ether);
+
+        _setOperatorNetworkLimit(delegator2, alice, network, operator1, 500 ether);
+        _setOperatorNetworkLimit(delegator2, alice, network, operator2, 500 ether);
+
+        middleware.registerOperator(operator1);
+        middleware.registerOperator(operator2);
+        middleware.registerSharedVault(address(vault1));
+        middleware.registerSharedVault(address(vault2));
+
+        bytes32 key1 = keccak256("key1");
+        bytes32 key2 = keccak256("key2");
+
+        middleware.updateKey(operator1, key1);
+        middleware.updateKey(operator2, key2);
+
+        ExtendedSimpleMiddleware.ValidatorData[] memory validatorSet = middleware.getValidatorSet();
+        assertEq(validatorSet.length, 0, "valset length should be 0");
+
+        skipEpoch();
+
+        // updates applies on next epoch
+        validatorSet = middleware.getValidatorSet();
+        assertEq(validatorSet.length, 2, "valset length should be 2");
+        for (uint256 i = 0; i < validatorSet.length; i++) {
+            ExtendedSimpleMiddleware.ValidatorData memory validator = validatorSet[i];
+            if (validator.key == key1) {
+                assertEq(validator.power, 1000 ether, "validator1 power should be 1000");
+            } else if (validator.key == key2) {
+                assertEq(validator.power, 1000 ether, "validator2 power should be 1000");
+            } else {
+                assertEq(true, false, "unexpected validator key");
+            }
+        }
+
+        middleware.pauseOperator(operator1);
+
+        // not excluded immediately
+        validatorSet = middleware.getValidatorSet();
+        assertEq(validatorSet.length, 2, "valset length should be 1");
+        skipEpoch();
+        validatorSet = middleware.getValidatorSet();
+        assertEq(validatorSet.length, 1, "valset length should be 1");
+        assertEq(validatorSet[0].key, key2, "validator key should be key2");
+        assertEq(validatorSet[0].power, 1000 ether, "validator2 power should be 1000");
+
+        middleware.unpauseOperator(operator1);
+        skipEpoch();
+        validatorSet = middleware.getValidatorSet();
+        assertEq(validatorSet.length, 2, "valset length should be 1");
+
+        // stake decrease if vault paused
+        middleware.pauseSharedVault(address(vault1));
+        skipEpoch();
+        validatorSet = middleware.getValidatorSet();
+        assertEq(validatorSet.length, 2, "valset length should be 2");
+        for (uint256 i = 0; i < validatorSet.length; i++) {
+            ExtendedSimpleMiddleware.ValidatorData memory validator = validatorSet[i];
+            if (validator.key == key1) {
+                assertEq(validator.power, 500 ether, "validator1 power should be 1000");
+            } else if (validator.key == key2) {
+                assertEq(validator.power, 500 ether, "validator2 power should be 1000");
+            } else {
+                assertEq(true, false, "unexpected validator key");
+            }
+        }
+
+        // change on next epoch
+        _setOperatorNetworkLimit(delegator2, alice, network, operator2, 1000 ether);
+        validatorSet = middleware.getValidatorSet();
+        assertEq(validatorSet.length, 2, "valset length should be 2");
+        for (uint256 i = 0; i < validatorSet.length; i++) {
+            ExtendedSimpleMiddleware.ValidatorData memory validator = validatorSet[i];
+            if (validator.key == key1) {
+                assertEq(validator.power, 500 ether, "validator1 power should be 1000");
+            } else if (validator.key == key2) {
+                assertEq(validator.power, 500 ether, "validator2 power should be 1000");
+            } else {
+                assertEq(true, false, "unexpected validator key");
+            }
+        }
+        skipEpoch();
+        validatorSet = middleware.getValidatorSet();
+        assertEq(validatorSet.length, 2, "valset length should be 2");
+        for (uint256 i = 0; i < validatorSet.length; i++) {
+            ExtendedSimpleMiddleware.ValidatorData memory validator = validatorSet[i];
+            if (validator.key == key1) {
+                assertEq(validator.power, 500 ether, "validator1 power should be 1000");
+            } else if (validator.key == key2) {
+                assertEq(validator.power, 1000 ether, "validator2 power should be 1000");
+            } else {
+                assertEq(true, false, "unexpected validator key");
+            }
+        }
     }
 
-    // function testSlash() public {}
+    function testSlash() public {
+        address operator1 = address(0x1337);
+        address operator2 = address(0x1338);
 
-    // function testEpochs() public {}
+        _registerOperator(operator1);
+        _registerOperator(operator2);
+
+        _optInOperatorNetwork(operator1, network);
+        _optInOperatorNetwork(operator2, network);
+
+        _optInOperatorVault(vault3, operator1);
+        _optInOperatorVault(vault3, operator2);
+        _optInOperatorVault(vault2, operator1);
+        _optInOperatorVault(vault2, operator2);
+
+        _setMaxNetworkLimit(address(delegator3), network, 0, 1000 ether);
+        _setMaxNetworkLimit(address(delegator2), network, 0, 1000 ether);
+
+        _setNetworkLimitNetwork(delegator3, alice, network, 1000 ether);
+        _setNetworkLimitFull(delegator2, alice, network, 1000 ether);
+
+        _setOperatorNetworkShares(delegator3, alice, network, operator1, 500 ether);
+        _setOperatorNetworkShares(delegator3, alice, network, operator2, 500 ether);
+
+        _setOperatorNetworkLimit(delegator2, alice, network, operator1, 500 ether);
+        _setOperatorNetworkLimit(delegator2, alice, network, operator2, 500 ether);
+
+        middleware.registerOperator(operator1);
+        middleware.registerOperator(operator2);
+        middleware.registerSharedVault(address(vault3));
+        middleware.registerSharedVault(address(vault2));
+
+        bytes32 key1 = keccak256("key1");
+        bytes32 key2 = keccak256("key2");
+
+        middleware.updateKey(operator1, key1);
+        middleware.updateKey(operator2, key2);
+
+        skipEpoch();
+
+        // Prepare hints
+        uint256 vaultsLen = middleware.activeVaults(operator1).length;
+        bytes[][] memory stakeHints = new bytes[][](vaultsLen);
+        for (uint256 i; i < vaultsLen; i++) {
+            stakeHints[i] = new bytes[](middleware.activeSubnetworks().length);
+            for (uint256 j; j < stakeHints[i].length; j++) {
+                stakeHints[i][j] = "";
+            }
+        }
+
+        bytes[] memory slashHints = new bytes[](stakeHints.length);
+        slashHints[0] = "";
+
+        uint32 epoch = middleware.getCurrentEpoch();
+        uint256 amount = 100 ether;
+
+        // Perform a slash on operator1
+        vm.prank(owner);
+        middleware.slash(epoch, key1, amount, stakeHints, slashHints);
+
+        vm.warp(block.timestamp + 1 days);
+        middleware.executeSlash(address(vault3), 0, "");
+
+        skipEpoch();
+        uint256 totalStake = middleware.getTotalStake();
+
+        assertEq(totalStake, 1950 ether, "Total stake not updated correctly");
+
+        // can't slash after immutable period
+        skipImmutablePeriod();
+        vm.expectRevert();
+        middleware.slash(epoch, key1, amount, stakeHints, slashHints);
+    }
 
     function skipEpoch() private {
         vm.warp(block.timestamp + epochDuration);

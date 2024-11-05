@@ -36,7 +36,7 @@ abstract contract VaultManager is BaseMiddleware {
 
     PauseableEnumerableSet.AddressSet internal _sharedVaults;
     mapping(address => PauseableEnumerableSet.AddressSet) internal _operatorVaults;
-    mapping(address => bool) public vaultExists;
+    mapping(address => uint256) public operatorVaultExists;
 
     struct SlashResponse {
         address vault;
@@ -123,7 +123,9 @@ abstract contract VaultManager is BaseMiddleware {
      */
     function registerSharedVault(address vault) public virtual onlyOwner {
         _validateVault(vault);
-        vaultExists[vault] = true;
+        if (operatorVaultExists[vault] > 0) {
+            revert VaultAlreadyRegistred();
+        }
         _sharedVaults.register(getCurrentEpoch(), vault);
     }
 
@@ -134,7 +136,7 @@ abstract contract VaultManager is BaseMiddleware {
      */
     function registerOperatorVault(address operator, address vault) public virtual onlyOwner {
         _validateVault(vault);
-        vaultExists[vault] = true;
+        operatorVaultExists[vault]++;
         _operatorVaults[operator].register(getCurrentEpoch(), vault);
     }
 
@@ -178,7 +180,6 @@ abstract contract VaultManager is BaseMiddleware {
      */
     function unregisterSharedVault(address vault) public virtual onlyOwner {
         _sharedVaults.unregister(getCurrentEpoch(), IMMUTABLE_EPOCHS, vault);
-        delete vaultExists[vault];
     }
 
     /* 
@@ -188,7 +189,7 @@ abstract contract VaultManager is BaseMiddleware {
      */
     function unregisterOperatorVault(address operator, address vault) public virtual onlyOwner {
         _operatorVaults[operator].unregister(getCurrentEpoch(), IMMUTABLE_EPOCHS, vault);
-        delete vaultExists[vault];
+        operatorVaultExists[vault]--;
     }
 
     /* 
@@ -318,12 +319,12 @@ abstract contract VaultManager is BaseMiddleware {
      * @param vault The address of the vault to validate.
      */
     function _validateVault(address vault) private view {
-        if (vaultExists[vault]) {
-            revert VaultAlreadyRegistred();
-        }
-
         if (!IRegistry(VAULT_REGISTRY).isEntity(vault)) {
             revert NotVault();
+        }
+
+        if (_sharedVaults.contains(vault)) {
+            revert VaultAlreadyRegistred();
         }
 
         if (!IVault(vault).isInitialized()) {
