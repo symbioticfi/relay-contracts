@@ -13,10 +13,10 @@ import {IVetoSlasher} from "@symbiotic/interfaces/slasher/IVetoSlasher.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {BaseMiddleware} from "./BaseMiddleware.sol";
-import {PauseableEnumerableSet} from "./libraries/PauseableEnumerableSet.sol";
+import {BaseMiddleware} from "../BaseMiddleware.sol";
+import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
-abstract contract VaultManager is BaseMiddleware {
+abstract contract BaseVaultManager is BaseMiddleware {
     using PauseableEnumerableSet for PauseableEnumerableSet.AddressSet;
     using PauseableEnumerableSet for PauseableEnumerableSet.Uint160Set;
     using Subnetwork for address;
@@ -118,81 +118,6 @@ abstract contract VaultManager is BaseMiddleware {
     }
 
     /* 
-     * @notice Registers a new shared vault.
-     * @param vault The address of the vault to register.
-     */
-    function registerSharedVault(address vault) public virtual onlyOwner {
-        _validateVault(vault);
-        if (operatorVaultExists[vault] > 0) {
-            revert VaultAlreadyRegistred();
-        }
-        _sharedVaults.register(getCurrentEpoch(), vault);
-    }
-
-    /* 
-     * @notice Registers a new operator vault.
-     * @param operator The address of the operator.
-     * @param vault The address of the vault to register.
-     */
-    function registerOperatorVault(address operator, address vault) public virtual onlyOwner {
-        _validateVault(vault);
-        operatorVaultExists[vault]++;
-        _operatorVaults[operator].register(getCurrentEpoch(), vault);
-    }
-
-    /* 
-     * @notice Pauses a shared vault.
-     * @param vault The address of the vault to pause.
-     */
-    function pauseSharedVault(address vault) public virtual onlyOwner {
-        _sharedVaults.pause(getCurrentEpoch(), vault);
-    }
-
-    /* 
-     * @notice Unpauses a shared vault.
-     * @param vault The address of the vault to unpause.
-     */
-    function unpauseSharedVault(address vault) public virtual onlyOwner {
-        _sharedVaults.unpause(getCurrentEpoch(), IMMUTABLE_EPOCHS, vault);
-    }
-
-    /* 
-     * @notice Pauses an operator vault.
-     * @param operator The address of the operator.
-     * @param vault The address of the vault to pause.
-     */
-    function pauseOperatorVault(address operator, address vault) public virtual onlyOwner {
-        _operatorVaults[operator].pause(getCurrentEpoch(), vault);
-    }
-
-    /* 
-     * @notice Unpauses an operator vault.
-     * @param operator The address of the operator.
-     * @param vault The address of the vault to unpause.
-     */
-    function unpauseOperatorVault(address operator, address vault) public virtual onlyOwner {
-        _operatorVaults[operator].unpause(getCurrentEpoch(), IMMUTABLE_EPOCHS, vault);
-    }
-
-    /* 
-     * @notice Unregisters a shared vault.
-     * @param vault The address of the vault to unregister.
-     */
-    function unregisterSharedVault(address vault) public virtual onlyOwner {
-        _sharedVaults.unregister(getCurrentEpoch(), IMMUTABLE_EPOCHS, vault);
-    }
-
-    /* 
-     * @notice Unregisters an operator vault.
-     * @param operator The address of the operator.
-     * @param vault The address of the vault to unregister.
-     */
-    function unregisterOperatorVault(address operator, address vault) public virtual onlyOwner {
-        _operatorVaults[operator].unregister(getCurrentEpoch(), IMMUTABLE_EPOCHS, vault);
-        operatorVaultExists[vault]--;
-    }
-
-    /* 
      * @notice Returns the stake of an operator at a specific epoch.
      * @param epoch The epoch to check.
      * @param operator The address of the operator.
@@ -253,6 +178,96 @@ abstract contract VaultManager is BaseMiddleware {
     }
 
     /* 
+     * @notice Returns the total power of multiple operators at a specific epoch.
+     * @param epoch The epoch to check.
+     * @param operators The list of operator addresses.
+     * @return The total power of the operators.
+     */
+    function _totalPower(uint32 epoch, address[] memory operators) internal view returns (uint256 power) {
+        for (uint256 i; i < operators.length; ++i) {
+            uint256 operatorStake = getOperatorPower(epoch, operators[i]);
+            power += operatorStake;
+        }
+
+        return power;
+    }
+
+    /* 
+     * @notice Registers a new shared vault.
+     * @param vault The address of the vault to register.
+     */
+    function _registerSharedVault(address vault) internal {
+        _validateVault(vault);
+        if (operatorVaultExists[vault] > 0) {
+            revert VaultAlreadyRegistred();
+        }
+        _sharedVaults.register(getCurrentEpoch(), vault);
+    }
+
+    /* 
+     * @notice Registers a new operator vault.
+     * @param operator The address of the operator.
+     * @param vault The address of the vault to register.
+     */
+    function _registerOperatorVault(address operator, address vault) internal {
+        _validateVault(vault);
+        operatorVaultExists[vault]++;
+        _operatorVaults[operator].register(getCurrentEpoch(), vault);
+    }
+
+    /* 
+     * @notice Pauses a shared vault.
+     * @param vault The address of the vault to pause.
+     */
+    function _pauseSharedVault(address vault) internal {
+        _sharedVaults.pause(getCurrentEpoch(), vault);
+    }
+
+    /* 
+     * @notice Unpauses a shared vault.
+     * @param vault The address of the vault to unpause.
+     */
+    function _unpauseSharedVault(address vault) internal {
+        _sharedVaults.unpause(getCurrentEpoch(), IMMUTABLE_EPOCHS, vault);
+    }
+
+    /* 
+     * @notice Pauses an operator vault.
+     * @param operator The address of the operator.
+     * @param vault The address of the vault to pause.
+     */
+    function _pauseOperatorVault(address operator, address vault) internal {
+        _operatorVaults[operator].pause(getCurrentEpoch(), vault);
+    }
+
+    /* 
+     * @notice Unpauses an operator vault.
+     * @param operator The address of the operator.
+     * @param vault The address of the vault to unpause.
+     */
+    function _unpauseOperatorVault(address operator, address vault) internal {
+        _operatorVaults[operator].unpause(getCurrentEpoch(), IMMUTABLE_EPOCHS, vault);
+    }
+
+    /* 
+     * @notice Unregisters a shared vault.
+     * @param vault The address of the vault to unregister.
+     */
+    function _unregisterSharedVault(address vault) internal {
+        _sharedVaults.unregister(getCurrentEpoch(), IMMUTABLE_EPOCHS, vault);
+    }
+
+    /* 
+     * @notice Unregisters an operator vault.
+     * @param operator The address of the operator.
+     * @param vault The address of the vault to unregister.
+     */
+    function _unregisterOperatorVault(address operator, address vault) internal {
+        _operatorVaults[operator].unregister(getCurrentEpoch(), IMMUTABLE_EPOCHS, vault);
+        operatorVaultExists[vault]--;
+    }
+
+    /* 
      * @notice Slashes a vault based on provided conditions.
      * @param timestamp The timestamp when the slash occurs.
      * @param vault The address of the vault.
@@ -299,10 +314,8 @@ abstract contract VaultManager is BaseMiddleware {
      * @param hints Additional data for the veto slasher.
      * @return The amount that was slashed.
      */
-    function executeSlash(address vault, uint256 slashIndex, bytes calldata hints)
-        public
-        virtual
-        onlyOwner
+    function _executeSlash(address vault, uint256 slashIndex, bytes calldata hints)
+        internal
         returns (uint256 slashedAmount)
     {
         address slasher = IVault(vault).slasher();

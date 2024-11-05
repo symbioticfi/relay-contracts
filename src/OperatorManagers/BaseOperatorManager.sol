@@ -8,10 +8,10 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {BaseMiddleware} from "./BaseMiddleware.sol";
-import {PauseableEnumerableSet} from "./libraries/PauseableEnumerableSet.sol";
+import {BaseMiddleware} from "../BaseMiddleware.sol";
+import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
-abstract contract OperatorManager is BaseMiddleware {
+abstract contract BaseOperatorManager is BaseMiddleware {
     using PauseableEnumerableSet for PauseableEnumerableSet.AddressSet;
 
     error NotOperator();
@@ -50,7 +50,7 @@ abstract contract OperatorManager is BaseMiddleware {
      * @notice Registers a new operator.
      * @param operator The address of the operator to register.
      */
-    function registerOperator(address operator) public virtual onlyOwner {
+    function _registerOperator(address operator) internal {
         if (!IRegistry(OPERATOR_REGISTRY).isEntity(operator)) {
             revert NotOperator();
         }
@@ -66,7 +66,7 @@ abstract contract OperatorManager is BaseMiddleware {
      * @notice Pauses a registered operator.
      * @param operator The address of the operator to pause.
      */
-    function pauseOperator(address operator) public virtual onlyOwner {
+    function _pauseOperator(address operator) internal {
         _operators.pause(getCurrentEpoch(), operator);
     }
 
@@ -74,7 +74,7 @@ abstract contract OperatorManager is BaseMiddleware {
      * @notice Unpauses a paused operator.
      * @param operator The address of the operator to unpause.
      */
-    function unpauseOperator(address operator) public virtual onlyOwner {
+    function _unpauseOperator(address operator) internal {
         _operators.unpause(getCurrentEpoch(), IMMUTABLE_EPOCHS, operator);
     }
 
@@ -82,7 +82,7 @@ abstract contract OperatorManager is BaseMiddleware {
      * @notice Unregisters an operator.
      * @param operator The address of the operator to unregister.
      */
-    function unregisterOperator(address operator) public virtual onlyOwner {
+    function _unregisterOperator(address operator) internal {
         _operators.unregister(getCurrentEpoch(), IMMUTABLE_EPOCHS, operator);
     }
 }

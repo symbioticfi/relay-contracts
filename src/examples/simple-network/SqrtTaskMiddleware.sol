@@ -10,12 +10,12 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
-import {VaultManager} from "../../VaultManager.sol";
-import {OperatorManager} from "../../OperatorManager.sol";
-import {KeyManager} from "../../KeyManager.sol";
 import {BaseMiddleware} from "../../BaseMiddleware.sol";
+import {DefaultVaultManager} from "../../VaultManagers/DefaultVaultManager.sol";
+import {DefaultOperatorManager} from "../../OperatorManagers/DefaultOperatorManager.sol";
+import {DefaultKeyManager} from "../../KeyManagers/DefaultKeyManager.sol";
 
-contract SqrtTaskMiddleware is VaultManager, OperatorManager, KeyManager, EIP712 {
+contract SqrtTaskMiddleware is DefaultVaultManager, DefaultOperatorManager, DefaultKeyManager, EIP712 {
     using Subnetwork for address;
     using Math for uint256;
 

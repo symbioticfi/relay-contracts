@@ -9,12 +9,12 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {VaultManager} from "../../VaultManager.sol";
-import {OperatorManager} from "../../OperatorManager.sol";
-import {KeyManager} from "../../KeyManager.sol";
-import {BaseMiddleware} from "../..//BaseMiddleware.sol";
+import {BaseMiddleware} from "../../BaseMiddleware.sol";
+import {DefaultVaultManager} from "../../VaultManagers/DefaultVaultManager.sol";
+import {DefaultOperatorManager} from "../../OperatorManagers/DefaultOperatorManager.sol";
+import {DefaultKeyManager} from "../../KeyManagers/DefaultKeyManager.sol";
 
-contract SimpleMiddleware is VaultManager, OperatorManager, KeyManager {
+contract SimpleMiddleware is DefaultVaultManager, DefaultOperatorManager, DefaultKeyManager {
     using Subnetwork for address;
 
     error InactiveKeySlash(); // Error thrown when trying to slash an inactive key
@@ -55,6 +55,15 @@ contract SimpleMiddleware is VaultManager, OperatorManager, KeyManager {
     function getTotalStake() public view returns (uint256) {
         address[] memory operators = activeOperators(); // Get the list of active operators
         return _totalStake(getCurrentEpoch(), operators); // Return the total stake for the current epoch
+    }
+
+    /* 
+     * @notice Returns the total power for the active operators in the current epoch.
+     * @return The total power amount.
+     */
+    function getTotalPower() public view returns (uint256) {
+        address[] memory operators = activeOperators(); // Get the list of active operators
+        return _totalPower(getCurrentEpoch(), operators); // Return the total power for the current epoch
     }
 
     /* 

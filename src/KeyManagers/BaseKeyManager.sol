@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.25;
 
-import {BaseMiddleware} from "./BaseMiddleware.sol";
-import {PauseableEnumerableSet} from "./libraries/PauseableEnumerableSet.sol";
+import {BaseMiddleware} from "../BaseMiddleware.sol";
+import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
-abstract contract KeyManager is BaseMiddleware {
+abstract contract BaseKeyManager is BaseMiddleware {
     using PauseableEnumerableSet for PauseableEnumerableSet.Inner;
 
     error DuplicateKey();
@@ -56,7 +56,7 @@ abstract contract KeyManager is BaseMiddleware {
      * @param operator The address of the operator whose key is to be updated.
      * @param key The new key to associate with the operator.
      */
-    function updateKey(address operator, bytes32 key) public virtual onlyOwner {
+    function _updateKey(address operator, bytes32 key) internal {
         uint32 epoch = getCurrentEpoch();
 
         if (keys[operator] == key) {
