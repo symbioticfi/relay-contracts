@@ -10,16 +10,11 @@ import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
-import {BaseMiddleware} from "../src/BaseMiddleware.sol";
-import {PauseableEnumerableSet} from "../src/libraries/PauseableEnumerableSet.sol";
-import {KeyManager} from "../src/KeyManager.sol";
-import {OperatorManager} from "../src/OperatorManager.sol";
-import {VaultManager} from "../src/VaultManager.sol";
 import {Slasher} from "@symbiotic/contracts/slasher/Slasher.sol";
 import {VetoSlasher} from "@symbiotic/contracts/slasher/VetoSlasher.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
-contract SDKTest is POCBaseTest {
+contract DefaultSDKTest is POCBaseTest {
     using Subnetwork for bytes32;
     using Subnetwork for address;
     using Math for uint256;

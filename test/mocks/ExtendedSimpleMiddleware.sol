@@ -2,9 +2,9 @@
 pragma solidity 0.8.25;
 
 import {SimpleMiddleware} from "../../src/examples/simple-network/SimpleMiddleware.sol";
-import {BLSKeyManager} from "../../src/BLSKeyManager.sol";
+import {DefaultBLSKeyManager} from "../../src/KeyManagers/DefaultBLSKeyManager.sol";
 
-contract ExtendedSimpleMiddleware is SimpleMiddleware, BLSKeyManager {
+contract ExtendedSimpleMiddleware is SimpleMiddleware, DefaultBLSKeyManager {
     constructor(
         address network,
         address operatorRegistry,
