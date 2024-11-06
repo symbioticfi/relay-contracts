@@ -6,7 +6,7 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 import {PauseableEnumerableSet} from "./libraries/PauseableEnumerableSet.sol";
 
-abstract contract BaseMiddleware is Ownable {
+abstract contract BaseManager is Ownable {
     using PauseableEnumerableSet for PauseableEnumerableSet.Uint160Set;
 
     error SlashingWindowTooShort(); // Error thrown when the slashing window is lower than epoch
@@ -24,10 +24,10 @@ abstract contract BaseMiddleware is Ownable {
     uint64 public constant VETO_SLASHER_TYPE = 1; // Constant representing the veto slasher type
     uint96 public constant DEFAULT_SUBNETWORK = 0; // Default subnetwork identifier
 
-    PauseableEnumerableSet.Uint160Set subnetworks; // Set of active subnetworks
+    PauseableEnumerableSet.Uint160Set _subnetworks; // Set of active subnetworks
 
     /* 
-     * @notice Constructor for initializing the BaseMiddleware contract.
+     * @notice Constructor for initializing the BaseManager contract.
      * @param owner The address of the contract owner.
      * @param network The address of the network.
      * @param epochDuration The duration of each epoch.
@@ -57,7 +57,7 @@ abstract contract BaseMiddleware is Ownable {
         OPERATOR_REGISTRY = operatorRegistry;
         OPERATOR_NET_OPTIN = operatorNetOptIn;
 
-        subnetworks.register(getCurrentEpoch(), uint160(DEFAULT_SUBNETWORK)); // Register default subnetwork
+        _subnetworks.register(getCurrentEpoch(), uint160(DEFAULT_SUBNETWORK)); // Register default subnetwork
     }
 
     /* 
@@ -99,7 +99,7 @@ abstract contract BaseMiddleware is Ownable {
      * @return The count of registered subnetworks.
      */
     function subnetworksLength() public view returns (uint256) {
-        return subnetworks.length();
+        return _subnetworks.length();
     }
 
     /* 
@@ -108,7 +108,7 @@ abstract contract BaseMiddleware is Ownable {
      * @return The subnetwork details including address, enabled epoch, disabled epoch and enabled before disabled epoch.
      */
     function subnetworkWithTimesAt(uint256 pos) public view returns (uint160, uint32, uint32, uint32) {
-        return subnetworks.at(pos);
+        return _subnetworks.at(pos);
     }
 
     /* 
@@ -116,7 +116,17 @@ abstract contract BaseMiddleware is Ownable {
      * @return An array of active subnetwork addresses.
      */
     function activeSubnetworks() public view returns (uint160[] memory) {
-        return subnetworks.getActive(getCurrentEpoch());
+        return _subnetworks.getActive(getCurrentEpoch());
+    }
+
+    /* 
+     * @notice Checks if a given subnetwork was active at a specified epoch.
+     * @param epoch The epoch to check.
+     * @param subnetwork The subnetwork to check.
+     * @return A boolean indicating whether the subnetwork was active at the specified epoch.
+     */
+    function subnetworkWasActiveAt(uint32 epoch, uint96 subnetwork) public view returns (bool) {
+        return _subnetworks.wasActiveAt(epoch, uint160(subnetwork));
     }
 
     /* 
@@ -124,7 +134,7 @@ abstract contract BaseMiddleware is Ownable {
      * @param subnetwork The identifier of the subnetwork to register.
      */
     function registerSubnetwork(uint96 subnetwork) public virtual onlyOwner {
-        subnetworks.register(getCurrentEpoch(), uint160(subnetwork));
+        _subnetworks.register(getCurrentEpoch(), uint160(subnetwork));
     }
 
     /* 
@@ -132,7 +142,7 @@ abstract contract BaseMiddleware is Ownable {
      * @param subnetwork The identifier of the subnetwork to pause.
      */
     function pauseSubnetwork(uint96 subnetwork) public virtual onlyOwner {
-        subnetworks.pause(getCurrentEpoch(), uint160(subnetwork));
+        _subnetworks.pause(getCurrentEpoch(), uint160(subnetwork));
     }
 
     /* 
@@ -140,7 +150,7 @@ abstract contract BaseMiddleware is Ownable {
      * @param subnetwork The identifier of the subnetwork to unpause.
      */
     function unpauseSubnetwork(uint96 subnetwork) public virtual onlyOwner {
-        subnetworks.unpause(getCurrentEpoch(), IMMUTABLE_EPOCHS, uint160(subnetwork));
+        _subnetworks.unpause(getCurrentEpoch(), IMMUTABLE_EPOCHS, uint160(subnetwork));
     }
 
     /* 
@@ -148,6 +158,6 @@ abstract contract BaseMiddleware is Ownable {
      * @param subnetwork The identifier of the subnetwork to unregister.
      */
     function unregisterSubnetwork(uint96 subnetwork) public virtual onlyOwner {
-        subnetworks.unregister(getCurrentEpoch(), IMMUTABLE_EPOCHS, uint160(subnetwork));
+        _subnetworks.unregister(getCurrentEpoch(), IMMUTABLE_EPOCHS, uint160(subnetwork));
     }
 }

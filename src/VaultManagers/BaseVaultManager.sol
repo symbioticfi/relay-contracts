@@ -13,10 +13,10 @@ import {IVetoSlasher} from "@symbiotic/interfaces/slasher/IVetoSlasher.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {BaseMiddleware} from "../BaseMiddleware.sol";
+import {BaseManager} from "../BaseManager.sol";
 import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
-abstract contract BaseVaultManager is BaseMiddleware {
+abstract contract BaseVaultManager is BaseManager {
     using PauseableEnumerableSet for PauseableEnumerableSet.AddressSet;
     using PauseableEnumerableSet for PauseableEnumerableSet.Uint160Set;
     using Subnetwork for address;
@@ -100,7 +100,7 @@ abstract contract BaseVaultManager is BaseMiddleware {
      * @param operator The address of the operator.
      * @return An array of addresses representing the active vaults.
      */
-    function activeVaults(address operator) public view returns (address[] memory) {
+    function activeVaults(address operator) public view virtual returns (address[] memory) {
         uint32 epoch = getCurrentEpoch();
         address[] memory activeSharedVaults = _sharedVaults.getActive(epoch);
         address[] memory activeOperatorVaults = _operatorVaults[operator].getActive(epoch);
@@ -118,13 +118,33 @@ abstract contract BaseVaultManager is BaseMiddleware {
     }
 
     /* 
-     * @notice Returns the stake of an operator at a specific epoch.
+     * @notice Checks if a given shared vault was active at a specified epoch.
      * @param epoch The epoch to check.
+     * @param vault The vault to check.
+     * @return A boolean indicating whether the shared vault was active at the specified epoch.
+     */
+    function sharedVaultWasActiveAt(uint32 epoch, address vault) public view returns (bool) {
+        return _sharedVaults.wasActiveAt(epoch, vault);
+    }
+
+    /* 
+     * @notice Checks if a given shared vault was active at a specified epoch.
+     * @param epoch The epoch to check.
+     * @param operator The address of operator.
+     * @param vault The vault to check.
+     * @return A boolean indicating whether the shared vault was active at the specified epoch.
+     */
+    function operatorVaultWasActiveAt(uint32 epoch, address operator, address vault) public view returns (bool) {
+        return _operatorVaults[operator].wasActiveAt(epoch, vault);
+    }
+
+    /* 
+     * @notice Returns the stake of an operator at a current epoch.
      * @param operator The address of the operator.
      * @return The stake of the operator.
      */
-    function getOperatorStake(uint32 epoch, address operator) public view returns (uint256 stake) {
-        uint48 timestamp = getEpochStart(epoch);
+    function getOperatorStake(address operator) public view virtual returns (uint256 stake) {
+        uint48 timestamp = getCurrentEpochStart();
         address[] memory vaults = activeVaults(operator);
         uint160[] memory _subnetworks = activeSubnetworks();
 
@@ -140,13 +160,12 @@ abstract contract BaseVaultManager is BaseMiddleware {
     }
 
     /* 
-     * @notice Returns the power of an operator at a specific epoch.
-     * @param epoch The epoch to check.
+     * @notice Returns the power of an operator at a current epoch.
      * @param operator The address of the operator.
      * @return The power of the operator.
      */
-    function getOperatorPower(uint32 epoch, address operator) public view returns (uint256 power) {
-        uint48 timestamp = getEpochStart(epoch);
+    function getOperatorPower(address operator) public view virtual returns (uint256 power) {
+        uint48 timestamp = getCurrentEpochStart();
         address[] memory vaults = activeVaults(operator);
         uint160[] memory _subnetworks = activeSubnetworks();
 
@@ -163,14 +182,13 @@ abstract contract BaseVaultManager is BaseMiddleware {
     }
 
     /* 
-     * @notice Returns the total stake of multiple operators at a specific epoch.
-     * @param epoch The epoch to check.
+     * @notice Returns the total stake of multiple operators at a current epoch.
      * @param operators The list of operator addresses.
      * @return The total stake of the operators.
      */
-    function _totalStake(uint32 epoch, address[] memory operators) internal view returns (uint256 stake) {
+    function _totalStake(address[] memory operators) internal view returns (uint256 stake) {
         for (uint256 i; i < operators.length; ++i) {
-            uint256 operatorStake = getOperatorStake(epoch, operators[i]);
+            uint256 operatorStake = getOperatorStake(operators[i]);
             stake += operatorStake;
         }
 
@@ -178,14 +196,13 @@ abstract contract BaseVaultManager is BaseMiddleware {
     }
 
     /* 
-     * @notice Returns the total power of multiple operators at a specific epoch.
-     * @param epoch The epoch to check.
+     * @notice Returns the total power of multiple operators at a current epoch.
      * @param operators The list of operator addresses.
      * @return The total power of the operators.
      */
-    function _totalPower(uint32 epoch, address[] memory operators) internal view returns (uint256 power) {
+    function _totalPower(address[] memory operators) internal view returns (uint256 power) {
         for (uint256 i; i < operators.length; ++i) {
-            uint256 operatorStake = getOperatorPower(epoch, operators[i]);
+            uint256 operatorStake = getOperatorPower(operators[i]);
             power += operatorStake;
         }
 
@@ -211,6 +228,9 @@ abstract contract BaseVaultManager is BaseMiddleware {
      */
     function _registerOperatorVault(address operator, address vault) internal {
         _validateVault(vault);
+        if (_sharedVaults.contains(vault)) {
+            revert VaultAlreadyRegistred();
+        }
         operatorVaultExists[vault]++;
         _operatorVaults[operator].register(getCurrentEpoch(), vault);
     }
@@ -334,10 +354,6 @@ abstract contract BaseVaultManager is BaseMiddleware {
     function _validateVault(address vault) private view {
         if (!IRegistry(VAULT_REGISTRY).isEntity(vault)) {
             revert NotVault();
-        }
-
-        if (_sharedVaults.contains(vault)) {
-            revert VaultAlreadyRegistred();
         }
 
         if (!IVault(vault).isInitialized()) {

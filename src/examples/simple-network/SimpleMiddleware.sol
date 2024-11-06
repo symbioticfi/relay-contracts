@@ -9,7 +9,7 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {BaseMiddleware} from "../../BaseMiddleware.sol";
+import {BaseManager} from "../../BaseManager.sol";
 import {DefaultVaultManager} from "../../VaultManagers/DefaultVaultManager.sol";
 import {DefaultOperatorManager} from "../../OperatorManagers/DefaultOperatorManager.sol";
 import {DefaultKeyManager} from "../../KeyManagers/DefaultKeyManager.sol";
@@ -18,6 +18,7 @@ contract SimpleMiddleware is DefaultVaultManager, DefaultOperatorManager, Defaul
     using Subnetwork for address;
 
     error InactiveKeySlash(); // Error thrown when trying to slash an inactive key
+    error InactiveOperatorSlash(); // Error thrown when trying to slash an inactive operator
     error NotExistKeySlash(); // Error thrown when the key does not exist for slashing
     error InvalidHints(); // Error thrown for invalid hints provided
 
@@ -44,9 +45,7 @@ contract SimpleMiddleware is DefaultVaultManager, DefaultOperatorManager, Defaul
         address owner,
         uint48 epochDuration,
         uint48 slashingWindow
-    )
-        BaseMiddleware(owner, network, epochDuration, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin)
-    {}
+    ) BaseManager(owner, network, epochDuration, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin) {}
 
     /* 
      * @notice Returns the total stake for the active operators in the current epoch.
@@ -54,7 +53,7 @@ contract SimpleMiddleware is DefaultVaultManager, DefaultOperatorManager, Defaul
      */
     function getTotalStake() public view returns (uint256) {
         address[] memory operators = activeOperators(); // Get the list of active operators
-        return _totalStake(getCurrentEpoch(), operators); // Return the total stake for the current epoch
+        return _totalStake(operators); // Return the total stake for the current epoch
     }
 
     /* 
@@ -63,7 +62,7 @@ contract SimpleMiddleware is DefaultVaultManager, DefaultOperatorManager, Defaul
      */
     function getTotalPower() public view returns (uint256) {
         address[] memory operators = activeOperators(); // Get the list of active operators
-        return _totalPower(getCurrentEpoch(), operators); // Return the total power for the current epoch
+        return _totalPower(operators); // Return the total power for the current epoch
     }
 
     /* 
@@ -71,7 +70,6 @@ contract SimpleMiddleware is DefaultVaultManager, DefaultOperatorManager, Defaul
      * @return An array of ValidatorData containing the power and key of each validator.
      */
     function getValidatorSet() public view returns (ValidatorData[] memory validatorSet) {
-        uint32 epoch = getCurrentEpoch(); // Get the current epoch
         address[] memory operators = activeOperators(); // Get the list of active operators
         validatorSet = new ValidatorData[](operators.length); // Initialize the validator set
         uint256 len = 0; // Length counter
@@ -80,11 +78,11 @@ contract SimpleMiddleware is DefaultVaultManager, DefaultOperatorManager, Defaul
             address operator = operators[i]; // Get the operator address
 
             bytes32 key = operatorKey(operator); // Get the key for the operator
-            if (key == bytes32(0) || !keyWasActiveAt(epoch, key)) {
+            if (key == bytes32(0) || !keyWasActiveAt(getCurrentEpoch(), key)) {
                 continue; // Skip if the key is inactive
             }
 
-            uint256 power = getOperatorPower(epoch, operator); // Get the operator's power
+            uint256 power = getOperatorPower(operator); // Get the operator's power
             validatorSet[len++] = ValidatorData(power, key); // Store the validator data
         }
 
@@ -121,7 +119,11 @@ contract SimpleMiddleware is DefaultVaultManager, DefaultOperatorManager, Defaul
             revert InactiveKeySlash(); // Revert if the key is inactive
         }
 
-        uint256 totalStake = getOperatorStake(epoch, operator); // Get the total stake for the operator
+        if (!operatorWasActiveAt(epoch, operator)) {
+            revert InactiveOperatorSlash(); // Revert if the operator wasn't active
+        }
+
+        uint256 totalStake = getOperatorStake(operator); // Get the total stake for the operator
         address[] memory vaults = activeVaults(operator); // Get active vaults for the operator
         uint160[] memory _subnetworks = activeSubnetworks(); // Get active subnetworks
 

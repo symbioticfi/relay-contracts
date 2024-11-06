@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.25;
 
-import {BaseMiddleware} from "../BaseMiddleware.sol";
+import {BaseManager} from "../BaseManager.sol";
 import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
-abstract contract BaseKeyManager is BaseMiddleware {
+abstract contract BaseKeyManager is BaseManager {
     using PauseableEnumerableSet for PauseableEnumerableSet.Inner;
 
     error DuplicateKey();
@@ -42,7 +42,7 @@ abstract contract BaseKeyManager is BaseMiddleware {
 
     /* 
      * @notice Checks if a given key was active at a specified epoch.
-     * @param epoch The epoch to check for key activity.
+     * @param epoch The epoch to check.
      * @param key The key to check.
      * @return A boolean indicating whether the key was active at the specified epoch.
      */
