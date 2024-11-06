@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.25;
 
-import {SimpleMiddleware} from "../../src/examples/simple-network/SimpleMiddleware.sol";
+import {SimpleMiddleware} from "../../src/examples/SimpleMiddleware.sol";
 import {DefaultBLSKeyManager} from "../../src/KeyManagers/DefaultBLSKeyManager.sol";
 
 contract ExtendedSimpleMiddleware is SimpleMiddleware, DefaultBLSKeyManager {
