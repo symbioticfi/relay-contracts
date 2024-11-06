@@ -8,10 +8,10 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {BaseMiddleware} from "../BaseMiddleware.sol";
+import {BaseManager} from "../BaseManager.sol";
 import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
-abstract contract BaseOperatorManager is BaseMiddleware {
+abstract contract BaseOperatorManager is BaseManager {
     using PauseableEnumerableSet for PauseableEnumerableSet.AddressSet;
 
     error NotOperator();
@@ -44,6 +44,16 @@ abstract contract BaseOperatorManager is BaseMiddleware {
      */
     function activeOperators() public view returns (address[] memory) {
         return _operators.getActive(getCurrentEpoch());
+    }
+
+    /* 
+     * @notice Checks if a given operator was active at a specified epoch.
+     * @param epoch The epoch to check.
+     * @param operator The operator to check.
+     * @return A boolean indicating whether the operator was active at the specified epoch.
+     */
+    function operatorWasActiveAt(uint32 epoch, address operator) public view returns (bool) {
+        return _operators.wasActiveAt(epoch, operator);
     }
 
     /* 

@@ -10,7 +10,7 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
-import {BaseMiddleware} from "../../BaseMiddleware.sol";
+import {BaseManager} from "../../BaseManager.sol";
 import {DefaultVaultManager} from "../../VaultManagers/DefaultVaultManager.sol";
 import {DefaultOperatorManager} from "../../OperatorManagers/DefaultOperatorManager.sol";
 import {DefaultKeyManager} from "../../KeyManagers/DefaultKeyManager.sol";
@@ -46,7 +46,7 @@ contract SqrtTaskMiddleware is DefaultVaultManager, DefaultOperatorManager, Defa
         uint48 epochDuration,
         uint48 slashingWindow
     )
-        BaseMiddleware(owner, network, epochDuration, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin)
+        BaseManager(owner, network, epochDuration, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin)
         EIP712("SqrtTaskMiddleware", "1")
     {}
 
@@ -75,7 +75,7 @@ contract SqrtTaskMiddleware is DefaultVaultManager, DefaultOperatorManager, Defa
         emit CompleteTask(taskIndex, isValidAnswer);
     }
 
-    function _verify(uint256 taskIndex, uint256 answer, bytes calldata signature) private returns (bool) {
+    function _verify(uint256 taskIndex, uint256 answer, bytes calldata signature) private view returns (bool) {
         if (tasks[taskIndex].completed) {
             revert TaskCompleted();
         }
@@ -83,7 +83,7 @@ contract SqrtTaskMiddleware is DefaultVaultManager, DefaultOperatorManager, Defa
         return _verifyAnswer(taskIndex, answer);
     }
 
-    function _verifySignature(uint256 taskIndex, uint256 answer, bytes calldata signature) private {
+    function _verifySignature(uint256 taskIndex, uint256 answer, bytes calldata signature) private view {
         Task storage task = tasks[taskIndex];
 
         bytes32 hash_ = _hashTypedDataV4(keccak256(abi.encode(COMPLETE_TASK_TYPEHASH, taskIndex, answer)));
@@ -93,7 +93,7 @@ contract SqrtTaskMiddleware is DefaultVaultManager, DefaultOperatorManager, Defa
         }
     }
 
-    function _verifyAnswer(uint256 taskIndex, uint256 answer) private returns (bool) {
+    function _verifyAnswer(uint256 taskIndex, uint256 answer) private view returns (bool) {
         uint256 value = tasks[taskIndex].value;
         uint256 square = answer ** 2;
         if (square == value) {
@@ -145,28 +145,28 @@ contract SqrtTaskMiddleware is DefaultVaultManager, DefaultOperatorManager, Defa
     /* 
      * inheritdoc BaseMiddleware
      */
-    function registerSubnetwork(uint96 subnetwork) public override {
+    function registerSubnetwork(uint96 subnetwork) public pure override {
         revert();
     }
 
     /* 
      * inheritdoc BaseMiddleware
      */
-    function pauseSubnetwork(uint96 subnetwork) public override {
+    function pauseSubnetwork(uint96 subnetwork) public pure override {
         revert();
     }
 
     /* 
      * inheritdoc BaseMiddleware
      */
-    function unpauseSubnetwork(uint96 subnetwork) public override {
+    function unpauseSubnetwork(uint96 subnetwork) public pure override {
         revert();
     }
 
     /* 
      * inheritdoc BaseMiddleware
      */
-    function unregisterSubnetwork(uint96 subnetwork) public override {
+    function unregisterSubnetwork(uint96 subnetwork) public pure override {
         revert();
     }
 }

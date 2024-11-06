@@ -75,6 +75,16 @@ library PauseableEnumerableSet {
     }
 
     /* 
+     * @notice Checks if a given addr was active at a specified epoch.
+     * @param epoch The epoch to check.
+     * @param addr The address to check.
+     * @return A boolean indicating whether the addr was active at the specified epoch.
+     */
+    function wasActiveAt(AddressSet storage self, uint32 epoch, address addr) internal view returns (bool) {
+        return self.set.wasActiveAt(epoch, uint160(addr));
+    }
+
+    /* 
      * @notice Registers a new address at a given epoch.
      * @param self The AddressSet storage.
      * @param epoch The epoch when the address is added.
@@ -166,6 +176,20 @@ library PauseableEnumerableSet {
         }
 
         return array;
+    }
+
+    /* 
+     * @notice Checks if a given value was active at a specified epoch.
+     * @param epoch The epoch to check.
+     * @param value The value to check.
+     * @return A boolean indicating whether the value was active at the specified epoch.
+     */
+    function wasActiveAt(Uint160Set storage self, uint32 epoch, uint160 value) internal view returns (bool) {
+        if (self.positions[value] == 0) {
+            return false;
+        }
+
+        return self.array[self.positions[value] - 1].wasActiveAt(epoch);
     }
 
     /* 

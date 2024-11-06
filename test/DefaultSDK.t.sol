@@ -20,7 +20,6 @@ contract DefaultSDKTest is POCBaseTest {
     using Math for uint256;
 
     address network = address(0x123);
-    address notOwner = address(0xdead);
 
     ExtendedSimpleMiddleware internal middleware;
 

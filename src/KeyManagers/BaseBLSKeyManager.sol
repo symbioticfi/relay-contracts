@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.25;
 
-import {BaseMiddleware} from "../BaseMiddleware.sol";
+import {BaseManager} from "../BaseManager.sol";
 import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
-abstract contract BaseBLSKeyManager is BaseMiddleware {
+abstract contract BaseBLSKeyManager is BaseManager {
     using PauseableEnumerableSet for PauseableEnumerableSet.Inner;
 
     error DuplicateBLSKey();
@@ -42,9 +42,9 @@ abstract contract BaseBLSKeyManager is BaseMiddleware {
 
     /* 
      * @notice Checks if a given BLS key was active at a specified epoch.
-     * @param epoch The epoch to check for key activity.
+     * @param epoch The epoch to check.
      * @param key The BLS key to check.
-     * @return A boolean indicating whether the BLS key was active at the specified epoch.
+     * @return A boolean indicating whether the BLS key was active at the specifed epoch.
      */
     function blsKeyWasActiveAt(uint32 epoch, bytes memory key) public view returns (bool) {
         return _blsKeyData[key].wasActiveAt(epoch);
