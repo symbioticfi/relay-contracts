@@ -9,10 +9,10 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {BaseManager} from "../../BaseManager.sol";
-import {DefaultVaultManager} from "../../VaultManagers/DefaultVaultManager.sol";
-import {DefaultOperatorManager} from "../../OperatorManagers/DefaultOperatorManager.sol";
-import {DefaultKeyManager} from "../../KeyManagers/DefaultKeyManager.sol";
+import {BaseManager} from "../BaseManager.sol";
+import {DefaultVaultManager} from "../VaultManagers/DefaultVaultManager.sol";
+import {DefaultOperatorManager} from "../OperatorManagers/DefaultOperatorManager.sol";
+import {DefaultKeyManager} from "../KeyManagers/DefaultKeyManager.sol";
 
 contract SimpleMiddleware is DefaultVaultManager, DefaultOperatorManager, DefaultKeyManager {
     using Subnetwork for address;
