@@ -30,6 +30,7 @@ abstract contract BaseVaultManager is BaseManager {
     error TooOldEpoch();
     error InvalidEpoch();
     error InvalidSubnetworksCnt();
+    error InactiveVaultSlash();
     error UnknownSlasherType();
     error NonVetoSlasher();
     error TooOldTimestampSlash();
@@ -115,6 +116,17 @@ abstract contract BaseVaultManager is BaseManager {
         }
 
         return vaults;
+    }
+
+    /* 
+     * @notice Checks if a given vault was active at a specified epoch.
+     * @param epoch The epoch to check.
+     * @param operator The address of operator.
+     * @param vault The vault to check.
+     * @return A boolean indicating whether the vault was active at the specified epoch.
+     */
+    function vaultWasActiveAt(uint32 epoch, address operator, address vault) public view returns (bool) {
+        return sharedVaultWasActiveAt(epoch, vault) || operatorVaultWasActiveAt(epoch, operator, vault);
     }
 
     /* 
@@ -307,6 +319,10 @@ abstract contract BaseVaultManager is BaseManager {
     ) internal returns (SlashResponse memory resp) {
         if (!(_sharedVaults.contains(vault) || _operatorVaults[operator].contains(vault))) {
             revert NotOperatorVault();
+        }
+
+        if (!vaultWasActiveAt(getEpochAt(timestamp), operator, vault)) {
+            revert InactiveVaultSlash();
         }
 
         if (timestamp + SLASHING_WINDOW < Time.timestamp()) {
