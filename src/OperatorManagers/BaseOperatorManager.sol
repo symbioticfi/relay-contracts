@@ -22,7 +22,7 @@ abstract contract BaseOperatorManager is BaseManager {
     PauseableEnumerableSet.AddressSet internal _operators;
 
     /* 
-     * @notice Returns the length of the operators list.
+     * @notice Returns the total number of registered operators, including both active and inactive.
      * @return The number of registered operators.
      */
     function operatorsLength() public view returns (uint256) {
@@ -43,17 +43,17 @@ abstract contract BaseOperatorManager is BaseManager {
      * @return An array of addresses representing the active operators.
      */
     function activeOperators() public view returns (address[] memory) {
-        return _operators.getActive(getCurrentEpoch());
+        return _operators.getActive(getCaptureTimestamp());
     }
 
     /* 
-     * @notice Checks if a given operator was active at a specified epoch.
-     * @param epoch The epoch to check.
+     * @notice Checks if a given operator was active at a specified timestamp.
+     * @param timestamp The timestamp to check.
      * @param operator The operator to check.
-     * @return A boolean indicating whether the operator was active at the specified epoch.
+     * @return A boolean indicating whether the operator was active at the specified timestamp.
      */
-    function operatorWasActiveAt(uint32 epoch, address operator) public view returns (bool) {
-        return _operators.wasActiveAt(epoch, operator);
+    function operatorWasActiveAt(uint48 timestamp, address operator) public view returns (bool) {
+        return _operators.wasActiveAt(timestamp, operator);
     }
 
     /* 
@@ -69,7 +69,7 @@ abstract contract BaseOperatorManager is BaseManager {
             revert OperatorNotOptedIn();
         }
 
-        _operators.register(getCurrentEpoch(), operator);
+        _operators.register(getCaptureTimestamp(), operator);
     }
 
     /* 
@@ -85,7 +85,7 @@ abstract contract BaseOperatorManager is BaseManager {
      * @param operator The address of the operator to unpause.
      */
     function _unpauseOperator(address operator) internal {
-        _operators.unpause(getCurrentEpoch(), IMMUTABLE_EPOCHS, operator);
+        _operators.unpause(getCurrentEpoch(), SLASHING_WINDOW, operator);
     }
 
     /* 
@@ -93,6 +93,6 @@ abstract contract BaseOperatorManager is BaseManager {
      * @param operator The address of the operator to unregister.
      */
     function _unregisterOperator(address operator) internal {
-        _operators.unregister(getCurrentEpoch(), IMMUTABLE_EPOCHS, operator);
+        _operators.unregister(getCurrentEpoch(), SLASHING_WINDOW, operator);
     }
 }

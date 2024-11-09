@@ -25,9 +25,8 @@ library PauseableEnumerableSet {
      */
     struct Inner {
         uint160 value; // The actual value.
-        uint32 enabledEpoch; // Epoch when the value was enabled.
-        uint32 disabledEpoch; // Epoch when the value was disabled.
-        uint32 prevEnabledEpoch; // Epoch when the value was enabled before disabled.
+        uint48 enabledTimestamp; // Timestamp when the value was enabled.
+        uint48 disabledTimestamp; // Timestamp when the value was disabled.
     }
 
     // Custom error messages
@@ -51,21 +50,21 @@ library PauseableEnumerableSet {
      * @notice Returns the address and its active period at a given position in the AddressSet.
      * @param self The AddressSet storage.
      * @param pos The position in the set.
-     * @return The address, enabled epoch, disabled epoch and enabled before dsiabled epoch at the position.
+     * @return The address, enabled timestamp and disabled timestamp at the position.
      */
-    function at(AddressSet storage self, uint256 pos) internal view returns (address, uint32, uint32, uint32) {
-        (uint160 value, uint32 enabledEpoch, uint32 disabledEpoch, uint32 prevEnabled) = self.set.at(pos);
-        return (address(value), enabledEpoch, disabledEpoch, prevEnabled);
+    function at(AddressSet storage self, uint256 pos) internal view returns (address, uint48, uint48) {
+        (uint160 value, uint48 enabledTimestamp, uint48 disabledTimestamp) = self.set.at(pos);
+        return (address(value), enabledTimestamp, disabledTimestamp);
     }
 
     /* 
-     * @notice Retrieves all active addresses at a given epoch.
+     * @notice Retrieves all active addresses at a given timestamp.
      * @param self The AddressSet storage.
-     * @param epoch The epoch to check.
+     * @param timestamp The timestamp to check.
      * @return An array of active addresses.
      */
-    function getActive(AddressSet storage self, uint32 epoch) internal view returns (address[] memory array) {
-        uint160[] memory uint160Array = self.set.getActive(epoch);
+    function getActive(AddressSet storage self, uint48 timestamp) internal view returns (address[] memory array) {
+        uint160[] memory uint160Array = self.set.getActive(timestamp);
 
         assembly ("memory-safe") {
             array := uint160Array
@@ -75,55 +74,55 @@ library PauseableEnumerableSet {
     }
 
     /* 
-     * @notice Checks if a given addr was active at a specified epoch.
-     * @param epoch The epoch to check.
+     * @notice Checks if a given addr was active at a specified timestamp.
+     * @param timestamp The timestamp to check.
      * @param addr The address to check.
-     * @return A boolean indicating whether the addr was active at the specified epoch.
+     * @return A boolean indicating whether the addr was active at the specified timestamp.
      */
-    function wasActiveAt(AddressSet storage self, uint32 epoch, address addr) internal view returns (bool) {
-        return self.set.wasActiveAt(epoch, uint160(addr));
+    function wasActiveAt(AddressSet storage self, uint48 timestamp, address addr) internal view returns (bool) {
+        return self.set.wasActiveAt(timestamp, uint160(addr));
     }
 
     /* 
-     * @notice Registers a new address at a given epoch.
+     * @notice Registers a new address at a given timestamp.
      * @param self The AddressSet storage.
-     * @param epoch The epoch when the address is added.
+     * @param timestamp The timestamp when the address is added.
      * @param addr The address to register.
      */
-    function register(AddressSet storage self, uint32 epoch, address addr) internal {
-        self.set.register(epoch, uint160(addr));
+    function register(AddressSet storage self, uint48 timestamp, address addr) internal {
+        self.set.register(timestamp, uint160(addr));
     }
 
     /* 
-     * @notice Pauses an address at a given epoch.
+     * @notice Pauses an address at a given timestamp.
      * @param self The AddressSet storage.
-     * @param epoch The epoch when the address is paused.
+     * @param timestamp The timestamp when the address is paused.
      * @param addr The address to pause.
      */
-    function pause(AddressSet storage self, uint32 epoch, address addr) internal {
-        self.set.pause(epoch, uint160(addr));
+    function pause(AddressSet storage self, uint48 timestamp, address addr) internal {
+        self.set.pause(timestamp, uint160(addr));
     }
 
     /* 
      * @notice Unpauses an address, re-enabling it after the immutable period.
      * @param self The AddressSet storage.
-     * @param epoch The current epoch.
-     * @param immutableEpochs The required immutable period before unpausing.
+     * @param timestamp The current timestamp.
+     * @param immutablePeriod The required immutable period before unpausing.
      * @param addr The address to unpause.
      */
-    function unpause(AddressSet storage self, uint32 epoch, uint32 immutableEpochs, address addr) internal {
-        self.set.unpause(epoch, immutableEpochs, uint160(addr));
+    function unpause(AddressSet storage self, uint48 timestamp, uint48 immutablePeriod, address addr) internal {
+        self.set.unpause(timestamp, immutablePeriod, uint160(addr));
     }
 
     /* 
      * @notice Unregisters an address, removing it from the set.
      * @param self The AddressSet storage.
-     * @param epoch The current epoch.
-     * @param immutableEpochs The required immutable period before unregistering.
+     * @param timestamp The current timestamp.
+     * @param immutablePeriod The required immutable period before unregistering.
      * @param addr The address to unregister.
      */
-    function unregister(AddressSet storage self, uint32 epoch, uint32 immutableEpochs, address addr) internal {
-        self.set.unregister(epoch, immutableEpochs, uint160(addr));
+    function unregister(AddressSet storage self, uint48 timestamp, uint48 immutablePeriod, address addr) internal {
+        self.set.unregister(timestamp, immutablePeriod, uint160(addr));
     }
 
     /* 
@@ -149,23 +148,23 @@ library PauseableEnumerableSet {
      * @notice Returns the value and its active period at a given position in the Uint160Set.
      * @param self The Uint160Set storage.
      * @param pos The position in the set.
-     * @return The value, enabled epoch, disabled epoch and enabled before disabled epoch at the position.
+     * @return The value, enabled timestamp and disabled timestamp at the position.
      */
-    function at(Uint160Set storage self, uint256 pos) internal view returns (uint160, uint32, uint32, uint32) {
+    function at(Uint160Set storage self, uint256 pos) internal view returns (uint160, uint48, uint48) {
         return self.array[pos].get();
     }
 
     /* 
-     * @notice Retrieves all active values at a given epoch.
+     * @notice Retrieves all active values at a given timestamp.
      * @param self The Uint160Set storage.
-     * @param epoch The epoch to check.
+     * @param timestamp The timestamp to check.
      * @return An array of active values.
      */
-    function getActive(Uint160Set storage self, uint32 epoch) internal view returns (uint160[] memory) {
+    function getActive(Uint160Set storage self, uint48 timestamp) internal view returns (uint160[] memory) {
         uint160[] memory array = new uint160[](self.array.length);
         uint256 len = 0;
         for (uint256 i; i < self.array.length; ++i) {
-            if (!self.array[i].wasActiveAt(epoch)) {
+            if (!self.array[i].wasActiveAt(timestamp)) {
                 continue;
             }
             array[len++] = self.array[i].value;
@@ -179,80 +178,80 @@ library PauseableEnumerableSet {
     }
 
     /* 
-     * @notice Checks if a given value was active at a specified epoch.
-     * @param epoch The epoch to check.
+     * @notice Checks if a given value was active at a specified timestamp.
+     * @param timestamp The timestamp to check.
      * @param value The value to check.
-     * @return A boolean indicating whether the value was active at the specified epoch.
+     * @return A boolean indicating whether the value was active at the specified timestamp.
      */
-    function wasActiveAt(Uint160Set storage self, uint32 epoch, uint160 value) internal view returns (bool) {
+    function wasActiveAt(Uint160Set storage self, uint48 timestamp, uint160 value) internal view returns (bool) {
         if (self.positions[value] == 0) {
             return false;
         }
 
-        return self.array[self.positions[value] - 1].wasActiveAt(epoch);
+        return self.array[self.positions[value] - 1].wasActiveAt(timestamp);
     }
 
     /* 
-     * @notice Registers a new Uint160 value at a given epoch.
+     * @notice Registers a new Uint160 value at a given timestamp.
      * @param self The Uint160Set storage.
-     * @param epoch The epoch when the value is added.
+     * @param timestamp The timestamp when the value is added.
      * @param value The Uint160 value to register.
      */
-    function register(Uint160Set storage self, uint32 epoch, uint160 value) internal {
+    function register(Uint160Set storage self, uint48 timestamp, uint160 value) internal {
         if (self.positions[value] != 0) {
             revert AlreadyRegistered();
         }
 
         uint256 pos = self.array.length;
         Inner storage element = self.array.push();
-        element.set(epoch, value);
+        element.set(timestamp, value);
         self.positions[value] = pos + 1;
     }
 
     /* 
-     * @notice Pauses a Uint160 value at a given epoch.
+     * @notice Pauses a Uint160 value at a given timestamp.
      * @param self The Uint160Set storage.
-     * @param epoch The epoch when the value is paused.
+     * @param timestamp The timestamp when the value is paused.
      * @param value The Uint160 value to pause.
      */
-    function pause(Uint160Set storage self, uint32 epoch, uint160 value) internal {
+    function pause(Uint160Set storage self, uint48 timestamp, uint160 value) internal {
         if (self.positions[value] == 0) {
             revert NotRegistered();
         }
 
-        self.array[self.positions[value] - 1].disable(epoch);
+        self.array[self.positions[value] - 1].disable(timestamp);
     }
 
     /* 
      * @notice Unpauses a Uint160 value after the immutable period.
      * @param self The Uint160Set storage.
-     * @param epoch The current epoch.
-     * @param immutableEpochs The required immutable period before unpausing.
+     * @param timestamp The current timestamp.
+     * @param immutablePeriod The required immutable period before unpausing.
      * @param value The Uint160 value to unpause.
      */
-    function unpause(Uint160Set storage self, uint32 epoch, uint32 immutableEpochs, uint160 value) internal {
+    function unpause(Uint160Set storage self, uint48 timestamp, uint48 immutablePeriod, uint160 value) internal {
         if (self.positions[value] == 0) {
             revert NotRegistered();
         }
 
-        self.array[self.positions[value] - 1].validateUnpause(epoch, immutableEpochs);
-        self.array[self.positions[value] - 1].enable(epoch);
+        self.array[self.positions[value] - 1].validateUnpause(timestamp, immutablePeriod);
+        self.array[self.positions[value] - 1].enable(timestamp);
     }
 
     /* 
      * @notice Unregisters a Uint160 value from the set.
      * @param self The Uint160Set storage.
-     * @param epoch The current epoch.
-     * @param immutableEpochs The required immutable period before unregistering.
+     * @param timestamp The current timestamp.
+     * @param immutablePeriod The required immutable period before unregistering.
      * @param value The Uint160 value to unregister.
      */
-    function unregister(Uint160Set storage self, uint32 epoch, uint32 immutableEpochs, uint160 value) internal {
+    function unregister(Uint160Set storage self, uint48 timestamp, uint48 immutablePeriod, uint160 value) internal {
         if (self.positions[value] == 0) {
             revert NotRegistered();
         }
 
         uint256 pos = self.positions[value] - 1;
-        self.array[pos].validateUnregister(epoch, immutableEpochs);
+        self.array[pos].validateUnregister(timestamp, immutablePeriod);
 
         if (self.array.length == 1 || self.array.length == pos + 1) {
             delete self.positions[value];
@@ -287,99 +286,97 @@ library PauseableEnumerableSet {
     }
 
     /* 
-    * @notice @notice Returns the value and its active period from the Inner struct.
+    * @notice Returns the value and its active period from the Inner struct.
     * @param self The Inner struct.
-    * @return The value, enabled epoch, disabled epoch and enabled before disabled epoch.
+    * @return The value, enabled timestamp and disabled timestamp.
     */
-    function get(Inner storage self) internal view returns (uint160, uint32, uint32, uint32) {
-        return (self.value, self.enabledEpoch, self.disabledEpoch, self.prevEnabledEpoch);
+    function get(Inner storage self) internal view returns (uint160, uint48, uint48) {
+        return (self.value, self.enabledTimestamp, self.disabledTimestamp);
     }
 
     /* 
-    * @notice Sets the value and marks it as enabled at a given epoch.
+    * @notice Sets the value and marks it as enabled at a given timestamp.
     * @param self The Inner struct.
-    * @param epoch The epoch when the value is set.
+    * @param timestamp The timestamp when the value is set.
     * @param value The Uint160 value to store.
     */
-    function set(Inner storage self, uint32 epoch, uint160 value) internal {
+    function set(Inner storage self, uint48 timestamp, uint160 value) internal {
         self.value = value;
-        self.enabledEpoch = epoch + 1;
+        self.enabledTimestamp = timestamp;
     }
 
     /* 
-    * @notice Sets the address and marks it as enabled at a given epoch.
+    * @notice Sets the address and marks it as enabled at a given timestamp.
     * @param self The Inner struct.
-    * @param epoch The epoch when the address is set.
+    * @param timestamp The timestamp when the address is set.
     * @param addr The address to store.
     */
-    function set(Inner storage self, uint32 epoch, address addr) internal {
+    function set(Inner storage self, uint48 timestamp, address addr) internal {
         self.value = uint160(addr);
-        self.enabledEpoch = epoch + 1;
+        self.enabledTimestamp = timestamp;
     }
 
     /* 
-    * @notice Enables the value at a given epoch.
+    * @notice Enables the value at a given timestamp.
     * @param self The Inner struct.
-    * @param epoch The epoch when the value is enabled.
+    * @param timestamp The timestamp when the value is enabled.
     */
-    function enable(Inner storage self, uint32 epoch) internal {
-        if (self.enabledEpoch != 0) {
+    function enable(Inner storage self, uint48 timestamp) internal {
+        if (self.enabledTimestamp != 0) {
             revert AlreadyEnabled();
         }
 
-        self.enabledEpoch = epoch + 1;
+        self.enabledTimestamp = timestamp;
     }
 
     /* 
-    * @notice Disables the value at a given epoch.
+    * @notice Disables the value at a given timestamp.
     * @param self The Inner struct.
-    * @param epoch The epoch when the value is disabled.
+    * @param timestamp The timestamp when the value is disabled.
     */
-    function disable(Inner storage self, uint32 epoch) internal {
-        if (self.enabledEpoch == 0) {
+    function disable(Inner storage self, uint48 timestamp) internal {
+        if (self.enabledTimestamp == 0) {
             revert NotEnabled();
         }
 
-        self.prevEnabledEpoch = self.enabledEpoch;
-        self.enabledEpoch = 0;
-        self.disabledEpoch = epoch;
+        self.enabledTimestamp = 0;
+        self.disabledTimestamp = timestamp;
     }
 
     /* 
-    * @notice Checks if the value was active at a given epoch.
+    * @notice Checks if the value was active at a given timestamp.
     * @param self The Inner struct.
-    * @param epoch The epoch to check.
-    * @return True if the value was active at the epoch, false otherwise.
+    * @param timestamp The timestamp to check.
+    * @return True if the value was active at the timestamp, false otherwise.
     */
-    function wasActiveAt(Inner storage self, uint32 epoch) internal view returns (bool) {
-        return (self.enabledEpoch != 0 && self.enabledEpoch <= epoch)
-            || (self.disabledEpoch >= epoch && self.prevEnabledEpoch <= epoch);
+    function wasActiveAt(Inner storage self, uint48 timestamp) internal view returns (bool) {
+        return self.enabledTimestamp != 0 && self.enabledTimestamp <= timestamp;
     }
 
     /* 
-    * @notice Validates whether the value can be unpaused at a given epoch.
+    * @notice Validates whether the value can be unpaused at a given timestamp.
     * @param self The Inner struct.
-    * @param epoch The current epoch.
-    * @param immutableEpochs The immutable period that must pass before unpausing.
+    * @param timestamp The current timestamp.
+    * @param immutablePeriod The immutable period that must pass before unpausing.
     */
-    function validateUnpause(Inner storage self, uint32 epoch, uint32 immutableEpochs) internal view {
-        if (self.disabledEpoch + immutableEpochs - 1 > epoch) {
+    function validateUnpause(Inner storage self, uint48 timestamp, uint48 immutablePeriod) internal view {
+        if (self.disabledTimestamp + immutablePeriod > timestamp) {
             revert ImmutablePeriodNotPassed();
         }
     }
 
     /* 
-    * @notice Validates whether the value can be unregistered at a given epoch.
+    * @notice Validates whether the value can be unregistered at a given timestamp.
     * @param self The Inner struct.
-    * @param epoch The current epoch.
-    * @param immutableEpochs The immutable period that must pass before unregistering.
+    * @param timestamp The current timestamp.
+    * @param immutablePeriod The immutable period that must pass before unregistering.
     */
-    function validateUnregister(Inner storage self, uint32 epoch, uint32 immutableEpochs) internal view {
-        if (self.enabledEpoch != 0 || self.disabledEpoch == 0) {
+    function validateUnregister(Inner storage self, uint48 timestamp, uint48 immutablePeriod) internal view {
+        if (self.enabledTimestamp != 0 || self.disabledTimestamp == 0) {
             revert Enabled();
         }
 
-        if (self.disabledEpoch + immutableEpochs > epoch) {
+        if (self.disabledTimestamp + immutablePeriod > timestamp) {
             revert ImmutablePeriodNotPassed();
         }
     }

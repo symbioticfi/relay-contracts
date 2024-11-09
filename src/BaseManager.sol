@@ -6,13 +6,8 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 abstract contract BaseManager is Initializable, OwnableUpgradeable {
-    error SlashingWindowTooShort(); // Error thrown when the slashing window is lower than epoch
-
     address public NETWORK; // Address of the network
-    uint48 public EPOCH_DURATION; // Duration of each epoch
-    uint48 public START_TIME; // Start time of the epoch
     uint48 public SLASHING_WINDOW; // Duration of the slashing window
-    uint32 public IMMUTABLE_EPOCHS; // Duration of the state immutability in epochs
     address public VAULT_REGISTRY; // Address of the vault registry
     address public OPERATOR_REGISTRY; // Address of the operator registry
     address public OPERATOR_NET_OPTIN; // Address of the operator network opt-in service
@@ -37,58 +32,27 @@ abstract contract BaseManager is Initializable, OwnableUpgradeable {
     function initialize(
         address owner,
         address network,
-        uint48 epochDuration,
         uint48 slashingWindow,
         address vaultRegistry,
         address operatorRegistry,
         address operatorNetOptIn
     ) public virtual initializer {
-        if (slashingWindow < epochDuration) {
-            revert SlashingWindowTooShort();
-        }
 
         __Ownable_init(owner);
 
         NETWORK = network;
-        EPOCH_DURATION = epochDuration;
         SLASHING_WINDOW = slashingWindow;
-        IMMUTABLE_EPOCHS = uint32((slashingWindow + epochDuration - 1) / epochDuration);
         VAULT_REGISTRY = vaultRegistry;
         OPERATOR_REGISTRY = operatorRegistry;
         OPERATOR_NET_OPTIN = operatorNetOptIn;
     }
 
     /* 
-     * @notice Returns the start timestamp of a given epoch.
-     * @param epoch The epoch number.
-     * @return The start timestamp of the specified epoch.
+     * @notice Returns the current capture timestamp
+     * @dev Returns block.timestamp - 1 by default but can be overrided
+     * @return The current capture timestamp 
      */
-    function getEpochStart(uint32 epoch) public view returns (uint48 timestamp) {
-        return START_TIME + epoch * EPOCH_DURATION;
-    }
-
-    /* 
-     * @notice Returns the epoch number corresponding to a given timestamp.
-     * @param timestamp The timestamp to convert to an epoch number.
-     * @return The epoch number associated with the specified timestamp.
-     */
-    function getEpochAt(uint48 timestamp) public view returns (uint32 epoch) {
-        return uint32((timestamp - START_TIME) / EPOCH_DURATION);
-    }
-
-    /* 
-     * @notice Returns the current epoch number based on the current timestamp.
-     * @return The current epoch number.
-     */
-    function getCurrentEpoch() public view returns (uint32 epoch) {
-        return getEpochAt(Time.timestamp());
-    }
-
-    /* 
-     * @notice Returns the start timestamp of the current epoch.
-     * @return The start timestamp of the current epoch.
-     */
-    function getCurrentEpochStart() public view returns (uint48 timestamp) {
-        return START_TIME + getCurrentEpoch() * EPOCH_DURATION;
+    function getCaptureTimestamp() public virtual view returns(uint48 timestamp) {
+        return Time.timestamp() - 1;
     }
 }
