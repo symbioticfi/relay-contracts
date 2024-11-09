@@ -12,11 +12,13 @@ import {IVetoSlasher} from "@symbiotic/interfaces/slasher/IVetoSlasher.sol";
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 
 import {BaseManager} from "../BaseManager.sol";
 import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
 abstract contract BaseVaultManager is BaseManager {
+    using EnumerableMap for EnumerableMap.AddressToUintMap;
     using PauseableEnumerableSet for PauseableEnumerableSet.AddressSet;
     using PauseableEnumerableSet for PauseableEnumerableSet.Uint160Set;
     using Subnetwork for address;
@@ -35,15 +37,51 @@ abstract contract BaseVaultManager is BaseManager {
     error NonVetoSlasher();
     error TooOldTimestampSlash();
 
+    PauseableEnumerableSet.Uint160Set internal _subnetworks;
     PauseableEnumerableSet.AddressSet internal _sharedVaults;
     mapping(address => PauseableEnumerableSet.AddressSet) internal _operatorVaults;
-    mapping(address => uint256) public operatorVaultExists;
+    EnumerableMap.AddressToUintMap internal _allOperatorVaults;
 
     struct SlashResponse {
         address vault;
         uint64 slasherType;
         bytes32 subnetwork;
         uint256 response; // if instant slashed amount else slash index
+    }
+
+    /* 
+     * @notice Returns the number of subnetworks registered.
+     * @return The count of registered subnetworks.
+     */
+    function subnetworksLength() public view returns (uint256) {
+        return _subnetworks.length();
+    }
+
+    /* 
+     * @notice Returns the subnetwork information at a specified position.
+     * @param pos The index of the subnetwork.
+     * @return The subnetwork details including address, enabled epoch, disabled epoch and enabled before disabled epoch.
+     */
+    function subnetworkWithTimesAt(uint256 pos) public view returns (uint160, uint32, uint32, uint32) {
+        return _subnetworks.at(pos);
+    }
+
+    /* 
+     * @notice Returns an array of active subnetworks for the current epoch.
+     * @return An array of active subnetwork addresses.
+     */
+    function activeSubnetworks() public view returns (uint160[] memory) {
+        return _subnetworks.getActive(getCurrentEpoch());
+    }
+
+    /* 
+     * @notice Checks if a given subnetwork was active at a specified epoch.
+     * @param epoch The epoch to check.
+     * @param subnetwork The subnetwork to check.
+     * @return A boolean indicating whether the subnetwork was active at the specified epoch.
+     */
+    function subnetworkWasActiveAt(uint32 epoch, uint96 subnetwork) public view returns (bool) {
+        return _subnetworks.wasActiveAt(epoch, uint160(subnetwork));
     }
 
     /* 
@@ -94,6 +132,32 @@ abstract contract BaseVaultManager is BaseManager {
      */
     function stakeToPower(address vault, uint256 stake) public view virtual returns (uint256) {
         return stake;
+    }
+
+    /* 
+     * @notice Returns the list of network's active vaults for the current epoch.
+     * @return An array of addresses representing the active vaults.
+     */
+    function activeVaults() public view virtual returns (address[] memory) {
+        uint32 epoch = getCurrentEpoch();
+        address[] memory activeSharedVaults = _sharedVaults.getActive(epoch);
+        address[] memory vaults = new address[](activeSharedVaults.length + _allOperatorVaults.length());
+        uint256 len = activeSharedVaults.length;
+        for (uint256 i; i < activeSharedVaults.length; ++i) {
+            vaults[i] = activeSharedVaults[i];
+        }
+        for (uint256 i = 0; i < _allOperatorVaults.length(); ++i) {
+            (address vault, uint256 count) = _allOperatorVaults.at(i);
+            if (count > 0) {
+                vaults[len++] = vault;
+            }
+        }
+
+        assembly ("memory-safe") {
+            mstore(vaults, len)
+        }
+
+        return vaults;
     }
 
     /* 
@@ -158,12 +222,12 @@ abstract contract BaseVaultManager is BaseManager {
     function getOperatorStake(address operator) public view virtual returns (uint256 stake) {
         uint48 timestamp = getCurrentEpochStart();
         address[] memory vaults = activeVaults(operator);
-        uint160[] memory _subnetworks = activeSubnetworks();
+        uint160[] memory subnetworks = activeSubnetworks();
 
         for (uint256 i; i < vaults.length; ++i) {
             address vault = vaults[i];
-            for (uint256 j; j < _subnetworks.length; ++j) {
-                bytes32 subnetwork = NETWORK.subnetwork(uint96(_subnetworks[j]));
+            for (uint256 j; j < subnetworks.length; ++j) {
+                bytes32 subnetwork = NETWORK.subnetwork(uint96(subnetworks[j]));
                 stake += IBaseDelegator(IVault(vault).delegator()).stakeAt(subnetwork, operator, timestamp, "");
             }
         }
@@ -179,12 +243,12 @@ abstract contract BaseVaultManager is BaseManager {
     function getOperatorPower(address operator) public view virtual returns (uint256 power) {
         uint48 timestamp = getCurrentEpochStart();
         address[] memory vaults = activeVaults(operator);
-        uint160[] memory _subnetworks = activeSubnetworks();
+        uint160[] memory subnetworks = activeSubnetworks();
 
         for (uint256 i; i < vaults.length; ++i) {
             address vault = vaults[i];
-            for (uint256 j; j < _subnetworks.length; ++j) {
-                bytes32 subnetwork = NETWORK.subnetwork(uint96(_subnetworks[j]));
+            for (uint256 j; j < subnetworks.length; ++j) {
+                bytes32 subnetwork = NETWORK.subnetwork(uint96(subnetworks[j]));
                 uint256 stake = IBaseDelegator(IVault(vault).delegator()).stakeAt(subnetwork, operator, timestamp, "");
                 power += stakeToPower(vault, stake);
             }
@@ -222,12 +286,44 @@ abstract contract BaseVaultManager is BaseManager {
     }
 
     /* 
+     * @notice Registers a new subnetwork.
+     * @param subnetwork The identifier of the subnetwork to register.
+     */
+    function _registerSubnetwork(uint96 subnetwork) internal {
+        _subnetworks.register(getCurrentEpoch(), uint160(subnetwork));
+    }
+
+    /* 
+     * @notice Pauses a specified subnetwork.
+     * @param subnetwork The identifier of the subnetwork to pause.
+     */
+    function _pauseSubnetwork(uint96 subnetwork) internal {
+        _subnetworks.pause(getCurrentEpoch(), uint160(subnetwork));
+    }
+
+    /* 
+     * @notice Unpauses a specified subnetwork.
+     * @param subnetwork The identifier of the subnetwork to unpause.
+     */
+    function _unpauseSubnetwork(uint96 subnetwork) internal {
+        _subnetworks.unpause(getCurrentEpoch(), IMMUTABLE_EPOCHS, uint160(subnetwork));
+    }
+
+    /* 
+     * @notice Unregisters a specified subnetwork.
+     * @param subnetwork The identifier of the subnetwork to unregister.
+     */
+    function _unregisterSubnetwork(uint96 subnetwork) internal {
+        _subnetworks.unregister(getCurrentEpoch(), IMMUTABLE_EPOCHS, uint160(subnetwork));
+    }
+
+    /* 
      * @notice Registers a new shared vault.
      * @param vault The address of the vault to register.
      */
     function _registerSharedVault(address vault) internal {
         _validateVault(vault);
-        if (operatorVaultExists[vault] > 0) {
+        if (_allOperatorVaults.get(vault) > 0) {
             revert VaultAlreadyRegistred();
         }
         _sharedVaults.register(getCurrentEpoch(), vault);
@@ -243,8 +339,8 @@ abstract contract BaseVaultManager is BaseManager {
         if (_sharedVaults.contains(vault)) {
             revert VaultAlreadyRegistred();
         }
-        operatorVaultExists[vault]++;
         _operatorVaults[operator].register(getCurrentEpoch(), vault);
+        _allOperatorVaults.set(vault, _allOperatorVaults.get(vault) + 2);
     }
 
     /* 
@@ -270,6 +366,7 @@ abstract contract BaseVaultManager is BaseManager {
      */
     function _pauseOperatorVault(address operator, address vault) internal {
         _operatorVaults[operator].pause(getCurrentEpoch(), vault);
+        _allOperatorVaults.set(vault, _allOperatorVaults.get(vault) - 1);
     }
 
     /* 
@@ -279,6 +376,7 @@ abstract contract BaseVaultManager is BaseManager {
      */
     function _unpauseOperatorVault(address operator, address vault) internal {
         _operatorVaults[operator].unpause(getCurrentEpoch(), IMMUTABLE_EPOCHS, vault);
+        _allOperatorVaults.set(vault, _allOperatorVaults.get(vault) + 1);
     }
 
     /* 
@@ -296,7 +394,10 @@ abstract contract BaseVaultManager is BaseManager {
      */
     function _unregisterOperatorVault(address operator, address vault) internal {
         _operatorVaults[operator].unregister(getCurrentEpoch(), IMMUTABLE_EPOCHS, vault);
-        operatorVaultExists[vault]--;
+        _allOperatorVaults.set(vault, _allOperatorVaults.get(vault) - 1);
+        if (_allOperatorVaults.get(vault) == 0) {
+            _allOperatorVaults.remove(vault);
+        }
     }
 
     /* 

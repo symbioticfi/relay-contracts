@@ -5,6 +5,38 @@ import {BaseVaultManager} from "./BaseVaultManager.sol";
 
 abstract contract DefaultVaultManager is BaseVaultManager {
     /* 
+     * @notice Registers a new subnetwork.
+     * @param subnetwork The identifier of the subnetwork to register.
+     */
+    function registerSubnetwork(uint96 subnetwork) public virtual onlyOwner {
+        _registerSubnetwork(subnetwork);
+    }
+
+    /* 
+     * @notice Pauses a specified subnetwork.
+     * @param subnetwork The identifier of the subnetwork to pause.
+     */
+    function pauseSubnetwork(uint96 subnetwork) public virtual onlyOwner {
+        _pauseSubnetwork(subnetwork);
+    }
+
+    /* 
+     * @notice Unpauses a specified subnetwork.
+     * @param subnetwork The identifier of the subnetwork to unpause.
+     */
+    function unpauseSubnetwork(uint96 subnetwork) public virtual onlyOwner {
+        _unpauseSubnetwork(subnetwork);
+    }
+
+    /* 
+     * @notice Unregisters a specified subnetwork.
+     * @param subnetwork The identifier of the subnetwork to unregister.
+     */
+    function unregisterSubnetwork(uint96 subnetwork) public virtual onlyOwner {
+        _unregisterSubnetwork(subnetwork);
+    }
+
+    /* 
      * @notice Registers a new shared vault.
      * @param vault The address of the vault to register.
      */

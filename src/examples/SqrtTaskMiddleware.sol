@@ -10,7 +10,6 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
-import {BaseManager} from "../BaseManager.sol";
 import {DefaultVaultManager} from "../VaultManagers/DefaultVaultManager.sol";
 import {DefaultOperatorManager} from "../OperatorManagers/DefaultOperatorManager.sol";
 import {DefaultKeyManager} from "../KeyManagers/DefaultKeyManager.sol";
@@ -45,10 +44,9 @@ contract SqrtTaskMiddleware is DefaultVaultManager, DefaultOperatorManager, Defa
         address owner,
         uint48 epochDuration,
         uint48 slashingWindow
-    )
-        BaseManager(owner, network, epochDuration, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin)
-        EIP712("SqrtTaskMiddleware", "1")
-    {}
+    ) EIP712("SqrtTaskMiddleware", "1") {
+        initialize(owner, network, epochDuration, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
+    }
 
     function createTask(uint256 value, address operator) external returns (uint256 taskIndex) {
         taskIndex = tasks.length;
