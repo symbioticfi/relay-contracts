@@ -9,7 +9,6 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {BaseManager} from "../BaseManager.sol";
 import {DefaultVaultManager} from "../VaultManagers/DefaultVaultManager.sol";
 import {DefaultOperatorManager} from "../OperatorManagers/DefaultOperatorManager.sol";
 import {DefaultKeyManager} from "../KeyManagers/DefaultKeyManager.sol";
@@ -45,7 +44,9 @@ contract SimpleMiddleware is DefaultVaultManager, DefaultOperatorManager, Defaul
         address owner,
         uint48 epochDuration,
         uint48 slashingWindow
-    ) BaseManager(owner, network, epochDuration, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin) {}
+    ) {
+        initialize(owner, network, epochDuration, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
+    }
 
     /* 
      * @notice Returns the total stake for the active operators in the current epoch.
@@ -125,9 +126,9 @@ contract SimpleMiddleware is DefaultVaultManager, DefaultOperatorManager, Defaul
 
         uint256 totalStake = getOperatorStake(operator); // Get the total stake for the operator
         address[] memory vaults = activeVaults(operator); // Get active vaults for the operator
-        uint160[] memory _subnetworks = activeSubnetworks(); // Get active subnetworks
+        uint160[] memory subnetworks = activeSubnetworks(); // Get active subnetworks
 
-        slashResponses = new SlashResponse[](vaults.length * _subnetworks.length); // Initialize the array for slash responses
+        slashResponses = new SlashResponse[](vaults.length * subnetworks.length); // Initialize the array for slash responses
         uint256 len = 0; // Length counter
 
         if (stakeHints.length != slashHints.length || stakeHints.length != vaults.length) {
@@ -135,13 +136,13 @@ contract SimpleMiddleware is DefaultVaultManager, DefaultOperatorManager, Defaul
         }
 
         for (uint256 i; i < vaults.length; ++i) {
-            if (stakeHints[i].length != _subnetworks.length) {
+            if (stakeHints[i].length != subnetworks.length) {
                 revert InvalidHints(); // Revert if the stake hints do not match the subnetworks
             }
 
             address vault = vaults[i]; // Get the vault address
-            for (uint256 j = 0; j < _subnetworks.length; ++j) {
-                bytes32 subnetwork = NETWORK.subnetwork(uint96(_subnetworks[j])); // Get the subnetwork
+            for (uint256 j = 0; j < subnetworks.length; ++j) {
+                bytes32 subnetwork = NETWORK.subnetwork(uint96(subnetworks[j])); // Get the subnetwork
                 uint256 stake = IBaseDelegator(IVault(vault).delegator()).stakeAt(
                     subnetwork,
                     operator,
