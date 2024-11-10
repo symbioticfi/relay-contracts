@@ -71,7 +71,7 @@ abstract contract BaseKeyManager is BaseManager {
             _keyData[key].set(timestamp, operator);
         }
 
-        if (keyUpdateEpoch[operator] != timestamp) {
+        if (keyUpdateTimestamp[operator] != timestamp) {
             prevKeys[operator] = keys[operator];
             keyUpdateTimestamp[operator] = timestamp;
         }

@@ -10,9 +10,9 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
-import {DefaultVaultManager} from "../VaultManagers/DefaultVaultManager.sol";
-import {DefaultOperatorManager} from "../OperatorManagers/DefaultOperatorManager.sol";
-import {DefaultKeyManager} from "../KeyManagers/DefaultKeyManager.sol";
+import {DefaultVaultManager} from "../../vault-manager/DefaultVaultManager.sol";
+import {DefaultOperatorManager} from "../../operator-manager/DefaultOperatorManager.sol";
+import {DefaultKeyManager} from "../../key-manager/DefaultKeyManager.sol";
 
 contract SqrtTaskMiddleware is DefaultVaultManager, DefaultOperatorManager, DefaultKeyManager, EIP712 {
     using Subnetwork for address;
@@ -42,15 +42,14 @@ contract SqrtTaskMiddleware is DefaultVaultManager, DefaultOperatorManager, Defa
         address vaultRegistry,
         address operatorNetOptin,
         address owner,
-        uint48 epochDuration,
         uint48 slashingWindow
     ) EIP712("SqrtTaskMiddleware", "1") {
-        initialize(owner, network, epochDuration, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
+        initialize(owner, network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
     }
 
     function createTask(uint256 value, address operator) external returns (uint256 taskIndex) {
         taskIndex = tasks.length;
-        tasks.push(Task({captureTimestamp: Time.timestamp() - 1, value: value, operator: operator, completed: false}));
+        tasks.push(Task({captureTimestamp: getCaptureTimestamp(), value: value, operator: operator, completed: false}));
 
         emit CreateTask(taskIndex);
     }
@@ -119,7 +118,7 @@ contract SqrtTaskMiddleware is DefaultVaultManager, DefaultOperatorManager, Defa
 
     function _slash(uint256 taskIndex, bytes[] calldata stakeHints, bytes[] calldata slashHints) private {
         Task storage task = tasks[taskIndex];
-        address[] memory vaults = activeVaults(task.operator);
+        address[] memory vaults = activeVaultsAt(task.captureTimestamp, task.operator);
 
         if (stakeHints.length != slashHints.length || stakeHints.length != vaults.length) {
             revert InvalidHints();

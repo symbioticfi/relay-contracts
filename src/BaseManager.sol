@@ -5,7 +5,7 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-abstract contract BaseManager is Initializable, OwnableUpgradeable {
+contract BaseManager is Initializable, OwnableUpgradeable {
     address public NETWORK; // Address of the network
     uint48 public SLASHING_WINDOW; // Duration of the slashing window
     address public VAULT_REGISTRY; // Address of the vault registry
