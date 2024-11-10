@@ -4,26 +4,27 @@ pragma solidity ^0.8.25;
 import {BaseManager} from "../BaseManager.sol";
 import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
+import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
+
 abstract contract BaseKeyManager is BaseManager {
-    using PauseableEnumerableSet for PauseableEnumerableSet.Inner;
+    using PauseableEnumerableSet for PauseableEnumerableSet.Bytes32Set;
 
     error DuplicateKey();
     error KeyAlreadyEnabled();
+    error MaxDisabledKeysReached();
 
     bytes32 private constant ZERO_BYTES32 = bytes32(0);
+    uint256 private constant MAX_DISABLED_KEYS = 1;
 
-    mapping(address => bytes32) public keys; // Mapping from operator addresses to their current keys
-    mapping(address => bytes32) public prevKeys; // Mapping from operator addresses to their previous keys
-    mapping(address => uint48) public keyUpdateTimestamp; // Mapping from operator addresses to the epoch of the last key update
-    mapping(bytes32 => PauseableEnumerableSet.Inner) internal _keyData; // Mapping from keys to their associated data
-
+    mapping(address => PauseableEnumerableSet.Bytes32Set) internal keys; // Mapping from operator addresses to their current keys
+    mapping(bytes32 => address) internal keyToOperator;
     /**
      * @notice Returns the operator address associated with a given key
      * @param key The key for which to find the associated operator
      * @return The address of the operator linked to the specified key
      */
     function operatorByKey(bytes32 key) public view returns (address) {
-        return _keyData[key].getAddress();
+        return keyToOperator[key];
     }
 
     /**
@@ -33,11 +34,7 @@ abstract contract BaseKeyManager is BaseManager {
      * @return The key associated with the specified operator
      */
     function operatorKey(address operator) public view returns (bytes32) {
-        if (keyUpdateTimestamp[operator] == getCaptureTimestamp()) {
-            return prevKeys[operator];
-        }
-
-        return keys[operator];
+        return keys[operator].getActive(getCaptureTimestamp())[0];
     }
 
     /**
@@ -47,7 +44,7 @@ abstract contract BaseKeyManager is BaseManager {
      * @return A boolean indicating whether the key was active at the specified timestamp
      */
     function keyWasActiveAt(uint48 timestamp, bytes32 key) public view returns (bool) {
-        return _keyData[key].wasActiveAt(timestamp);
+        return keys[keyToOperator[key]].wasActiveAt(timestamp, key);
     }
 
     /**
@@ -57,25 +54,28 @@ abstract contract BaseKeyManager is BaseManager {
      * @param key The new key to associate with the operator
      */
     function _updateKey(address operator, bytes32 key) internal {
-        uint48 timestamp = getCaptureTimestamp();
-
-        if (keys[operator] == key) {
-            revert KeyAlreadyEnabled();
-        }
-
-        if (_keyData[key].getAddress() != address(0) && _keyData[key].getAddress() != operator) {
+        if (keyToOperator[key] != address(0)) {
             revert DuplicateKey();
         }
 
-        if (key != ZERO_BYTES32 && _keyData[key].getAddress() == address(0)) {
-            _keyData[key].set(timestamp, operator);
+        // try to remove disabled keys 
+        keys[operator].prune(Time.timestamp(), SLASHING_WINDOW);
+
+        // check if we have reached the max number of disabled keys
+        // this allow us to limit the number times we can change the key
+        if (keys[operator].length() > MAX_DISABLED_KEYS + 1) {
+            revert MaxDisabledKeysReached();
         }
 
-        if (keyUpdateTimestamp[operator] != timestamp) {
-            prevKeys[operator] = keys[operator];
-            keyUpdateTimestamp[operator] = timestamp;
+        // get the current active keys
+        bytes32[] memory activeKeys = keys[operator].getActive(Time.timestamp());
+
+        // pause the current active key if any
+        if (activeKeys.length > 0) {
+            keys[operator].pause(Time.timestamp(), activeKeys[0]);
         }
 
-        keys[operator] = key;
+        // register the new key
+        keys[operator].register(Time.timestamp(), key);
     }
 }

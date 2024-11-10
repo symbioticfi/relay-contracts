@@ -460,7 +460,7 @@ abstract contract BaseVaultManager is BaseManager {
      * @param subnetwork The identifier of the subnetwork to register
      */
     function _registerSubnetwork(uint96 subnetwork) internal {
-        _subnetworks.register(getCaptureTimestamp(), uint160(subnetwork));
+        _subnetworks.register(Time.timestamp(), uint160(subnetwork));
     }
 
     /**
@@ -468,7 +468,7 @@ abstract contract BaseVaultManager is BaseManager {
      * @param subnetwork The identifier of the subnetwork to pause
      */
     function _pauseSubnetwork(uint96 subnetwork) internal {
-        _subnetworks.pause(getCaptureTimestamp(), uint160(subnetwork));
+        _subnetworks.pause(Time.timestamp(), uint160(subnetwork));
     }
 
     /**
@@ -476,7 +476,7 @@ abstract contract BaseVaultManager is BaseManager {
      * @param subnetwork The identifier of the subnetwork to unpause
      */
     function _unpauseSubnetwork(uint96 subnetwork) internal {
-        _subnetworks.unpause(getCaptureTimestamp(), SLASHING_WINDOW, uint160(subnetwork));
+        _subnetworks.unpause(Time.timestamp(), SLASHING_WINDOW, uint160(subnetwork));
     }
 
     /**
@@ -484,7 +484,7 @@ abstract contract BaseVaultManager is BaseManager {
      * @param subnetwork The identifier of the subnetwork to unregister
      */
     function _unregisterSubnetwork(uint96 subnetwork) internal {
-        _subnetworks.unregister(getCaptureTimestamp(), SLASHING_WINDOW, uint160(subnetwork));
+        _subnetworks.unregister(Time.timestamp(), SLASHING_WINDOW, uint160(subnetwork));
     }
 
     /**
@@ -493,7 +493,7 @@ abstract contract BaseVaultManager is BaseManager {
      */
     function _registerSharedVault(address vault) internal {
         _validateVault(vault);
-        _sharedVaults.register(getCaptureTimestamp(), vault);
+        _sharedVaults.register(Time.timestamp(), vault);
     }
 
     /**
@@ -506,7 +506,7 @@ abstract contract BaseVaultManager is BaseManager {
         if (_sharedVaults.contains(vault)) {
             revert VaultAlreadyRegistred();
         }
-        _operatorVaults[operator].register(getCaptureTimestamp(), vault);
+        _operatorVaults[operator].register(Time.timestamp(), vault);
         _vaultOperator.set(vault, operator);
     }
 
@@ -515,7 +515,7 @@ abstract contract BaseVaultManager is BaseManager {
      * @param vault The address of the vault to pause
      */
     function _pauseSharedVault(address vault) internal {
-        _sharedVaults.pause(getCaptureTimestamp(), vault);
+        _sharedVaults.pause(Time.timestamp(), vault);
     }
 
     /**
@@ -523,7 +523,7 @@ abstract contract BaseVaultManager is BaseManager {
      * @param vault The address of the vault to unpause
      */
     function _unpauseSharedVault(address vault) internal {
-        _sharedVaults.unpause(getCaptureTimestamp(), SLASHING_WINDOW, vault);
+        _sharedVaults.unpause(Time.timestamp(), SLASHING_WINDOW, vault);
     }
 
     /**
@@ -532,7 +532,7 @@ abstract contract BaseVaultManager is BaseManager {
      * @param vault The address of the vault to pause
      */
     function _pauseOperatorVault(address operator, address vault) internal {
-        _operatorVaults[operator].pause(getCaptureTimestamp(), vault);
+        _operatorVaults[operator].pause(Time.timestamp(), vault);
     }
 
     /**
@@ -541,7 +541,7 @@ abstract contract BaseVaultManager is BaseManager {
      * @param vault The address of the vault to unpause
      */
     function _unpauseOperatorVault(address operator, address vault) internal {
-        _operatorVaults[operator].unpause(getCaptureTimestamp(), SLASHING_WINDOW, vault);
+        _operatorVaults[operator].unpause(Time.timestamp(), SLASHING_WINDOW, vault);
     }
 
     /**
@@ -549,7 +549,7 @@ abstract contract BaseVaultManager is BaseManager {
      * @param vault The address of the vault to unregister
      */
     function _unregisterSharedVault(address vault) internal {
-        _sharedVaults.unregister(getCaptureTimestamp(), SLASHING_WINDOW, vault);
+        _sharedVaults.unregister(Time.timestamp(), SLASHING_WINDOW, vault);
     }
 
     /**
@@ -558,7 +558,7 @@ abstract contract BaseVaultManager is BaseManager {
      * @param vault The address of the vault to unregister
      */
     function _unregisterOperatorVault(address operator, address vault) internal {
-        _operatorVaults[operator].unregister(getCaptureTimestamp(), SLASHING_WINDOW, vault);
+        _operatorVaults[operator].unregister(Time.timestamp(), SLASHING_WINDOW, vault);
         _vaultOperator.remove(vault);
     }
 
