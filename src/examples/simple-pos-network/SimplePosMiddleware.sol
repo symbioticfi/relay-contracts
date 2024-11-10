@@ -56,7 +56,7 @@ contract SimplePosMiddleware is DefaultVaultManager, DefaultOperatorManager, Def
     /* 
      * @notice Returns the capture timestamp for the current epoch.
      * @return The capture timestamp.
-     */ 
+     */
     function getCaptureTimestamp() public view virtual override returns (uint48 timestamp) {
         return START_TIMESTAMP + (Time.timestamp() - START_TIMESTAMP) / EPOCH_DURATION;
     }
@@ -65,7 +65,7 @@ contract SimplePosMiddleware is DefaultVaultManager, DefaultOperatorManager, Def
      * @notice Returns the start timestamp for a given epoch.
      * @param epoch The epoch number.
      * @return The start timestamp.
-     */ 
+     */
     function getEpochStart(uint48 epoch) public view returns (uint48) {
         return START_TIMESTAMP + epoch * EPOCH_DURATION;
     }
@@ -117,7 +117,7 @@ contract SimplePosMiddleware is DefaultVaultManager, DefaultOperatorManager, Def
             validatorSet[len++] = ValidatorData(power, key); // Store the validator data
         }
 
-        assembly ("memory-safe") {
+        assembly {
             mstore(validatorSet, len) // Update the length of the array
         }
     }
@@ -189,7 +189,7 @@ contract SimplePosMiddleware is DefaultVaultManager, DefaultOperatorManager, Def
             }
         }
 
-        assembly ("memory-safe") {
+        assembly {
             mstore(slashResponses, len) // Update the length of the slash responses
         }
     }

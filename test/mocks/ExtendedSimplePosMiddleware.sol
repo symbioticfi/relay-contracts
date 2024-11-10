@@ -14,7 +14,14 @@ contract ExtendedSimplePosMiddleware is SimplePosMiddleware {
         uint48 epochDuration,
         uint48 slashingWindow
     )
-        SimplePosMiddleware(network, operatorRegistry, vaultRegistry, operatorNetOptin, owner, epochDuration, slashingWindow)
+        SimplePosMiddleware(
+            network,
+            operatorRegistry,
+            vaultRegistry,
+            operatorNetOptin,
+            owner,
+            epochDuration,
+            slashingWindow
+        )
     {}
-    
 }

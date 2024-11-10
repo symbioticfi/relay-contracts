@@ -15,7 +15,6 @@ library PauseableEnumerableSet {
     error Enabled(); // Thrown when trying to disable a value that's enabled.
     error ImmutablePeriodNotPassed(); // Thrown when an action is attempted before immutable period passes.
 
-
     /* 
      * Struct for managing a set of Uint160 values.
      */
@@ -69,7 +68,7 @@ library PauseableEnumerableSet {
     function getActive(AddressSet storage self, uint48 timestamp) internal view returns (address[] memory array) {
         uint160[] memory uint160Array = self.set.getActive(timestamp);
 
-        assembly ("memory-safe") {
+        assembly {
             array := uint160Array
         }
 
@@ -173,7 +172,7 @@ library PauseableEnumerableSet {
             array[len++] = self.array[i].value;
         }
 
-        assembly ("memory-safe") {
+        assembly {
             mstore(array, len)
         }
 
@@ -352,8 +351,8 @@ library PauseableEnumerableSet {
     * @return True if the value was active at the timestamp, false otherwise.
     */
     function wasActiveAt(Inner storage self, uint48 timestamp) internal view returns (bool) {
-        return self.enabledTimestamp <= timestamp && 
-                (self.disabledTimestamp == 0 || self.disabledTimestamp >= timestamp);
+        return
+            self.enabledTimestamp <= timestamp && (self.disabledTimestamp == 0 || self.disabledTimestamp >= timestamp);
     }
 
     /* 
@@ -384,7 +383,7 @@ library PauseableEnumerableSet {
         }
     }
 
-        /* 
+    /* 
      * Struct for managing a set of Uint160 values.
      */
     struct Uint256Set {
@@ -437,7 +436,7 @@ library PauseableEnumerableSet {
     function getActive(Bytes32Set storage self, uint48 timestamp) internal view returns (bytes32[] memory array) {
         uint256[] memory uint256Array = self.set.getActive(timestamp);
 
-        assembly ("memory-safe") {
+        assembly {
             array := uint256Array
         }
 
@@ -504,7 +503,7 @@ library PauseableEnumerableSet {
      */
     function prune(Bytes32Set storage self, uint48 timestamp, uint48 immutablePeriod) internal {
         self.set.prune(timestamp, immutablePeriod);
-    }   
+    }
 
     /* 
      * @notice Checks if an address is contained in the AddressSet.
@@ -551,7 +550,7 @@ library PauseableEnumerableSet {
             array[len++] = self.array[i].value;
         }
 
-        assembly ("memory-safe") {
+        assembly {
             mstore(array, len)
         }
 
@@ -656,8 +655,10 @@ library PauseableEnumerableSet {
     function prune(Uint256Set storage self, uint48 timestamp, uint48 immutablePeriod) internal {
         // Start from end to avoid shifting elements during unregister
         for (uint256 i = self.array.length; i > 0;) {
-            unchecked { --i; }
-            
+            unchecked {
+                --i;
+            }
+
             if (!self.array[i].checkUnregister(timestamp, immutablePeriod)) {
                 continue;
             }
@@ -749,8 +750,8 @@ library PauseableEnumerableSet {
     * @return True if the value was active at the timestamp, false otherwise.
     */
     function wasActiveAt(Inner256 storage self, uint48 timestamp) internal view returns (bool) {
-        return self.enabledTimestamp <= timestamp && 
-                (self.disabledTimestamp == 0 || self.disabledTimestamp >= timestamp);
+        return
+            self.enabledTimestamp <= timestamp && (self.disabledTimestamp == 0 || self.disabledTimestamp >= timestamp);
     }
 
     /* 
@@ -781,7 +782,6 @@ library PauseableEnumerableSet {
         }
     }
 
-
     /* 
     * @notice Checks if the value can be unregistered at a given timestamp.
     * @param self The Inner struct.
@@ -789,7 +789,11 @@ library PauseableEnumerableSet {
     * @param immutablePeriod The immutable period that must pass before unregistering.
     * @return True if the value can be unregistered, false otherwise.
     */
-    function checkUnregister(Inner256 storage self, uint48 timestamp, uint48 immutablePeriod) internal view returns(bool) {
+    function checkUnregister(Inner256 storage self, uint48 timestamp, uint48 immutablePeriod)
+        internal
+        view
+        returns (bool)
+    {
         if (self.enabledTimestamp != 0 || self.disabledTimestamp == 0) {
             return false;
         }

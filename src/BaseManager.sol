@@ -15,10 +15,6 @@ contract BaseManager is Initializable, OwnableUpgradeable {
     uint64 public constant INSTANT_SLASHER_TYPE = 0; // Constant representing the instant slasher type
     uint64 public constant VETO_SLASHER_TYPE = 1; // Constant representing the veto slasher type
 
-    constructor() {
-        _disableInitializers();
-    }
-
     /* 
      * @notice initalizer of the BaseManager contract.
      * @param owner The address of the contract owner.
@@ -37,7 +33,6 @@ contract BaseManager is Initializable, OwnableUpgradeable {
         address operatorRegistry,
         address operatorNetOptIn
     ) public virtual initializer {
-
         __Ownable_init(owner);
 
         NETWORK = network;
@@ -52,7 +47,7 @@ contract BaseManager is Initializable, OwnableUpgradeable {
      * @dev Returns block.timestamp - 1 by default but can be overrided
      * @return The current capture timestamp 
      */
-    function getCaptureTimestamp() public virtual view returns(uint48 timestamp) {
+    function getCaptureTimestamp() public view virtual returns (uint48 timestamp) {
         return Time.timestamp() - 1;
     }
 }

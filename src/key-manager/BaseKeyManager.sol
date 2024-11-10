@@ -23,6 +23,7 @@ abstract contract BaseKeyManager is BaseManager {
      * @param key The key for which to find the associated operator
      * @return The address of the operator linked to the specified key
      */
+
     function operatorByKey(bytes32 key) public view returns (address) {
         return keyToOperator[key];
     }
@@ -58,7 +59,7 @@ abstract contract BaseKeyManager is BaseManager {
             revert DuplicateKey();
         }
 
-        // try to remove disabled keys 
+        // try to remove disabled keys
         keys[operator].prune(Time.timestamp(), SLASHING_WINDOW);
 
         // check if we have reached the max number of disabled keys
