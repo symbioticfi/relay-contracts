@@ -34,7 +34,7 @@ abstract contract BaseOperatorManager is BaseManager {
      * @param pos The index position in the operators array.
      * @return The address, enabled epoch, disabled epoch and enabled before disabled epoch of the operator.
      */
-    function operatorWithTimesAt(uint256 pos) public view returns (address, uint32, uint32, uint32) {
+    function operatorWithTimesAt(uint256 pos) public view returns (address, uint48, uint48) {
         return _operators.at(pos);
     }
 
@@ -77,7 +77,7 @@ abstract contract BaseOperatorManager is BaseManager {
      * @param operator The address of the operator to pause.
      */
     function _pauseOperator(address operator) internal {
-        _operators.pause(getCurrentEpoch(), operator);
+        _operators.pause(Time.timestamp(), operator);
     }
 
     /* 
@@ -85,7 +85,7 @@ abstract contract BaseOperatorManager is BaseManager {
      * @param operator The address of the operator to unpause.
      */
     function _unpauseOperator(address operator) internal {
-        _operators.unpause(getCurrentEpoch(), SLASHING_WINDOW, operator);
+        _operators.unpause(Time.timestamp(), SLASHING_WINDOW, operator);
     }
 
     /* 
@@ -93,6 +93,6 @@ abstract contract BaseOperatorManager is BaseManager {
      * @param operator The address of the operator to unregister.
      */
     function _unregisterOperator(address operator) internal {
-        _operators.unregister(getCurrentEpoch(), SLASHING_WINDOW, operator);
+        _operators.unregister(Time.timestamp(), SLASHING_WINDOW, operator);
     }
 }

@@ -9,11 +9,11 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {DefaultVaultManager} from "../VaultManagers/DefaultVaultManager.sol";
-import {DefaultOperatorManager} from "../OperatorManagers/DefaultOperatorManager.sol";
-import {DefaultKeyManager} from "../KeyManagers/DefaultKeyManager.sol";
+import {DefaultVaultManager} from "../../vault-manager/DefaultVaultManager.sol";
+import {DefaultOperatorManager} from "../../operator-manager/DefaultOperatorManager.sol";
+import {DefaultKeyManager} from "../../key-manager/DefaultKeyManager.sol";
 
-contract SimpleMiddleware is DefaultVaultManager, DefaultOperatorManager, DefaultKeyManager {
+contract SimplePosMiddleware is DefaultVaultManager, DefaultOperatorManager, DefaultKeyManager {
     using Subnetwork for address;
 
     error InactiveKeySlash(); // Error thrown when trying to slash an inactive key
@@ -25,6 +25,9 @@ contract SimpleMiddleware is DefaultVaultManager, DefaultOperatorManager, Defaul
         uint256 power; // Power of the validator
         bytes32 key; // Key associated with the validator
     }
+
+    uint48 public immutable EPOCH_DURATION; // Duration of each epoch
+    uint48 public immutable START_TIMESTAMP; // Start timestamp of the network
 
     /* 
      * @notice Constructor for initializing the SimpleMiddleware contract.
@@ -45,7 +48,34 @@ contract SimpleMiddleware is DefaultVaultManager, DefaultOperatorManager, Defaul
         uint48 epochDuration,
         uint48 slashingWindow
     ) {
-        initialize(owner, network, epochDuration, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
+        initialize(owner, network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
+        EPOCH_DURATION = epochDuration;
+        START_TIMESTAMP = Time.timestamp();
+    }
+
+    /* 
+     * @notice Returns the capture timestamp for the current epoch.
+     * @return The capture timestamp.
+     */ 
+    function getCaptureTimestamp() public view virtual override returns (uint48 timestamp) {
+        return START_TIMESTAMP + (Time.timestamp() - START_TIMESTAMP) / EPOCH_DURATION;
+    }
+
+    /* 
+     * @notice Returns the start timestamp for a given epoch.
+     * @param epoch The epoch number.
+     * @return The start timestamp.
+     */ 
+    function getEpochStart(uint48 epoch) public view returns (uint48) {
+        return START_TIMESTAMP + epoch * EPOCH_DURATION;
+    }
+
+    /* 
+     * @notice Returns the current epoch.
+     * @return The current epoch.
+     */
+    function getCurrentEpoch() public view returns (uint48) {
+        return (Time.timestamp() - START_TIMESTAMP) / EPOCH_DURATION;
     }
 
     /* 
@@ -79,7 +109,7 @@ contract SimpleMiddleware is DefaultVaultManager, DefaultOperatorManager, Defaul
             address operator = operators[i]; // Get the operator address
 
             bytes32 key = operatorKey(operator); // Get the key for the operator
-            if (key == bytes32(0) || !keyWasActiveAt(getCurrentEpoch(), key)) {
+            if (key == bytes32(0) || !keyWasActiveAt(getCaptureTimestamp(), key)) {
                 continue; // Skip if the key is inactive
             }
 
@@ -104,7 +134,7 @@ contract SimpleMiddleware is DefaultVaultManager, DefaultOperatorManager, Defaul
      * @param slashHints Hints for the slashing process.
      * @return An array of SlashResponse indicating the results of the slashing.
      */
-    function slash(uint32 epoch, bytes32 key, uint256 amount, bytes[][] memory stakeHints, bytes[] memory slashHints)
+    function slash(uint48 epoch, bytes32 key, uint256 amount, bytes[][] memory stakeHints, bytes[] memory slashHints)
         public
         onlyOwner
         returns (SlashResponse[] memory slashResponses)
@@ -124,9 +154,9 @@ contract SimpleMiddleware is DefaultVaultManager, DefaultOperatorManager, Defaul
             revert InactiveOperatorSlash(); // Revert if the operator wasn't active
         }
 
-        uint256 totalStake = getOperatorStake(operator); // Get the total stake for the operator
-        address[] memory vaults = activeVaults(operator); // Get active vaults for the operator
-        uint160[] memory subnetworks = activeSubnetworks(); // Get active subnetworks
+        uint256 totalStake = getOperatorStakeAt(operator, epochStart); // Get the total stake for the operator
+        address[] memory vaults = activeVaultsAt(epochStart, operator); // Get active vaults for the operator
+        uint160[] memory subnetworks = activeSubnetworksAt(epochStart); // Get active subnetworks
 
         slashResponses = new SlashResponse[](vaults.length * subnetworks.length); // Initialize the array for slash responses
         uint256 len = 0; // Length counter

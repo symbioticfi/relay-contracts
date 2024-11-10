@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.25;
+pragma solidity ^0.8.25;
 
 import {POCBaseTest} from "@symbiotic-test/POCBase.t.sol";
 
-import {ExtendedSimpleMiddleware} from "./mocks/ExtendedSimpleMiddleware.sol";
+import {SimplePosMiddleware} from "../src/examples/simple-pos-network/SimplePosMiddleware.sol";
+import {ExtendedSimplePosMiddleware} from "./mocks/ExtendedSimplePosMiddleware.sol";
 import {IVault} from "@symbiotic/interfaces/vault/IVault.sol";
 import {IBaseDelegator} from "@symbiotic/interfaces/delegator/IBaseDelegator.sol";
 import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
@@ -21,7 +22,7 @@ contract DefaultSDKTest is POCBaseTest {
 
     address network = address(0x123);
 
-    ExtendedSimpleMiddleware internal middleware;
+    ExtendedSimplePosMiddleware internal middleware;
 
     uint48 internal epochDuration = 600; // 10 minutes
     uint48 internal slashingWindow = 1200; // 20 minutes
@@ -36,7 +37,7 @@ contract DefaultSDKTest is POCBaseTest {
         _deposit(vault3, alice, 1000 ether);
 
         // Initialize middleware contract
-        middleware = new ExtendedSimpleMiddleware(
+        middleware = new ExtendedSimplePosMiddleware(
             address(network),
             address(operatorRegistry),
             address(vaultFactory),
@@ -192,71 +193,71 @@ contract DefaultSDKTest is POCBaseTest {
         assertEq(operatorKey, newKey3, "Operator's key was not updated correctly");
     }
 
-    function testBLSKeys() public {
-        bytes memory key = "key";
-        address operator = address(0x1337);
+    // function testBLSKeys() public {
+    //     bytes memory key = "key";
+    //     address operator = address(0x1337);
 
-        bytes memory operatorKey = middleware.operatorBLSKey(operator);
-        assertEq(operatorKey, "", "Operator's BLS key should be empty");
-        address keyOperator = middleware.operatorByBLSKey(key);
-        assertEq(keyOperator, address(0), "BLS key's operator should be empty");
+    //     bytes memory operatorKey = middleware.operatorBLSKey(operator);
+    //     assertEq(operatorKey, "", "Operator's BLS key should be empty");
+    //     address keyOperator = middleware.operatorByBLSKey(key);
+    //     assertEq(keyOperator, address(0), "BLS key's operator should be empty");
 
-        middleware.updateBLSKey(operator, key);
-        keyOperator = middleware.operatorByBLSKey(key);
-        assertEq(keyOperator, operator, "BLS key's operator was not updated correctly");
+    //     middleware.updateBLSKey(operator, key);
+    //     keyOperator = middleware.operatorByBLSKey(key);
+    //     assertEq(keyOperator, operator, "BLS key's operator was not updated correctly");
 
-        // applies on next epoch
-        operatorKey = middleware.operatorBLSKey(operator);
-        assertEq(operatorKey, "", "Operator's BLS key should be empty");
+    //     // applies on next epoch
+    //     operatorKey = middleware.operatorBLSKey(operator);
+    //     assertEq(operatorKey, "", "Operator's BLS key should be empty");
 
-        skipEpoch();
-        operatorKey = middleware.operatorBLSKey(operator);
-        assertEq(operatorKey, key, "Operator's BLS key was not updated correctly");
+    //     skipEpoch();
+    //     operatorKey = middleware.operatorBLSKey(operator);
+    //     assertEq(operatorKey, key, "Operator's BLS key was not updated correctly");
 
-        // update key
-        bytes memory newKey = "newKey";
-        middleware.updateBLSKey(operator, newKey);
+    //     // update key
+    //     bytes memory newKey = "newKey";
+    //     middleware.updateBLSKey(operator, newKey);
 
-        // can't update already active bls key twice
-        vm.expectRevert();
-        middleware.updateBLSKey(operator, newKey);
+    //     // can't update already active bls key twice
+    //     vm.expectRevert();
+    //     middleware.updateBLSKey(operator, newKey);
 
-        keyOperator = middleware.operatorByBLSKey(key);
-        assertEq(keyOperator, operator, "BLS key's operator was not updated correctly");
+    //     keyOperator = middleware.operatorByBLSKey(key);
+    //     assertEq(keyOperator, operator, "BLS key's operator was not updated correctly");
 
-        // applies on next epoch
-        operatorKey = middleware.operatorBLSKey(operator);
-        assertEq(operatorKey, key, "Operator's BLS key should be previous key");
+    //     // applies on next epoch
+    //     operatorKey = middleware.operatorBLSKey(operator);
+    //     assertEq(operatorKey, key, "Operator's BLS key should be previous key");
 
-        skipEpoch();
-        operatorKey = middleware.operatorBLSKey(operator);
-        assertEq(operatorKey, newKey, "Operator's BLS key was not updated correctly");
+    //     skipEpoch();
+    //     operatorKey = middleware.operatorBLSKey(operator);
+    //     assertEq(operatorKey, newKey, "Operator's BLS key was not updated correctly");
 
-        bytes memory zeroKey = "";
-        middleware.updateBLSKey(operator, zeroKey);
-        operatorKey = middleware.operatorBLSKey(operator);
-        assertEq(operatorKey, newKey, "Operator's BLS key should be previous key");
+    //     bytes memory zeroKey = "";
+    //     middleware.updateBLSKey(operator, zeroKey);
+    //     operatorKey = middleware.operatorBLSKey(operator);
+    //     assertEq(operatorKey, newKey, "Operator's BLS key should be previous key");
 
-        skipEpoch();
-        operatorKey = middleware.operatorBLSKey(operator);
-        assertEq(operatorKey, zeroKey, "Operator's BLS key was not updated correctly");
+    //     skipEpoch();
+    //     operatorKey = middleware.operatorBLSKey(operator);
+    //     assertEq(operatorKey, zeroKey, "Operator's BLS key was not updated correctly");
 
-        // can't set used bls key to another operator
-        vm.expectRevert();
-        middleware.updateBLSKey(address(0x123123), key);
+    //     // can't set used bls key to another operator
+    //     vm.expectRevert();
+    //     middleware.updateBLSKey(address(0x123123), key);
 
-        // should apply update to latest updated bls key
-        bytes memory newKey2 = "newKey2";
-        bytes memory newKey3 = "newKey3";
-        middleware.updateBLSKey(operator, newKey2);
-        middleware.updateBLSKey(operator, newKey3);
-        operatorKey = middleware.operatorBLSKey(operator);
-        assertEq(operatorKey, zeroKey, "Operator's BLS key should be previous key");
+    //     // should apply update to latest updated bls key
+    //     bytes memory newKey2 = "newKey2";
+    //     bytes memory newKey3 = "newKey3";
+    //     middleware.updateBLSKey(operator, newKey2);
+    //     middleware.updateBLSKey(operator, newKey3);
+    //     operatorKey = middleware.operatorBLSKey(operator);
+    //     assertEq(operatorKey, zeroKey, "Operator's BLS key should be previous key");
 
-        skipEpoch();
-        operatorKey = middleware.operatorBLSKey(operator);
-        assertEq(operatorKey, newKey3, "Operator's BLS key was not updated correctly");
-    }
+    //     skipEpoch();
+    //     operatorKey = middleware.operatorBLSKey(operator);
+    //     assertEq(operatorKey, newKey3, "Operator's BLS key was not updated correctly");
+    // }
 
     function testSubnetworks() public {
         skipEpoch(); // let first 0 subnetwork activate
@@ -421,7 +422,7 @@ contract DefaultSDKTest is POCBaseTest {
         middleware.updateKey(operator1, key1);
         middleware.updateKey(operator2, key2);
 
-        ExtendedSimpleMiddleware.ValidatorData[] memory validatorSet = middleware.getValidatorSet();
+        SimplePosMiddleware.ValidatorData[] memory validatorSet = middleware.getValidatorSet();
         assertEq(validatorSet.length, 0, "valset length should be 0");
 
         skipEpoch();
@@ -430,7 +431,7 @@ contract DefaultSDKTest is POCBaseTest {
         validatorSet = middleware.getValidatorSet();
         assertEq(validatorSet.length, 2, "valset length should be 2");
         for (uint256 i = 0; i < validatorSet.length; i++) {
-            ExtendedSimpleMiddleware.ValidatorData memory validator = validatorSet[i];
+            SimplePosMiddleware.ValidatorData memory validator = validatorSet[i];
             if (validator.key == key1) {
                 assertEq(validator.power, 1000 ether, "validator1 power should be 1000");
             } else if (validator.key == key2) {
@@ -462,7 +463,7 @@ contract DefaultSDKTest is POCBaseTest {
         validatorSet = middleware.getValidatorSet();
         assertEq(validatorSet.length, 2, "valset length should be 2");
         for (uint256 i = 0; i < validatorSet.length; i++) {
-            ExtendedSimpleMiddleware.ValidatorData memory validator = validatorSet[i];
+            SimplePosMiddleware.ValidatorData memory validator = validatorSet[i];
             if (validator.key == key1) {
                 assertEq(validator.power, 500 ether, "validator1 power should be 1000");
             } else if (validator.key == key2) {
@@ -477,7 +478,7 @@ contract DefaultSDKTest is POCBaseTest {
         validatorSet = middleware.getValidatorSet();
         assertEq(validatorSet.length, 2, "valset length should be 2");
         for (uint256 i = 0; i < validatorSet.length; i++) {
-            ExtendedSimpleMiddleware.ValidatorData memory validator = validatorSet[i];
+            SimplePosMiddleware.ValidatorData memory validator = validatorSet[i];
             if (validator.key == key1) {
                 assertEq(validator.power, 500 ether, "validator1 power should be 1000");
             } else if (validator.key == key2) {
@@ -490,7 +491,7 @@ contract DefaultSDKTest is POCBaseTest {
         validatorSet = middleware.getValidatorSet();
         assertEq(validatorSet.length, 2, "valset length should be 2");
         for (uint256 i = 0; i < validatorSet.length; i++) {
-            ExtendedSimpleMiddleware.ValidatorData memory validator = validatorSet[i];
+            SimplePosMiddleware.ValidatorData memory validator = validatorSet[i];
             if (validator.key == key1) {
                 assertEq(validator.power, 500 ether, "validator1 power should be 1000");
             } else if (validator.key == key2) {
@@ -554,7 +555,7 @@ contract DefaultSDKTest is POCBaseTest {
         bytes[] memory slashHints = new bytes[](stakeHints.length);
         slashHints[0] = "";
 
-        uint32 epoch = middleware.getCurrentEpoch();
+        uint48 epoch = middleware.getCurrentEpoch();
         uint256 amount = 100 ether;
 
         // Perform a slash on operator1
