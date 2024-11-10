@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.25;
+pragma solidity ^0.8.25;
 
 import {SimplePosMiddleware} from "../../src/examples/simple-pos-network/SimplePosMiddleware.sol";
 import {DefaultKeyManager} from "../../src/key-manager/DefaultKeyManager.sol";

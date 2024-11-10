@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.25;
+pragma solidity ^0.8.25;
 
 import {IRegistry} from "@symbiotic/interfaces/common/IRegistry.sol";
 import {IOptInService} from "@symbiotic/interfaces/service/IOptInService.sol";
@@ -47,6 +47,15 @@ abstract contract BaseOperatorManager is BaseManager {
     }
 
     /* 
+     * @notice Returns a list of active operators at a specific timestamp.
+     * @param timestamp The timestamp to check.
+     * @return An array of addresses representing the active operators.
+     */
+    function activeOperatorsAt(uint48 timestamp) public view returns (address[] memory) {
+        return _operators.getActive(timestamp);
+    }
+
+    /* 
      * @notice Checks if a given operator was active at a specified timestamp.
      * @param timestamp The timestamp to check.
      * @param operator The operator to check.
@@ -69,7 +78,7 @@ abstract contract BaseOperatorManager is BaseManager {
             revert OperatorNotOptedIn();
         }
 
-        _operators.register(getCaptureTimestamp(), operator);
+        _operators.register(Time.timestamp(), operator);
     }
 
     /* 
