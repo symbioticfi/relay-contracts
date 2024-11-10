@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.25;
+pragma solidity ^0.8.25;
 
 import {IVault} from "@symbiotic/interfaces/vault/IVault.sol";
 import {IBaseDelegator} from "@symbiotic/interfaces/delegator/IBaseDelegator.sol";
@@ -142,28 +142,28 @@ contract SqrtTaskMiddleware is DefaultVaultManager, DefaultOperatorManager, Defa
     /* 
      * inheritdoc BaseMiddleware
      */
-    function registerSubnetwork(uint96 subnetwork) public pure override {
+    function registerSubnetwork(uint96) public pure override {
         revert();
     }
 
     /* 
      * inheritdoc BaseMiddleware
      */
-    function pauseSubnetwork(uint96 subnetwork) public pure override {
+    function pauseSubnetwork(uint96) public pure override {
         revert();
     }
 
     /* 
      * inheritdoc BaseMiddleware
      */
-    function unpauseSubnetwork(uint96 subnetwork) public pure override {
+    function unpauseSubnetwork(uint96) public pure override {
         revert();
     }
 
     /* 
      * inheritdoc BaseMiddleware
      */
-    function unregisterSubnetwork(uint96 subnetwork) public pure override {
+    function unregisterSubnetwork(uint96) public pure override {
         revert();
     }
 }
