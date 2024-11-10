@@ -136,11 +136,7 @@ abstract contract BaseVaultManager is BaseManager {
      * @return enableTime The time when the vault was enabled
      * @return disableTime The time when the vault was disabled
      */
-    function operatorVaultWithTimesAt(address operator, uint256 pos)
-        public
-        view
-        returns (address, uint48, uint48)
-    {
+    function operatorVaultWithTimesAt(address operator, uint256 pos) public view returns (address, uint48, uint48) {
         return _operatorVaults[operator].at(pos);
     }
 
@@ -186,7 +182,7 @@ abstract contract BaseVaultManager is BaseManager {
             }
         }
 
-        assembly ("memory-safe") {
+        assembly {
             mstore(vaults, len)
         }
 
@@ -215,7 +211,7 @@ abstract contract BaseVaultManager is BaseManager {
             }
         }
 
-        assembly ("memory-safe") {
+        assembly {
             mstore(vaults, len)
         }
 
@@ -319,7 +315,11 @@ abstract contract BaseVaultManager is BaseManager {
      * @param timestamp The timestamp to check stake at
      * @return The stake amount
      */
-    function getOperatorStakeAt(address operator, address vault, uint96 subnetwork, uint48 timestamp) public view returns (uint256) {
+    function getOperatorStakeAt(address operator, address vault, uint96 subnetwork, uint48 timestamp)
+        public
+        view
+        returns (uint256)
+    {
         bytes32 subnetworkId = NETWORK.subnetwork(subnetwork);
         return IBaseDelegator(IVault(vault).delegator()).stakeAt(subnetworkId, operator, timestamp, "");
     }
@@ -344,7 +344,11 @@ abstract contract BaseVaultManager is BaseManager {
      * @param timestamp The timestamp to check power at
      * @return The power amount
      */
-    function getOperatorPowerAt(address operator, address vault, uint96 subnetwork, uint48 timestamp) public view returns (uint256) {
+    function getOperatorPowerAt(address operator, address vault, uint96 subnetwork, uint48 timestamp)
+        public
+        view
+        returns (uint256)
+    {
         uint256 stake = getOperatorStakeAt(operator, vault, subnetwork, timestamp);
         return stakeToPower(vault, stake);
     }

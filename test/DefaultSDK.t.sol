@@ -13,7 +13,6 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {Slasher} from "@symbiotic/contracts/slasher/Slasher.sol";
 import {VetoSlasher} from "@symbiotic/contracts/slasher/VetoSlasher.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract DefaultSDKTest is POCBaseTest {
     using Subnetwork for bytes32;
