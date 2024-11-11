@@ -9,10 +9,9 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {VaultManager} from "../vault-manager/VaultManager.sol";
-import {OperatorManager} from "../operator-manager/OperatorManager.sol";
-import {AccessManager} from "../access-manager/AccessManager.sol";
-
+import {VaultManager} from "../managers/VaultManager.sol";
+import {OperatorManager} from "../managers/OperatorManager.sol";
+import {AccessManager} from "../managers/AccessManager.sol";
 
 abstract contract BaseMiddleware is VaultManager, OperatorManager, AccessManager {
     using Subnetwork for address;
@@ -49,7 +48,6 @@ abstract contract BaseMiddleware is VaultManager, OperatorManager, AccessManager
      * @param key The key for which to find the associated operator
      * @return The address of the operator linked to the specified key
      */
-
     function operatorByKey(bytes memory key) public view virtual returns (address);
 
     /**

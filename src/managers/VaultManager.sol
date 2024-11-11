@@ -14,7 +14,7 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 
-import {BaseManager} from "../BaseManager.sol";
+import {BaseManager} from "./BaseManager.sol";
 import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
 abstract contract VaultManager is BaseManager {
@@ -148,7 +148,6 @@ abstract contract VaultManager is BaseManager {
     function activeOperatorVaults(address operator) public view returns (address[] memory) {
         return _operatorVaults[operator].getActive(getCaptureTimestamp());
     }
-
 
     /**
      * @notice Returns all active vaults at the current capture timestamp

@@ -1,11 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-
-import {BaseManager} from "../BaseManager.sol";
-
-abstract contract AccessManager is BaseManager {
+abstract contract AccessManager {
     modifier checkAccess() {
         _checkAccess(msg.sender, msg.sig);
         _;
