@@ -5,7 +5,7 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract BaseManager is Initializable, OwnableUpgradeable {
+abstract contract BaseManager is Initializable, OwnableUpgradeable {
     address public NETWORK; // Address of the network
     uint48 public SLASHING_WINDOW; // Duration of the slashing window
     address public VAULT_REGISTRY; // Address of the vault registry
@@ -17,7 +17,6 @@ contract BaseManager is Initializable, OwnableUpgradeable {
 
     /* 
      * @notice initalizer of the BaseManager contract.
-     * @param owner The address of the contract owner.
      * @param network The address of the network.
      * @param epochDuration The duration of each epoch.
      * @param slashingWindow The duration of the slashing window.
@@ -26,12 +25,12 @@ contract BaseManager is Initializable, OwnableUpgradeable {
      * @param operatorNetOptIn The address of the operator network opt-in service.
      */
     function initialize(
-        address owner,
         address network,
         uint48 slashingWindow,
         address vaultRegistry,
         address operatorRegistry,
-        address operatorNetOptIn
+        address operatorNetOptIn,
+        address owner
     ) public virtual initializer {
         __Ownable_init(owner);
 
@@ -49,5 +48,9 @@ contract BaseManager is Initializable, OwnableUpgradeable {
      */
     function getCaptureTimestamp() public view virtual returns (uint48 timestamp) {
         return Time.timestamp() - 1;
+    }
+
+    function stakeToPower(address vault, uint256 stake) public view virtual returns (uint256 power) {
+        return stake;
     }
 }

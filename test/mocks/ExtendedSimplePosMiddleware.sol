@@ -2,7 +2,7 @@
 pragma solidity ^0.8.25;
 
 import {SimplePosMiddleware} from "../../src/examples/simple-pos-network/SimplePosMiddleware.sol";
-import {DefaultKeyManager} from "../../src/key-manager/DefaultKeyManager.sol";
+import {KeyManager} from "../../src/key-manager/KeyManager.sol";
 
 contract ExtendedSimplePosMiddleware is SimplePosMiddleware {
     constructor(

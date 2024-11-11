@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {BaseManager} from "../BaseManager.sol";
+import {BaseMiddleware} from "../middleware/BaseMiddleware.sol";
 import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
-abstract contract BaseKeyManager is BaseManager {
+abstract contract KeyManager is BaseMiddleware {
     using PauseableEnumerableSet for PauseableEnumerableSet.Bytes32Set;
 
     error DuplicateKey();
@@ -24,8 +24,8 @@ abstract contract BaseKeyManager is BaseManager {
      * @return The address of the operator linked to the specified key
      */
 
-    function operatorByKey(bytes32 key) public view returns (address) {
-        return keyToOperator[key];
+    function operatorByKey(bytes memory key) public view override returns (address) {
+        return keyToOperator[abi.decode(key, (bytes32))];
     }
 
     /**
@@ -34,8 +34,8 @@ abstract contract BaseKeyManager is BaseManager {
      * @param operator The address of the operator
      * @return The key associated with the specified operator
      */
-    function operatorKey(address operator) public view returns (bytes32) {
-        return keys[operator].getActive(getCaptureTimestamp())[0];
+    function operatorKey(address operator) public view override returns (bytes memory) {
+        return abi.encode(keys[operator].getActive(getCaptureTimestamp())[0]);
     }
 
     /**
@@ -52,9 +52,11 @@ abstract contract BaseKeyManager is BaseManager {
      * @notice Updates the key associated with an operator
      * @dev Reverts if the key is already enabled or if another operator is using it
      * @param operator The address of the operator whose key is to be updated
-     * @param key The new key to associate with the operator
+     * @param key_ The new key to associate with the operator
      */
-    function _updateKey(address operator, bytes32 key) internal {
+    function _updateKey(address operator, bytes memory key_) internal override {
+        bytes32 key = abi.decode(key_, (bytes32));
+
         if (keyToOperator[key] != address(0)) {
             revert DuplicateKey();
         }
