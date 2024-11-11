@@ -8,7 +8,7 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {BaseManager} from "../BaseManager.sol";
+import {BaseManager} from "./BaseManager.sol";
 import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
 abstract contract OperatorManager is BaseManager {

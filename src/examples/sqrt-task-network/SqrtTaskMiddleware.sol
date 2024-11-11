@@ -14,10 +14,9 @@ import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SharedVaults} from "../../middleware/extensions/SharedVaults.sol";
 import {Operators} from "../../middleware/extensions/Operators.sol";
 
-import {KeyManager} from "../../key-manager/KeyManager.sol";
+import {KeyStorage} from "../../key-storage/KeyStorage.sol";
 
-
-contract SqrtTaskMiddleware is SharedVaults, Operators, KeyManager, EIP712 {
+contract SqrtTaskMiddleware is SharedVaults, Operators, KeyStorage, EIP712 {
     using Subnetwork for address;
     using Math for uint256;
 
@@ -46,8 +45,10 @@ contract SqrtTaskMiddleware is SharedVaults, Operators, KeyManager, EIP712 {
         address operatorNetOptin,
         address owner,
         uint48 slashingWindow
-    ) EIP712("SqrtTaskMiddleware", "1") BaseMiddleware(network, operatorRegistry, vaultRegistry, operatorNetOptin, slashingWindow, owner) {
-    }
+    )
+        EIP712("SqrtTaskMiddleware", "1")
+        BaseMiddleware(network, operatorRegistry, vaultRegistry, operatorNetOptin, slashingWindow, owner)
+    {}
 
     function createTask(uint256 value, address operator) external returns (uint256 taskIndex) {
         taskIndex = tasks.length;

@@ -13,10 +13,9 @@ import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SharedVaults} from "../../middleware/extensions/SharedVaults.sol";
 import {Operators} from "../../middleware/extensions/Operators.sol";
 
-import {KeyManager} from "../../key-manager/KeyManager.sol";
+import {KeyStorage} from "../../key-storage/KeyStorage.sol";
 
-
-contract SimplePosMiddleware is SharedVaults, Operators, KeyManager {
+contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage {
     using Subnetwork for address;
 
     error InactiveKeySlash(); // Error thrown when trying to slash an inactive key
@@ -144,7 +143,6 @@ contract SimplePosMiddleware is SharedVaults, Operators, KeyManager {
         // uint48 epochStart = getEpochStart(epoch); // Get the start timestamp for the epoch
         // address operator = operatorByKey(abi.encode(key)); // Get the operator associated with the key
 
-        
         // if (operator == address(0)) {
         //     revert NotExistKeySlash(); // Revert if the operator does not exist
         // }
