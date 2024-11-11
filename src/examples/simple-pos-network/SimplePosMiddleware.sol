@@ -58,7 +58,7 @@ contract SimplePosMiddleware is DefaultVaultManager, DefaultOperatorManager, Def
      * @return The capture timestamp.
      */
     function getCaptureTimestamp() public view virtual override returns (uint48 timestamp) {
-        return START_TIMESTAMP + (Time.timestamp() - START_TIMESTAMP) / EPOCH_DURATION;
+        return START_TIMESTAMP + ((Time.timestamp() - START_TIMESTAMP) / EPOCH_DURATION) * EPOCH_DURATION;
     }
 
     /* 
