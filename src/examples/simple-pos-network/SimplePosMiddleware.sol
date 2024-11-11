@@ -54,14 +54,6 @@ contract SimplePosMiddleware is DefaultVaultManager, DefaultOperatorManager, Def
     }
 
     /* 
-     * @notice Returns the capture timestamp for the current epoch.
-     * @return The capture timestamp.
-     */
-    function getCaptureTimestamp() public view virtual override returns (uint48 timestamp) {
-        return START_TIMESTAMP + ((Time.timestamp() - START_TIMESTAMP) / EPOCH_DURATION) * EPOCH_DURATION;
-    }
-
-    /* 
      * @notice Returns the start timestamp for a given epoch.
      * @param epoch The epoch number.
      * @return The start timestamp.
@@ -76,6 +68,14 @@ contract SimplePosMiddleware is DefaultVaultManager, DefaultOperatorManager, Def
      */
     function getCurrentEpoch() public view returns (uint48) {
         return (Time.timestamp() - START_TIMESTAMP) / EPOCH_DURATION;
+    }
+
+    /* 
+     * @notice Returns the capture timestamp for the current epoch.
+     * @return The capture timestamp.
+     */
+    function getCaptureTimestamp() public view virtual override returns (uint48 timestamp) {
+        return getEpochStart(getCurrentEpoch());
     }
 
     /* 
