@@ -4,7 +4,7 @@ pragma solidity ^0.8.25;
 import {BaseManager} from "../BaseManager.sol";
 import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
-abstract contract BaseBLSKeyManager is BaseManager {
+abstract contract BLSKeyManager is BaseManager {
     using PauseableEnumerableSet for PauseableEnumerableSet.Inner;
 
     error DuplicateBLSKey();
