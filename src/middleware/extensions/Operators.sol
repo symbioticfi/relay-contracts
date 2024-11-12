@@ -3,7 +3,6 @@ pragma solidity ^0.8.25;
 
 import {BaseMiddleware} from "../BaseMiddleware.sol";
 
-
 abstract contract Operators is BaseMiddleware {
     function registerOperatorVault(address operator, address vault) public checkAccess {
         require(isOperatorRegistered(operator), "Operator not registered");

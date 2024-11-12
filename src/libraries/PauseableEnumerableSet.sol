@@ -358,8 +358,7 @@ library PauseableEnumerableSet {
     * @return True if the value was active at the timestamp, false otherwise.
     */
     function wasActiveAt(Inner storage self, uint48 timestamp) internal view returns (bool) {
-        return
-            self.enabledTimestamp < timestamp && (self.disabledTimestamp == 0 || self.disabledTimestamp >= timestamp);
+        return self.enabledTimestamp < timestamp && (self.disabledTimestamp == 0 || self.disabledTimestamp >= timestamp);
     }
 
     /* 
@@ -760,8 +759,7 @@ library PauseableEnumerableSet {
     * @return True if the value was active at the timestamp, false otherwise.
     */
     function wasActiveAt(Inner256 storage self, uint48 timestamp) internal view returns (bool) {
-        return
-            self.enabledTimestamp < timestamp && (self.disabledTimestamp == 0 || self.disabledTimestamp >= timestamp);
+        return self.enabledTimestamp < timestamp && (self.disabledTimestamp == 0 || self.disabledTimestamp >= timestamp);
     }
 
     /* 
@@ -799,11 +797,11 @@ library PauseableEnumerableSet {
     * @param immutablePeriod The immutable period that must pass before unregistering.
     * @return True if the value can be unregistered, false otherwise.
     */
-    function checkUnregister(Inner256 storage self, uint48 timestamp, uint48 immutablePeriod)
-        internal
-        view
-        returns (bool)
-    {
+    function checkUnregister(
+        Inner256 storage self,
+        uint48 timestamp,
+        uint48 immutablePeriod
+    ) internal view returns (bool) {
         if (self.enabledTimestamp != 0 || self.disabledTimestamp == 0) {
             return false;
         }
