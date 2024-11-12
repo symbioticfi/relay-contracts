@@ -305,6 +305,7 @@ library PauseableEnumerableSet {
     function set(Inner storage self, uint48 timestamp, uint160 value) internal {
         self.value = value;
         self.enabledTimestamp = timestamp;
+        self.disabledTimestamp = 0;
     }
 
     /* 
@@ -316,6 +317,7 @@ library PauseableEnumerableSet {
     function set(Inner storage self, uint48 timestamp, address addr) internal {
         self.value = uint160(addr);
         self.enabledTimestamp = timestamp;
+        self.disabledTimestamp = 0;
     }
 
     /* 
@@ -329,6 +331,7 @@ library PauseableEnumerableSet {
         }
 
         self.enabledTimestamp = timestamp;
+        self.disabledTimestamp = 0;
     }
 
     /* 
@@ -340,8 +343,12 @@ library PauseableEnumerableSet {
         if (self.disabledTimestamp != 0) {
             revert NotEnabled();
         }
+        if (self.enabledTimestamp == 0) {
+            revert NotEnabled();
+        }
 
         self.disabledTimestamp = timestamp;
+        self.enabledTimestamp = 0;
     }
 
     /* 
@@ -352,7 +359,7 @@ library PauseableEnumerableSet {
     */
     function wasActiveAt(Inner storage self, uint48 timestamp) internal view returns (bool) {
         return
-            self.enabledTimestamp <= timestamp && (self.disabledTimestamp == 0 || self.disabledTimestamp >= timestamp);
+            self.enabledTimestamp < timestamp && (self.disabledTimestamp == 0 || self.disabledTimestamp >= timestamp);
     }
 
     /* 
@@ -728,6 +735,7 @@ library PauseableEnumerableSet {
         }
 
         self.enabledTimestamp = timestamp;
+        self.disabledTimestamp = 0;
     }
 
     /* 
@@ -751,7 +759,7 @@ library PauseableEnumerableSet {
     */
     function wasActiveAt(Inner256 storage self, uint48 timestamp) internal view returns (bool) {
         return
-            self.enabledTimestamp <= timestamp && (self.disabledTimestamp == 0 || self.disabledTimestamp >= timestamp);
+            self.enabledTimestamp < timestamp && (self.disabledTimestamp == 0 || self.disabledTimestamp >= timestamp);
     }
 
     /* 
