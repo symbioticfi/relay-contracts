@@ -711,6 +711,7 @@ library PauseableEnumerableSet {
     function set(Inner256 storage self, uint48 timestamp, uint256 value) internal {
         self.value = value;
         self.enabledTimestamp = timestamp;
+        self.disabledTimestamp = 0;
     }
 
     /* 
@@ -722,6 +723,7 @@ library PauseableEnumerableSet {
     function set(Inner256 storage self, uint48 timestamp, bytes32 key) internal {
         self.value = uint256(key);
         self.enabledTimestamp = timestamp;
+        self.disabledTimestamp = 0;
     }
 
     /* 
@@ -747,7 +749,7 @@ library PauseableEnumerableSet {
         if (self.disabledTimestamp != 0) {
             revert NotEnabled();
         }
-
+        self.enabledTimestamp = 0;
         self.disabledTimestamp = timestamp;
     }
 
