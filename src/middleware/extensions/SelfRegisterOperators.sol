@@ -2,29 +2,47 @@
 pragma solidity ^0.8.25;
 
 import {BaseMiddleware} from "../BaseMiddleware.sol";
+import {BaseSig} from "./sigs/BaseSig.sol";
 
-abstract contract Operators is BaseMiddleware {
-    function registerOperator(address operator, bytes memory key, address vault) public {
-        _beforeRegisterOperator(operator, key, vault);
-        _registerOperator(operator);
-        _updateKey(operator, key);
-        _registerOperatorVault(operator, vault);
+abstract contract SelfRegisterOperators is BaseMiddleware, BaseSig {
+    error InvalidSignature();
+
+    function registerOperator(bytes memory key, address vault, bytes memory signature) public {
+        _beforeRegisterOperator(msg.sender, key, vault);
+        _verifyKey(key, signature);
+        _registerOperator(msg.sender);
+        _updateKey(msg.sender, key);
+        _registerOperatorVault(msg.sender, vault);
     }
 
-    function unregisterOperator(address operator) public {
-        _beforeUnregisterOperator(operator);
-        _unregisterOperator(operator);
+    function unregisterOperator() public {
+        _beforeUnregisterOperator(msg.sender);
+        _unregisterOperator(msg.sender);
     }
 
-    function pauseOperator(address operator) public {
-        _beforePauseOperator(operator);
-        _pauseOperator(operator);
+    function pauseOperator() public {
+        _beforePauseOperator(msg.sender);
+        _pauseOperator(msg.sender);
     }
 
-    function unpauseOperator(address operator) public {
-        _beforeUnpauseOperator(operator);
-        _unpauseOperator(operator);
+    function unpauseOperator() public {
+        _beforeUnpauseOperator(msg.sender);
+        _unpauseOperator(msg.sender);
     }
+
+    function updateOperatorKey(bytes memory key, bytes memory signature) public {
+        _beforeUpdateOperatorKey(msg.sender, key);
+        _verifyKey(key, signature);
+        _updateKey(msg.sender, key);
+    }
+
+    function _verifyKey(bytes memory key, bytes memory signature) internal view {
+        if (!_verifyKeySignature(key, signature)) {
+            revert InvalidSignature();
+        }
+    }
+
+    function _beforeUpdateOperatorKey(address operator, bytes memory key) internal virtual {}
 
     function _beforeRegisterOperator(address operator, bytes memory key, address vault) internal virtual {}
     function _beforeUnregisterOperator(address operator) internal virtual {}
