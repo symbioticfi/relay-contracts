@@ -10,11 +10,13 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
-import {DefaultVaultManager} from "../../vault-manager/DefaultVaultManager.sol";
-import {DefaultOperatorManager} from "../../operator-manager/DefaultOperatorManager.sol";
-import {DefaultKeyManager} from "../../key-manager/DefaultKeyManager.sol";
+import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
+import {SharedVaults} from "../../middleware/extensions/SharedVaults.sol";
+import {Operators} from "../../middleware/extensions/Operators.sol";
 
-contract SqrtTaskMiddleware is DefaultVaultManager, DefaultOperatorManager, DefaultKeyManager, EIP712 {
+import {KeyStorage} from "../../key-storage/KeyStorage.sol";
+
+contract SqrtTaskMiddleware is SharedVaults, Operators, KeyStorage, EIP712 {
     using Subnetwork for address;
     using Math for uint256;
 
@@ -43,9 +45,10 @@ contract SqrtTaskMiddleware is DefaultVaultManager, DefaultOperatorManager, Defa
         address operatorNetOptin,
         address owner,
         uint48 slashingWindow
-    ) EIP712("SqrtTaskMiddleware", "1") {
-        initialize(owner, network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
-    }
+    )
+        EIP712("SqrtTaskMiddleware", "1")
+        BaseMiddleware(network, operatorRegistry, vaultRegistry, operatorNetOptin, slashingWindow, owner)
+    {}
 
     function createTask(uint256 value, address operator) external returns (uint256 taskIndex) {
         taskIndex = tasks.length;
@@ -137,33 +140,5 @@ contract SqrtTaskMiddleware is DefaultVaultManager, DefaultOperatorManager, Defa
 
             _slashVault(task.captureTimestamp, vault, subnetwork, task.operator, slashAmount, slashHints[i]);
         }
-    }
-
-    /* 
-     * inheritdoc BaseMiddleware
-     */
-    function registerSubnetwork(uint96) public pure override {
-        revert();
-    }
-
-    /* 
-     * inheritdoc BaseMiddleware
-     */
-    function pauseSubnetwork(uint96) public pure override {
-        revert();
-    }
-
-    /* 
-     * inheritdoc BaseMiddleware
-     */
-    function unpauseSubnetwork(uint96) public pure override {
-        revert();
-    }
-
-    /* 
-     * inheritdoc BaseMiddleware
-     */
-    function unregisterSubnetwork(uint96) public pure override {
-        revert();
     }
 }

@@ -281,7 +281,7 @@ library PauseableEnumerableSet {
     /* 
      * @notice Returns the address stored in the Inner struct.
      * @param self The Inner struct
-    * @return The stored Uint160 as address
+     * @return The stored Uint160 as address
     */
     function getAddress(Inner storage self) internal view returns (address) {
         return address(self.value);
