@@ -4,18 +4,18 @@ pragma solidity ^0.8.25;
 import {BaseManager} from "../managers/BaseManager.sol";
 import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
-abstract contract BlsKeyStorage is BaseManager {
+abstract contract KeyStorageBytes is BaseManager {
     using PauseableEnumerableSet for PauseableEnumerableSet.Inner;
 
-    error DuplicateBLSKey();
-    error BLSKeyAlreadyEnabled();
+    error DuplicateKey();
+    error KeyAlreadyEnabled();
 
     bytes32 private constant ZERO_BYTES_HASH = keccak256(""); // Constant representing an empty hash
 
-    mapping(address => bytes) public blsKeys; // Mapping from operator addresses to their BLS keys
-    mapping(address => bytes) public prevBLSKeys; // Mapping from operator addresses to their previous BLS keys
-    mapping(address => uint48) public blsKeyUpdateTimestamp; // Mapping from operator addresses to the timestamp of the last BLS key update
-    mapping(bytes => PauseableEnumerableSet.Inner) internal _blsKeyData; // Mapping from BLS keys to their associated data
+    mapping(address => bytes) public keys; // Mapping from operator addresses to their BLS keys
+    mapping(address => bytes) public prevKeys; // Mapping from operator addresses to their previous keys
+    mapping(address => uint48) public keyUpdateTimestamp; // Mapping from operator addresses to the timestamp of the last key update
+    mapping(bytes => PauseableEnumerableSet.Inner) internal _keyData; // Mapping from keys to their associated data
 
     /**
      * @notice Returns the operator address associated with a given BLS key
@@ -23,7 +23,7 @@ abstract contract BlsKeyStorage is BaseManager {
      * @return The address of the operator linked to the specified BLS key
      */
     function operatorByKey(bytes memory key) public view returns (address) {
-        return _blsKeyData[key].getAddress();
+        return _keyData[key].getAddress();
     }
 
     /**
@@ -33,11 +33,11 @@ abstract contract BlsKeyStorage is BaseManager {
      * @return The BLS key associated with the specified operator
      */
     function operatorKey(address operator) public view returns (bytes memory) {
-        if (blsKeyUpdateTimestamp[operator] == getCaptureTimestamp()) {
-            return prevBLSKeys[operator];
+        if (keyUpdateTimestamp[operator] == getCaptureTimestamp()) {
+            return prevKeys[operator];
         }
 
-        return blsKeys[operator];
+        return keys[operator];
     }
 
     /**
@@ -47,7 +47,7 @@ abstract contract BlsKeyStorage is BaseManager {
      * @return A boolean indicating whether the BLS key was active at the specified timestamp
      */
     function keyWasActiveAt(uint48 timestamp, bytes memory key) public view returns (bool) {
-        return _blsKeyData[key].wasActiveAt(timestamp);
+        return _keyData[key].wasActiveAt(timestamp);
     }
 
     /**
@@ -59,23 +59,23 @@ abstract contract BlsKeyStorage is BaseManager {
     function _updateKey(address operator, bytes memory key) internal {
         uint48 timestamp = getCaptureTimestamp();
 
-        if (keccak256(blsKeys[operator]) == keccak256(key)) {
-            revert BLSKeyAlreadyEnabled();
+        if (keccak256(keys[operator]) == keccak256(key)) {
+            revert KeyAlreadyEnabled();
         }
 
-        if (_blsKeyData[key].getAddress() != address(0) && _blsKeyData[key].getAddress() != operator) {
-            revert DuplicateBLSKey();
+        if (_keyData[key].getAddress() != address(0) && _keyData[key].getAddress() != operator) {
+            revert DuplicateKey();
         }
 
-        if (keccak256(key) != ZERO_BYTES_HASH && _blsKeyData[key].getAddress() == address(0)) {
-            _blsKeyData[key].set(timestamp, operator);
+        if (keccak256(key) != ZERO_BYTES_HASH && _keyData[key].getAddress() == address(0)) {
+            _keyData[key].set(timestamp, operator);
         }
 
-        if (blsKeyUpdateTimestamp[operator] != timestamp) {
-            prevBLSKeys[operator] = blsKeys[operator];
-            blsKeyUpdateTimestamp[operator] = timestamp;
+        if (keyUpdateTimestamp[operator] != timestamp) {
+            prevKeys[operator] = keys[operator];
+            keyUpdateTimestamp[operator] = timestamp;
         }
 
-        blsKeys[operator] = key;
+        keys[operator] = key;
     }
 }

@@ -13,10 +13,10 @@ import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SharedVaults} from "../../middleware/extensions/SharedVaults.sol";
 import {Operators} from "../../middleware/extensions/Operators.sol";
 
-import {KeyStorage} from "../../key-storage/KeyStorage.sol";
+import {KeyStorage256} from "../../key-storage/KeyStorage256.sol";
 
 
-contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage {
+contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256 {
     using Subnetwork for address;
 
     error InactiveKeySlash(); // Error thrown when trying to slash an inactive key
