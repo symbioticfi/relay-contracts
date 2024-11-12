@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {BaseManager} from "../BaseManager.sol";
+import {BaseManager} from "../managers/BaseManager.sol";
 import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
-abstract contract BaseBLSKeyManager is BaseManager {
+abstract contract BlsKeyStorage is BaseManager {
     using PauseableEnumerableSet for PauseableEnumerableSet.Inner;
 
     error DuplicateBLSKey();

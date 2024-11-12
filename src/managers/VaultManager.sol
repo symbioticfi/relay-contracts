@@ -14,10 +14,10 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 
-import {BaseManager} from "../BaseManager.sol";
+import {BaseManager} from "./BaseManager.sol";
 import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
-abstract contract BaseVaultManager is BaseManager {
+abstract contract VaultManager is BaseManager {
     using EnumerableMap for EnumerableMap.AddressToUintMap;
     using EnumerableMap for EnumerableMap.AddressToAddressMap;
     using PauseableEnumerableSet for PauseableEnumerableSet.AddressSet;
@@ -147,17 +147,6 @@ abstract contract BaseVaultManager is BaseManager {
      */
     function activeOperatorVaults(address operator) public view returns (address[] memory) {
         return _operatorVaults[operator].getActive(getCaptureTimestamp());
-    }
-
-    /**
-     * @notice Converts stake amount to power for a vault
-     * @param vault The address of the vault
-     * @param stake The amount of stake to convert
-     * @return The calculated power amount
-     */
-    function stakeToPower(address vault, uint256 stake) public view virtual returns (uint256) {
-        vault;
-        return stake;
     }
 
     /**

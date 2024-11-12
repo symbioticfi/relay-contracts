@@ -9,11 +9,13 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {DefaultVaultManager} from "../../vault-manager/DefaultVaultManager.sol";
-import {DefaultOperatorManager} from "../../operator-manager/DefaultOperatorManager.sol";
-import {DefaultKeyManager} from "../../key-manager/DefaultKeyManager.sol";
+import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
+import {SharedVaults} from "../../middleware/extensions/SharedVaults.sol";
+import {Operators} from "../../middleware/extensions/Operators.sol";
 
-contract SimplePosMiddleware is DefaultVaultManager, DefaultOperatorManager, DefaultKeyManager {
+import {KeyStorage} from "../../key-storage/KeyStorage.sol";
+
+contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage {
     using Subnetwork for address;
 
     error InactiveKeySlash(); // Error thrown when trying to slash an inactive key
@@ -47,8 +49,7 @@ contract SimplePosMiddleware is DefaultVaultManager, DefaultOperatorManager, Def
         address owner,
         uint48 epochDuration,
         uint48 slashingWindow
-    ) {
-        initialize(owner, network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
+    ) BaseMiddleware(network, operatorRegistry, vaultRegistry, operatorNetOptin, slashingWindow, owner) {
         EPOCH_DURATION = epochDuration;
         START_TIMESTAMP = Time.timestamp();
     }
@@ -108,7 +109,7 @@ contract SimplePosMiddleware is DefaultVaultManager, DefaultOperatorManager, Def
         for (uint256 i; i < operators.length; ++i) {
             address operator = operators[i]; // Get the operator address
 
-            bytes32 key = operatorKey(operator); // Get the key for the operator
+            bytes32 key = abi.decode(operatorKey(operator), (bytes32)); // Get the key for the operator
             if (key == bytes32(0) || !keyWasActiveAt(getCaptureTimestamp(), key)) {
                 continue; // Skip if the key is inactive
             }
@@ -117,7 +118,7 @@ contract SimplePosMiddleware is DefaultVaultManager, DefaultOperatorManager, Def
             validatorSet[len++] = ValidatorData(power, key); // Store the validator data
         }
 
-        assembly {
+        assembly ("memory-safe") {
             mstore(validatorSet, len) // Update the length of the array
         }
     }
@@ -139,58 +140,58 @@ contract SimplePosMiddleware is DefaultVaultManager, DefaultOperatorManager, Def
         onlyOwner
         returns (SlashResponse[] memory slashResponses)
     {
-        uint48 epochStart = getEpochStart(epoch); // Get the start timestamp for the epoch
-        address operator = operatorByKey(key); // Get the operator associated with the key
+        // uint48 epochStart = getEpochStart(epoch); // Get the start timestamp for the epoch
+        // address operator = operatorByKey(abi.encode(key)); // Get the operator associated with the key
 
-        if (operator == address(0)) {
-            revert NotExistKeySlash(); // Revert if the operator does not exist
-        }
+        // if (operator == address(0)) {
+        //     revert NotExistKeySlash(); // Revert if the operator does not exist
+        // }
 
-        if (!keyWasActiveAt(epoch, key)) {
-            revert InactiveKeySlash(); // Revert if the key is inactive
-        }
+        // if (!keyWasActiveAt(epoch, key)) {
+        //     revert InactiveKeySlash(); // Revert if the key is inactive
+        // }
 
-        if (!operatorWasActiveAt(epoch, operator)) {
-            revert InactiveOperatorSlash(); // Revert if the operator wasn't active
-        }
+        // if (!operatorWasActiveAt(epoch, operator)) {
+        //     revert InactiveOperatorSlash(); // Revert if the operator wasn't active
+        // }
 
-        uint256 totalStake = getOperatorStakeAt(operator, epochStart); // Get the total stake for the operator
-        address[] memory vaults = activeVaultsAt(epochStart, operator); // Get active vaults for the operator
-        uint160[] memory subnetworks = activeSubnetworksAt(epochStart); // Get active subnetworks
+        // uint256 totalStake = getOperatorStakeAt(operator, epochStart); // Get the total stake for the operator
+        // address[] memory vaults = activeVaultsAt(epochStart, operator); // Get active vaults for the operator
+        // uint160[] memory subnetworks = activeSubnetworksAt(epochStart); // Get active subnetworks
 
-        slashResponses = new SlashResponse[](vaults.length * subnetworks.length); // Initialize the array for slash responses
-        uint256 len = 0; // Length counter
+        // slashResponses = new SlashResponse[](vaults.length * subnetworks.length); // Initialize the array for slash responses
+        // uint256 len = 0; // Length counter
 
-        if (stakeHints.length != slashHints.length || stakeHints.length != vaults.length) {
-            revert InvalidHints(); // Revert if the hints do not match in length
-        }
+        // if (stakeHints.length != slashHints.length || stakeHints.length != vaults.length) {
+        //     revert InvalidHints(); // Revert if the hints do not match in length
+        // }
 
-        for (uint256 i; i < vaults.length; ++i) {
-            if (stakeHints[i].length != subnetworks.length) {
-                revert InvalidHints(); // Revert if the stake hints do not match the subnetworks
-            }
+        // for (uint256 i; i < vaults.length; ++i) {
+        //     if (stakeHints[i].length != subnetworks.length) {
+        //         revert InvalidHints(); // Revert if the stake hints do not match the subnetworks
+        //     }
 
-            address vault = vaults[i]; // Get the vault address
-            for (uint256 j = 0; j < subnetworks.length; ++j) {
-                bytes32 subnetwork = NETWORK.subnetwork(uint96(subnetworks[j])); // Get the subnetwork
-                uint256 stake = IBaseDelegator(IVault(vault).delegator()).stakeAt(
-                    subnetwork,
-                    operator,
-                    epochStart,
-                    stakeHints[i][j] // Get the stake at the specified subnetwork
-                );
+        //     address vault = vaults[i]; // Get the vault address
+        //     for (uint256 j = 0; j < subnetworks.length; ++j) {
+        //         bytes32 subnetwork = NETWORK.subnetwork(uint96(subnetworks[j])); // Get the subnetwork
+        //         uint256 stake = IBaseDelegator(IVault(vault).delegator()).stakeAt(
+        //             subnetwork,
+        //             operator,
+        //             epochStart,
+        //             stakeHints[i][j] // Get the stake at the specified subnetwork
+        //         );
 
-                uint256 slashAmount = Math.mulDiv(amount, stake, totalStake); // Calculate the slashing amount
-                if (slashAmount == 0) {
-                    continue; // Skip if the slashing amount is zero
-                }
+        //         uint256 slashAmount = Math.mulDiv(amount, stake, totalStake); // Calculate the slashing amount
+        //         if (slashAmount == 0) {
+        //             continue; // Skip if the slashing amount is zero
+        //         }
 
-                slashResponses[len++] = _slashVault(epochStart, vault, subnetwork, operator, slashAmount, slashHints[i]); // Execute the slashing
-            }
-        }
+        //         slashResponses[len++] = _slashVault(epochStart, vault, subnetwork, operator, slashAmount, slashHints[i]); // Execute the slashing
+        //     }
+        // }
 
-        assembly {
-            mstore(slashResponses, len) // Update the length of the slash responses
-        }
+        // assembly ("memory-safe") {
+        //     mstore(slashResponses, len) // Update the length of the slash responses
+        // }
     }
 }
