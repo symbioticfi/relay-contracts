@@ -6,7 +6,7 @@ import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
-abstract contract KeyStorage is BaseMiddleware {
+abstract contract KeyStorage256 is BaseMiddleware {
     using PauseableEnumerableSet for PauseableEnumerableSet.Bytes32Set;
 
     error DuplicateKey();
