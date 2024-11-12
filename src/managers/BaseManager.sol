@@ -51,6 +51,7 @@ abstract contract BaseManager is Initializable, OwnableUpgradeable {
     }
 
     function stakeToPower(address vault, uint256 stake) public view virtual returns (uint256 power) {
+        vault;
         return stake;
     }
 }

@@ -17,7 +17,8 @@ abstract contract KeyStorage is BaseMiddleware {
     uint256 private constant MAX_DISABLED_KEYS = 1;
 
     mapping(address => PauseableEnumerableSet.Bytes32Set) internal keys; // Mapping from operator addresses to their current keys
-    mapping(bytes32 => address) internal keyToOperator;
+    mapping(bytes32 => address) internal keyToOperator; // Mapping from keys to operator addresses
+
     /**
      * @notice Returns the operator address associated with a given key
      * @param key The key for which to find the associated operator

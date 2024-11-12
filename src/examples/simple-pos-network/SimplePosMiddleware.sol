@@ -15,6 +15,7 @@ import {Operators} from "../../middleware/extensions/Operators.sol";
 
 import {KeyStorage} from "../../key-storage/KeyStorage.sol";
 
+
 contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage {
     using Subnetwork for address;
 
@@ -133,65 +134,64 @@ contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage {
      * @param amount The amount to slash.
      * @param stakeHints Hints for determining stakes.
      * @param slashHints Hints for the slashing process.
-     * @return An array of SlashResponse indicating the results of the slashing.
      */
     function slash(uint48 epoch, bytes32 key, uint256 amount, bytes[][] memory stakeHints, bytes[] memory slashHints)
         public
         onlyOwner
-        returns (SlashResponse[] memory slashResponses)
     {
-        // uint48 epochStart = getEpochStart(epoch); // Get the start timestamp for the epoch
-        // address operator = operatorByKey(abi.encode(key)); // Get the operator associated with the key
+        uint48 epochStart = getEpochStart(epoch);
+        address operator = operatorByKey(abi.encode(key));
 
-        // if (operator == address(0)) {
-        //     revert NotExistKeySlash(); // Revert if the operator does not exist
-        // }
+        _checkCanSlash(epoch, key);
 
-        // if (!keyWasActiveAt(epoch, key)) {
-        //     revert InactiveKeySlash(); // Revert if the key is inactive
-        // }
+        uint256 totalStake = getOperatorStakeAt(operator, epochStart);
+        address[] memory vaults = activeVaultsAt(epochStart, operator);
+        uint160[] memory subnetworks = activeSubnetworksAt(epochStart);
 
-        // if (!operatorWasActiveAt(epoch, operator)) {
-        //     revert InactiveOperatorSlash(); // Revert if the operator wasn't active
-        // }
+        // Validate hints lengths upfront
+        if (stakeHints.length != slashHints.length || stakeHints.length != vaults.length) {
+            revert InvalidHints();
+        }
 
-        // uint256 totalStake = getOperatorStakeAt(operator, epochStart); // Get the total stake for the operator
-        // address[] memory vaults = activeVaultsAt(epochStart, operator); // Get active vaults for the operator
-        // uint160[] memory subnetworks = activeSubnetworksAt(epochStart); // Get active subnetworks
+        for (uint256 i; i < vaults.length; ++i) {
+            if (stakeHints[i].length != subnetworks.length) {
+                revert InvalidHints();
+            }
 
-        // slashResponses = new SlashResponse[](vaults.length * subnetworks.length); // Initialize the array for slash responses
-        // uint256 len = 0; // Length counter
+            address vault = vaults[i];
+            for (uint256 j; j < subnetworks.length; ++j) {
+                bytes32 subnetwork = NETWORK.subnetwork(uint96(subnetworks[j]));
+                uint256 stake = IBaseDelegator(IVault(vault).delegator()).stakeAt(
+                    subnetwork,
+                    operator,
+                    epochStart,
+                    stakeHints[i][j]
+                );
 
-        // if (stakeHints.length != slashHints.length || stakeHints.length != vaults.length) {
-        //     revert InvalidHints(); // Revert if the hints do not match in length
-        // }
+                uint256 slashAmount = Math.mulDiv(amount, stake, totalStake);
+                if (slashAmount == 0) {
+                    continue;
+                }
 
-        // for (uint256 i; i < vaults.length; ++i) {
-        //     if (stakeHints[i].length != subnetworks.length) {
-        //         revert InvalidHints(); // Revert if the stake hints do not match the subnetworks
-        //     }
+                _slashVault(epochStart, vault, subnetwork, operator, slashAmount, slashHints[i]);
+            }
+        }
+    }
 
-        //     address vault = vaults[i]; // Get the vault address
-        //     for (uint256 j = 0; j < subnetworks.length; ++j) {
-        //         bytes32 subnetwork = NETWORK.subnetwork(uint96(subnetworks[j])); // Get the subnetwork
-        //         uint256 stake = IBaseDelegator(IVault(vault).delegator()).stakeAt(
-        //             subnetwork,
-        //             operator,
-        //             epochStart,
-        //             stakeHints[i][j] // Get the stake at the specified subnetwork
-        //         );
+    function _checkCanSlash(uint48 epoch, bytes32 key) internal view {
+        address operator = operatorByKey(abi.encode(key)); // Get the operator associated with the key
+        uint48 epochStart = getEpochStart(epoch); // Get the start timestamp for the epoch
 
-        //         uint256 slashAmount = Math.mulDiv(amount, stake, totalStake); // Calculate the slashing amount
-        //         if (slashAmount == 0) {
-        //             continue; // Skip if the slashing amount is zero
-        //         }
+        if (operator == address(0)) {
+            revert NotExistKeySlash(); // Revert if the operator does not exist
+        }
 
-        //         slashResponses[len++] = _slashVault(epochStart, vault, subnetwork, operator, slashAmount, slashHints[i]); // Execute the slashing
-        //     }
-        // }
+        if (!keyWasActiveAt(epochStart, key)) {
+            revert InactiveKeySlash(); // Revert if the key is inactive
+        }
 
-        // assembly ("memory-safe") {
-        //     mstore(slashResponses, len) // Update the length of the slash responses
-        // }
+        if (!operatorWasActiveAt(epochStart, operator)) {
+            revert InactiveOperatorSlash(); // Revert if the operator wasn't active
+        }
     }
 }

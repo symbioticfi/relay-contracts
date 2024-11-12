@@ -22,7 +22,7 @@ abstract contract BlsKeyStorage is BaseManager {
      * @param key The BLS key for which to find the associated operator
      * @return The address of the operator linked to the specified BLS key
      */
-    function operatorByBLSKey(bytes memory key) public view returns (address) {
+    function operatorByKey(bytes memory key) public view returns (address) {
         return _blsKeyData[key].getAddress();
     }
 
@@ -32,7 +32,7 @@ abstract contract BlsKeyStorage is BaseManager {
      * @param operator The address of the operator
      * @return The BLS key associated with the specified operator
      */
-    function operatorBLSKey(address operator) public view returns (bytes memory) {
+    function operatorKey(address operator) public view returns (bytes memory) {
         if (blsKeyUpdateTimestamp[operator] == getCaptureTimestamp()) {
             return prevBLSKeys[operator];
         }
@@ -46,7 +46,7 @@ abstract contract BlsKeyStorage is BaseManager {
      * @param key The BLS key to check
      * @return A boolean indicating whether the BLS key was active at the specified timestamp
      */
-    function blsKeyWasActiveAt(uint48 timestamp, bytes memory key) public view returns (bool) {
+    function keyWasActiveAt(uint48 timestamp, bytes memory key) public view returns (bool) {
         return _blsKeyData[key].wasActiveAt(timestamp);
     }
 
@@ -56,7 +56,7 @@ abstract contract BlsKeyStorage is BaseManager {
      * @param operator The address of the operator whose BLS key is to be updated
      * @param key The new BLS key to associate with the operator
      */
-    function _updateBLSKey(address operator, bytes memory key) internal {
+    function _updateKey(address operator, bytes memory key) internal {
         uint48 timestamp = getCaptureTimestamp();
 
         if (keccak256(blsKeys[operator]) == keccak256(key)) {
