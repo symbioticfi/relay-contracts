@@ -15,6 +15,7 @@ import {Operators} from "../../middleware/extensions/Operators.sol";
 
 import {KeyStorage} from "../../key-storage/KeyStorage.sol";
 
+
 contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage {
     using Subnetwork for address;
 
@@ -138,17 +139,12 @@ contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage {
     function slash(uint48 epoch, bytes32 key, uint256 amount, bytes[][] memory stakeHints, bytes[] memory slashHints)
         public
         onlyOwner
+        returns (SlashResponse[] memory slashResponses)
     {
         uint48 epochStart = getEpochStart(epoch);
         address operator = operatorByKey(abi.encode(key));
 
-<<<<<<< Updated upstream
-        // if (operator == address(0)) {
-        //     revert NotExistKeySlash(); // Revert if the operator does not exist
-        // }
-=======
         _checkCanSlash(epoch, key);
->>>>>>> Stashed changes
 
         uint256 totalStake = getOperatorStakeAt(operator, epochStart);
         address[] memory vaults = activeVaultsAt(epochStart, operator);
