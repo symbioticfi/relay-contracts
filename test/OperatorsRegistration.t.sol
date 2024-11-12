@@ -5,30 +5,30 @@ import {POCBaseTest} from "@symbiotic-test/POCBase.t.sol";
 
 import {SimplePosMiddleware} from "../src/examples/simple-pos-network/SimplePosMiddleware.sol";
 import {ExtendedSimplePosMiddleware} from "./mocks/ExtendedSimplePosMiddleware.sol";
-import {IVault} from "@symbiotic/interfaces/vault/IVault.sol";
-import {IBaseDelegator} from "@symbiotic/interfaces/delegator/IBaseDelegator.sol";
-import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
+//import {IVault} from "@symbiotic/interfaces/vault/IVault.sol";
+//import {IBaseDelegator} from "@symbiotic/interfaces/delegator/IBaseDelegator.sol";
+// import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
-import {Slasher} from "@symbiotic/contracts/slasher/Slasher.sol";
-import {VetoSlasher} from "@symbiotic/contracts/slasher/VetoSlasher.sol";
+//import {Slasher} from "@symbiotic/contracts/slasher/Slasher.sol";
+//import {VetoSlasher} from "@symbiotic/contracts/slasher/VetoSlasher.sol";
 
 contract OperatorsRegistrationTest is POCBaseTest {
-    using Subnetwork for bytes32;
-    using Subnetwork for address;
+    // using Subnetwork for bytes32;
+    // using Subnetwork for address;
     using Math for uint256;
 
     address network = address(0x123);
 
     ExtendedSimplePosMiddleware internal middleware;
 
-
     uint48 internal epochDuration = 600; // 10 minutes
     uint48 internal slashingWindow = 1200; // 20 minutes
 
     function setUp() public override {
-        vm.warp(1729690309);
+        SYMBIOTIC_CORE_PROJECT_ROOT = "lib/core/";
+        vm.warp(1_729_690_309);
 
         super.setUp();
 
@@ -46,7 +46,6 @@ contract OperatorsRegistrationTest is POCBaseTest {
             epochDuration,
             slashingWindow
         );
-
 
         _registerNetwork(network, address(middleware));
     }
@@ -72,7 +71,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
         vm.startPrank(operator);
         operatorNetworkOptInService.optIn(network);
         vm.stopPrank();
-        
+
         middleware.registerOperator(operator, key, address(0));
 
         (address op, uint48 s, uint48 f) = middleware.operatorWithTimesAt(0);
@@ -153,7 +152,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
         keys[2] = hex"0000000000000000000000000000000000000000000000000000000000000003";
 
         // Register and opt-in all operators
-        for(uint i = 0; i < operators.length; i++) {
+        for (uint256 i = 0; i < operators.length; i++) {
             _registerOperator(operators[i]);
             vm.startPrank(operators[i]);
             operatorNetworkOptInService.optIn(network);
@@ -163,7 +162,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
 
         // Skip epoch to activate all operators
         skipEpoch();
-        
+
         // Verify all operators are active
         address[] memory activeOps = middleware.activeOperators();
         assertEq(activeOps.length, 3, "Should have 3 active operators");
@@ -240,9 +239,11 @@ contract OperatorsRegistrationTest is POCBaseTest {
         // Skip epoch to activate operator
         skipEpoch();
         assertEq(middleware.activeOperators().length, 1, "Should have 1 active operator after reregistration");
-        assertTrue(middleware.operatorWasActiveAt(middleware.getCaptureTimestamp(), operator), "Operator should be active after reregistration");
+        assertTrue(
+            middleware.operatorWasActiveAt(middleware.getCaptureTimestamp(), operator),
+            "Operator should be active after reregistration"
+        );
     }
-
 
     function testCornerCaseTimings() public {
         // Set up initial operator
@@ -258,7 +259,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
         middleware.registerOperator(operator, key, address(0));
         vm.warp(middleware.getEpochStart(1) - 1);
         assertEq(middleware.activeOperators().length, 0, "Should have no active operators before epoch");
-        
+
         // Check right at epoch boundary
         vm.warp(middleware.getEpochStart(1));
         assertEq(middleware.activeOperators().length, 1, "Should have 1 active operator at epoch start");
@@ -266,7 +267,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
         // Test pause timing edge cases
         middleware.pauseOperator(operator);
         uint48 pauseTime = uint48(block.timestamp);
-        
+
         // Try unpause just before slashing window ends
         vm.warp(pauseTime + slashingWindow - 1);
         vm.expectRevert();
@@ -278,25 +279,23 @@ contract OperatorsRegistrationTest is POCBaseTest {
 
         // Test capture timestamp interactions
         uint48 currentEpochStart = middleware.getEpochStart(middleware.getCurrentEpoch() + 1);
-        
+
         // Pause right before capture timestamp
         vm.warp(currentEpochStart - 1);
         middleware.pauseOperator(operator);
         assertTrue(
-            middleware.operatorWasActiveAt(currentEpochStart - 1, operator),
-            "Operator should be active before pause"
+            middleware.operatorWasActiveAt(currentEpochStart - 1, operator), "Operator should be active before pause"
         );
-        
+
         // Check status at capture timestamp
         vm.warp(currentEpochStart);
         assertFalse(
-            middleware.operatorWasActiveAt(currentEpochStart, operator),
-            "Operator should be inactive at capture"
+            middleware.operatorWasActiveAt(currentEpochStart, operator), "Operator should be inactive at capture"
         );
 
         // Test unregister timing
         vm.warp(currentEpochStart + slashingWindow - 2);
-        
+
         // Attempt unregister before slashing window
         vm.expectRevert();
         middleware.unregisterOperator(operator);
@@ -311,7 +310,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
 
         // Test registration in next epoch
         vm.warp(currentEpochStart + 2 * slashingWindow + 1);
-        
+
         // Should work in next epoch
         bytes memory keyNew = hex"0000000000000000000000000000000000000000000000000000000000001112";
         middleware.registerOperator(operator, keyNew, address(0));
@@ -328,7 +327,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
         address[] memory operators = new address[](2);
         operators[0] = operator1;
         operators[1] = operator2;
-        
+
         for (uint256 i = 0; i < operators.length; i++) {
             _registerOperator(operators[i]);
             vm.startPrank(operators[i]);
@@ -381,7 +380,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
         middleware.pauseOperator(operator1);
         middleware.pauseOperator(operator2);
         skipImmutablePeriod();
-        
+
         middleware.unregisterOperator(operator1);
         vm.expectRevert(); // Can't register same operator again
         middleware.registerOperator(operator1, key1, address(0));

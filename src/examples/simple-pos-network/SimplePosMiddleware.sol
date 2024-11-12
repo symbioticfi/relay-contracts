@@ -15,7 +15,6 @@ import {Operators} from "../../middleware/extensions/Operators.sol";
 
 import {KeyStorage256} from "../../key-storage/KeyStorage256.sol";
 
-
 contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256 {
     using Subnetwork for address;
 
@@ -135,10 +134,13 @@ contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256 {
      * @param stakeHints Hints for determining stakes.
      * @param slashHints Hints for the slashing process.
      */
-    function slash(uint48 epoch, bytes32 key, uint256 amount, bytes[][] memory stakeHints, bytes[] memory slashHints)
-        public
-        onlyOwner
-    {
+    function slash(
+        uint48 epoch,
+        bytes32 key,
+        uint256 amount,
+        bytes[][] memory stakeHints,
+        bytes[] memory slashHints
+    ) public onlyOwner {
         uint48 epochStart = getEpochStart(epoch);
         address operator = operatorByKey(abi.encode(key));
 
@@ -162,10 +164,7 @@ contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256 {
             for (uint256 j; j < subnetworks.length; ++j) {
                 bytes32 subnetwork = NETWORK.subnetwork(uint96(subnetworks[j]));
                 uint256 stake = IBaseDelegator(IVault(vault).delegator()).stakeAt(
-                    subnetwork,
-                    operator,
-                    epochStart,
-                    stakeHints[i][j]
+                    subnetwork, operator, epochStart, stakeHints[i][j]
                 );
 
                 uint256 slashAmount = Math.mulDiv(amount, stake, totalStake);
