@@ -134,12 +134,10 @@ contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage {
      * @param amount The amount to slash.
      * @param stakeHints Hints for determining stakes.
      * @param slashHints Hints for the slashing process.
-     * @return An array of SlashResponse indicating the results of the slashing.
      */
     function slash(uint48 epoch, bytes32 key, uint256 amount, bytes[][] memory stakeHints, bytes[] memory slashHints)
         public
         onlyOwner
-        returns (SlashResponse[] memory slashResponses)
     {
         uint48 epochStart = getEpochStart(epoch);
         address operator = operatorByKey(abi.encode(key));
