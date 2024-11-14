@@ -11,6 +11,7 @@ abstract contract ECDSASig is BaseSig {
         bytes32 key = abi.decode(key_, (bytes32));
         bytes32 hash = keccak256(abi.encodePacked(msg.sender, key));
         address signer = hash.recover(signature);
-        return signer == msg.sender;
+        address keyAddress = address(uint160(uint256(key)));
+        return signer == keyAddress;
     }
 }
