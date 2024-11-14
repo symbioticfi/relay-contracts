@@ -3,15 +3,19 @@ pragma solidity ^0.8.25;
 
 import {BaseMiddleware} from "../BaseMiddleware.sol";
 
-import {console} from "forge-std/console.sol";
-
 abstract contract Operators is BaseMiddleware {
+    function registerOperatorVault(address operator, address vault) public checkAccess {
+        require(isOperatorRegistered(operator), "Operator not registered");
+        _beforeRegisterOperatorVault(operator, vault);
+        _registerOperatorVault(operator, vault);
+    }
+
     function registerOperator(address operator, bytes memory key, address vault) public checkAccess {
         _beforeRegisterOperator(operator, key, vault);
         _registerOperator(operator);
         _updateKey(operator, key);
         if (vault != address(0)) {
-            _registerOperatorVault(operator, vault);
+            registerOperatorVault(operator, vault);
         }
     }
 
@@ -31,6 +35,7 @@ abstract contract Operators is BaseMiddleware {
     }
 
     function _beforeRegisterOperator(address operator, bytes memory key, address vault) internal virtual {}
+    function _beforeRegisterOperatorVault(address operator, address vault) internal virtual {}
     function _beforeUnregisterOperator(address operator) internal virtual {}
     function _beforePauseOperator(address operator) internal virtual {}
     function _beforeUnpauseOperator(address operator) internal virtual {}
