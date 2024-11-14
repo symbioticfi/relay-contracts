@@ -66,6 +66,15 @@ abstract contract OperatorManager is BaseManager {
     }
 
     /* 
+     * @notice Checks if an operator is registered.
+     * @param operator The address of the operator to check.
+     * @return A boolean indicating whether the operator is registered.
+     */
+    function isOperatorRegistered(address operator) public view returns (bool) {
+        return _operators.contains(operator);
+    }
+
+    /* 
      * @notice Registers a new operator.
      * @param operator The address of the operator to register.
      */
