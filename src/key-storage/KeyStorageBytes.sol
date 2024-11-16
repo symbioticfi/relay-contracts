@@ -22,7 +22,9 @@ abstract contract KeyStorageBytes is BaseManager {
      * @param key The BLS key for which to find the associated operator
      * @return The address of the operator linked to the specified BLS key
      */
-    function operatorByKey(bytes memory key) public view returns (address) {
+    function operatorByKey(
+        bytes memory key
+    ) public view returns (address) {
         return _keyData[key].getAddress();
     }
 
@@ -32,7 +34,9 @@ abstract contract KeyStorageBytes is BaseManager {
      * @param operator The address of the operator
      * @return The BLS key associated with the specified operator
      */
-    function operatorKey(address operator) public view returns (bytes memory) {
+    function operatorKey(
+        address operator
+    ) public view returns (bytes memory) {
         if (keyUpdateTimestamp[operator] == getCaptureTimestamp()) {
             return prevKeys[operator];
         }

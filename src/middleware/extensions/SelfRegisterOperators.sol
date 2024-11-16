@@ -45,7 +45,13 @@ abstract contract SelfRegisterOperators is BaseMiddleware, BaseSig {
     function _beforeUpdateOperatorKey(address operator, bytes memory key) internal virtual {}
 
     function _beforeRegisterOperator(address operator, bytes memory key, address vault) internal virtual {}
-    function _beforeUnregisterOperator(address operator) internal virtual {}
-    function _beforePauseOperator(address operator) internal virtual {}
-    function _beforeUnpauseOperator(address operator) internal virtual {}
+    function _beforeUnregisterOperator(
+        address operator
+    ) internal virtual {}
+    function _beforePauseOperator(
+        address operator
+    ) internal virtual {}
+    function _beforeUnpauseOperator(
+        address operator
+    ) internal virtual {}
 }

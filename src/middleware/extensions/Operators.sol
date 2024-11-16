@@ -19,24 +19,36 @@ abstract contract Operators is BaseMiddleware {
         }
     }
 
-    function unregisterOperator(address operator) public checkAccess {
+    function unregisterOperator(
+        address operator
+    ) public checkAccess {
         _beforeUnregisterOperator(operator);
         _unregisterOperator(operator);
     }
 
-    function pauseOperator(address operator) public checkAccess {
+    function pauseOperator(
+        address operator
+    ) public checkAccess {
         _beforePauseOperator(operator);
         _pauseOperator(operator);
     }
 
-    function unpauseOperator(address operator) public checkAccess {
+    function unpauseOperator(
+        address operator
+    ) public checkAccess {
         _beforeUnpauseOperator(operator);
         _unpauseOperator(operator);
     }
 
     function _beforeRegisterOperator(address operator, bytes memory key, address vault) internal virtual {}
     function _beforeRegisterOperatorVault(address operator, address vault) internal virtual {}
-    function _beforeUnregisterOperator(address operator) internal virtual {}
-    function _beforePauseOperator(address operator) internal virtual {}
-    function _beforeUnpauseOperator(address operator) internal virtual {}
+    function _beforeUnregisterOperator(
+        address operator
+    ) internal virtual {}
+    function _beforePauseOperator(
+        address operator
+    ) internal virtual {}
+    function _beforeUnpauseOperator(
+        address operator
+    ) internal virtual {}
 }

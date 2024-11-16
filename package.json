@@ -1,0 +1,17 @@
+{
+  "name": "symbiotic-tests",
+  "version": "1.0.0",
+  "description": "Test helpers for Symbiotic protocol",
+  "private": true,
+  "scripts": {
+    "testgen": "node test/helpers/ed25519TestGenerator.js"
+  },
+  "dependencies": {
+    "@noble/curves": "^1.3.0",
+    "ethereum-cryptography": "^2.1.3",
+    "ethers": "^6.11.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -34,7 +34,9 @@ abstract contract OperatorManager is BaseManager {
      * @param pos The index position in the operators array.
      * @return The address, enabled epoch, disabled epoch and enabled before disabled epoch of the operator.
      */
-    function operatorWithTimesAt(uint256 pos) public view returns (address, uint48, uint48) {
+    function operatorWithTimesAt(
+        uint256 pos
+    ) public view returns (address, uint48, uint48) {
         return _operators.at(pos);
     }
 
@@ -51,7 +53,9 @@ abstract contract OperatorManager is BaseManager {
      * @param timestamp The timestamp to check.
      * @return An array of addresses representing the active operators.
      */
-    function activeOperatorsAt(uint48 timestamp) public view returns (address[] memory) {
+    function activeOperatorsAt(
+        uint48 timestamp
+    ) public view returns (address[] memory) {
         return _operators.getActive(timestamp);
     }
 
@@ -70,7 +74,9 @@ abstract contract OperatorManager is BaseManager {
      * @param operator The address of the operator to check.
      * @return A boolean indicating whether the operator is registered.
      */
-    function isOperatorRegistered(address operator) public view returns (bool) {
+    function isOperatorRegistered(
+        address operator
+    ) public view returns (bool) {
         return _operators.contains(operator);
     }
 
@@ -78,7 +84,9 @@ abstract contract OperatorManager is BaseManager {
      * @notice Registers a new operator.
      * @param operator The address of the operator to register.
      */
-    function _registerOperator(address operator) internal {
+    function _registerOperator(
+        address operator
+    ) internal {
         if (!IRegistry(OPERATOR_REGISTRY).isEntity(operator)) {
             revert NotOperator();
         }
@@ -94,7 +102,9 @@ abstract contract OperatorManager is BaseManager {
      * @notice Pauses a registered operator.
      * @param operator The address of the operator to pause.
      */
-    function _pauseOperator(address operator) internal {
+    function _pauseOperator(
+        address operator
+    ) internal {
         _operators.pause(Time.timestamp(), operator);
     }
 
@@ -102,7 +112,9 @@ abstract contract OperatorManager is BaseManager {
      * @notice Unpauses a paused operator.
      * @param operator The address of the operator to unpause.
      */
-    function _unpauseOperator(address operator) internal {
+    function _unpauseOperator(
+        address operator
+    ) internal {
         _operators.unpause(Time.timestamp(), SLASHING_WINDOW, operator);
     }
 
@@ -110,7 +122,9 @@ abstract contract OperatorManager is BaseManager {
      * @notice Unregisters an operator.
      * @param operator The address of the operator to unregister.
      */
-    function _unregisterOperator(address operator) internal {
+    function _unregisterOperator(
+        address operator
+    ) internal {
         _operators.unregister(Time.timestamp(), SLASHING_WINDOW, operator);
     }
 }
