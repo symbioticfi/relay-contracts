@@ -24,7 +24,9 @@ abstract contract KeyStorage256 is BaseMiddleware {
      * @param key The key for which to find the associated operator
      * @return The address of the operator linked to the specified key
      */
-    function operatorByKey(bytes memory key) public view override returns (address) {
+    function operatorByKey(
+        bytes memory key
+    ) public view override returns (address) {
         return keyToOperator[abi.decode(key, (bytes32))];
     }
 
@@ -34,8 +36,14 @@ abstract contract KeyStorage256 is BaseMiddleware {
      * @param operator The address of the operator
      * @return The key associated with the specified operator
      */
-    function operatorKey(address operator) public view override returns (bytes memory) {
-        return abi.encode(keys[operator].getActive(getCaptureTimestamp())[0]);
+    function operatorKey(
+        address operator
+    ) public view override returns (bytes memory) {
+        bytes32[] memory active = keys[operator].getActive(getCaptureTimestamp());
+        if (active.length == 0) {
+            return abi.encode(ZERO_BYTES32);
+        }
+        return abi.encode(active[0]);
     }
 
     /**

@@ -44,7 +44,9 @@ library PauseableEnumerableSet {
      * @param self The AddressSet storage.
      * @return The number of elements in the set.
      */
-    function length(AddressSet storage self) internal view returns (uint256) {
+    function length(
+        AddressSet storage self
+    ) internal view returns (uint256) {
         return self.set.length();
     }
 
@@ -142,7 +144,9 @@ library PauseableEnumerableSet {
      * @param self The Uint160Set storage.
      * @return The number of elements.
      */
-    function length(Uint160Set storage self) internal view returns (uint256) {
+    function length(
+        Uint160Set storage self
+    ) internal view returns (uint256) {
         return self.array.length;
     }
 
@@ -283,7 +287,9 @@ library PauseableEnumerableSet {
      * @param self The Inner struct
      * @return The stored Uint160 as address
     */
-    function getAddress(Inner storage self) internal view returns (address) {
+    function getAddress(
+        Inner storage self
+    ) internal view returns (address) {
         return address(self.value);
     }
 
@@ -292,7 +298,9 @@ library PauseableEnumerableSet {
     * @param self The Inner struct.
     * @return The value, enabled timestamp and disabled timestamp.
     */
-    function get(Inner storage self) internal view returns (uint160, uint48, uint48) {
+    function get(
+        Inner storage self
+    ) internal view returns (uint160, uint48, uint48) {
         return (self.value, self.enabledTimestamp, self.disabledTimestamp);
     }
 
@@ -418,7 +426,9 @@ library PauseableEnumerableSet {
      * @param self The AddressSet storage.
      * @return The number of elements in the set.
      */
-    function length(Bytes32Set storage self) internal view returns (uint256) {
+    function length(
+        Bytes32Set storage self
+    ) internal view returns (uint256) {
         return self.set.length();
     }
 
@@ -526,7 +536,9 @@ library PauseableEnumerableSet {
      * @param self The Uint160Set storage.
      * @return The number of elements.
      */
-    function length(Uint256Set storage self) internal view returns (uint256) {
+    function length(
+        Uint256Set storage self
+    ) internal view returns (uint256) {
         return self.array.length;
     }
 
@@ -688,7 +700,9 @@ library PauseableEnumerableSet {
      * @param self The Inner struct
     * @return The stored Uint160 as address
     */
-    function getBytes32(Inner256 storage self) internal view returns (bytes32) {
+    function getBytes32(
+        Inner256 storage self
+    ) internal view returns (bytes32) {
         return bytes32(self.value);
     }
 
@@ -697,7 +711,9 @@ library PauseableEnumerableSet {
     * @param self The Inner struct.
     * @return The value, enabled timestamp and disabled timestamp.
     */
-    function get(Inner256 storage self) internal view returns (uint256, uint48, uint48) {
+    function get(
+        Inner256 storage self
+    ) internal view returns (uint256, uint48, uint48) {
         return (self.value, self.enabledTimestamp, self.disabledTimestamp);
     }
 

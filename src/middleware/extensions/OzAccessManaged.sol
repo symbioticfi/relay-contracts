@@ -6,7 +6,9 @@ import {AccessManagedUpgradeable} from "@openzeppelin/contracts-upgradeable/acce
 import {BaseMiddleware} from "../BaseMiddleware.sol";
 
 abstract contract OzAccessManaged is BaseMiddleware, AccessManagedUpgradeable {
-    constructor(address authority) {
+    constructor(
+        address authority
+    ) {
         __AccessManaged_init(authority);
     }
 

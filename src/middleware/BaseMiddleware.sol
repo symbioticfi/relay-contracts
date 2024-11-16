@@ -48,7 +48,9 @@ abstract contract BaseMiddleware is VaultManager, OperatorManager, AccessManager
      * @param key The key for which to find the associated operator
      * @return The address of the operator linked to the specified key
      */
-    function operatorByKey(bytes memory key) public view virtual returns (address);
+    function operatorByKey(
+        bytes memory key
+    ) public view virtual returns (address);
 
     /**
      * @notice Returns the current or previous key for a given operator
@@ -56,5 +58,7 @@ abstract contract BaseMiddleware is VaultManager, OperatorManager, AccessManager
      * @param operator The address of the operator
      * @return The key associated with the specified operator
      */
-    function operatorKey(address operator) public view virtual returns (bytes memory);
+    function operatorKey(
+        address operator
+    ) public view virtual returns (bytes memory);
 }

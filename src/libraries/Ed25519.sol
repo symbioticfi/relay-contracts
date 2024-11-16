@@ -5,7 +5,9 @@ pragma solidity ^0.8;
 
 library Ed25519 {
     // Computes (v^(2^250-1), v^11) mod p
-    function pow22501(uint256 v) private pure returns (uint256 p22501, uint256 p11) {
+    function pow22501(
+        uint256 v
+    ) private pure returns (uint256 p22501, uint256 p11) {
         p11 = mulmod(v, v, 0x7fffffff_ffffffff_ffffffff_ffffffff_ffffffff_ffffffff_ffffffff_ffffffed);
         p22501 = mulmod(p11, p11, 0x7fffffff_ffffffff_ffffffff_ffffffff_ffffffff_ffffffff_ffffffff_ffffffed);
         p22501 = mulmod(

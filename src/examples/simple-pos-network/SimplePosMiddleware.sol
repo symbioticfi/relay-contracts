@@ -67,7 +67,9 @@ contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256 {
      * @param epoch The epoch number.
      * @return The start timestamp.
      */
-    function getEpochStart(uint48 epoch) public view returns (uint48) {
+    function getEpochStart(
+        uint48 epoch
+    ) public view returns (uint48) {
         return START_TIMESTAMP + epoch * EPOCH_DURATION;
     }
 
@@ -142,10 +144,13 @@ contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256 {
      * @param stakeHints Hints for determining stakes.
      * @param slashHints Hints for the slashing process.
      */
-    function slash(uint48 epoch, bytes32 key, uint256 amount, bytes[][] memory stakeHints, bytes[] memory slashHints)
-        public
-        onlyOwner
-    {
+    function slash(
+        uint48 epoch,
+        bytes32 key,
+        uint256 amount,
+        bytes[][] memory stakeHints,
+        bytes[] memory slashHints
+    ) public onlyOwner {
         SlashParams memory params;
         params.epochStart = getEpochStart(epoch);
         params.operator = operatorByKey(abi.encode(key));
