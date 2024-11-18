@@ -15,7 +15,7 @@ abstract contract ECDSASig is BaseSig {
         return signer == keyAddress && signer != address(0);
     }
 
-    function recover(bytes32 hash, bytes memory signature) public pure returns (address) {
+    function recover(bytes32 hash, bytes memory signature) internal pure returns (address) {
         return hash.recover(signature);
     }
 }
