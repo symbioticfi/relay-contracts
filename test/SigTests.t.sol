@@ -114,7 +114,7 @@ contract SigTests is POCBaseTest {
         bytes32 messageHash = keccak256(abi.encodePacked(operator, operatorPublicKey));
         // Sign message with operator's private key
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(operatorPrivateKey, messageHash);
-        bytes memory signature = abi.encode(v, r, s);
+        bytes memory signature = abi.encodePacked(r, s, v);
         // Register operator using their own signature
         vm.prank(operator);
         middleware.registerOperator(abi.encode(operatorPublicKey), address(vault1), signature);
@@ -133,7 +133,7 @@ contract SigTests is POCBaseTest {
         bytes32 messageHash = keccak256(abi.encodePacked(operator, wrongKey));
         // Sign message
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(operatorPrivateKey, messageHash);
-        bytes memory signature = abi.encode(v, r, s);
+        bytes memory signature = abi.encodePacked(r, s, v);
 
         // Attempt to register with mismatched key should fail
         vm.prank(operator);
@@ -146,7 +146,7 @@ contract SigTests is POCBaseTest {
         bytes32 messageHash = keccak256(abi.encodePacked(operator, operatorPublicKey));
         // Sign message with operator's key
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(operatorPrivateKey, messageHash);
-        bytes memory signature = abi.encode(v, r, s);
+        bytes memory signature = abi.encodePacked(r, s, v);
 
         // Attempt to register from different address should fail
         vm.prank(alice);
@@ -159,7 +159,7 @@ contract SigTests is POCBaseTest {
         bytes32 messageHash = keccak256(abi.encodePacked(operator, operatorPublicKey));
         // Sign message
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(operatorPrivateKey, messageHash);
-        bytes memory signature = abi.encode(v, r, s);
+        bytes memory signature = abi.encodePacked(r, s, v);
         // Register operator first time
         vm.prank(operator);
         middleware.registerOperator(abi.encode(operatorPublicKey), address(vault1), signature);
