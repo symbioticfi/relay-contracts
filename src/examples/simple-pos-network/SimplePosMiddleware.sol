@@ -11,11 +11,12 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SharedVaults} from "../../middleware/extensions/SharedVaults.sol";
-import {Operators} from "../../middleware/extensions/Operators.sol";
+import {Operators} from "../../middleware/extensions/operators/Operators.sol";
+import {OwnableAccessManager} from "../../middleware/extensions/access-managers/OwnableAccessManager.sol";
 
 import {KeyStorage256} from "../../key-storage/KeyStorage256.sol";
 
-contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256 {
+contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256, OwnableAccessManager {
     using Subnetwork for address;
 
     error InactiveKeySlash(); // Error thrown when trying to slash an inactive key
@@ -57,9 +58,22 @@ contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256 {
         address owner,
         uint48 epochDuration,
         uint48 slashingWindow
-    ) BaseMiddleware(network, operatorRegistry, vaultRegistry, operatorNetOptin, slashingWindow, owner) {
+    ) {
+        initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, owner);
         EPOCH_DURATION = epochDuration;
         START_TIMESTAMP = Time.timestamp();
+    }
+
+    function initialize(
+        address network,
+        uint48 slashingWindow,
+        address vaultRegistry,
+        address operatorRegistry,
+        address operatorNetOptin,
+        address owner
+    ) public initializer {
+        super.initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
+        __OwnableAccessManaged_init(owner);
     }
 
     /* 
@@ -150,7 +164,7 @@ contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256 {
         uint256 amount,
         bytes[][] memory stakeHints,
         bytes[] memory slashHints
-    ) public onlyOwner {
+    ) public checkAccess {
         SlashParams memory params;
         params.epochStart = getEpochStart(epoch);
         params.operator = operatorByKey(abi.encode(key));
