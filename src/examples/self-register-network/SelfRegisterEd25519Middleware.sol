@@ -17,7 +17,13 @@ import {NoAccessManager} from "../../middleware/extensions/access-managers/NoAcc
 import {KeyStorage256} from "../../key-storage/KeyStorage256.sol";
 import {Ed25519Sig} from "../../middleware/extensions/sigs/Ed25519Sig.sol";
 
-contract SelfRegisterEd25519Middleware is SharedVaults, SelfRegisterOperators, KeyStorage256, Ed25519Sig, NoAccessManager {
+contract SelfRegisterEd25519Middleware is
+    SharedVaults,
+    SelfRegisterOperators,
+    KeyStorage256,
+    Ed25519Sig,
+    NoAccessManager
+{
     /*
      * @notice Constructor for initializing the SelfRegisterEd25519Middleware contract.
      * @param network The address of the network.

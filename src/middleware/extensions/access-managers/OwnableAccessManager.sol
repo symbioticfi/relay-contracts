@@ -8,6 +8,7 @@ abstract contract OwnableAccessManager is BaseMiddleware {
 
     error OnlyOwnerCanCall(address sender);
     error InvalidOwner(address owner);
+
     function __OwnableAccessManaged_init(
         address _owner
     ) internal onlyInitializing {
@@ -20,7 +21,9 @@ abstract contract OwnableAccessManager is BaseMiddleware {
         }
     }
 
-    function setOwner(address _owner) public checkAccess {
+    function setOwner(
+        address _owner
+    ) public checkAccess {
         if (_owner == address(0)) {
             revert InvalidOwner(address(0));
         }
