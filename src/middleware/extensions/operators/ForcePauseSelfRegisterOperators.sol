@@ -1,4 +1,3 @@
-
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
@@ -19,20 +18,13 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators {
         _unpauseOperator(operator);
     }
 
-    function forcePauseOperatorVault(
-        address operator,
-        address vault
-    ) public checkAccess {
+    function forcePauseOperatorVault(address operator, address vault) public checkAccess {
         _beforePauseOperatorVault(operator, vault);
         _pauseOperatorVault(operator, vault);
     }
 
-    function forceUnpauseOperatorVault(
-        address operator,
-        address vault
-    ) public checkAccess {
+    function forceUnpauseOperatorVault(address operator, address vault) public checkAccess {
         _beforeUnpauseOperatorVault(operator, vault);
         _unpauseOperatorVault(operator, vault);
     }
-
 }

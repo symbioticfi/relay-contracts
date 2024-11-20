@@ -278,7 +278,12 @@ library PauseableEnumerableSet {
         self.array[self.positions[value] - 1].status.enable(timestamp, immutablePeriod);
     }
 
-    function checkUnregister(Bytes32Set storage self, uint48 timestamp, uint48 immutablePeriod, bytes32 value) internal view returns (bool) {
+    function checkUnregister(
+        Bytes32Set storage self,
+        uint48 timestamp,
+        uint48 immutablePeriod,
+        bytes32 value
+    ) internal view returns (bool) {
         uint256 pos = self.positions[value];
         if (pos == 0) return false;
         return self.array[pos - 1].status.checkUnregister(timestamp, immutablePeriod);
@@ -359,7 +364,12 @@ library PauseableEnumerableSet {
         self.array[self.positions[value] - 1].status.enable(timestamp, immutablePeriod);
     }
 
-    function checkUnregister(BytesSet storage self, uint48 timestamp, uint48 immutablePeriod, bytes memory value) internal view returns (bool) {
+    function checkUnregister(
+        BytesSet storage self,
+        uint48 timestamp,
+        uint48 immutablePeriod,
+        bytes memory value
+    ) internal view returns (bool) {
         uint256 pos = self.positions[value];
         if (pos == 0) return false;
         return self.array[pos - 1].status.checkUnregister(timestamp, immutablePeriod);
