@@ -7,9 +7,13 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 abstract contract ECDSASig is BaseSig {
     using ECDSA for bytes32;
 
-    function _verifyKeySignature(bytes memory key_, bytes memory signature) internal view override returns (bool) {
+    function _verifyKeySignature(
+        address operator,
+        bytes memory key_,
+        bytes memory signature
+    ) internal pure override returns (bool) {
         bytes32 key = abi.decode(key_, (bytes32));
-        bytes32 hash = keccak256(abi.encodePacked(msg.sender, key));
+        bytes32 hash = keccak256(abi.encodePacked(operator, key));
         address signer = recover(hash, signature);
         address keyAddress = address(uint160(uint256(key)));
         return signer == keyAddress && signer != address(0);

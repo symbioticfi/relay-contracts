@@ -11,12 +11,13 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SharedVaults} from "../../middleware/extensions/SharedVaults.sol";
-import {SelfRegisterOperators} from "../../middleware/extensions/SelfRegisterOperators.sol";
+import {SelfRegisterOperators} from "../../middleware/extensions/operators/SelfRegisterOperators.sol";
+import {NoAccessManager} from "../../middleware/extensions/access-managers/NoAccessManager.sol";
 
 import {KeyStorage256} from "../../key-storage/KeyStorage256.sol";
 import {Ed25519Sig} from "../../middleware/extensions/sigs/Ed25519Sig.sol";
 
-contract SelfRegisterEd25519Middleware is SharedVaults, SelfRegisterOperators, KeyStorage256, Ed25519Sig {
+contract SelfRegisterEd25519Middleware is SharedVaults, SelfRegisterOperators, KeyStorage256, Ed25519Sig, NoAccessManager {
     /*
      * @notice Constructor for initializing the SelfRegisterEd25519Middleware contract.
      * @param network The address of the network.
@@ -31,7 +32,19 @@ contract SelfRegisterEd25519Middleware is SharedVaults, SelfRegisterOperators, K
         address operatorRegistry,
         address vaultRegistry,
         address operatorNetOptin,
-        address owner,
         uint48 slashingWindow
-    ) BaseMiddleware(network, operatorRegistry, vaultRegistry, operatorNetOptin, slashingWindow, owner) {}
+    ) {
+        initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
+    }
+
+    function initialize(
+        address network,
+        uint48 slashingWindow,
+        address vaultRegistry,
+        address operatorRegistry,
+        address operatorNetOptIn
+    ) public override initializer {
+        super.initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn);
+        __SelfRegisterOperators_init("SelfRegisterEd25519Middleware");
+    }
 }

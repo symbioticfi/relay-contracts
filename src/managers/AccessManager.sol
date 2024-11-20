@@ -10,5 +10,5 @@ abstract contract AccessManager {
     /**
      * @notice Checks if the user has access to the given selector.
      */
-    function _checkAccess() internal virtual {}
+    function _checkAccess() internal virtual;
 }

@@ -37,7 +37,6 @@ contract SigTests is POCBaseTest {
             address(operatorRegistry),
             address(vaultFactory),
             address(operatorNetworkOptInService),
-            owner,
             1200 // slashing window
         );
 
@@ -46,7 +45,6 @@ contract SigTests is POCBaseTest {
             address(operatorRegistry),
             address(vaultFactory),
             address(operatorNetworkOptInService),
-            owner,
             1200 // slashing window
         );
 
@@ -123,11 +121,11 @@ contract SigTests is POCBaseTest {
         assertTrue(middleware.isOperatorRegistered(operator));
 
         assertEq(abi.decode(middleware.operatorKey(operator), (bytes32)), bytes32(0));
-        vm.warp(block.timestamp + 2);
+        vm.warp(vm.getBlockTimestamp() + 100);
         assertEq(abi.decode(middleware.operatorKey(operator), (bytes32)), operatorPublicKey);
     }
 
-    function testSelfRegisterOperatorInvalidSignature() public {
+    function testSelxfRegisterOperatorInvalidSignature() public {
         // Create registration message with wrong key
         bytes32 wrongKey = bytes32(uint256(1));
         bytes32 messageHash = keccak256(abi.encodePacked(operator, wrongKey));
@@ -141,7 +139,7 @@ contract SigTests is POCBaseTest {
         middleware.registerOperator(abi.encode(operatorPublicKey), address(vault1), signature);
     }
 
-    function testSelfRegisterOperatorWrongSender() public {
+    function testSelfxRegisterOperatorWrongSender() public {
         // Create valid registration message
         bytes32 messageHash = keccak256(abi.encodePacked(operator, operatorPublicKey));
         // Sign message with operator's key
@@ -154,7 +152,7 @@ contract SigTests is POCBaseTest {
         middleware.registerOperator(abi.encode(operatorPublicKey), address(vault1), signature);
     }
 
-    function testSelfRegisterOperatorAlreadyRegistered() public {
+    function testSelxfRegisterOperatorAlreadyRegistered() public {
         // Create registration message
         bytes32 messageHash = keccak256(abi.encodePacked(operator, operatorPublicKey));
         // Sign message

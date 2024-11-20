@@ -2,10 +2,9 @@
 pragma solidity ^0.8.25;
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-abstract contract BaseManager is Initializable, OwnableUpgradeable {
+abstract contract BaseManager is Initializable {
     address public NETWORK; // Address of the network
     uint48 public SLASHING_WINDOW; // Duration of the slashing window
     address public VAULT_REGISTRY; // Address of the vault registry
@@ -29,11 +28,8 @@ abstract contract BaseManager is Initializable, OwnableUpgradeable {
         uint48 slashingWindow,
         address vaultRegistry,
         address operatorRegistry,
-        address operatorNetOptIn,
-        address owner
+        address operatorNetOptIn
     ) public virtual initializer {
-        __Ownable_init(owner);
-
         NETWORK = network;
         SLASHING_WINDOW = slashingWindow;
         VAULT_REGISTRY = vaultRegistry;

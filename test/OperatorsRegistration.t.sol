@@ -4,7 +4,6 @@ pragma solidity ^0.8.25;
 import {POCBaseTest} from "@symbiotic-test/POCBase.t.sol";
 
 import {SimplePosMiddleware} from "../src/examples/simple-pos-network/SimplePosMiddleware.sol";
-import {ExtendedSimplePosMiddleware} from "./mocks/ExtendedSimplePosMiddleware.sol";
 //import {IVault} from "@symbiotic/interfaces/vault/IVault.sol";
 //import {IBaseDelegator} from "@symbiotic/interfaces/delegator/IBaseDelegator.sol";
 // import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
@@ -21,7 +20,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
 
     address network = address(0x123);
 
-    ExtendedSimplePosMiddleware internal middleware;
+    SimplePosMiddleware internal middleware;
 
     uint48 internal epochDuration = 600; // 10 minutes
     uint48 internal slashingWindow = 1200; // 20 minutes
@@ -37,7 +36,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
         _deposit(vault3, alice, 1000 ether);
 
         // Initialize middleware contract
-        middleware = new ExtendedSimplePosMiddleware(
+        middleware = new SimplePosMiddleware(
             address(network),
             address(operatorRegistry),
             address(vaultFactory),

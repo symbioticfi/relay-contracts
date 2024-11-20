@@ -5,7 +5,11 @@ import {Ed25519} from "../../../libraries/Ed25519.sol";
 import {BaseSig} from "./BaseSig.sol";
 
 abstract contract Ed25519Sig is BaseSig {
-    function _verifyKeySignature(bytes memory key_, bytes memory signature) internal view override returns (bool) {
+    function _verifyKeySignature(
+        address operator,
+        bytes memory key_,
+        bytes memory signature
+    ) internal pure override returns (bool) {
         bytes32 key = abi.decode(key_, (bytes32));
         bytes32 r;
         bytes32 s;
@@ -13,7 +17,7 @@ abstract contract Ed25519Sig is BaseSig {
             r := mload(add(signature, 32))
             s := mload(add(signature, 64))
         }
-        bytes32 message = keccak256(abi.encodePacked(msg.sender, key));
+        bytes32 message = keccak256(abi.encodePacked(operator, key));
         return Ed25519.check(key, r, s, message, bytes9(0));
     }
 }

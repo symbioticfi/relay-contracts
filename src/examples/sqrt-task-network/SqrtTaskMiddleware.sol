@@ -12,11 +12,11 @@ import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/Signa
 
 import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SharedVaults} from "../../middleware/extensions/SharedVaults.sol";
-import {Operators} from "../../middleware/extensions/Operators.sol";
-
+import {Operators} from "../../middleware/extensions/operators/Operators.sol";
+import {OwnableAccessManager} from "../../middleware/extensions/access-managers/OwnableAccessManager.sol";
 import {KeyStorage256} from "../../key-storage/KeyStorage256.sol";
 
-contract SqrtTaskMiddleware is SharedVaults, Operators, KeyStorage256, EIP712 {
+contract SqrtTaskMiddleware is SharedVaults, Operators, KeyStorage256, EIP712, OwnableAccessManager {
     using Subnetwork for address;
     using Math for uint256;
 
@@ -45,10 +45,9 @@ contract SqrtTaskMiddleware is SharedVaults, Operators, KeyStorage256, EIP712 {
         address operatorNetOptin,
         address owner,
         uint48 slashingWindow
-    )
-        EIP712("SqrtTaskMiddleware", "1")
-        BaseMiddleware(network, operatorRegistry, vaultRegistry, operatorNetOptin, slashingWindow, owner)
-    {}
+    ) EIP712("SqrtTaskMiddleware", "1") {
+        initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
+    }
 
     function createTask(uint256 value, address operator) external returns (uint256 taskIndex) {
         taskIndex = tasks.length;
