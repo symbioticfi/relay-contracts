@@ -79,7 +79,7 @@ abstract contract KeyStorage256 is BaseMiddleware {
         if (_keys[operator].length() > 0) {
             // try to remove disabled keys
             bytes32 prevKey = _keys[operator].array[0].value;
-            if (_keys[operator].array[0].status.checkUnregister(Time.timestamp(), SLASHING_WINDOW)) {
+            if (_keys[operator].checkUnregister(Time.timestamp(), SLASHING_WINDOW, prevKey)) {
                 _keys[operator].unregister(Time.timestamp(), SLASHING_WINDOW, prevKey);
                 delete _keyToOperator[prevKey];
             } else if (_keys[operator].wasActiveAt(getCaptureTimestamp(), prevKey)) {
