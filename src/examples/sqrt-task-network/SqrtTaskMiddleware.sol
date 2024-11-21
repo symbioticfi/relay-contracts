@@ -15,8 +15,16 @@ import {SharedVaults} from "../../middleware/extensions/SharedVaults.sol";
 import {Operators} from "../../middleware/extensions/operators/Operators.sol";
 import {OwnableAccessManager} from "../../middleware/extensions/access-managers/OwnableAccessManager.sol";
 import {KeyStorage256} from "../../key-storage/KeyStorage256.sol";
+import {TimestampCapture} from "../../middleware/extensions/capture-timestamps/TimestampCapture.sol";
 
-contract SqrtTaskMiddleware is SharedVaults, Operators, KeyStorage256, EIP712, OwnableAccessManager {
+contract SqrtTaskMiddleware is
+    SharedVaults,
+    Operators,
+    KeyStorage256,
+    EIP712,
+    OwnableAccessManager,
+    TimestampCapture
+{
     using Subnetwork for address;
     using Math for uint256;
 
@@ -43,7 +51,6 @@ contract SqrtTaskMiddleware is SharedVaults, Operators, KeyStorage256, EIP712, O
         address operatorRegistry,
         address vaultRegistry,
         address operatorNetOptin,
-        address owner,
         uint48 slashingWindow
     ) EIP712("SqrtTaskMiddleware", "1") {
         initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);

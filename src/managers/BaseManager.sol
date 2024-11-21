@@ -14,14 +14,13 @@ abstract contract BaseManager is Initializable {
     uint64 public constant INSTANT_SLASHER_TYPE = 0; // Constant representing the instant slasher type
     uint64 public constant VETO_SLASHER_TYPE = 1; // Constant representing the veto slasher type
 
-    /* 
-     * @notice initalizer of the BaseManager contract.
-     * @param network The address of the network.
-     * @param epochDuration The duration of each epoch.
-     * @param slashingWindow The duration of the slashing window.
-     * @param vaultRegistry The address of the vault registry.
-     * @param operatorRegistry The address of the operator registry.
-     * @param operatorNetOptIn The address of the operator network opt-in service.
+    /**
+     * @notice Initializes the BaseManager contract
+     * @param network The address of the network
+     * @param slashingWindow The duration of the slashing window
+     * @param vaultRegistry The address of the vault registry
+     * @param operatorRegistry The address of the operator registry
+     * @param operatorNetOptIn The address of the operator network opt-in service
      */
     function initialize(
         address network,
@@ -37,17 +36,19 @@ abstract contract BaseManager is Initializable {
         OPERATOR_NET_OPTIN = operatorNetOptIn;
     }
 
-    /* 
+    /**
      * @notice Returns the current capture timestamp
-     * @dev Returns block.timestamp - 1 by default but can be overrided
-     * @return The current capture timestamp 
+     * @return timestamp The current capture timestamp
      */
-    function getCaptureTimestamp() public view virtual returns (uint48 timestamp) {
-        return Time.timestamp() - 1;
-    }
+    function getCaptureTimestamp() public view virtual returns (uint48 timestamp);
 
+    /**
+     * @notice Converts stake amount to voting power
+     * @param vault The vault address
+     * @param stake The stake amount
+     * @return power The calculated voting power
+     */
     function stakeToPower(address vault, uint256 stake) public view virtual returns (uint256 power) {
-        vault;
         return stake;
     }
 }

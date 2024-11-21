@@ -6,6 +6,11 @@ import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
+/**
+ * @title KeyStorageBytes
+ * @notice Manages storage and validation of operator keys
+ * @dev Extends BaseManager to provide key management functionality
+ */
 abstract contract KeyStorageBytes is BaseManager {
     using PauseableEnumerableSet for PauseableEnumerableSet.BytesSet;
     using PauseableEnumerableSet for PauseableEnumerableSet.Status;
@@ -21,9 +26,9 @@ abstract contract KeyStorageBytes is BaseManager {
     mapping(bytes => address) internal _keyToOperator;
 
     /**
-     * @notice Returns the operator address associated with a given key
-     * @param key The key for which to find the associated operator
-     * @return The address of the operator linked to the specified key
+     * @notice Gets the operator address associated with a key
+     * @param key The key to lookup
+     * @return The operator address that owns the key, or zero address if none
      */
     function operatorByKey(
         bytes memory key
@@ -32,10 +37,9 @@ abstract contract KeyStorageBytes is BaseManager {
     }
 
     /**
-     * @notice Returns the current or previous key for a given operator
-     * @dev Returns the previous key if the key was updated in the current epoch
-     * @param operator The address of the operator
-     * @return The key associated with the specified operator
+     * @notice Gets an operator's active key at the current capture timestamp
+     * @param operator The operator address to lookup
+     * @return The operator's active key, or empty bytes if none
      */
     function operatorKey(
         address operator
@@ -48,20 +52,22 @@ abstract contract KeyStorageBytes is BaseManager {
     }
 
     /**
-     * @notice Checks if a given key was active at a specified timestamp
+     * @notice Checks if a key was active at a specific timestamp
      * @param timestamp The timestamp to check
      * @param key The key to check
-     * @return A boolean indicating whether the key was active at the specified timestamp
+     * @return True if the key was active at the timestamp, false otherwise
      */
     function keyWasActiveAt(uint48 timestamp, bytes memory key) public view returns (bool) {
         return _keys[_keyToOperator[key]].wasActiveAt(timestamp, key);
     }
 
     /**
-     * @notice Updates the key associated with an operator
-     * @dev Reverts if the key is already enabled or if another operator is using it
-     * @param operator The address of the operator whose key is to be updated
-     * @param key The new key to associate with the operator
+     * @notice Updates an operator's key
+     * @dev Handles key rotation by disabling old key and registering new one
+     * @param operator The operator address to update
+     * @param key The new key to register
+     * @custom:throws DuplicateKey if key is already registered to another operator
+     * @custom:throws MaxDisabledKeysReached if operator has too many disabled keys
      */
     function _updateKey(address operator, bytes memory key) internal {
         bytes32 keyHash = keccak256(key);

@@ -13,10 +13,10 @@ import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SharedVaults} from "../../middleware/extensions/SharedVaults.sol";
 import {Operators} from "../../middleware/extensions/operators/Operators.sol";
 import {OwnableAccessManager} from "../../middleware/extensions/access-managers/OwnableAccessManager.sol";
-
+import {EpochCapture} from "../../middleware/extensions/capture-timestamps/EpochCapture.sol";
 import {KeyStorage256} from "../../key-storage/KeyStorage256.sol";
 
-contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256, OwnableAccessManager {
+contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256, OwnableAccessManager, EpochCapture {
     using Subnetwork for address;
 
     error InactiveKeySlash(); // Error thrown when trying to slash an inactive key
@@ -28,9 +28,6 @@ contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256, OwnableA
         uint256 power; // Power of the validator
         bytes32 key; // Key associated with the validator
     }
-
-    uint48 public immutable EPOCH_DURATION; // Duration of each epoch
-    uint48 public immutable START_TIMESTAMP; // Start timestamp of the network
 
     struct SlashParams {
         uint48 epochStart;
@@ -59,9 +56,7 @@ contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256, OwnableA
         uint48 epochDuration,
         uint48 slashingWindow
     ) {
-        initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, owner);
-        EPOCH_DURATION = epochDuration;
-        START_TIMESTAMP = Time.timestamp();
+        initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, owner, epochDuration);
     }
 
     function initialize(
@@ -70,37 +65,12 @@ contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256, OwnableA
         address vaultRegistry,
         address operatorRegistry,
         address operatorNetOptin,
-        address owner
+        address owner,
+        uint48 epochDuration
     ) public initializer {
         super.initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
         __OwnableAccessManaged_init(owner);
-    }
-
-    /* 
-     * @notice Returns the start timestamp for a given epoch.
-     * @param epoch The epoch number.
-     * @return The start timestamp.
-     */
-    function getEpochStart(
-        uint48 epoch
-    ) public view returns (uint48) {
-        return START_TIMESTAMP + epoch * EPOCH_DURATION;
-    }
-
-    /* 
-     * @notice Returns the current epoch.
-     * @return The current epoch.
-     */
-    function getCurrentEpoch() public view returns (uint48) {
-        return (Time.timestamp() - START_TIMESTAMP) / EPOCH_DURATION;
-    }
-
-    /* 
-     * @notice Returns the capture timestamp for the current epoch.
-     * @return The capture timestamp.
-     */
-    function getCaptureTimestamp() public view virtual override returns (uint48 timestamp) {
-        return getEpochStart(getCurrentEpoch());
+        __EpochCapture_init(epochDuration);
     }
 
     /* 
