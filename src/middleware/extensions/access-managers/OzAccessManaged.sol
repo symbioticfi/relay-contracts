@@ -11,11 +11,13 @@ import {BaseMiddleware} from "../../BaseMiddleware.sol";
  * @dev Implements BaseMiddleware with OpenZeppelin's AccessManagedUpgradeable functionality
  */
 abstract contract OzAccessManaged is BaseMiddleware, AccessManagedUpgradeable {
+    bool public constant OzAccessManagedEnabled = true;
     /**
      * @notice Initializes the contract with an authority address
      * @param authority The address to set as the access manager authority
      * @dev Can only be called during initialization
      */
+
     function __OzAccessManaged_init(
         address authority
     ) internal onlyInitializing {

@@ -9,6 +9,8 @@ import {SelfRegisterOperators} from "./SelfRegisterOperators.sol";
  * @dev Implements force pause functionality and prevents unpausing of force-paused operators
  */
 abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators {
+    bool public constant ForcePauseSelfRegisterOperatorsEnabled = true;
+
     struct ForcePauseSelfRegisterOperatorsStorage {
         mapping(address => bool) forcePaused;
         mapping(address => mapping(address => bool)) forcePausedVault;

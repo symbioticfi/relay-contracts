@@ -10,6 +10,8 @@ import {BaseSig} from "./BaseSig.sol";
  * @dev Implements BaseSig interface using Ed25519 signature verification
  */
 abstract contract Ed25519Sig is BaseSig {
+    bool public constant Ed25519SigEnabled = true;
+
     /**
      * @notice Verifies that a signature was created by the owner of a key
      * @param operator The address of the operator that owns the key
