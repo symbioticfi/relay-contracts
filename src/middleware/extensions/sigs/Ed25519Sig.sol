@@ -25,13 +25,25 @@ abstract contract Ed25519Sig is BaseSig {
         bytes memory signature
     ) internal pure override returns (bool) {
         bytes32 key = abi.decode(key_, (bytes32));
+        bytes32 message = keccak256(abi.encodePacked(operator, key));
+        return check(key, signature, message);
+    }
+
+    /**
+     * @notice Checks an Ed25519 signature against a message and public key
+     * @param key The Ed25519 public key
+     * @param signature The Ed25519 signature to verify
+     * @param message The message that was signed
+     * @return True if the signature is valid, false otherwise
+     * @dev Wrapper around Ed25519.check
+     */
+    function check(bytes32 key, bytes memory signature, bytes32 message) internal pure returns (bool) {
         bytes32 r;
         bytes32 s;
         assembly {
             r := mload(add(signature, 32))
             s := mload(add(signature, 64))
         }
-        bytes32 message = keccak256(abi.encodePacked(operator, key));
         return Ed25519.check(key, r, s, message, bytes9(0));
     }
 }
