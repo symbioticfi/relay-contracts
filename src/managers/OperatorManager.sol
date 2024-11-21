@@ -19,14 +19,28 @@ abstract contract OperatorManager is BaseManager {
     error OperatorNotRegistered();
     error OperatorAlreadyRegistred();
 
-    PauseableEnumerableSet.AddressSet internal _operators;
+    /// @custom:storage-location erc7201:symbiotic.storage.OperatorManager
+    struct OperatorManagerStorage {
+        PauseableEnumerableSet.AddressSet _operators;
+    }
+
+    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OperatorManager")) - 1)) & ~bytes32(uint256(0xff))
+    bytes32 private constant OperatorManagerStorageLocation =
+        0x819b71b9578fceb0968f87c9e32befffbf335e42bec212b90debd10f2f3fdb00;
+
+    function _getOperatorManagerStorage() private pure returns (OperatorManagerStorage storage $) {
+        assembly {
+            $.slot := OperatorManagerStorageLocation
+        }
+    }
 
     /**
      * @notice Returns the total number of registered operators, including both active and inactive
      * @return The number of registered operators
      */
     function operatorsLength() public view returns (uint256) {
-        return _operators.length();
+        OperatorManagerStorage storage $ = _getOperatorManagerStorage();
+        return $._operators.length();
     }
 
     /**
@@ -39,7 +53,8 @@ abstract contract OperatorManager is BaseManager {
     function operatorWithTimesAt(
         uint256 pos
     ) public view returns (address, uint48, uint48) {
-        return _operators.at(pos);
+        OperatorManagerStorage storage $ = _getOperatorManagerStorage();
+        return $._operators.at(pos);
     }
 
     /**
@@ -47,7 +62,8 @@ abstract contract OperatorManager is BaseManager {
      * @return Array of addresses representing the active operators
      */
     function activeOperators() public view returns (address[] memory) {
-        return _operators.getActive(getCaptureTimestamp());
+        OperatorManagerStorage storage $ = _getOperatorManagerStorage();
+        return $._operators.getActive(getCaptureTimestamp());
     }
 
     /**
@@ -58,7 +74,8 @@ abstract contract OperatorManager is BaseManager {
     function activeOperatorsAt(
         uint48 timestamp
     ) public view returns (address[] memory) {
-        return _operators.getActive(timestamp);
+        OperatorManagerStorage storage $ = _getOperatorManagerStorage();
+        return $._operators.getActive(timestamp);
     }
 
     /**
@@ -68,7 +85,8 @@ abstract contract OperatorManager is BaseManager {
      * @return True if the operator was active at the timestamp, false otherwise
      */
     function operatorWasActiveAt(uint48 timestamp, address operator) public view returns (bool) {
-        return _operators.wasActiveAt(timestamp, operator);
+        OperatorManagerStorage storage $ = _getOperatorManagerStorage();
+        return $._operators.wasActiveAt(timestamp, operator);
     }
 
     /**
@@ -79,7 +97,8 @@ abstract contract OperatorManager is BaseManager {
     function isOperatorRegistered(
         address operator
     ) public view returns (bool) {
-        return _operators.contains(operator);
+        OperatorManagerStorage storage $ = _getOperatorManagerStorage();
+        return $._operators.contains(operator);
     }
 
     /**
@@ -91,15 +110,16 @@ abstract contract OperatorManager is BaseManager {
     function _registerOperator(
         address operator
     ) internal {
-        if (!IRegistry(OPERATOR_REGISTRY).isEntity(operator)) {
+        if (!IRegistry(OPERATOR_REGISTRY()).isEntity(operator)) {
             revert NotOperator();
         }
 
-        if (!IOptInService(OPERATOR_NET_OPTIN).isOptedIn(operator, NETWORK)) {
+        if (!IOptInService(OPERATOR_NET_OPTIN()).isOptedIn(operator, NETWORK())) {
             revert OperatorNotOptedIn();
         }
 
-        _operators.register(Time.timestamp(), operator);
+        OperatorManagerStorage storage $ = _getOperatorManagerStorage();
+        $._operators.register(Time.timestamp(), operator);
     }
 
     /**
@@ -109,7 +129,8 @@ abstract contract OperatorManager is BaseManager {
     function _pauseOperator(
         address operator
     ) internal {
-        _operators.pause(Time.timestamp(), operator);
+        OperatorManagerStorage storage $ = _getOperatorManagerStorage();
+        $._operators.pause(Time.timestamp(), operator);
     }
 
     /**
@@ -119,7 +140,8 @@ abstract contract OperatorManager is BaseManager {
     function _unpauseOperator(
         address operator
     ) internal {
-        _operators.unpause(Time.timestamp(), SLASHING_WINDOW, operator);
+        OperatorManagerStorage storage $ = _getOperatorManagerStorage();
+        $._operators.unpause(Time.timestamp(), SLASHING_WINDOW(), operator);
     }
 
     /**
@@ -129,6 +151,7 @@ abstract contract OperatorManager is BaseManager {
     function _unregisterOperator(
         address operator
     ) internal {
-        _operators.unregister(Time.timestamp(), SLASHING_WINDOW, operator);
+        OperatorManagerStorage storage $ = _getOperatorManagerStorage();
+        $._operators.unregister(Time.timestamp(), SLASHING_WINDOW(), operator);
     }
 }

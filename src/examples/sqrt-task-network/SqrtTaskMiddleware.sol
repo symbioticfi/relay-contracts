@@ -133,7 +133,7 @@ contract SqrtTaskMiddleware is
             revert InvalidHints();
         }
 
-        bytes32 subnetwork = NETWORK.subnetwork(0);
+        bytes32 subnetwork = NETWORK().subnetwork(0);
         for (uint256 i; i < vaults.length; ++i) {
             address vault = vaults[i];
             uint256 slashAmount = IBaseDelegator(IVault(vault).delegator()).stakeAt(

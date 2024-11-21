@@ -9,8 +9,6 @@ import {BaseMiddleware} from "../../BaseMiddleware.sol";
  * @dev Implements BaseMiddleware with owner-based access control
  */
 abstract contract OwnableAccessManager is BaseMiddleware {
-    address public owner;
-
     /**
      * @notice Error thrown when a non-owner address attempts to call a restricted function
      * @param sender The address that attempted the call
@@ -23,14 +21,41 @@ abstract contract OwnableAccessManager is BaseMiddleware {
      */
     error InvalidOwner(address owner);
 
+    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OwnableAccessManager.owner")) - 1)) & ~bytes32(uint256(0xff))
+    bytes32 private constant OnwerStorageLocation = 0x1a2e92a5f10b92a479fe01ec4964026ce147416d5a91524db21dfcebc947d100;
+
+    function _owner() private view returns (address owner_) {
+        bytes32 location = OnwerStorageLocation;
+        assembly {
+            owner_ := sload(location)
+        }
+    }
+
+    function _setOwner(
+        address owner_
+    ) private {
+        bytes32 location = OnwerStorageLocation;
+        assembly {
+            sstore(location, owner_)
+        }
+    }
+
+    /**
+     * @notice Gets the current owner address
+     * @return The owner address
+     */
+    function owner() public view returns (address) {
+        return _owner();
+    }
+
     /**
      * @notice Initializes the contract with an owner address
-     * @param _owner The address to set as the owner
+     * @param owner_ The address to set as the owner
      */
     function __OwnableAccessManaged_init(
-        address _owner
+        address owner_
     ) internal onlyInitializing {
-        owner = _owner;
+        _setOwner(owner_);
     }
 
     /**
@@ -38,22 +63,22 @@ abstract contract OwnableAccessManager is BaseMiddleware {
      * @dev Reverts if the caller is not the owner
      */
     function _checkAccess() internal view override {
-        if (msg.sender != owner) {
+        if (msg.sender != _owner()) {
             revert OnlyOwnerCanCall(msg.sender);
         }
     }
 
     /**
      * @notice Updates the owner address
-     * @param _owner The new owner address
+     * @param owner_ The new owner address
      * @dev Can only be called by the current owner
      */
     function setOwner(
-        address _owner
+        address owner_
     ) public checkAccess {
-        if (_owner == address(0)) {
+        if (owner_ == address(0)) {
             revert InvalidOwner(address(0));
         }
-        owner = _owner;
+        _setOwner(owner_);
     }
 }

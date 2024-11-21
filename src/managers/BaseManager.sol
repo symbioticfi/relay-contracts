@@ -5,14 +5,27 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 abstract contract BaseManager is Initializable {
-    address public NETWORK; // Address of the network
-    uint48 public SLASHING_WINDOW; // Duration of the slashing window
-    address public VAULT_REGISTRY; // Address of the vault registry
-    address public OPERATOR_REGISTRY; // Address of the operator registry
-    address public OPERATOR_NET_OPTIN; // Address of the operator network opt-in service
-
     uint64 public constant INSTANT_SLASHER_TYPE = 0; // Constant representing the instant slasher type
     uint64 public constant VETO_SLASHER_TYPE = 1; // Constant representing the veto slasher type
+
+    /// @custom:storage-location erc7201:symbiotic.storage.BaseManager
+    struct BaseManagerStorage {
+        address _network; // Address of the network
+        uint48 _slashingWindow; // Duration of the slashing window
+        address _vaultRegistry; // Address of the vault registry
+        address _operatorRegistry; // Address of the operator registry
+        address _operatorNetOptin; // Address of the operator network opt-in service
+    }
+
+    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.BaseManager")) - 1)) & ~bytes32(uint256(0xff))
+    bytes32 private constant BaseManagerStorageLocation =
+        0xc0625060998ed0caa490c91b79737728a736aeb8ed65081a52c24738d2978d00;
+
+    function _getBaseManagerStorage() private pure returns (BaseManagerStorage storage $) {
+        assembly {
+            $.slot := BaseManagerStorageLocation
+        }
+    }
 
     /**
      * @notice Initializes the BaseManager contract
@@ -29,11 +42,37 @@ abstract contract BaseManager is Initializable {
         address operatorRegistry,
         address operatorNetOptIn
     ) public virtual initializer {
-        NETWORK = network;
-        SLASHING_WINDOW = slashingWindow;
-        VAULT_REGISTRY = vaultRegistry;
-        OPERATOR_REGISTRY = operatorRegistry;
-        OPERATOR_NET_OPTIN = operatorNetOptIn;
+        BaseManagerStorage storage $ = _getBaseManagerStorage();
+        $._network = network;
+        $._slashingWindow = slashingWindow;
+        $._vaultRegistry = vaultRegistry;
+        $._operatorRegistry = operatorRegistry;
+        $._operatorNetOptin = operatorNetOptIn;
+    }
+
+    function NETWORK() public view returns (address) {
+        BaseManagerStorage storage $ = _getBaseManagerStorage();
+        return $._network;
+    }
+
+    function SLASHING_WINDOW() public view returns (uint48) {
+        BaseManagerStorage storage $ = _getBaseManagerStorage();
+        return $._slashingWindow;
+    }
+
+    function VAULT_REGISTRY() public view returns (address) {
+        BaseManagerStorage storage $ = _getBaseManagerStorage();
+        return $._vaultRegistry;
+    }
+
+    function OPERATOR_REGISTRY() public view returns (address) {
+        BaseManagerStorage storage $ = _getBaseManagerStorage();
+        return $._operatorRegistry;
+    }
+
+    function OPERATOR_NET_OPTIN() public view returns (address) {
+        BaseManagerStorage storage $ = _getBaseManagerStorage();
+        return $._operatorNetOptin;
     }
 
     /**

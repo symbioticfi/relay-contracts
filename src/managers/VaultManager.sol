@@ -39,10 +39,23 @@ abstract contract VaultManager is BaseManager {
     error NonVetoSlasher();
     error TooOldTimestampSlash();
 
-    PauseableEnumerableSet.Uint160Set internal _subnetworks;
-    PauseableEnumerableSet.AddressSet internal _sharedVaults;
-    mapping(address => PauseableEnumerableSet.AddressSet) internal _operatorVaults;
-    EnumerableMap.AddressToAddressMap internal _vaultOperator;
+    /// @custom:storage-location erc7201:symbiotic.storage.VaultManager
+    struct VaultManagerStorage {
+        PauseableEnumerableSet.Uint160Set _subnetworks;
+        PauseableEnumerableSet.AddressSet _sharedVaults;
+        mapping(address => PauseableEnumerableSet.AddressSet) _operatorVaults;
+        EnumerableMap.AddressToAddressMap _vaultOperator;
+    }
+
+    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.VaultManager")) - 1)) & ~bytes32(uint256(0xff))
+    bytes32 private constant VaultManagerStorageLocation =
+        0x2d53fdb1dd96fda6f8b11e221b5832c7a1e485a4745ba2d81260927c2c462900;
+
+    function _getVaultManagerStorage() private pure returns (VaultManagerStorage storage $) {
+        assembly {
+            $.slot := VaultManagerStorageLocation
+        }
+    }
 
     /**
      * @dev Struct containing information about a slash response
@@ -63,7 +76,8 @@ abstract contract VaultManager is BaseManager {
      * @return uint256 The count of registered subnetworks
      */
     function subnetworksLength() public view returns (uint256) {
-        return _subnetworks.length();
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        return $._subnetworks.length();
     }
 
     /**
@@ -76,7 +90,8 @@ abstract contract VaultManager is BaseManager {
     function subnetworkWithTimesAt(
         uint256 pos
     ) public view returns (uint160, uint48, uint48) {
-        return _subnetworks.at(pos);
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        return $._subnetworks.at(pos);
     }
 
     /**
@@ -84,7 +99,8 @@ abstract contract VaultManager is BaseManager {
      * @return uint160[] Array of active subnetwork addresses
      */
     function activeSubnetworks() public view returns (uint160[] memory) {
-        return _subnetworks.getActive(getCaptureTimestamp());
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        return $._subnetworks.getActive(getCaptureTimestamp());
     }
 
     /**
@@ -95,7 +111,8 @@ abstract contract VaultManager is BaseManager {
     function activeSubnetworksAt(
         uint48 timestamp
     ) public view returns (uint160[] memory) {
-        return _subnetworks.getActive(timestamp);
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        return $._subnetworks.getActive(timestamp);
     }
 
     /**
@@ -105,7 +122,8 @@ abstract contract VaultManager is BaseManager {
      * @return bool True if the subnetwork was active at the timestamp
      */
     function subnetworkWasActiveAt(uint48 timestamp, uint96 subnetwork) public view returns (bool) {
-        return _subnetworks.wasActiveAt(timestamp, uint160(subnetwork));
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        return $._subnetworks.wasActiveAt(timestamp, uint160(subnetwork));
     }
 
     /**
@@ -113,7 +131,8 @@ abstract contract VaultManager is BaseManager {
      * @return uint256 The count of shared vaults
      */
     function sharedVaultsLength() public view returns (uint256) {
-        return _sharedVaults.length();
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        return $._sharedVaults.length();
     }
 
     /**
@@ -126,7 +145,8 @@ abstract contract VaultManager is BaseManager {
     function sharedVaultWithTimesAt(
         uint256 pos
     ) public view returns (address, uint48, uint48) {
-        return _sharedVaults.at(pos);
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        return $._sharedVaults.at(pos);
     }
 
     /**
@@ -134,7 +154,8 @@ abstract contract VaultManager is BaseManager {
      * @return address[] Array of active shared vault addresses
      */
     function activeSharedVaults() public view returns (address[] memory) {
-        return _sharedVaults.getActive(getCaptureTimestamp());
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        return $._sharedVaults.getActive(getCaptureTimestamp());
     }
 
     /**
@@ -145,7 +166,8 @@ abstract contract VaultManager is BaseManager {
     function operatorVaultsLength(
         address operator
     ) public view returns (uint256) {
-        return _operatorVaults[operator].length();
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        return $._operatorVaults[operator].length();
     }
 
     /**
@@ -157,7 +179,8 @@ abstract contract VaultManager is BaseManager {
      * @return uint48 The time when the vault was disabled
      */
     function operatorVaultWithTimesAt(address operator, uint256 pos) public view returns (address, uint48, uint48) {
-        return _operatorVaults[operator].at(pos);
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        return $._operatorVaults[operator].at(pos);
     }
 
     /**
@@ -168,7 +191,8 @@ abstract contract VaultManager is BaseManager {
     function activeOperatorVaults(
         address operator
     ) public view returns (address[] memory) {
-        return _operatorVaults[operator].getActive(getCaptureTimestamp());
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        return $._operatorVaults[operator].getActive(getCaptureTimestamp());
     }
 
     /**
@@ -176,19 +200,20 @@ abstract contract VaultManager is BaseManager {
      * @return address[] Array of all active vault addresses
      */
     function activeVaults() public view virtual returns (address[] memory) {
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
         uint48 timestamp = getCaptureTimestamp();
-        address[] memory activeSharedVaults_ = _sharedVaults.getActive(timestamp);
+        address[] memory activeSharedVaults_ = $._sharedVaults.getActive(timestamp);
         uint256 len = activeSharedVaults_.length;
-        address[] memory vaults = new address[](len + _vaultOperator.length());
+        address[] memory vaults = new address[](len + $._vaultOperator.length());
 
         for (uint256 i; i < len; ++i) {
             vaults[i] = activeSharedVaults_[i];
         }
 
-        uint256 operatorVaultsLen = _vaultOperator.length();
+        uint256 operatorVaultsLen = $._vaultOperator.length();
         for (uint256 i; i < operatorVaultsLen; ++i) {
-            (address vault, address operator) = _vaultOperator.at(i);
-            if (_operatorVaults[operator].wasActiveAt(timestamp, vault)) {
+            (address vault, address operator) = $._vaultOperator.at(i);
+            if ($._operatorVaults[operator].wasActiveAt(timestamp, vault)) {
                 vaults[len++] = vault;
             }
         }
@@ -208,18 +233,19 @@ abstract contract VaultManager is BaseManager {
     function activeVaultsAt(
         uint48 timestamp
     ) public view virtual returns (address[] memory) {
-        address[] memory activeSharedVaults_ = _sharedVaults.getActive(timestamp);
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        address[] memory activeSharedVaults_ = $._sharedVaults.getActive(timestamp);
         uint256 len = activeSharedVaults_.length;
-        address[] memory vaults = new address[](len + _vaultOperator.length());
+        address[] memory vaults = new address[](len + $._vaultOperator.length());
 
         for (uint256 i; i < len; ++i) {
             vaults[i] = activeSharedVaults_[i];
         }
 
-        uint256 operatorVaultsLen = _vaultOperator.length();
+        uint256 operatorVaultsLen = $._vaultOperator.length();
         for (uint256 i; i < operatorVaultsLen; ++i) {
-            (address vault, address operator) = _vaultOperator.at(i);
-            if (_operatorVaults[operator].wasActiveAt(timestamp, vault)) {
+            (address vault, address operator) = $._vaultOperator.at(i);
+            if ($._operatorVaults[operator].wasActiveAt(timestamp, vault)) {
                 vaults[len++] = vault;
             }
         }
@@ -239,9 +265,10 @@ abstract contract VaultManager is BaseManager {
     function activeVaults(
         address operator
     ) public view virtual returns (address[] memory) {
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
         uint48 timestamp = getCaptureTimestamp();
-        address[] memory activeSharedVaults_ = _sharedVaults.getActive(timestamp);
-        address[] memory activeOperatorVaults_ = _operatorVaults[operator].getActive(timestamp);
+        address[] memory activeSharedVaults_ = $._sharedVaults.getActive(timestamp);
+        address[] memory activeOperatorVaults_ = $._operatorVaults[operator].getActive(timestamp);
 
         uint256 activeSharedVaultsLen = activeSharedVaults_.length;
         address[] memory vaults = new address[](activeSharedVaultsLen + activeOperatorVaults_.length);
@@ -262,8 +289,9 @@ abstract contract VaultManager is BaseManager {
      * @return address[] Array of vault addresses that were active at the timestamp
      */
     function activeVaultsAt(uint48 timestamp, address operator) public view virtual returns (address[] memory) {
-        address[] memory activeSharedVaults_ = _sharedVaults.getActive(timestamp);
-        address[] memory activeOperatorVaults_ = _operatorVaults[operator].getActive(timestamp);
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        address[] memory activeSharedVaults_ = $._sharedVaults.getActive(timestamp);
+        address[] memory activeOperatorVaults_ = $._operatorVaults[operator].getActive(timestamp);
 
         uint256 activeSharedVaultsLen = activeSharedVaults_.length;
         address[] memory vaults = new address[](activeSharedVaultsLen + activeOperatorVaults_.length);
@@ -295,7 +323,8 @@ abstract contract VaultManager is BaseManager {
      * @return bool True if the shared vault was active at the timestamp
      */
     function sharedVaultWasActiveAt(uint48 timestamp, address vault) public view returns (bool) {
-        return _sharedVaults.wasActiveAt(timestamp, vault);
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        return $._sharedVaults.wasActiveAt(timestamp, vault);
     }
 
     /**
@@ -306,7 +335,8 @@ abstract contract VaultManager is BaseManager {
      * @return bool True if the operator vault was active at the timestamp
      */
     function operatorVaultWasActiveAt(uint48 timestamp, address operator, address vault) public view returns (bool) {
-        return _operatorVaults[operator].wasActiveAt(timestamp, vault);
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        return $._operatorVaults[operator].wasActiveAt(timestamp, vault);
     }
 
     /**
@@ -318,7 +348,7 @@ abstract contract VaultManager is BaseManager {
      */
     function getOperatorStake(address operator, address vault, uint96 subnetwork) public view returns (uint256) {
         uint48 timestamp = getCaptureTimestamp();
-        bytes32 subnetworkId = NETWORK.subnetwork(subnetwork);
+        bytes32 subnetworkId = NETWORK().subnetwork(subnetwork);
         return IBaseDelegator(IVault(vault).delegator()).stakeAt(subnetworkId, operator, timestamp, "");
     }
 
@@ -336,7 +366,7 @@ abstract contract VaultManager is BaseManager {
         uint96 subnetwork,
         uint48 timestamp
     ) public view returns (uint256) {
-        bytes32 subnetworkId = NETWORK.subnetwork(subnetwork);
+        bytes32 subnetworkId = NETWORK().subnetwork(subnetwork);
         return IBaseDelegator(IVault(vault).delegator()).stakeAt(subnetworkId, operator, timestamp, "");
     }
 
@@ -491,7 +521,8 @@ abstract contract VaultManager is BaseManager {
     function _registerSubnetwork(
         uint96 subnetwork
     ) internal {
-        _subnetworks.register(Time.timestamp(), uint160(subnetwork));
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        $._subnetworks.register(Time.timestamp(), uint160(subnetwork));
     }
 
     /**
@@ -501,7 +532,8 @@ abstract contract VaultManager is BaseManager {
     function _pauseSubnetwork(
         uint96 subnetwork
     ) internal {
-        _subnetworks.pause(Time.timestamp(), uint160(subnetwork));
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        $._subnetworks.pause(Time.timestamp(), uint160(subnetwork));
     }
 
     /**
@@ -511,7 +543,8 @@ abstract contract VaultManager is BaseManager {
     function _unpauseSubnetwork(
         uint96 subnetwork
     ) internal {
-        _subnetworks.unpause(Time.timestamp(), SLASHING_WINDOW, uint160(subnetwork));
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        $._subnetworks.unpause(Time.timestamp(), SLASHING_WINDOW(), uint160(subnetwork));
     }
 
     /**
@@ -521,7 +554,8 @@ abstract contract VaultManager is BaseManager {
     function _unregisterSubnetwork(
         uint96 subnetwork
     ) internal {
-        _subnetworks.unregister(Time.timestamp(), SLASHING_WINDOW, uint160(subnetwork));
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        $._subnetworks.unregister(Time.timestamp(), SLASHING_WINDOW(), uint160(subnetwork));
     }
 
     /**
@@ -531,8 +565,9 @@ abstract contract VaultManager is BaseManager {
     function _registerSharedVault(
         address vault
     ) internal {
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
         _validateVault(vault);
-        _sharedVaults.register(Time.timestamp(), vault);
+        $._sharedVaults.register(Time.timestamp(), vault);
     }
 
     /**
@@ -541,12 +576,13 @@ abstract contract VaultManager is BaseManager {
      * @param vault The vault address to register
      */
     function _registerOperatorVault(address operator, address vault) internal {
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
         _validateVault(vault);
-        if (_sharedVaults.contains(vault)) {
+        if ($._sharedVaults.contains(vault)) {
             revert VaultAlreadyRegistred();
         }
-        _operatorVaults[operator].register(Time.timestamp(), vault);
-        _vaultOperator.set(vault, operator);
+        $._operatorVaults[operator].register(Time.timestamp(), vault);
+        $._vaultOperator.set(vault, operator);
     }
 
     /**
@@ -556,7 +592,8 @@ abstract contract VaultManager is BaseManager {
     function _pauseSharedVault(
         address vault
     ) internal {
-        _sharedVaults.pause(Time.timestamp(), vault);
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        $._sharedVaults.pause(Time.timestamp(), vault);
     }
 
     /**
@@ -566,7 +603,8 @@ abstract contract VaultManager is BaseManager {
     function _unpauseSharedVault(
         address vault
     ) internal {
-        _sharedVaults.unpause(Time.timestamp(), SLASHING_WINDOW, vault);
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        $._sharedVaults.unpause(Time.timestamp(), SLASHING_WINDOW(), vault);
     }
 
     /**
@@ -575,7 +613,8 @@ abstract contract VaultManager is BaseManager {
      * @param vault The vault address to pause
      */
     function _pauseOperatorVault(address operator, address vault) internal {
-        _operatorVaults[operator].pause(Time.timestamp(), vault);
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        $._operatorVaults[operator].pause(Time.timestamp(), vault);
     }
 
     /**
@@ -584,7 +623,8 @@ abstract contract VaultManager is BaseManager {
      * @param vault The vault address to unpause
      */
     function _unpauseOperatorVault(address operator, address vault) internal {
-        _operatorVaults[operator].unpause(Time.timestamp(), SLASHING_WINDOW, vault);
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        $._operatorVaults[operator].unpause(Time.timestamp(), SLASHING_WINDOW(), vault);
     }
 
     /**
@@ -594,7 +634,8 @@ abstract contract VaultManager is BaseManager {
     function _unregisterSharedVault(
         address vault
     ) internal {
-        _sharedVaults.unregister(Time.timestamp(), SLASHING_WINDOW, vault);
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        $._sharedVaults.unregister(Time.timestamp(), SLASHING_WINDOW(), vault);
     }
 
     /**
@@ -603,8 +644,9 @@ abstract contract VaultManager is BaseManager {
      * @param vault The vault address to unregister
      */
     function _unregisterOperatorVault(address operator, address vault) internal {
-        _operatorVaults[operator].unregister(Time.timestamp(), SLASHING_WINDOW, vault);
-        _vaultOperator.remove(vault);
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        $._operatorVaults[operator].unregister(Time.timestamp(), SLASHING_WINDOW(), vault);
+        $._vaultOperator.remove(vault);
     }
 
     /**
@@ -625,7 +667,8 @@ abstract contract VaultManager is BaseManager {
         uint256 amount,
         bytes memory hints
     ) internal returns (SlashResponse memory resp) {
-        if (!(_sharedVaults.contains(vault) || _operatorVaults[operator].contains(vault))) {
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        if (!($._sharedVaults.contains(vault) || $._operatorVaults[operator].contains(vault))) {
             revert NotOperatorVault();
         }
 
@@ -633,7 +676,7 @@ abstract contract VaultManager is BaseManager {
             revert InactiveVaultSlash();
         }
 
-        if (timestamp + SLASHING_WINDOW < Time.timestamp()) {
+        if (timestamp + SLASHING_WINDOW() < Time.timestamp()) {
             revert TooOldTimestampSlash();
         }
 
@@ -679,7 +722,8 @@ abstract contract VaultManager is BaseManager {
     function _validateVault(
         address vault
     ) private view {
-        if (!IRegistry(VAULT_REGISTRY).isEntity(vault)) {
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        if (!IRegistry(VAULT_REGISTRY()).isEntity(vault)) {
             revert NotVault();
         }
 
@@ -687,7 +731,7 @@ abstract contract VaultManager is BaseManager {
             revert VaultNotInitialized();
         }
 
-        if (_vaultOperator.contains(vault)) {
+        if ($._vaultOperator.contains(vault)) {
             revert VaultAlreadyRegistred();
         }
 
@@ -698,7 +742,7 @@ abstract contract VaultManager is BaseManager {
             vaultEpoch -= IVetoSlasher(slasher).vetoDuration();
         }
 
-        if (vaultEpoch < SLASHING_WINDOW) {
+        if (vaultEpoch < SLASHING_WINDOW()) {
             revert VaultEpochTooShort();
         }
     }
