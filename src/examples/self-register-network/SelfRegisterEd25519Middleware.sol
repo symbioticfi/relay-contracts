@@ -13,6 +13,7 @@ import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SharedVaults} from "../../middleware/extensions/SharedVaults.sol";
 import {SelfRegisterOperators} from "../../middleware/extensions/operators/SelfRegisterOperators.sol";
 import {NoAccessManager} from "../../middleware/extensions/access-managers/NoAccessManager.sol";
+import {TimestampCapture} from "../../middleware/extensions/capture-timestamps/TimestampCapture.sol";
 
 import {KeyStorage256} from "../../key-storage/KeyStorage256.sol";
 import {Ed25519Sig} from "../../middleware/extensions/sigs/Ed25519Sig.sol";
@@ -22,7 +23,8 @@ contract SelfRegisterEd25519Middleware is
     SelfRegisterOperators,
     KeyStorage256,
     Ed25519Sig,
-    NoAccessManager
+    NoAccessManager,
+    TimestampCapture
 {
     /*
      * @notice Constructor for initializing the SelfRegisterEd25519Middleware contract.

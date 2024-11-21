@@ -14,10 +14,18 @@ import {SharedVaults} from "../../middleware/extensions/SharedVaults.sol";
 import {SelfRegisterOperators} from "../../middleware/extensions/operators/SelfRegisterOperators.sol";
 import {ECDSASig} from "../../middleware/extensions/sigs/ECDSASig.sol";
 import {NoAccessManager} from "../../middleware/extensions/access-managers/NoAccessManager.sol";
+import {TimestampCapture} from "../../middleware/extensions/capture-timestamps/TimestampCapture.sol";
 
 import {KeyStorage256} from "../../key-storage/KeyStorage256.sol";
 
-contract SelfRegisterMiddleware is SharedVaults, SelfRegisterOperators, KeyStorage256, ECDSASig, NoAccessManager {
+contract SelfRegisterMiddleware is
+    SharedVaults,
+    SelfRegisterOperators,
+    KeyStorage256,
+    ECDSASig,
+    NoAccessManager,
+    TimestampCapture
+{
     /*
      * @notice Constructor for initializing the SelfRegisterMiddleware contract.
      * @param network The address of the network.
