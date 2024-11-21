@@ -12,6 +12,8 @@ import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/Signa
  * @dev Extends BaseMiddleware, BaseSig, and EIP712Upgradeable to provide signature-based operator management
  */
 abstract contract SelfRegisterOperators is BaseMiddleware, BaseSig, EIP712Upgradeable {
+    bool public constant SelfRegisterOperatorsEnabled = true;
+
     error InvalidSignature();
 
     // EIP-712 TypeHash constants

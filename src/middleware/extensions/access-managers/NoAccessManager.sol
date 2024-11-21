@@ -9,6 +9,8 @@ import {BaseMiddleware} from "../../BaseMiddleware.sol";
  * @dev Implements BaseMiddleware and always reverts on access checks
  */
 abstract contract NoAccessManager is BaseMiddleware {
+    bool public constant NoAccessManagerEnabled = true;
+
     /**
      * @notice Error thrown when access is denied
      */

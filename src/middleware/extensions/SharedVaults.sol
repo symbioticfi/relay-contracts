@@ -9,6 +9,8 @@ import {BaseMiddleware} from "../BaseMiddleware.sol";
  * @dev Extends BaseMiddleware to provide access control for vault management functions
  */
 abstract contract SharedVaults is BaseMiddleware {
+    bool public constant SharedVaultsEnabled = true;
+
     /**
      * @notice Registers a new shared vault
      * @param sharedVault The address of the vault to register
