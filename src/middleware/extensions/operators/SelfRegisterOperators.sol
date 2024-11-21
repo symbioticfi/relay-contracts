@@ -40,7 +40,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, BaseSig, EIP712Upgrad
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.SelfRegisterOperators")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant SelfResgisterOperators_STORAGE_LOCATION =
-        0xefff5050c06ffc4cd47bb2affac9b172a9afa4faaca821adedcc3651bef4ba00;
+        0x7c1bcd600c3fcfbc53470fac03a90d5cf6aa7b77c3f1ed10e6c6bd4d192eaf00;
 
     function _getSelfRegisterOperatorsStorage() private pure returns (SelfRegisterOperatorsStorage storage $) {
         bytes32 location = SelfResgisterOperators_STORAGE_LOCATION;

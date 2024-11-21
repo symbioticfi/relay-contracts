@@ -49,7 +49,7 @@ abstract contract VaultManager is BaseManager {
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.VaultManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant VaultManagerStorageLocation =
-        0x2d53fdb1dd96fda6f8b11e221b5832c7a1e485a4745ba2d81260927c2c462900;
+        0x485f0695561726d087d0cb5cf546efed37ef61dfced21455f1ba7eb5e5b3db00;
 
     function _getVaultManagerStorage() private pure returns (VaultManagerStorage storage $) {
         assembly {

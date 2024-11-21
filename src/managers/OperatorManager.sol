@@ -26,7 +26,7 @@ abstract contract OperatorManager is BaseManager {
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OperatorManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant OperatorManagerStorageLocation =
-        0x819b71b9578fceb0968f87c9e32befffbf335e42bec212b90debd10f2f3fdb00;
+        0x3b2b549db680c436ebf9aa3c8eeee850852f16da5cdb5137dbc0299ebb219e00;
 
     function _getOperatorManagerStorage() private pure returns (OperatorManagerStorage storage $) {
         assembly {
