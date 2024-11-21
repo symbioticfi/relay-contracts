@@ -11,11 +11,12 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SharedVaults} from "../../middleware/extensions/SharedVaults.sol";
-import {Operators} from "../../middleware/extensions/Operators.sol";
-
+import {Operators} from "../../middleware/extensions/operators/Operators.sol";
+import {OwnableAccessManager} from "../../middleware/extensions/access-managers/OwnableAccessManager.sol";
+import {EpochCapture} from "../../middleware/extensions/capture-timestamps/EpochCapture.sol";
 import {KeyStorage256} from "../../key-storage/KeyStorage256.sol";
 
-contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256 {
+contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256, OwnableAccessManager, EpochCapture {
     using Subnetwork for address;
 
     error InactiveKeySlash(); // Error thrown when trying to slash an inactive key
@@ -28,8 +29,13 @@ contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256 {
         bytes32 key; // Key associated with the validator
     }
 
-    uint48 public immutable EPOCH_DURATION; // Duration of each epoch
-    uint48 public immutable START_TIMESTAMP; // Start timestamp of the network
+    struct SlashParams {
+        uint48 epochStart;
+        address operator;
+        uint256 totalStake;
+        address[] vaults;
+        uint160[] subnetworks;
+    }
 
     /* 
      * @notice Constructor for initializing the SimpleMiddleware contract.
@@ -49,34 +55,22 @@ contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256 {
         address owner,
         uint48 epochDuration,
         uint48 slashingWindow
-    ) BaseMiddleware(network, operatorRegistry, vaultRegistry, operatorNetOptin, slashingWindow, owner) {
-        EPOCH_DURATION = epochDuration;
-        START_TIMESTAMP = Time.timestamp();
+    ) {
+        initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, owner, epochDuration);
     }
 
-    /* 
-     * @notice Returns the start timestamp for a given epoch.
-     * @param epoch The epoch number.
-     * @return The start timestamp.
-     */
-    function getEpochStart(uint48 epoch) public view returns (uint48) {
-        return START_TIMESTAMP + epoch * EPOCH_DURATION;
-    }
-
-    /* 
-     * @notice Returns the current epoch.
-     * @return The current epoch.
-     */
-    function getCurrentEpoch() public view returns (uint48) {
-        return (Time.timestamp() - START_TIMESTAMP) / EPOCH_DURATION;
-    }
-
-    /* 
-     * @notice Returns the capture timestamp for the current epoch.
-     * @return The capture timestamp.
-     */
-    function getCaptureTimestamp() public view virtual override returns (uint48 timestamp) {
-        return getEpochStart(getCurrentEpoch());
+    function initialize(
+        address network,
+        uint48 slashingWindow,
+        address vaultRegistry,
+        address operatorRegistry,
+        address operatorNetOptin,
+        address owner,
+        uint48 epochDuration
+    ) public initializer {
+        super.initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
+        __OwnableAccessManaged_init(owner);
+        __EpochCapture_init(epochDuration);
     }
 
     /* 
@@ -140,39 +134,40 @@ contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256 {
         uint256 amount,
         bytes[][] memory stakeHints,
         bytes[] memory slashHints
-    ) public onlyOwner {
-        uint48 epochStart = getEpochStart(epoch);
-        address operator = operatorByKey(abi.encode(key));
+    ) public checkAccess {
+        SlashParams memory params;
+        params.epochStart = getEpochStart(epoch);
+        params.operator = operatorByKey(abi.encode(key));
 
         _checkCanSlash(epoch, key);
 
-        uint256 totalStake = getOperatorStakeAt(operator, epochStart);
-        address[] memory vaults = activeVaultsAt(epochStart, operator);
-        uint160[] memory subnetworks = activeSubnetworksAt(epochStart);
+        params.totalStake = getOperatorStakeAt(params.operator, params.epochStart);
+        params.vaults = activeVaultsAt(params.epochStart, params.operator);
+        params.subnetworks = activeSubnetworksAt(params.epochStart);
 
         // Validate hints lengths upfront
-        if (stakeHints.length != slashHints.length || stakeHints.length != vaults.length) {
+        if (stakeHints.length != slashHints.length || stakeHints.length != params.vaults.length) {
             revert InvalidHints();
         }
 
-        for (uint256 i; i < vaults.length; ++i) {
-            if (stakeHints[i].length != subnetworks.length) {
+        for (uint256 i; i < params.vaults.length; ++i) {
+            if (stakeHints[i].length != params.subnetworks.length) {
                 revert InvalidHints();
             }
 
-            address vault = vaults[i];
-            for (uint256 j; j < subnetworks.length; ++j) {
-                bytes32 subnetwork = NETWORK.subnetwork(uint96(subnetworks[j]));
+            address vault = params.vaults[i];
+            for (uint256 j; j < params.subnetworks.length; ++j) {
+                bytes32 subnetwork = NETWORK.subnetwork(uint96(params.subnetworks[j]));
                 uint256 stake = IBaseDelegator(IVault(vault).delegator()).stakeAt(
-                    subnetwork, operator, epochStart, stakeHints[i][j]
+                    subnetwork, params.operator, params.epochStart, stakeHints[i][j]
                 );
 
-                uint256 slashAmount = Math.mulDiv(amount, stake, totalStake);
+                uint256 slashAmount = Math.mulDiv(amount, stake, params.totalStake);
                 if (slashAmount == 0) {
                     continue;
                 }
 
-                _slashVault(epochStart, vault, subnetwork, operator, slashAmount, slashHints[i]);
+                _slashVault(params.epochStart, vault, subnetwork, params.operator, slashAmount, slashHints[i]);
             }
         }
     }

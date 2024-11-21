@@ -2,8 +2,6 @@
 solc-version = "0.8.26"
 src = "src"
 out = "out"
-libs = ["lib"]
-via_ir = true
 fs_permissions = [{ access = "read", path = "./"}]
 gas_reports = ["*"]
 

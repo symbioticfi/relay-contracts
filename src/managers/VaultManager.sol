@@ -17,6 +17,11 @@ import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap
 import {BaseManager} from "./BaseManager.sol";
 import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
+/**
+ * @title VaultManager
+ * @notice Abstract contract for managing vaults and their relationships with operators and subnetworks
+ * @dev Extends BaseManager and provides functionality for registering, pausing, and managing vaults
+ */
 abstract contract VaultManager is BaseManager {
     using EnumerableMap for EnumerableMap.AddressToUintMap;
     using EnumerableMap for EnumerableMap.AddressToAddressMap;
@@ -39,119 +44,136 @@ abstract contract VaultManager is BaseManager {
     mapping(address => PauseableEnumerableSet.AddressSet) internal _operatorVaults;
     EnumerableMap.AddressToAddressMap internal _vaultOperator;
 
+    /**
+     * @dev Struct containing information about a slash response
+     * @param vault The address of the vault being slashed
+     * @param slasherType The type identifier of the slasher
+     * @param subnetwork The subnetwork identifier where the slash occurred
+     * @param response For instant slashing: the slashed amount, for veto slashing: the slash index
+     */
     struct SlashResponse {
         address vault;
         uint64 slasherType;
         bytes32 subnetwork;
-        uint256 response; // if instant slashed amount else slash index
+        uint256 response;
     }
 
     /**
-     * @notice Returns the number of subnetworks registered
-     * @return The count of registered subnetworks
+     * @notice Gets the total number of registered subnetworks
+     * @return uint256 The count of registered subnetworks
      */
     function subnetworksLength() public view returns (uint256) {
         return _subnetworks.length();
     }
 
     /**
-     * @notice Returns the subnetwork information at a specified position
-     * @param pos The index of the subnetwork
-     * @return The subnetwork address
-     * @return enableTime The time when the subnetwork was enabled
-     * @return disableTime The time when the subnetwork was disabled
+     * @notice Gets the subnetwork information at a specific index
+     * @param pos The index position to query
+     * @return uint160 The subnetwork address
+     * @return uint48 The time when the subnetwork was enabled
+     * @return uint48 The time when the subnetwork was disabled
      */
-    function subnetworkWithTimesAt(uint256 pos) public view returns (uint160, uint48, uint48) {
+    function subnetworkWithTimesAt(
+        uint256 pos
+    ) public view returns (uint160, uint48, uint48) {
         return _subnetworks.at(pos);
     }
 
     /**
-     * @notice Returns an array of active subnetworks at the current capture timestamp
-     * @return An array of active subnetwork addresses
+     * @notice Gets all currently active subnetworks
+     * @return uint160[] Array of active subnetwork addresses
      */
     function activeSubnetworks() public view returns (uint160[] memory) {
         return _subnetworks.getActive(getCaptureTimestamp());
     }
 
     /**
-     * @notice Returns an array of active subnetworks at a specific timestamp
-     * @param timestamp The timestamp to check activity at
-     * @return An array of active subnetwork addresses
+     * @notice Gets all subnetworks that were active at a specific timestamp
+     * @param timestamp The timestamp to check
+     * @return uint160[] Array of subnetwork addresses that were active at the timestamp
      */
-    function activeSubnetworksAt(uint48 timestamp) public view returns (uint160[] memory) {
+    function activeSubnetworksAt(
+        uint48 timestamp
+    ) public view returns (uint160[] memory) {
         return _subnetworks.getActive(timestamp);
     }
 
     /**
-     * @notice Checks if a given subnetwork was active at a specified timestamp
+     * @notice Checks if a subnetwork was active at a specific timestamp
      * @param timestamp The timestamp to check
-     * @param subnetwork The subnetwork to check
-     * @return True if the subnetwork was active at the timestamp
+     * @param subnetwork The subnetwork identifier
+     * @return bool True if the subnetwork was active at the timestamp
      */
     function subnetworkWasActiveAt(uint48 timestamp, uint96 subnetwork) public view returns (bool) {
         return _subnetworks.wasActiveAt(timestamp, uint160(subnetwork));
     }
 
     /**
-     * @notice Returns the number of shared vaults
-     * @return The count of shared vaults
+     * @notice Gets the total number of shared vaults
+     * @return uint256 The count of shared vaults
      */
     function sharedVaultsLength() public view returns (uint256) {
         return _sharedVaults.length();
     }
 
     /**
-     * @notice Returns the vault information at a specified position
-     * @param pos The index position in the shared vaults array
-     * @return The vault address
-     * @return enableTime The time when the vault was enabled
-     * @return disableTime The time when the vault was disabled
+     * @notice Gets the vault information at a specific index
+     * @param pos The index position to query
+     * @return address The vault address
+     * @return uint48 The time when the vault was enabled
+     * @return uint48 The time when the vault was disabled
      */
-    function sharedVaultWithTimesAt(uint256 pos) public view returns (address, uint48, uint48) {
+    function sharedVaultWithTimesAt(
+        uint256 pos
+    ) public view returns (address, uint48, uint48) {
         return _sharedVaults.at(pos);
     }
 
     /**
-     * @notice Returns an array of active shared vaults at the current capture timestamp
-     * @return An array of active shared vault addresses
+     * @notice Gets all currently active shared vaults
+     * @return address[] Array of active shared vault addresses
      */
     function activeSharedVaults() public view returns (address[] memory) {
         return _sharedVaults.getActive(getCaptureTimestamp());
     }
 
     /**
-     * @notice Returns the number of vaults associated with an operator
-     * @param operator The address of the operator
-     * @return The count of vaults for the operator
+     * @notice Gets the number of vaults associated with an operator
+     * @param operator The operator address to query
+     * @return uint256 The count of vaults for the operator
      */
-    function operatorVaultsLength(address operator) public view returns (uint256) {
+    function operatorVaultsLength(
+        address operator
+    ) public view returns (uint256) {
         return _operatorVaults[operator].length();
     }
 
     /**
-     * @notice Returns the vault information at a specified position for an operator
-     * @param operator The address of the operator
-     * @param pos The index position in the operator vaults array
-     * @return The vault address
-     * @return enableTime The time when the vault was enabled
-     * @return disableTime The time when the vault was disabled
+     * @notice Gets the vault information at a specific index for an operator
+     * @param operator The operator address
+     * @param pos The index position to query
+     * @return address The vault address
+     * @return uint48 The time when the vault was enabled
+     * @return uint48 The time when the vault was disabled
      */
     function operatorVaultWithTimesAt(address operator, uint256 pos) public view returns (address, uint48, uint48) {
         return _operatorVaults[operator].at(pos);
     }
 
     /**
-     * @notice Returns an array of active vaults for a specific operator at the current capture timestamp
-     * @param operator The address of the operator
-     * @return An array of active vault addresses
+     * @notice Gets all currently active vaults for a specific operator
+     * @param operator The operator address
+     * @return address[] Array of active vault addresses
      */
-    function activeOperatorVaults(address operator) public view returns (address[] memory) {
+    function activeOperatorVaults(
+        address operator
+    ) public view returns (address[] memory) {
         return _operatorVaults[operator].getActive(getCaptureTimestamp());
     }
 
     /**
-     * @notice Returns all active vaults at the current capture timestamp
-     * @return An array of active vault addresses
+     * @notice Gets all currently active vaults across all operators
+     * @return address[] Array of all active vault addresses
      */
     function activeVaults() public view virtual returns (address[] memory) {
         uint48 timestamp = getCaptureTimestamp();
@@ -179,11 +201,13 @@ abstract contract VaultManager is BaseManager {
     }
 
     /**
-     * @notice Returns all active vaults at a specific timestamp
-     * @param timestamp The timestamp to check activity at
-     * @return An array of active vault addresses
+     * @notice Gets all vaults that were active at a specific timestamp
+     * @param timestamp The timestamp to check
+     * @return address[] Array of vault addresses that were active at the timestamp
      */
-    function activeVaultsAt(uint48 timestamp) public view virtual returns (address[] memory) {
+    function activeVaultsAt(
+        uint48 timestamp
+    ) public view virtual returns (address[] memory) {
         address[] memory activeSharedVaults_ = _sharedVaults.getActive(timestamp);
         uint256 len = activeSharedVaults_.length;
         address[] memory vaults = new address[](len + _vaultOperator.length());
@@ -208,11 +232,13 @@ abstract contract VaultManager is BaseManager {
     }
 
     /**
-     * @notice Returns active vaults for a specific operator at the current capture timestamp
-     * @param operator The address of the operator
-     * @return An array of active vault addresses
+     * @notice Gets all currently active vaults for a specific operator
+     * @param operator The operator address
+     * @return address[] Array of active vault addresses for the operator
      */
-    function activeVaults(address operator) public view virtual returns (address[] memory) {
+    function activeVaults(
+        address operator
+    ) public view virtual returns (address[] memory) {
         uint48 timestamp = getCaptureTimestamp();
         address[] memory activeSharedVaults_ = _sharedVaults.getActive(timestamp);
         address[] memory activeOperatorVaults_ = _operatorVaults[operator].getActive(timestamp);
@@ -230,10 +256,10 @@ abstract contract VaultManager is BaseManager {
     }
 
     /**
-     * @notice Returns active vaults for a specific operator at a given timestamp
-     * @param timestamp The timestamp to check activity at
-     * @param operator The address of the operator
-     * @return An array of active vault addresses
+     * @notice Gets all vaults that were active for an operator at a specific timestamp
+     * @param timestamp The timestamp to check
+     * @param operator The operator address
+     * @return address[] Array of vault addresses that were active at the timestamp
      */
     function activeVaultsAt(uint48 timestamp, address operator) public view virtual returns (address[] memory) {
         address[] memory activeSharedVaults_ = _sharedVaults.getActive(timestamp);
@@ -254,9 +280,9 @@ abstract contract VaultManager is BaseManager {
     /**
      * @notice Checks if a vault was active at a specific timestamp
      * @param timestamp The timestamp to check
-     * @param operator The address of operator
-     * @param vault The vault address to check
-     * @return True if the vault was active at the timestamp
+     * @param operator The operator address
+     * @param vault The vault address
+     * @return bool True if the vault was active at the timestamp
      */
     function vaultWasActiveAt(uint48 timestamp, address operator, address vault) public view returns (bool) {
         return sharedVaultWasActiveAt(timestamp, vault) || operatorVaultWasActiveAt(timestamp, operator, vault);
@@ -265,8 +291,8 @@ abstract contract VaultManager is BaseManager {
     /**
      * @notice Checks if a shared vault was active at a specific timestamp
      * @param timestamp The timestamp to check
-     * @param vault The vault address to check
-     * @return True if the shared vault was active at the timestamp
+     * @param vault The vault address
+     * @return bool True if the shared vault was active at the timestamp
      */
     function sharedVaultWasActiveAt(uint48 timestamp, address vault) public view returns (bool) {
         return _sharedVaults.wasActiveAt(timestamp, vault);
@@ -275,9 +301,9 @@ abstract contract VaultManager is BaseManager {
     /**
      * @notice Checks if an operator vault was active at a specific timestamp
      * @param timestamp The timestamp to check
-     * @param operator The address of operator
-     * @param vault The vault address to check
-     * @return True if the operator vault was active at the timestamp
+     * @param operator The operator address
+     * @param vault The vault address
+     * @return bool True if the operator vault was active at the timestamp
      */
     function operatorVaultWasActiveAt(uint48 timestamp, address operator, address vault) public view returns (bool) {
         return _operatorVaults[operator].wasActiveAt(timestamp, vault);
@@ -285,10 +311,10 @@ abstract contract VaultManager is BaseManager {
 
     /**
      * @notice Gets the stake amount for an operator in a vault and subnetwork
-     * @param operator The address of the operator
-     * @param vault The address of the vault
+     * @param operator The operator address
+     * @param vault The vault address
      * @param subnetwork The subnetwork identifier
-     * @return The stake amount
+     * @return uint256 The stake amount
      */
     function getOperatorStake(address operator, address vault, uint96 subnetwork) public view returns (uint256) {
         uint48 timestamp = getCaptureTimestamp();
@@ -298,11 +324,11 @@ abstract contract VaultManager is BaseManager {
 
     /**
      * @notice Gets the stake amount for an operator in a vault and subnetwork at a specific timestamp
-     * @param operator The address of the operator
-     * @param vault The address of the vault
+     * @param operator The operator address
+     * @param vault The vault address
      * @param subnetwork The subnetwork identifier
-     * @param timestamp The timestamp to check stake at
-     * @return The stake amount
+     * @param timestamp The timestamp to check
+     * @return uint256 The stake amount at the timestamp
      */
     function getOperatorStakeAt(
         address operator,
@@ -316,10 +342,10 @@ abstract contract VaultManager is BaseManager {
 
     /**
      * @notice Gets the power amount for an operator in a vault and subnetwork
-     * @param operator The address of the operator
-     * @param vault The address of the vault
+     * @param operator The operator address
+     * @param vault The vault address
      * @param subnetwork The subnetwork identifier
-     * @return The power amount
+     * @return uint256 The power amount
      */
     function getOperatorPower(address operator, address vault, uint96 subnetwork) public view returns (uint256) {
         uint256 stake = getOperatorStake(operator, vault, subnetwork);
@@ -328,11 +354,11 @@ abstract contract VaultManager is BaseManager {
 
     /**
      * @notice Gets the power amount for an operator in a vault and subnetwork at a specific timestamp
-     * @param operator The address of the operator
-     * @param vault The address of the vault
+     * @param operator The operator address
+     * @param vault The vault address
      * @param subnetwork The subnetwork identifier
-     * @param timestamp The timestamp to check power at
-     * @return The power amount
+     * @param timestamp The timestamp to check
+     * @return uint256 The power amount at the timestamp
      */
     function getOperatorPowerAt(
         address operator,
@@ -346,10 +372,12 @@ abstract contract VaultManager is BaseManager {
 
     /**
      * @notice Gets the total stake amount for an operator across all vaults and subnetworks
-     * @param operator The address of the operator
+     * @param operator The operator address
      * @return stake The total stake amount
      */
-    function getOperatorStake(address operator) public view virtual returns (uint256 stake) {
+    function getOperatorStake(
+        address operator
+    ) public view virtual returns (uint256 stake) {
         address[] memory vaults = activeVaults(operator);
         uint160[] memory subnetworks = activeSubnetworks();
 
@@ -365,9 +393,9 @@ abstract contract VaultManager is BaseManager {
 
     /**
      * @notice Gets the total stake amount for an operator across all vaults and subnetworks at a specific timestamp
-     * @param operator The address of the operator
-     * @param timestamp The timestamp to check stake at
-     * @return stake The total stake amount
+     * @param operator The operator address
+     * @param timestamp The timestamp to check
+     * @return stake The total stake amount at the timestamp
      */
     function getOperatorStakeAt(address operator, uint48 timestamp) public view virtual returns (uint256 stake) {
         address[] memory vaults = activeVaultsAt(timestamp, operator);
@@ -385,10 +413,12 @@ abstract contract VaultManager is BaseManager {
 
     /**
      * @notice Gets the total power amount for an operator across all vaults and subnetworks
-     * @param operator The address of the operator
+     * @param operator The operator address
      * @return power The total power amount
      */
-    function getOperatorPower(address operator) public view virtual returns (uint256 power) {
+    function getOperatorPower(
+        address operator
+    ) public view virtual returns (uint256 power) {
         address[] memory vaults = activeVaults(operator);
         uint160[] memory subnetworks = activeSubnetworks();
 
@@ -404,9 +434,9 @@ abstract contract VaultManager is BaseManager {
 
     /**
      * @notice Gets the total power amount for an operator across all vaults and subnetworks at a specific timestamp
-     * @param operator The address of the operator
-     * @param timestamp The timestamp to check power at
-     * @return power The total power amount
+     * @param operator The operator address
+     * @param timestamp The timestamp to check
+     * @return power The total power amount at the timestamp
      */
     function getOperatorPowerAt(address operator, uint48 timestamp) public view virtual returns (uint256 power) {
         address[] memory vaults = activeVaultsAt(timestamp, operator);
@@ -427,7 +457,9 @@ abstract contract VaultManager is BaseManager {
      * @param operators Array of operator addresses
      * @return stake The total stake amount
      */
-    function _totalStake(address[] memory operators) internal view returns (uint256 stake) {
+    function _totalStake(
+        address[] memory operators
+    ) internal view returns (uint256 stake) {
         for (uint256 i; i < operators.length; ++i) {
             uint256 operatorStake = getOperatorStake(operators[i]);
             stake += operatorStake;
@@ -441,7 +473,9 @@ abstract contract VaultManager is BaseManager {
      * @param operators Array of operator addresses
      * @return power The total power amount
      */
-    function _totalPower(address[] memory operators) internal view returns (uint256 power) {
+    function _totalPower(
+        address[] memory operators
+    ) internal view returns (uint256 power) {
         for (uint256 i; i < operators.length; ++i) {
             uint256 operatorStake = getOperatorPower(operators[i]);
             power += operatorStake;
@@ -452,49 +486,59 @@ abstract contract VaultManager is BaseManager {
 
     /**
      * @notice Registers a new subnetwork
-     * @param subnetwork The identifier of the subnetwork to register
+     * @param subnetwork The subnetwork identifier to register
      */
-    function _registerSubnetwork(uint96 subnetwork) internal {
+    function _registerSubnetwork(
+        uint96 subnetwork
+    ) internal {
         _subnetworks.register(Time.timestamp(), uint160(subnetwork));
     }
 
     /**
      * @notice Pauses a subnetwork
-     * @param subnetwork The identifier of the subnetwork to pause
+     * @param subnetwork The subnetwork identifier to pause
      */
-    function _pauseSubnetwork(uint96 subnetwork) internal {
+    function _pauseSubnetwork(
+        uint96 subnetwork
+    ) internal {
         _subnetworks.pause(Time.timestamp(), uint160(subnetwork));
     }
 
     /**
      * @notice Unpauses a subnetwork
-     * @param subnetwork The identifier of the subnetwork to unpause
+     * @param subnetwork The subnetwork identifier to unpause
      */
-    function _unpauseSubnetwork(uint96 subnetwork) internal {
+    function _unpauseSubnetwork(
+        uint96 subnetwork
+    ) internal {
         _subnetworks.unpause(Time.timestamp(), SLASHING_WINDOW, uint160(subnetwork));
     }
 
     /**
      * @notice Unregisters a subnetwork
-     * @param subnetwork The identifier of the subnetwork to unregister
+     * @param subnetwork The subnetwork identifier to unregister
      */
-    function _unregisterSubnetwork(uint96 subnetwork) internal {
+    function _unregisterSubnetwork(
+        uint96 subnetwork
+    ) internal {
         _subnetworks.unregister(Time.timestamp(), SLASHING_WINDOW, uint160(subnetwork));
     }
 
     /**
      * @notice Registers a new shared vault
-     * @param vault The address of the vault to register
+     * @param vault The vault address to register
      */
-    function _registerSharedVault(address vault) internal {
+    function _registerSharedVault(
+        address vault
+    ) internal {
         _validateVault(vault);
         _sharedVaults.register(Time.timestamp(), vault);
     }
 
     /**
      * @notice Registers a new operator vault
-     * @param operator The address of the operator
-     * @param vault The address of the vault to register
+     * @param operator The operator address
+     * @param vault The vault address to register
      */
     function _registerOperatorVault(address operator, address vault) internal {
         _validateVault(vault);
@@ -507,24 +551,28 @@ abstract contract VaultManager is BaseManager {
 
     /**
      * @notice Pauses a shared vault
-     * @param vault The address of the vault to pause
+     * @param vault The vault address to pause
      */
-    function _pauseSharedVault(address vault) internal {
+    function _pauseSharedVault(
+        address vault
+    ) internal {
         _sharedVaults.pause(Time.timestamp(), vault);
     }
 
     /**
      * @notice Unpauses a shared vault
-     * @param vault The address of the vault to unpause
+     * @param vault The vault address to unpause
      */
-    function _unpauseSharedVault(address vault) internal {
+    function _unpauseSharedVault(
+        address vault
+    ) internal {
         _sharedVaults.unpause(Time.timestamp(), SLASHING_WINDOW, vault);
     }
 
     /**
      * @notice Pauses an operator vault
-     * @param operator The address of the operator
-     * @param vault The address of the vault to pause
+     * @param operator The operator address
+     * @param vault The vault address to pause
      */
     function _pauseOperatorVault(address operator, address vault) internal {
         _operatorVaults[operator].pause(Time.timestamp(), vault);
@@ -532,8 +580,8 @@ abstract contract VaultManager is BaseManager {
 
     /**
      * @notice Unpauses an operator vault
-     * @param operator The address of the operator
-     * @param vault The address of the vault to unpause
+     * @param operator The operator address
+     * @param vault The vault address to unpause
      */
     function _unpauseOperatorVault(address operator, address vault) internal {
         _operatorVaults[operator].unpause(Time.timestamp(), SLASHING_WINDOW, vault);
@@ -541,16 +589,18 @@ abstract contract VaultManager is BaseManager {
 
     /**
      * @notice Unregisters a shared vault
-     * @param vault The address of the vault to unregister
+     * @param vault The vault address to unregister
      */
-    function _unregisterSharedVault(address vault) internal {
+    function _unregisterSharedVault(
+        address vault
+    ) internal {
         _sharedVaults.unregister(Time.timestamp(), SLASHING_WINDOW, vault);
     }
 
     /**
      * @notice Unregisters an operator vault
-     * @param operator The address of the operator
-     * @param vault The address of the vault to unregister
+     * @param operator The operator address
+     * @param vault The vault address to unregister
      */
     function _unregisterOperatorVault(address operator, address vault) internal {
         _operatorVaults[operator].unregister(Time.timestamp(), SLASHING_WINDOW, vault);
@@ -560,7 +610,7 @@ abstract contract VaultManager is BaseManager {
     /**
      * @notice Slashes a vault based on provided conditions
      * @param timestamp The timestamp when the slash occurs
-     * @param vault The address of the vault
+     * @param vault The vault address
      * @param subnetwork The subnetwork identifier
      * @param operator The operator to slash
      * @param amount The amount to slash
@@ -603,7 +653,7 @@ abstract contract VaultManager is BaseManager {
 
     /**
      * @notice Executes a veto-based slash for a vault
-     * @param vault The address of the vault
+     * @param vault The vault address
      * @param slashIndex The index of the slash to execute
      * @param hints Additional data for the veto slasher
      * @return slashedAmount The amount that was slashed
@@ -623,10 +673,12 @@ abstract contract VaultManager is BaseManager {
     }
 
     /**
-     * @notice Validates if the vault is properly initialized and registered
-     * @param vault The address of the vault to validate
+     * @notice Validates if a vault is properly initialized and registered
+     * @param vault The vault address to validate
      */
-    function _validateVault(address vault) private view {
+    function _validateVault(
+        address vault
+    ) private view {
         if (!IRegistry(VAULT_REGISTRY).isEntity(vault)) {
             revert NotVault();
         }
