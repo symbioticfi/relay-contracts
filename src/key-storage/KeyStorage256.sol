@@ -6,8 +6,14 @@ import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
+/**
+ * @title KeyStorage256
+ * @notice Manages storage and validation of operator keys using bytes32 values
+ * @dev Extends BaseMiddleware to provide key management functionality
+ */
 abstract contract KeyStorage256 is BaseMiddleware {
     using PauseableEnumerableSet for PauseableEnumerableSet.Bytes32Set;
+    using PauseableEnumerableSet for PauseableEnumerableSet.Status;
 
     error DuplicateKey();
     error KeyAlreadyEnabled();
@@ -16,69 +22,83 @@ abstract contract KeyStorage256 is BaseMiddleware {
     bytes32 private constant ZERO_BYTES32 = bytes32(0);
     uint256 private constant MAX_DISABLED_KEYS = 1;
 
-    mapping(address => PauseableEnumerableSet.Bytes32Set) internal keys; // Mapping from operator addresses to their current keys
-    mapping(bytes32 => address) internal keyToOperator; // Mapping from keys to operator addresses
+    /// @notice Mapping from operator addresses to their keys
+    mapping(address => PauseableEnumerableSet.Bytes32Set) internal _keys;
+    /// @notice Mapping from keys to operator addresses
+    mapping(bytes32 => address) internal _keyToOperator;
 
     /**
-     * @notice Returns the operator address associated with a given key
-     * @param key The key for which to find the associated operator
-     * @return The address of the operator linked to the specified key
+     * @notice Gets the operator address associated with a key
+     * @param key The key to lookup
+     * @return The operator address that owns the key, or zero address if none
      */
-    function operatorByKey(bytes memory key) public view override returns (address) {
-        return keyToOperator[abi.decode(key, (bytes32))];
+    function operatorByKey(
+        bytes memory key
+    ) public view override returns (address) {
+        return _keyToOperator[abi.decode(key, (bytes32))];
     }
 
     /**
-     * @notice Returns the current or previous key for a given operator
-     * @dev Returns the previous key if the key was updated in the current epoch
-     * @param operator The address of the operator
-     * @return The key associated with the specified operator
+     * @notice Gets an operator's active key at the current capture timestamp
+     * @param operator The operator address to lookup
+     * @return The operator's active key encoded as bytes, or encoded zero bytes if none
      */
-    function operatorKey(address operator) public view override returns (bytes memory) {
-        return abi.encode(keys[operator].getActive(getCaptureTimestamp())[0]);
+    function operatorKey(
+        address operator
+    ) public view override returns (bytes memory) {
+        bytes32[] memory active = _keys[operator].getActive(getCaptureTimestamp());
+        if (active.length == 0) {
+            return abi.encode(ZERO_BYTES32);
+        }
+        return abi.encode(active[0]);
     }
 
     /**
-     * @notice Checks if a given key was active at a specified timestamp
+     * @notice Checks if a key was active at a specific timestamp
      * @param timestamp The timestamp to check
      * @param key The key to check
-     * @return A boolean indicating whether the key was active at the specified timestamp
+     * @return True if the key was active at the timestamp, false otherwise
      */
     function keyWasActiveAt(uint48 timestamp, bytes32 key) public view returns (bool) {
-        return keys[keyToOperator[key]].wasActiveAt(timestamp, key);
+        return _keys[_keyToOperator[key]].wasActiveAt(timestamp, key);
     }
 
     /**
-     * @notice Updates the key associated with an operator
-     * @dev Reverts if the key is already enabled or if another operator is using it
-     * @param operator The address of the operator whose key is to be updated
-     * @param key_ The new key to associate with the operator
+     * @notice Updates an operator's key
+     * @dev Handles key rotation by disabling old key and registering new one
+     * @param operator The operator address to update
+     * @param key_ The new key to register, encoded as bytes
+     * @custom:throws DuplicateKey if key is already registered to another operator
+     * @custom:throws MaxDisabledKeysReached if operator has too many disabled keys
      */
     function _updateKey(address operator, bytes memory key_) internal override {
         bytes32 key = abi.decode(key_, (bytes32));
 
-        if (keyToOperator[key] != address(0)) {
+        if (_keyToOperator[key] != address(0)) {
             revert DuplicateKey();
         }
 
-        // try to remove disabled keys
-        keys[operator].prune(Time.timestamp(), SLASHING_WINDOW);
-
         // check if we have reached the max number of disabled keys
         // this allow us to limit the number times we can change the key
-        if (keys[operator].length() > MAX_DISABLED_KEYS + 1) {
+        if (key != ZERO_BYTES32 && _keys[operator].length() > MAX_DISABLED_KEYS + 1) {
             revert MaxDisabledKeysReached();
         }
 
-        // get the current active keys
-        bytes32[] memory activeKeys = keys[operator].getActive(Time.timestamp());
-
-        // pause the current active key if any
-        if (activeKeys.length > 0) {
-            keys[operator].pause(Time.timestamp(), activeKeys[0]);
+        if (_keys[operator].length() > 0) {
+            // try to remove disabled keys
+            bytes32 prevKey = _keys[operator].array[0].value;
+            if (_keys[operator].checkUnregister(Time.timestamp(), SLASHING_WINDOW, prevKey)) {
+                _keys[operator].unregister(Time.timestamp(), SLASHING_WINDOW, prevKey);
+                delete _keyToOperator[prevKey];
+            } else if (_keys[operator].wasActiveAt(getCaptureTimestamp(), prevKey)) {
+                _keys[operator].pause(Time.timestamp(), prevKey);
+            }
         }
 
-        // register the new key
-        keys[operator].register(Time.timestamp(), key);
+        if (key != ZERO_BYTES32) {
+            // register the new key
+            _keys[operator].register(Time.timestamp(), key);
+            _keyToOperator[key] = operator;
+        }
     }
 }

@@ -15,32 +15,12 @@ import {AccessManager} from "../managers/AccessManager.sol";
 
 abstract contract BaseMiddleware is VaultManager, OperatorManager, AccessManager {
     using Subnetwork for address;
-
-    /* 
-     * @notice Constructor for initializing the BaseMiddleware contract.
-     * @param network The address of the network.
-     * @param operatorRegistry The address of the operator registry.
-     * @param vaultRegistry The address of the vault registry.
-     * @param operatorNetOptin The address of the operator network opt-in service.
-     * @param epochDuration The duration of each epoch.
-     * @param slashingWindow The duration of the slashing window
-     */
-    constructor(
-        address network,
-        address operatorRegistry,
-        address vaultRegistry,
-        address operatorNetOptin,
-        uint48 slashingWindow,
-        address owner
-    ) {
-        initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, owner);
-    }
-
     /**
      * @notice Updates the key associated with an operator
      * @param operator The address of the operator
      * @param key The key to update
      */
+
     function _updateKey(address operator, bytes memory key) internal virtual;
 
     /**
@@ -48,7 +28,9 @@ abstract contract BaseMiddleware is VaultManager, OperatorManager, AccessManager
      * @param key The key for which to find the associated operator
      * @return The address of the operator linked to the specified key
      */
-    function operatorByKey(bytes memory key) public view virtual returns (address);
+    function operatorByKey(
+        bytes memory key
+    ) public view virtual returns (address);
 
     /**
      * @notice Returns the current or previous key for a given operator
@@ -56,5 +38,7 @@ abstract contract BaseMiddleware is VaultManager, OperatorManager, AccessManager
      * @param operator The address of the operator
      * @return The key associated with the specified operator
      */
-    function operatorKey(address operator) public view virtual returns (bytes memory);
+    function operatorKey(
+        address operator
+    ) public view virtual returns (bytes memory);
 }

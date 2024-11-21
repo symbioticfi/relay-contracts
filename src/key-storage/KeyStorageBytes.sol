@@ -4,78 +4,99 @@ pragma solidity ^0.8.25;
 import {BaseManager} from "../managers/BaseManager.sol";
 import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
+import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
+
+/**
+ * @title KeyStorageBytes
+ * @notice Manages storage and validation of operator keys
+ * @dev Extends BaseManager to provide key management functionality
+ */
 abstract contract KeyStorageBytes is BaseManager {
-    using PauseableEnumerableSet for PauseableEnumerableSet.Inner;
+    using PauseableEnumerableSet for PauseableEnumerableSet.BytesSet;
+    using PauseableEnumerableSet for PauseableEnumerableSet.Status;
 
     error DuplicateKey();
-    error KeyAlreadyEnabled();
+    error MaxDisabledKeysReached();
 
-    bytes32 private constant ZERO_BYTES_HASH = keccak256(""); // Constant representing an empty hash
+    uint256 private constant MAX_DISABLED_KEYS = 1;
+    bytes private constant ZERO_BYTES = "";
+    bytes32 private constant ZERO_BYTES_HASH = keccak256("");
 
-    mapping(address => bytes) public keys; // Mapping from operator addresses to their BLS keys
-    mapping(address => bytes) public prevKeys; // Mapping from operator addresses to their previous keys
-    mapping(address => uint48) public keyUpdateTimestamp; // Mapping from operator addresses to the timestamp of the last key update
-    mapping(bytes => PauseableEnumerableSet.Inner) internal _keyData; // Mapping from keys to their associated data
+    mapping(address => PauseableEnumerableSet.BytesSet) internal _keys;
+    mapping(bytes => address) internal _keyToOperator;
 
     /**
-     * @notice Returns the operator address associated with a given BLS key
-     * @param key The BLS key for which to find the associated operator
-     * @return The address of the operator linked to the specified BLS key
+     * @notice Gets the operator address associated with a key
+     * @param key The key to lookup
+     * @return The operator address that owns the key, or zero address if none
      */
-    function operatorByKey(bytes memory key) public view returns (address) {
-        return _keyData[key].getAddress();
+    function operatorByKey(
+        bytes memory key
+    ) public view returns (address) {
+        return _keyToOperator[key];
     }
 
     /**
-     * @notice Returns the current or previous BLS key for a given operator
-     * @dev Returns the previous key if the key was updated in the current epoch
-     * @param operator The address of the operator
-     * @return The BLS key associated with the specified operator
+     * @notice Gets an operator's active key at the current capture timestamp
+     * @param operator The operator address to lookup
+     * @return The operator's active key, or empty bytes if none
      */
-    function operatorKey(address operator) public view returns (bytes memory) {
-        if (keyUpdateTimestamp[operator] == getCaptureTimestamp()) {
-            return prevKeys[operator];
+    function operatorKey(
+        address operator
+    ) public view returns (bytes memory) {
+        bytes[] memory active = _keys[operator].getActive(getCaptureTimestamp());
+        if (active.length == 0) {
+            return ZERO_BYTES;
         }
-
-        return keys[operator];
+        return active[0];
     }
 
     /**
-     * @notice Checks if a given BLS key was active at a specified timestamp
+     * @notice Checks if a key was active at a specific timestamp
      * @param timestamp The timestamp to check
-     * @param key The BLS key to check
-     * @return A boolean indicating whether the BLS key was active at the specified timestamp
+     * @param key The key to check
+     * @return True if the key was active at the timestamp, false otherwise
      */
     function keyWasActiveAt(uint48 timestamp, bytes memory key) public view returns (bool) {
-        return _keyData[key].wasActiveAt(timestamp);
+        return _keys[_keyToOperator[key]].wasActiveAt(timestamp, key);
     }
 
     /**
-     * @notice Updates the BLS key associated with an operator
-     * @dev Reverts if the key is already enabled or if another operator is using it
-     * @param operator The address of the operator whose BLS key is to be updated
-     * @param key The new BLS key to associate with the operator
+     * @notice Updates an operator's key
+     * @dev Handles key rotation by disabling old key and registering new one
+     * @param operator The operator address to update
+     * @param key The new key to register
+     * @custom:throws DuplicateKey if key is already registered to another operator
+     * @custom:throws MaxDisabledKeysReached if operator has too many disabled keys
      */
     function _updateKey(address operator, bytes memory key) internal {
-        uint48 timestamp = getCaptureTimestamp();
+        bytes32 keyHash = keccak256(key);
 
-        if (keccak256(keys[operator]) == keccak256(key)) {
-            revert KeyAlreadyEnabled();
-        }
-
-        if (_keyData[key].getAddress() != address(0) && _keyData[key].getAddress() != operator) {
+        if (_keyToOperator[key] != address(0)) {
             revert DuplicateKey();
         }
 
-        if (keccak256(key) != ZERO_BYTES_HASH && _keyData[key].getAddress() == address(0)) {
-            _keyData[key].set(timestamp, operator);
+        // check if we have reached the max number of disabled keys
+        // this allow us to limit the number times we can change the key
+        if (keyHash != ZERO_BYTES_HASH && _keys[operator].length() > MAX_DISABLED_KEYS + 1) {
+            revert MaxDisabledKeysReached();
         }
 
-        if (keyUpdateTimestamp[operator] != timestamp) {
-            prevKeys[operator] = keys[operator];
-            keyUpdateTimestamp[operator] = timestamp;
+        if (_keys[operator].length() > 0) {
+            // try to remove disabled keys
+            bytes memory prevKey = _keys[operator].array[0].value;
+            if (_keys[operator].checkUnregister(Time.timestamp(), SLASHING_WINDOW, prevKey)) {
+                _keys[operator].unregister(Time.timestamp(), SLASHING_WINDOW, prevKey);
+                delete _keyToOperator[prevKey];
+            } else if (_keys[operator].wasActiveAt(getCaptureTimestamp(), prevKey)) {
+                _keys[operator].pause(Time.timestamp(), prevKey);
+            }
         }
 
-        keys[operator] = key;
+        if (keyHash != ZERO_BYTES_HASH) {
+            // register the new key
+            _keys[operator].register(Time.timestamp(), key);
+            _keyToOperator[key] = operator;
+        }
     }
 }
