@@ -14,7 +14,7 @@ abstract contract EpochCapture is BaseMiddleware {
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.EpochCapture")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant EpochCaptureStorageLocation =
-        0xe67dbdffe3bfc71af681fa5640e3b9c1dc23200b8ae4b657cba896e439a22800;
+        0x4e241e104e7ef4df0fc8eb6aad7b0f201c6126c722652f1bd1305b6b75c86d00;
 
     function _getEpochCaptureStorage() private pure returns (EpochCaptureStorage storage $) {
         bytes32 location = EpochCaptureStorageLocation;

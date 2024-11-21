@@ -18,7 +18,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators {
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.ForcePauseSelfRegisterOperators")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant ForcePauseSelfRegisterOperatorsStorageLocation =
-        0xdd349876372c6239a846e50336b70d810259637738fd42711d201341e1e8d600;
+        0xf3871d05fd4da42686c3c56dfd4be98b1d278da4bf1fd61b1d6e7a6e37722600;
 
     function _getForcePauseStorage() private pure returns (ForcePauseSelfRegisterOperatorsStorage storage $) {
         bytes32 location = ForcePauseSelfRegisterOperatorsStorageLocation;

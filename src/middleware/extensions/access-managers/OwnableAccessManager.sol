@@ -24,10 +24,11 @@ abstract contract OwnableAccessManager is BaseMiddleware {
     error InvalidOwner(address owner);
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OwnableAccessManager.owner")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant OnwerStorageLocation = 0x1a2e92a5f10b92a479fe01ec4964026ce147416d5a91524db21dfcebc947d100;
+    bytes32 private constant OwnableAccessManagerStorageLocation =
+        0xeeb01dcf9eb4176c944794e8cb12d9caba4faa2514a692b173894bc3e9135d00;
 
     function _owner() private view returns (address owner_) {
-        bytes32 location = OnwerStorageLocation;
+        bytes32 location = OwnableAccessManagerStorageLocation;
         assembly {
             owner_ := sload(location)
         }
@@ -36,7 +37,7 @@ abstract contract OwnableAccessManager is BaseMiddleware {
     function _setOwner(
         address owner_
     ) private {
-        bytes32 location = OnwerStorageLocation;
+        bytes32 location = OwnableAccessManagerStorageLocation;
         assembly {
             sstore(location, owner_)
         }

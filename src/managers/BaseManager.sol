@@ -19,7 +19,7 @@ abstract contract BaseManager is Initializable {
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.BaseManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant BaseManagerStorageLocation =
-        0xc0625060998ed0caa490c91b79737728a736aeb8ed65081a52c24738d2978d00;
+        0xb3503c3f5ee7753561129bea19627692ca916ecb48491bfcd223db17a12b8e00;
 
     function _getBaseManagerStorage() private pure returns (BaseManagerStorage storage $) {
         assembly {
