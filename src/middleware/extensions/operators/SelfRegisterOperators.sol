@@ -32,8 +32,26 @@ abstract contract SelfRegisterOperators is BaseMiddleware, BaseSig, EIP712Upgrad
     bytes32 private constant UNPAUSE_OPERATOR_VAULT_TYPEHASH =
         keccak256("UnpauseOperatorVault(address operator,address vault,uint256 nonce)");
 
-    /// @notice Mapping of operator addresses to their nonces for signature verification
-    mapping(address => uint256) public nonces;
+    struct SelfRegisterOperatorsStorage {
+        mapping(address => uint256) nonces;
+    }
+
+    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.SelfRegisterOperators")) - 1)) & ~bytes32(uint256(0xff))
+    bytes32 private constant SelfResgisterOperators_STORAGE_LOCATION =
+        0xefff5050c06ffc4cd47bb2affac9b172a9afa4faaca821adedcc3651bef4ba00;
+
+    function _getSelfRegisterOperatorsStorage() private pure returns (SelfRegisterOperatorsStorage storage $) {
+        bytes32 location = SelfResgisterOperators_STORAGE_LOCATION;
+        assembly {
+            $.slot := location
+        }
+    }
+
+    function nonces(
+        address operator
+    ) public view returns (uint256) {
+        return _getSelfRegisterOperatorsStorage().nonces[operator];
+    }
 
     /**
      * @notice Initializes the contract with EIP712 domain separator
@@ -78,9 +96,10 @@ abstract contract SelfRegisterOperators is BaseMiddleware, BaseSig, EIP712Upgrad
         bytes memory signature,
         bytes memory keySignature
     ) public {
+        SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator,
-            keccak256(abi.encode(REGISTER_OPERATOR_TYPEHASH, operator, keccak256(key), vault, nonces[operator]++)),
+            keccak256(abi.encode(REGISTER_OPERATOR_TYPEHASH, operator, keccak256(key), vault, $.nonces[operator]++)),
             signature
         );
         _verifyKey(operator, key, keySignature);
@@ -109,8 +128,9 @@ abstract contract SelfRegisterOperators is BaseMiddleware, BaseSig, EIP712Upgrad
      */
     function unregisterOperator(address operator, bytes memory signature) public {
         _beforeUnregisterOperator(operator);
+        SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
-            operator, keccak256(abi.encode(UNREGISTER_OPERATOR_TYPEHASH, operator, nonces[operator]++)), signature
+            operator, keccak256(abi.encode(UNREGISTER_OPERATOR_TYPEHASH, operator, $.nonces[operator]++)), signature
         );
         _unregisterOperator(operator);
     }
@@ -130,7 +150,10 @@ abstract contract SelfRegisterOperators is BaseMiddleware, BaseSig, EIP712Upgrad
      */
     function pauseOperator(address operator, bytes memory signature) public {
         _beforePauseOperator(operator);
-        _verifyEIP712(operator, keccak256(abi.encode(PAUSE_OPERATOR_TYPEHASH, operator, nonces[operator]++)), signature);
+        SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
+        _verifyEIP712(
+            operator, keccak256(abi.encode(PAUSE_OPERATOR_TYPEHASH, operator, $.nonces[operator]++)), signature
+        );
         _pauseOperator(operator);
     }
 
@@ -149,8 +172,9 @@ abstract contract SelfRegisterOperators is BaseMiddleware, BaseSig, EIP712Upgrad
      */
     function unpauseOperator(address operator, bytes memory signature) public {
         _beforeUnpauseOperator(operator);
+        SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
-            operator, keccak256(abi.encode(UNPAUSE_OPERATOR_TYPEHASH, operator, nonces[operator]++)), signature
+            operator, keccak256(abi.encode(UNPAUSE_OPERATOR_TYPEHASH, operator, $.nonces[operator]++)), signature
         );
         _unpauseOperator(operator);
     }
@@ -179,9 +203,10 @@ abstract contract SelfRegisterOperators is BaseMiddleware, BaseSig, EIP712Upgrad
         bytes memory signature,
         bytes memory keySignature
     ) public {
+        SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator,
-            keccak256(abi.encode(UPDATE_OPERATOR_KEY_TYPEHASH, operator, keccak256(key), nonces[operator]++)),
+            keccak256(abi.encode(UPDATE_OPERATOR_KEY_TYPEHASH, operator, keccak256(key), $.nonces[operator]++)),
             signature
         );
         _verifyKey(operator, key, keySignature);
@@ -210,9 +235,10 @@ abstract contract SelfRegisterOperators is BaseMiddleware, BaseSig, EIP712Upgrad
     function registerOperatorVault(address operator, address vault, bytes memory signature) public {
         require(isOperatorRegistered(operator), "Operator not registered");
         _beforeRegisterOperatorVault(operator, vault);
+        SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator,
-            keccak256(abi.encode(REGISTER_OPERATOR_VAULT_TYPEHASH, operator, vault, nonces[operator]++)),
+            keccak256(abi.encode(REGISTER_OPERATOR_VAULT_TYPEHASH, operator, vault, $.nonces[operator]++)),
             signature
         );
         _registerOperatorVault(operator, vault);
@@ -237,9 +263,10 @@ abstract contract SelfRegisterOperators is BaseMiddleware, BaseSig, EIP712Upgrad
      */
     function unregisterOperatorVault(address operator, address vault, bytes memory signature) public {
         _beforeUnregisterOperatorVault(operator, vault);
+        SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator,
-            keccak256(abi.encode(UNREGISTER_OPERATOR_VAULT_TYPEHASH, operator, vault, nonces[operator]++)),
+            keccak256(abi.encode(UNREGISTER_OPERATOR_VAULT_TYPEHASH, operator, vault, $.nonces[operator]++)),
             signature
         );
         _unregisterOperatorVault(operator, vault);
@@ -264,9 +291,10 @@ abstract contract SelfRegisterOperators is BaseMiddleware, BaseSig, EIP712Upgrad
      */
     function pauseOperatorVault(address operator, address vault, bytes memory signature) public {
         _beforePauseOperatorVault(operator, vault);
+        SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator,
-            keccak256(abi.encode(PAUSE_OPERATOR_VAULT_TYPEHASH, operator, vault, nonces[operator]++)),
+            keccak256(abi.encode(PAUSE_OPERATOR_VAULT_TYPEHASH, operator, vault, $.nonces[operator]++)),
             signature
         );
         _pauseOperatorVault(operator, vault);
@@ -291,9 +319,10 @@ abstract contract SelfRegisterOperators is BaseMiddleware, BaseSig, EIP712Upgrad
      */
     function unpauseOperatorVault(address operator, address vault, bytes memory signature) public {
         _beforeUnpauseOperatorVault(operator, vault);
+        SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator,
-            keccak256(abi.encode(UNPAUSE_OPERATOR_VAULT_TYPEHASH, operator, vault, nonces[operator]++)),
+            keccak256(abi.encode(UNPAUSE_OPERATOR_VAULT_TYPEHASH, operator, vault, $.nonces[operator]++)),
             signature
         );
         _unpauseOperatorVault(operator, vault);

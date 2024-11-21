@@ -22,10 +22,23 @@ abstract contract KeyStorage256 is BaseMiddleware {
     bytes32 private constant ZERO_BYTES32 = bytes32(0);
     uint256 private constant MAX_DISABLED_KEYS = 1;
 
-    /// @notice Mapping from operator addresses to their keys
-    mapping(address => PauseableEnumerableSet.Bytes32Set) internal _keys;
-    /// @notice Mapping from keys to operator addresses
-    mapping(bytes32 => address) internal _keyToOperator;
+    struct KeyStorage256Storage {
+        /// @notice Mapping from operator addresses to their keys
+        mapping(address => PauseableEnumerableSet.Bytes32Set) keys;
+        /// @notice Mapping from keys to operator addresses
+        mapping(bytes32 => address) keyToOperator;
+    }
+
+    // keccak256(abi.encode(uint256(keccak256("symbioticfi.storage.KeyStorage256")) - 1)) & ~bytes32(uint256(0xff))
+    bytes32 private constant KeyStorage256StorageLocation =
+        0x00c0c7c8c5c9c4c3c2c1c0c7c8c5c9c4c3c2c1c0c7c8c5c9c4c3c2c1c0c7c800;
+
+    function _getStorage() private pure returns (KeyStorage256Storage storage s) {
+        bytes32 location = KeyStorage256StorageLocation;
+        assembly {
+            s.slot := location
+        }
+    }
 
     /**
      * @notice Gets the operator address associated with a key
@@ -35,7 +48,8 @@ abstract contract KeyStorage256 is BaseMiddleware {
     function operatorByKey(
         bytes memory key
     ) public view override returns (address) {
-        return _keyToOperator[abi.decode(key, (bytes32))];
+        KeyStorage256Storage storage s = _getStorage();
+        return s.keyToOperator[abi.decode(key, (bytes32))];
     }
 
     /**
@@ -46,7 +60,8 @@ abstract contract KeyStorage256 is BaseMiddleware {
     function operatorKey(
         address operator
     ) public view override returns (bytes memory) {
-        bytes32[] memory active = _keys[operator].getActive(getCaptureTimestamp());
+        KeyStorage256Storage storage s = _getStorage();
+        bytes32[] memory active = s.keys[operator].getActive(getCaptureTimestamp());
         if (active.length == 0) {
             return abi.encode(ZERO_BYTES32);
         }
@@ -60,7 +75,8 @@ abstract contract KeyStorage256 is BaseMiddleware {
      * @return True if the key was active at the timestamp, false otherwise
      */
     function keyWasActiveAt(uint48 timestamp, bytes32 key) public view returns (bool) {
-        return _keys[_keyToOperator[key]].wasActiveAt(timestamp, key);
+        KeyStorage256Storage storage s = _getStorage();
+        return s.keys[s.keyToOperator[key]].wasActiveAt(timestamp, key);
     }
 
     /**
@@ -72,33 +88,34 @@ abstract contract KeyStorage256 is BaseMiddleware {
      * @custom:throws MaxDisabledKeysReached if operator has too many disabled keys
      */
     function _updateKey(address operator, bytes memory key_) internal override {
+        KeyStorage256Storage storage s = _getStorage();
         bytes32 key = abi.decode(key_, (bytes32));
 
-        if (_keyToOperator[key] != address(0)) {
+        if (s.keyToOperator[key] != address(0)) {
             revert DuplicateKey();
         }
 
         // check if we have reached the max number of disabled keys
         // this allow us to limit the number times we can change the key
-        if (key != ZERO_BYTES32 && _keys[operator].length() > MAX_DISABLED_KEYS + 1) {
+        if (key != ZERO_BYTES32 && s.keys[operator].length() > MAX_DISABLED_KEYS + 1) {
             revert MaxDisabledKeysReached();
         }
 
-        if (_keys[operator].length() > 0) {
+        if (s.keys[operator].length() > 0) {
             // try to remove disabled keys
-            bytes32 prevKey = _keys[operator].array[0].value;
-            if (_keys[operator].checkUnregister(Time.timestamp(), SLASHING_WINDOW, prevKey)) {
-                _keys[operator].unregister(Time.timestamp(), SLASHING_WINDOW, prevKey);
-                delete _keyToOperator[prevKey];
-            } else if (_keys[operator].wasActiveAt(getCaptureTimestamp(), prevKey)) {
-                _keys[operator].pause(Time.timestamp(), prevKey);
+            bytes32 prevKey = s.keys[operator].array[0].value;
+            if (s.keys[operator].checkUnregister(Time.timestamp(), SLASHING_WINDOW(), prevKey)) {
+                s.keys[operator].unregister(Time.timestamp(), SLASHING_WINDOW(), prevKey);
+                delete s.keyToOperator[prevKey];
+            } else if (s.keys[operator].wasActiveAt(getCaptureTimestamp(), prevKey)) {
+                s.keys[operator].pause(Time.timestamp(), prevKey);
             }
         }
 
         if (key != ZERO_BYTES32) {
             // register the new key
-            _keys[operator].register(Time.timestamp(), key);
-            _keyToOperator[key] = operator;
+            s.keys[operator].register(Time.timestamp(), key);
+            s.keyToOperator[key] = operator;
         }
     }
 }

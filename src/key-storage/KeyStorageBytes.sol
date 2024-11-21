@@ -22,8 +22,21 @@ abstract contract KeyStorageBytes is BaseManager {
     bytes private constant ZERO_BYTES = "";
     bytes32 private constant ZERO_BYTES_HASH = keccak256("");
 
-    mapping(address => PauseableEnumerableSet.BytesSet) internal _keys;
-    mapping(bytes => address) internal _keyToOperator;
+    struct KeyStorageBytesStorage {
+        mapping(address => PauseableEnumerableSet.BytesSet) _keys;
+        mapping(bytes => address) _keyToOperator;
+    }
+
+    // keccak256(abi.encode(uint256(keccak256("symbioticfi.storage.KeyStorageBytes")) - 1)) & ~bytes32(uint256(0xff))
+    bytes32 private constant KeyStorageBytesStorageLocation =
+        0x00c0c7c8c5c9c4c3c2c1c0c7c8c5c9c4c3c2c1c0c7c8c5c9c4c3c2c1c0c7c800;
+
+    function _getStorage() private pure returns (KeyStorageBytesStorage storage s) {
+        bytes32 location = KeyStorageBytesStorageLocation;
+        assembly {
+            s.slot := location
+        }
+    }
 
     /**
      * @notice Gets the operator address associated with a key
@@ -33,7 +46,8 @@ abstract contract KeyStorageBytes is BaseManager {
     function operatorByKey(
         bytes memory key
     ) public view returns (address) {
-        return _keyToOperator[key];
+        KeyStorageBytesStorage storage $ = _getStorage();
+        return $._keyToOperator[key];
     }
 
     /**
@@ -44,7 +58,8 @@ abstract contract KeyStorageBytes is BaseManager {
     function operatorKey(
         address operator
     ) public view returns (bytes memory) {
-        bytes[] memory active = _keys[operator].getActive(getCaptureTimestamp());
+        KeyStorageBytesStorage storage $ = _getStorage();
+        bytes[] memory active = $._keys[operator].getActive(getCaptureTimestamp());
         if (active.length == 0) {
             return ZERO_BYTES;
         }
@@ -58,7 +73,8 @@ abstract contract KeyStorageBytes is BaseManager {
      * @return True if the key was active at the timestamp, false otherwise
      */
     function keyWasActiveAt(uint48 timestamp, bytes memory key) public view returns (bool) {
-        return _keys[_keyToOperator[key]].wasActiveAt(timestamp, key);
+        KeyStorageBytesStorage storage $ = _getStorage();
+        return $._keys[$._keyToOperator[key]].wasActiveAt(timestamp, key);
     }
 
     /**
@@ -70,33 +86,34 @@ abstract contract KeyStorageBytes is BaseManager {
      * @custom:throws MaxDisabledKeysReached if operator has too many disabled keys
      */
     function _updateKey(address operator, bytes memory key) internal {
+        KeyStorageBytesStorage storage $ = _getStorage();
         bytes32 keyHash = keccak256(key);
 
-        if (_keyToOperator[key] != address(0)) {
+        if ($._keyToOperator[key] != address(0)) {
             revert DuplicateKey();
         }
 
         // check if we have reached the max number of disabled keys
         // this allow us to limit the number times we can change the key
-        if (keyHash != ZERO_BYTES_HASH && _keys[operator].length() > MAX_DISABLED_KEYS + 1) {
+        if (keyHash != ZERO_BYTES_HASH && $._keys[operator].length() > MAX_DISABLED_KEYS + 1) {
             revert MaxDisabledKeysReached();
         }
 
-        if (_keys[operator].length() > 0) {
+        if ($._keys[operator].length() > 0) {
             // try to remove disabled keys
-            bytes memory prevKey = _keys[operator].array[0].value;
-            if (_keys[operator].checkUnregister(Time.timestamp(), SLASHING_WINDOW, prevKey)) {
-                _keys[operator].unregister(Time.timestamp(), SLASHING_WINDOW, prevKey);
-                delete _keyToOperator[prevKey];
-            } else if (_keys[operator].wasActiveAt(getCaptureTimestamp(), prevKey)) {
-                _keys[operator].pause(Time.timestamp(), prevKey);
+            bytes memory prevKey = $._keys[operator].array[0].value;
+            if ($._keys[operator].checkUnregister(Time.timestamp(), SLASHING_WINDOW(), prevKey)) {
+                $._keys[operator].unregister(Time.timestamp(), SLASHING_WINDOW(), prevKey);
+                delete $._keyToOperator[prevKey];
+            } else if ($._keys[operator].wasActiveAt(getCaptureTimestamp(), prevKey)) {
+                $._keys[operator].pause(Time.timestamp(), prevKey);
             }
         }
 
         if (keyHash != ZERO_BYTES_HASH) {
             // register the new key
-            _keys[operator].register(Time.timestamp(), key);
-            _keyToOperator[key] = operator;
+            $._keys[operator].register(Time.timestamp(), key);
+            $._keyToOperator[key] = operator;
         }
     }
 }

@@ -157,7 +157,7 @@ contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256, OwnableA
 
             address vault = params.vaults[i];
             for (uint256 j; j < params.subnetworks.length; ++j) {
-                bytes32 subnetwork = NETWORK.subnetwork(uint96(params.subnetworks[j]));
+                bytes32 subnetwork = NETWORK().subnetwork(uint96(params.subnetworks[j]));
                 uint256 stake = IBaseDelegator(IVault(vault).delegator()).stakeAt(
                     subnetwork, params.operator, params.epochStart, stakeHints[i][j]
                 );

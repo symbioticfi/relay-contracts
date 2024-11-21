@@ -5,8 +5,21 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {BaseMiddleware} from "../../BaseMiddleware.sol";
 
 abstract contract EpochCapture is BaseMiddleware {
-    uint48 public START_TIMESTAMP; // Start timestamp of the first epoch
-    uint48 public EPOCH_DURATION; // Duration of each epoch
+    struct EpochCaptureStorage {
+        uint48 startTimestamp;
+        uint48 epochDuration;
+    }
+
+    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.EpochCapture")) - 1)) & ~bytes32(uint256(0xff))
+    bytes32 private constant EpochCaptureStorageLocation =
+        0xe67dbdffe3bfc71af681fa5640e3b9c1dc23200b8ae4b657cba896e439a22800;
+
+    function _getEpochCaptureStorage() private pure returns (EpochCaptureStorage storage $) {
+        bytes32 location = EpochCaptureStorageLocation;
+        assembly {
+            $.slot := location
+        }
+    }
 
     /* 
      * @notice initalizer of the Epochs contract.
@@ -15,8 +28,9 @@ abstract contract EpochCapture is BaseMiddleware {
     function __EpochCapture_init(
         uint48 epochDuration
     ) internal onlyInitializing {
-        EPOCH_DURATION = epochDuration;
-        START_TIMESTAMP = Time.timestamp();
+        EpochCaptureStorage storage $ = _getEpochCaptureStorage();
+        $.epochDuration = epochDuration;
+        $.startTimestamp = Time.timestamp();
     }
 
     /* 
@@ -27,7 +41,8 @@ abstract contract EpochCapture is BaseMiddleware {
     function getEpochStart(
         uint48 epoch
     ) public view returns (uint48) {
-        return START_TIMESTAMP + epoch * EPOCH_DURATION;
+        EpochCaptureStorage storage $ = _getEpochCaptureStorage();
+        return $.startTimestamp + epoch * $.epochDuration;
     }
 
     /* 
@@ -35,7 +50,8 @@ abstract contract EpochCapture is BaseMiddleware {
      * @return The current epoch.
      */
     function getCurrentEpoch() public view returns (uint48) {
-        return (Time.timestamp() - START_TIMESTAMP) / EPOCH_DURATION;
+        EpochCaptureStorage storage $ = _getEpochCaptureStorage();
+        return (Time.timestamp() - $.startTimestamp) / $.epochDuration;
     }
 
     /* 
