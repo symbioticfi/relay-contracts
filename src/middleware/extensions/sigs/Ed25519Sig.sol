@@ -15,37 +15,31 @@ abstract contract Ed25519Sig is BaseSig {
     /**
      * @notice Verifies that a signature was created by the owner of a key
      * @param operator The address of the operator that owns the key
-     * @param key_ The public key to verify against, encoded as bytes
-     * @param signature The Ed25519 signature to verify, containing r and s components
+     * @param key_ The public key to verify against
+     * @param signature The Ed25519 signature to verify
      * @return True if the signature was created by the key owner, false otherwise
-     * @dev The key is expected to be a bytes32 that represents an Ed25519 public key
-     *      The signature is expected to be 64 bytes containing r (32 bytes) and s (32 bytes)
+     * @dev The key must be a valid Ed25519 public key point compressed to 32 bytes
+     *      The signature must be 64 bytes containing r and s components encoded as uint256
      */
     function _verifyKeySignature(
         address operator,
         bytes memory key_,
         bytes memory signature
-    ) internal pure override returns (bool) {
+    ) internal override returns (bool) {
         bytes32 key = abi.decode(key_, (bytes32));
-        bytes32 message = keccak256(abi.encodePacked(operator, key));
-        return check(key, signature, message);
+        bytes memory message = abi.encode(keccak256(abi.encodePacked(operator, key)));
+        return verify(message, signature, key);
     }
 
     /**
-     * @notice Checks an Ed25519 signature against a message and public key
-     * @param key The Ed25519 public key
-     * @param signature The Ed25519 signature to verify
+     * @notice Verifies an Ed25519 signature against a message and public key
      * @param message The message that was signed
+     * @param signature The Ed25519 signature to verify
+     * @param key The Ed25519 public key compressed to 32 bytes
      * @return True if the signature is valid, false otherwise
-     * @dev Wrapper around Ed25519.check
+     * @dev Wrapper around Ed25519.verify which handles decompression and curve operations
      */
-    function check(bytes32 key, bytes memory signature, bytes32 message) internal pure returns (bool) {
-        bytes32 r;
-        bytes32 s;
-        assembly {
-            r := mload(add(signature, 32))
-            s := mload(add(signature, 64))
-        }
-        return Ed25519.check(key, r, s, message, bytes9(0));
+    function verify(bytes memory message, bytes memory signature, bytes32 key) internal returns (bool) {
+        return Ed25519.verify(message, signature, key);
     }
 }
