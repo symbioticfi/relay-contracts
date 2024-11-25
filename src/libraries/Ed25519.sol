@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
 import {SCL_EIP6565} from "@crypto-lib/lib/libSCL_EIP6565.sol";
