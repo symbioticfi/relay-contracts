@@ -24,12 +24,6 @@ function generateTestData(operatorAddress) {
         ])
     );
 
-    // Add 9 bytes of zeros to the message
-    message = Buffer.concat([
-        message,
-        Buffer.alloc(9)
-    ]);
-
     // Sign the message
     const signature = "0x" + bytesToHex(ed25519.sign(message, privateKey));
 
@@ -70,11 +64,6 @@ function generateInvalidTestData(operatorAddress) {
             publicKey1,
         ])
     );
-
-    message = Buffer.concat([
-        message,
-        Buffer.alloc(9)
-    ]);
 
     // Sign with privateKey2 (mismatch)
     const signature = "0x" + bytesToHex(ed25519.sign(message, privateKey2));
