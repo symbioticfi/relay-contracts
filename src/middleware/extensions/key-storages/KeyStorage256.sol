@@ -15,7 +15,7 @@ abstract contract KeyStorage256 is BaseMiddleware {
     uint64 public constant KeyStorage256_VERSION = 1;
 
     using PauseableEnumerableSet for PauseableEnumerableSet.Bytes32Set;
-    
+
     error DuplicateKey();
     error KeyAlreadyEnabled();
     error MaxDisabledKeysReached();
