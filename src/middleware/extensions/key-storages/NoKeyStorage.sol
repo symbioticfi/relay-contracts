@@ -9,7 +9,7 @@ import {BaseMiddleware} from "../../BaseMiddleware.sol";
  * @dev Implements BaseMiddleware and always reverts on key operations
  */
 abstract contract NoKeyStorage is BaseMiddleware {
-    bool public constant NoKeyStorageEnabled = true;
+    uint64 public constant NoKeyStorage_VERSION = 1;
 
     error KeyStorageDisabled();
 

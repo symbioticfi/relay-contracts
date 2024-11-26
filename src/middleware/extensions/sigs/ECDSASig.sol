@@ -10,7 +10,7 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
  * @dev Implements BaseSig interface using OpenZeppelin's ECDSA library
  */
 abstract contract ECDSASig is BaseSig {
-    bool public constant ECDSASigEnabled = true;
+    uint64 public constant ECDSASig_VERSION = 1;
 
     using ECDSA for bytes32;
 

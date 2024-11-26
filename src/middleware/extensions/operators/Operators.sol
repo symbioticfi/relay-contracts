@@ -9,7 +9,7 @@ import {BaseMiddleware} from "../../BaseMiddleware.sol";
  * @dev Provides core operator management functionality with hooks for customization
  */
 abstract contract Operators is BaseMiddleware {
-    bool public constant OperatorsEnabled = true;
+    uint64 public constant Operators_VERSION = 1;
 
     /**
      * @notice Registers a new operator with an optional vault association

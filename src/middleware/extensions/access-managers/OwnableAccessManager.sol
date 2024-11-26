@@ -9,7 +9,7 @@ import {BaseMiddleware} from "../../BaseMiddleware.sol";
  * @dev Implements BaseMiddleware with owner-based access control
  */
 abstract contract OwnableAccessManager is BaseMiddleware {
-    bool public constant OwnableAccessManagerEnabled = true;
+    uint64 public constant OwnableAccessManager_VERSION = 1;
 
     /**
      * @notice Error thrown when a non-owner address attempts to call a restricted function

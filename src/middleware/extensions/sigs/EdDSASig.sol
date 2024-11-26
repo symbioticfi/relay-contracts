@@ -10,7 +10,7 @@ import {BaseSig} from "./BaseSig.sol";
  * @dev Implements BaseSig interface using EdDSA signature verification
  */
 abstract contract EdDSASig is BaseSig {
-    bool public constant EdDSASigEnabled = true;
+    uint64 public constant EdDSASig_VERSION = 1;
 
     /**
      * @notice Verifies that a signature was created by the owner of a key
