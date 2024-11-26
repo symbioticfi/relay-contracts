@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {BaseMiddleware} from "../middleware/BaseMiddleware.sol";
-import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
+import {BaseMiddleware} from "../../BaseMiddleware.sol";
+import {PauseableEnumerableSet} from "../../../libraries/PauseableEnumerableSet.sol";
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
@@ -71,11 +71,12 @@ abstract contract KeyStorage256 is BaseMiddleware {
     /**
      * @notice Checks if a key was active at a specific timestamp
      * @param timestamp The timestamp to check
-     * @param key The key to check
+     * @param key_ The key to check
      * @return True if the key was active at the timestamp, false otherwise
      */
-    function keyWasActiveAt(uint48 timestamp, bytes32 key) public view returns (bool) {
+    function keyWasActiveAt(uint48 timestamp, bytes memory key_) public view override returns (bool) {
         KeyStorage256Storage storage s = _getStorage();
+        bytes32 key = abi.decode(key_, (bytes32));
         return s.keys[s.keyToOperator[key]].wasActiveAt(timestamp, key);
     }
 

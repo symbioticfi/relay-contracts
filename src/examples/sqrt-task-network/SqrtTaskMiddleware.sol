@@ -14,13 +14,13 @@ import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SharedVaults} from "../../middleware/extensions/SharedVaults.sol";
 import {Operators} from "../../middleware/extensions/operators/Operators.sol";
 import {OwnableAccessManager} from "../../middleware/extensions/access-managers/OwnableAccessManager.sol";
-import {KeyStorage256} from "../../key-storage/KeyStorage256.sol";
+import {NoKeyStorage} from "../../middleware/extensions/key-storages/NoKeyStorage.sol";
 import {TimestampCapture} from "../../middleware/extensions/capture-timestamps/TimestampCapture.sol";
 
 contract SqrtTaskMiddleware is
     SharedVaults,
     Operators,
-    KeyStorage256,
+    NoKeyStorage,
     EIP712,
     OwnableAccessManager,
     TimestampCapture

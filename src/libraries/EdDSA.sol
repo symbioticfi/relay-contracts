@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.26;
+pragma solidity ^0.8.25;
 
 import {SCL_EIP6565} from "@crypto-lib/lib/libSCL_EIP6565.sol";
 import {SCL_sha512} from "@crypto-lib/hash/SCL_sha512.sol";
@@ -8,13 +8,13 @@ import {p, d, pMINUS_1} from "@crypto-lib/fields/SCL_wei25519.sol";
 import {ModInv} from "@crypto-lib/modular/SCL_modular.sol";
 
 /**
- * @title Ed25519
- * @notice Library for verifying Ed25519 signatures on the Edwards curve
- * @dev Implements signature verification and point decompression for Ed25519
+ * @title EdDSA
+ * @notice Library for verifying EdDSA signatures on the Ed25519 curve
+ * @dev Implements signature verification and point decompression for EdDSA
  */
-library Ed25519 {
+library EdDSA {
     /**
-     * @notice Verifies an Ed25519 signature against a message and public key
+     * @notice Verifies an EdDSA signature against a message and public key
      * @param message The message that was signed
      * @param signature The signature to verify, encoded as (r,s) coordinates
      * @param pubkey The compressed public key to verify against

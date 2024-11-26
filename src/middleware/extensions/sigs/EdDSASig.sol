@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {Ed25519} from "../../../libraries/Ed25519.sol";
+import {EdDSA} from "../../../libraries/EdDSA.sol";
 import {BaseSig} from "./BaseSig.sol";
 
 /**
- * @title Ed25519Sig
- * @notice Contract for verifying Ed25519 signatures against operator keys
- * @dev Implements BaseSig interface using Ed25519 signature verification
+ * @title EdDSASig
+ * @notice Contract for verifying EdDSA signatures over Ed25519 against operator keys
+ * @dev Implements BaseSig interface using EdDSA signature verification
  */
-abstract contract Ed25519Sig is BaseSig {
-    bool public constant Ed25519SigEnabled = true;
+abstract contract EdDSASig is BaseSig {
+    bool public constant EdDSASigEnabled = true;
 
     /**
      * @notice Verifies that a signature was created by the owner of a key
@@ -40,6 +40,6 @@ abstract contract Ed25519Sig is BaseSig {
      * @dev Wrapper around Ed25519.verify which handles decompression and curve operations
      */
     function verify(bytes memory message, bytes memory signature, bytes32 key) internal returns (bool) {
-        return Ed25519.verify(message, signature, key);
+        return EdDSA.verify(message, signature, key);
     }
 }
