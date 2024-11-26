@@ -13,7 +13,6 @@ abstract contract KeyManager is BaseManager {
      * @param operator The address of the operator
      * @param key The key to update
      */
-
     function _updateKey(address operator, bytes memory key) internal virtual;
 
     /**
