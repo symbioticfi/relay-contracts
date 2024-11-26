@@ -336,7 +336,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, BaseSig, EIP712Upgrad
      * @param key The public key to verify
      * @param signature The signature to verify
      */
-    function _verifyKey(address operator, bytes memory key, bytes memory signature) internal view {
+    function _verifyKey(address operator, bytes memory key, bytes memory signature) internal {
         if (key.length != 0 && !_verifyKeySignature(operator, key, signature)) {
             revert InvalidSignature();
         }
