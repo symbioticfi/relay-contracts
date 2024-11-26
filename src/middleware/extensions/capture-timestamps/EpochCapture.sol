@@ -5,7 +5,7 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {BaseMiddleware} from "../../BaseMiddleware.sol";
 
 abstract contract EpochCapture is BaseMiddleware {
-    bool public constant EpochCaptureEnabled = true;
+    uint64 public constant EpochCapture_VERSION = 1;
 
     struct EpochCaptureStorage {
         uint48 startTimestamp;

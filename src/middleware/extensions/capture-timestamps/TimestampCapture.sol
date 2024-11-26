@@ -5,7 +5,7 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {BaseMiddleware} from "../../BaseMiddleware.sol";
 
 abstract contract TimestampCapture is BaseMiddleware {
-    bool public constant TimestampCaptureEnabled = true;
+    uint64 public constant TimestampCapture_VERSION = 1;
 
     /* 
      * @notice Returns the current timestamp minus 1 second.

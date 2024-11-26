@@ -11,7 +11,7 @@ import {BaseMiddleware} from "../BaseMiddleware.sol";
  * @dev Extends BaseMiddleware to provide access control for subnetwork management functions
  */
 abstract contract Subnetworks is BaseMiddleware {
-    bool public constant SubnetworksEnabled = true;
+    uint64 public constant Subnetworks_VERSION = 1;
 
     /**
      * @notice Registers a new subnetwork

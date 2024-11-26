@@ -12,9 +12,10 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
  * @dev Extends BaseMiddleware to provide key management functionality
  */
 abstract contract KeyStorage256 is BaseMiddleware {
-    using PauseableEnumerableSet for PauseableEnumerableSet.Bytes32Set;
-    using PauseableEnumerableSet for PauseableEnumerableSet.Status;
+    uint64 public constant KeyStorage256_VERSION = 1;
 
+    using PauseableEnumerableSet for PauseableEnumerableSet.Bytes32Set;
+    
     error DuplicateKey();
     error KeyAlreadyEnabled();
     error MaxDisabledKeysReached();
