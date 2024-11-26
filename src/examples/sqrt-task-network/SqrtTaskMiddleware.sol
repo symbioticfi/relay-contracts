@@ -57,7 +57,7 @@ contract SqrtTaskMiddleware is SharedVaults, Operators, NoKeyStorage, EIP712, Ow
         address operatorRegistry,
         address operatorNetOptin,
         address owner
-    ) public override initializer {
+    ) public initializer {
         super.initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
         __OwnableAccessManaged_init(owner);
     }

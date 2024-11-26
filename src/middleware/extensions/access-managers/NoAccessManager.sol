@@ -10,7 +10,7 @@ import {BaseMiddleware} from "../../BaseMiddleware.sol";
  */
 abstract contract NoAccessManager is BaseMiddleware {
     uint64 public constant NoAccessManager_VERSION = 1;
-    
+
     /**
      * @notice Checks access and always allows access
      * @dev This function is called internally to enforce access control and will always allow access
