@@ -17,14 +17,7 @@ import {OwnableAccessManager} from "../../middleware/extensions/access-managers/
 import {NoKeyStorage} from "../../middleware/extensions/key-storages/NoKeyStorage.sol";
 import {TimestampCapture} from "../../middleware/extensions/capture-timestamps/TimestampCapture.sol";
 
-contract SqrtTaskMiddleware is
-    SharedVaults,
-    Operators,
-    NoKeyStorage,
-    EIP712,
-    OwnableAccessManager,
-    TimestampCapture
-{
+contract SqrtTaskMiddleware is SharedVaults, Operators, NoKeyStorage, EIP712, OwnableAccessManager, TimestampCapture {
     using Subnetwork for address;
     using Math for uint256;
 

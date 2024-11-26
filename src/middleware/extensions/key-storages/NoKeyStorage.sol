@@ -18,7 +18,9 @@ abstract contract NoKeyStorage is BaseMiddleware {
      * @param key The key to lookup (unused)
      * @return The operator address (always reverts)
      */
-    function operatorByKey(bytes memory key) public pure override returns (address) {
+    function operatorByKey(
+        bytes memory key
+    ) public pure override returns (address) {
         revert KeyStorageDisabled();
     }
 
@@ -27,7 +29,9 @@ abstract contract NoKeyStorage is BaseMiddleware {
      * @param operator The operator address to lookup (unused)
      * @return The operator's key (always reverts)
      */
-    function operatorKey(address operator) public pure override returns (bytes memory) {
+    function operatorKey(
+        address operator
+    ) public pure override returns (bytes memory) {
         revert KeyStorageDisabled();
     }
 
