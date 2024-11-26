@@ -44,9 +44,22 @@ contract SqrtTaskMiddleware is SharedVaults, Operators, NoKeyStorage, EIP712, Ow
         address operatorRegistry,
         address vaultRegistry,
         address operatorNetOptin,
-        uint48 slashingWindow
+        uint48 slashingWindow,
+        address owner
     ) EIP712("SqrtTaskMiddleware", "1") {
-        initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
+        initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, owner);
+    }
+
+    function initialize(
+        address network,
+        uint48 slashingWindow,
+        address vaultRegistry,
+        address operatorRegistry,
+        address operatorNetOptin,
+        address owner
+    ) public override initializer {
+        super.initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
+        __OwnableAccessManaged_init(owner);
     }
 
     function createTask(uint256 value, address operator) external returns (uint256 taskIndex) {
