@@ -13,5 +13,5 @@ abstract contract BaseSig {
         address operator,
         bytes memory key_,
         bytes memory signature
-    ) internal view virtual returns (bool);
+    ) internal virtual returns (bool);
 }

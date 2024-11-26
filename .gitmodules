@@ -10,3 +10,6 @@
 [submodule "lib/core"]
 	path = lib/core
 	url = https://github.com/symbioticfi/core
+[submodule "lib/crypto-lib"]
+	path = lib/crypto-lib
+	url = https://github.com/get-smooth/crypto-lib
