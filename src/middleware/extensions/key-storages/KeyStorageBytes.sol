@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {BaseManager} from "../managers/BaseManager.sol";
-import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
+import {BaseMiddleware} from "../../BaseMiddleware.sol";
+import {PauseableEnumerableSet} from "../../../libraries/PauseableEnumerableSet.sol";
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
@@ -11,7 +11,7 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
  * @notice Manages storage and validation of operator keys
  * @dev Extends BaseManager to provide key management functionality
  */
-abstract contract KeyStorageBytes is BaseManager {
+abstract contract KeyStorageBytes is BaseMiddleware {
     using PauseableEnumerableSet for PauseableEnumerableSet.BytesSet;
     using PauseableEnumerableSet for PauseableEnumerableSet.Status;
 
@@ -45,7 +45,7 @@ abstract contract KeyStorageBytes is BaseManager {
      */
     function operatorByKey(
         bytes memory key
-    ) public view returns (address) {
+    ) public view override returns (address) {
         KeyStorageBytesStorage storage $ = _getStorage();
         return $._keyToOperator[key];
     }
@@ -57,7 +57,7 @@ abstract contract KeyStorageBytes is BaseManager {
      */
     function operatorKey(
         address operator
-    ) public view returns (bytes memory) {
+    ) public view override returns (bytes memory) {
         KeyStorageBytesStorage storage $ = _getStorage();
         bytes[] memory active = $._keys[operator].getActive(getCaptureTimestamp());
         if (active.length == 0) {
@@ -72,7 +72,7 @@ abstract contract KeyStorageBytes is BaseManager {
      * @param key The key to check
      * @return True if the key was active at the timestamp, false otherwise
      */
-    function keyWasActiveAt(uint48 timestamp, bytes memory key) public view returns (bool) {
+    function keyWasActiveAt(uint48 timestamp, bytes memory key) public view override returns (bool) {
         KeyStorageBytesStorage storage $ = _getStorage();
         return $._keys[$._keyToOperator[key]].wasActiveAt(timestamp, key);
     }
@@ -85,7 +85,7 @@ abstract contract KeyStorageBytes is BaseManager {
      * @custom:throws DuplicateKey if key is already registered to another operator
      * @custom:throws MaxDisabledKeysReached if operator has too many disabled keys
      */
-    function _updateKey(address operator, bytes memory key) internal {
+    function _updateKey(address operator, bytes memory key) internal override {
         KeyStorageBytesStorage storage $ = _getStorage();
         bytes32 keyHash = keccak256(key);
 

@@ -14,7 +14,7 @@ import {SharedVaults} from "../../middleware/extensions/SharedVaults.sol";
 import {Operators} from "../../middleware/extensions/operators/Operators.sol";
 import {OwnableAccessManager} from "../../middleware/extensions/access-managers/OwnableAccessManager.sol";
 import {EpochCapture} from "../../middleware/extensions/capture-timestamps/EpochCapture.sol";
-import {KeyStorage256} from "../../key-storage/KeyStorage256.sol";
+import {KeyStorage256} from "../../middleware/extensions/key-storages/KeyStorage256.sol";
 
 contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256, OwnableAccessManager, EpochCapture {
     using Subnetwork for address;
@@ -104,7 +104,7 @@ contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256, OwnableA
             address operator = operators[i]; // Get the operator address
 
             bytes32 key = abi.decode(operatorKey(operator), (bytes32)); // Get the key for the operator
-            if (key == bytes32(0) || !keyWasActiveAt(getCaptureTimestamp(), key)) {
+            if (key == bytes32(0) || !keyWasActiveAt(getCaptureTimestamp(), abi.encode(key))) {
                 continue; // Skip if the key is inactive
             }
 
@@ -180,7 +180,7 @@ contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256, OwnableA
             revert NotExistKeySlash(); // Revert if the operator does not exist
         }
 
-        if (!keyWasActiveAt(epochStart, key)) {
+        if (!keyWasActiveAt(epochStart, abi.encode(key))) {
             revert InactiveKeySlash(); // Revert if the key is inactive
         }
 

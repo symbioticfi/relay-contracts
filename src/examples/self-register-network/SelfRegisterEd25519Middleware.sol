@@ -15,14 +15,14 @@ import {SelfRegisterOperators} from "../../middleware/extensions/operators/SelfR
 import {NoAccessManager} from "../../middleware/extensions/access-managers/NoAccessManager.sol";
 import {TimestampCapture} from "../../middleware/extensions/capture-timestamps/TimestampCapture.sol";
 
-import {KeyStorage256} from "../../key-storage/KeyStorage256.sol";
-import {Ed25519Sig} from "../../middleware/extensions/sigs/Ed25519Sig.sol";
+import {KeyStorage256} from "../../middleware/extensions/key-storages/KeyStorage256.sol";
+import {EdDSASig} from "../../middleware/extensions/sigs/EdDSASig.sol";
 
 contract SelfRegisterEd25519Middleware is
     SharedVaults,
     SelfRegisterOperators,
     KeyStorage256,
-    Ed25519Sig,
+    EdDSASig,
     NoAccessManager,
     TimestampCapture
 {

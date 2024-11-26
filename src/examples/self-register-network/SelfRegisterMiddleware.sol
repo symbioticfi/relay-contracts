@@ -16,7 +16,7 @@ import {ECDSASig} from "../../middleware/extensions/sigs/ECDSASig.sol";
 import {NoAccessManager} from "../../middleware/extensions/access-managers/NoAccessManager.sol";
 import {TimestampCapture} from "../../middleware/extensions/capture-timestamps/TimestampCapture.sol";
 
-import {KeyStorage256} from "../../key-storage/KeyStorage256.sol";
+import {KeyStorage256} from "../../middleware/extensions/key-storages/KeyStorage256.sol";
 
 contract SelfRegisterMiddleware is
     SharedVaults,
