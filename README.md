@@ -8,11 +8,11 @@ This repository provides a framework for developing middleware in a modular and 
 
 - **Extensions**: Modular contracts that provide additional functionalities. Key extensions include:
 
-  - **Operators**: Manages operator registration and vault relationships.
+  - **Operators**: Manages operator registration and operator's vault.
   
   - **KeyStorage**: Manages operator keys. Variants include `KeyStorage256`, `KeyStorageBytes`, and `NoKeyStorage`.
   
-  - **AccessManager**: Controls access to restricted functions. Implementations include `OwnableAccessManager`, `OzAccessManaged`, and `NoAccessManager`.
+  - **AccessManager**: Controls access to restricted functions. Implementations include `OwnableAccessManager`, `OzAccessControl`, `OzAccessManaged`, and `NoAccessManager`.
   
   - **CaptureTimestamp**: Captures the active state at specific timestamps. Options are `EpochCapture` and `TimestampCapture`.
   
@@ -20,13 +20,18 @@ This repository provides a framework for developing middleware in a modular and 
 
   - **StakePower**: Calculates operator power based on stake. Implementations include `EqualStakePower` for 1:1 stake-to-power ratio, and can be extended for custom power calculations.
 
+  - **SharedVaults**: Manages vaults shared between all operators.
+
+  - **Subnetworks**: Manages subnetworks.
+
+
 ## Middleware Examples
 
 Below are examples of middleware implementations using different combinations of the extensions.
 
 #### SimplePosMiddleware
 ```solidity
-contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256, OwnableAccessManager, EpochCapture {
+contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256, OwnableAccessManager, EpochCapture, EqualStakePower {
     // Implementation details...
 }
 ```
@@ -40,7 +45,7 @@ Features:
 #### SqrtTaskMiddleware
 
 ```solidity
-contract SqrtTaskMiddleware is SharedVaults, Operators, NoKeyStorage, EIP712, OwnableAccessManager, TimestampCapture {
+contract SqrtTaskMiddleware is SharedVaults, Operators, NoKeyStorage, EIP712, OwnableAccessManager, TimestampCapture, EqualStakePower {
     // Implementation details...
 }
 ```
@@ -54,7 +59,7 @@ Features:
 #### SelfRegisterMiddleware
 
 ```solidity
-contract SelfRegisterMiddleware is SharedVaults, SelfRegisterOperators, KeyStorage256, ECDSASig, NoAccessManager, TimestampCapture {
+contract SelfRegisterMiddleware is SharedVaults, SelfRegisterOperators, KeyStorage256, ECDSASig, NoAccessManager, TimestampCapture, EqualStakePower {
     // Implementation details...
 }
 ```
@@ -75,7 +80,7 @@ contract SelfRegisterEd25519Middleware is SharedVaults, SelfRegisterOperators, K
 
 Features:
 
-- Similar to `SelfRegisterMiddleware` but uses Ed25519 keys and signatures.
+- Similar to `SelfRegisterMiddleware` but uses Ed25519 keys and EdDSA signatures.
 
 ## Getting Started
 
@@ -85,7 +90,41 @@ To develop your middleware:
 
 2. **Choose Extensions**: Based on your requirements, include extensions for operator management, key storage, access control, and timestamp capturing.
 
-3. **Initialize Properly**: Ensure all inherited contracts are properly initialized. For upgradeable contracts, use the `initializer` modifier and call `_disableInitializers` in the constructor to prevent double initialization.
+3. **Initialize Properly**: Ensure all inherited contracts are properly initialized:
+
+   - Use the `initializer` modifier on your initialization function
+   - Call `_disableInitializers()` in the constructor for upgradeable contracts
+   - Initialize all inherited contracts in the correct order
+   - Pass required parameters to each contract's initialization function
+   - Follow initialization order from most base to most derived contract
+   - Note: If your contract is not upgradeable, initialization can be done directly in the constructor:
+     ```solidity
+     constructor(
+         address network,
+         uint48 slashingWindow,
+         address vaultRegistry,
+         address operatorRegistry,
+         address operatorNetOptIn,
+         address admin
+     ) {
+         initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn, admin);
+     }
+     ```
+   - Example initialization pattern:
+     ```solidity
+     function initialize(
+         address network,
+         uint48 slashingWindow,
+         address vaultRegistry,
+         address operatorRegistry,
+         address operatorNetOptIn,
+         address admin
+     ) public initializer {
+         __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn);
+         __OzAccessManaged_init(admin);
+         __AdditionalExtension_init();
+     }
+     ```
 
 4. **Implement Required Functions**: Override functions as needed to implement your middleware's logic.
 
@@ -111,14 +150,49 @@ contract MyCustomMiddleware is BaseMiddleware, Operators, KeyStorage256, Ownable
 }
 ```
 
+5. **Configure OzAccessControl Roles**: When using OzAccessControl, set up roles and permissions:
+
+   ```solidity
+   // Define role identifiers as constants
+   bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+   bytes32 public constant VAULT_ROLE = keccak256("VAULT_ROLE");
+   bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
+
+   function initialize(...) public initializer {
+       // Initialize base contracts
+       __BaseMiddleware_init(...);
+       __OzAccessControl_init(admin);
+
+       // Set up role hierarchy
+       _setRoleAdmin(OPERATOR_ROLE, MANAGER_ROLE); // Manager role can grant/revoke operator role
+       _setRoleAdmin(VAULT_ROLE, MANAGER_ROLE); // Manager role can grant/revoke vault role
+       _setRoleAdmin(MANAGER_ROLE, DEFAULT_ADMIN_ROLE); // Default admin can grant/revoke manager role
+
+       // Assign roles to function selectors
+       _setSelectorRole(this.registerOperator.selector, OPERATOR_ROLE);
+       _setSelectorRole(this.registerVault.selector, VAULT_ROLE);
+       _setSelectorRole(this.updateParameters.selector, MANAGER_ROLE);
+
+       // Grant initial roles
+       _grantRole(MANAGER_ROLE, admin);
+   }
+   ```
+
 ## Notes
 
 - **Storage Slots**: When creating extensions, ensure you follow the ERC-7201 standard for storage slot allocation to prevent conflicts.
 
 - **Versioning**: Include a public constant variable for versioning in your contracts (e.g., `uint64 public constant MyExtension_VERSION = 1;`).
 
-- **Access Control**: Choose an appropriate `AccessManager` based on your needs. For unrestricted access, use `NoAccessManager`. For owner-based access, use `OwnableAccessManager`.
-
+- **Access Control**: Choose an appropriate `AccessManager` based on your needs:
+  - `NoAccessManager`: Allows unrestricted access to all functions
+  - `OwnableAccessManager`: Restricts access to a single owner address
+  - `OzAccessControl`: Implements OpenZeppelin-style role-based access control where different roles can be assigned to specific function selectors. Roles can be granted and revoked by role admins, with a default admin role that can manage all other roles. Roles can be set up by:
+    1. Granting roles to addresses using `grantRole(bytes32 role, address account)`
+    2. Setting role admins with `_setRoleAdmin(bytes32 role, bytes32 adminRole)` 
+    3. Assigning roles to function selectors via `_setSelectorRole(bytes4 selector, bytes32 role)`
+  - `OzAccessManaged`: Wraps OpenZeppelin's AccessManaged contract to integrate with external access control systems
+  
 - **Key Storage**: Select a `KeyStorage` implementation that fits your key requirements. Use `KeyStorage256` for 256-bit keys, `KeyStorageBytes` for arbitrary-length keys, or `NoKeyStorage` if keys are not needed.
 
 This framework provides flexibility in building middleware by allowing you to mix and match various extensions based on your requirements. By following the modular approach and best practices outlined, you can develop robust middleware solutions that integrate seamlessly with the network.
