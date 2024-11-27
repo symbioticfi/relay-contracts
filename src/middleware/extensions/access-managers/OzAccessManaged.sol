@@ -7,7 +7,7 @@ import {BaseMiddleware} from "../../BaseMiddleware.sol";
 
 /**
  * @title OzAccessManaged
- * @notice A middleware extension that integrates OpenZeppelin's AccessManager for access control
+ * @notice A middleware extension that integrates OpenZeppelin's AccessManaged for access control
  * @dev Implements BaseMiddleware with OpenZeppelin's AccessManagedUpgradeable functionality
  */
 abstract contract OzAccessManaged is BaseMiddleware, AccessManagedUpgradeable {
@@ -25,10 +25,10 @@ abstract contract OzAccessManaged is BaseMiddleware, AccessManagedUpgradeable {
     }
 
     /**
-     * @notice Checks if the caller has access through the OpenZeppelin AccessManager
+     * @notice Checks if the caller has access through the OpenZeppelin AccessManaged
      * @dev Delegates access check to OpenZeppelin's _checkCanCall function
      */
-    function _checkAccess() internal override {
+    function _checkAccess() internal virtual override {
         _checkCanCall(msg.sender, msg.data);
     }
 }

@@ -15,7 +15,7 @@ abstract contract NoAccessManager is BaseMiddleware {
      * @notice Checks access and always allows access
      * @dev This function is called internally to enforce access control and will always allow access
      */
-    function _checkAccess() internal pure override {
+    function _checkAccess() internal pure virtual override {
         // Allow all access by default
     }
 }

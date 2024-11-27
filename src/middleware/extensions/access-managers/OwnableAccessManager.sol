@@ -65,7 +65,7 @@ abstract contract OwnableAccessManager is BaseMiddleware {
      * @notice Checks if the caller has access (is the owner)
      * @dev Reverts if the caller is not the owner
      */
-    function _checkAccess() internal view override {
+    function _checkAccess() internal view virtual override {
         if (msg.sender != _owner()) {
             revert OnlyOwnerCanCall(msg.sender);
         }
