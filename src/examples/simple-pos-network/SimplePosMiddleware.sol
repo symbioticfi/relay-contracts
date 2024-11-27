@@ -40,7 +40,7 @@ contract SimplePosMiddleware is
     struct SlashParams {
         uint48 epochStart;
         address operator;
-        uint256 totalStake;
+        uint256 totalPower;
         address[] vaults;
         uint160[] subnetworks;
     }
@@ -79,15 +79,6 @@ contract SimplePosMiddleware is
         super.initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
         __OwnableAccessManaged_init(owner);
         __EpochCapture_init(epochDuration);
-    }
-
-    /* 
-     * @notice Returns the total stake for the active operators in the current epoch.
-     * @return The total stake amount.
-     */
-    function getTotalStake() public view returns (uint256) {
-        address[] memory operators = activeOperators(); // Get the list of active operators
-        return _totalStake(operators); // Return the total stake for the current epoch
     }
 
     /* 
@@ -149,7 +140,7 @@ contract SimplePosMiddleware is
 
         _checkCanSlash(epoch, key);
 
-        params.totalStake = getOperatorStakeAt(params.operator, params.epochStart);
+        params.totalPower = getOperatorPowerAt(params.operator, params.epochStart);
         params.vaults = activeVaultsAt(params.epochStart, params.operator);
         params.subnetworks = activeSubnetworksAt(params.epochStart);
 
@@ -170,7 +161,7 @@ contract SimplePosMiddleware is
                     subnetwork, params.operator, params.epochStart, stakeHints[i][j]
                 );
 
-                uint256 slashAmount = Math.mulDiv(amount, stake, params.totalStake);
+                uint256 slashAmount = Math.mulDiv(amount, stakeToPower(vault, stake), params.totalPower);
                 if (slashAmount == 0) {
                     continue;
                 }

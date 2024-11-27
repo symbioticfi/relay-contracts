@@ -401,47 +401,6 @@ abstract contract VaultManager is BaseManager {
     }
 
     /**
-     * @notice Gets the total stake amount for an operator across all vaults and subnetworks
-     * @param operator The operator address
-     * @return stake The total stake amount
-     */
-    function getOperatorStake(
-        address operator
-    ) public view virtual returns (uint256 stake) {
-        address[] memory vaults = activeVaults(operator);
-        uint160[] memory subnetworks = activeSubnetworks();
-
-        for (uint256 i; i < vaults.length; ++i) {
-            address vault = vaults[i];
-            for (uint256 j; j < subnetworks.length; ++j) {
-                stake += getOperatorStake(operator, vault, uint96(subnetworks[j]));
-            }
-        }
-
-        return stake;
-    }
-
-    /**
-     * @notice Gets the total stake amount for an operator across all vaults and subnetworks at a specific timestamp
-     * @param operator The operator address
-     * @param timestamp The timestamp to check
-     * @return stake The total stake amount at the timestamp
-     */
-    function getOperatorStakeAt(address operator, uint48 timestamp) public view virtual returns (uint256 stake) {
-        address[] memory vaults = activeVaultsAt(timestamp, operator);
-        uint160[] memory subnetworks = activeSubnetworksAt(timestamp);
-
-        for (uint256 i; i < vaults.length; ++i) {
-            address vault = vaults[i];
-            for (uint256 j; j < subnetworks.length; ++j) {
-                stake += getOperatorStakeAt(operator, vault, uint96(subnetworks[j]), timestamp);
-            }
-        }
-
-        return stake;
-    }
-
-    /**
      * @notice Gets the total power amount for an operator across all vaults and subnetworks
      * @param operator The operator address
      * @return power The total power amount
@@ -480,22 +439,6 @@ abstract contract VaultManager is BaseManager {
         }
 
         return power;
-    }
-
-    /**
-     * @notice Calculates the total stake for a list of operators
-     * @param operators Array of operator addresses
-     * @return stake The total stake amount
-     */
-    function _totalStake(
-        address[] memory operators
-    ) internal view returns (uint256 stake) {
-        for (uint256 i; i < operators.length; ++i) {
-            uint256 operatorStake = getOperatorStake(operators[i]);
-            stake += operatorStake;
-        }
-
-        return stake;
     }
 
     /**
