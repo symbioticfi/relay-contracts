@@ -1,6 +1,6 @@
 # Middleware Development Guide
 
-This repository provides a framework for developing middleware in a modular and extensible way. It leverages various base contracts and extensions to handle key functionalities such as operator management, access control, key storage, and timestamp capturing.
+This repository provides a framework for developing middleware in a modular and extensible way. It leverages various base contracts and extensions to handle key functionalities such as operator management, access control, key storage, timestamp capturing and stake to power calculation.
 
 ## Key Components:
 
@@ -17,6 +17,8 @@ This repository provides a framework for developing middleware in a modular and 
   - **CaptureTimestamp**: Captures the active state at specific timestamps. Options are `EpochCapture` and `TimestampCapture`.
   
   - **Signature Verification**: Verifies operator signatures. Implementations include `ECDSASig` and `EdDSASig`.
+
+  - **StakePower**: Calculates operator power based on stake. Implementations include `EqualStakePower` for 1:1 stake-to-power ratio, and can be extended for custom power calculations.
 
 ## Middleware Examples
 

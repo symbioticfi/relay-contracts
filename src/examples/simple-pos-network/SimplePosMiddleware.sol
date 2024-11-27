@@ -15,8 +15,16 @@ import {Operators} from "../../middleware/extensions/operators/Operators.sol";
 import {OwnableAccessManager} from "../../middleware/extensions/access-managers/OwnableAccessManager.sol";
 import {EpochCapture} from "../../middleware/extensions/capture-timestamps/EpochCapture.sol";
 import {KeyStorage256} from "../../middleware/extensions/key-storages/KeyStorage256.sol";
+import {EqualStakePower} from "../../middleware/extensions/stake-powers/EqualStakePower.sol";
 
-contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256, OwnableAccessManager, EpochCapture {
+contract SimplePosMiddleware is
+    SharedVaults,
+    Operators,
+    KeyStorage256,
+    OwnableAccessManager,
+    EpochCapture,
+    EqualStakePower
+{
     using Subnetwork for address;
 
     error InactiveKeySlash(); // Error thrown when trying to slash an inactive key
