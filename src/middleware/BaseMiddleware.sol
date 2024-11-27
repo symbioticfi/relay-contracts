@@ -11,7 +11,7 @@ import {KeyManager} from "../managers/KeyManager.sol";
  * @notice Abstract base contract that combines core manager functionality for building middleware
  * @dev Inherits from VaultManager, OperatorManager, AccessManager and KeyManager to provide:
  *      - Vault management and registration
- *      - Operator management and registration 
+ *      - Operator management and registration
  *      - Access control and permissions
  *      - Key storage and management
  *

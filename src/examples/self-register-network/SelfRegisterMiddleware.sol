@@ -15,7 +15,7 @@ import {SelfRegisterOperators} from "../../middleware/extensions/operators/SelfR
 import {ECDSASig} from "../../middleware/extensions/sigs/ECDSASig.sol";
 import {NoAccessManager} from "../../middleware/extensions/access-managers/NoAccessManager.sol";
 import {TimestampCapture} from "../../middleware/extensions/capture-timestamps/TimestampCapture.sol";
-
+import {EqualStakePower} from "../../middleware/extensions/stake-powers/EqualStakePower.sol";
 import {KeyStorage256} from "../../middleware/extensions/key-storages/KeyStorage256.sol";
 
 contract SelfRegisterMiddleware is
@@ -24,7 +24,8 @@ contract SelfRegisterMiddleware is
     KeyStorage256,
     ECDSASig,
     NoAccessManager,
-    TimestampCapture
+    TimestampCapture,
+    EqualStakePower
 {
     /*
      * @notice Constructor for initializing the SelfRegisterMiddleware contract.
