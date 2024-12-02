@@ -191,7 +191,9 @@ contract SigTests is POCBaseTest {
         ed25519Middleware.registerOperator(abi.encode(key), address(vault), signature);
     }
 
-    function _getOperatorVault(address operator) internal returns (IVault) {
+    function _getOperatorVault(
+        address operator
+    ) internal returns (IVault) {
         address[] memory networkLimitSetRoleHolders = new address[](1);
         networkLimitSetRoleHolders[0] = alice;
         address[] memory operatorNetworkSharesSetRoleHolders = new address[](1);
