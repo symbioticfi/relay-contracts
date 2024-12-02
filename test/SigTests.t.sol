@@ -3,9 +3,15 @@ pragma solidity ^0.8.25;
 
 import {Test, Vm, console} from "forge-std/Test.sol";
 import {POCBaseTest} from "@symbiotic-test/POCBase.t.sol";
+import {IOperatorSpecificDelegator} from "@symbiotic/interfaces/delegator/IOperatorSpecificDelegator.sol";
+import {IVault} from "@symbiotic/interfaces/vault/IVault.sol";
+import {IVaultConfigurator} from "@symbiotic/interfaces/IVaultConfigurator.sol";
+import {IBaseDelegator} from "@symbiotic/interfaces/delegator/IBaseDelegator.sol";
+
 import {SelfRegisterMiddleware} from "../src/examples/self-register-network/SelfRegisterMiddleware.sol";
 import {SelfRegisterEd25519Middleware} from "../src/examples/self-register-network/SelfRegisterEd25519Middleware.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {EdDSA} from "../src/libraries/EdDSA.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
 contract SigTests is POCBaseTest {
@@ -19,6 +25,8 @@ contract SigTests is POCBaseTest {
     bytes32 internal operatorPublicKey;
     string internal constant ED25519_TEST_DATA = "test/helpers/ed25519TestData.json";
     address internal ed25519Operator;
+    address internal vault;
+    address internal vaultEd;
 
     function setUp() public override {
         SYMBIOTIC_CORE_PROJECT_ROOT = "lib/core/";
@@ -52,10 +60,14 @@ contract SigTests is POCBaseTest {
         _registerNetwork(address(0x456), address(ed25519Middleware));
         _registerOperator(operator);
         _registerOperator(ed25519Operator);
-        _optInOperatorVault(vault1, operator);
-        _optInOperatorVault(vault1, ed25519Operator);
         _optInOperatorNetwork(operator, address(0x123));
         _optInOperatorNetwork(ed25519Operator, address(0x456));
+
+        vault = address(_getOperatorVault(operator));
+        _optInOperatorVault(IVault(vault), operator);
+
+        vaultEd = address(_getOperatorVault(ed25519Operator));
+        _optInOperatorVault(IVault(vaultEd), ed25519Operator);
     }
 
     function testEd25519RegisterOperator() public {
@@ -65,7 +77,7 @@ contract SigTests is POCBaseTest {
 
         // Register operator using Ed25519 signature
         vm.prank(ed25519Operator);
-        ed25519Middleware.registerOperator(abi.encode(key), address(vault1), signature);
+        ed25519Middleware.registerOperator(abi.encode(key), address(vaultEd), signature);
 
         // Verify operator is registered correctly
         assertTrue(ed25519Middleware.isOperatorRegistered(ed25519Operator));
@@ -87,7 +99,7 @@ contract SigTests is POCBaseTest {
         // Attempt to register with invalid signature should fail
         vm.prank(ed25519Operator);
         vm.expectRevert();
-        ed25519Middleware.registerOperator(abi.encode(key), address(vault1), signature);
+        ed25519Middleware.registerOperator(abi.encode(key), address(vaultEd), signature);
     }
 
     function testEd25519RegisterOperatorWrongSender() public {
@@ -104,7 +116,7 @@ contract SigTests is POCBaseTest {
         // Attempt to register from different address should fail
         vm.prank(alice);
         vm.expectRevert();
-        ed25519Middleware.registerOperator(abi.encode(key), address(vault1), abi.encodePacked(r, s));
+        ed25519Middleware.registerOperator(abi.encode(key), address(vaultEd), abi.encodePacked(r, s));
     }
 
     function testSelfRegisterOperator() public {
@@ -115,7 +127,7 @@ contract SigTests is POCBaseTest {
         bytes memory signature = abi.encodePacked(r, s, v);
         // Register operator using their own signature
         vm.prank(operator);
-        middleware.registerOperator(abi.encode(operatorPublicKey), address(vault1), signature);
+        middleware.registerOperator(abi.encode(operatorPublicKey), address(vault), signature);
 
         // Verify operator is registered correctly
         assertTrue(middleware.isOperatorRegistered(operator));
@@ -136,7 +148,7 @@ contract SigTests is POCBaseTest {
         // Attempt to register with mismatched key should fail
         vm.prank(operator);
         vm.expectRevert();
-        middleware.registerOperator(abi.encode(operatorPublicKey), address(vault1), signature);
+        middleware.registerOperator(abi.encode(operatorPublicKey), address(vault), signature);
     }
 
     function testSelfxRegisterOperatorWrongSender() public {
@@ -149,7 +161,7 @@ contract SigTests is POCBaseTest {
         // Attempt to register from different address should fail
         vm.prank(alice);
         vm.expectRevert();
-        middleware.registerOperator(abi.encode(operatorPublicKey), address(vault1), signature);
+        middleware.registerOperator(abi.encode(operatorPublicKey), address(vault), signature);
     }
 
     function testSelxfRegisterOperatorAlreadyRegistered() public {
@@ -160,12 +172,12 @@ contract SigTests is POCBaseTest {
         bytes memory signature = abi.encodePacked(r, s, v);
         // Register operator first time
         vm.prank(operator);
-        middleware.registerOperator(abi.encode(operatorPublicKey), address(vault1), signature);
+        middleware.registerOperator(abi.encode(operatorPublicKey), address(vault), signature);
 
         // Attempt to register again should fail
         vm.prank(operator);
         vm.expectRevert();
-        middleware.registerOperator(abi.encode(operatorPublicKey), address(vault1), signature);
+        middleware.registerOperator(abi.encode(operatorPublicKey), address(vault), signature);
     }
 
     function testEd25519RegisterOperatorMismatchedKeyAndSignature() public {
@@ -176,6 +188,51 @@ contract SigTests is POCBaseTest {
         // Attempt to register with mismatched key and signature should fail
         vm.prank(ed25519Operator);
         vm.expectRevert();
-        ed25519Middleware.registerOperator(abi.encode(key), address(vault1), signature);
+        ed25519Middleware.registerOperator(abi.encode(key), address(vault), signature);
+    }
+
+    function _getOperatorVault(address operator) internal returns (IVault) {
+        address[] memory networkLimitSetRoleHolders = new address[](1);
+        networkLimitSetRoleHolders[0] = alice;
+        address[] memory operatorNetworkSharesSetRoleHolders = new address[](1);
+        operatorNetworkSharesSetRoleHolders[0] = alice;
+        (address vault_,,) = vaultConfigurator.create(
+            IVaultConfigurator.InitParams({
+                version: 1,
+                owner: alice,
+                vaultParams: abi.encode(
+                    IVault.InitParams({
+                        collateral: address(collateral),
+                        burner: address(0xdEaD),
+                        epochDuration: 7 days,
+                        depositWhitelist: false,
+                        isDepositLimit: false,
+                        depositLimit: 0,
+                        defaultAdminRoleHolder: alice,
+                        depositWhitelistSetRoleHolder: alice,
+                        depositorWhitelistRoleHolder: alice,
+                        isDepositLimitSetRoleHolder: alice,
+                        depositLimitSetRoleHolder: alice
+                    })
+                ),
+                delegatorIndex: 2,
+                delegatorParams: abi.encode(
+                    IOperatorSpecificDelegator.InitParams({
+                        baseParams: IBaseDelegator.BaseParams({
+                            defaultAdminRoleHolder: alice,
+                            hook: address(0),
+                            hookSetRoleHolder: alice
+                        }),
+                        networkLimitSetRoleHolders: networkLimitSetRoleHolders,
+                        operator: operator
+                    })
+                ),
+                withSlasher: false,
+                slasherIndex: 0,
+                slasherParams: ""
+            })
+        );
+
+        return IVault(vault_);
     }
 }
