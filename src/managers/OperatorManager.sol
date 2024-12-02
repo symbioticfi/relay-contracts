@@ -16,8 +16,6 @@ abstract contract OperatorManager is BaseManager {
 
     error NotOperator();
     error OperatorNotOptedIn();
-    error OperatorNotRegistered();
-    error OperatorAlreadyRegistred();
 
     /// @custom:storage-location erc7201:symbiotic.storage.OperatorManager
     struct OperatorManagerStorage {
