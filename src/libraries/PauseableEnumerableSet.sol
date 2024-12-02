@@ -319,9 +319,10 @@ library PauseableEnumerableSet {
      * @return array Array of active uint160s
      */
     function getActive(Uint160Set storage self, uint48 timestamp) internal view returns (uint160[] memory array) {
-        array = new uint160[](self.array.length);
+        uint256 arrayLen = self.array.length;
+        array = new uint160[](arrayLen);
         uint256 len;
-        for (uint256 i; i < self.array.length; ++i) {
+        for (uint256 i; i < arrayLen; ++i) {
             if (self.array[i].status.wasActiveAt(timestamp)) {
                 array[len++] = self.array[i].value;
             }
@@ -450,9 +451,10 @@ library PauseableEnumerableSet {
      * @return array Array of active bytes32s
      */
     function getActive(Bytes32Set storage self, uint48 timestamp) internal view returns (bytes32[] memory array) {
-        array = new bytes32[](self.array.length);
+        uint256 arrayLen = self.array.length;
+        array = new bytes32[](arrayLen);
         uint256 len;
-        for (uint256 i; i < self.array.length; ++i) {
+        for (uint256 i; i < arrayLen; ++i) {
             if (self.array[i].status.wasActiveAt(timestamp)) {
                 array[len++] = self.array[i].value;
             }
@@ -601,9 +603,10 @@ library PauseableEnumerableSet {
      * @return array Array of active bytes values
      */
     function getActive(BytesSet storage self, uint48 timestamp) internal view returns (bytes[] memory array) {
-        array = new bytes[](self.array.length);
+        uint256 arrayLen = self.array.length;
+        array = new bytes[](arrayLen);
         uint256 len;
-        for (uint256 i; i < self.array.length; ++i) {
+        for (uint256 i; i < arrayLen; ++i) {
             if (self.array[i].status.wasActiveAt(timestamp)) {
                 array[len++] = self.array[i].value;
             }

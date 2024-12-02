@@ -205,27 +205,7 @@ abstract contract VaultManager is BaseManager {
     function activeVaults() public view virtual returns (address[] memory) {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         uint48 timestamp = getCaptureTimestamp();
-        address[] memory activeSharedVaults_ = $._sharedVaults.getActive(timestamp);
-        uint256 len = activeSharedVaults_.length;
-        address[] memory vaults = new address[](len + $._vaultOperator.length());
-
-        for (uint256 i; i < len; ++i) {
-            vaults[i] = activeSharedVaults_[i];
-        }
-
-        uint256 operatorVaultsLen = $._vaultOperator.length();
-        for (uint256 i; i < operatorVaultsLen; ++i) {
-            (address vault, address operator) = $._vaultOperator.at(i);
-            if ($._operatorVaults[operator].wasActiveAt(timestamp, vault)) {
-                vaults[len++] = vault;
-            }
-        }
-
-        assembly {
-            mstore(vaults, len)
-        }
-
-        return vaults;
+        return activeVaultsAt(timestamp);
     }
 
     /**
@@ -239,13 +219,13 @@ abstract contract VaultManager is BaseManager {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         address[] memory activeSharedVaults_ = $._sharedVaults.getActive(timestamp);
         uint256 len = activeSharedVaults_.length;
-        address[] memory vaults = new address[](len + $._vaultOperator.length());
+        uint256 operatorVaultsLen = $._vaultOperator.length();
+        address[] memory vaults = new address[](len + operatorVaultsLen);
 
         for (uint256 i; i < len; ++i) {
             vaults[i] = activeSharedVaults_[i];
         }
 
-        uint256 operatorVaultsLen = $._vaultOperator.length();
         for (uint256 i; i < operatorVaultsLen; ++i) {
             (address vault, address operator) = $._vaultOperator.at(i);
             if ($._operatorVaults[operator].wasActiveAt(timestamp, vault)) {
@@ -270,19 +250,7 @@ abstract contract VaultManager is BaseManager {
     ) public view virtual returns (address[] memory) {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         uint48 timestamp = getCaptureTimestamp();
-        address[] memory activeSharedVaults_ = $._sharedVaults.getActive(timestamp);
-        address[] memory activeOperatorVaults_ = $._operatorVaults[operator].getActive(timestamp);
-
-        uint256 activeSharedVaultsLen = activeSharedVaults_.length;
-        address[] memory vaults = new address[](activeSharedVaultsLen + activeOperatorVaults_.length);
-        for (uint256 i; i < activeSharedVaultsLen; ++i) {
-            vaults[i] = activeSharedVaults_[i];
-        }
-        for (uint256 i; i < activeOperatorVaults_.length; ++i) {
-            vaults[activeSharedVaultsLen + i] = activeOperatorVaults_[i];
-        }
-
-        return vaults;
+        return activeVaultsAt(timestamp, operator);
     }
 
     /**
@@ -297,11 +265,12 @@ abstract contract VaultManager is BaseManager {
         address[] memory activeOperatorVaults_ = $._operatorVaults[operator].getActive(timestamp);
 
         uint256 activeSharedVaultsLen = activeSharedVaults_.length;
-        address[] memory vaults = new address[](activeSharedVaultsLen + activeOperatorVaults_.length);
+        uint256 activeOperatorVaultsLen = activeOperatorVaults_.length;
+        address[] memory vaults = new address[](activeSharedVaultsLen + activeOperatorVaultsLen);
         for (uint256 i; i < activeSharedVaultsLen; ++i) {
             vaults[i] = activeSharedVaults_[i];
         }
-        for (uint256 i; i < activeOperatorVaults_.length; ++i) {
+        for (uint256 i; i < activeOperatorVaultsLen; ++i) {
             vaults[activeSharedVaultsLen + i] = activeOperatorVaults_[i];
         }
 
