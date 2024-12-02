@@ -8,7 +8,6 @@ import {IEntity} from "@symbiotic/interfaces/common/IEntity.sol";
 import {IVetoSlasher} from "@symbiotic/interfaces/slasher/IVetoSlasher.sol";
 import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
 import {ISlasher} from "@symbiotic/interfaces/slasher/ISlasher.sol";
-import {IVetoSlasher} from "@symbiotic/interfaces/slasher/IVetoSlasher.sol";
 import {IOperatorSpecificDelegator} from "@symbiotic/interfaces/delegator/IOperatorSpecificDelegator.sol";
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
@@ -698,7 +697,7 @@ abstract contract VaultManager is BaseManager {
     function _validateOperatorVault(address operator, address vault) internal view {
         address delegator = IVault(vault).delegator();
         if (
-            delegator == address(0) || IEntity(delegator).TYPE() != OPERATOR_SPECIFIC_DELEGATOR_TYPE
+            IEntity(delegator).TYPE() != OPERATOR_SPECIFIC_DELEGATOR_TYPE
                 || IOperatorSpecificDelegator(delegator).operator() != operator
         ) {
             revert NotOperatorSpecificVault();
