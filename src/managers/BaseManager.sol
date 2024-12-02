@@ -5,8 +5,8 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 abstract contract BaseManager is Initializable {
-    uint64 public constant INSTANT_SLASHER_TYPE = 0; // Constant representing the instant slasher type
-    uint64 public constant VETO_SLASHER_TYPE = 1; // Constant representing the veto slasher type
+    uint64 internal constant INSTANT_SLASHER_TYPE = 0; // Constant representing the instant slasher type
+    uint64 internal constant VETO_SLASHER_TYPE = 1; // Constant representing the veto slasher type
 
     /// @custom:storage-location erc7201:symbiotic.storage.BaseManager
     struct BaseManagerStorage {

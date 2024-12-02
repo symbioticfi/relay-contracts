@@ -9,6 +9,7 @@ import {IVetoSlasher} from "@symbiotic/interfaces/slasher/IVetoSlasher.sol";
 import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
 import {ISlasher} from "@symbiotic/interfaces/slasher/ISlasher.sol";
 import {IVetoSlasher} from "@symbiotic/interfaces/slasher/IVetoSlasher.sol";
+import {IOperatorSpecificDelegator} from "@symbiotic/interfaces/delegator/IOperatorSpecificDelegator.sol";
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
@@ -38,6 +39,7 @@ abstract contract VaultManager is BaseManager {
     error UnknownSlasherType();
     error NonVetoSlasher();
     error TooOldTimestampSlash();
+    error NotOperatorSpecificVault();
 
     /// @custom:storage-location erc7201:symbiotic.storage.VaultManager
     struct VaultManagerStorage {
@@ -56,6 +58,8 @@ abstract contract VaultManager is BaseManager {
             $.slot := VaultManagerStorageLocation
         }
     }
+
+    uint64 internal constant OPERATOR_SPECIFIC_DELEGATOR_TYPE = 2;
 
     /**
      * @dev Struct containing information about a slash response
@@ -521,6 +525,7 @@ abstract contract VaultManager is BaseManager {
     function _registerOperatorVault(address operator, address vault) internal {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         _validateVault(vault);
+        _validateOperatorVault(vault, operator);
         if ($._sharedVaults.contains(vault)) {
             revert VaultAlreadyRegistred();
         }
@@ -687,6 +692,16 @@ abstract contract VaultManager is BaseManager {
 
         if (vaultEpoch < SLASHING_WINDOW()) {
             revert VaultEpochTooShort();
+        }
+    }
+
+    function _validateOperatorVault(address operator, address vault) internal view {
+        address delegator = IVault(vault).delegator();
+        if (
+            delegator == address(0) || IEntity(delegator).TYPE() != OPERATOR_SPECIFIC_DELEGATOR_TYPE
+                || IOperatorSpecificDelegator(delegator).operator() != operator
+        ) {
+            revert NotOperatorSpecificVault();
         }
     }
 }
