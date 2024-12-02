@@ -493,9 +493,7 @@ abstract contract VaultManager is BaseManager {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         _validateVault(vault);
         _validateOperatorVault(operator, vault);
-        if ($._sharedVaults.contains(vault)) {
-            revert VaultAlreadyRegistered();
-        }
+
         $._operatorVaults[operator].register(Time.timestamp(), vault);
         $._vaultOperator.set(vault, operator);
     }
@@ -646,7 +644,7 @@ abstract contract VaultManager is BaseManager {
             revert VaultNotInitialized();
         }
 
-        if ($._vaultOperator.contains(vault)) {
+        if ($._vaultOperator.contains(vault) || $._sharedVaults.contains(vault)) {
             revert VaultAlreadyRegistered();
         }
 
