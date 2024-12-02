@@ -525,7 +525,7 @@ abstract contract VaultManager is BaseManager {
     function _registerOperatorVault(address operator, address vault) internal {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         _validateVault(vault);
-        _validateOperatorVault(vault, operator);
+        _validateOperatorVault(operator, vault);
         if ($._sharedVaults.contains(vault)) {
             revert VaultAlreadyRegistred();
         }
