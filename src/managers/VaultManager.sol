@@ -37,6 +37,7 @@ abstract contract VaultManager is BaseManager {
     error InactiveVaultSlash();
     error UnknownSlasherType();
     error NonVetoSlasher();
+    error NoSlasher();
     error TooOldTimestampSlash();
     error NotOperatorSpecificVault();
 
@@ -594,6 +595,10 @@ abstract contract VaultManager is BaseManager {
         }
 
         address slasher = IVault(vault).slasher();
+        if (slasher == address(0)) {
+            revert NoSlasher();
+        }
+
         uint64 slasherType = IEntity(slasher).TYPE();
         resp.vault = vault;
         resp.slasherType = slasherType;
