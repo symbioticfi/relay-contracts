@@ -163,6 +163,16 @@ abstract contract VaultManager is BaseManager {
     }
 
     /**
+     * @notice Gets all shared vaults that were active at a specific timestamp
+     * @param timestamp The timestamp to check
+     * @return address[] Array of shared vault addresses that were active at the timestamp
+     */
+    function activeSharedVaultsAt(uint48 timestamp) public view returns (address[] memory) {
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        return $._sharedVaults.getActive(timestamp);
+    }
+
+    /**
      * @notice Gets the number of vaults associated with an operator
      * @param operator The operator address to query
      * @return uint256 The count of vaults for the operator
@@ -321,8 +331,7 @@ abstract contract VaultManager is BaseManager {
      */
     function getOperatorStake(address operator, address vault, uint96 subnetwork) public view returns (uint256) {
         uint48 timestamp = getCaptureTimestamp();
-        bytes32 subnetworkId = NETWORK().subnetwork(subnetwork);
-        return IBaseDelegator(IVault(vault).delegator()).stakeAt(subnetworkId, operator, timestamp, "");
+        return getOperatorStakeAt(operator, vault, subnetwork, timestamp);
     }
 
     /**
@@ -351,8 +360,7 @@ abstract contract VaultManager is BaseManager {
      * @return uint256 The power amount
      */
     function getOperatorPower(address operator, address vault, uint96 subnetwork) public view returns (uint256) {
-        uint256 stake = getOperatorStake(operator, vault, subnetwork);
-        return stakeToPower(vault, stake);
+        return getOperatorPowerAt(operator, vault, subnetwork, getCaptureTimestamp());
     }
 
     /**
@@ -381,17 +389,7 @@ abstract contract VaultManager is BaseManager {
     function getOperatorPower(
         address operator
     ) public view virtual returns (uint256 power) {
-        address[] memory vaults = activeVaults(operator);
-        uint160[] memory subnetworks = activeSubnetworks();
-
-        for (uint256 i; i < vaults.length; ++i) {
-            address vault = vaults[i];
-            for (uint256 j; j < subnetworks.length; ++j) {
-                power += getOperatorPower(operator, vault, uint96(subnetworks[j]));
-            }
-        }
-
-        return power;
+        return getOperatorPowerAt(operator, getCaptureTimestamp());
     }
 
     /**
