@@ -32,7 +32,7 @@ abstract contract VaultManager is BaseManager {
     error NotVault();
     error NotOperatorVault();
     error VaultNotInitialized();
-    error VaultAlreadyRegistred();
+    error VaultAlreadyRegistered();
     error VaultEpochTooShort();
     error InactiveVaultSlash();
     error UnknownSlasherType();
@@ -422,8 +422,7 @@ abstract contract VaultManager is BaseManager {
         address[] memory operators
     ) internal view returns (uint256 power) {
         for (uint256 i; i < operators.length; ++i) {
-            uint256 operatorStake = getOperatorPower(operators[i]);
-            power += operatorStake;
+            power += getOperatorPower(operators[i]);
         }
 
         return power;
@@ -495,7 +494,7 @@ abstract contract VaultManager is BaseManager {
         _validateVault(vault);
         _validateOperatorVault(operator, vault);
         if ($._sharedVaults.contains(vault)) {
-            revert VaultAlreadyRegistred();
+            revert VaultAlreadyRegistered();
         }
         $._operatorVaults[operator].register(Time.timestamp(), vault);
         $._vaultOperator.set(vault, operator);
@@ -648,7 +647,7 @@ abstract contract VaultManager is BaseManager {
         }
 
         if ($._vaultOperator.contains(vault)) {
-            revert VaultAlreadyRegistred();
+            revert VaultAlreadyRegistered();
         }
 
         uint48 vaultEpoch = IVault(vault).epochDuration();
