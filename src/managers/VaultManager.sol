@@ -329,7 +329,7 @@ abstract contract VaultManager is BaseManager {
      * @param subnetwork The subnetwork identifier
      * @return uint256 The stake amount
      */
-    function getOperatorStake(address operator, address vault, uint96 subnetwork) public view returns (uint256) {
+    function getOperatorStake(address operator, address vault, uint96 subnetwork) private view returns (uint256) {
         uint48 timestamp = getCaptureTimestamp();
         return getOperatorStakeAt(operator, vault, subnetwork, timestamp);
     }
@@ -347,7 +347,7 @@ abstract contract VaultManager is BaseManager {
         address vault,
         uint96 subnetwork,
         uint48 timestamp
-    ) public view returns (uint256) {
+    ) private view returns (uint256) {
         bytes32 subnetworkId = NETWORK().subnetwork(subnetwork);
         return IBaseDelegator(IVault(vault).delegator()).stakeAt(subnetworkId, operator, timestamp, "");
     }
