@@ -323,18 +323,6 @@ abstract contract VaultManager is BaseManager {
     }
 
     /**
-     * @notice Gets the stake amount for an operator in a vault and subnetwork
-     * @param operator The operator address
-     * @param vault The vault address
-     * @param subnetwork The subnetwork identifier
-     * @return uint256 The stake amount
-     */
-    function getOperatorStake(address operator, address vault, uint96 subnetwork) private view returns (uint256) {
-        uint48 timestamp = getCaptureTimestamp();
-        return getOperatorStakeAt(operator, vault, subnetwork, timestamp);
-    }
-
-    /**
      * @notice Gets the stake amount for an operator in a vault and subnetwork at a specific timestamp
      * @param operator The operator address
      * @param vault The vault address
