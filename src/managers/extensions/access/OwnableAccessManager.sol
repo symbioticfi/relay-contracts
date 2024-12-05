@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {BaseMiddleware} from "../../BaseMiddleware.sol";
+import {AccessManager} from "../../base/AccessManager.sol";
 
 /**
  * @title OwnableAccessManager
  * @notice A middleware extension that restricts access to a single owner address
- * @dev Implements BaseMiddleware with owner-based access control
+ * @dev Implements AccessManager with owner-based access control
  */
-abstract contract OwnableAccessManager is BaseMiddleware {
+abstract contract OwnableAccessManager is AccessManager {
     uint64 public constant OwnableAccessManager_VERSION = 1;
 
     /**
@@ -34,6 +34,16 @@ abstract contract OwnableAccessManager is BaseMiddleware {
         }
     }
 
+    /**
+     * @notice Initializes the contract with an owner address
+     * @param owner_ The address to set as the owner
+    */
+    function __OwnableAccessManager_init(
+        address owner_
+    ) internal onlyInitializing {
+        _setOwner(owner_);
+    }
+
     function _setOwner(
         address owner_
     ) private {
@@ -49,16 +59,6 @@ abstract contract OwnableAccessManager is BaseMiddleware {
      */
     function owner() public view returns (address) {
         return _owner();
-    }
-
-    /**
-     * @notice Initializes the contract with an owner address
-     * @param owner_ The address to set as the owner
-     */
-    function __OwnableAccessManaged_init(
-        address owner_
-    ) internal onlyInitializing {
-        _setOwner(owner_);
     }
 
     /**

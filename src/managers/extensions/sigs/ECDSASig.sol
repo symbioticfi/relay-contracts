@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {BaseSig} from "./BaseSig.sol";
+import {SigManager} from "../../base/SigManager.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 /**
  * @title ECDSASig
  * @notice Contract for verifying ECDSA signatures against operator keys
- * @dev Implements BaseSig interface using OpenZeppelin's ECDSA library
+ * @dev Implements SigManager interface using OpenZeppelin's ECDSA library
  */
-abstract contract ECDSASig is BaseSig {
+abstract contract ECDSASig is SigManager {
     uint64 public constant ECDSASig_VERSION = 1;
 
     using ECDSA for bytes32;
@@ -26,7 +26,7 @@ abstract contract ECDSASig is BaseSig {
         address operator,
         bytes memory key_,
         bytes memory signature
-    ) internal pure override returns (bool) {
+    ) public pure override returns (bool) {
         bytes32 key = abi.decode(key_, (bytes32));
         bytes32 hash = keccak256(abi.encodePacked(operator, key));
         address signer = recover(hash, signature);
@@ -41,7 +41,7 @@ abstract contract ECDSASig is BaseSig {
      * @return The address that created the signature
      * @dev Wrapper around OpenZeppelin's ECDSA.recover
      */
-    function recover(bytes32 hash, bytes memory signature) internal pure returns (address) {
+    function recover(bytes32 hash, bytes memory signature) public pure returns (address) {
         return hash.recover(signature);
     }
 }

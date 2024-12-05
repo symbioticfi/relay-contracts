@@ -4,12 +4,11 @@ pragma solidity ^0.8.25;
 import {IRegistry} from "@symbiotic/interfaces/common/IRegistry.sol";
 import {IOptInService} from "@symbiotic/interfaces/service/IOptInService.sol";
 
-import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {BaseManager} from "./BaseManager.sol";
-import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
+import {PauseableEnumerableSet} from "../../libraries/PauseableEnumerableSet.sol";
 
 abstract contract OperatorManager is BaseManager {
     using PauseableEnumerableSet for PauseableEnumerableSet.AddressSet;
@@ -33,33 +32,10 @@ abstract contract OperatorManager is BaseManager {
     }
 
     /**
-     * @notice Returns the total number of registered operators, including both active and inactive
-     * @return The number of registered operators
-     */
-    function operatorsLength() public view returns (uint256) {
-        OperatorManagerStorage storage $ = _getOperatorManagerStorage();
-        return $._operators.length();
-    }
-
-    /**
-     * @notice Returns the operator and their associated enabled and disabled times at a specific position
-     * @param pos The index position in the operators array
-     * @return The operator address
-     * @return The enabled timestamp
-     * @return The disabled timestamp
-     */
-    function operatorWithTimesAt(
-        uint256 pos
-    ) public view returns (address, uint48, uint48) {
-        OperatorManagerStorage storage $ = _getOperatorManagerStorage();
-        return $._operators.at(pos);
-    }
-
-    /**
      * @notice Returns a list of active operators
      * @return Array of addresses representing the active operators
      */
-    function activeOperators() public view returns (address[] memory) {
+    function activeOperators() internal view returns (address[] memory) {
         OperatorManagerStorage storage $ = _getOperatorManagerStorage();
         return $._operators.getActive(getCaptureTimestamp());
     }
@@ -71,7 +47,7 @@ abstract contract OperatorManager is BaseManager {
      */
     function activeOperatorsAt(
         uint48 timestamp
-    ) public view returns (address[] memory) {
+    ) internal view returns (address[] memory) {
         OperatorManagerStorage storage $ = _getOperatorManagerStorage();
         return $._operators.getActive(timestamp);
     }
@@ -82,7 +58,7 @@ abstract contract OperatorManager is BaseManager {
      * @param operator The operator address to check
      * @return True if the operator was active at the timestamp, false otherwise
      */
-    function operatorWasActiveAt(uint48 timestamp, address operator) public view returns (bool) {
+    function operatorWasActiveAt(uint48 timestamp, address operator) internal view returns (bool) {
         OperatorManagerStorage storage $ = _getOperatorManagerStorage();
         return $._operators.wasActiveAt(timestamp, operator);
     }
@@ -94,7 +70,7 @@ abstract contract OperatorManager is BaseManager {
      */
     function isOperatorRegistered(
         address operator
-    ) public view returns (bool) {
+    ) internal view returns (bool) {
         OperatorManagerStorage storage $ = _getOperatorManagerStorage();
         return $._operators.contains(operator);
     }
@@ -117,7 +93,7 @@ abstract contract OperatorManager is BaseManager {
         }
 
         OperatorManagerStorage storage $ = _getOperatorManagerStorage();
-        $._operators.register(Time.timestamp(), operator);
+        $._operators.register(now(), operator);
     }
 
     /**
@@ -128,7 +104,7 @@ abstract contract OperatorManager is BaseManager {
         address operator
     ) internal {
         OperatorManagerStorage storage $ = _getOperatorManagerStorage();
-        $._operators.pause(Time.timestamp(), operator);
+        $._operators.pause(now(), operator);
     }
 
     /**
@@ -139,7 +115,7 @@ abstract contract OperatorManager is BaseManager {
         address operator
     ) internal {
         OperatorManagerStorage storage $ = _getOperatorManagerStorage();
-        $._operators.unpause(Time.timestamp(), SLASHING_WINDOW(), operator);
+        $._operators.unpause(now(), SLASHING_WINDOW(), operator);
     }
 
     /**
@@ -150,6 +126,6 @@ abstract contract OperatorManager is BaseManager {
         address operator
     ) internal {
         OperatorManagerStorage storage $ = _getOperatorManagerStorage();
-        $._operators.unregister(Time.timestamp(), SLASHING_WINDOW(), operator);
+        $._operators.unregister(now(), SLASHING_WINDOW(), operator);
     }
 }

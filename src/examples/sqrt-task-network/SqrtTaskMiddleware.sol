@@ -13,15 +13,16 @@ import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/Signa
 import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SharedVaults} from "../../middleware/extensions/SharedVaults.sol";
 import {Operators} from "../../middleware/extensions/operators/Operators.sol";
-import {OwnableAccessManager} from "../../middleware/extensions/access-managers/OwnableAccessManager.sol";
-import {NoKeyStorage} from "../../middleware/extensions/key-storages/NoKeyStorage.sol";
-import {TimestampCapture} from "../../middleware/extensions/capture-timestamps/TimestampCapture.sol";
-import {EqualStakePower} from "../../middleware/extensions/stake-powers/EqualStakePower.sol";
+
+import {OwnableAccessManager} from "../../managers/extensions/access/OwnableAccessManager.sol";
+import {NoKeyManager} from "../../managers/extensions/keys/NoKeyManager.sol";
+import {TimestampCapture} from "../../managers/extensions/capture-timestamps/TimestampCapture.sol";
+import {EqualStakePower} from "../../managers/extensions/stake-powers/EqualStakePower.sol";
 
 contract SqrtTaskMiddleware is
     SharedVaults,
     Operators,
-    NoKeyStorage,
+    NoKeyManager,
     EIP712,
     OwnableAccessManager,
     TimestampCapture,
@@ -66,9 +67,9 @@ contract SqrtTaskMiddleware is
         address operatorRegistry,
         address operatorNetOptin,
         address owner
-    ) public initializer {
-        super.initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
-        __OwnableAccessManaged_init(owner);
+    ) internal initializer {
+        __BaseManager_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
+        __OwnableAccessManager_init(owner);
     }
 
     function createTask(uint256 value, address operator) external returns (uint256 taskIndex) {

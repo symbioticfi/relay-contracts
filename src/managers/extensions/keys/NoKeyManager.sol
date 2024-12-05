@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {BaseMiddleware} from "../../BaseMiddleware.sol";
+import {KeyManager} from "../../base/KeyManager.sol";
 
 /**
- * @title NoKeyStorage
+ * @title NoKeyManager
  * @notice A middleware extension that provides no key storage functionality
- * @dev Implements BaseMiddleware and always reverts on key operations
+ * @dev Implements KeyManager and always reverts on key operations
  */
-abstract contract NoKeyStorage is BaseMiddleware {
-    uint64 public constant NoKeyStorage_VERSION = 1;
+abstract contract NoKeyManager is KeyManager {
+    uint64 public constant NoKeyManager_VERSION = 1;
 
-    error KeyStorageDisabled();
+    error KeyManagerDisabled();
 
     /**
      * @notice Gets the operator address associated with a key
@@ -21,7 +21,7 @@ abstract contract NoKeyStorage is BaseMiddleware {
     function operatorByKey(
         bytes memory key
     ) public pure override returns (address) {
-        revert KeyStorageDisabled();
+        revert KeyManagerDisabled();
     }
 
     /**
@@ -32,7 +32,7 @@ abstract contract NoKeyStorage is BaseMiddleware {
     function operatorKey(
         address operator
     ) public pure override returns (bytes memory) {
-        revert KeyStorageDisabled();
+        revert KeyManagerDisabled();
     }
 
     /**
@@ -42,7 +42,7 @@ abstract contract NoKeyStorage is BaseMiddleware {
      * @return Whether key was active (always reverts)
      */
     function keyWasActiveAt(uint48 timestamp, bytes memory key) public pure override returns (bool) {
-        revert KeyStorageDisabled();
+        revert KeyManagerDisabled();
     }
 
     /**
@@ -51,6 +51,6 @@ abstract contract NoKeyStorage is BaseMiddleware {
      * @param key The new key (unused)
      */
     function _updateKey(address operator, bytes memory key) internal virtual override {
-        revert KeyStorageDisabled();
+        revert KeyManagerDisabled();
     }
 }
