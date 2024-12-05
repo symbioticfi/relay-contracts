@@ -40,7 +40,7 @@ abstract contract BaseManager is CaptureTimestampManager {
         address vaultRegistry,
         address operatorRegistry,
         address operatorNetOptIn
-    ) internal onlyInitializing() {
+    ) internal onlyInitializing {
         BaseManagerStorage storage $ = _getBaseManagerStorage();
         $._network = network;
         $._slashingWindow = slashingWindow;
@@ -49,27 +49,27 @@ abstract contract BaseManager is CaptureTimestampManager {
         $._operatorNetOptin = operatorNetOptIn;
     }
 
-    function NETWORK() internal view returns (address) {
+    function _NETWORK() internal view returns (address) {
         BaseManagerStorage storage $ = _getBaseManagerStorage();
         return $._network;
     }
 
-    function SLASHING_WINDOW() internal view returns (uint48) {
+    function _SLASHING_WINDOW() internal view returns (uint48) {
         BaseManagerStorage storage $ = _getBaseManagerStorage();
         return $._slashingWindow;
     }
 
-    function VAULT_REGISTRY() internal view returns (address) {
+    function _VAULT_REGISTRY() internal view returns (address) {
         BaseManagerStorage storage $ = _getBaseManagerStorage();
         return $._vaultRegistry;
     }
 
-    function OPERATOR_REGISTRY() internal view returns (address) {
+    function _OPERATOR_REGISTRY() internal view returns (address) {
         BaseManagerStorage storage $ = _getBaseManagerStorage();
         return $._operatorRegistry;
     }
 
-    function OPERATOR_NET_OPTIN() internal view returns (address) {
+    function _OPERATOR_NET_OPTIN() internal view returns (address) {
         BaseManagerStorage storage $ = _getBaseManagerStorage();
         return $._operatorNetOptin;
     }

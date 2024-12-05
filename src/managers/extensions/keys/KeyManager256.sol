@@ -104,17 +104,17 @@ abstract contract KeyManager256 is KeyManager {
         if (s.keys[operator].length() > 0) {
             // try to remove disabled keys
             bytes32 prevKey = s.keys[operator].array[0].value;
-            if (s.keys[operator].checkUnregister(now(), SLASHING_WINDOW(), prevKey)) {
-                s.keys[operator].unregister(now(), SLASHING_WINDOW(), prevKey);
+            if (s.keys[operator].checkUnregister(_now(), _SLASHING_WINDOW(), prevKey)) {
+                s.keys[operator].unregister(_now(), _SLASHING_WINDOW(), prevKey);
                 delete s.keyToOperator[prevKey];
-            } else if (s.keys[operator].wasActiveAt(now(), prevKey)) {
-                s.keys[operator].pause(now(), prevKey);
+            } else if (s.keys[operator].wasActiveAt(_now(), prevKey)) {
+                s.keys[operator].pause(_now(), prevKey);
             }
         }
 
         if (key != ZERO_BYTES32) {
             // register the new key
-            s.keys[operator].register(now(), key);
+            s.keys[operator].register(_now(), key);
             s.keyToOperator[key] = operator;
         }
     }

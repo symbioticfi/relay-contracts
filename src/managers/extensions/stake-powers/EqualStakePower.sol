@@ -15,7 +15,7 @@ abstract contract EqualStakePower is StakePowerManager {
      * @param stake The stake amount
      * @return power The calculated voting power (equal to stake)
      */
-    function stakeToPower(address vault, uint256 stake) internal pure override returns (uint256 power) {
+    function stakeToPower(address vault, uint256 stake) public pure override returns (uint256 power) {
         return stake;
     }
 }

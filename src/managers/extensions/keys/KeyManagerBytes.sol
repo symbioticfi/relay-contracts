@@ -101,17 +101,17 @@ abstract contract KeyManagerBytes is KeyManager {
         if ($._keys[operator].length() > 0) {
             // try to remove disabled keys
             bytes memory prevKey = $._keys[operator].array[0].value;
-            if ($._keys[operator].checkUnregister(now(), SLASHING_WINDOW(), prevKey)) {
-                $._keys[operator].unregister(now(), SLASHING_WINDOW(), prevKey);
+            if ($._keys[operator].checkUnregister(_now(), _SLASHING_WINDOW(), prevKey)) {
+                $._keys[operator].unregister(_now(), _SLASHING_WINDOW(), prevKey);
                 delete $._keyToOperator[prevKey];
-            } else if ($._keys[operator].wasActiveAt(now(), prevKey)) {
-                $._keys[operator].pause(now(), prevKey);
+            } else if ($._keys[operator].wasActiveAt(_now(), prevKey)) {
+                $._keys[operator].pause(_now(), prevKey);
             }
         }
 
         if (keyHash != ZERO_BYTES_HASH) {
             // register the new key
-            $._keys[operator].register(now(), key);
+            $._keys[operator].register(_now(), key);
             $._keyToOperator[key] = operator;
         }
     }

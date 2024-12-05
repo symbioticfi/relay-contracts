@@ -37,7 +37,7 @@ abstract contract OwnableAccessManager is AccessManager {
     /**
      * @notice Initializes the contract with an owner address
      * @param owner_ The address to set as the owner
-    */
+     */
     function __OwnableAccessManager_init(
         address owner_
     ) internal onlyInitializing {
