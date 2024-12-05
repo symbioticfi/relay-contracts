@@ -85,7 +85,7 @@ contract SimplePosMiddleware is
      * @return The total power amount.
      */
     function getTotalPower() public view returns (uint256) {
-        address[] memory operators = activeOperators(); // Get the list of active operators
+        address[] memory operators = _activeOperators(); // Get the list of active operators
         return _totalPower(operators); // Return the total power for the current epoch
     }
 
@@ -94,7 +94,7 @@ contract SimplePosMiddleware is
      * @return An array of ValidatorData containing the power and key of each validator.
      */
     function getValidatorSet() public view returns (ValidatorData[] memory validatorSet) {
-        address[] memory operators = activeOperators(); // Get the list of active operators
+        address[] memory operators = _activeOperators(); // Get the list of active operators
         validatorSet = new ValidatorData[](operators.length); // Initialize the validator set
         uint256 len = 0; // Length counter
 
@@ -106,7 +106,7 @@ contract SimplePosMiddleware is
                 continue; // Skip if the key is inactive
             }
 
-            uint256 power = getOperatorPower(operator); // Get the operator's power
+            uint256 power = _getOperatorPower(operator); // Get the operator's power
             validatorSet[len++] = ValidatorData(power, key); // Store the validator data
         }
 
@@ -139,9 +139,9 @@ contract SimplePosMiddleware is
 
         _checkCanSlash(epoch, key);
 
-        params.totalPower = getOperatorPowerAt(params.operator, params.epochStart);
-        params.vaults = activeVaultsAt(params.epochStart, params.operator);
-        params.subnetworks = activeSubnetworksAt(params.epochStart);
+        params.totalPower = _getOperatorPowerAt(params.epochStart, params.operator);
+        params.vaults = _activeVaultsAt(params.epochStart, params.operator);
+        params.subnetworks = _activeSubnetworksAt(params.epochStart);
 
         // Validate hints lengths upfront
         if (stakeHints.length != slashHints.length || stakeHints.length != params.vaults.length) {
@@ -155,7 +155,7 @@ contract SimplePosMiddleware is
 
             address vault = params.vaults[i];
             for (uint256 j; j < params.subnetworks.length; ++j) {
-                bytes32 subnetwork = NETWORK().subnetwork(uint96(params.subnetworks[j]));
+                bytes32 subnetwork = _NETWORK().subnetwork(uint96(params.subnetworks[j]));
                 uint256 stake = IBaseDelegator(IVault(vault).delegator()).stakeAt(
                     subnetwork, params.operator, params.epochStart, stakeHints[i][j]
                 );
@@ -182,7 +182,7 @@ contract SimplePosMiddleware is
             revert InactiveKeySlash(); // Revert if the key is inactive
         }
 
-        if (!operatorWasActiveAt(epochStart, operator)) {
+        if (!_operatorWasActiveAt(epochStart, operator)) {
             revert InactiveOperatorSlash(); // Revert if the operator wasn't active
         }
     }

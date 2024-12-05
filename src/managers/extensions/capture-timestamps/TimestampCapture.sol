@@ -8,7 +8,6 @@ import {CaptureTimestampManager} from "../../base/CaptureTimestampManager.sol";
  * @notice A middleware extension that captures timestamps by subtracting 1 second from current time
  * @dev Implements CaptureTimestampManager with a simple timestamp capture mechanism
  */
-
 abstract contract TimestampCapture is CaptureTimestampManager {
     uint64 public constant TimestampCapture_VERSION = 1;
 
@@ -16,7 +15,7 @@ abstract contract TimestampCapture is CaptureTimestampManager {
      * @notice Returns the current timestamp minus 1 second.
      * @return timestamp The current timestamp minus 1 second.
      */
-    function getCaptureTimestamp() internal view override returns (uint48 timestamp) {
-        return now() - 1;
+    function getCaptureTimestamp() public view override returns (uint48 timestamp) {
+        return _now() - 1;
     }
 }

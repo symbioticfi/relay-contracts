@@ -9,7 +9,6 @@ import {CaptureTimestampManager} from "../../base/CaptureTimestampManager.sol";
  * @dev Implements CaptureTimestampManager with epoch-based timestamp capture
  * @dev Epochs are fixed time periods starting from a base timestamp
  */
-
 abstract contract EpochCapture is CaptureTimestampManager {
     uint64 public constant EpochCapture_VERSION = 1;
 
@@ -38,7 +37,7 @@ abstract contract EpochCapture is CaptureTimestampManager {
     ) internal onlyInitializing {
         EpochCaptureStorage storage $ = _getEpochCaptureStorage();
         $.epochDuration = epochDuration;
-        $.startTimestamp = now();
+        $.startTimestamp = _now();
     }
 
     /* 
@@ -48,7 +47,7 @@ abstract contract EpochCapture is CaptureTimestampManager {
      */
     function getEpochStart(
         uint48 epoch
-    ) internal view returns (uint48) {
+    ) public view returns (uint48) {
         EpochCaptureStorage storage $ = _getEpochCaptureStorage();
         return $.startTimestamp + epoch * $.epochDuration;
     }
@@ -57,16 +56,16 @@ abstract contract EpochCapture is CaptureTimestampManager {
      * @notice Returns the current epoch.
      * @return The current epoch.
      */
-    function getCurrentEpoch() internal view returns (uint48) {
+    function getCurrentEpoch() public view returns (uint48) {
         EpochCaptureStorage storage $ = _getEpochCaptureStorage();
-        return (now() - $.startTimestamp) / $.epochDuration;
+        return (_now() - $.startTimestamp) / $.epochDuration;
     }
 
     /* 
      * @notice Returns the capture timestamp for the current epoch.
      * @return The capture timestamp.
      */
-    function getCaptureTimestamp() internal view override returns (uint48 timestamp) {
+    function getCaptureTimestamp() public view override returns (uint48 timestamp) {
         return getEpochStart(getCurrentEpoch());
     }
 }

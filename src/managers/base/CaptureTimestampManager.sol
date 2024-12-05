@@ -7,18 +7,19 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
  * @title CaptureTimestampManager
  * @notice Abstract contract for managing capture timestamps
  */
+
 abstract contract CaptureTimestampManager is Initializable {
     /**
      * @notice Returns the current capture timestamp
      * @return timestamp The current capture timestamp
      */
-    function getCaptureTimestamp() internal view virtual returns (uint48 timestamp);
+    function getCaptureTimestamp() public view virtual returns (uint48 timestamp);
 
     /**
      * @notice Returns the current timestamp
      * @return timestamp The current timestamp
      */
-    function now() internal view returns (uint48) {
+    function _now() internal view returns (uint48) {
         return Time.timestamp();
     }
 }

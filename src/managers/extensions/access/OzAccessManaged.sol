@@ -17,6 +17,7 @@ abstract contract OzAccessManaged is AccessManager, AccessManagedUpgradeable {
      * @param authority The address to set as the access manager authority
      * @dev Can only be called during initialization
      */
+
     function __OzAccessManaged_init(
         address authority
     ) internal onlyInitializing {

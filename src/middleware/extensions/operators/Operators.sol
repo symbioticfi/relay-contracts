@@ -76,7 +76,7 @@ abstract contract Operators is BaseMiddleware {
      * @param vault The address of the vault
      */
     function registerOperatorVault(address operator, address vault) public checkAccess {
-        require(isOperatorRegistered(operator), "Operator not registered");
+        require(_isOperatorRegistered(operator), "Operator not registered");
         _beforeRegisterOperatorVault(operator, vault);
         _registerOperatorVault(operator, vault);
     }
