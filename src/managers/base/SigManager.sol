@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-abstract contract BaseSig {
+import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+
+abstract contract SigManager is Initializable {
     /**
      * @notice Verifies that a signature was created by the owner of a key
      * @param operator The address of the operator that owns the key
@@ -13,5 +15,5 @@ abstract contract BaseSig {
         address operator,
         bytes memory key_,
         bytes memory signature
-    ) internal virtual returns (bool);
+    ) public virtual returns (bool);
 }

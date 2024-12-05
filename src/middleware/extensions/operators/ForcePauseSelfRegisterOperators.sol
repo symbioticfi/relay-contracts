@@ -20,7 +20,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators {
     bytes32 private constant ForcePauseSelfRegisterOperatorsStorageLocation =
         0xf3871d05fd4da42686c3c56dfd4be98b1d278da4bf1fd61b1d6e7a6e37722600;
 
-    function _getForcePauseStorage() private pure returns (ForcePauseSelfRegisterOperatorsStorage storage $) {
+    function _getForcePauseStorage() internal pure returns (ForcePauseSelfRegisterOperatorsStorage storage $) {
         bytes32 location = ForcePauseSelfRegisterOperatorsStorageLocation;
         assembly {
             $.slot := location
@@ -90,7 +90,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators {
      */
     function _beforeUnpauseOperator(
         address operator
-    ) internal virtual override {
+    ) public virtual override {
         ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
         if ($.forcePaused[operator]) revert OperatorForcePaused();
         super._beforeUnpauseOperator(operator);
@@ -102,7 +102,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators {
      */
     function _beforeUnregisterOperator(
         address operator
-    ) internal virtual override {
+    ) public virtual override {
         ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
         if ($.forcePaused[operator]) revert OperatorForcePaused();
         super._beforeUnregisterOperator(operator);
@@ -113,7 +113,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators {
      * @param operator The operator address
      * @param vault The vault address
      */
-    function _beforeUnpauseOperatorVault(address operator, address vault) internal virtual override {
+    function _beforeUnpauseOperatorVault(address operator, address vault) public virtual override {
         ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
         if ($.forcePausedVault[operator][vault]) revert OperatorVaultForcePaused();
         super._beforeUnpauseOperatorVault(operator, vault);
@@ -124,7 +124,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators {
      * @param operator The operator address
      * @param vault The vault address
      */
-    function _beforeUnregisterOperatorVault(address operator, address vault) internal virtual override {
+    function _beforeUnregisterOperatorVault(address operator, address vault) public virtual override {
         ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
         if ($.forcePausedVault[operator][vault]) revert OperatorVaultForcePaused();
         super._beforeUnregisterOperatorVault(operator, vault);

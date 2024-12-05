@@ -5,22 +5,21 @@ import {IVault} from "@symbiotic/interfaces/vault/IVault.sol";
 import {IBaseDelegator} from "@symbiotic/interfaces/delegator/IBaseDelegator.sol";
 import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
 
-import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SharedVaults} from "../../middleware/extensions/SharedVaults.sol";
 import {Operators} from "../../middleware/extensions/operators/Operators.sol";
-import {OwnableAccessManager} from "../../middleware/extensions/access-managers/OwnableAccessManager.sol";
-import {EpochCapture} from "../../middleware/extensions/capture-timestamps/EpochCapture.sol";
-import {KeyStorage256} from "../../middleware/extensions/key-storages/KeyStorage256.sol";
-import {EqualStakePower} from "../../middleware/extensions/stake-powers/EqualStakePower.sol";
+
+import {OwnableAccessManager} from "../../managers/extensions/access/OwnableAccessManager.sol";
+import {EpochCapture} from "../../managers/extensions/capture-timestamps/EpochCapture.sol";
+import {KeyManager256} from "../../managers/extensions/keys/KeyManager256.sol";
+import {EqualStakePower} from "../../managers/extensions/stake-powers/EqualStakePower.sol";
 
 contract SimplePosMiddleware is
     SharedVaults,
     Operators,
-    KeyStorage256,
+    KeyManager256,
     OwnableAccessManager,
     EpochCapture,
     EqualStakePower
@@ -75,9 +74,9 @@ contract SimplePosMiddleware is
         address operatorNetOptin,
         address owner,
         uint48 epochDuration
-    ) public initializer {
-        super.initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
-        __OwnableAccessManaged_init(owner);
+    ) internal initializer {
+        __BaseManager_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
+        __OwnableAccessManager_init(owner);
         __EpochCapture_init(epochDuration);
     }
 

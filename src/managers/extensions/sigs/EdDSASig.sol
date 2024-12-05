@@ -2,14 +2,14 @@
 pragma solidity ^0.8.25;
 
 import {EdDSA} from "../../../libraries/EdDSA.sol";
-import {BaseSig} from "./BaseSig.sol";
+import {SigManager} from "../../base/SigManager.sol";
 
 /**
  * @title EdDSASig
  * @notice Contract for verifying EdDSA signatures over Ed25519 against operator keys
- * @dev Implements BaseSig interface using EdDSA signature verification
+ * @dev Implements SigManager interface using EdDSA signature verification
  */
-abstract contract EdDSASig is BaseSig {
+abstract contract EdDSASig is SigManager {
     uint64 public constant EdDSASig_VERSION = 1;
 
     /**
@@ -25,7 +25,7 @@ abstract contract EdDSASig is BaseSig {
         address operator,
         bytes memory key_,
         bytes memory signature
-    ) internal override returns (bool) {
+    ) public override returns (bool) {
         bytes32 key = abi.decode(key_, (bytes32));
         bytes memory message = abi.encode(keccak256(abi.encodePacked(operator, key)));
         return verify(message, signature, key);
@@ -39,7 +39,7 @@ abstract contract EdDSASig is BaseSig {
      * @return True if the signature is valid, false otherwise
      * @dev Wrapper around Ed25519.verify which handles decompression and curve operations
      */
-    function verify(bytes memory message, bytes memory signature, bytes32 key) internal returns (bool) {
+    function verify(bytes memory message, bytes memory signature, bytes32 key) public returns (bool) {
         return EdDSA.verify(message, signature, key);
     }
 }

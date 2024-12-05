@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {BaseMiddleware} from "../../BaseMiddleware.sol";
+import {AccessManager} from "../../base/AccessManager.sol";
 
 /**
  * @title OzAccessControl
  * @notice A middleware extension that implements role-based access control
- * @dev Implements BaseMiddleware with role-based access control functionality
+ * @dev Implements AccessManager with role-based access control functionality
  */
-abstract contract OzAccessControl is BaseMiddleware {
+abstract contract OzAccessControl is AccessManager {
     uint64 public constant OzAccessControl_VERSION = 1;
 
     struct RoleData {
@@ -28,7 +28,7 @@ abstract contract OzAccessControl is BaseMiddleware {
     bytes32 private constant OzAccessControlStorageLocation =
         0xbe09a78a256419d2b885312b60a13e8082d8ab3c36c463fff4fbb086f1e96f00;
 
-    function _getOzAccessControlStorage() private pure returns (OzAccessControlStorage storage $) {
+    function _getOzAccessControlStorage() internal pure returns (OzAccessControlStorage storage $) {
         assembly {
             $.slot := OzAccessControlStorageLocation
         }
@@ -130,7 +130,7 @@ abstract contract OzAccessControl is BaseMiddleware {
      * @param selector The function selector
      * @param role The required role
      */
-    function _setSelectorRole(bytes4 selector, bytes32 role) internal virtual {
+    function _setSelectorRole(bytes4 selector, bytes32 role) public virtual {
         OzAccessControlStorage storage $ = _getOzAccessControlStorage();
         $._selectorRoles[selector] = role;
         emit SelectorRoleSet(selector, role);
@@ -141,7 +141,7 @@ abstract contract OzAccessControl is BaseMiddleware {
      * @param role The role to set admin for
      * @param adminRole The new admin role
      */
-    function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal virtual {
+    function _setRoleAdmin(bytes32 role, bytes32 adminRole) public virtual {
         OzAccessControlStorage storage $ = _getOzAccessControlStorage();
         bytes32 previousAdminRole = getRoleAdmin(role);
         $._roles[role].adminRole = adminRole;
@@ -149,12 +149,12 @@ abstract contract OzAccessControl is BaseMiddleware {
     }
 
     /**
-     * @notice Internal function to grant a role
+     * @notice public function to grant a role
      * @param role The role to grant
      * @param account The account to grant the role to
      * @return bool True if role was granted
      */
-    function _grantRole(bytes32 role, address account) internal virtual returns (bool) {
+    function _grantRole(bytes32 role, address account) public virtual returns (bool) {
         if (!hasRole(role, account)) {
             OzAccessControlStorage storage $ = _getOzAccessControlStorage();
             $._roles[role].hasRole[account] = true;
@@ -165,12 +165,12 @@ abstract contract OzAccessControl is BaseMiddleware {
     }
 
     /**
-     * @notice Internal function to revoke a role
+     * @notice public function to revoke a role
      * @param role The role to revoke
      * @param account The account to revoke the role from
      * @return bool True if role was revoked
      */
-    function _revokeRole(bytes32 role, address account) internal virtual returns (bool) {
+    function _revokeRole(bytes32 role, address account) public virtual returns (bool) {
         if (hasRole(role, account)) {
             OzAccessControlStorage storage $ = _getOzAccessControlStorage();
             $._roles[role].hasRole[account] = false;

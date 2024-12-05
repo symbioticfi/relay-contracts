@@ -1,18 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {BaseMiddleware} from "../../BaseMiddleware.sol";
+import {KeyManager} from "../../base/KeyManager.sol";
 import {PauseableEnumerableSet} from "../../../libraries/PauseableEnumerableSet.sol";
 
-import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
-
 /**
- * @title KeyStorageBytes
+ * @title KeyManagerBytes
  * @notice Manages storage and validation of operator keys
- * @dev Extends BaseManager to provide key management functionality
+ * @dev Extends KeyManager to provide key management functionality
  */
-abstract contract KeyStorageBytes is BaseMiddleware {
-    uint64 public constant KeyStorageBytes_VERSION = 1;
+abstract contract KeyManagerBytes is KeyManager {
+    uint64 public constant KeyManagerBytes_VERSION = 1;
 
     using PauseableEnumerableSet for PauseableEnumerableSet.BytesSet;
 
@@ -23,17 +21,17 @@ abstract contract KeyStorageBytes is BaseMiddleware {
     bytes private constant ZERO_BYTES = "";
     bytes32 private constant ZERO_BYTES_HASH = keccak256("");
 
-    struct KeyStorageBytesStorage {
+    struct KeyManagerBytesStorage {
         mapping(address => PauseableEnumerableSet.BytesSet) _keys;
         mapping(bytes => address) _keyToOperator;
     }
 
-    // keccak256(abi.encode(uint256(keccak256("symbioticfi.storage.KeyStorageBytes")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant KeyStorageBytesStorageLocation =
+    // keccak256(abi.encode(uint256(keccak256("symbioticfi.storage.KeyManagerBytes")) - 1)) & ~bytes32(uint256(0xff))
+    bytes32 private constant KeyManagerBytesStorageLocation =
         0x00c0c7c8c5c9c4c3c2c1c0c7c8c5c9c4c3c2c1c0c7c8c5c9c4c3c2c1c0c7c800;
 
-    function _getStorage() private pure returns (KeyStorageBytesStorage storage s) {
-        bytes32 location = KeyStorageBytesStorageLocation;
+    function _getKeyManagerBytesStorage() internal pure returns (KeyManagerBytesStorage storage s) {
+        bytes32 location = KeyManagerBytesStorageLocation;
         assembly {
             s.slot := location
         }
@@ -47,7 +45,7 @@ abstract contract KeyStorageBytes is BaseMiddleware {
     function operatorByKey(
         bytes memory key
     ) public view override returns (address) {
-        KeyStorageBytesStorage storage $ = _getStorage();
+        KeyManagerBytesStorage storage $ = _getKeyManagerBytesStorage();
         return $._keyToOperator[key];
     }
 
@@ -59,7 +57,7 @@ abstract contract KeyStorageBytes is BaseMiddleware {
     function operatorKey(
         address operator
     ) public view override returns (bytes memory) {
-        KeyStorageBytesStorage storage $ = _getStorage();
+        KeyManagerBytesStorage storage $ = _getKeyManagerBytesStorage();
         bytes[] memory active = $._keys[operator].getActive(getCaptureTimestamp());
         if (active.length == 0) {
             return ZERO_BYTES;
@@ -74,7 +72,7 @@ abstract contract KeyStorageBytes is BaseMiddleware {
      * @return True if the key was active at the timestamp, false otherwise
      */
     function keyWasActiveAt(uint48 timestamp, bytes memory key) public view override returns (bool) {
-        KeyStorageBytesStorage storage $ = _getStorage();
+        KeyManagerBytesStorage storage $ = _getKeyManagerBytesStorage();
         return $._keys[$._keyToOperator[key]].wasActiveAt(timestamp, key);
     }
 
@@ -87,7 +85,7 @@ abstract contract KeyStorageBytes is BaseMiddleware {
      * @custom:throws MaxDisabledKeysReached if operator has too many disabled keys
      */
     function _updateKey(address operator, bytes memory key) internal override {
-        KeyStorageBytesStorage storage $ = _getStorage();
+        KeyManagerBytesStorage storage $ = _getKeyManagerBytesStorage();
         bytes32 keyHash = keccak256(key);
 
         if ($._keyToOperator[key] != address(0)) {
@@ -103,17 +101,17 @@ abstract contract KeyStorageBytes is BaseMiddleware {
         if ($._keys[operator].length() > 0) {
             // try to remove disabled keys
             bytes memory prevKey = $._keys[operator].array[0].value;
-            if ($._keys[operator].checkUnregister(Time.timestamp(), SLASHING_WINDOW(), prevKey)) {
-                $._keys[operator].unregister(Time.timestamp(), SLASHING_WINDOW(), prevKey);
+            if ($._keys[operator].checkUnregister(now(), SLASHING_WINDOW(), prevKey)) {
+                $._keys[operator].unregister(now(), SLASHING_WINDOW(), prevKey);
                 delete $._keyToOperator[prevKey];
-            } else if ($._keys[operator].wasActiveAt(getCaptureTimestamp(), prevKey)) {
-                $._keys[operator].pause(Time.timestamp(), prevKey);
+            } else if ($._keys[operator].wasActiveAt(now(), prevKey)) {
+                $._keys[operator].pause(now(), prevKey);
             }
         }
 
         if (keyHash != ZERO_BYTES_HASH) {
             // register the new key
-            $._keys[operator].register(Time.timestamp(), key);
+            $._keys[operator].register(now(), key);
             $._keyToOperator[key] = operator;
         }
     }

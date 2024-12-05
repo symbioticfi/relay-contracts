@@ -2,16 +2,16 @@
 pragma solidity ^0.8.25;
 
 import {BaseMiddleware} from "../../BaseMiddleware.sol";
-import {BaseSig} from "../sigs/BaseSig.sol";
+import {SigManager} from "../../../managers/base/SigManager.sol";
 import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
 import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
 /**
  * @title SelfRegisterOperators
  * @notice Contract for self-registration and management of operators with signature verification
- * @dev Extends BaseMiddleware, BaseSig, and EIP712Upgradeable to provide signature-based operator management
+ * @dev Extends BaseMiddleware, SigManager, and EIP712Upgradeable to provide signature-based operator management
  */
-abstract contract SelfRegisterOperators is BaseMiddleware, BaseSig, EIP712Upgradeable {
+abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upgradeable {
     uint64 public constant SelfRegisterOperators_VERSION = 1;
 
     error InvalidSignature();
@@ -61,7 +61,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, BaseSig, EIP712Upgrad
      */
     function __SelfRegisterOperators_init(
         string memory name
-    ) internal onlyInitializing {
+    ) public onlyInitializing {
         __EIP712_init(name, "1.0");
     }
 
@@ -336,7 +336,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, BaseSig, EIP712Upgrad
      * @param key The public key to verify
      * @param signature The signature to verify
      */
-    function _verifyKey(address operator, bytes memory key, bytes memory signature) internal {
+    function _verifyKey(address operator, bytes memory key, bytes memory signature) public {
         if (key.length != 0 && !_verifyKeySignature(operator, key, signature)) {
             revert InvalidSignature();
         }
@@ -348,7 +348,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, BaseSig, EIP712Upgrad
      * @param structHash The hash of the EIP712 struct
      * @param signature The signature to verify
      */
-    function _verifyEIP712(address operator, bytes32 structHash, bytes memory signature) internal view {
+    function _verifyEIP712(address operator, bytes32 structHash, bytes memory signature) public view {
         if (!SignatureChecker.isValidSignatureNow(operator, _hashTypedDataV4(structHash), signature)) {
             revert InvalidSignature();
         }
@@ -359,7 +359,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, BaseSig, EIP712Upgrad
      * @param operator The operator address
      * @param key The new key
      */
-    function _beforeUpdateOperatorKey(address operator, bytes memory key) internal virtual {}
+    function _beforeUpdateOperatorKey(address operator, bytes memory key) public virtual {}
 
     /**
      * @notice Hook called before registering an operator
@@ -367,7 +367,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, BaseSig, EIP712Upgrad
      * @param key The operator's key
      * @param vault Optional vault address
      */
-    function _beforeRegisterOperator(address operator, bytes memory key, address vault) internal virtual {}
+    function _beforeRegisterOperator(address operator, bytes memory key, address vault) public virtual {}
 
     /**
      * @notice Hook called before unregistering an operator
@@ -375,7 +375,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, BaseSig, EIP712Upgrad
      */
     function _beforeUnregisterOperator(
         address operator
-    ) internal virtual {}
+    ) public virtual {}
 
     /**
      * @notice Hook called before pausing an operator
@@ -383,7 +383,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, BaseSig, EIP712Upgrad
      */
     function _beforePauseOperator(
         address operator
-    ) internal virtual {}
+    ) public virtual {}
 
     /**
      * @notice Hook called before unpausing an operator
@@ -391,33 +391,33 @@ abstract contract SelfRegisterOperators is BaseMiddleware, BaseSig, EIP712Upgrad
      */
     function _beforeUnpauseOperator(
         address operator
-    ) internal virtual {}
+    ) public virtual {}
 
     /**
      * @notice Hook called before registering an operator vault
      * @param operator The operator address
      * @param vault The vault address
      */
-    function _beforeRegisterOperatorVault(address operator, address vault) internal virtual {}
+    function _beforeRegisterOperatorVault(address operator, address vault) public virtual {}
 
     /**
      * @notice Hook called before unregistering an operator vault
      * @param operator The operator address
      * @param vault The vault address
      */
-    function _beforeUnregisterOperatorVault(address operator, address vault) internal virtual {}
+    function _beforeUnregisterOperatorVault(address operator, address vault) public virtual {}
 
     /**
      * @notice Hook called before pausing an operator vault
      * @param operator The operator address
      * @param vault The vault address
      */
-    function _beforePauseOperatorVault(address operator, address vault) internal virtual {}
+    function _beforePauseOperatorVault(address operator, address vault) public virtual {}
 
     /**
      * @notice Hook called before unpausing an operator vault
      * @param operator The operator address
      * @param vault The vault address
      */
-    function _beforeUnpauseOperatorVault(address operator, address vault) internal virtual {}
+    function _beforeUnpauseOperatorVault(address operator, address vault) public virtual {}
 }

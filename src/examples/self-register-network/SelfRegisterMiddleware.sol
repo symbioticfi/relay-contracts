@@ -12,16 +12,17 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SharedVaults} from "../../middleware/extensions/SharedVaults.sol";
 import {SelfRegisterOperators} from "../../middleware/extensions/operators/SelfRegisterOperators.sol";
-import {ECDSASig} from "../../middleware/extensions/sigs/ECDSASig.sol";
-import {NoAccessManager} from "../../middleware/extensions/access-managers/NoAccessManager.sol";
-import {TimestampCapture} from "../../middleware/extensions/capture-timestamps/TimestampCapture.sol";
-import {EqualStakePower} from "../../middleware/extensions/stake-powers/EqualStakePower.sol";
-import {KeyStorage256} from "../../middleware/extensions/key-storages/KeyStorage256.sol";
+
+import {ECDSASig} from "../../managers/extensions/sigs/ECDSASig.sol";
+import {NoAccessManager} from "../../managers/extensions/access/NoAccessManager.sol";
+import {TimestampCapture} from "../../managers/extensions/capture-timestamps/TimestampCapture.sol";
+import {EqualStakePower} from "../../managers/extensions/stake-powers/EqualStakePower.sol";
+import {KeyManager256} from "../../managers/extensions/keys/KeyManager256.sol";
 
 contract SelfRegisterMiddleware is
     SharedVaults,
     SelfRegisterOperators,
-    KeyStorage256,
+    KeyManager256,
     ECDSASig,
     NoAccessManager,
     TimestampCapture,
@@ -52,8 +53,8 @@ contract SelfRegisterMiddleware is
         address vaultRegistry,
         address operatorRegistry,
         address operatorNetOptIn
-    ) public override initializer {
-        super.initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn);
+    ) internal initializer {
+        __BaseManager_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn);
         __SelfRegisterOperators_init("SelfRegisterMiddleware");
     }
 }
