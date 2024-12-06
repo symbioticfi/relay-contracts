@@ -8,7 +8,9 @@ abstract contract SlashingWindowManager is Initializable {
     bytes32 private constant SlashingWindowManagerStorageLocation =
         0x52becd5b30d67421b1f63b9d90d513daf82b3973912d3edfdac9468c1743c000;
 
-    function __SlashingWindowManager_init_private(uint48 _slashingWindow) internal onlyInitializing {
+    function __SlashingWindowManager_init_private(
+        uint48 _slashingWindow
+    ) internal onlyInitializing {
         assembly {
             sstore(SlashingWindowManagerStorageLocation, _slashingWindow)
         }

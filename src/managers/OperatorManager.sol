@@ -20,7 +20,7 @@ abstract contract OperatorManager is NetworkManager, SlashingWindowManager, Capt
     /// @custom:storage-location erc7201:symbiotic.storage.OperatorManager
     struct OperatorManagerStorage {
         address _operatorRegistry; // Address of the operator registry
-        address _operatorNetOptin; // Address of the operator network opt-in service    
+        address _operatorNetOptin; // Address of the operator network opt-in service
         PauseableEnumerableSet.AddressSet _operators;
     }
 
