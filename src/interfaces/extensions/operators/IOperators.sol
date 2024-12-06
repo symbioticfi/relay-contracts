@@ -18,19 +18,25 @@ interface IOperators {
      * @notice Unregisters an operator
      * @param operator The address of the operator to unregister
      */
-    function unregisterOperator(address operator) external;
+    function unregisterOperator(
+        address operator
+    ) external;
 
     /**
      * @notice Pauses an operator
      * @param operator The address of the operator to pause
      */
-    function pauseOperator(address operator) external;
+    function pauseOperator(
+        address operator
+    ) external;
 
     /**
      * @notice Unpauses an operator
      * @param operator The address of the operator to unpause
      */
-    function unpauseOperator(address operator) external;
+    function unpauseOperator(
+        address operator
+    ) external;
 
     /**
      * @notice Updates an operator's public key

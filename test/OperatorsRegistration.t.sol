@@ -235,7 +235,9 @@ contract OperatorsRegistrationTest is POCBaseTest {
 
         // Skip epoch to activate operator
         skipEpoch();
-        assertEq(IBaseMiddlewareReader(address(middleware)).activeOperators().length, 1, "Should have 1 active operator");
+        assertEq(
+            IBaseMiddlewareReader(address(middleware)).activeOperators().length, 1, "Should have 1 active operator"
+        );
 
         // Pause operator
         middleware.pauseOperator(operator);
@@ -249,7 +251,9 @@ contract OperatorsRegistrationTest is POCBaseTest {
         // Wait for immutable period and unregister
         skipImmutablePeriod();
         middleware.unregisterOperator(operator);
-        assertEq(IBaseMiddlewareReader(address(middleware)).operatorsLength(), 0, "Should have 0 operators after unregister");
+        assertEq(
+            IBaseMiddlewareReader(address(middleware)).operatorsLength(), 0, "Should have 0 operators after unregister"
+        );
 
         // Register same operator again
         bytes memory keyNew = hex"0000000000000000000000000000000000000000000000000000000000001112";

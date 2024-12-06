@@ -15,13 +15,17 @@ interface IForcePauseSelfRegisterOperators is ISelfRegisterOperators {
      * @notice Forces an operator to be paused
      * @param operator The address of the operator to pause
      */
-    function forcePauseOperator(address operator) external;
+    function forcePauseOperator(
+        address operator
+    ) external;
 
     /**
      * @notice Forces an operator to be unpaused
      * @param operator The address of the operator to unpause
      */
-    function forceUnpauseOperator(address operator) external;
+    function forceUnpauseOperator(
+        address operator
+    ) external;
 
     /**
      * @notice Forces a specific operator-vault pair to be paused

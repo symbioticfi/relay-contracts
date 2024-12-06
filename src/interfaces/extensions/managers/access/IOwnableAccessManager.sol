@@ -29,5 +29,7 @@ interface IOwnableAccessManager {
      * @param owner_ The new owner address
      * @dev Can only be called by the current owner
      */
-    function setOwner(address owner_) external;
+    function setOwner(
+        address owner_
+    ) external;
 }

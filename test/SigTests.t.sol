@@ -90,10 +90,13 @@ contract SigTests is POCBaseTest {
         assertTrue(IBaseMiddlewareReader(address(ed25519Middleware)).isOperatorRegistered(ed25519Operator));
 
         assertEq(
-            abi.decode(IBaseMiddlewareReader(address(ed25519Middleware)).operatorKey(ed25519Operator), (bytes32)), bytes32(0)
+            abi.decode(IBaseMiddlewareReader(address(ed25519Middleware)).operatorKey(ed25519Operator), (bytes32)),
+            bytes32(0)
         );
         vm.warp(block.timestamp + 2);
-        assertEq(abi.decode(IBaseMiddlewareReader(address(ed25519Middleware)).operatorKey(ed25519Operator), (bytes32)), key);
+        assertEq(
+            abi.decode(IBaseMiddlewareReader(address(ed25519Middleware)).operatorKey(ed25519Operator), (bytes32)), key
+        );
     }
 
     function testEd25519RegisterOperatorInvalidSignature() public {
@@ -143,7 +146,9 @@ contract SigTests is POCBaseTest {
 
         assertEq(abi.decode(IBaseMiddlewareReader(address(middleware)).operatorKey(operator), (bytes32)), bytes32(0));
         vm.warp(vm.getBlockTimestamp() + 100);
-        assertEq(abi.decode(IBaseMiddlewareReader(address(middleware)).operatorKey(operator), (bytes32)), operatorPublicKey);
+        assertEq(
+            abi.decode(IBaseMiddlewareReader(address(middleware)).operatorKey(operator), (bytes32)), operatorPublicKey
+        );
     }
 
     function testSelxfRegisterOperatorInvalidSignature() public {

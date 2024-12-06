@@ -27,14 +27,18 @@ interface IOzAccessControl {
      * @param role The role to get the admin for
      * @return bytes32 The admin role
      */
-    function getRoleAdmin(bytes32 role) external view returns (bytes32);
+    function getRoleAdmin(
+        bytes32 role
+    ) external view returns (bytes32);
 
     /**
      * @notice Returns the role required for a function selector
      * @param selector The function selector
      * @return bytes32 The required role
      */
-    function getRole(bytes4 selector) external view returns (bytes32);
+    function getRole(
+        bytes4 selector
+    ) external view returns (bytes32);
 
     /**
      * @notice Grants role to account if caller has admin role

@@ -12,7 +12,9 @@ interface IEpochCapture {
      * @param epoch The epoch number
      * @return The start timestamp
      */
-    function getEpochStart(uint48 epoch) external view returns (uint48);
+    function getEpochStart(
+        uint48 epoch
+    ) external view returns (uint48);
 
     /**
      * @notice Returns the current epoch number

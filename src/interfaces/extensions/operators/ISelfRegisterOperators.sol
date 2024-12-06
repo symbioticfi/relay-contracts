@@ -13,7 +13,9 @@ interface ISelfRegisterOperators {
      * @param operator The operator address to check
      * @return The current nonce value
      */
-    function nonces(address operator) external view returns (uint256);
+    function nonces(
+        address operator
+    ) external view returns (uint256);
 
     /**
      * @notice Allows an operator to self-register with a key and optional vault
@@ -100,7 +102,9 @@ interface ISelfRegisterOperators {
      * @notice Allows an operator to register a vault association
      * @param vault The address of the vault to associate
      */
-    function registerOperatorVault(address vault) external;
+    function registerOperatorVault(
+        address vault
+    ) external;
 
     /**
      * @notice Registers a vault association with signature verification
@@ -114,7 +118,9 @@ interface ISelfRegisterOperators {
      * @notice Allows an operator to unregister a vault association
      * @param vault The address of the vault to unregister
      */
-    function unregisterOperatorVault(address vault) external;
+    function unregisterOperatorVault(
+        address vault
+    ) external;
 
     /**
      * @notice Unregisters a vault association with signature verification
@@ -128,7 +134,9 @@ interface ISelfRegisterOperators {
      * @notice Allows an operator to pause a vault association
      * @param vault The address of the vault to pause
      */
-    function pauseOperatorVault(address vault) external;
+    function pauseOperatorVault(
+        address vault
+    ) external;
 
     /**
      * @notice Pauses a vault association with signature verification
@@ -142,7 +150,9 @@ interface ISelfRegisterOperators {
      * @notice Allows an operator to unpause a vault association
      * @param vault The address of the vault to unpause
      */
-    function unpauseOperatorVault(address vault) external;
+    function unpauseOperatorVault(
+        address vault
+    ) external;
 
     /**
      * @notice Unpauses a vault association with signature verification

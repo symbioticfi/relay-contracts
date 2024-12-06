@@ -5,8 +5,7 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 
 abstract contract NetworkStorage is Initializable {
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.NetworkStorage")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant NetworkStorageLocation =
-        0x779150488f5e984d1f840ba606e388ada6c73b44f261274c3595c61a30023e00;
+    bytes32 private constant NetworkStorageLocation = 0x779150488f5e984d1f840ba606e388ada6c73b44f261274c3595c61a30023e00;
 
     /**
      * @notice Initializes the NetworkManager contract
