@@ -89,7 +89,9 @@ abstract contract VaultManager is NetworkManager, SlashingWindowManager, Capture
      * @notice Initializes the VaultManager with required parameters
      * @param vaultRegistry The address of the vault registry contract
      */
-    function __VaultManager_init_private(address vaultRegistry) internal onlyInitializing {
+    function __VaultManager_init_private(
+        address vaultRegistry
+    ) internal onlyInitializing {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         $._vaultRegistry = vaultRegistry;
     }
