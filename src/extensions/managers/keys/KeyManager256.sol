@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {KeyManager} from "../../base/KeyManager.sol";
+import {KeyManager} from "../../../managers/extendable/KeyManager.sol";
 import {PauseableEnumerableSet} from "../../../libraries/PauseableEnumerableSet.sol";
 
 /**

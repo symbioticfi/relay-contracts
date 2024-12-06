@@ -10,7 +10,7 @@ import {IBaseDelegator} from "@symbiotic/interfaces/delegator/IBaseDelegator.sol
 
 import {IBaseMiddleware} from "../src/interfaces/IBaseMiddleware.sol";
 
-import {ReadHelper} from "../src/middleware/ReadHelper.sol";
+import {BaseMiddlewareReader} from "../src/middleware/BaseMiddlewareReader.sol";
 import {SelfRegisterMiddleware} from "../src/examples/self-register-network/SelfRegisterMiddleware.sol";
 import {SelfRegisterEd25519Middleware} from "../src/examples/self-register-network/SelfRegisterEd25519Middleware.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
@@ -42,7 +42,7 @@ contract SigTests is POCBaseTest {
         string memory json = vm.readFile(ED25519_TEST_DATA);
         ed25519Operator = abi.decode(vm.parseJson(json, ".operator"), (address));
 
-        address readHelper = address(new ReadHelper());
+        address readHelper = address(new BaseMiddlewareReader());
 
         // Initialize both middlewares
         middleware = new SelfRegisterMiddleware(

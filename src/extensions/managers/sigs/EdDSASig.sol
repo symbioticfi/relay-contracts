@@ -2,7 +2,7 @@
 pragma solidity ^0.8.25;
 
 import {EdDSA} from "../../../libraries/EdDSA.sol";
-import {SigManager} from "../../base/SigManager.sol";
+import {SigManager} from "../../../managers/extendable/SigManager.sol";
 
 /**
  * @title EdDSASig

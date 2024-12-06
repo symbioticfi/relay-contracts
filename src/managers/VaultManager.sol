@@ -12,16 +12,20 @@ import {IOperatorSpecificDelegator} from "@symbiotic/interfaces/delegator/IOpera
 
 import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 
-import {BaseManager} from "./BaseManager.sol";
-import {StakePowerManager} from "./StakePowerManager.sol";
-import {PauseableEnumerableSet} from "../../libraries/PauseableEnumerableSet.sol";
+import {StakePowerManager} from "./extendable/StakePowerManager.sol";
+import {CaptureTimestampManager} from "./extendable/CaptureTimestampManager.sol";
+
+import {NetworkManager} from "./NetworkManager.sol";
+import {SlashingWindowManager} from "./SlashingWindowManager.sol";
+
+import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
 /**
  * @title VaultManager
  * @notice Abstract contract for managing vaults and their relationships with operators and subnetworks
  * @dev Extends BaseManager and provides functionality for registering, pausing, and managing vaults
  */
-abstract contract VaultManager is BaseManager, StakePowerManager {
+abstract contract VaultManager is NetworkManager, SlashingWindowManager, CaptureTimestampManager, StakePowerManager {
     using EnumerableMap for EnumerableMap.AddressToUintMap;
     using EnumerableMap for EnumerableMap.AddressToAddressMap;
     using PauseableEnumerableSet for PauseableEnumerableSet.AddressSet;
@@ -42,23 +46,12 @@ abstract contract VaultManager is BaseManager, StakePowerManager {
 
     /// @custom:storage-location erc7201:symbiotic.storage.VaultManager
     struct VaultManagerStorage {
+        address _vaultRegistry;
         PauseableEnumerableSet.Uint160Set _subnetworks;
         PauseableEnumerableSet.AddressSet _sharedVaults;
         mapping(address => PauseableEnumerableSet.AddressSet) _operatorVaults;
         EnumerableMap.AddressToAddressMap _vaultOperator;
     }
-
-    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.VaultManager")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant VaultManagerStorageLocation =
-        0x485f0695561726d087d0cb5cf546efed37ef61dfced21455f1ba7eb5e5b3db00;
-
-    function _getVaultManagerStorage() internal pure returns (VaultManagerStorage storage $) {
-        assembly {
-            $.slot := VaultManagerStorageLocation
-        }
-    }
-
-    uint64 internal constant OPERATOR_SPECIFIC_DELEGATOR_TYPE = 2;
 
     /**
      * @dev Struct containing information about a slash response
@@ -72,6 +65,42 @@ abstract contract VaultManager is BaseManager, StakePowerManager {
         uint64 slasherType;
         bytes32 subnetwork;
         uint256 response;
+    }
+
+    uint64 internal constant INSTANT_SLASHER_TYPE = 0; // Constant representing the instant slasher type
+    uint64 internal constant VETO_SLASHER_TYPE = 1; // Constant representing the veto slasher type
+    uint64 internal constant OPERATOR_SPECIFIC_DELEGATOR_TYPE = 2;
+    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.VaultManager")) - 1)) & ~bytes32(uint256(0xff))
+    bytes32 private constant VaultManagerStorageLocation =
+        0x485f0695561726d087d0cb5cf546efed37ef61dfced21455f1ba7eb5e5b3db00;
+
+    /**
+     * @notice Internal helper to access the VaultManager storage struct
+     * @dev Uses assembly to load storage location from a constant slot
+     * @return $ Storage pointer to the VaultManagerStorage struct
+     */
+    function _getVaultManagerStorage() internal pure returns (VaultManagerStorage storage $) {
+        assembly {
+            $.slot := VaultManagerStorageLocation
+        }
+    }
+
+    /**
+     * @notice Initializes the VaultManager with required parameters
+     * @param vaultRegistry The address of the vault registry contract
+     */
+    function __VaultManager_init_private(address vaultRegistry) internal onlyInitializing {
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        $._vaultRegistry = vaultRegistry;
+    }
+
+    /**
+     * @notice Gets the address of the vault registry contract
+     * @return The vault registry contract address
+     */
+    function _VAULT_REGISTRY() internal view returns (address) {
+        VaultManagerStorage storage $ = _getVaultManagerStorage();
+        return $._vaultRegistry;
     }
 
     /**

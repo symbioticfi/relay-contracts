@@ -2,31 +2,22 @@
 pragma solidity ^0.8.25;
 
 import {BaseMiddleware} from "./BaseMiddleware.sol";
-import {NoAccessManager} from "../managers/extensions/access/NoAccessManager.sol";
-import {NoKeyManager} from "../managers/extensions/keys/NoKeyManager.sol";
-import "forge-std/console.sol";
+import {NoAccessManager} from "../extensions/managers/access/NoAccessManager.sol";
+import {NoKeyManager} from "../extensions/managers/keys/NoKeyManager.sol";
 
 /**
- * @title ReadHelper
+ * @title BaseMiddlewareReader
  * @notice A helper contract for view functions that combines core manager functionality
  * @dev This contract serves as a foundation for building custom middleware by providing essential
  * management capabilities that can be extended with additional functionality.
  */
-contract ReadHelper is BaseMiddleware, NoAccessManager, NoKeyManager {
+contract BaseMiddlewareReader is BaseMiddleware, NoAccessManager, NoKeyManager {
     function getCaptureTimestamp() public view override returns (uint48 timestamp) {
-        address middleware;
-        assembly {
-            middleware := shr(96, calldataload(sub(calldatasize(), 20)))
-        }
-        return BaseMiddleware(middleware).getCaptureTimestamp();
+        return BaseMiddleware(_getMiddleware()).getCaptureTimestamp();
     }
 
     function stakeToPower(address vault, uint256 stake) public view override returns (uint256 power) {
-        address middleware;
-        assembly {
-            middleware := shr(96, calldataload(sub(calldatasize(), 20)))
-        }
-        return BaseMiddleware(middleware).stakeToPower(vault, stake);
+        return BaseMiddleware(_getMiddleware()).stakeToPower(vault, stake);
     }
 
     function NETWORK() external view returns (address) {
@@ -202,5 +193,13 @@ contract ReadHelper is BaseMiddleware, NoAccessManager, NoKeyManager {
         address[] memory operators
     ) external view returns (uint256) {
         return _totalPower(operators);
+    }
+
+    function _getMiddleware() private view returns (address) {
+        address middleware;
+        assembly {
+            middleware := shr(96, calldataload(sub(calldatasize(), 20)))
+        }
+        return middleware;
     }
 }

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {CaptureTimestampManager} from "../../base/CaptureTimestampManager.sol";
+import {CaptureTimestampManager} from "../../../managers/extendable/CaptureTimestampManager.sol";
 
 /**
  * @title EpochCapture

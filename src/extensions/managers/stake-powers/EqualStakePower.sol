@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {StakePowerManager} from "../../base/StakePowerManager.sol";
+import {StakePowerManager} from "../../../managers/extendable/StakePowerManager.sol";
 
 /**
  * @title EqualStakePower
