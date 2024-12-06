@@ -51,13 +51,14 @@ contract SqrtTaskMiddleware is
 
     constructor(
         address network,
+        uint48 slashingWindow,
         address operatorRegistry,
         address vaultRegistry,
         address operatorNetOptin,
-        uint48 slashingWindow,
+        address readHelper,
         address owner
     ) EIP712("SqrtTaskMiddleware", "1") {
-        initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, owner);
+        initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, readHelper, owner);
     }
 
     function initialize(
@@ -66,9 +67,10 @@ contract SqrtTaskMiddleware is
         address vaultRegistry,
         address operatorRegistry,
         address operatorNetOptin,
+        address readHelper,
         address owner
     ) internal initializer {
-        __BaseManager_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
+        __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, readHelper);
         __OwnableAccessManager_init(owner);
     }
 
