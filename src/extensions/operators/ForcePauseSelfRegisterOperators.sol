@@ -2,7 +2,8 @@
 pragma solidity ^0.8.25;
 
 import {SelfRegisterOperators} from "./SelfRegisterOperators.sol";
-import {IForcePauseSelfRegisterOperators} from "../../interfaces/extensions/operators/IForcePauseSelfRegisterOperators.sol";
+import {IForcePauseSelfRegisterOperators} from
+    "../../interfaces/extensions/operators/IForcePauseSelfRegisterOperators.sol";
 
 /**
  * @title ForcePauseSelfRegisterOperators

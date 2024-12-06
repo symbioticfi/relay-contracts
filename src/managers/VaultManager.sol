@@ -70,6 +70,7 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
     enum SlasherType {
         INSTANT, // Instant slasher type
         VETO // Veto slasher type
+
     }
 
     enum DelegatorType {

@@ -34,7 +34,7 @@ abstract contract OzAccessControl is AccessManager, IOzAccessControl {
             $.slot := OzAccessControlStorageLocation
         }
     }
-    
+
     /**
      * @notice Initializes the contract with a default admin
      * @param defaultAdmin The address to set as the default admin
