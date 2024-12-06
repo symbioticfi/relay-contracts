@@ -2,18 +2,18 @@
 pragma solidity ^0.8.25;
 
 import {BaseMiddleware} from "../middleware/BaseMiddleware.sol";
+import {ISubnetworks} from "../interfaces/extensions/ISubnetworks.sol";
 
 /**
  * @title Subnetworks
  * @notice Contract for managing subnetworks that can be registered and controlled
  * @dev Extends BaseMiddleware to provide access control for subnetwork management functions
  */
-abstract contract Subnetworks is BaseMiddleware {
+abstract contract Subnetworks is BaseMiddleware, ISubnetworks {
     uint64 public constant Subnetworks_VERSION = 1;
 
     /**
-     * @notice Registers a new subnetwork
-     * @param subnetwork The ID of the subnetwork to register
+     * @inheritdoc ISubnetworks
      */
     function registerSubnetwork(
         uint96 subnetwork
@@ -23,8 +23,7 @@ abstract contract Subnetworks is BaseMiddleware {
     }
 
     /**
-     * @notice Pauses a subnetwork
-     * @param subnetwork The ID of the subnetwork to pause
+     * @inheritdoc ISubnetworks
      */
     function pauseSubnetwork(
         uint96 subnetwork
@@ -34,8 +33,7 @@ abstract contract Subnetworks is BaseMiddleware {
     }
 
     /**
-     * @notice Unpauses a subnetwork
-     * @param subnetwork The ID of the subnetwork to unpause
+     * @inheritdoc ISubnetworks
      */
     function unpauseSubnetwork(
         uint96 subnetwork
@@ -45,8 +43,7 @@ abstract contract Subnetworks is BaseMiddleware {
     }
 
     /**
-     * @notice Unregisters a subnetwork
-     * @param subnetwork The ID of the subnetwork to unregister
+     * @inheritdoc ISubnetworks
      */
     function unregisterSubnetwork(
         uint96 subnetwork

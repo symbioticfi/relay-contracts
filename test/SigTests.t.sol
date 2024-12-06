@@ -8,7 +8,7 @@ import {IVault} from "@symbiotic/interfaces/vault/IVault.sol";
 import {IVaultConfigurator} from "@symbiotic/interfaces/IVaultConfigurator.sol";
 import {IBaseDelegator} from "@symbiotic/interfaces/delegator/IBaseDelegator.sol";
 
-import {IBaseMiddleware} from "../src/interfaces/IBaseMiddleware.sol";
+import {IBaseMiddlewareReader} from "../src/interfaces/IBaseMiddlewareReader.sol";
 
 import {BaseMiddlewareReader} from "../src/middleware/BaseMiddlewareReader.sol";
 import {SelfRegisterMiddleware} from "../src/examples/self-register-network/SelfRegisterMiddleware.sol";
@@ -87,13 +87,13 @@ contract SigTests is POCBaseTest {
         ed25519Middleware.registerOperator(abi.encode(key), address(vaultEd), signature);
 
         // Verify operator is registered correctly
-        assertTrue(IBaseMiddleware(address(ed25519Middleware)).isOperatorRegistered(ed25519Operator));
+        assertTrue(IBaseMiddlewareReader(address(ed25519Middleware)).isOperatorRegistered(ed25519Operator));
 
         assertEq(
-            abi.decode(IBaseMiddleware(address(ed25519Middleware)).operatorKey(ed25519Operator), (bytes32)), bytes32(0)
+            abi.decode(IBaseMiddlewareReader(address(ed25519Middleware)).operatorKey(ed25519Operator), (bytes32)), bytes32(0)
         );
         vm.warp(block.timestamp + 2);
-        assertEq(abi.decode(IBaseMiddleware(address(ed25519Middleware)).operatorKey(ed25519Operator), (bytes32)), key);
+        assertEq(abi.decode(IBaseMiddlewareReader(address(ed25519Middleware)).operatorKey(ed25519Operator), (bytes32)), key);
     }
 
     function testEd25519RegisterOperatorInvalidSignature() public {
@@ -139,11 +139,11 @@ contract SigTests is POCBaseTest {
         middleware.registerOperator(abi.encode(operatorPublicKey), address(vault), signature);
 
         // Verify operator is registered correctly
-        assertTrue(IBaseMiddleware(address(middleware)).isOperatorRegistered(operator));
+        assertTrue(IBaseMiddlewareReader(address(middleware)).isOperatorRegistered(operator));
 
-        assertEq(abi.decode(IBaseMiddleware(address(middleware)).operatorKey(operator), (bytes32)), bytes32(0));
+        assertEq(abi.decode(IBaseMiddlewareReader(address(middleware)).operatorKey(operator), (bytes32)), bytes32(0));
         vm.warp(vm.getBlockTimestamp() + 100);
-        assertEq(abi.decode(IBaseMiddleware(address(middleware)).operatorKey(operator), (bytes32)), operatorPublicKey);
+        assertEq(abi.decode(IBaseMiddlewareReader(address(middleware)).operatorKey(operator), (bytes32)), operatorPublicKey);
     }
 
     function testSelxfRegisterOperatorInvalidSignature() public {

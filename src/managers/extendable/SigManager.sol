@@ -15,5 +15,5 @@ abstract contract SigManager is Initializable {
         address operator,
         bytes memory key_,
         bytes memory signature
-    ) public virtual returns (bool);
+    ) internal virtual returns (bool);
 }

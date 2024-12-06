@@ -2,6 +2,7 @@
 pragma solidity ^0.8.25;
 
 import {CaptureTimestampManager} from "../../../managers/extendable/CaptureTimestampManager.sol";
+import {IEpochCapture} from "../../../interfaces/extensions/managers/capture-timestamps/IEpochCapture.sol";
 
 /**
  * @title EpochCapture
@@ -9,7 +10,7 @@ import {CaptureTimestampManager} from "../../../managers/extendable/CaptureTimes
  * @dev Implements CaptureTimestampManager with epoch-based timestamp capture
  * @dev Epochs are fixed time periods starting from a base timestamp
  */
-abstract contract EpochCapture is CaptureTimestampManager {
+abstract contract EpochCapture is CaptureTimestampManager, IEpochCapture {
     uint64 public constant EpochCapture_VERSION = 1;
 
     struct EpochCaptureStorage {
@@ -40,10 +41,8 @@ abstract contract EpochCapture is CaptureTimestampManager {
         $.startTimestamp = _now();
     }
 
-    /* 
-     * @notice Returns the start timestamp for a given epoch.
-     * @param epoch The epoch number.
-     * @return The start timestamp.
+    /**
+     * @inheritdoc IEpochCapture
      */
     function getEpochStart(
         uint48 epoch
@@ -52,9 +51,8 @@ abstract contract EpochCapture is CaptureTimestampManager {
         return $.startTimestamp + epoch * $.epochDuration;
     }
 
-    /* 
-     * @notice Returns the current epoch.
-     * @return The current epoch.
+    /**
+     * @inheritdoc IEpochCapture
      */
     function getCurrentEpoch() public view returns (uint48) {
         EpochCaptureStorage storage $ = _getEpochCaptureStorage();

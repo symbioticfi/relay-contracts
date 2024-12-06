@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {SlashingWindowManager} from "../SlashingWindowManager.sol";
+import {SlashingWindowStorage} from "../storages/SlashingWindowStorage.sol";
 import {CaptureTimestampManager} from "./CaptureTimestampManager.sol";
 
 /**
  * @title KeyManager
  * @notice Abstract contract for managing keys
  */
-abstract contract KeyManager is SlashingWindowManager, CaptureTimestampManager {
+abstract contract KeyManager is SlashingWindowStorage, CaptureTimestampManager {
     /**
      * @notice Updates the key associated with an operator
      * @param operator The address of the operator

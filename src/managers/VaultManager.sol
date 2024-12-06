@@ -15,8 +15,8 @@ import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap
 import {StakePowerManager} from "./extendable/StakePowerManager.sol";
 import {CaptureTimestampManager} from "./extendable/CaptureTimestampManager.sol";
 
-import {NetworkManager} from "./NetworkManager.sol";
-import {SlashingWindowManager} from "./SlashingWindowManager.sol";
+import {NetworkStorage} from "./storages/NetworkStorage.sol";
+import {SlashingWindowStorage} from "./storages/SlashingWindowStorage.sol";
 
 import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
@@ -25,7 +25,7 @@ import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
  * @notice Abstract contract for managing vaults and their relationships with operators and subnetworks
  * @dev Extends BaseManager and provides functionality for registering, pausing, and managing vaults
  */
-abstract contract VaultManager is NetworkManager, SlashingWindowManager, CaptureTimestampManager, StakePowerManager {
+abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, CaptureTimestampManager, StakePowerManager {
     using EnumerableMap for EnumerableMap.AddressToUintMap;
     using EnumerableMap for EnumerableMap.AddressToAddressMap;
     using PauseableEnumerableSet for PauseableEnumerableSet.AddressSet;
@@ -67,9 +67,17 @@ abstract contract VaultManager is NetworkManager, SlashingWindowManager, Capture
         uint256 response;
     }
 
-    uint64 internal constant INSTANT_SLASHER_TYPE = 0; // Constant representing the instant slasher type
-    uint64 internal constant VETO_SLASHER_TYPE = 1; // Constant representing the veto slasher type
-    uint64 internal constant OPERATOR_SPECIFIC_DELEGATOR_TYPE = 2;
+    enum SlasherType {
+        INSTANT, // Instant slasher type
+        VETO // Veto slasher type
+    }
+
+    enum DelegatorType {
+        FULL_RESTAKE,
+        NETWORK_RESTAKE,
+        OPERATOR_SPECIFIC
+    }
+
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.VaultManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant VaultManagerStorageLocation =
         0x485f0695561726d087d0cb5cf546efed37ef61dfced21455f1ba7eb5e5b3db00;
@@ -631,9 +639,9 @@ abstract contract VaultManager is NetworkManager, SlashingWindowManager, Capture
         resp.vault = vault;
         resp.slasherType = slasherType;
         resp.subnetwork = subnetwork;
-        if (slasherType == INSTANT_SLASHER_TYPE) {
+        if (slasherType == uint64(SlasherType.INSTANT)) {
             resp.response = ISlasher(slasher).slash(subnetwork, operator, amount, timestamp, hints);
-        } else if (slasherType == VETO_SLASHER_TYPE) {
+        } else if (slasherType == uint64(SlasherType.VETO)) {
             resp.response = IVetoSlasher(slasher).requestSlash(subnetwork, operator, amount, timestamp, hints);
         } else {
             revert UnknownSlasherType();
@@ -654,7 +662,7 @@ abstract contract VaultManager is NetworkManager, SlashingWindowManager, Capture
     ) internal returns (uint256 slashedAmount) {
         address slasher = IVault(vault).slasher();
         uint64 slasherType = IEntity(slasher).TYPE();
-        if (slasherType != VETO_SLASHER_TYPE) {
+        if (slasherType != uint64(SlasherType.VETO)) {
             revert NonVetoSlasher();
         }
 
@@ -684,7 +692,7 @@ abstract contract VaultManager is NetworkManager, SlashingWindowManager, Capture
         uint48 vaultEpoch = IVault(vault).epochDuration();
 
         address slasher = IVault(vault).slasher();
-        if (slasher != address(0) && IEntity(slasher).TYPE() == VETO_SLASHER_TYPE) {
+        if (slasher != address(0) && IEntity(slasher).TYPE() == uint64(SlasherType.VETO)) {
             vaultEpoch -= IVetoSlasher(slasher).vetoDuration();
         }
 
@@ -696,7 +704,7 @@ abstract contract VaultManager is NetworkManager, SlashingWindowManager, Capture
     function _validateOperatorVault(address operator, address vault) internal view {
         address delegator = IVault(vault).delegator();
         if (
-            IEntity(delegator).TYPE() != OPERATOR_SPECIFIC_DELEGATOR_TYPE
+            IEntity(delegator).TYPE() != uint64(DelegatorType.OPERATOR_SPECIFIC)
                 || IOperatorSpecificDelegator(delegator).operator() != operator
         ) {
             revert NotOperatorSpecificVault();

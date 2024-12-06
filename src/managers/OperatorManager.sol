@@ -4,14 +4,14 @@ pragma solidity ^0.8.25;
 import {IRegistry} from "@symbiotic/interfaces/common/IRegistry.sol";
 import {IOptInService} from "@symbiotic/interfaces/service/IOptInService.sol";
 
-import {NetworkManager} from "./NetworkManager.sol";
-import {SlashingWindowManager} from "./SlashingWindowManager.sol";
+import {NetworkStorage} from "./storages/NetworkStorage.sol";
+import {SlashingWindowStorage} from "./storages/SlashingWindowStorage.sol";
 
 import {CaptureTimestampManager} from "./extendable/CaptureTimestampManager.sol";
 
 import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
-abstract contract OperatorManager is NetworkManager, SlashingWindowManager, CaptureTimestampManager {
+abstract contract OperatorManager is NetworkStorage, SlashingWindowStorage, CaptureTimestampManager {
     using PauseableEnumerableSet for PauseableEnumerableSet.AddressSet;
 
     error NotOperator();

@@ -5,16 +5,15 @@ import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SigManager} from "../../managers/extendable/SigManager.sol";
 import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
 import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
+import {ISelfRegisterOperators} from "../../interfaces/extensions/operators/ISelfRegisterOperators.sol";
 
 /**
  * @title SelfRegisterOperators
  * @notice Contract for self-registration and management of operators with signature verification
  * @dev Extends BaseMiddleware, SigManager, and EIP712Upgradeable to provide signature-based operator management
  */
-abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upgradeable {
+abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upgradeable, ISelfRegisterOperators {
     uint64 public constant SelfRegisterOperators_VERSION = 1;
-
-    error InvalidSignature();
 
     // EIP-712 TypeHash constants
     bytes32 private constant REGISTER_OPERATOR_TYPEHASH =
@@ -66,10 +65,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
     }
 
     /**
-     * @notice Allows an operator to self-register with a key and optional vault
-     * @param key The operator's public key
-     * @param vault Optional vault address to associate with the operator
-     * @param signature Signature proving ownership of the key
+     * @inheritdoc ISelfRegisterOperators
      */
     function registerOperator(bytes memory key, address vault, bytes memory signature) public {
         _verifyKey(msg.sender, key, signature);
@@ -84,12 +80,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
     }
 
     /**
-     * @notice Registers an operator on behalf of another address with signature verification
-     * @param operator The address of the operator to register
-     * @param key The operator's public key
-     * @param vault Optional vault address to associate
-     * @param signature EIP712 signature authorizing registration
-     * @param keySignature Signature proving ownership of the key
+     * @inheritdoc ISelfRegisterOperators
      */
     function registerOperator(
         address operator,
@@ -116,7 +107,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
     }
 
     /**
-     * @notice Allows an operator to unregister themselves
+     * @inheritdoc ISelfRegisterOperators
      */
     function unregisterOperator() public {
         _beforeUnregisterOperator(msg.sender);
@@ -124,9 +115,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
     }
 
     /**
-     * @notice Unregisters an operator with signature verification
-     * @param operator The address of the operator to unregister
-     * @param signature EIP712 signature authorizing unregistration
+     * @inheritdoc ISelfRegisterOperators
      */
     function unregisterOperator(address operator, bytes memory signature) public {
         _beforeUnregisterOperator(operator);
@@ -138,7 +127,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
     }
 
     /**
-     * @notice Allows an operator to pause themselves
+     * @inheritdoc ISelfRegisterOperators
      */
     function pauseOperator() public {
         _beforePauseOperator(msg.sender);
@@ -146,9 +135,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
     }
 
     /**
-     * @notice Pauses an operator with signature verification
-     * @param operator The address of the operator to pause
-     * @param signature EIP712 signature authorizing pause
+     * @inheritdoc ISelfRegisterOperators
      */
     function pauseOperator(address operator, bytes memory signature) public {
         _beforePauseOperator(operator);
@@ -160,7 +147,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
     }
 
     /**
-     * @notice Allows an operator to unpause themselves
+     * @inheritdoc ISelfRegisterOperators
      */
     function unpauseOperator() public {
         _beforeUnpauseOperator(msg.sender);
@@ -168,9 +155,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
     }
 
     /**
-     * @notice Unpauses an operator with signature verification
-     * @param operator The address of the operator to unpause
-     * @param signature EIP712 signature authorizing unpause
+     * @inheritdoc ISelfRegisterOperators
      */
     function unpauseOperator(address operator, bytes memory signature) public {
         _beforeUnpauseOperator(operator);
@@ -182,9 +167,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
     }
 
     /**
-     * @notice Allows an operator to update their own key
-     * @param key The new public key
-     * @param signature Signature proving ownership of the key
+     * @inheritdoc ISelfRegisterOperators
      */
     function updateOperatorKey(bytes memory key, bytes memory signature) public {
         _verifyKey(msg.sender, key, signature);
@@ -193,11 +176,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
     }
 
     /**
-     * @notice Updates an operator's key with signature verification
-     * @param operator The address of the operator
-     * @param key The new public key
-     * @param signature EIP712 signature authorizing key update
-     * @param keySignature Signature proving ownership of the new key
+     * @inheritdoc ISelfRegisterOperators
      */
     function updateOperatorKey(
         address operator,
@@ -217,8 +196,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
     }
 
     /**
-     * @notice Allows an operator to register a vault association
-     * @param vault The address of the vault to associate
+     * @inheritdoc ISelfRegisterOperators
      */
     function registerOperatorVault(
         address vault
@@ -229,10 +207,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
     }
 
     /**
-     * @notice Registers a vault association with signature verification
-     * @param operator The address of the operator
-     * @param vault The address of the vault
-     * @param signature EIP712 signature authorizing vault registration
+     * @inheritdoc ISelfRegisterOperators
      */
     function registerOperatorVault(address operator, address vault, bytes memory signature) public {
         require(_isOperatorRegistered(operator), "Operator not registered");
@@ -247,8 +222,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
     }
 
     /**
-     * @notice Allows an operator to unregister a vault association
-     * @param vault The address of the vault to unregister
+     * @inheritdoc ISelfRegisterOperators
      */
     function unregisterOperatorVault(
         address vault
@@ -258,10 +232,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
     }
 
     /**
-     * @notice Unregisters a vault association with signature verification
-     * @param operator The address of the operator
-     * @param vault The address of the vault
-     * @param signature EIP712 signature authorizing vault unregistration
+     * @inheritdoc ISelfRegisterOperators
      */
     function unregisterOperatorVault(address operator, address vault, bytes memory signature) public {
         _beforeUnregisterOperatorVault(operator, vault);
@@ -275,8 +246,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
     }
 
     /**
-     * @notice Allows an operator to pause a vault association
-     * @param vault The address of the vault to pause
+     * @inheritdoc ISelfRegisterOperators
      */
     function pauseOperatorVault(
         address vault
@@ -286,10 +256,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
     }
 
     /**
-     * @notice Pauses a vault association with signature verification
-     * @param operator The address of the operator
-     * @param vault The address of the vault
-     * @param signature EIP712 signature authorizing vault pause
+     * @inheritdoc ISelfRegisterOperators
      */
     function pauseOperatorVault(address operator, address vault, bytes memory signature) public {
         _beforePauseOperatorVault(operator, vault);
@@ -303,8 +270,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
     }
 
     /**
-     * @notice Allows an operator to unpause a vault association
-     * @param vault The address of the vault to unpause
+     * @inheritdoc ISelfRegisterOperators
      */
     function unpauseOperatorVault(
         address vault
@@ -314,10 +280,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
     }
 
     /**
-     * @notice Unpauses a vault association with signature verification
-     * @param operator The address of the operator
-     * @param vault The address of the vault
-     * @param signature EIP712 signature authorizing vault unpause
+     * @inheritdoc ISelfRegisterOperators
      */
     function unpauseOperatorVault(address operator, address vault, bytes memory signature) public {
         _beforeUnpauseOperatorVault(operator, vault);
