@@ -1,4 +1,6 @@
-# Middleware Development Guide
+# Middleware Development Guide [**!!!WIP!!!**]
+
+**Warning: The SDK is a work in progress and is currently under audits. Use with caution.**
 
 This repository provides a framework for developing middleware in a modular and extensible way. It leverages various base contracts and extensions to handle key functionalities such as operator management, access control, key storage, timestamp capturing and stake to power calculation.
 
@@ -10,7 +12,7 @@ This repository provides a framework for developing middleware in a modular and 
 
   - **Operators**: Manages operator registration and operator's vault.
   
-  - **KeyStorage**: Manages operator keys. Variants include `KeyStorage256`, `KeyStorageBytes`, and `NoKeyStorage`.
+  - **KeyManager**: Manages operator keys. Variants include `KeyManager256`, `KeyManagerBytes`, and `NoKeyManager`.
   
   - **AccessManager**: Controls access to restricted functions. Implementations include `OwnableAccessManager`, `OzAccessControl`, `OzAccessManaged`, and `NoAccessManager`.
   
@@ -86,15 +88,12 @@ Features:
 
 To develop your middleware:
 
-1. **Inherit from `BaseMiddleware`**: This provides access to core functionalities.
+1. **Choose Extensions**: Based on your requirements, include extensions for operator management, key storage, access control, and timestamp capturing.
 
-2. **Choose Extensions**: Based on your requirements, include extensions for operator management, key storage, access control, and timestamp capturing.
-
-3. **Initialize Properly**: Ensure all inherited contracts are properly initialized:
-
-   - Use the `initializer` modifier on your initialization function
+2. **Initialize Properly**: Ensure all inherited contracts are properly initialized:
+   - Write an initialization function with the `initializer` modifier
    - Call `_disableInitializers()` in the constructor for upgradeable contracts
-   - Initialize all inherited contracts in the correct order
+   - Initialize `BaseMiddleware` and extensions in the correct order
    - Pass required parameters to each contract's initialization function
    - Follow initialization order from most base to most derived contract
    - Note: If your contract is not upgradeable, initialization can be done directly in the constructor:
@@ -105,9 +104,10 @@ To develop your middleware:
          address vaultRegistry,
          address operatorRegistry,
          address operatorNetOptIn,
+         address readHelper,
          address admin
      ) {
-         initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn, admin);
+         initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn, readHelper, admin);
      }
      ```
    - Example initialization pattern:
@@ -118,39 +118,43 @@ To develop your middleware:
          address vaultRegistry,
          address operatorRegistry,
          address operatorNetOptIn,
+         address readHelper,
          address admin
      ) public initializer {
-         __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn);
+         __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn, readHelper);
          __OzAccessManaged_init(admin);
          __AdditionalExtension_init();
      }
      ```
 
-4. **Implement Required Functions**: Override functions as needed to implement your middleware's logic.
+3. **Implement Required Functions** (Optional): Override functions as needed to implement your middleware's logic. Additionally, implement your own functions to extend the middleware's capabilities.
 
 ## Example: Creating a Custom Middleware
 
 ```solidity
-contract MyCustomMiddleware is BaseMiddleware, Operators, KeyStorage256, OwnableAccessManager, TimestampCapture {
+contract MyCustomMiddleware is BaseMiddleware, Operators, KeyStorage256, OwnableAccessManager {
     uint64 public constant MyCustomMiddleware_VERSION = 1;
 
-    function initialize(
-        address network,
-        uint48 slashingWindow,
-        address vaultRegistry,
-        address operatorRegistry,
-        address operatorNetOptIn,
-        address owner
-    ) public initializer {
-        super.initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn);
-        __OwnableAccessManaged_init(owner);
+    /**
+     * @notice Override getCaptureTimestamp to provide custom timestamp logic
+     * @return timestamp The current block timestamp
+     */
+    function getCaptureTimestamp() public view override returns (uint48 timestamp) {
+        return uint48(block.timestamp);
     }
 
-    // Additional implementation...
+    /**
+     * @notice Custom function to calculate the square of a given number
+     * @param number The number to be squared
+     * @return result The square of the given number
+     */
+    function calculateSquare(uint256 number) public pure returns (uint256 result) {
+        return number * number;
+    }
 }
 ```
 
-5. **Configure OzAccessControl Roles**: When using OzAccessControl, set up roles and permissions:
+4. **Configure Access Control** (Optional): When using access control extensions, set up roles and permissions:
 
    ```solidity
    // Define role identifiers as constants
@@ -192,8 +196,9 @@ contract MyCustomMiddleware is BaseMiddleware, Operators, KeyStorage256, Ownable
     2. Setting role admins with `_setRoleAdmin(bytes32 role, bytes32 adminRole)` 
     3. Assigning roles to function selectors via `_setSelectorRole(bytes4 selector, bytes32 role)`
   - `OzAccessManaged`: Wraps OpenZeppelin's AccessManaged contract to integrate with external access control systems
+  - `OzAccessManaged`: Wraps OpenZeppelin's AccessManaged contract to integrate with external access control systems. This allows for more complex access control scenarios where permissions are managed externally, providing flexibility and scalability in managing roles and permissions.
   
-- **Key Storage**: Select a `KeyStorage` implementation that fits your key requirements. Use `KeyStorage256` for 256-bit keys, `KeyStorageBytes` for arbitrary-length keys, or `NoKeyStorage` if keys are not needed.
+- **Key Manager**: Choose a `KeyManager` implementation that suits your key management needs. Use `KeyManager256` for managing 256-bit keys, `KeyManagerBytes` for handling arbitrary-length keys, or `NoKeyManager` if key management is not required.
 
 This framework provides flexibility in building middleware by allowing you to mix and match various extensions based on your requirements. By following the modular approach and best practices outlined, you can develop robust middleware solutions that integrate seamlessly with the network.
 
