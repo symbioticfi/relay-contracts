@@ -12,7 +12,7 @@ import {IBaseMiddleware} from "../src/interfaces/IBaseMiddleware.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
-import {ReadHelper} from "../src/middleware/ReadHelper.sol";
+import {BaseMiddlewareReader} from "../src/middleware/BaseMiddlewareReader.sol";
 import "forge-std/console.sol";
 //import {Slasher} from "@symbiotic/contracts/slasher/Slasher.sol";
 //import {VetoSlasher} from "@symbiotic/contracts/slasher/VetoSlasher.sol";
@@ -39,7 +39,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
         _deposit(vault2, alice, 1000 ether);
         _deposit(vault3, alice, 1000 ether);
 
-        address readHelper = address(new ReadHelper());
+        address readHelper = address(new BaseMiddlewareReader());
 
         // Initialize middleware contract
         middleware = new SimplePosMiddleware(

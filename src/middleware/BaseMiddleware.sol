@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {VaultManager} from "../managers/base/VaultManager.sol";
-import {OperatorManager} from "../managers/base/OperatorManager.sol";
-import {AccessManager} from "../managers/base/AccessManager.sol";
-import {KeyManager} from "../managers/base/KeyManager.sol";
-import "forge-std/console.sol";
+import {VaultManager} from "../managers/VaultManager.sol";
+import {OperatorManager} from "../managers/OperatorManager.sol";
+import {AccessManager} from "../managers/extendable/AccessManager.sol";
+import {KeyManager} from "../managers/extendable/KeyManager.sol";
 
 /**
  * @title BaseMiddleware
@@ -20,9 +19,9 @@ import "forge-std/console.sol";
  * management capabilities that can be extended with additional functionality.
  */
 abstract contract BaseMiddleware is VaultManager, OperatorManager, AccessManager, KeyManager {
-    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.BaseMiddleware.readHelper")) - 1)) & ~bytes32(uint256(0xff))
+    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.BaseMiddleware")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant ReadHelperStorageLocation =
-        0x19370075337de2141d8d7be7b8e2dab6686d6a69c74729da94b114b78d743b00;
+        0xfd87879bc98f37af7578af722aecfbe5843e5ad354da2d1e70cb5157c4ec8800;
 
     function __BaseMiddleware_init(
         address network,
@@ -32,7 +31,10 @@ abstract contract BaseMiddleware is VaultManager, OperatorManager, AccessManager
         address operatorNetOptin,
         address readHelper
     ) internal onlyInitializing {
-        __BaseManager_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
+        __NetworkManager_init_private(network);
+        __SlashingWindowManager_init_private(slashingWindow);
+        __VaultManager_init_private(vaultRegistry);
+        __OperatorManager_init_private(operatorRegistry, operatorNetOptin);
         assembly {
             sstore(ReadHelperStorageLocation, readHelper)
         }

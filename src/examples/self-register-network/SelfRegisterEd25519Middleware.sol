@@ -1,23 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {IVault} from "@symbiotic/interfaces/vault/IVault.sol";
-import {IBaseDelegator} from "@symbiotic/interfaces/delegator/IBaseDelegator.sol";
-import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
-
-import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
-
 import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
-import {SharedVaults} from "../../middleware/extensions/SharedVaults.sol";
-import {SelfRegisterOperators} from "../../middleware/extensions/operators/SelfRegisterOperators.sol";
+import {SharedVaults} from "../../extensions/SharedVaults.sol";
+import {SelfRegisterOperators} from "../../extensions/operators/SelfRegisterOperators.sol";
 
-import {NoAccessManager} from "../../managers/extensions/access/NoAccessManager.sol";
-import {TimestampCapture} from "../../managers/extensions/capture-timestamps/TimestampCapture.sol";
-import {EqualStakePower} from "../../managers/extensions/stake-powers/EqualStakePower.sol";
-import {KeyManager256} from "../../managers/extensions/keys/KeyManager256.sol";
-import {EdDSASig} from "../../managers/extensions/sigs/EdDSASig.sol";
+import {NoAccessManager} from "../../extensions/managers/access/NoAccessManager.sol";
+import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
+import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
+import {KeyManager256} from "../../extensions/managers/keys/KeyManager256.sol";
+import {EdDSASig} from "../../extensions/managers/sigs/EdDSASig.sol";
 
 contract SelfRegisterEd25519Middleware is
     SharedVaults,

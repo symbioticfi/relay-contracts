@@ -8,13 +8,13 @@ import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
-import {SharedVaults} from "../../middleware/extensions/SharedVaults.sol";
-import {Operators} from "../../middleware/extensions/operators/Operators.sol";
+import {SharedVaults} from "../../extensions/SharedVaults.sol";
+import {Operators} from "../../extensions/operators/Operators.sol";
 
-import {OwnableAccessManager} from "../../managers/extensions/access/OwnableAccessManager.sol";
-import {EpochCapture} from "../../managers/extensions/capture-timestamps/EpochCapture.sol";
-import {KeyManager256} from "../../managers/extensions/keys/KeyManager256.sol";
-import {EqualStakePower} from "../../managers/extensions/stake-powers/EqualStakePower.sol";
+import {OwnableAccessManager} from "../../extensions/managers/access/OwnableAccessManager.sol";
+import {EpochCapture} from "../../extensions/managers/capture-timestamps/EpochCapture.sol";
+import {KeyManager256} from "../../extensions/managers/keys/KeyManager256.sol";
+import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
 
 contract SimplePosMiddleware is
     SharedVaults,

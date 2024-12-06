@@ -5,19 +5,18 @@ import {IVault} from "@symbiotic/interfaces/vault/IVault.sol";
 import {IBaseDelegator} from "@symbiotic/interfaces/delegator/IBaseDelegator.sol";
 import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
 
-import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
 import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
-import {SharedVaults} from "../../middleware/extensions/SharedVaults.sol";
-import {Operators} from "../../middleware/extensions/operators/Operators.sol";
+import {SharedVaults} from "../../extensions/SharedVaults.sol";
+import {Operators} from "../../extensions/operators/Operators.sol";
 
-import {OwnableAccessManager} from "../../managers/extensions/access/OwnableAccessManager.sol";
-import {NoKeyManager} from "../../managers/extensions/keys/NoKeyManager.sol";
-import {TimestampCapture} from "../../managers/extensions/capture-timestamps/TimestampCapture.sol";
-import {EqualStakePower} from "../../managers/extensions/stake-powers/EqualStakePower.sol";
+import {OwnableAccessManager} from "../../extensions/managers/access/OwnableAccessManager.sol";
+import {NoKeyManager} from "../../extensions/managers/keys/NoKeyManager.sol";
+import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
+import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
 
 contract SqrtTaskMiddleware is
     SharedVaults,

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {BaseMiddleware} from "../BaseMiddleware.sol";
+import {BaseMiddleware} from "../middleware/BaseMiddleware.sol";
 
 /**
  * @title SharedVaults

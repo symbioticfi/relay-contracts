@@ -3,7 +3,7 @@ pragma solidity ^0.8.25;
 
 import {AccessManagedUpgradeable} from "@openzeppelin/contracts-upgradeable/access/manager/AccessManagedUpgradeable.sol";
 
-import {AccessManager} from "../../base/AccessManager.sol";
+import {AccessManager} from "../../../managers/extendable/AccessManager.sol";
 
 /**
  * @title OzAccessManaged

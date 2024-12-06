@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {AccessManager} from "../../base/AccessManager.sol";
+import {AccessManager} from "../../../managers/extendable/AccessManager.sol";
 
 /**
  * @title OwnableAccessManager
@@ -23,9 +23,9 @@ abstract contract OwnableAccessManager is AccessManager {
      */
     error InvalidOwner(address owner);
 
-    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OwnableAccessManager.owner")) - 1)) & ~bytes32(uint256(0xff))
+    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OwnableAccessManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant OwnableAccessManagerStorageLocation =
-        0xeeb01dcf9eb4176c944794e8cb12d9caba4faa2514a692b173894bc3e9135d00;
+        0xcee92923a0c63eca6fc0402d78c9efde9f9f3dc73e6f9e14501bf734ed77f100;
 
     function _owner() private view returns (address owner_) {
         bytes32 location = OwnableAccessManagerStorageLocation;

@@ -4,13 +4,14 @@ pragma solidity ^0.8.25;
 import {IRegistry} from "@symbiotic/interfaces/common/IRegistry.sol";
 import {IOptInService} from "@symbiotic/interfaces/service/IOptInService.sol";
 
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+import {NetworkManager} from "./NetworkManager.sol";
+import {SlashingWindowManager} from "./SlashingWindowManager.sol";
 
-import {BaseManager} from "./BaseManager.sol";
-import {PauseableEnumerableSet} from "../../libraries/PauseableEnumerableSet.sol";
+import {CaptureTimestampManager} from "./extendable/CaptureTimestampManager.sol";
 
-abstract contract OperatorManager is BaseManager {
+import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
+
+abstract contract OperatorManager is NetworkManager, SlashingWindowManager, CaptureTimestampManager {
     using PauseableEnumerableSet for PauseableEnumerableSet.AddressSet;
 
     error NotOperator();
@@ -18,6 +19,8 @@ abstract contract OperatorManager is BaseManager {
 
     /// @custom:storage-location erc7201:symbiotic.storage.OperatorManager
     struct OperatorManagerStorage {
+        address _operatorRegistry; // Address of the operator registry
+        address _operatorNetOptin; // Address of the operator network opt-in service    
         PauseableEnumerableSet.AddressSet _operators;
     }
 
@@ -25,10 +28,46 @@ abstract contract OperatorManager is BaseManager {
     bytes32 private constant OperatorManagerStorageLocation =
         0x3b2b549db680c436ebf9aa3c8eeee850852f16da5cdb5137dbc0299ebb219e00;
 
+    /**
+     * @notice Gets the storage pointer for OperatorManager state
+     * @return $ Storage pointer to OperatorManagerStorage struct
+     */
     function _getOperatorManagerStorage() internal pure returns (OperatorManagerStorage storage $) {
         assembly {
             $.slot := OperatorManagerStorageLocation
         }
+    }
+
+    /**
+     * @notice Initializes the OperatorManager with required parameters
+     * @param operatorRegistry The address of the operator registry contract
+     * @param operatorNetOptin The address of the operator network opt-in service
+     */
+    function __OperatorManager_init_private(
+        address operatorRegistry,
+        address operatorNetOptin
+    ) internal onlyInitializing {
+        OperatorManagerStorage storage $ = _getOperatorManagerStorage();
+        $._operatorRegistry = operatorRegistry;
+        $._operatorNetOptin = operatorNetOptin;
+    }
+
+    /**
+     * @notice Gets the address of the operator registry contract
+     * @return The operator registry contract address
+     */
+    function _OPERATOR_REGISTRY() internal view returns (address) {
+        OperatorManagerStorage storage $ = _getOperatorManagerStorage();
+        return $._operatorRegistry;
+    }
+
+    /**
+     * @notice Gets the address of the operator network opt-in service contract
+     * @return The operator network opt-in service contract address
+     */
+    function _OPERATOR_NET_OPTIN() internal view returns (address) {
+        OperatorManagerStorage storage $ = _getOperatorManagerStorage();
+        return $._operatorNetOptin;
     }
 
     /**
