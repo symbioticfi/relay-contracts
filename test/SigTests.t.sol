@@ -8,6 +8,9 @@ import {IVault} from "@symbiotic/interfaces/vault/IVault.sol";
 import {IVaultConfigurator} from "@symbiotic/interfaces/IVaultConfigurator.sol";
 import {IBaseDelegator} from "@symbiotic/interfaces/delegator/IBaseDelegator.sol";
 
+import {IBaseMiddleware} from "../src/interfaces/IBaseMiddleware.sol";
+
+import {ReadHelper} from "../src/middleware/ReadHelper.sol";
 import {SelfRegisterMiddleware} from "../src/examples/self-register-network/SelfRegisterMiddleware.sol";
 import {SelfRegisterEd25519Middleware} from "../src/examples/self-register-network/SelfRegisterEd25519Middleware.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
@@ -39,21 +42,25 @@ contract SigTests is POCBaseTest {
         string memory json = vm.readFile(ED25519_TEST_DATA);
         ed25519Operator = abi.decode(vm.parseJson(json, ".operator"), (address));
 
+        address readHelper = address(new ReadHelper());
+
         // Initialize both middlewares
         middleware = new SelfRegisterMiddleware(
             address(0x123),
-            address(operatorRegistry),
+            1200, // slashing window
             address(vaultFactory),
+            address(operatorRegistry),
             address(operatorNetworkOptInService),
-            1200 // slashing window
+            readHelper
         );
 
         ed25519Middleware = new SelfRegisterEd25519Middleware(
             address(0x456),
-            address(operatorRegistry),
+            1200, // slashing window
             address(vaultFactory),
+            address(operatorRegistry),
             address(operatorNetworkOptInService),
-            1200 // slashing window
+            readHelper
         );
 
         _registerNetwork(address(0x123), address(middleware));
@@ -80,11 +87,13 @@ contract SigTests is POCBaseTest {
         ed25519Middleware.registerOperator(abi.encode(key), address(vaultEd), signature);
 
         // Verify operator is registered correctly
-        assertTrue(ed25519Middleware.isOperatorRegistered(ed25519Operator));
+        assertTrue(IBaseMiddleware(address(ed25519Middleware)).isOperatorRegistered(ed25519Operator));
 
-        assertEq(abi.decode(ed25519Middleware.operatorKey(ed25519Operator), (bytes32)), bytes32(0));
+        assertEq(
+            abi.decode(IBaseMiddleware(address(ed25519Middleware)).operatorKey(ed25519Operator), (bytes32)), bytes32(0)
+        );
         vm.warp(block.timestamp + 2);
-        assertEq(abi.decode(ed25519Middleware.operatorKey(ed25519Operator), (bytes32)), key);
+        assertEq(abi.decode(IBaseMiddleware(address(ed25519Middleware)).operatorKey(ed25519Operator), (bytes32)), key);
     }
 
     function testEd25519RegisterOperatorInvalidSignature() public {
@@ -130,11 +139,11 @@ contract SigTests is POCBaseTest {
         middleware.registerOperator(abi.encode(operatorPublicKey), address(vault), signature);
 
         // Verify operator is registered correctly
-        assertTrue(middleware.isOperatorRegistered(operator));
+        assertTrue(IBaseMiddleware(address(middleware)).isOperatorRegistered(operator));
 
-        assertEq(abi.decode(middleware.operatorKey(operator), (bytes32)), bytes32(0));
+        assertEq(abi.decode(IBaseMiddleware(address(middleware)).operatorKey(operator), (bytes32)), bytes32(0));
         vm.warp(vm.getBlockTimestamp() + 100);
-        assertEq(abi.decode(middleware.operatorKey(operator), (bytes32)), operatorPublicKey);
+        assertEq(abi.decode(IBaseMiddleware(address(middleware)).operatorKey(operator), (bytes32)), operatorPublicKey);
     }
 
     function testSelxfRegisterOperatorInvalidSignature() public {

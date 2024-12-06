@@ -90,7 +90,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators {
      */
     function _beforeUnpauseOperator(
         address operator
-    ) public virtual override {
+    ) internal virtual override {
         ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
         if ($.forcePaused[operator]) revert OperatorForcePaused();
         super._beforeUnpauseOperator(operator);
@@ -102,7 +102,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators {
      */
     function _beforeUnregisterOperator(
         address operator
-    ) public virtual override {
+    ) internal virtual override {
         ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
         if ($.forcePaused[operator]) revert OperatorForcePaused();
         super._beforeUnregisterOperator(operator);
@@ -113,7 +113,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators {
      * @param operator The operator address
      * @param vault The vault address
      */
-    function _beforeUnpauseOperatorVault(address operator, address vault) public virtual override {
+    function _beforeUnpauseOperatorVault(address operator, address vault) internal virtual override {
         ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
         if ($.forcePausedVault[operator][vault]) revert OperatorVaultForcePaused();
         super._beforeUnpauseOperatorVault(operator, vault);
@@ -124,7 +124,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators {
      * @param operator The operator address
      * @param vault The vault address
      */
-    function _beforeUnregisterOperatorVault(address operator, address vault) public virtual override {
+    function _beforeUnregisterOperatorVault(address operator, address vault) internal virtual override {
         ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
         if ($.forcePausedVault[operator][vault]) revert OperatorVaultForcePaused();
         super._beforeUnregisterOperatorVault(operator, vault);

@@ -116,7 +116,7 @@ abstract contract Operators is BaseMiddleware {
      * @param operator The operator address
      * @param key The new key
      */
-    function _beforeUpdateOperatorKey(address operator, bytes memory key) public virtual {}
+    function _beforeUpdateOperatorKey(address operator, bytes memory key) internal virtual {}
 
     /**
      * @notice Hook called before registering an operator
@@ -124,7 +124,7 @@ abstract contract Operators is BaseMiddleware {
      * @param key The operator's key
      * @param vault Optional vault address
      */
-    function _beforeRegisterOperator(address operator, bytes memory key, address vault) public virtual {}
+    function _beforeRegisterOperator(address operator, bytes memory key, address vault) internal virtual {}
 
     /**
      * @notice Hook called before unregistering an operator
@@ -132,7 +132,7 @@ abstract contract Operators is BaseMiddleware {
      */
     function _beforeUnregisterOperator(
         address operator
-    ) public virtual {}
+    ) internal virtual {}
 
     /**
      * @notice Hook called before pausing an operator
@@ -140,7 +140,7 @@ abstract contract Operators is BaseMiddleware {
      */
     function _beforePauseOperator(
         address operator
-    ) public virtual {}
+    ) internal virtual {}
 
     /**
      * @notice Hook called before unpausing an operator
@@ -148,33 +148,33 @@ abstract contract Operators is BaseMiddleware {
      */
     function _beforeUnpauseOperator(
         address operator
-    ) public virtual {}
+    ) internal virtual {}
 
     /**
      * @notice Hook called before registering an operator-vault pair
      * @param operator The operator address
      * @param vault The vault address
      */
-    function _beforeRegisterOperatorVault(address operator, address vault) public virtual {}
+    function _beforeRegisterOperatorVault(address operator, address vault) internal virtual {}
 
     /**
      * @notice Hook called before unregistering an operator-vault pair
      * @param operator The operator address
      * @param vault The vault address
      */
-    function _beforeUnregisterOperatorVault(address operator, address vault) public virtual {}
+    function _beforeUnregisterOperatorVault(address operator, address vault) internal virtual {}
 
     /**
      * @notice Hook called before pausing an operator-vault pair
      * @param operator The operator address
      * @param vault The vault address
      */
-    function _beforePauseOperatorVault(address operator, address vault) public virtual {}
+    function _beforePauseOperatorVault(address operator, address vault) internal virtual {}
 
     /**
      * @notice Hook called before unpausing an operator-vault pair
      * @param operator The operator address
      * @param vault The vault address
      */
-    function _beforeUnpauseOperatorVault(address operator, address vault) public virtual {}
+    function _beforeUnpauseOperatorVault(address operator, address vault) internal virtual {}
 }

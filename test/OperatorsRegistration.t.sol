@@ -4,12 +4,16 @@ pragma solidity ^0.8.25;
 import {POCBaseTest} from "@symbiotic-test/POCBase.t.sol";
 
 import {SimplePosMiddleware} from "../src/examples/simple-pos-network/SimplePosMiddleware.sol";
+import {IBaseMiddleware} from "../src/interfaces/IBaseMiddleware.sol";
+
 //import {IVault} from "@symbiotic/interfaces/vault/IVault.sol";
 //import {IBaseDelegator} from "@symbiotic/interfaces/delegator/IBaseDelegator.sol";
 // import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+import {ReadHelper} from "../src/middleware/ReadHelper.sol";
+import "forge-std/console.sol";
 //import {Slasher} from "@symbiotic/contracts/slasher/Slasher.sol";
 //import {VetoSlasher} from "@symbiotic/contracts/slasher/VetoSlasher.sol";
 
@@ -35,15 +39,18 @@ contract OperatorsRegistrationTest is POCBaseTest {
         _deposit(vault2, alice, 1000 ether);
         _deposit(vault3, alice, 1000 ether);
 
+        address readHelper = address(new ReadHelper());
+
         // Initialize middleware contract
         middleware = new SimplePosMiddleware(
             address(network),
-            address(operatorRegistry),
+            slashingWindow,
             address(vaultFactory),
+            address(operatorRegistry),
             address(operatorNetworkOptInService),
+            readHelper,
             owner,
-            epochDuration,
-            slashingWindow
+            epochDuration
         );
 
         _registerNetwork(network, address(middleware));
@@ -52,7 +59,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
     function testOperators() public {
         address operator = address(0x1337);
         bytes memory key = hex"0000000000000000000000000000000000000000000000000000000000000005";
-        uint256 operatorsLength = middleware.operatorsLength();
+        uint256 operatorsLength = IBaseMiddleware(address(middleware)).operatorsLength();
         assertEq(operatorsLength, 0, "Operators length should be 0");
 
         // can't register without registration
@@ -73,9 +80,9 @@ contract OperatorsRegistrationTest is POCBaseTest {
 
         middleware.registerOperator(operator, key, address(0));
 
-        (address op, uint48 s, uint48 f) = middleware.operatorWithTimesAt(0);
+        (address op, uint48 s, uint48 f) = IBaseMiddleware(address(middleware)).operatorWithTimesAt(0);
 
-        operatorsLength = middleware.operatorsLength();
+        operatorsLength = IBaseMiddleware(address(middleware)).operatorsLength();
         assertEq(operatorsLength, 1, "Operators length should be 1");
 
         // can't register twice
@@ -83,10 +90,10 @@ contract OperatorsRegistrationTest is POCBaseTest {
         middleware.registerOperator(operator, key, address(0));
 
         // activates on next epoch
-        address[] memory operators = middleware.activeOperators();
+        address[] memory operators = IBaseMiddleware(address(middleware)).activeOperators();
         assertEq(operators.length, 0, "1 Active operators length should be 0");
         skipEpoch();
-        operators = middleware.activeOperators();
+        operators = IBaseMiddleware(address(middleware)).activeOperators();
         assertEq(operators.length, 1, "2 Active operators length should be 1");
 
         // pause
@@ -97,7 +104,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
         middleware.pauseOperator(operator);
 
         // pause applies on next epoch
-        operators = middleware.activeOperators();
+        operators = IBaseMiddleware(address(middleware)).activeOperators();
         assertEq(operators.length, 1, "3 Active operators length should be 1");
 
         // can't unpause right now, minumum one epoch before immutable period passed
@@ -106,20 +113,20 @@ contract OperatorsRegistrationTest is POCBaseTest {
 
         skipImmutablePeriod();
         skipImmutablePeriod();
-        operators = middleware.activeOperators();
+        operators = IBaseMiddleware(address(middleware)).activeOperators();
         assertEq(operators.length, 0, "4 Active operators length should be 0");
 
-        (op, s, f) = middleware.operatorWithTimesAt(0);
+        (op, s, f) = IBaseMiddleware(address(middleware)).operatorWithTimesAt(0);
 
         // unpause
         middleware.unpauseOperator(operator);
-        (op, s, f) = middleware.operatorWithTimesAt(0);
+        (op, s, f) = IBaseMiddleware(address(middleware)).operatorWithTimesAt(0);
 
         // unpause applies on next epoch
-        operators = middleware.activeOperators();
+        operators = IBaseMiddleware(address(middleware)).activeOperators();
         assertEq(operators.length, 0, "5 Active operators length should be 0");
         skipEpoch();
-        operators = middleware.activeOperators();
+        operators = IBaseMiddleware(address(middleware)).activeOperators();
         assertEq(operators.length, 1, "6 Active operators length should be 1");
 
         // pause and unregister
@@ -134,7 +141,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
         skipEpoch();
         middleware.unregisterOperator(operator);
 
-        operatorsLength = middleware.operatorsLength();
+        operatorsLength = IBaseMiddleware(address(middleware)).operatorsLength();
         assertEq(operatorsLength, 0, "7 Operators length should be 0");
     }
 
@@ -163,34 +170,43 @@ contract OperatorsRegistrationTest is POCBaseTest {
         skipEpoch();
 
         // Verify all operators are active
-        address[] memory activeOps = middleware.activeOperators();
+        address[] memory activeOps = IBaseMiddleware(address(middleware)).activeOperators();
         assertEq(activeOps.length, 3, "Should have 3 active operators");
 
         // Test complex pause/unpause sequence
         // Pause operator 0
         middleware.pauseOperator(operators[0]);
         skipEpoch();
-        activeOps = middleware.activeOperators();
+        activeOps = IBaseMiddleware(address(middleware)).activeOperators();
         assertEq(activeOps.length, 2, "Should have 2 active operators after pause");
 
         // Pause operator 1
         middleware.pauseOperator(operators[1]);
         skipEpoch();
-        activeOps = middleware.activeOperators();
+        activeOps = IBaseMiddleware(address(middleware)).activeOperators();
         assertEq(activeOps.length, 1, "Should have 1 active operator after second pause");
 
         // Wait for immutable period and try to unpause operator 0
         skipImmutablePeriod();
         middleware.unpauseOperator(operators[0]);
         skipEpoch();
-        activeOps = middleware.activeOperators();
+        activeOps = IBaseMiddleware(address(middleware)).activeOperators();
         assertEq(activeOps.length, 2, "Should have 2 active operators after unpause");
 
         // Test operator was active at specific timestamps
-        uint48 currentTimestamp = middleware.getCaptureTimestamp();
-        assertTrue(middleware.operatorWasActiveAt(currentTimestamp, operators[0]), "Operator 0 should be active");
-        assertFalse(middleware.operatorWasActiveAt(currentTimestamp, operators[1]), "Operator 1 should be inactive");
-        assertTrue(middleware.operatorWasActiveAt(currentTimestamp, operators[2]), "Operator 2 should be active");
+        uint48 currentTimestamp = IBaseMiddleware(address(middleware)).getCaptureTimestamp();
+        assertTrue(
+            IBaseMiddleware(address(middleware)).operatorWasActiveAt(currentTimestamp, operators[0]),
+            "Operator 0 should be active"
+        );
+        assertFalse(
+            IBaseMiddleware(address(middleware)).operatorWasActiveAt(currentTimestamp, operators[1]),
+            "Operator 1 should be inactive"
+        );
+        assertTrue(
+            IBaseMiddleware(address(middleware)).operatorWasActiveAt(currentTimestamp, operators[2]),
+            "Operator 2 should be active"
+        );
 
         // Test unregistration with active and inactive operators
         vm.expectRevert();
@@ -200,8 +216,8 @@ contract OperatorsRegistrationTest is POCBaseTest {
         middleware.unregisterOperator(operators[1]); // Should succeed - operator is paused
 
         // Verify final state
-        assertEq(middleware.operatorsLength(), 2, "Should have 2 operators remaining");
-        activeOps = middleware.activeOperators();
+        assertEq(IBaseMiddleware(address(middleware)).operatorsLength(), 2, "Should have 2 operators remaining");
+        activeOps = IBaseMiddleware(address(middleware)).activeOperators();
         assertEq(activeOps.length, 2, "Should still have 2 active operators");
     }
 
@@ -219,17 +235,21 @@ contract OperatorsRegistrationTest is POCBaseTest {
 
         // Skip epoch to activate operator
         skipEpoch();
-        assertEq(middleware.activeOperators().length, 1, "Should have 1 active operator");
+        assertEq(IBaseMiddleware(address(middleware)).activeOperators().length, 1, "Should have 1 active operator");
 
         // Pause operator
         middleware.pauseOperator(operator);
         skipEpoch();
-        assertEq(middleware.activeOperators().length, 0, "Should have 0 active operators after pause");
+        assertEq(
+            IBaseMiddleware(address(middleware)).activeOperators().length,
+            0,
+            "Should have 0 active operators after pause"
+        );
 
         // Wait for immutable period and unregister
         skipImmutablePeriod();
         middleware.unregisterOperator(operator);
-        assertEq(middleware.operatorsLength(), 0, "Should have 0 operators after unregister");
+        assertEq(IBaseMiddleware(address(middleware)).operatorsLength(), 0, "Should have 0 operators after unregister");
 
         // Register same operator again
         bytes memory keyNew = hex"0000000000000000000000000000000000000000000000000000000000001112";
@@ -237,9 +257,15 @@ contract OperatorsRegistrationTest is POCBaseTest {
 
         // Skip epoch to activate operator
         skipEpoch();
-        assertEq(middleware.activeOperators().length, 1, "Should have 1 active operator after reregistration");
+        assertEq(
+            IBaseMiddleware(address(middleware)).activeOperators().length,
+            1,
+            "Should have 1 active operator after reregistration"
+        );
         assertTrue(
-            middleware.operatorWasActiveAt(middleware.getCaptureTimestamp(), operator),
+            IBaseMiddleware(address(middleware)).operatorWasActiveAt(
+                IBaseMiddleware(address(middleware)).getCaptureTimestamp(), operator
+            ),
             "Operator should be active after reregistration"
         );
     }
@@ -257,11 +283,19 @@ contract OperatorsRegistrationTest is POCBaseTest {
         // Register operator just before epoch boundary
         middleware.registerOperator(operator, key, address(0));
         vm.warp(middleware.getEpochStart(1) - 1);
-        assertEq(middleware.activeOperators().length, 0, "Should have no active operators before epoch");
+        assertEq(
+            IBaseMiddleware(address(middleware)).activeOperators().length,
+            0,
+            "Should have no active operators before epoch"
+        );
 
         // Check right at epoch boundary
         vm.warp(middleware.getEpochStart(1));
-        assertEq(middleware.activeOperators().length, 1, "Should have 1 active operator at epoch start");
+        assertEq(
+            IBaseMiddleware(address(middleware)).activeOperators().length,
+            1,
+            "Should have 1 active operator at epoch start"
+        );
 
         // Test pause timing edge cases
         middleware.pauseOperator(operator);
@@ -283,13 +317,15 @@ contract OperatorsRegistrationTest is POCBaseTest {
         vm.warp(currentEpochStart - 1);
         middleware.pauseOperator(operator);
         assertTrue(
-            middleware.operatorWasActiveAt(currentEpochStart - 1, operator), "Operator should be active before pause"
+            IBaseMiddleware(address(middleware)).operatorWasActiveAt(currentEpochStart - 1, operator),
+            "Operator should be active before pause"
         );
 
         // Check status at capture timestamp
         vm.warp(currentEpochStart);
         assertFalse(
-            middleware.operatorWasActiveAt(currentEpochStart, operator), "Operator should be inactive at capture"
+            IBaseMiddleware(address(middleware)).operatorWasActiveAt(currentEpochStart, operator),
+            "Operator should be inactive at capture"
         );
 
         // Test unregister timing
@@ -340,13 +376,13 @@ contract OperatorsRegistrationTest is POCBaseTest {
         middleware.registerOperator(operator2, key2, address(0));
 
         // At this point, operator1 should be active, operator2 pending
-        address[] memory activeOps = middleware.activeOperators();
+        address[] memory activeOps = IBaseMiddleware(address(middleware)).activeOperators();
         assertEq(activeOps.length, 1, "Should have 1 active operator");
         assertEq(activeOps[0], operator1, "Active operator should be operator1");
 
         // Skip epoch to activate operator2
         skipEpoch();
-        activeOps = middleware.activeOperators();
+        activeOps = IBaseMiddleware(address(middleware)).activeOperators();
         assertEq(activeOps.length, 2, "Should have 2 active operators");
 
         // Pause operator1, wait partial immutable period, pause operator2
@@ -367,13 +403,13 @@ contract OperatorsRegistrationTest is POCBaseTest {
 
         // Skip epoch to activate both operators
         skipEpoch();
-        activeOps = middleware.activeOperators();
+        activeOps = IBaseMiddleware(address(middleware)).activeOperators();
         assertEq(activeOps.length, 2, "Should have 2 active operators again");
 
         // Test historical activity
-        uint48 timestamp = middleware.getCaptureTimestamp();
-        assertTrue(middleware.operatorWasActiveAt(timestamp, operator1));
-        assertTrue(middleware.operatorWasActiveAt(timestamp, operator2));
+        uint48 timestamp = IBaseMiddleware(address(middleware)).getCaptureTimestamp();
+        assertTrue(IBaseMiddleware(address(middleware)).operatorWasActiveAt(timestamp, operator1));
+        assertTrue(IBaseMiddleware(address(middleware)).operatorWasActiveAt(timestamp, operator2));
 
         // Pause both operators again but unregister at different times
         middleware.pauseOperator(operator1);
@@ -388,8 +424,8 @@ contract OperatorsRegistrationTest is POCBaseTest {
         middleware.unregisterOperator(operator2);
 
         // Verify final state
-        assertEq(middleware.operatorsLength(), 0, "Should have no operators");
-        activeOps = middleware.activeOperators();
+        assertEq(IBaseMiddleware(address(middleware)).operatorsLength(), 0, "Should have no operators");
+        activeOps = IBaseMiddleware(address(middleware)).activeOperators();
         assertEq(activeOps.length, 0, "Should have no active operators");
     }
 

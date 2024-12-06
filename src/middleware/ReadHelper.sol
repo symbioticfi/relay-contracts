@@ -1,48 +1,32 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {BaseMiddleware} from "../../../middleware/BaseMiddleware.sol";
-import {NoAccessManager} from "../../../managers/extensions/access/NoAccessManager.sol";
+import {BaseMiddleware} from "./BaseMiddleware.sol";
+import {NoAccessManager} from "../managers/extensions/access/NoAccessManager.sol";
+import {NoKeyManager} from "../managers/extensions/keys/NoKeyManager.sol";
+import "forge-std/console.sol";
 
 /**
- * @title ReadHelperImpl
+ * @title ReadHelper
  * @notice A helper contract for view functions that combines core manager functionality
  * @dev This contract serves as a foundation for building custom middleware by providing essential
  * management capabilities that can be extended with additional functionality.
  */
-contract ReadHelperImpl is BaseMiddleware, NoAccessManager {
+contract ReadHelper is BaseMiddleware, NoAccessManager, NoKeyManager {
     function getCaptureTimestamp() public view override returns (uint48 timestamp) {
-        (bool success, bytes memory data) = msg.sender.staticcall(msg.data);
-        require(success, "ReadHelper: getCaptureTimestamp failed");
-        return abi.decode(data, (uint48));
+        address middleware;
+        assembly {
+            middleware := shr(96, calldataload(sub(calldatasize(), 20)))
+        }
+        return BaseMiddleware(middleware).getCaptureTimestamp();
     }
 
     function stakeToPower(address vault, uint256 stake) public view override returns (uint256 power) {
-        (bool success, bytes memory data) = msg.sender.staticcall(msg.data);
-        require(success, "ReadHelper: getStakePower failed");
-        return abi.decode(data, (uint256));
-    }
-
-    function keyWasActiveAt(uint48 timestamp, bytes memory key) public view override returns (bool) {
-        (bool success, bytes memory data) = msg.sender.staticcall(msg.data);
-        require(success, "ReadHelper: keyWasActiveAt failed");
-        return abi.decode(data, (bool));
-    }
-
-    function operatorKey(
-        address operator
-    ) public view override returns (bytes memory) {
-        (bool success, bytes memory data) = msg.sender.staticcall(msg.data);
-        require(success, "ReadHelper: operatorKey failed");
-        return abi.decode(data, (bytes));
-    }
-
-    function operatorByKey(
-        bytes memory key
-    ) public view override returns (address) {
-        (bool success, bytes memory data) = msg.sender.staticcall(msg.data);
-        require(success, "ReadHelper: operatorByKey failed");
-        return abi.decode(data, (address));
+        address middleware;
+        assembly {
+            middleware := shr(96, calldataload(sub(calldatasize(), 20)))
+        }
+        return BaseMiddleware(middleware).stakeToPower(vault, stake);
     }
 
     function NETWORK() external view returns (address) {
@@ -218,9 +202,5 @@ contract ReadHelperImpl is BaseMiddleware, NoAccessManager {
         address[] memory operators
     ) external view returns (uint256) {
         return _totalPower(operators);
-    }
-
-    function _updateKey(address operator, bytes memory key) internal pure override {
-        revert();
     }
 }

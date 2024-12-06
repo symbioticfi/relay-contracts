@@ -56,14 +56,17 @@ contract SimplePosMiddleware is
      */
     constructor(
         address network,
-        address operatorRegistry,
+        uint48 slashingWindow,
         address vaultRegistry,
+        address operatorRegistry,
         address operatorNetOptin,
+        address readHelper,
         address owner,
-        uint48 epochDuration,
-        uint48 slashingWindow
+        uint48 epochDuration
     ) {
-        initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, owner, epochDuration);
+        initialize(
+            network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, readHelper, owner, epochDuration
+        );
     }
 
     function initialize(
@@ -72,10 +75,11 @@ contract SimplePosMiddleware is
         address vaultRegistry,
         address operatorRegistry,
         address operatorNetOptin,
+        address readHelper,
         address owner,
         uint48 epochDuration
     ) internal initializer {
-        __BaseManager_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
+        __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, readHelper);
         __OwnableAccessManager_init(owner);
         __EpochCapture_init(epochDuration);
     }

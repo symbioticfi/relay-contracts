@@ -39,12 +39,13 @@ contract SelfRegisterMiddleware is
      */
     constructor(
         address network,
-        address operatorRegistry,
+        uint48 slashingWindow,
         address vaultRegistry,
+        address operatorRegistry,
         address operatorNetOptin,
-        uint48 slashingWindow
+        address readHelper
     ) {
-        initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin);
+        initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, readHelper);
     }
 
     function initialize(
@@ -52,9 +53,10 @@ contract SelfRegisterMiddleware is
         uint48 slashingWindow,
         address vaultRegistry,
         address operatorRegistry,
-        address operatorNetOptIn
+        address operatorNetOptIn,
+        address readHelper
     ) internal initializer {
-        __BaseManager_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn);
+        __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn, readHelper);
         __SelfRegisterOperators_init("SelfRegisterMiddleware");
     }
 }

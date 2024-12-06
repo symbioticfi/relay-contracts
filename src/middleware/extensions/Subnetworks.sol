@@ -61,7 +61,7 @@ abstract contract Subnetworks is BaseMiddleware {
      */
     function _beforeRegisterSubnetwork(
         uint96 subnetwork
-    ) public virtual {}
+    ) internal virtual {}
 
     /**
      * @notice Hook called before pausing a subnetwork
@@ -69,7 +69,7 @@ abstract contract Subnetworks is BaseMiddleware {
      */
     function _beforePauseSubnetwork(
         uint96 subnetwork
-    ) public virtual {}
+    ) internal virtual {}
 
     /**
      * @notice Hook called before unpausing a subnetwork
@@ -77,7 +77,7 @@ abstract contract Subnetworks is BaseMiddleware {
      */
     function _beforeUnpauseSubnetwork(
         uint96 subnetwork
-    ) public virtual {}
+    ) internal virtual {}
 
     /**
      * @notice Hook called before unregistering a subnetwork
@@ -85,5 +85,5 @@ abstract contract Subnetworks is BaseMiddleware {
      */
     function _beforeUnregisterSubnetwork(
         uint96 subnetwork
-    ) public virtual {}
+    ) internal virtual {}
 }

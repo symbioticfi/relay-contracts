@@ -61,7 +61,7 @@ abstract contract SharedVaults is BaseMiddleware {
      */
     function _beforeRegisterSharedVault(
         address sharedVault
-    ) public virtual {}
+    ) internal virtual {}
 
     /**
      * @notice Hook called before pausing a shared vault
@@ -69,7 +69,7 @@ abstract contract SharedVaults is BaseMiddleware {
      */
     function _beforePauseSharedVault(
         address sharedVault
-    ) public virtual {}
+    ) internal virtual {}
 
     /**
      * @notice Hook called before unpausing a shared vault
@@ -77,7 +77,7 @@ abstract contract SharedVaults is BaseMiddleware {
      */
     function _beforeUnpauseSharedVault(
         address sharedVault
-    ) public virtual {}
+    ) internal virtual {}
 
     /**
      * @notice Hook called before unregistering a shared vault
@@ -85,5 +85,5 @@ abstract contract SharedVaults is BaseMiddleware {
      */
     function _beforeUnregisterSharedVault(
         address sharedVault
-    ) public virtual {}
+    ) internal virtual {}
 }
