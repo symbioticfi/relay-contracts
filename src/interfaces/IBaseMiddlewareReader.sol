@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-interface IBaseMiddleware {
+interface IBaseMiddlewareReader {
     function getCaptureTimestamp() external view returns (uint48 timestamp);
 
     function stakeToPower(address vault, uint256 stake) external view returns (uint256 power);

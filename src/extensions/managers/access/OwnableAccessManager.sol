@@ -2,26 +2,15 @@
 pragma solidity ^0.8.25;
 
 import {AccessManager} from "../../../managers/extendable/AccessManager.sol";
+import {IOwnableAccessManager} from "../../../interfaces/extensions/managers/access/IOwnableAccessManager.sol";
 
 /**
  * @title OwnableAccessManager
  * @notice A middleware extension that restricts access to a single owner address
  * @dev Implements AccessManager with owner-based access control
  */
-abstract contract OwnableAccessManager is AccessManager {
+abstract contract OwnableAccessManager is AccessManager, IOwnableAccessManager {
     uint64 public constant OwnableAccessManager_VERSION = 1;
-
-    /**
-     * @notice Error thrown when a non-owner address attempts to call a restricted function
-     * @param sender The address that attempted the call
-     */
-    error OnlyOwnerCanCall(address sender);
-
-    /**
-     * @notice Error thrown when trying to set an invalid owner address
-     * @param owner The invalid owner address
-     */
-    error InvalidOwner(address owner);
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OwnableAccessManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant OwnableAccessManagerStorageLocation =
@@ -54,8 +43,7 @@ abstract contract OwnableAccessManager is AccessManager {
     }
 
     /**
-     * @notice Gets the current owner address
-     * @return The owner address
+     * @inheritdoc IOwnableAccessManager
      */
     function owner() public view returns (address) {
         return _owner();
@@ -72,9 +60,7 @@ abstract contract OwnableAccessManager is AccessManager {
     }
 
     /**
-     * @notice Updates the owner address
-     * @param owner_ The new owner address
-     * @dev Can only be called by the current owner
+     * @inheritdoc IOwnableAccessManager
      */
     function setOwner(
         address owner_

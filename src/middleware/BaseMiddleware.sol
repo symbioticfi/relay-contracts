@@ -19,6 +19,9 @@ import {KeyManager} from "../managers/extendable/KeyManager.sol";
  * management capabilities that can be extended with additional functionality.
  */
 abstract contract BaseMiddleware is VaultManager, OperatorManager, AccessManager, KeyManager {
+    // This constant aggregates changes of all not extendable managers
+    uint64 public constant BaseMiddleware_VERSION = 1;
+
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.BaseMiddleware")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant ReadHelperStorageLocation =
         0xfd87879bc98f37af7578af722aecfbe5843e5ad354da2d1e70cb5157c4ec8800;
@@ -31,8 +34,8 @@ abstract contract BaseMiddleware is VaultManager, OperatorManager, AccessManager
         address operatorNetOptin,
         address readHelper
     ) internal onlyInitializing {
-        __NetworkManager_init_private(network);
-        __SlashingWindowManager_init_private(slashingWindow);
+        __NetworkStorage_init_private(network);
+        __SlashingWindowStorage_init_private(slashingWindow);
         __VaultManager_init_private(vaultRegistry);
         __OperatorManager_init_private(operatorRegistry, operatorNetOptin);
         assembly {

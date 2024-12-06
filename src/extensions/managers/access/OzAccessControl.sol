@@ -2,13 +2,14 @@
 pragma solidity ^0.8.25;
 
 import {AccessManager} from "../../../managers/extendable/AccessManager.sol";
+import {IOzAccessControl} from "../../../interfaces/extensions/managers/access/IOzAccessControl.sol";
 
 /**
  * @title OzAccessControl
  * @notice A middleware extension that implements role-based access control
  * @dev Implements AccessManager with role-based access control functionality
  */
-abstract contract OzAccessControl is AccessManager {
+abstract contract OzAccessControl is AccessManager, IOzAccessControl {
     uint64 public constant OzAccessControl_VERSION = 1;
 
     struct RoleData {
@@ -33,15 +34,7 @@ abstract contract OzAccessControl is AccessManager {
             $.slot := OzAccessControlStorageLocation
         }
     }
-
-    error AccessControlUnauthorizedAccount(address account, bytes32 role);
-    error AccessControlBadConfirmation();
-
-    event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole);
-    event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender);
-    event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender);
-    event SelectorRoleSet(bytes4 indexed selector, bytes32 indexed role);
-
+    
     /**
      * @notice Initializes the contract with a default admin
      * @param defaultAdmin The address to set as the default admin
@@ -53,10 +46,7 @@ abstract contract OzAccessControl is AccessManager {
     }
 
     /**
-     * @notice Returns true if account has been granted role
-     * @param role The role to check
-     * @param account The account to check
-     * @return bool True if account has role
+     * @inheritdoc IOzAccessControl
      */
     function hasRole(bytes32 role, address account) public view virtual returns (bool) {
         OzAccessControlStorage storage $ = _getOzAccessControlStorage();
@@ -64,9 +54,7 @@ abstract contract OzAccessControl is AccessManager {
     }
 
     /**
-     * @notice Returns the admin role that controls the specified role
-     * @param role The role to get the admin for
-     * @return bytes32 The admin role
+     * @inheritdoc IOzAccessControl
      */
     function getRoleAdmin(
         bytes32 role
@@ -76,9 +64,7 @@ abstract contract OzAccessControl is AccessManager {
     }
 
     /**
-     * @notice Returns the role required for a function selector
-     * @param selector The function selector
-     * @return bytes32 The required role
+     * @inheritdoc IOzAccessControl
      */
     function getRole(
         bytes4 selector
@@ -88,9 +74,7 @@ abstract contract OzAccessControl is AccessManager {
     }
 
     /**
-     * @notice Grants role to account if caller has admin role
-     * @param role The role to grant
-     * @param account The account to grant the role to
+     * @inheritdoc IOzAccessControl
      */
     function grantRole(bytes32 role, address account) public virtual {
         bytes32 adminRole = getRoleAdmin(role);
@@ -101,9 +85,7 @@ abstract contract OzAccessControl is AccessManager {
     }
 
     /**
-     * @notice Revokes role from account if caller has admin role
-     * @param role The role to revoke
-     * @param account The account to revoke the role from
+     * @inheritdoc IOzAccessControl
      */
     function revokeRole(bytes32 role, address account) public virtual {
         bytes32 adminRole = getRoleAdmin(role);
@@ -114,9 +96,7 @@ abstract contract OzAccessControl is AccessManager {
     }
 
     /**
-     * @notice Allows an account to renounce a role they have
-     * @param role The role to renounce
-     * @param callerConfirmation Address of the caller for confirmation
+     * @inheritdoc IOzAccessControl
      */
     function renounceRole(bytes32 role, address callerConfirmation) public virtual {
         if (callerConfirmation != msg.sender) {
@@ -130,7 +110,7 @@ abstract contract OzAccessControl is AccessManager {
      * @param selector The function selector
      * @param role The required role
      */
-    function _setSelectorRole(bytes4 selector, bytes32 role) public virtual {
+    function _setSelectorRole(bytes4 selector, bytes32 role) internal virtual {
         OzAccessControlStorage storage $ = _getOzAccessControlStorage();
         $._selectorRoles[selector] = role;
         emit SelectorRoleSet(selector, role);
@@ -141,7 +121,7 @@ abstract contract OzAccessControl is AccessManager {
      * @param role The role to set admin for
      * @param adminRole The new admin role
      */
-    function _setRoleAdmin(bytes32 role, bytes32 adminRole) public virtual {
+    function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal virtual {
         OzAccessControlStorage storage $ = _getOzAccessControlStorage();
         bytes32 previousAdminRole = getRoleAdmin(role);
         $._roles[role].adminRole = adminRole;
@@ -154,7 +134,7 @@ abstract contract OzAccessControl is AccessManager {
      * @param account The account to grant the role to
      * @return bool True if role was granted
      */
-    function _grantRole(bytes32 role, address account) public virtual returns (bool) {
+    function _grantRole(bytes32 role, address account) internal virtual returns (bool) {
         if (!hasRole(role, account)) {
             OzAccessControlStorage storage $ = _getOzAccessControlStorage();
             $._roles[role].hasRole[account] = true;
@@ -170,7 +150,7 @@ abstract contract OzAccessControl is AccessManager {
      * @param account The account to revoke the role from
      * @return bool True if role was revoked
      */
-    function _revokeRole(bytes32 role, address account) public virtual returns (bool) {
+    function _revokeRole(bytes32 role, address account) internal virtual returns (bool) {
         if (hasRole(role, account)) {
             OzAccessControlStorage storage $ = _getOzAccessControlStorage();
             $._roles[role].hasRole[account] = false;

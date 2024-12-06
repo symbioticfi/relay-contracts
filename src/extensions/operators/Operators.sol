@@ -2,20 +2,18 @@
 pragma solidity ^0.8.25;
 
 import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
+import {IOperators} from "../../interfaces/extensions/operators/IOperators.sol";
 
 /**
  * @title Operators
  * @notice Base contract for managing operator registration, keys, and vault relationships
  * @dev Provides core operator management functionality with hooks for customization
  */
-abstract contract Operators is BaseMiddleware {
+abstract contract Operators is BaseMiddleware, IOperators {
     uint64 public constant Operators_VERSION = 1;
 
     /**
-     * @notice Registers a new operator with an optional vault association
-     * @param operator The address of the operator to register
-     * @param key The operator's public key
-     * @param vault Optional vault address to associate with the operator
+     * @inheritdoc IOperators
      */
     function registerOperator(address operator, bytes memory key, address vault) public checkAccess {
         _beforeRegisterOperator(operator, key, vault);
@@ -28,8 +26,7 @@ abstract contract Operators is BaseMiddleware {
     }
 
     /**
-     * @notice Unregisters an operator
-     * @param operator The address of the operator to unregister
+     * @inheritdoc IOperators
      */
     function unregisterOperator(
         address operator
@@ -39,8 +36,7 @@ abstract contract Operators is BaseMiddleware {
     }
 
     /**
-     * @notice Pauses an operator
-     * @param operator The address of the operator to pause
+     * @inheritdoc IOperators
      */
     function pauseOperator(
         address operator
@@ -50,8 +46,7 @@ abstract contract Operators is BaseMiddleware {
     }
 
     /**
-     * @notice Unpauses an operator
-     * @param operator The address of the operator to unpause
+     * @inheritdoc IOperators
      */
     function unpauseOperator(
         address operator
@@ -61,9 +56,7 @@ abstract contract Operators is BaseMiddleware {
     }
 
     /**
-     * @notice Updates an operator's public key
-     * @param operator The address of the operator
-     * @param key The new public key
+     * @inheritdoc IOperators
      */
     function updateOperatorKey(address operator, bytes memory key) public checkAccess {
         _beforeUpdateOperatorKey(operator, key);
@@ -71,9 +64,7 @@ abstract contract Operators is BaseMiddleware {
     }
 
     /**
-     * @notice Associates an operator with a vault
-     * @param operator The address of the operator
-     * @param vault The address of the vault
+     * @inheritdoc IOperators
      */
     function registerOperatorVault(address operator, address vault) public checkAccess {
         require(_isOperatorRegistered(operator), "Operator not registered");
@@ -82,9 +73,7 @@ abstract contract Operators is BaseMiddleware {
     }
 
     /**
-     * @notice Removes an operator's association with a vault
-     * @param operator The address of the operator
-     * @param vault The address of the vault
+     * @inheritdoc IOperators
      */
     function unregisterOperatorVault(address operator, address vault) public checkAccess {
         _beforeUnregisterOperatorVault(operator, vault);
@@ -92,9 +81,7 @@ abstract contract Operators is BaseMiddleware {
     }
 
     /**
-     * @notice Pauses an operator's association with a specific vault
-     * @param operator The address of the operator
-     * @param vault The address of the vault
+     * @inheritdoc IOperators
      */
     function pauseOperatorVault(address operator, address vault) public checkAccess {
         _beforePauseOperatorVault(operator, vault);
@@ -102,9 +89,7 @@ abstract contract Operators is BaseMiddleware {
     }
 
     /**
-     * @notice Unpauses an operator's association with a specific vault
-     * @param operator The address of the operator
-     * @param vault The address of the vault
+     * @inheritdoc IOperators
      */
     function unpauseOperatorVault(address operator, address vault) public checkAccess {
         _beforeUnpauseOperatorVault(operator, vault);

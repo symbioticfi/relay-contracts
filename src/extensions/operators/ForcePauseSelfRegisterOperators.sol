@@ -2,13 +2,14 @@
 pragma solidity ^0.8.25;
 
 import {SelfRegisterOperators} from "./SelfRegisterOperators.sol";
+import {IForcePauseSelfRegisterOperators} from "../../interfaces/extensions/operators/IForcePauseSelfRegisterOperators.sol";
 
 /**
  * @title ForcePauseSelfRegisterOperators
  * @notice Extension of SelfRegisterOperators that allows authorized addresses to forcefully pause operators
  * @dev Implements force pause functionality and prevents unpausing of force-paused operators
  */
-abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators {
+abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IForcePauseSelfRegisterOperators {
     uint64 public constant ForcePauseSelfRegisterOperators_VERSION = 1;
 
     struct ForcePauseSelfRegisterOperatorsStorage {
@@ -27,13 +28,8 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators {
         }
     }
 
-    error OperatorForcePaused();
-    error OperatorVaultForcePaused();
-
     /**
-     * @notice Forces an operator to be paused
-     * @param operator The address of the operator to pause
-     * @dev Can only be called by authorized addresses (checkAccess modifier)
+     * @inheritdoc IForcePauseSelfRegisterOperators
      */
     function forcePauseOperator(
         address operator
@@ -45,9 +41,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators {
     }
 
     /**
-     * @notice Forces an operator to be unpaused
-     * @param operator The address of the operator to unpause
-     * @dev Can only be called by authorized addresses (checkAccess modifier)
+     * @inheritdoc IForcePauseSelfRegisterOperators
      */
     function forceUnpauseOperator(
         address operator
@@ -59,10 +53,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators {
     }
 
     /**
-     * @notice Forces a specific operator-vault pair to be paused
-     * @param operator The address of the operator
-     * @param vault The address of the vault
-     * @dev Can only be called by authorized addresses (checkAccess modifier)
+     * @inheritdoc IForcePauseSelfRegisterOperators
      */
     function forcePauseOperatorVault(address operator, address vault) public checkAccess {
         ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
@@ -72,10 +63,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators {
     }
 
     /**
-     * @notice Forces a specific operator-vault pair to be unpaused
-     * @param operator The address of the operator
-     * @param vault The address of the vault
-     * @dev Can only be called by authorized addresses (checkAccess modifier)
+     * @inheritdoc IForcePauseSelfRegisterOperators
      */
     function forceUnpauseOperatorVault(address operator, address vault) public checkAccess {
         ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
