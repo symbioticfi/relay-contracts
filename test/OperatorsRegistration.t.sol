@@ -54,6 +54,8 @@ contract OperatorsRegistrationTest is POCBaseTest {
         );
 
         _registerNetwork(network, address(middleware));
+
+        vm.warp(vm.getBlockTimestamp() + 1);
     }
 
     function testOperators() public {
@@ -286,7 +288,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
 
         // Register operator just before epoch boundary
         middleware.registerOperator(operator, key, address(0));
-        vm.warp(middleware.getEpochStart(1) - 1);
+        vm.warp(middleware.getEpochStart(1));
         assertEq(
             IBaseMiddlewareReader(address(middleware)).activeOperators().length,
             0,
@@ -294,7 +296,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
         );
 
         // Check right at epoch boundary
-        vm.warp(middleware.getEpochStart(1));
+        vm.warp(middleware.getEpochStart(1) + 1);
         assertEq(
             IBaseMiddlewareReader(address(middleware)).activeOperators().length,
             1,
