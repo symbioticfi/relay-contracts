@@ -142,7 +142,7 @@ library PauseableEnumerableSet {
         uint48 timestamp,
         uint48 immutablePeriod
     ) internal view returns (bool) {
-        return self.enabled != 0 && self.disabled == 0 && self.disabled + immutablePeriod > timestamp;
+        return self.enabled == 0 && self.disabled != 0 && self.disabled + immutablePeriod <= timestamp;
     }
 
     /**
