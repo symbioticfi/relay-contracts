@@ -87,6 +87,7 @@ abstract contract KeyManagerBytes is KeyManager {
     function _updateKey(address operator, bytes memory key) internal override {
         KeyManagerBytesStorage storage $ = _getKeyManagerBytesStorage();
         bytes32 keyHash = keccak256(key);
+        uint48 timestamp = _now();
 
         if ($._keyToOperator[key] != address(0)) {
             revert DuplicateKey();
@@ -101,17 +102,17 @@ abstract contract KeyManagerBytes is KeyManager {
         if ($._keys[operator].length() > 0) {
             // try to remove disabled keys
             bytes memory prevKey = $._keys[operator].array[0].value;
-            if ($._keys[operator].checkUnregister(_now(), _SLASHING_WINDOW(), prevKey)) {
-                $._keys[operator].unregister(_now(), _SLASHING_WINDOW(), prevKey);
+            if ($._keys[operator].checkUnregister(timestamp, _SLASHING_WINDOW(), prevKey)) {
+                $._keys[operator].unregister(timestamp, _SLASHING_WINDOW(), prevKey);
                 delete $._keyToOperator[prevKey];
-            } else if ($._keys[operator].wasActiveAt(_now(), prevKey)) {
-                $._keys[operator].pause(_now(), prevKey);
+            } else if ($._keys[operator].wasActiveAt(timestamp, prevKey)) {
+                $._keys[operator].pause(timestamp, prevKey);
             }
         }
 
         if (keyHash != ZERO_BYTES_HASH) {
             // register the new key
-            $._keys[operator].register(_now(), key);
+            $._keys[operator].register(timestamp, key);
             $._keyToOperator[key] = operator;
         }
     }
