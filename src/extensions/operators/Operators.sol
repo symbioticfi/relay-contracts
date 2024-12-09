@@ -67,7 +67,9 @@ abstract contract Operators is BaseMiddleware, IOperators {
      * @inheritdoc IOperators
      */
     function registerOperatorVault(address operator, address vault) public checkAccess {
-        require(_isOperatorRegistered(operator), "Operator not registered");
+        if (!_isOperatorRegistered(operator)) {
+            revert OperatorNotRegistered();
+        }
         _beforeRegisterOperatorVault(operator, vault);
         _registerOperatorVault(operator, vault);
     }

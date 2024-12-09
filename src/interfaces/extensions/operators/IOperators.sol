@@ -6,6 +6,8 @@ pragma solidity ^0.8.25;
  * @notice Interface for managing operator registration, keys, and vault relationships
  */
 interface IOperators {
+    error OperatorNotRegistered();
+
     /**
      * @notice Registers a new operator with an optional vault association
      * @param operator The address of the operator to register
