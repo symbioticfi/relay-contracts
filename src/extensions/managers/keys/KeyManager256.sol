@@ -89,6 +89,7 @@ abstract contract KeyManager256 is KeyManager {
     function _updateKey(address operator, bytes memory key_) internal override {
         KeyManager256Storage storage s = _getKeyManager256Storage();
         bytes32 key = abi.decode(key_, (bytes32));
+        uint48 timestamp = _now();
 
         if (s.keyToOperator[key] != address(0)) {
             revert DuplicateKey();
@@ -103,17 +104,17 @@ abstract contract KeyManager256 is KeyManager {
         if (s.keys[operator].length() > 0) {
             // try to remove disabled keys
             bytes32 prevKey = s.keys[operator].array[0].value;
-            if (s.keys[operator].checkUnregister(_now(), _SLASHING_WINDOW(), prevKey)) {
-                s.keys[operator].unregister(_now(), _SLASHING_WINDOW(), prevKey);
+            if (s.keys[operator].checkUnregister(timestamp, _SLASHING_WINDOW(), prevKey)) {
+                s.keys[operator].unregister(timestamp, _SLASHING_WINDOW(), prevKey);
                 delete s.keyToOperator[prevKey];
-            } else if (s.keys[operator].wasActiveAt(_now(), prevKey)) {
-                s.keys[operator].pause(_now(), prevKey);
+            } else if (s.keys[operator].wasActiveAt(timestamp, prevKey)) {
+                s.keys[operator].pause(timestamp, prevKey);
             }
         }
 
         if (key != ZERO_BYTES32) {
             // register the new key
-            s.keys[operator].register(_now(), key);
+            s.keys[operator].register(timestamp, key);
             s.keyToOperator[key] = operator;
         }
     }
