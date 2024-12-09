@@ -145,13 +145,14 @@ contract SqrtTaskMiddleware is
     function _slash(uint256 taskIndex, bytes[] calldata stakeHints, bytes[] calldata slashHints) private {
         Task storage task = tasks[taskIndex];
         address[] memory vaults = _activeVaultsAt(task.captureTimestamp, task.operator);
+        uint256 vaultsLength = vaults.length;
 
-        if (stakeHints.length != slashHints.length || stakeHints.length != vaults.length) {
+        if (stakeHints.length != slashHints.length || stakeHints.length != vaultsLength) {
             revert InvalidHints();
         }
 
         bytes32 subnetwork = _NETWORK().subnetwork(0);
-        for (uint256 i; i < vaults.length; ++i) {
+        for (uint256 i; i < vaultsLength; ++i) {
             address vault = vaults[i];
             uint256 slashAmount = IBaseDelegator(IVault(vault).delegator()).stakeAt(
                 subnetwork, task.operator, task.captureTimestamp, stakeHints[i]
