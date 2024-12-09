@@ -146,19 +146,21 @@ contract SimplePosMiddleware is
         params.totalPower = _getOperatorPowerAt(params.epochStart, params.operator);
         params.vaults = _activeVaultsAt(params.epochStart, params.operator);
         params.subnetworks = _activeSubnetworksAt(params.epochStart);
+        uint256 vaultsLength = params.vaults.length;
+        uint256 subnetworksLength = params.subnetworks.length;
 
         // Validate hints lengths upfront
-        if (stakeHints.length != slashHints.length || stakeHints.length != params.vaults.length) {
+        if (stakeHints.length != slashHints.length || stakeHints.length != vaultsLength) {
             revert InvalidHints();
         }
 
-        for (uint256 i; i < params.vaults.length; ++i) {
-            if (stakeHints[i].length != params.subnetworks.length) {
+        for (uint256 i; i < vaultsLength; ++i) {
+            if (stakeHints[i].length != subnetworksLength) {
                 revert InvalidHints();
             }
 
             address vault = params.vaults[i];
-            for (uint256 j; j < params.subnetworks.length; ++j) {
+            for (uint256 j; j < subnetworksLength; ++j) {
                 bytes32 subnetwork = _NETWORK().subnetwork(uint96(params.subnetworks[j]));
                 uint256 stake = IBaseDelegator(IVault(vault).delegator()).stakeAt(
                     subnetwork, params.operator, params.epochStart, stakeHints[i][j]
