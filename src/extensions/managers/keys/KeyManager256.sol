@@ -22,9 +22,9 @@ abstract contract KeyManager256 is KeyManager {
 
     struct KeyManager256Storage {
         /// @notice Mapping from operator addresses to their keys
-        mapping(address => PauseableEnumerableSet.Bytes32Set) keys;
+        mapping(address => PauseableEnumerableSet.Bytes32Set) _keys;
         /// @notice Mapping from keys to operator addresses
-        mapping(bytes32 => address) keyToOperator;
+        mapping(bytes32 => address) _keyToOperator;
     }
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.KeyManager256")) - 1)) & ~bytes32(uint256(0xff))
@@ -46,8 +46,8 @@ abstract contract KeyManager256 is KeyManager {
     function operatorByKey(
         bytes memory key
     ) public view override returns (address) {
-        KeyManager256Storage storage s = _getKeyManager256Storage();
-        return s.keyToOperator[abi.decode(key, (bytes32))];
+        KeyManager256Storage storage $ = _getKeyManager256Storage();
+        return $._keyToOperator[abi.decode(key, (bytes32))];
     }
 
     /**
@@ -58,8 +58,8 @@ abstract contract KeyManager256 is KeyManager {
     function operatorKey(
         address operator
     ) public view override returns (bytes memory) {
-        KeyManager256Storage storage s = _getKeyManager256Storage();
-        bytes32[] memory active = s.keys[operator].getActive(getCaptureTimestamp());
+        KeyManager256Storage storage $ = _getKeyManager256Storage();
+        bytes32[] memory active = $._keys[operator].getActive(getCaptureTimestamp());
         if (active.length == 0) {
             return abi.encode(ZERO_BYTES32);
         }
@@ -73,9 +73,9 @@ abstract contract KeyManager256 is KeyManager {
      * @return True if the key was active at the timestamp, false otherwise
      */
     function keyWasActiveAt(uint48 timestamp, bytes memory key_) public view override returns (bool) {
-        KeyManager256Storage storage s = _getKeyManager256Storage();
+        KeyManager256Storage storage $ = _getKeyManager256Storage();
         bytes32 key = abi.decode(key_, (bytes32));
-        return s.keys[s.keyToOperator[key]].wasActiveAt(timestamp, key);
+        return $._keys[$._keyToOperator[key]].wasActiveAt(timestamp, key);
     }
 
     /**
@@ -87,35 +87,35 @@ abstract contract KeyManager256 is KeyManager {
      * @custom:throws MaxDisabledKeysReached if operator has too many disabled keys
      */
     function _updateKey(address operator, bytes memory key_) internal override {
-        KeyManager256Storage storage s = _getKeyManager256Storage();
+        KeyManager256Storage storage $ = _getKeyManager256Storage();
         bytes32 key = abi.decode(key_, (bytes32));
         uint48 timestamp = _now();
 
-        if (s.keyToOperator[key] != address(0)) {
+        if ($._keyToOperator[key] != address(0)) {
             revert DuplicateKey();
         }
 
         // check if we have reached the max number of disabled keys
         // this allow us to limit the number times we can change the key
-        if (key != ZERO_BYTES32 && s.keys[operator].length() > MAX_DISABLED_KEYS + 1) {
+        if (key != ZERO_BYTES32 && $._keys[operator].length() > MAX_DISABLED_KEYS + 1) {
             revert MaxDisabledKeysReached();
         }
 
-        if (s.keys[operator].length() > 0) {
+        if ($._keys[operator].length() > 0) {
             // try to remove disabled keys
-            bytes32 prevKey = s.keys[operator].array[0].value;
-            if (s.keys[operator].checkUnregister(timestamp, _SLASHING_WINDOW(), prevKey)) {
-                s.keys[operator].unregister(timestamp, _SLASHING_WINDOW(), prevKey);
-                delete s.keyToOperator[prevKey];
-            } else if (s.keys[operator].wasActiveAt(timestamp, prevKey)) {
-                s.keys[operator].pause(timestamp, prevKey);
+            bytes32 prevKey = $._keys[operator].array[0].value;
+            if ($._keys[operator].checkUnregister(timestamp, _SLASHING_WINDOW(), prevKey)) {
+                $._keys[operator].unregister(timestamp, _SLASHING_WINDOW(), prevKey);
+                delete $._keyToOperator[prevKey];
+            } else if ($._keys[operator].wasActiveAt(timestamp, prevKey)) {
+                $._keys[operator].pause(timestamp, prevKey);
             }
         }
 
         if (key != ZERO_BYTES32) {
             // register the new key
-            s.keys[operator].register(timestamp, key);
-            s.keyToOperator[key] = operator;
+            $._keys[operator].register(timestamp, key);
+            $._keyToOperator[key] = operator;
         }
     }
 }
