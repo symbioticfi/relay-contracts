@@ -32,4 +32,10 @@ interface IOwnableAccessManager {
     function setOwner(
         address owner_
     ) external;
+
+    /**
+     * @notice Renounces the ownership of the contract
+     * @dev Can only be called by the current owner
+     */
+    function renounceOwnership() external;
 }
