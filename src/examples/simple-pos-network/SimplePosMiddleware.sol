@@ -8,6 +8,7 @@ import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
+import {VaultManager} from "../../managers/VaultManager.sol";
 import {SharedVaults} from "../../extensions/SharedVaults.sol";
 import {Operators} from "../../extensions/operators/Operators.sol";
 
@@ -174,6 +175,17 @@ contract SimplePosMiddleware is
                 _slashVault(params.epochStart, vault, subnetwork, params.operator, slashAmount, slashHints[i]);
             }
         }
+    }
+
+    function executeSlash(
+        uint48 epochStart,
+        address vault,
+        bytes32 subnetwork,
+        address operator,
+        uint256 amount,
+        bytes memory hints
+    ) external checkAccess {
+        _slashVault(epochStart, vault, subnetwork, operator, amount, hints);
     }
 
     function _checkCanSlash(uint48 epochStart, bytes32 key, address operator) internal view {

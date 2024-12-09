@@ -53,19 +53,8 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
         EnumerableMap.AddressToAddressMap _vaultOperator;
     }
 
-    /**
-     * @dev Struct containing information about a slash response
-     * @param vault The address of the vault being slashed
-     * @param slasherType The type identifier of the slasher
-     * @param subnetwork The subnetwork identifier where the slash occurred
-     * @param response For instant slashing: the slashed amount, for veto slashing: the slash index
-     */
-    struct SlashResponse {
-        address vault;
-        uint64 slasherType;
-        bytes32 subnetwork;
-        uint256 response;
-    }
+    event InstantSlash(address vault, bytes32 subnetwork, uint256 amount);
+    event VetoSlash(address vault, bytes32 subnetwork, uint256 index);
 
     enum SlasherType {
         INSTANT, // Instant slasher type
@@ -640,7 +629,7 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
      * @param operator The operator to slash
      * @param amount The amount to slash
      * @param hints Additional data for the slasher
-     * @return resp A struct containing information about the slash response
+     * @return response index for veto slashing or amount for instant slashing
      */
     function _slashVault(
         uint48 timestamp,
@@ -649,7 +638,7 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
         address operator,
         uint256 amount,
         bytes memory hints
-    ) internal returns (SlashResponse memory resp) {
+    ) internal returns (uint256 response) {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         if (!($._sharedVaults.contains(vault) || $._operatorVaults[operator].contains(vault))) {
             revert NotOperatorVault();
@@ -669,13 +658,12 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
         }
 
         uint64 slasherType = IEntity(slasher).TYPE();
-        resp.vault = vault;
-        resp.slasherType = slasherType;
-        resp.subnetwork = subnetwork;
         if (slasherType == uint64(SlasherType.INSTANT)) {
-            resp.response = ISlasher(slasher).slash(subnetwork, operator, amount, timestamp, hints);
+            response = ISlasher(slasher).slash(subnetwork, operator, amount, timestamp, hints);
+            emit InstantSlash(vault, subnetwork, response);
         } else if (slasherType == uint64(SlasherType.VETO)) {
-            resp.response = IVetoSlasher(slasher).requestSlash(subnetwork, operator, amount, timestamp, hints);
+            response = IVetoSlasher(slasher).requestSlash(subnetwork, operator, amount, timestamp, hints);
+            emit VetoSlash(vault, subnetwork, response);
         } else {
             revert UnknownSlasherType();
         }

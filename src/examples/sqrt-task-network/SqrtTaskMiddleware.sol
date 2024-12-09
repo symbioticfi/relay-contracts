@@ -165,4 +165,15 @@ contract SqrtTaskMiddleware is
             _slashVault(task.captureTimestamp, vault, subnetwork, task.operator, slashAmount, slashHints[i]);
         }
     }
+
+    function executeSlash(
+        uint48 epochStart,
+        address vault,
+        bytes32 subnetwork,
+        address operator,
+        uint256 amount,
+        bytes memory hints
+    ) external checkAccess {
+        _slashVault(epochStart, vault, subnetwork, operator, amount, hints);
+    }
 }
