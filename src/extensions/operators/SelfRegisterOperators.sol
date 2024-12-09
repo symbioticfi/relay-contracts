@@ -210,7 +210,9 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
      * @inheritdoc ISelfRegisterOperators
      */
     function registerOperatorVault(address operator, address vault, bytes memory signature) public {
-        require(_isOperatorRegistered(operator), "Operator not registered");
+        if (!_isOperatorRegistered(operator)) {
+            revert OperatorNotRegistered();
+        }
         _beforeRegisterOperatorVault(operator, vault);
         SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
