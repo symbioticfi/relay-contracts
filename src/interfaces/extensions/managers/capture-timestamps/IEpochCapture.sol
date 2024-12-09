@@ -21,4 +21,10 @@ interface IEpochCapture {
      * @return The current epoch
      */
     function getCurrentEpoch() external view returns (uint48);
+
+    /**
+     * @notice Returns the duration of each epoch
+     * @return The duration of each epoch
+     */
+    function getEpochDuration() external view returns (uint48);
 }

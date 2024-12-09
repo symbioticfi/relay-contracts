@@ -70,4 +70,12 @@ abstract contract EpochCapture is CaptureTimestampManager, IEpochCapture {
     function getCaptureTimestamp() public view override returns (uint48 timestamp) {
         return getEpochStart(getCurrentEpoch());
     }
+
+    /**
+     * @inheritdoc IEpochCapture
+     */
+    function getEpochDuration() public view returns (uint48) {
+        EpochCaptureStorage storage $ = _getEpochCaptureStorage();
+        return $.epochDuration;
+    }
 }
