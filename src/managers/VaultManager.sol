@@ -441,6 +441,38 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
         address[] memory vaults = _activeVaultsAt(timestamp, operator);
         uint160[] memory subnetworks = _activeSubnetworksAt(timestamp);
 
+        return _getOperatorPower(operator, vaults, subnetworks);
+    }
+
+    /**
+     * @notice Gets the total power amount for an operator across all vaults and subnetworks
+     * @param operator The operator address
+     * @param vaults The list of vault addresses
+     * @param subnetworks The list of subnetwork identifiers
+     * @return power The total power amount
+     */
+    function _getOperatorPower(
+        address operator,
+        address[] memory vaults,
+        uint160[] memory subnetworks
+    ) internal view returns (uint256 power) {
+        return _getOperatorPowerAt(getCaptureTimestamp(), operator, vaults, subnetworks);
+    }
+
+    /**
+     * @notice Gets the total power amount for an operator across all vaults and subnetworks at a specific timestamp
+     * @param timestamp The timestamp to check
+     * @param operator The operator address
+     * @param vaults The list of vault addresses
+     * @param subnetworks The list of subnetwork identifiers
+     * @return power The total power amount at the timestamp
+     */
+    function _getOperatorPowerAt(
+        uint48 timestamp,
+        address operator,
+        address[] memory vaults,
+        uint160[] memory subnetworks
+    ) internal view returns (uint256 power) {
         for (uint256 i; i < vaults.length; ++i) {
             address vault = vaults[i];
             for (uint256 j; j < subnetworks.length; ++j) {
