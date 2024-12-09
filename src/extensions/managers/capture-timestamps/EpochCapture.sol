@@ -30,7 +30,7 @@ abstract contract EpochCapture is CaptureTimestampManager, IEpochCapture {
     }
 
     /* 
-     * @notice initalizer of the Epochs contract.
+     * @notice initializer of the Epochs contract.
      * @param epochDuration The duration of each epoch.
      */
     function __EpochCapture_init(
