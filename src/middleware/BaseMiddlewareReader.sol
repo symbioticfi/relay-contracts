@@ -189,6 +189,23 @@ contract BaseMiddlewareReader is BaseMiddleware, NoAccessManager, NoKeyManager {
         return _getOperatorPowerAt(timestamp, operator);
     }
 
+    function getOperatorPower(
+        address operator,
+        address[] memory vaults,
+        uint160[] memory subnetworks
+    ) external view returns (uint256) {
+        return _getOperatorPower(operator, vaults, subnetworks);
+    }
+
+    function getOperatorPowerAt(
+        uint48 timestamp,
+        address operator,
+        address[] memory vaults,
+        uint160[] memory subnetworks
+    ) external view returns (uint256) {
+        return _getOperatorPowerAt(timestamp, operator, vaults, subnetworks);
+    }
+
     function totalPower(
         address[] memory operators
     ) external view returns (uint256) {

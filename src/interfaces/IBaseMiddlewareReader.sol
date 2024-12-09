@@ -115,6 +115,19 @@ interface IBaseMiddlewareReader {
 
     function getOperatorPowerAt(uint48 timestamp, address operator) external view returns (uint256);
 
+    function getOperatorPower(
+        address operator,
+        address[] memory vaults,
+        uint160[] memory subnetworks
+    ) external view returns (uint256);
+
+    function getOperatorPowerAt(
+        uint48 timestamp,
+        address operator,
+        address[] memory vaults,
+        uint160[] memory subnetworks
+    ) external view returns (uint256);
+
     function totalPower(
         address[] memory operators
     ) external view returns (uint256);

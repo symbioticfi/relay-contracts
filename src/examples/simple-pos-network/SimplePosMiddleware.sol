@@ -141,11 +141,11 @@ contract SimplePosMiddleware is
         params.epochStart = getEpochStart(epoch);
         params.operator = operatorByKey(abi.encode(key));
 
-        _checkCanSlash(epoch, key);
+        _checkCanSlash(params.epochStart, key, params.operator);
 
-        params.totalPower = _getOperatorPowerAt(params.epochStart, params.operator);
         params.vaults = _activeVaultsAt(params.epochStart, params.operator);
         params.subnetworks = _activeSubnetworksAt(params.epochStart);
+        params.totalPower = _getOperatorPower(params.operator, params.vaults, params.subnetworks);
         uint256 vaultsLength = params.vaults.length;
         uint256 subnetworksLength = params.subnetworks.length;
 
@@ -176,10 +176,7 @@ contract SimplePosMiddleware is
         }
     }
 
-    function _checkCanSlash(uint48 epoch, bytes32 key) internal view {
-        address operator = operatorByKey(abi.encode(key)); // Get the operator associated with the key
-        uint48 epochStart = getEpochStart(epoch); // Get the start timestamp for the epoch
-
+    function _checkCanSlash(uint48 epochStart, bytes32 key, address operator) internal view {
         if (operator == address(0)) {
             revert NotExistKeySlash(); // Revert if the operator does not exist
         }
