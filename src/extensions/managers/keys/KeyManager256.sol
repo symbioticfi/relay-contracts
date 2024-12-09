@@ -15,7 +15,6 @@ abstract contract KeyManager256 is KeyManager {
     using PauseableEnumerableSet for PauseableEnumerableSet.Bytes32Set;
 
     error DuplicateKey();
-    error KeyAlreadyEnabled();
     error MaxDisabledKeysReached();
 
     bytes32 private constant ZERO_BYTES32 = bytes32(0);

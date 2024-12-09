@@ -56,7 +56,11 @@ abstract contract EpochCapture is CaptureTimestampManager, IEpochCapture {
      */
     function getCurrentEpoch() public view returns (uint48) {
         EpochCaptureStorage storage $ = _getEpochCaptureStorage();
-        return (_now() - $.startTimestamp) / $.epochDuration;
+        if (_now() == $.startTimestamp) {
+            return 0;
+        }
+
+        return (_now() - $.startTimestamp - 1) / $.epochDuration;
     }
 
     /* 
