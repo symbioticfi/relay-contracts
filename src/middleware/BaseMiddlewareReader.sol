@@ -212,7 +212,7 @@ contract BaseMiddlewareReader is BaseMiddleware, NoAccessManager, NoKeyManager {
         return _totalPower(operators);
     }
 
-    function _getMiddleware() private view returns (address) {
+    function _getMiddleware() private pure returns (address) {
         address middleware;
         assembly {
             middleware := shr(96, calldataload(sub(calldatasize(), 20)))
