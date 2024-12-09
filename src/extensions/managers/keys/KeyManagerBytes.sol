@@ -26,9 +26,9 @@ abstract contract KeyManagerBytes is KeyManager {
         mapping(bytes => address) _keyToOperator;
     }
 
-    // keccak256(abi.encode(uint256(keccak256("symbioticfi.storage.KeyManagerBytes")) - 1)) & ~bytes32(uint256(0xff))
+    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.KeyManagerBytes")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant KeyManagerBytesStorageLocation =
-        0x00c0c7c8c5c9c4c3c2c1c0c7c8c5c9c4c3c2c1c0c7c8c5c9c4c3c2c1c0c7c800;
+        0x40e4e6d672540d8bc06612820fe8dc1fcfe7e420a91aaea066d48e4af34ab000;
 
     function _getKeyManagerBytesStorage() internal pure returns (KeyManagerBytesStorage storage s) {
         bytes32 location = KeyManagerBytesStorageLocation;
