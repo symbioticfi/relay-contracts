@@ -28,7 +28,6 @@ import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
  * - _operatorNetOptin: Service for verifying network opt-in status
  * - _operators: Set of registered operators with pause functionality
  */
-
 abstract contract OperatorManager is NetworkStorage, SlashingWindowStorage, CaptureTimestampManager {
     using PauseableEnumerableSet for PauseableEnumerableSet.AddressSet;
 

@@ -16,7 +16,6 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
  * Storage:
  * - SlashingWindowStorageLocation: Storage slot containing the slashing window duration
  */
-
 abstract contract SlashingWindowStorage is Initializable {
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.SlashingWindowStorage")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant SlashingWindowStorageLocation =
@@ -26,7 +25,6 @@ abstract contract SlashingWindowStorage is Initializable {
      * @notice Initializes the SlashingWindowStorage contract
      * @param _slashingWindow The duration of the slashing window in seconds
      */
-
     function __SlashingWindowStorage_init_private(
         uint48 _slashingWindow
     ) internal onlyInitializing {

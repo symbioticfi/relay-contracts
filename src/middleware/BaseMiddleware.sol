@@ -23,8 +23,7 @@ abstract contract BaseMiddleware is VaultManager, OperatorManager, AccessManager
     uint64 public constant BaseMiddleware_VERSION = 1;
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.BaseMiddleware")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant ReaderStorageLocation =
-        0xfd87879bc98f37af7578af722aecfbe5843e5ad354da2d1e70cb5157c4ec8800;
+    bytes32 private constant ReaderStorageLocation = 0xfd87879bc98f37af7578af722aecfbe5843e5ad354da2d1e70cb5157c4ec8800;
 
     /**
      * @notice Initializes the BaseMiddleware contract with required dependencies and parameters
@@ -32,7 +31,7 @@ abstract contract BaseMiddleware is VaultManager, OperatorManager, AccessManager
      * @param network The address of the network contract
      * @param slashingWindow The duration of the slashing window in blocks
      * @param vaultRegistry The address of the vault registry contract
-     * @param operatorRegistry The address of the operator registry contract 
+     * @param operatorRegistry The address of the operator registry contract
      * @param operatorNetOptin The address of the operator network opt-in contract
      * @param reader The address of the reader contract used for delegatecall
      */
