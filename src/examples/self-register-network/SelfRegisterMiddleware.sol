@@ -20,14 +20,14 @@ contract SelfRegisterMiddleware is
     TimestampCapture,
     EqualStakePower
 {
-    /*
-     * @notice Constructor for initializing the SelfRegisterMiddleware contract.
-     * @param network The address of the network.
-     * @param operatorRegistry The address of the operator registry.
-     * @param vaultRegistry The address of the vault registry.
-     * @param operatorNetOptin The address of the operator network opt-in service.
-     * @param owner The address of the contract owner.
+    /**
+     * @notice Constructor for initializing the SelfRegisterMiddleware contract
+     * @param network The address of the network
      * @param slashingWindow The duration of the slashing window
+     * @param vaultRegistry The address of the vault registry
+     * @param operatorRegistry The address of the operator registry
+     * @param operatorNetOptin The address of the operator network opt-in service
+     * @param reader The address of the reader contract used for delegatecall
      */
     constructor(
         address network,
@@ -35,9 +35,9 @@ contract SelfRegisterMiddleware is
         address vaultRegistry,
         address operatorRegistry,
         address operatorNetOptin,
-        address readHelper
+        address reader
     ) {
-        initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, readHelper);
+        initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader);
     }
 
     function initialize(
@@ -46,9 +46,9 @@ contract SelfRegisterMiddleware is
         address vaultRegistry,
         address operatorRegistry,
         address operatorNetOptIn,
-        address readHelper
+        address reader
     ) internal initializer {
-        __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn, readHelper);
+        __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn, reader);
         __SelfRegisterOperators_init("SelfRegisterMiddleware");
     }
 }
