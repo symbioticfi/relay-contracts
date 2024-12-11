@@ -13,7 +13,6 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
  * - Abstract implementation allowing different signature schemes
  * - Initializable pattern for upgradeable contracts
  */
-
 abstract contract SigManager is Initializable {
     /**
      * @notice Verifies that a signature was created by the owner of a key

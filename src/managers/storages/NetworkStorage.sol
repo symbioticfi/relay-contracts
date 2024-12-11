@@ -10,13 +10,12 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
  *
  * Key features:
  * - Immutable network address after initialization
- * - Single storage slot usage for gas efficiency 
+ * - Single storage slot usage for gas efficiency
  * - Assembly-level storage access
  *
  * Storage:
  * - NetworkStorageLocation: Storage slot containing the network address
  */
-
 abstract contract NetworkStorage is Initializable {
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.NetworkStorage")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant NetworkStorageLocation = 0x779150488f5e984d1f840ba606e388ada6c73b44f261274c3595c61a30023e00;
