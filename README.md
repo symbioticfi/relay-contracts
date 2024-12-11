@@ -6,6 +6,8 @@ This repository provides a framework for developing middleware in a modular and 
 
 ## Key Components:
 
+![Middleware Architecture](img/middleware.png)
+
 - **BaseMiddleware**: The foundational contract that combines core manager functionalities from `VaultManager`, `OperatorManager`, `AccessManager`, and `KeyManager`.
 
 - **Extensions**: Modular contracts that provide additional functionalities. Key extensions include:
@@ -127,7 +129,7 @@ To develop your middleware:
      }
      ```
 
-3. **Implement Required Functions** (Optional): Override functions as needed to implement your middleware's logic. Additionally, implement your own functions to extend the middleware's capabilities.
+3. **Custom Logic** (Optional): Override manager functions to implement custom logic without using extensions (e.g. `StakePower` manager). Additionally, implement your own functions to extend the middleware's capabilities.
 
 ## Example: Creating a Custom Middleware
 
