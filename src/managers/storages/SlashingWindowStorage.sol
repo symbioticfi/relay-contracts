@@ -7,14 +7,6 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
  * @title SlashingWindowStorage
  * @notice Storage contract for managing the slashing window duration
  * @dev Uses a single storage slot to store the slashing window duration value
- *
- * Key features:
- * - Immutable slashing window duration after initialization
- * - Single storage slot usage for gas efficiency
- * - Assembly-level storage access
- *
- * Storage:
- * - SlashingWindowStorageLocation: Storage slot containing the slashing window duration
  */
 abstract contract SlashingWindowStorage is Initializable {
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.SlashingWindowStorage")) - 1)) & ~bytes32(uint256(0xff))

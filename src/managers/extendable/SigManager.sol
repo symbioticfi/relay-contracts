@@ -7,11 +7,6 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
  * @title SigManager
  * @notice Abstract contract for verifying signatures against operator keys
  * @dev Provides signature verification functionality for operator keys
- *
- * Key features:
- * - Signature verification against operator keys
- * - Abstract implementation allowing different signature schemes
- * - Initializable pattern for upgradeable contracts
  */
 abstract contract SigManager is Initializable {
     /**
