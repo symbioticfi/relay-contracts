@@ -20,14 +20,14 @@ contract SelfRegisterEd25519Middleware is
     TimestampCapture,
     EqualStakePower
 {
-    /*
-     * @notice Constructor for initializing the SelfRegisterEd25519Middleware contract.
-     * @param network The address of the network.
-     * @param operatorRegistry The address of the operator registry.
-     * @param vaultRegistry The address of the vault registry.
-     * @param operatorNetOptin The address of the operator network opt-in service.
-     * @param owner The address of the contract owner.
+    /**
+     * @notice Constructor for initializing the SelfRegisterEd25519Middleware contract
+     * @param network The address of the network
      * @param slashingWindow The duration of the slashing window
+     * @param vaultRegistry The address of the vault registry
+     * @param operatorRegistry The address of the operator registry
+     * @param operatorNetOptin The address of the operator network opt-in service
+     * @param reader The address of the reader contract used for delegatecall
      */
     constructor(
         address network,
