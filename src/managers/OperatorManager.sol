@@ -16,17 +16,6 @@ import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
  * @notice Manages operator registration and validation for the protocol
  * @dev Inherits from NetworkStorage, SlashingWindowStorage, and CaptureTimestampManager
  * to provide operator management functionality with network awareness and time-based features
- *
- * Key features:
- * - Operator registration and validation
- * - Network opt-in verification
- * - Pauseable operator enumeration
- * - Timestamp-based operator management
- *
- * Storage:
- * - _operatorRegistry: Registry contract for validating operators
- * - _operatorNetOptin: Service for verifying network opt-in status
- * - _operators: Set of registered operators with pause functionality
  */
 abstract contract OperatorManager is NetworkStorage, SlashingWindowStorage, CaptureTimestampManager {
     using PauseableEnumerableSet for PauseableEnumerableSet.AddressSet;
