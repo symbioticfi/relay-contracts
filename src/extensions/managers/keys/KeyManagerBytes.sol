@@ -81,8 +81,6 @@ abstract contract KeyManagerBytes is KeyManager {
      * @dev Handles key rotation by disabling old key and registering new one
      * @param operator The operator address to update
      * @param key The new key to register
-     * @custom:throws DuplicateKey if key is already registered to another operator
-     * @custom:throws MaxDisabledKeysReached if operator has too many disabled keys
      */
     function _updateKey(address operator, bytes memory key) internal override {
         KeyManagerBytesStorage storage $ = _getKeyManagerBytesStorage();

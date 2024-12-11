@@ -129,7 +129,7 @@ abstract contract OzAccessControl is AccessManager, IOzAccessControl {
     }
 
     /**
-     * @notice public function to grant a role
+     * @notice Grants a role
      * @param role The role to grant
      * @param account The account to grant the role to
      * @return bool True if role was granted
@@ -145,7 +145,7 @@ abstract contract OzAccessControl is AccessManager, IOzAccessControl {
     }
 
     /**
-     * @notice public function to revoke a role
+     * @notice Revokes a role
      * @param role The role to revoke
      * @param account The account to revoke the role from
      * @return bool True if role was revoked

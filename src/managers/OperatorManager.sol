@@ -11,6 +11,24 @@ import {CaptureTimestampManager} from "./extendable/CaptureTimestampManager.sol"
 
 import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
+/**
+ * @title OperatorManager
+ * @notice Manages operator registration and validation for the protocol
+ * @dev Inherits from NetworkStorage, SlashingWindowStorage, and CaptureTimestampManager
+ * to provide operator management functionality with network awareness and time-based features
+ *
+ * Key features:
+ * - Operator registration and validation
+ * - Network opt-in verification
+ * - Pauseable operator enumeration
+ * - Timestamp-based operator management
+ *
+ * Storage:
+ * - _operatorRegistry: Registry contract for validating operators
+ * - _operatorNetOptin: Service for verifying network opt-in status
+ * - _operators: Set of registered operators with pause functionality
+ */
+
 abstract contract OperatorManager is NetworkStorage, SlashingWindowStorage, CaptureTimestampManager {
     using PauseableEnumerableSet for PauseableEnumerableSet.AddressSet;
 
@@ -140,8 +158,6 @@ abstract contract OperatorManager is NetworkStorage, SlashingWindowStorage, Capt
     /**
      * @notice Registers a new operator
      * @param operator The address of the operator to register
-     * @custom:throws NotOperator if operator is not registered in the operator registry
-     * @custom:throws OperatorNotOptedIn if operator has not opted into the network
      */
     function _registerOperator(
         address operator

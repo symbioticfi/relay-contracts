@@ -45,15 +45,16 @@ contract SimplePosMiddleware is
         uint160[] subnetworks;
     }
 
-    /* 
-     * @notice Constructor for initializing the SimpleMiddleware contract.
-     * @param network The address of the network.
-     * @param operatorRegistry The address of the operator registry.
-     * @param vaultRegistry The address of the vault registry.
-     * @param operatorNetOptin The address of the operator network opt-in service.
-     * @param owner The address of the contract owner.
-     * @param epochDuration The duration of each epoch.
+    /**
+     * @notice Constructor for initializing the SimplePosMiddleware contract
+     * @param network The address of the network
      * @param slashingWindow The duration of the slashing window
+     * @param vaultRegistry The address of the vault registry
+     * @param operatorRegistry The address of the operator registry
+     * @param operatorNetOptin The address of the operator network opt-in service
+     * @param reader The address of the reader contract used for delegatecall
+     * @param owner The address of the contract owner
+     * @param epochDuration The duration of each epoch
      */
     constructor(
         address network,
@@ -61,12 +62,12 @@ contract SimplePosMiddleware is
         address vaultRegistry,
         address operatorRegistry,
         address operatorNetOptin,
-        address readHelper,
+        address reader,
         address owner,
         uint48 epochDuration
     ) {
         initialize(
-            network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, readHelper, owner, epochDuration
+            network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader, owner, epochDuration
         );
     }
 
@@ -76,11 +77,11 @@ contract SimplePosMiddleware is
         address vaultRegistry,
         address operatorRegistry,
         address operatorNetOptin,
-        address readHelper,
+        address reader,
         address owner,
         uint48 epochDuration
     ) internal initializer {
-        __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, readHelper);
+        __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader);
         __OwnableAccessManager_init(owner);
         __EpochCapture_init(epochDuration);
     }
