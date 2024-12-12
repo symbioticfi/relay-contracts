@@ -60,7 +60,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
      */
     function __SelfRegisterOperators_init(
         string memory name
-    ) public onlyInitializing {
+    ) internal onlyInitializing {
         __EIP712_init(name, "1.0");
     }
 
