@@ -35,7 +35,7 @@ Below are examples of middleware implementations using different combinations of
 
 #### SimplePosMiddleware
 ```solidity
-contract SimplePosMiddleware is SharedVaults, Operators, KeyStorage256, OwnableAccessManager, EpochCapture, EqualStakePower {
+contract SimplePosMiddleware is SharedVaults, Operators, KeyManager256, OwnableAccessManager, EpochCapture, EqualStakePower {
     // Implementation details...
 }
 ```
@@ -49,7 +49,7 @@ Features:
 #### SqrtTaskMiddleware
 
 ```solidity
-contract SqrtTaskMiddleware is SharedVaults, Operators, NoKeyStorage, EIP712, OwnableAccessManager, TimestampCapture, EqualStakePower {
+contract SqrtTaskMiddleware is SharedVaults, Operators, NoKeyManager, EIP712, OwnableAccessManager, TimestampCapture, EqualStakePower {
     // Implementation details...
 }
 ```
@@ -63,7 +63,7 @@ Features:
 #### SelfRegisterMiddleware
 
 ```solidity
-contract SelfRegisterMiddleware is SharedVaults, SelfRegisterOperators, KeyStorage256, ECDSASig, NoAccessManager, TimestampCapture, EqualStakePower {
+contract SelfRegisterMiddleware is SharedVaults, SelfRegisterOperators, KeyManager256, ECDSASig, NoAccessManager, TimestampCapture, EqualStakePower {
     // Implementation details...
 }
 ```
@@ -77,7 +77,7 @@ Features:
 #### SelfRegisterEd25519Middleware
 
 ```solidity
-contract SelfRegisterEd25519Middleware is SharedVaults, SelfRegisterOperators, KeyStorage256, EdDSASig, NoAccessManager, TimestampCapture {
+contract SelfRegisterEd25519Middleware is SharedVaults, SelfRegisterOperators, KeyManager256, EdDSASig, NoAccessManager, TimestampCapture {
     // Implementation details...
 }
 ```
@@ -85,6 +85,18 @@ contract SelfRegisterEd25519Middleware is SharedVaults, SelfRegisterOperators, K
 Features:
 
 - Similar to `SelfRegisterMiddleware` but uses Ed25519 keys and EdDSA signatures.
+
+#### SelfRegisterSqrtTaskMiddleware
+
+```solidity
+contract SelfRegisterSqrtTaskMiddleware is SharedVaults, SelfRegisterOperators, KeyManager256, ECDSASig, OwnableAccessManager, TimestampCapture, EqualStakePower {
+    // Implementation details...
+}
+```
+
+Features:
+
+- Similar to `SqrtTaskMiddleware` but allows self-registration of operators, permissionless shared vaults management and uses ECDSA signatures and keys.
 
 ## Getting Started
 
