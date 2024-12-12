@@ -83,7 +83,7 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
         }
     }
 
-    uint96 private constant DEFAULT_SUBNETWORK = 0;
+    uint96 internal constant DEFAULT_SUBNETWORK = 0;
 
     /**
      * @notice Initializes the VaultManager with required parameters

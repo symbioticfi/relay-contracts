@@ -1,12 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
+import {INetworkRegistry} from "@symbiotic/interfaces/INetworkRegistry.sol";
 import {IVault} from "@symbiotic/interfaces/vault/IVault.sol";
 import {IBaseDelegator} from "@symbiotic/interfaces/delegator/IBaseDelegator.sol";
 import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
+
+import {AccessManager} from "../../managers/extendable/AccessManager.sol";
 
 import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SharedVaults} from "../../extensions/SharedVaults.sol";
@@ -48,7 +51,7 @@ contract SelfRegisterSqrtTaskMiddleware is
     Task[] public tasks;
 
     constructor(
-        address network,
+        address networkRegistry,
         uint48 slashingWindow,
         address operatorRegistry,
         address vaultRegistry,
@@ -56,11 +59,11 @@ contract SelfRegisterSqrtTaskMiddleware is
         address reader,
         address owner
     ) {
-        initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader, owner);
+        initialize(networkRegistry, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader, owner);
     }
 
     function initialize(
-        address network,
+        address networkRegistry,
         uint48 slashingWindow,
         address vaultRegistry,
         address operatorRegistry,
@@ -68,9 +71,21 @@ contract SelfRegisterSqrtTaskMiddleware is
         address reader,
         address owner
     ) internal initializer {
-        __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader);
+        INetworkRegistry(networkRegistry).registerNetwork();
+        __BaseMiddleware_init(address(this), slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader);
         __OwnableAccessManager_init(owner);
         __SelfRegisterOperators_init("SelfRegisterSqrtTaskMiddleware");
+    }
+
+    // allow anyone to register shared vaults
+    function _checkAccess() internal view override(AccessManager, OwnableAccessManager) {
+        if (
+            msg.sig == this.registerSharedVault.selector || msg.sig == this.unregisterSharedVault.selector
+                || msg.sig == this.pauseSharedVault.selector
+        ) {
+            return;
+        }
+        OwnableAccessManager._checkAccess();
     }
 
     function createTask(uint256 value, address operator) external returns (uint256 taskIndex) {
@@ -175,5 +190,15 @@ contract SelfRegisterSqrtTaskMiddleware is
         bytes memory hints
     ) external checkAccess {
         _slashVault(epochStart, vault, subnetwork, operator, amount, hints);
+    }
+
+    function _beforeRegisterSharedVault(
+        address sharedVault
+    ) internal override {
+        IBaseDelegator(IVault(sharedVault).delegator()).setMaxNetworkLimit(DEFAULT_SUBNETWORK, type(uint256).max);
+    }
+
+    function _beforeRegisterOperatorVault(address operator, address vault) internal override {
+        IBaseDelegator(IVault(vault).delegator()).setMaxNetworkLimit(DEFAULT_SUBNETWORK, type(uint256).max);
     }
 }
