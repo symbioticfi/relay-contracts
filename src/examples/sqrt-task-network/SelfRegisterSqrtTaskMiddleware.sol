@@ -70,7 +70,7 @@ contract SelfRegisterSqrtTaskMiddleware is
     ) internal initializer {
         __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader);
         __OwnableAccessManager_init(owner);
-        __SelfRegisterOperators_init("SqrtTaskMiddleware");
+        __SelfRegisterOperators_init("SelfRegisterSqrtTaskMiddleware");
     }
 
     function createTask(uint256 value, address operator) external returns (uint256 taskIndex) {
