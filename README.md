@@ -1,4 +1,4 @@
-# Middleware Development Guide [**!!!WIP!!!**]
+# Middleware Development Guide
 
 **Warning: The SDK is a work in progress and is currently under audits. Use with caution.**
 
