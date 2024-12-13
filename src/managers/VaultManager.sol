@@ -716,8 +716,13 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
         uint48 vaultEpoch = IVault(vault).epochDuration();
 
         address slasher = IVault(vault).slasher();
-        if (slasher != address(0) && IEntity(slasher).TYPE() == uint64(SlasherType.VETO)) {
-            vaultEpoch -= IVetoSlasher(slasher).vetoDuration();
+        if (slasher != address(0)) {
+            uint64 slasherType = IEntity(slasher).TYPE();
+            if (slasherType == uint64(SlasherType.VETO)) {
+                vaultEpoch -= IVetoSlasher(slasher).vetoDuration();
+            } else if (slasherType > uint64(SlasherType.VETO)) {
+                revert UnknownSlasherType();
+            }
         }
 
         if (vaultEpoch < _SLASHING_WINDOW()) {
