@@ -35,6 +35,9 @@ contract SelfRegisterSqrtTaskMiddleware is
 
     error InvalidHints();
     error TaskCompleted();
+    error TooManyOperators();
+    error TooManyOperatorVaults();
+    error TooManySharedVaults();
 
     event CreateTask(uint256 indexed taskIndex);
     event CompleteTask(uint256 indexed taskIndex, bool isValidAnswer);
@@ -47,6 +50,10 @@ contract SelfRegisterSqrtTaskMiddleware is
     }
 
     bytes32 private constant COMPLETE_TASK_TYPEHASH = keccak256("CompleteTask(uint256 taskIndex,uint256 answer)");
+
+    uint256 public constant MAX_OPERATORS = 100;
+    uint256 public constant MAX_OPERATOR_VAULTS = 40;
+    uint256 public constant MAX_SHARED_VAULTS = 60;
 
     Task[] public tasks;
 
@@ -192,13 +199,34 @@ contract SelfRegisterSqrtTaskMiddleware is
         _slashVault(epochStart, vault, subnetwork, operator, amount, hints);
     }
 
+    /// @notice Prevents DOS by limiting total number of shared vaults that can be registered
+    /// @dev MAX_SHARED_VAULTS constant prevents unbounded iteration when looping through shared vaults 
     function _beforeRegisterSharedVault(
         address sharedVault
     ) internal override {
+        super._beforeRegisterSharedVault(sharedVault);
+        if (_sharedVaultsLength() >= MAX_SHARED_VAULTS) {
+            revert TooManySharedVaults();
+        }
         IBaseDelegator(IVault(sharedVault).delegator()).setMaxNetworkLimit(DEFAULT_SUBNETWORK, type(uint256).max);
     }
 
+    /// @notice Prevents DOS by limiting number of vaults per operator
+    /// @dev MAX_OPERATOR_VAULTS constant prevents unbounded iteration when looping through an operator's vaults
     function _beforeRegisterOperatorVault(address operator, address vault) internal override {
+        super._beforeRegisterOperatorVault(operator, vault);
+        if (_operatorVaultsLength(operator) >= MAX_OPERATOR_VAULTS) {
+            revert TooManyOperatorVaults();
+        }
         IBaseDelegator(IVault(vault).delegator()).setMaxNetworkLimit(DEFAULT_SUBNETWORK, type(uint256).max);
+    }
+
+    /// @notice Prevents DOS by limiting total number of operators that can be registered
+    /// @dev MAX_OPERATORS constant prevents unbounded iteration when looping through operators
+    function _beforeRegisterOperator(address operator, bytes memory key, address vault) internal virtual override {
+        super._beforeRegisterOperator(operator, key, vault);
+        if (_operatorsLength() >= MAX_OPERATORS) {
+            revert TooManyOperators();
+        }
     }
 }
