@@ -200,7 +200,7 @@ contract SelfRegisterSqrtTaskMiddleware is
     }
 
     /// @notice Prevents DOS by limiting total number of shared vaults that can be registered
-    /// @dev MAX_SHARED_VAULTS constant prevents unbounded iteration when looping through shared vaults 
+    /// @dev MAX_SHARED_VAULTS constant prevents unbounded iteration when looping through shared vaults
     function _beforeRegisterSharedVault(
         address sharedVault
     ) internal override {
