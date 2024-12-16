@@ -51,7 +51,8 @@ contract SigTests is POCBaseTest {
             address(vaultFactory),
             address(operatorRegistry),
             address(operatorNetworkOptInService),
-            readHelper
+            readHelper,
+            alice
         );
 
         ed25519Middleware = new SelfRegisterEd25519Middleware(
@@ -60,7 +61,8 @@ contract SigTests is POCBaseTest {
             address(vaultFactory),
             address(operatorRegistry),
             address(operatorNetworkOptInService),
-            readHelper
+            readHelper,
+            alice
         );
 
         _registerNetwork(address(0x123), address(middleware));
