@@ -298,7 +298,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
     /**
      * @notice Verifies a key signature
      * @param operator The address of the operator
-     * @param key The public key to verify
+     * @param key The public key to verify (zero key is allowed for deletion)
      * @param signature The signature to verify
      */
     function _verifyKey(address operator, bytes memory key, bytes memory signature) internal {
