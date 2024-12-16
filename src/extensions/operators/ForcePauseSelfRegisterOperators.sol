@@ -38,7 +38,9 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
         ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
         $.forcePaused[operator] = true;
         _beforePauseOperator(operator);
-        _pauseOperator(operator);
+        if (_operatorWasActiveAt(_now(), operator)) {
+            _pauseOperator(operator);
+        }
     }
 
     /**
@@ -63,7 +65,6 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
         _unregisterOperator(operator);
     }
 
-
     /**
      * @inheritdoc IForcePauseSelfRegisterOperators
      */
@@ -71,7 +72,9 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
         ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
         $.forcePausedVault[operator][vault] = true;
         _beforePauseOperatorVault(operator, vault);
-        _pauseOperatorVault(operator, vault);
+        if (_operatorVaultWasActiveAt(_now(), operator, vault)) {
+            _pauseOperatorVault(operator, vault);
+        }
     }
 
     /**
