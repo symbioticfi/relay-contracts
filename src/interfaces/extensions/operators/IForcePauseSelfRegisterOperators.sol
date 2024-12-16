@@ -28,6 +28,14 @@ interface IForcePauseSelfRegisterOperators is ISelfRegisterOperators {
     ) external;
 
     /**
+     * @notice Forces an operator to be unregistered
+     * @param operator The address of the operator to unregister
+     */
+    function forceUnregisterOperator(
+        address operator
+    ) external;
+
+    /**
      * @notice Forces a specific operator-vault pair to be paused
      * @param operator The address of the operator
      * @param vault The address of the vault
@@ -40,4 +48,12 @@ interface IForcePauseSelfRegisterOperators is ISelfRegisterOperators {
      * @param vault The address of the vault
      */
     function forceUnpauseOperatorVault(address operator, address vault) external;
+
+    /**
+    /**
+     * @notice Forces a specific operator-vault pair to be unregistered
+     * @param operator The address of the operator
+     * @param vault The address of the vault
+     */
+    function forceUnregisterOperatorVault(address operator, address vault) external;
 }

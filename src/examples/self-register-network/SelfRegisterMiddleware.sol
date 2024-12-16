@@ -6,7 +6,7 @@ import {SharedVaults} from "../../extensions/SharedVaults.sol";
 import {SelfRegisterOperators} from "../../extensions/operators/SelfRegisterOperators.sol";
 
 import {ECDSASig} from "../../extensions/managers/sigs/ECDSASig.sol";
-import {NoAccessManager} from "../../extensions/managers/access/NoAccessManager.sol";
+import {OwnableAccessManager} from "../../extensions/managers/access/OwnableAccessManager.sol";
 import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
 import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
 import {KeyManager256} from "../../extensions/managers/keys/KeyManager256.sol";
@@ -16,7 +16,7 @@ contract SelfRegisterMiddleware is
     SelfRegisterOperators,
     KeyManager256,
     ECDSASig,
-    NoAccessManager,
+    OwnableAccessManager,
     TimestampCapture,
     EqualStakePower
 {
@@ -28,6 +28,7 @@ contract SelfRegisterMiddleware is
      * @param operatorRegistry The address of the operator registry
      * @param operatorNetOptin The address of the operator network opt-in service
      * @param reader The address of the reader contract used for delegatecall
+     * @param owner The address of the owner
      */
     constructor(
         address network,
@@ -35,9 +36,10 @@ contract SelfRegisterMiddleware is
         address vaultRegistry,
         address operatorRegistry,
         address operatorNetOptin,
-        address reader
+        address reader,
+        address owner
     ) {
-        initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader);
+        initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader, owner);
     }
 
     function initialize(
@@ -46,9 +48,11 @@ contract SelfRegisterMiddleware is
         address vaultRegistry,
         address operatorRegistry,
         address operatorNetOptIn,
-        address reader
+        address reader,
+        address owner
     ) internal initializer {
         __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn, reader);
         __SelfRegisterOperators_init("SelfRegisterMiddleware");
+        __OwnableAccessManager_init(owner);
     }
 }

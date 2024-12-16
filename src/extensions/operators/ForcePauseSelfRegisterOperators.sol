@@ -56,6 +56,17 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
     /**
      * @inheritdoc IForcePauseSelfRegisterOperators
      */
+    function forceUnregisterOperator(
+        address operator
+    ) public checkAccess {
+        _beforeUnregisterOperator(operator);
+        _unregisterOperator(operator);
+    }
+
+
+    /**
+     * @inheritdoc IForcePauseSelfRegisterOperators
+     */
     function forcePauseOperatorVault(address operator, address vault) public checkAccess {
         ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
         $.forcePausedVault[operator][vault] = true;
@@ -71,6 +82,14 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
         $.forcePausedVault[operator][vault] = false;
         _beforeUnpauseOperatorVault(operator, vault);
         _unpauseOperatorVault(operator, vault);
+    }
+
+    /**
+     * @inheritdoc IForcePauseSelfRegisterOperators
+     */
+    function forceUnregisterOperatorVault(address operator, address vault) public checkAccess {
+        _beforeUnregisterOperatorVault(operator, vault);
+        _unregisterOperatorVault(operator, vault);
     }
 
     /**
