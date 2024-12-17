@@ -20,12 +20,6 @@ contract SelfRegisterMiddleware is
     TimestampCapture,
     EqualStakePower
 {
-    error TooManyOperators();
-    error TooManyOperatorVaults();
-
-    uint256 public constant MAX_OPERATORS = 100;
-    uint256 public constant MAX_OPERATOR_VAULTS = 40;
-
     /**
      * @notice Constructor for initializing the SelfRegisterMiddleware contract
      * @param network The address of the network
@@ -60,23 +54,5 @@ contract SelfRegisterMiddleware is
         __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn, reader);
         __SelfRegisterOperators_init("SelfRegisterMiddleware");
         __OwnableAccessManager_init(owner);
-    }
-
-    /// @notice Prevents DOS by limiting total number of operators that can be registered
-    /// @dev MAX_OPERATORS constant prevents unbounded iteration when looping through operators
-    function _beforeRegisterOperator(address operator, bytes memory key, address vault) internal virtual override {
-        super._beforeRegisterOperator(operator, key, vault);
-        if (_operatorsLength() >= MAX_OPERATORS) {
-            revert TooManyOperators();
-        }
-    }
-
-    /// @notice Prevents DOS by limiting number of vaults per operator
-    /// @dev MAX_OPERATOR_VAULTS constant prevents unbounded iteration when looping through an operator's vaults
-    function _beforeRegisterOperatorVault(address operator, address vault) internal virtual override {
-        super._beforeRegisterOperatorVault(operator, vault);
-        if (_operatorVaultsLength(operator) >= MAX_OPERATOR_VAULTS) {
-            revert TooManyOperatorVaults();
-        }
     }
 }

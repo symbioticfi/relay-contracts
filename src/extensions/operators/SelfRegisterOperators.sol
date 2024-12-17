@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
+import {Operators} from "./Operators.sol";
 import {SigManager} from "../../managers/extendable/SigManager.sol";
 import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
 import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
@@ -11,12 +11,13 @@ import {ISelfRegisterOperators} from "../../interfaces/extensions/operators/ISel
  * @title SelfRegisterOperators
  * @notice Contract for self-registration and management of operators with signature verification
  * @dev Extends BaseMiddleware, SigManager, and EIP712Upgradeable to provide signature-based operator management
+ * @dev CAUTION: If activeOperators functionality is needed, use ApprovalRegisterOperators instead to prevent DOS attacks
  */
-abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upgradeable, ISelfRegisterOperators {
+abstract contract SelfRegisterOperators is Operators, SigManager, EIP712Upgradeable, ISelfRegisterOperators {
     uint64 public constant SelfRegisterOperators_VERSION = 1;
 
     // EIP-712 TypeHash constants
-    bytes32 private constant REGISTER_OPERATOR_TYPEHASH =
+    bytes32 internal constant REGISTER_OPERATOR_TYPEHASH =
         keccak256("RegisterOperator(address operator,bytes key,address vault,uint256 nonce)");
     bytes32 private constant UNREGISTER_OPERATOR_TYPEHASH =
         keccak256("UnregisterOperator(address operator,uint256 nonce)");
@@ -41,7 +42,7 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
     bytes32 private constant SelfResgisterOperators_STORAGE_LOCATION =
         0x7c1bcd600c3fcfbc53470fac03a90d5cf6aa7b77c3f1ed10e6c6bd4d192eaf00;
 
-    function _getSelfRegisterOperatorsStorage() private pure returns (SelfRegisterOperatorsStorage storage $) {
+    function _getSelfRegisterOperatorsStorage() internal pure returns (SelfRegisterOperatorsStorage storage $) {
         bytes32 location = SelfResgisterOperators_STORAGE_LOCATION;
         assembly {
             $.slot := location
@@ -67,16 +68,9 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
     /**
      * @inheritdoc ISelfRegisterOperators
      */
-    function registerOperator(bytes memory key, address vault, bytes memory signature) public {
+    function registerOperator(bytes memory key, address vault, bytes memory signature) public virtual override {
         _verifyKey(msg.sender, key, signature);
-        _beforeRegisterOperator(msg.sender, key, vault);
-        _registerOperator(msg.sender);
-        _beforeUpdateOperatorKey(msg.sender, key);
-        _updateKey(msg.sender, key);
-        if (vault != address(0)) {
-            _beforeRegisterOperatorVault(msg.sender, vault);
-            _registerOperatorVault(msg.sender, vault);
-        }
+        _registerOperatorImpl(msg.sender, key, vault);
     }
 
     /**
@@ -88,91 +82,77 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
         address vault,
         bytes memory signature,
         bytes memory keySignature
-    ) public {
+    ) public virtual {
+        _verifyKey(operator, key, keySignature);
         SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator,
             keccak256(abi.encode(REGISTER_OPERATOR_TYPEHASH, operator, keccak256(key), vault, $.nonces[operator]++)),
             signature
         );
-        _verifyKey(operator, key, keySignature);
-        _beforeRegisterOperator(operator, key, vault);
-        _registerOperator(operator);
-        _beforeUpdateOperatorKey(operator, key);
-        _updateKey(operator, key);
-        if (vault != address(0)) {
-            _beforeRegisterOperatorVault(operator, vault);
-            _registerOperatorVault(operator, vault);
-        }
+        _registerOperatorImpl(operator, key, vault);
     }
 
     /**
      * @inheritdoc ISelfRegisterOperators
      */
-    function unregisterOperator() public {
-        _beforeUnregisterOperator(msg.sender);
-        _unregisterOperator(msg.sender);
+    function unregisterOperator() public override {
+        _unregisterOperatorImpl(msg.sender);
     }
 
     /**
      * @inheritdoc ISelfRegisterOperators
      */
     function unregisterOperator(address operator, bytes memory signature) public {
-        _beforeUnregisterOperator(operator);
         SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator, keccak256(abi.encode(UNREGISTER_OPERATOR_TYPEHASH, operator, $.nonces[operator]++)), signature
         );
-        _unregisterOperator(operator);
+        _unregisterOperatorImpl(operator);
     }
 
     /**
      * @inheritdoc ISelfRegisterOperators
      */
-    function pauseOperator() public {
-        _beforePauseOperator(msg.sender);
-        _pauseOperator(msg.sender);
+    function pauseOperator() public override {
+        _pauseOperatorImpl(msg.sender);
     }
 
     /**
      * @inheritdoc ISelfRegisterOperators
      */
     function pauseOperator(address operator, bytes memory signature) public {
-        _beforePauseOperator(operator);
         SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator, keccak256(abi.encode(PAUSE_OPERATOR_TYPEHASH, operator, $.nonces[operator]++)), signature
         );
-        _pauseOperator(operator);
+        _pauseOperatorImpl(operator);
     }
 
     /**
      * @inheritdoc ISelfRegisterOperators
      */
-    function unpauseOperator() public {
-        _beforeUnpauseOperator(msg.sender);
-        _unpauseOperator(msg.sender);
+    function unpauseOperator() public override {
+        _unpauseOperatorImpl(msg.sender);
     }
 
     /**
      * @inheritdoc ISelfRegisterOperators
      */
     function unpauseOperator(address operator, bytes memory signature) public {
-        _beforeUnpauseOperator(operator);
         SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator, keccak256(abi.encode(UNPAUSE_OPERATOR_TYPEHASH, operator, $.nonces[operator]++)), signature
         );
-        _unpauseOperator(operator);
+        _unpauseOperatorImpl(operator);
     }
 
     /**
      * @inheritdoc ISelfRegisterOperators
      */
-    function updateOperatorKey(bytes memory key, bytes memory signature) public {
+    function updateOperatorKey(bytes memory key, bytes memory signature) public override {
         _verifyKey(msg.sender, key, signature);
-        _beforeUpdateOperatorKey(msg.sender, key);
-        _updateKey(msg.sender, key);
+        _updateOperatorKeyImpl(msg.sender, key);
     }
 
     /**
@@ -184,15 +164,14 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
         bytes memory signature,
         bytes memory keySignature
     ) public {
+        _verifyKey(operator, key, keySignature);
         SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator,
             keccak256(abi.encode(UPDATE_OPERATOR_KEY_TYPEHASH, operator, keccak256(key), $.nonces[operator]++)),
             signature
         );
-        _verifyKey(operator, key, keySignature);
-        _beforeUpdateOperatorKey(operator, key);
-        _updateKey(operator, key);
+        _updateOperatorKeyImpl(operator, key);
     }
 
     /**
@@ -200,10 +179,8 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
      */
     function registerOperatorVault(
         address vault
-    ) public {
-        require(_isOperatorRegistered(msg.sender), "Operator not registered");
-        _beforeRegisterOperatorVault(msg.sender, vault);
-        _registerOperatorVault(msg.sender, vault);
+    ) public override {
+        _registerOperatorVaultImpl(msg.sender, vault);
     }
 
     /**
@@ -213,14 +190,13 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
         if (!_isOperatorRegistered(operator)) {
             revert OperatorNotRegistered();
         }
-        _beforeRegisterOperatorVault(operator, vault);
         SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator,
             keccak256(abi.encode(REGISTER_OPERATOR_VAULT_TYPEHASH, operator, vault, $.nonces[operator]++)),
             signature
         );
-        _registerOperatorVault(operator, vault);
+        _registerOperatorVaultImpl(operator, vault);
     }
 
     /**
@@ -228,23 +204,21 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
      */
     function unregisterOperatorVault(
         address vault
-    ) public {
-        _beforeUnregisterOperatorVault(msg.sender, vault);
-        _unregisterOperatorVault(msg.sender, vault);
+    ) public override {
+        _unregisterOperatorVaultImpl(msg.sender, vault);
     }
 
     /**
      * @inheritdoc ISelfRegisterOperators
      */
     function unregisterOperatorVault(address operator, address vault, bytes memory signature) public {
-        _beforeUnregisterOperatorVault(operator, vault);
         SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator,
             keccak256(abi.encode(UNREGISTER_OPERATOR_VAULT_TYPEHASH, operator, vault, $.nonces[operator]++)),
             signature
         );
-        _unregisterOperatorVault(operator, vault);
+        _unregisterOperatorVaultImpl(operator, vault);
     }
 
     /**
@@ -252,23 +226,21 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
      */
     function pauseOperatorVault(
         address vault
-    ) public {
-        _beforePauseOperatorVault(msg.sender, vault);
-        _pauseOperatorVault(msg.sender, vault);
+    ) public override {
+        _pauseOperatorVaultImpl(msg.sender, vault);
     }
 
     /**
      * @inheritdoc ISelfRegisterOperators
      */
     function pauseOperatorVault(address operator, address vault, bytes memory signature) public {
-        _beforePauseOperatorVault(operator, vault);
         SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator,
             keccak256(abi.encode(PAUSE_OPERATOR_VAULT_TYPEHASH, operator, vault, $.nonces[operator]++)),
             signature
         );
-        _pauseOperatorVault(operator, vault);
+        _pauseOperatorVaultImpl(operator, vault);
     }
 
     /**
@@ -276,23 +248,21 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
      */
     function unpauseOperatorVault(
         address vault
-    ) public {
-        _beforeUnpauseOperatorVault(msg.sender, vault);
-        _unpauseOperatorVault(msg.sender, vault);
+    ) public override {
+        _unpauseOperatorVaultImpl(msg.sender, vault);
     }
 
     /**
      * @inheritdoc ISelfRegisterOperators
      */
     function unpauseOperatorVault(address operator, address vault, bytes memory signature) public {
-        _beforeUnpauseOperatorVault(operator, vault);
         SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator,
             keccak256(abi.encode(UNPAUSE_OPERATOR_VAULT_TYPEHASH, operator, vault, $.nonces[operator]++)),
             signature
         );
-        _unpauseOperatorVault(operator, vault);
+        _unpauseOperatorVaultImpl(operator, vault);
     }
 
     /**
@@ -318,71 +288,4 @@ abstract contract SelfRegisterOperators is BaseMiddleware, SigManager, EIP712Upg
             revert InvalidSignature();
         }
     }
-
-    /**
-     * @notice Hook called before updating an operator's key
-     * @param operator The operator address
-     * @param key The new key
-     */
-    function _beforeUpdateOperatorKey(address operator, bytes memory key) internal virtual {}
-
-    /**
-     * @notice Hook called before registering an operator
-     * @param operator The operator address
-     * @param key The operator's key
-     * @param vault Optional vault address
-     */
-    function _beforeRegisterOperator(address operator, bytes memory key, address vault) internal virtual {}
-
-    /**
-     * @notice Hook called before unregistering an operator
-     * @param operator The operator address
-     */
-    function _beforeUnregisterOperator(
-        address operator
-    ) internal virtual {}
-
-    /**
-     * @notice Hook called before pausing an operator
-     * @param operator The operator address
-     */
-    function _beforePauseOperator(
-        address operator
-    ) internal virtual {}
-
-    /**
-     * @notice Hook called before unpausing an operator
-     * @param operator The operator address
-     */
-    function _beforeUnpauseOperator(
-        address operator
-    ) internal virtual {}
-
-    /**
-     * @notice Hook called before registering an operator vault
-     * @param operator The operator address
-     * @param vault The vault address
-     */
-    function _beforeRegisterOperatorVault(address operator, address vault) internal virtual {}
-
-    /**
-     * @notice Hook called before unregistering an operator vault
-     * @param operator The operator address
-     * @param vault The vault address
-     */
-    function _beforeUnregisterOperatorVault(address operator, address vault) internal virtual {}
-
-    /**
-     * @notice Hook called before pausing an operator vault
-     * @param operator The operator address
-     * @param vault The vault address
-     */
-    function _beforePauseOperatorVault(address operator, address vault) internal virtual {}
-
-    /**
-     * @notice Hook called before unpausing an operator vault
-     * @param operator The operator address
-     * @param vault The vault address
-     */
-    function _beforeUnpauseOperatorVault(address operator, address vault) internal virtual {}
 }

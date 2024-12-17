@@ -15,7 +15,11 @@ abstract contract Operators is BaseMiddleware, IOperators {
     /**
      * @inheritdoc IOperators
      */
-    function registerOperator(address operator, bytes memory key, address vault) public checkAccess {
+    function registerOperator(address operator, bytes memory key, address vault) external virtual checkAccess {
+        _registerOperatorImpl(operator, key, vault);
+    }
+
+    function _registerOperatorImpl(address operator, bytes memory key, address vault) internal virtual {
         _beforeRegisterOperator(operator, key, vault);
         _registerOperator(operator);
         _updateKey(operator, key);
@@ -30,7 +34,13 @@ abstract contract Operators is BaseMiddleware, IOperators {
      */
     function unregisterOperator(
         address operator
-    ) public checkAccess {
+    ) external virtual checkAccess {
+        _unregisterOperatorImpl(operator);
+    }
+
+    function _unregisterOperatorImpl(
+        address operator
+    ) internal virtual {
         _beforeUnregisterOperator(operator);
         _unregisterOperator(operator);
     }
@@ -40,7 +50,13 @@ abstract contract Operators is BaseMiddleware, IOperators {
      */
     function pauseOperator(
         address operator
-    ) public checkAccess {
+    ) external virtual checkAccess {
+        _pauseOperatorImpl(operator);
+    }
+
+    function _pauseOperatorImpl(
+        address operator
+    ) internal virtual {
         _beforePauseOperator(operator);
         _pauseOperator(operator);
     }
@@ -50,7 +66,13 @@ abstract contract Operators is BaseMiddleware, IOperators {
      */
     function unpauseOperator(
         address operator
-    ) public checkAccess {
+    ) external virtual checkAccess {
+        _unpauseOperatorImpl(operator);
+    }
+
+    function _unpauseOperatorImpl(
+        address operator
+    ) internal virtual {
         _beforeUnpauseOperator(operator);
         _unpauseOperator(operator);
     }
@@ -58,7 +80,11 @@ abstract contract Operators is BaseMiddleware, IOperators {
     /**
      * @inheritdoc IOperators
      */
-    function updateOperatorKey(address operator, bytes memory key) public checkAccess {
+    function updateOperatorKey(address operator, bytes memory key) external virtual checkAccess {
+        _updateOperatorKeyImpl(operator, key);
+    }
+
+    function _updateOperatorKeyImpl(address operator, bytes memory key) internal virtual {
         _beforeUpdateOperatorKey(operator, key);
         _updateKey(operator, key);
     }
@@ -66,7 +92,11 @@ abstract contract Operators is BaseMiddleware, IOperators {
     /**
      * @inheritdoc IOperators
      */
-    function registerOperatorVault(address operator, address vault) public checkAccess {
+    function registerOperatorVault(address operator, address vault) external virtual checkAccess {
+        _registerOperatorVaultImpl(operator, vault);
+    }
+
+    function _registerOperatorVaultImpl(address operator, address vault) internal virtual {
         if (!_isOperatorRegistered(operator)) {
             revert OperatorNotRegistered();
         }
@@ -77,7 +107,11 @@ abstract contract Operators is BaseMiddleware, IOperators {
     /**
      * @inheritdoc IOperators
      */
-    function unregisterOperatorVault(address operator, address vault) public checkAccess {
+    function unregisterOperatorVault(address operator, address vault) external virtual checkAccess {
+        _unregisterOperatorVaultImpl(operator, vault);
+    }
+
+    function _unregisterOperatorVaultImpl(address operator, address vault) internal virtual {
         _beforeUnregisterOperatorVault(operator, vault);
         _unregisterOperatorVault(operator, vault);
     }
@@ -85,7 +119,11 @@ abstract contract Operators is BaseMiddleware, IOperators {
     /**
      * @inheritdoc IOperators
      */
-    function pauseOperatorVault(address operator, address vault) public checkAccess {
+    function pauseOperatorVault(address operator, address vault) external virtual checkAccess {
+        _pauseOperatorVaultImpl(operator, vault);
+    }
+
+    function _pauseOperatorVaultImpl(address operator, address vault) internal virtual {
         _beforePauseOperatorVault(operator, vault);
         _pauseOperatorVault(operator, vault);
     }
@@ -93,7 +131,11 @@ abstract contract Operators is BaseMiddleware, IOperators {
     /**
      * @inheritdoc IOperators
      */
-    function unpauseOperatorVault(address operator, address vault) public checkAccess {
+    function unpauseOperatorVault(address operator, address vault) external virtual checkAccess {
+        _unpauseOperatorVaultImpl(operator, vault);
+    }
+
+    function _unpauseOperatorVaultImpl(address operator, address vault) internal virtual {
         _beforeUnpauseOperatorVault(operator, vault);
         _unpauseOperatorVault(operator, vault);
     }

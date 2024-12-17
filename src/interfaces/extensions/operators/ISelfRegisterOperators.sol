@@ -7,7 +7,6 @@ pragma solidity ^0.8.25;
  */
 interface ISelfRegisterOperators {
     error InvalidSignature();
-    error OperatorNotRegistered();
 
     /**
      * @notice Returns the nonce for an operator address

@@ -146,9 +146,7 @@ contract SigTests is POCBaseTest {
 
         assertEq(abi.decode(IBaseMiddlewareReader(address(middleware)).operatorKey(operator), (address)), address(0));
         vm.warp(vm.getBlockTimestamp() + 100);
-        assertEq(
-            abi.decode(IBaseMiddlewareReader(address(middleware)).operatorKey(operator), (address)), operator
-        );
+        assertEq(abi.decode(IBaseMiddlewareReader(address(middleware)).operatorKey(operator), (address)), operator);
     }
 
     function testSelxfRegisterOperatorInvalidSignature() public {

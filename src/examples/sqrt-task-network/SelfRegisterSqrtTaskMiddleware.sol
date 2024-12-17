@@ -35,25 +35,22 @@ contract SelfRegisterSqrtTaskMiddleware is
 
     error InvalidHints();
     error TaskCompleted();
-    error TooManyOperators();
     error TooManyOperatorVaults();
-    error TooManySharedVaults();
+    error InactiveValidator();
 
-    event CreateTask(uint256 indexed taskIndex, address indexed operator);
+    event CreateTask(uint256 indexed taskIndex, address indexed validator);
     event CompleteTask(uint256 indexed taskIndex, bool isValidAnswer);
 
     struct Task {
         uint48 captureTimestamp;
         uint256 value;
-        address operator;
+        address validator;
         bool completed;
     }
 
     bytes32 private constant COMPLETE_TASK_TYPEHASH = keccak256("CompleteTask(uint256 taskIndex,uint256 answer)");
 
-    uint256 public constant MAX_OPERATORS = 300;
-    uint256 public constant MAX_OPERATOR_VAULTS = 40;
-    uint256 public constant MAX_SHARED_VAULTS = 60;
+    uint256 public constant MAX_OPERATOR_VAULTS = 20;
 
     Task[] public tasks;
 
@@ -84,22 +81,21 @@ contract SelfRegisterSqrtTaskMiddleware is
         __SelfRegisterOperators_init("SelfRegisterSqrtTaskMiddleware");
     }
 
-    // allow anyone to register shared vaults
-    function _checkAccess() internal view override(AccessManager, OwnableAccessManager) {
-        if (
-            msg.sig == this.registerSharedVault.selector || msg.sig == this.unregisterSharedVault.selector
-                || msg.sig == this.pauseSharedVault.selector
-        ) {
-            return;
+    function createTask(uint256 value, address validator) external returns (uint256 taskIndex) {
+        bytes memory key = abi.encode(validator);
+        address operator = operatorByKey(key);
+        if (!keyWasActiveAt(getCaptureTimestamp(), key)) {
+            revert InactiveValidator();
         }
-        OwnableAccessManager._checkAccess();
-    }
-
-    function createTask(uint256 value, address operator) external returns (uint256 taskIndex) {
+        if (!_isOperatorRegistered(operator)) {
+            revert OperatorNotRegistered();
+        }
         taskIndex = tasks.length;
-        tasks.push(Task({captureTimestamp: getCaptureTimestamp(), value: value, operator: operator, completed: false}));
+        tasks.push(
+            Task({captureTimestamp: getCaptureTimestamp(), value: value, validator: validator, completed: false})
+        );
 
-        emit CreateTask(taskIndex, operator);
+        emit CreateTask(taskIndex, validator);
     }
 
     function completeTask(
@@ -133,7 +129,7 @@ contract SelfRegisterSqrtTaskMiddleware is
 
         bytes32 hash_ = _hashTypedDataV4(keccak256(abi.encode(COMPLETE_TASK_TYPEHASH, taskIndex, answer)));
 
-        if (!SignatureChecker.isValidSignatureNow(task.operator, hash_, signature)) {
+        if (!SignatureChecker.isValidSignatureNow(task.validator, hash_, signature)) {
             revert InvalidSignature();
         }
     }
@@ -166,7 +162,17 @@ contract SelfRegisterSqrtTaskMiddleware is
 
     function _slash(uint256 taskIndex, bytes[] calldata stakeHints, bytes[] calldata slashHints) private {
         Task storage task = tasks[taskIndex];
-        address[] memory vaults = _activeVaultsAt(task.captureTimestamp, task.operator);
+        address operator = operatorByKey(abi.encode(task.validator));
+        _slashOperator(task.captureTimestamp, operator, stakeHints, slashHints);
+    }
+
+    function _slashOperator(
+        uint48 captureTimestamp,
+        address operator,
+        bytes[] calldata stakeHints,
+        bytes[] calldata slashHints
+    ) private {
+        address[] memory vaults = _activeVaultsAt(captureTimestamp, operator);
         uint256 vaultsLength = vaults.length;
 
         if (stakeHints.length != slashHints.length || stakeHints.length != vaultsLength) {
@@ -176,15 +182,14 @@ contract SelfRegisterSqrtTaskMiddleware is
         bytes32 subnetwork = _NETWORK().subnetwork(0);
         for (uint256 i; i < vaultsLength; ++i) {
             address vault = vaults[i];
-            uint256 slashAmount = IBaseDelegator(IVault(vault).delegator()).stakeAt(
-                subnetwork, task.operator, task.captureTimestamp, stakeHints[i]
-            );
+            uint256 slashAmount =
+                IBaseDelegator(IVault(vault).delegator()).stakeAt(subnetwork, operator, captureTimestamp, stakeHints[i]);
 
             if (slashAmount == 0) {
                 continue;
             }
 
-            _slashVault(task.captureTimestamp, vault, subnetwork, task.operator, slashAmount, slashHints[i]);
+            _slashVault(captureTimestamp, vault, subnetwork, operator, slashAmount, slashHints[i]);
         }
     }
 
@@ -199,34 +204,11 @@ contract SelfRegisterSqrtTaskMiddleware is
         _slashVault(epochStart, vault, subnetwork, operator, amount, hints);
     }
 
-    /// @notice Prevents DOS by limiting total number of shared vaults that can be registered
-    /// @dev MAX_SHARED_VAULTS constant prevents unbounded iteration when looping through shared vaults
-    function _beforeRegisterSharedVault(
-        address sharedVault
-    ) internal override {
-        super._beforeRegisterSharedVault(sharedVault);
-        if (_sharedVaultsLength() >= MAX_SHARED_VAULTS) {
-            revert TooManySharedVaults();
-        }
-        IBaseDelegator(IVault(sharedVault).delegator()).setMaxNetworkLimit(DEFAULT_SUBNETWORK, type(uint256).max);
-    }
-
-    /// @notice Prevents DOS by limiting number of vaults per operator
-    /// @dev MAX_OPERATOR_VAULTS constant prevents unbounded iteration when looping through an operator's vaults
     function _beforeRegisterOperatorVault(address operator, address vault) internal override {
         super._beforeRegisterOperatorVault(operator, vault);
         if (_operatorVaultsLength(operator) >= MAX_OPERATOR_VAULTS) {
             revert TooManyOperatorVaults();
         }
         IBaseDelegator(IVault(vault).delegator()).setMaxNetworkLimit(DEFAULT_SUBNETWORK, type(uint256).max);
-    }
-
-    /// @notice Prevents DOS by limiting total number of operators that can be registered
-    /// @dev MAX_OPERATORS constant prevents unbounded iteration when looping through operators
-    function _beforeRegisterOperator(address operator, bytes memory key, address vault) internal virtual override {
-        super._beforeRegisterOperator(operator, key, vault);
-        if (_operatorsLength() >= MAX_OPERATORS) {
-            revert TooManyOperators();
-        }
     }
 }
