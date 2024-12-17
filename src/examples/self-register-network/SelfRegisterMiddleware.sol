@@ -9,12 +9,12 @@ import {ECDSASig} from "../../extensions/managers/sigs/ECDSASig.sol";
 import {OwnableAccessManager} from "../../extensions/managers/access/OwnableAccessManager.sol";
 import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
 import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
-import {KeyManager256} from "../../extensions/managers/keys/KeyManager256.sol";
+import {KeyManagerAddress} from "../../extensions/managers/keys/KeyManagerAddress.sol";
 
 contract SelfRegisterMiddleware is
     SharedVaults,
     SelfRegisterOperators,
-    KeyManager256,
+    KeyManagerAddress,
     ECDSASig,
     OwnableAccessManager,
     TimestampCapture,
@@ -62,6 +62,8 @@ contract SelfRegisterMiddleware is
         __OwnableAccessManager_init(owner);
     }
 
+    /// @notice Prevents DOS by limiting total number of operators that can be registered
+    /// @dev MAX_OPERATORS constant prevents unbounded iteration when looping through operators
     function _beforeRegisterOperator(address operator, bytes memory key, address vault) internal virtual override {
         super._beforeRegisterOperator(operator, key, vault);
         if (_operatorsLength() >= MAX_OPERATORS) {
@@ -69,6 +71,8 @@ contract SelfRegisterMiddleware is
         }
     }
 
+    /// @notice Prevents DOS by limiting number of vaults per operator
+    /// @dev MAX_OPERATOR_VAULTS constant prevents unbounded iteration when looping through an operator's vaults
     function _beforeRegisterOperatorVault(address operator, address vault) internal virtual override {
         super._beforeRegisterOperatorVault(operator, vault);
         if (_operatorVaultsLength(operator) >= MAX_OPERATOR_VAULTS) {

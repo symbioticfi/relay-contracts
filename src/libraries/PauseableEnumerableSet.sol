@@ -269,6 +269,25 @@ library PauseableEnumerableSet {
     }
 
     /**
+     * @notice Checks if an address can be unregistered
+     * @param self The AddressSet to query
+     * @param timestamp The current timestamp
+     * @param immutablePeriod The required waiting period after disabling
+     * @param value The address to check
+     * @return bool Whether the address can be unregistered
+     */
+    function checkUnregister(
+        AddressSet storage self,
+        uint48 timestamp,
+        uint48 immutablePeriod,
+        address value
+    ) internal view returns (bool) {
+        uint256 pos = self.set.positions[uint160(value)];
+        if (pos == 0) return false;
+        return self.set.array[pos - 1].status.checkUnregister(timestamp, immutablePeriod);
+    }
+
+    /**
      * @notice Unregisters an address
      * @param self The AddressSet to modify
      * @param timestamp The current timestamp

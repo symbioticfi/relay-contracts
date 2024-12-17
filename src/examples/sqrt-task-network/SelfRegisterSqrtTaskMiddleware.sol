@@ -17,7 +17,7 @@ import {SelfRegisterOperators} from "../../extensions/operators/SelfRegisterOper
 
 import {ECDSASig} from "../../extensions/managers/sigs/ECDSASig.sol";
 import {OwnableAccessManager} from "../../extensions/managers/access/OwnableAccessManager.sol";
-import {KeyManager256} from "../../extensions/managers/keys/KeyManager256.sol";
+import {KeyManagerAddress} from "../../extensions/managers/keys/KeyManagerAddress.sol";
 import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
 import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
 
@@ -25,7 +25,7 @@ contract SelfRegisterSqrtTaskMiddleware is
     SharedVaults,
     SelfRegisterOperators,
     ECDSASig,
-    KeyManager256,
+    KeyManagerAddress,
     OwnableAccessManager,
     TimestampCapture,
     EqualStakePower
@@ -39,7 +39,7 @@ contract SelfRegisterSqrtTaskMiddleware is
     error TooManyOperatorVaults();
     error TooManySharedVaults();
 
-    event CreateTask(uint256 indexed taskIndex);
+    event CreateTask(uint256 indexed taskIndex, address indexed operator);
     event CompleteTask(uint256 indexed taskIndex, bool isValidAnswer);
 
     struct Task {
@@ -51,7 +51,7 @@ contract SelfRegisterSqrtTaskMiddleware is
 
     bytes32 private constant COMPLETE_TASK_TYPEHASH = keccak256("CompleteTask(uint256 taskIndex,uint256 answer)");
 
-    uint256 public constant MAX_OPERATORS = 100;
+    uint256 public constant MAX_OPERATORS = 300;
     uint256 public constant MAX_OPERATOR_VAULTS = 40;
     uint256 public constant MAX_SHARED_VAULTS = 60;
 
@@ -99,7 +99,7 @@ contract SelfRegisterSqrtTaskMiddleware is
         taskIndex = tasks.length;
         tasks.push(Task({captureTimestamp: getCaptureTimestamp(), value: value, operator: operator, completed: false}));
 
-        emit CreateTask(taskIndex);
+        emit CreateTask(taskIndex, operator);
     }
 
     function completeTask(

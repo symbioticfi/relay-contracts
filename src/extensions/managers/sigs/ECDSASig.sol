@@ -29,11 +29,10 @@ abstract contract ECDSASig is SigManager, IECDSASig {
         bytes memory key_,
         bytes memory signature
     ) internal pure override returns (bool) {
-        bytes32 key = abi.decode(key_, (bytes32));
+        address key = abi.decode(key_, (address));
         bytes32 hash = keccak256(abi.encodePacked(operator, key));
         address signer = recover(hash, signature);
-        address keyAddress = address(uint160(uint256(key)));
-        return signer == keyAddress && signer != address(0);
+        return signer == key && signer != address(0);
     }
 
     /**
