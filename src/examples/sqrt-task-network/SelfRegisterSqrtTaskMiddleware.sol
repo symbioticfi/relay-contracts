@@ -21,6 +21,13 @@ import {KeyManagerAddress} from "../../extensions/managers/keys/KeyManagerAddres
 import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
 import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
 
+/**
+ * @title SelfRegisterSqrtTaskMiddleware
+ * @notice Middleware for managing sqrt computation tasks with self-registering operators
+ * @dev Uses SelfRegisterOperators for operator management because it allows permissionless registration.
+ * Task validation is done by a single validator chosen at task creation time because this avoids
+ * having to iterate over all operators, making it more gas efficient and avoiding potential DOS attacks.
+ */
 contract SelfRegisterSqrtTaskMiddleware is
     SharedVaults,
     SelfRegisterOperators,
