@@ -25,13 +25,17 @@ interface IApprovalRegisterOperators {
      * @param index The index of the request to retrieve
      * @return The registration request details
      */
-    function getRegistrationRequest(uint256 index) external view returns (RegistrationRequest memory);
+    function getRegistrationRequest(
+        uint256 index
+    ) external view returns (RegistrationRequest memory);
 
     /**
      * @notice Register an operator based on a pending request
      * @param requestIndex The index of the request to register
      */
-    function registerOperator(uint256 requestIndex) external;
+    function registerOperator(
+        uint256 requestIndex
+    ) external;
 
     /**
      * @notice Request registration as an operator

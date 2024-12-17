@@ -7,6 +7,7 @@ import {IApprovalRegisterOperators} from "../../interfaces/extensions/operators/
  * @title ApprovalRegisterOperators
  * @notice Extends SelfRegisterOperators to add approval-based registration
  */
+
 abstract contract ApprovalRegisterOperators is SelfRegisterOperators, IApprovalRegisterOperators {
     uint64 public constant ApprovalRegisterOperators_VERSION = 1;
 
