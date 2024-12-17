@@ -47,7 +47,7 @@ abstract contract ApprovalRegisterOperators is SelfRegisterOperators, IApprovalR
      */
     function registerOperator(
         uint256 requestIndex
-    ) public checkAccess {
+    ) external checkAccess {
         RegistrationRequest memory request = getRegistrationRequest(requestIndex);
         _registerOperatorImpl(request.operator, request.key, request.vault);
         ApprovalRegisterOperatorsStorage storage $ = _getApprovalRegisterOperatorsStorage();
@@ -61,21 +61,27 @@ abstract contract ApprovalRegisterOperators is SelfRegisterOperators, IApprovalR
     /**
      * @notice Override to prevent direct registration
      */
-    function registerOperator(bytes memory, address, bytes memory) public override {
+    function registerOperator(bytes memory key, address vault, bytes memory signature) external override virtual {
         revert DirectRegistrationNotAllowed();
     }
 
     /**
      * @notice Override to prevent direct registration
      */
-    function registerOperator(address, bytes memory, address, bytes memory, bytes memory) public override {
+    function registerOperator(
+        address operator,
+        bytes memory key,
+        address vault,
+        bytes memory signature,
+        bytes memory keySignature
+    ) public override virtual {
         revert DirectRegistrationNotAllowed();
     }
 
     /**
      * @inheritdoc IApprovalRegisterOperators
      */
-    function requestRegisterOperator(bytes memory key, address vault, bytes memory signature) public {
+    function requestRegisterOperator(bytes memory key, address vault, bytes memory signature) external {
         _verifyKey(msg.sender, key, signature);
         ApprovalRegisterOperatorsStorage storage $ = _getApprovalRegisterOperatorsStorage();
         $.requests.push(RegistrationRequest({operator: msg.sender, vault: vault, key: key}));

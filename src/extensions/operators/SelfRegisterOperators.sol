@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {Operators} from "./Operators.sol";
+import {BaseOperators} from "./BaseOperators.sol";
 import {SigManager} from "../../managers/extendable/SigManager.sol";
 import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
 import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
@@ -13,7 +13,7 @@ import {ISelfRegisterOperators} from "../../interfaces/extensions/operators/ISel
  * @dev Extends BaseMiddleware, SigManager, and EIP712Upgradeable to provide signature-based operator management
  * @dev CAUTION: If activeOperators functionality is needed, use ApprovalRegisterOperators instead to prevent DOS attacks
  */
-abstract contract SelfRegisterOperators is Operators, SigManager, EIP712Upgradeable, ISelfRegisterOperators {
+abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgradeable, ISelfRegisterOperators {
     uint64 public constant SelfRegisterOperators_VERSION = 1;
 
     // EIP-712 TypeHash constants
@@ -68,7 +68,7 @@ abstract contract SelfRegisterOperators is Operators, SigManager, EIP712Upgradea
     /**
      * @inheritdoc ISelfRegisterOperators
      */
-    function registerOperator(bytes memory key, address vault, bytes memory signature) public virtual override {
+    function registerOperator(bytes memory key, address vault, bytes memory signature) external virtual {
         _verifyKey(msg.sender, key, signature);
         _registerOperatorImpl(msg.sender, key, vault);
     }
@@ -96,7 +96,7 @@ abstract contract SelfRegisterOperators is Operators, SigManager, EIP712Upgradea
     /**
      * @inheritdoc ISelfRegisterOperators
      */
-    function unregisterOperator() public override {
+    function unregisterOperator() external override {
         _unregisterOperatorImpl(msg.sender);
     }
 
@@ -114,7 +114,7 @@ abstract contract SelfRegisterOperators is Operators, SigManager, EIP712Upgradea
     /**
      * @inheritdoc ISelfRegisterOperators
      */
-    function pauseOperator() public override {
+    function pauseOperator() external override {
         _pauseOperatorImpl(msg.sender);
     }
 
@@ -132,7 +132,7 @@ abstract contract SelfRegisterOperators is Operators, SigManager, EIP712Upgradea
     /**
      * @inheritdoc ISelfRegisterOperators
      */
-    function unpauseOperator() public override {
+    function unpauseOperator() external override {
         _unpauseOperatorImpl(msg.sender);
     }
 
@@ -150,7 +150,7 @@ abstract contract SelfRegisterOperators is Operators, SigManager, EIP712Upgradea
     /**
      * @inheritdoc ISelfRegisterOperators
      */
-    function updateOperatorKey(bytes memory key, bytes memory signature) public override {
+    function updateOperatorKey(bytes memory key, bytes memory signature) external override {
         _verifyKey(msg.sender, key, signature);
         _updateOperatorKeyImpl(msg.sender, key);
     }
@@ -179,7 +179,7 @@ abstract contract SelfRegisterOperators is Operators, SigManager, EIP712Upgradea
      */
     function registerOperatorVault(
         address vault
-    ) public override {
+    ) external override {
         _registerOperatorVaultImpl(msg.sender, vault);
     }
 
@@ -204,7 +204,7 @@ abstract contract SelfRegisterOperators is Operators, SigManager, EIP712Upgradea
      */
     function unregisterOperatorVault(
         address vault
-    ) public override {
+    ) external override {
         _unregisterOperatorVaultImpl(msg.sender, vault);
     }
 
@@ -226,7 +226,7 @@ abstract contract SelfRegisterOperators is Operators, SigManager, EIP712Upgradea
      */
     function pauseOperatorVault(
         address vault
-    ) public override {
+    ) external override {
         _pauseOperatorVaultImpl(msg.sender, vault);
     }
 
@@ -248,7 +248,7 @@ abstract contract SelfRegisterOperators is Operators, SigManager, EIP712Upgradea
      */
     function unpauseOperatorVault(
         address vault
-    ) public override {
+    ) external override {
         _unpauseOperatorVaultImpl(msg.sender, vault);
     }
 
