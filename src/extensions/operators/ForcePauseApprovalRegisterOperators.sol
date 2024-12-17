@@ -10,6 +10,7 @@ import {BaseOperators} from "./BaseOperators.sol";
  * @notice Extension of SelfRegisterOperators that allows authorized addresses to forcefully pause operators
  * @dev Implements force pause functionality and prevents unpausing of force-paused operators
  */
+
 abstract contract ForcePauseApprovalRegisterOperators is ForcePauseSelfRegisterOperators, ApprovalRegisterOperators {
     uint64 public constant ForcePauseApprovalRegisterOperators_VERSION = 1;
 
@@ -32,19 +33,29 @@ abstract contract ForcePauseApprovalRegisterOperators is ForcePauseSelfRegisterO
         revert DirectRegistrationNotAllowed();
     }
 
-    function _beforeUnpauseOperator(address operator) internal virtual override(ForcePauseSelfRegisterOperators, BaseOperators) {
+    function _beforeUnpauseOperator(
+        address operator
+    ) internal virtual override(ForcePauseSelfRegisterOperators, BaseOperators) {
         super._beforeUnpauseOperator(operator);
     }
 
-    function _beforeUnpauseOperatorVault(address operator, address vault) internal virtual override(ForcePauseSelfRegisterOperators, BaseOperators) {
+    function _beforeUnpauseOperatorVault(
+        address operator,
+        address vault
+    ) internal virtual override(ForcePauseSelfRegisterOperators, BaseOperators) {
         super._beforeUnpauseOperatorVault(operator, vault);
     }
 
-    function _beforeUnregisterOperator(address operator) internal virtual override(ForcePauseSelfRegisterOperators, BaseOperators) {
+    function _beforeUnregisterOperator(
+        address operator
+    ) internal virtual override(ForcePauseSelfRegisterOperators, BaseOperators) {
         super._beforeUnregisterOperator(operator);
     }
 
-    function _beforeUnregisterOperatorVault(address operator, address vault) internal virtual override(BaseOperators, ForcePauseSelfRegisterOperators) {
+    function _beforeUnregisterOperatorVault(
+        address operator,
+        address vault
+    ) internal virtual override(BaseOperators, ForcePauseSelfRegisterOperators) {
         super._beforeUnregisterOperatorVault(operator, vault);
     }
 }

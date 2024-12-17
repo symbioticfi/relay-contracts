@@ -61,7 +61,7 @@ abstract contract ApprovalRegisterOperators is SelfRegisterOperators, IApprovalR
     /**
      * @notice Override to prevent direct registration
      */
-    function registerOperator(bytes memory key, address vault, bytes memory signature) external override virtual {
+    function registerOperator(bytes memory key, address vault, bytes memory signature) external virtual override {
         revert DirectRegistrationNotAllowed();
     }
 
@@ -74,7 +74,7 @@ abstract contract ApprovalRegisterOperators is SelfRegisterOperators, IApprovalR
         address vault,
         bytes memory signature,
         bytes memory keySignature
-    ) public override virtual {
+    ) public virtual override {
         revert DirectRegistrationNotAllowed();
     }
 

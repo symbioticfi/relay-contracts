@@ -13,7 +13,7 @@ import {AccessManager} from "../../managers/extendable/AccessManager.sol";
 
 import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SharedVaults} from "../../extensions/SharedVaults.sol";
-import {ForcePauseApprovalRegisterOperators} from "../../extensions/operators/ForcePauseApprovalRegisterOperators.sol";
+import {SelfRegisterOperators} from "../../extensions/operators/SelfRegisterOperators.sol";
 
 import {ECDSASig} from "../../extensions/managers/sigs/ECDSASig.sol";
 import {OwnableAccessManager} from "../../extensions/managers/access/OwnableAccessManager.sol";
@@ -30,7 +30,7 @@ import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStake
  */
 contract SelfRegisterSqrtTaskMiddleware is
     SharedVaults,
-    ForcePauseApprovalRegisterOperators,
+    SelfRegisterOperators,
     ECDSASig,
     KeyManagerAddress,
     OwnableAccessManager,
