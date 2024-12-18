@@ -66,14 +66,21 @@ class SqrtTaskWorker:
             }
         }
 
-    def _process_task(self, task_id, task):
+    def _process_task(self, task_id, task, incorrect=False):
         if task[3]:  # Skip if completed
             logger.info(f"Task {task_id} already completed")
+            return
+        
+        if task[2].lower() != self.account.address.lower():
+            logger.info(f"Task {task_id} not assigned to this validator")
             return
             
         logger.info(f"Processing task {task_id}")
         value = task[1]
-        answer = int(math.isqrt(value))
+        if incorrect:
+            answer = int(math.isqrt(value)) + 2
+        else:
+            answer = int(math.isqrt(value))
         logger.info(f"Calculated sqrt({value}) = {answer}")
 
         # Create and sign EIP-712 message
@@ -173,6 +180,27 @@ def start(web3_url, validator_private_key, contract_address, abi_file):
     logger.info("Starting task processing loop")
     worker.process_tasks()
 
+@cli.command()
+@click.option('--validator-private-key', required=True, help='Private key for signing transactions')
+@click.option('--task-id', required=True, type=int, help='Task ID to complete incorrectly')
+@click.option('--web3-url', default='https://ethereum-holesky-rpc.publicnode.com', help='Web3 RPC URL')
+@click.option('--contract-address', default='0x18586B8cb86b59EF3F44BC915Ef92C83B6BAfd75', help='Contract address')
+@click.option('--abi-file', default='abi.json', help='Path to ABI JSON file')
+def submit_incorrect_answer(web3_url, validator_private_key, contract_address, abi_file, task_id):
+    """Submit an incorrect answer for a specific task"""
+    with open(abi_file, 'r') as f:
+        contract_abi = json.load(f)
+
+    logger.info("Initializing SqrtTaskWorker for incorrect task completion")
+    worker = SqrtTaskWorker(
+        web3_url=web3_url,
+        validator_private_key=validator_private_key,
+        contract_address=contract_address,
+        contract_abi=contract_abi
+    )
+    
+    task = worker.contract.functions.tasks(task_id).call()
+    worker._process_task(task_id, task, incorrect=True)
 
 @cli.command()
 @click.option('--validator-private-key', required=True, help='Validator private key')

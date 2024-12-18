@@ -29,6 +29,13 @@ python worker.py register \
     --vault-address YOUR_VAULT_ADDRESS
 ```
 
+3. (Optional) Submit an incorrect answer for a specific task:
+```bash
+python worker.py submit-incorrect-answer \
+    --validator-private-key YOUR_VALIDATOR_PRIVATE_KEY \
+    --task-id TASK_ID
+```
+
 ### Running the Worker
 
 1. Build the Docker image:
