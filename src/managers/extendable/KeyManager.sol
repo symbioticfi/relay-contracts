@@ -12,7 +12,7 @@ abstract contract KeyManager is SlashingWindowStorage, CaptureTimestampManager {
     /**
      * @notice Updates the key associated with an operator
      * @param operator The address of the operator
-     * @param key The key to update
+     * @param key The key to update, or empty bytes to delete the key
      */
     function _updateKey(address operator, bytes memory key) internal virtual;
 

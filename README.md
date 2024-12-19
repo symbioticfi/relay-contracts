@@ -14,7 +14,7 @@ This repository provides a framework for developing middleware in a modular and 
 
   - **Operators**: Manages operator registration and operator's vault.
   
-  - **KeyManager**: Manages operator keys. Variants include `KeyManager256`, `KeyManagerBytes`, and `NoKeyManager`.
+  - **KeyManager**: Manages operator keys. Variants include `KeyManagerAddress`, `KeyManager256`, `KeyManagerBytes`, and `NoKeyManager`.
   
   - **AccessManager**: Controls access to restricted functions. Implementations include `OwnableAccessManager`, `OzAccessControl`, `OzAccessManaged`, and `NoAccessManager`.
   
@@ -63,7 +63,7 @@ Features:
 #### SelfRegisterMiddleware
 
 ```solidity
-contract SelfRegisterMiddleware is SharedVaults, SelfRegisterOperators, KeyManager256, ECDSASig, NoAccessManager, TimestampCapture, EqualStakePower {
+contract SelfRegisterMiddleware is SharedVaults, SelfRegisterOperators, KeyManagerAddress, ECDSASig, NoAccessManager, TimestampCapture, EqualStakePower {
     // Implementation details...
 }
 ```
@@ -89,7 +89,7 @@ Features:
 #### SelfRegisterSqrtTaskMiddleware
 
 ```solidity
-contract SelfRegisterSqrtTaskMiddleware is SharedVaults, SelfRegisterOperators, KeyManager256, ECDSASig, OwnableAccessManager, TimestampCapture, EqualStakePower {
+contract SelfRegisterSqrtTaskMiddleware is SharedVaults, SelfRegisterOperators, KeyManagerAddress, ECDSASig, OwnableAccessManager, TimestampCapture, EqualStakePower {
     // Implementation details...
 }
 ```
@@ -209,10 +209,9 @@ contract MyCustomMiddleware is BaseMiddleware, Operators, KeyStorage256, Ownable
     1. Granting roles to addresses using `grantRole(bytes32 role, address account)`
     2. Setting role admins with `_setRoleAdmin(bytes32 role, bytes32 adminRole)` 
     3. Assigning roles to function selectors via `_setSelectorRole(bytes4 selector, bytes32 role)`
-  - `OzAccessManaged`: Wraps OpenZeppelin's AccessManaged contract to integrate with external access control systems
   - `OzAccessManaged`: Wraps OpenZeppelin's AccessManaged contract to integrate with external access control systems. This allows for more complex access control scenarios where permissions are managed externally, providing flexibility and scalability in managing roles and permissions.
   
-- **Key Manager**: Choose a `KeyManager` implementation that suits your key management needs. Use `KeyManager256` for managing 256-bit keys, `KeyManagerBytes` for handling arbitrary-length keys, or `NoKeyManager` if key management is not required.
+- **Key Manager**: Choose a `KeyManager` implementation that suits your key management needs. Use `KeyManagerAddress` for managing address keys, `KeyManager256` for managing 256-bit keys, `KeyManagerBytes` for handling arbitrary-length keys, or `NoKeyManager` if key management is not required.
 
 This framework provides flexibility in building middleware by allowing you to mix and match various extensions based on your requirements. By following the modular approach and best practices outlined, you can develop robust middleware solutions that integrate seamlessly with the network.
 

@@ -25,7 +25,6 @@ contract SigTests is POCBaseTest {
     SelfRegisterEd25519Middleware internal ed25519Middleware;
     uint256 internal operatorPrivateKey;
     address internal operator;
-    bytes32 internal operatorPublicKey;
     string internal constant ED25519_TEST_DATA = "test/helpers/ed25519TestData.json";
     address internal ed25519Operator;
     address internal vault;
@@ -37,7 +36,6 @@ contract SigTests is POCBaseTest {
         super.setUp();
 
         (operator, operatorPrivateKey) = makeAddrAndKey("operator");
-        operatorPublicKey = bytes32(uint256(uint160(operator)));
 
         string memory json = vm.readFile(ED25519_TEST_DATA);
         ed25519Operator = abi.decode(vm.parseJson(json, ".operator"), (address));
@@ -51,7 +49,8 @@ contract SigTests is POCBaseTest {
             address(vaultFactory),
             address(operatorRegistry),
             address(operatorNetworkOptInService),
-            readHelper
+            readHelper,
+            alice
         );
 
         ed25519Middleware = new SelfRegisterEd25519Middleware(
@@ -60,7 +59,8 @@ contract SigTests is POCBaseTest {
             address(vaultFactory),
             address(operatorRegistry),
             address(operatorNetworkOptInService),
-            readHelper
+            readHelper,
+            alice
         );
 
         _registerNetwork(address(0x123), address(middleware));
@@ -133,27 +133,25 @@ contract SigTests is POCBaseTest {
 
     function testSelfRegisterOperator() public {
         // Create registration message
-        bytes32 messageHash = keccak256(abi.encodePacked(operator, operatorPublicKey));
+        bytes32 messageHash = keccak256(abi.encodePacked(operator, operator));
         // Sign message with operator's private key
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(operatorPrivateKey, messageHash);
         bytes memory signature = abi.encodePacked(r, s, v);
         // Register operator using their own signature
         vm.prank(operator);
-        middleware.registerOperator(abi.encode(operatorPublicKey), address(vault), signature);
+        middleware.registerOperator(abi.encode(operator), address(vault), signature);
 
         // Verify operator is registered correctly
         assertTrue(IBaseMiddlewareReader(address(middleware)).isOperatorRegistered(operator));
 
-        assertEq(abi.decode(IBaseMiddlewareReader(address(middleware)).operatorKey(operator), (bytes32)), bytes32(0));
+        assertEq(abi.decode(IBaseMiddlewareReader(address(middleware)).operatorKey(operator), (address)), address(0));
         vm.warp(vm.getBlockTimestamp() + 100);
-        assertEq(
-            abi.decode(IBaseMiddlewareReader(address(middleware)).operatorKey(operator), (bytes32)), operatorPublicKey
-        );
+        assertEq(abi.decode(IBaseMiddlewareReader(address(middleware)).operatorKey(operator), (address)), operator);
     }
 
     function testSelxfRegisterOperatorInvalidSignature() public {
         // Create registration message with wrong key
-        bytes32 wrongKey = bytes32(uint256(1));
+        address wrongKey = address(uint160(uint256(1)));
         bytes32 messageHash = keccak256(abi.encodePacked(operator, wrongKey));
         // Sign message
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(operatorPrivateKey, messageHash);
@@ -162,12 +160,12 @@ contract SigTests is POCBaseTest {
         // Attempt to register with mismatched key should fail
         vm.prank(operator);
         vm.expectRevert();
-        middleware.registerOperator(abi.encode(operatorPublicKey), address(vault), signature);
+        middleware.registerOperator(abi.encode(operator), address(vault), signature);
     }
 
     function testSelfxRegisterOperatorWrongSender() public {
         // Create valid registration message
-        bytes32 messageHash = keccak256(abi.encodePacked(operator, operatorPublicKey));
+        bytes32 messageHash = keccak256(abi.encodePacked(operator, operator));
         // Sign message with operator's key
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(operatorPrivateKey, messageHash);
         bytes memory signature = abi.encodePacked(r, s, v);
@@ -175,23 +173,23 @@ contract SigTests is POCBaseTest {
         // Attempt to register from different address should fail
         vm.prank(alice);
         vm.expectRevert();
-        middleware.registerOperator(abi.encode(operatorPublicKey), address(vault), signature);
+        middleware.registerOperator(abi.encode(operator), address(vault), signature);
     }
 
     function testSelxfRegisterOperatorAlreadyRegistered() public {
         // Create registration message
-        bytes32 messageHash = keccak256(abi.encodePacked(operator, operatorPublicKey));
+        bytes32 messageHash = keccak256(abi.encodePacked(operator, operator));
         // Sign message
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(operatorPrivateKey, messageHash);
         bytes memory signature = abi.encodePacked(r, s, v);
         // Register operator first time
         vm.prank(operator);
-        middleware.registerOperator(abi.encode(operatorPublicKey), address(vault), signature);
+        middleware.registerOperator(abi.encode(operator), address(vault), signature);
 
         // Attempt to register again should fail
         vm.prank(operator);
         vm.expectRevert();
-        middleware.registerOperator(abi.encode(operatorPublicKey), address(vault), signature);
+        middleware.registerOperator(abi.encode(operator), address(vault), signature);
     }
 
     function testEd25519RegisterOperatorMismatchedKeyAndSignature() public {

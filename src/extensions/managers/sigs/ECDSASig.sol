@@ -8,7 +8,8 @@ import {IECDSASig} from "../../../interfaces/extensions/managers/sigs/IECDSASig.
 /**
  * @title ECDSASig
  * @notice Contract for verifying ECDSA signatures against operator keys
- * @dev Implements SigManager interface using OpenZeppelin's ECDSA library
+ * @dev Implements SigManager interface using OpenZeppelin's ECDSA library. Instead of using public keys directly,
+ *      this implementation uses Ethereum addresses derived from the public keys as operator keys.
  */
 abstract contract ECDSASig is SigManager, IECDSASig {
     uint64 public constant ECDSASig_VERSION = 1;
@@ -18,7 +19,7 @@ abstract contract ECDSASig is SigManager, IECDSASig {
     /**
      * @notice Verifies that a signature was created by the owner of a key
      * @param operator The address of the operator that owns the key
-     * @param key_ The public key to verify against, encoded as bytes
+     * @param key_ The address derived from the public key, encoded as bytes
      * @param signature The ECDSA signature to verify
      * @return True if the signature was created by the key owner, false otherwise
      * @dev The key is expected to be a bytes32 that can be converted to an Ethereum address
@@ -28,11 +29,10 @@ abstract contract ECDSASig is SigManager, IECDSASig {
         bytes memory key_,
         bytes memory signature
     ) internal pure override returns (bool) {
-        bytes32 key = abi.decode(key_, (bytes32));
+        address key = abi.decode(key_, (address));
         bytes32 hash = keccak256(abi.encodePacked(operator, key));
         address signer = recover(hash, signature);
-        address keyAddress = address(uint160(uint256(key)));
-        return signer == keyAddress && signer != address(0);
+        return signer == key && signer != address(0);
     }
 
     /**

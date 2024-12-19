@@ -34,7 +34,7 @@ contract SqrtTaskMiddleware is
     error InvalidSignature();
     error TaskCompleted();
 
-    event CreateTask(uint256 indexed taskIndex);
+    event CreateTask(uint256 indexed taskIndex, address indexed operator);
     event CompleteTask(uint256 indexed taskIndex, bool isValidAnswer);
 
     struct Task {
@@ -77,7 +77,7 @@ contract SqrtTaskMiddleware is
         taskIndex = tasks.length;
         tasks.push(Task({captureTimestamp: getCaptureTimestamp(), value: value, operator: operator, completed: false}));
 
-        emit CreateTask(taskIndex);
+        emit CreateTask(taskIndex, operator);
     }
 
     function completeTask(
