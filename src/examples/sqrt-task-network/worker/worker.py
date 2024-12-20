@@ -9,6 +9,8 @@ import click
 from web3.providers import HTTPProvider
 from eth_account.messages import encode_defunct
 
+CONTRACT_ADDRESS = '0x18586B8cb86b59EF3F44BC915Ef92C83B6BAfd75'
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -17,9 +19,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 class SqrtTaskWorker:
-    def __init__(self, web3_url, validator_private_key, contract_address, contract_abi):
-        self._setup_web3(web3_url, validator_private_key, contract_address, contract_abi)
-        self._setup_block_cache(contract_address)
+    def __init__(self, web3_url, validator_private_key, contract_abi):
+        self._setup_web3(web3_url, validator_private_key, CONTRACT_ADDRESS, contract_abi)
+        self._setup_block_cache(CONTRACT_ADDRESS)
 
     def _setup_web3(self, web3_url, private_key, contract_address, contract_abi):
         self.w3 = Web3(HTTPProvider(web3_url))
@@ -162,9 +164,8 @@ def cli():
 @cli.command()
 @click.option('--validator-private-key', required=True, help='Private key for signing transactions')
 @click.option('--web3-url', default='https://ethereum-holesky-rpc.publicnode.com', help='Web3 RPC URL')
-@click.option('--contract-address', default='0x18586B8cb86b59EF3F44BC915Ef92C83B6BAfd75', help='Contract address')
 @click.option('--abi-file', default='abi.json', help='Path to ABI JSON file')
-def start(web3_url, validator_private_key, contract_address, abi_file):
+def start(web3_url, validator_private_key, abi_file):
     """Start the sqrt task worker"""
     with open(abi_file, 'r') as f:
         contract_abi = json.load(f)
@@ -173,7 +174,6 @@ def start(web3_url, validator_private_key, contract_address, abi_file):
     worker = SqrtTaskWorker(
         web3_url=web3_url,
         validator_private_key=validator_private_key,
-        contract_address=contract_address,
         contract_abi=contract_abi
     )
     
@@ -184,9 +184,8 @@ def start(web3_url, validator_private_key, contract_address, abi_file):
 @click.option('--validator-private-key', required=True, help='Private key for signing transactions')
 @click.option('--task-id', required=True, type=int, help='Task ID to complete incorrectly')
 @click.option('--web3-url', default='https://ethereum-holesky-rpc.publicnode.com', help='Web3 RPC URL')
-@click.option('--contract-address', default='0x18586B8cb86b59EF3F44BC915Ef92C83B6BAfd75', help='Contract address')
 @click.option('--abi-file', default='abi.json', help='Path to ABI JSON file')
-def submit_incorrect_answer(web3_url, validator_private_key, contract_address, abi_file, task_id):
+def submit_incorrect_answer(web3_url, validator_private_key, abi_file, task_id):
     """Submit an incorrect answer for a specific task"""
     with open(abi_file, 'r') as f:
         contract_abi = json.load(f)
@@ -195,7 +194,6 @@ def submit_incorrect_answer(web3_url, validator_private_key, contract_address, a
     worker = SqrtTaskWorker(
         web3_url=web3_url,
         validator_private_key=validator_private_key,
-        contract_address=contract_address,
         contract_abi=contract_abi
     )
     
@@ -207,9 +205,8 @@ def submit_incorrect_answer(web3_url, validator_private_key, contract_address, a
 @click.option('--operator-private-key', required=True, help='Private key for signing transactions')
 @click.option('--vault-address', default='0x0000000000000000000000000000000000000000', help='Vault address')
 @click.option('--web3-url', default='https://ethereum-holesky-rpc.publicnode.com', help='Web3 RPC URL')
-@click.option('--contract-address', default='0x18586B8cb86b59EF3F44BC915Ef92C83B6BAfd75', help='Contract address')
 @click.option('--abi-file', default='abi.json', help='Path to ABI JSON file')
-def register(validator_private_key, vault_address, web3_url, operator_private_key, contract_address, abi_file):
+def register(validator_private_key, vault_address, web3_url, operator_private_key, abi_file):
     """Register as an operator"""
     with open(abi_file, 'r') as f:
         contract_abi = json.load(f)
@@ -218,7 +215,7 @@ def register(validator_private_key, vault_address, web3_url, operator_private_ke
     validator_account = Account.from_key(validator_private_key)
     operator_account = Account.from_key(operator_private_key)
     w3.middleware_onion.add(SignAndSendRawMiddlewareBuilder.build(operator_account))
-    contract = w3.eth.contract(address=contract_address, abi=contract_abi)
+    contract = w3.eth.contract(address=CONTRACT_ADDRESS, abi=contract_abi)
     # Create message hash from packed operator and validator addresses
     message_hash = w3.solidity_keccak(
         ['address', 'address'],

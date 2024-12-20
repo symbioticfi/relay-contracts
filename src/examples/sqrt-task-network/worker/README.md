@@ -6,10 +6,15 @@ This is a worker implementation for the Sqrt Task Network example. The worker li
 
 - Docker
 - Python 3.11+
-- Access to an Holesky Ethereum node
-- Private keys for validator and operator accounts
+- Access to a Holesky Ethereum node
+- Private key for validator (used to sign task results and operator registration)
+- Private key for operator (used to submit transactions to the network and in core)
 - Some Holesky ETH in the operator and validator account for gas fees
 - Registration in `OperatorRegistry` and opt-in in `NetworkOptInService` to the network (middleware address: 0x18586B8cb86b59EF3F44BC915Ef92C83B6BAfd75)
+
+## Documentation
+
+For detailed information about operating on SelfRegisterSqrtTaskNetwork, please refer to the [Operators Handbook](https://docs.symbiotic.fi/handbooks/operators-handbook).
 
 ## Usage
 
