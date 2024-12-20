@@ -10,7 +10,8 @@ This is a worker implementation for the Sqrt Task Network example. The worker li
 - Private key for validator (used to sign task results and operator registration)
 - Private key for operator (used to submit transactions to the network and in core)
 - Some Holesky ETH in the operator and validator account for gas fees
-- Registration in `OperatorRegistry` and opt-in in `NetworkOptInService` to the network (middleware address: 0x18586B8cb86b59EF3F44BC915Ef92C83B6BAfd75)
+- Registration in `OperatorRegistry` and opt-in in `NetworkOptInService` to the network ([see example](https://docs.symbiotic.fi/handbooks/operators-handbook#actions-in-symbiotic-core))
+    - Network: [0x18586B8cb86b59EF3F44BC915Ef92C83B6BAfd75](https://holesky.etherscan.io/address/0x18586B8cb86b59EF3F44BC915Ef92C83B6BAfd75)
 
 ## Documentation
 
