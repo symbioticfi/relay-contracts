@@ -20,6 +20,7 @@ abstract contract Subnetworks is BaseMiddleware, ISubnetworks {
     ) public checkAccess {
         _beforeRegisterSubnetwork(subnetwork);
         _registerSubnetwork(subnetwork);
+        _afterRegisterSubnetwork(subnetwork);
     }
 
     /**
@@ -30,6 +31,7 @@ abstract contract Subnetworks is BaseMiddleware, ISubnetworks {
     ) public checkAccess {
         _beforePauseSubnetwork(subnetwork);
         _pauseSubnetwork(subnetwork);
+        _afterPauseSubnetwork(subnetwork);
     }
 
     /**
@@ -40,6 +42,7 @@ abstract contract Subnetworks is BaseMiddleware, ISubnetworks {
     ) public checkAccess {
         _beforeUnpauseSubnetwork(subnetwork);
         _unpauseSubnetwork(subnetwork);
+        _afterUnpauseSubnetwork(subnetwork);
     }
 
     /**
@@ -50,6 +53,7 @@ abstract contract Subnetworks is BaseMiddleware, ISubnetworks {
     ) public checkAccess {
         _beforeUnregisterSubnetwork(subnetwork);
         _unregisterSubnetwork(subnetwork);
+        _afterUnregisterSubnetwork(subnetwork);
     }
 
     /**
@@ -57,6 +61,14 @@ abstract contract Subnetworks is BaseMiddleware, ISubnetworks {
      * @param subnetwork The subnetwork ID
      */
     function _beforeRegisterSubnetwork(
+        uint96 subnetwork
+    ) internal virtual {}
+
+    /**
+     * @notice Hook called after registering a subnetwork
+     * @param subnetwork The subnetwork ID
+     */
+    function _afterRegisterSubnetwork(
         uint96 subnetwork
     ) internal virtual {}
 
@@ -69,6 +81,14 @@ abstract contract Subnetworks is BaseMiddleware, ISubnetworks {
     ) internal virtual {}
 
     /**
+     * @notice Hook called after pausing a subnetwork
+     * @param subnetwork The subnetwork ID
+     */
+    function _afterPauseSubnetwork(
+        uint96 subnetwork
+    ) internal virtual {}
+
+    /**
      * @notice Hook called before unpausing a subnetwork
      * @param subnetwork The subnetwork ID
      */
@@ -77,10 +97,26 @@ abstract contract Subnetworks is BaseMiddleware, ISubnetworks {
     ) internal virtual {}
 
     /**
+     * @notice Hook called after unpausing a subnetwork
+     * @param subnetwork The subnetwork ID
+     */
+    function _afterUnpauseSubnetwork(
+        uint96 subnetwork
+    ) internal virtual {}
+
+    /**
      * @notice Hook called before unregistering a subnetwork
      * @param subnetwork The subnetwork ID
      */
     function _beforeUnregisterSubnetwork(
+        uint96 subnetwork
+    ) internal virtual {}
+
+    /**
+     * @notice Hook called after unregistering a subnetwork
+     * @param subnetwork The subnetwork ID
+     */
+    function _afterUnregisterSubnetwork(
         uint96 subnetwork
     ) internal virtual {}
 }
