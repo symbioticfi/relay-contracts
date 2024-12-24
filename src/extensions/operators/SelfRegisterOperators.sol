@@ -35,6 +35,7 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
         keccak256("UnpauseOperatorVault(address operator,address vault,uint256 nonce)");
 
     struct SelfRegisterOperatorsStorage {
+        uint256 minPower;
         mapping(address => uint256) nonces;
     }
 
@@ -49,6 +50,17 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
         }
     }
 
+    /**
+     * @notice Initializes the contract with EIP712 domain separator and minimum power threshold
+     * @param name The name to use for the EIP712 domain separator
+     * @param _minPower The minimum power threshold
+     */
+    function __SelfRegisterOperators_init(string memory name, uint256 _minPower) internal onlyInitializing {
+        __EIP712_init(name, "1");
+        SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
+        $.minPower = _minPower;
+    }
+
     function nonces(
         address operator
     ) public view returns (uint256) {
@@ -56,20 +68,11 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
     }
 
     /**
-     * @notice Initializes the contract with EIP712 domain separator
-     * @param name The name to use for the EIP712 domain separator
-     */
-    function __SelfRegisterOperators_init(
-        string memory name
-    ) internal onlyInitializing {
-        __EIP712_init(name, "1");
-    }
-
-    /**
      * @inheritdoc ISelfRegisterOperators
      */
     function registerOperator(bytes memory key, address vault, bytes memory signature) external virtual {
         _verifyKey(msg.sender, key, signature);
+        _checkMinPower(msg.sender, vault);
         _registerOperatorImpl(msg.sender, key, vault);
     }
 
@@ -84,6 +87,7 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
         bytes memory keySignature
     ) public virtual {
         _verifyKey(operator, key, keySignature);
+        _checkMinPower(operator, vault);
         SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator,
@@ -263,6 +267,21 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
             signature
         );
         _unpauseOperatorVaultImpl(operator, vault);
+    }
+
+    function _checkMinPower(address operator, address vault) internal view {
+        SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
+        address[] memory vaults = _activeVaults();
+        uint160[] memory subnetworks = _activeSubnetworks();
+        uint256 power = _getOperatorPower(operator, vaults, subnetworks);
+        if (address(vault) != address(0)) {
+            vaults = new address[](1);
+            vaults[0] = vault;
+            power += _getOperatorPower(operator, vaults, subnetworks);
+        }
+        if (power < $.minPower) {
+            revert NotEnoughPower();
+        }
     }
 
     /**

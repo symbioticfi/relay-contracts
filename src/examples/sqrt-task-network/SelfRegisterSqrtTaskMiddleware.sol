@@ -85,7 +85,7 @@ contract SelfRegisterSqrtTaskMiddleware is
         INetworkRegistry(networkRegistry).registerNetwork();
         __BaseMiddleware_init(address(this), slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader);
         __OwnableAccessManager_init(owner);
-        __SelfRegisterOperators_init("SelfRegisterSqrtTaskMiddleware");
+        __SelfRegisterOperators_init("SelfRegisterSqrtTaskMiddleware", 0);
     }
 
     function createTask(uint256 value, address validator) external returns (uint256 taskIndex) {
