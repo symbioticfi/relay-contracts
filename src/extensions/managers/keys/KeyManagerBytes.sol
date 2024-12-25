@@ -6,24 +6,21 @@ import {PauseableEnumerableSet} from "../../../libraries/PauseableEnumerableSet.
 
 /**
  * @title KeyManagerBytes
- * @notice Manages storage and validation of operator keys
+ * @notice Manages storage and validation of operator keys using bytes values
  * @dev Extends KeyManager to provide key management functionality
  */
 abstract contract KeyManagerBytes is KeyManager {
     uint64 public constant KeyManagerBytes_VERSION = 1;
 
-    using PauseableEnumerableSet for PauseableEnumerableSet.BytesSet;
+    using PauseableEnumerableSet for PauseableEnumerableSet.Status;
 
     error DuplicateKey();
-    error MaxDisabledKeysReached();
-
-    uint256 private constant MAX_DISABLED_KEYS = 1;
-    bytes private constant ZERO_BYTES = "";
-    bytes32 private constant ZERO_BYTES_HASH = keccak256("");
+    error PreviousKeySlashable();
 
     struct KeyManagerBytesStorage {
-        mapping(address => PauseableEnumerableSet.BytesSet) _keys;
-        mapping(bytes => address) _keyToOperator;
+        mapping(address => bytes) _key;
+        mapping(address => bytes) _prevKey;
+        mapping(bytes => PauseableEnumerableSet.InnerAddress) _keyData;
     }
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.KeyManagerBytes")) - 1)) & ~bytes32(uint256(0xff))
@@ -46,72 +43,74 @@ abstract contract KeyManagerBytes is KeyManager {
         bytes memory key
     ) public view override returns (address) {
         KeyManagerBytesStorage storage $ = _getKeyManagerBytesStorage();
-        return $._keyToOperator[key];
+        return $._keyData[key].value;
     }
 
     /**
      * @notice Gets an operator's active key at the current capture timestamp
      * @param operator The operator address to lookup
-     * @return The operator's active key, or empty bytes if none
+     * @return The operator's active key encoded as bytes, or empty bytes if none
      */
     function operatorKey(
         address operator
     ) public view override returns (bytes memory) {
         KeyManagerBytesStorage storage $ = _getKeyManagerBytesStorage();
-        bytes[] memory active = $._keys[operator].getActive(getCaptureTimestamp());
-        if (active.length == 0) {
-            return ZERO_BYTES;
+        uint48 timestamp = getCaptureTimestamp();
+        bytes memory key = $._key[operator];
+        if (keccak256(key) != keccak256("") && $._keyData[key].status.wasActiveAt(timestamp)) {
+            return key;
         }
-        return active[0];
+        key = $._prevKey[operator];
+        if (keccak256(key) != keccak256("") && $._keyData[key].status.wasActiveAt(timestamp)) {
+            return key;
+        }
+        return "";
     }
 
     /**
      * @notice Checks if a key was active at a specific timestamp
      * @param timestamp The timestamp to check
-     * @param key The key to check
+     * @param key_ The key to check
      * @return True if the key was active at the timestamp, false otherwise
      */
-    function keyWasActiveAt(uint48 timestamp, bytes memory key) public view override returns (bool) {
+    function keyWasActiveAt(uint48 timestamp, bytes memory key_) public view override returns (bool) {
         KeyManagerBytesStorage storage $ = _getKeyManagerBytesStorage();
-        return $._keys[$._keyToOperator[key]].wasActiveAt(timestamp, key);
+        return $._keyData[key_].status.wasActiveAt(timestamp);
     }
 
     /**
      * @notice Updates an operator's key
      * @dev Handles key rotation by disabling old key and registering new one
      * @param operator The operator address to update
-     * @param key The new key to register
+     * @param key_ The new key to register, encoded as bytes
      */
-    function _updateKey(address operator, bytes memory key) internal override {
+    function _updateKey(address operator, bytes memory key_) internal override {
         KeyManagerBytesStorage storage $ = _getKeyManagerBytesStorage();
-        bytes32 keyHash = keccak256(key);
         uint48 timestamp = _now();
 
-        if ($._keyToOperator[key] != address(0)) {
+        if ($._keyData[key_].value != address(0)) {
             revert DuplicateKey();
         }
 
-        // check if we have reached the max number of disabled keys
-        // this allow us to limit the number times we can change the key
-        if (keyHash != ZERO_BYTES_HASH && $._keys[operator].length() > MAX_DISABLED_KEYS + 1) {
-            revert MaxDisabledKeysReached();
-        }
-
-        if ($._keys[operator].length() > 0) {
-            // try to remove disabled keys
-            bytes memory prevKey = $._keys[operator].array[0].value;
-            if ($._keys[operator].checkUnregister(timestamp, _SLASHING_WINDOW(), prevKey)) {
-                $._keys[operator].unregister(timestamp, _SLASHING_WINDOW(), prevKey);
-                delete $._keyToOperator[prevKey];
-            } else if ($._keys[operator].wasActiveAt(timestamp, prevKey)) {
-                $._keys[operator].pause(timestamp, prevKey);
+        bytes memory prevKey = $._prevKey[operator];
+        if (keccak256(prevKey) != keccak256("")) {
+            if (!$._keyData[prevKey].status.checkUnregister(timestamp, _SLASHING_WINDOW())) {
+                revert PreviousKeySlashable();
             }
+            delete $._keyData[prevKey];
         }
 
-        if (keyHash != ZERO_BYTES_HASH) {
-            // register the new key
-            $._keys[operator].register(timestamp, key);
-            $._keyToOperator[key] = operator;
+        bytes memory currentKey = $._key[operator];
+        if (keccak256(currentKey) != keccak256("")) {
+            $._keyData[currentKey].status.disable(timestamp);
+        }
+
+        $._prevKey[operator] = currentKey;
+        $._key[operator] = key_;
+
+        if (keccak256(key_) != keccak256("")) {
+            $._keyData[key_].value = operator;
+            $._keyData[key_].status.set(timestamp);
         }
     }
 }
