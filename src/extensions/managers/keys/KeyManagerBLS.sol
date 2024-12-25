@@ -131,13 +131,12 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
                 revert PreviousKeySlashable();
             }
             delete $._keyData[prevKey.X];
-            $.aggregateKey = $.aggregateKey.plus(prevKey.negate());
         }
 
         BN254.G1Point memory currentKey = $._key[operator];
         if (currentKey.X != 0 || currentKey.Y != 0) {
             $._keyData[currentKey.X].status.disable(timestamp);
-            $.aggregateKey = $.aggregateKey.plus(currentKey.negate());
+            $._aggregatedKey = $._aggregatedKey.plus(currentKey.negate());
         }
 
         $._prevKey[operator] = currentKey;
@@ -146,7 +145,7 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
         if (key.X != 0 || key.Y != 0) {
             $._keyData[key.X].value = operator;
             $._keyData[key.X].status.set(timestamp);
-            $.aggregateKey = $.aggregateKey.plus(key);
+            $._aggregatedKey = $._aggregatedKey.plus(key);
         }
     }
 }

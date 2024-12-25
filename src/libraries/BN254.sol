@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: MIT
+// Original code: https://github.com/Layr-Labs/eigenlayer-middleware/blob/mainnet/src/libraries/BN254.sol
+// Copyright (c) 2024 LayrLabs Inc.
 pragma solidity ^0.8.25;
 
 library BN254 {
