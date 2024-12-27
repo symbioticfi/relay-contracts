@@ -1,7 +1,7 @@
 {
   "name": "@symbioticfi/middleware-sdk",
   "version": "0.0.1",
-  "description": "Symbiotic is a shared security protocol enabling decentralized networks to control and customize their own multi-asset restaking implementation.",
+  "description": "Symbiotic Middleware SDK is a framework for developing middleware contracts that represent your network's logic in a modular and extensible way.",
   "homepage": "https://symbiotic.fi/",
   "bugs": "https://github.com/symbioticfi/middleware-sdk/issues",
   "license": "MIT",
