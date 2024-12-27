@@ -5,6 +5,8 @@ import {KeyManager} from "../../../managers/extendable/KeyManager.sol";
 import {PauseableEnumerableSet} from "../../../libraries/PauseableEnumerableSet.sol";
 import {BN254} from "../../../libraries/BN254.sol";
 import {BLSSig} from "../sigs/BLSSig.sol";
+import {MerkleLib} from "../../../libraries/Merkle.sol";
+import {Checkpoints} from "@symbiotic/contracts/libraries/Checkpoints.sol";
 
 /**
  * @title KeyManagerBLS
@@ -14,8 +16,12 @@ import {BLSSig} from "../sigs/BLSSig.sol";
 abstract contract KeyManagerBLS is KeyManager, BLSSig {
     using BN254 for BN254.G1Point;
     using PauseableEnumerableSet for PauseableEnumerableSet.Status;
+    using MerkleLib for MerkleLib.Tree;
+    using Checkpoints for Checkpoints.Trace256;
 
     uint64 public constant KeyManagerBLS_VERSION = 1;
+    // must be same as TREE_DEPTH in MerkleLib.sol
+    uint256 private constant _TREE_DEPTH = 32;
 
     error DuplicateKey();
     error PreviousKeySlashable();
@@ -23,9 +29,9 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
     struct KeyManagerBLSStorage {
         mapping(address => BN254.G1Point) _key;
         mapping(address => BN254.G1Point) _prevKey;
-        mapping(uint256 => uint48) _aggregatedKeyTimestamp;
         mapping(uint256 => PauseableEnumerableSet.InnerAddress) _keyData;
-        BN254.G1Point _aggregatedKey;
+        Checkpoints.Trace256 _aggregatedKey;
+        MerkleLib.Tree _keyMerkle;
     }
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.KeyManagerBLS")) - 1)) & ~bytes32(uint256(0xff))
@@ -45,21 +51,26 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
         BN254.G2Point memory aggregateG2Key,
         BN254.G1Point memory signature,
         bytes32 messageHash,
-        BN254.G1Point[] memory nonSigningKeys
+        BN254.G1Point[] memory nonSigningKeys,
+        uint256[] memory nonSigningKeyIndices,
+        bytes32[_TREE_DEPTH][] memory nonSigningKeyMerkleProofs,
+        bytes memory hint
     ) public view returns (bool) {
         KeyManagerBLSStorage storage $ = _getKeyManagerBLSStorage();
-        if ($._aggregatedKeyTimestamp[aggregateG1Key.X] != timestamp) {
+        // verify that the aggregated key is the same as the one at the timestamp
+        uint256 x = $._aggregatedKey.upperLookupRecent(timestamp, hint);
+        if (aggregateG1Key.X != x) {
             return false;
         }
+
         BN254.G1Point memory aggregatedNonSigningKey = BN254.G1Point(0, 0);
         for (uint256 i = 0; i < nonSigningKeys.length; i++) {
-            if (!$._keyData[nonSigningKeys[i].X].status.wasActiveAt(timestamp)) {
+            if (MerkleLib.branchRoot(bytes32(nonSigningKeys[i].X), nonSigningKeyMerkleProofs[i], nonSigningKeyIndices[i]) != $._keyMerkle.root()) {
                 return false;
             }
-            if (true) {
-                aggregatedNonSigningKey = aggregatedNonSigningKey.plus(nonSigningKeys[i]);
-            }
+            aggregatedNonSigningKey = aggregatedNonSigningKey.plus(nonSigningKeys[i]);
         }
+        
         aggregateG1Key = aggregateG1Key.plus(aggregatedNonSigningKey.negate());
         return BLSSig.verify(aggregateG1Key, aggregateG2Key, signature, messageHash);
     }
@@ -130,22 +141,32 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
             if (!$._keyData[prevKey.X].status.checkUnregister(timestamp, _SLASHING_WINDOW())) {
                 revert PreviousKeySlashable();
             }
-            delete $._keyData[prevKey.X];
+            $._keyData[prevKey.X].value = address(0);
         }
 
+        uint256 x = $._aggregatedKey.latest();
+        (, uint256 y) = BN254.findYFromX(x);
+        BN254.G1Point memory aggregatedKey = BN254.G1Point(x, y);
         BN254.G1Point memory currentKey = $._key[operator];
         if (currentKey.X != 0 || currentKey.Y != 0) {
             $._keyData[currentKey.X].status.disable(timestamp);
-            $._aggregatedKey = $._aggregatedKey.plus(currentKey.negate());
+            aggregatedKey = aggregatedKey.plus(currentKey.negate());
         }
 
         $._prevKey[operator] = currentKey;
         $._key[operator] = key;
 
         if (key.X != 0 || key.Y != 0) {
+            if ($._keyData[key.X].status.enabled != 0 || $._keyData[key.X].status.disabled != 0) {
+                $._keyMerkle.insert(bytes32(key.X));
+            }
             $._keyData[key.X].value = operator;
             $._keyData[key.X].status.set(timestamp);
-            $._aggregatedKey = $._aggregatedKey.plus(key);
+            aggregatedKey = aggregatedKey.plus(key);
+        }
+
+        if (aggregatedKey.X != x) {
+            $._aggregatedKey.push(_now(), aggregatedKey.X);
         }
     }
 }
