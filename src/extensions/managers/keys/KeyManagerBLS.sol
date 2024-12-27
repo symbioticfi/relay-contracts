@@ -32,6 +32,7 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
         mapping(uint256 => PauseableEnumerableSet.InnerAddress) _keyData;
         Checkpoints.Trace256 _aggregatedKey;
         MerkleLib.Tree _keyMerkle;
+        bytes32 _keyMerkleRoot;
     }
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.KeyManagerBLS")) - 1)) & ~bytes32(uint256(0xff))
@@ -64,7 +65,7 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
         }
 
         BN254.G1Point memory aggregatedNonSigningKey = BN254.G1Point(0, 0);
-        bytes32 root = $._keyMerkle.root();
+        bytes32 root = $._keyMerkleRoot;    
         for (uint256 i = 0; i < nonSigningKeys.length; i++) {
             if (MerkleLib.branchRoot(bytes32(nonSigningKeys[i].X), nonSigningKeyMerkleProofs[i], nonSigningKeyIndices[i]) != root) {
                 return false;
@@ -168,6 +169,8 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
 
         if (aggregatedKey.X != x) {
             $._aggregatedKey.push(_now(), aggregatedKey.X);
+            // all merkle tree slots should be hot
+            $._keyMerkleRoot = $._keyMerkle.root();
         }
     }
 }
