@@ -11,7 +11,6 @@ import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/Signa
 
 import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SharedVaults} from "../../extensions/SharedVaults.sol";
-import {Operators} from "../../extensions/operators/Operators.sol";
 
 import {OwnableAccessManager} from "../../extensions/managers/access/OwnableAccessManager.sol";
 import {NoKeyManager} from "../../extensions/managers/keys/NoKeyManager.sol";
@@ -20,7 +19,6 @@ import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStake
 
 contract SqrtTaskMiddleware is
     SharedVaults,
-    Operators,
     NoKeyManager,
     EIP712,
     OwnableAccessManager,

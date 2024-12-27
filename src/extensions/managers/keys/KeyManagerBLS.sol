@@ -64,13 +64,14 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
         }
 
         BN254.G1Point memory aggregatedNonSigningKey = BN254.G1Point(0, 0);
+        bytes32 root = $._keyMerkle.root();
         for (uint256 i = 0; i < nonSigningKeys.length; i++) {
-            if (MerkleLib.branchRoot(bytes32(nonSigningKeys[i].X), nonSigningKeyMerkleProofs[i], nonSigningKeyIndices[i]) != $._keyMerkle.root()) {
+            if (MerkleLib.branchRoot(bytes32(nonSigningKeys[i].X), nonSigningKeyMerkleProofs[i], nonSigningKeyIndices[i]) != root) {
                 return false;
             }
             aggregatedNonSigningKey = aggregatedNonSigningKey.plus(nonSigningKeys[i]);
         }
-        
+
         aggregateG1Key = aggregateG1Key.plus(aggregatedNonSigningKey.negate());
         return BLSSig.verify(aggregateG1Key, aggregateG2Key, signature, messageHash);
     }
@@ -157,7 +158,7 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
         $._key[operator] = key;
 
         if (key.X != 0 || key.Y != 0) {
-            if ($._keyData[key.X].status.enabled != 0 || $._keyData[key.X].status.disabled != 0) {
+            if ($._keyData[key.X].status.enabled == 0 && $._keyData[key.X].status.disabled == 0) {
                 $._keyMerkle.insert(bytes32(key.X));
             }
             $._keyData[key.X].value = operator;
