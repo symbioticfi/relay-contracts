@@ -40,9 +40,8 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
     ) external checkAccess {
         ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
         $.forcePaused[operator] = true;
-        _beforePauseOperator(operator);
         if (_operatorWasActiveAt(_now(), operator)) {
-            _pauseOperator(operator);
+            _pauseOperatorImpl(operator);
         }
     }
 
@@ -57,8 +56,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
         if (!_isOperatorRegistered(operator)) {
             return;
         }
-        _beforeUnpauseOperator(operator);
-        _unpauseOperator(operator);
+        _unpauseOperatorImpl(operator);
     }
 
     /**
@@ -67,8 +65,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
     function forceUnregisterOperator(
         address operator
     ) external checkAccess {
-        _beforeUnregisterOperator(operator);
-        _unregisterOperator(operator);
+        _unregisterOperatorImpl(operator);
     }
 
     /**
@@ -77,9 +74,8 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
     function forcePauseOperatorVault(address operator, address vault) external checkAccess {
         ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
         $.forcePausedVault[operator][vault] = true;
-        _beforePauseOperatorVault(operator, vault);
-        if (_operatorVaultWasActiveAt(_now(), operator, vault)) {
-            _pauseOperatorVault(operator, vault);
+        if (_operatorVaultWasActiveAt(_now() + 1, operator, vault)) {
+            _pauseOperatorVaultImpl(operator, vault);
         }
     }
 
@@ -93,16 +89,14 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
         if (!s._vaultOperator.contains(vault)) {
             return;
         }
-        _beforeUnpauseOperatorVault(operator, vault);
-        _unpauseOperatorVault(operator, vault);
+        _unpauseOperatorVaultImpl(operator, vault);
     }
 
     /**
      * @inheritdoc IForcePauseSelfRegisterOperators
      */
     function forceUnregisterOperatorVault(address operator, address vault) external checkAccess {
-        _beforeUnregisterOperatorVault(operator, vault);
-        _unregisterOperatorVault(operator, vault);
+        _unregisterOperatorVaultImpl(operator, vault);
     }
 
     /**
