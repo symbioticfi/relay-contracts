@@ -28,7 +28,7 @@ abstract contract KeyManagerAddress is KeyManager {
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.KeyManagerAddress")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant KeyManagerAddressStorageLocation =
-        0x3da47716e6090d5a5545e03387f4dac112d37cd069a5573bb81de8579bd9dc00;
+        0xb864e827a56afd83aa8f7940e556fe526831aa2e6001c2c692580b8e7a7d1d00;
 
     function _getKeyManagerAddressStorage() internal pure returns (KeyManagerAddressStorage storage s) {
         bytes32 location = KeyManagerAddressStorageLocation;
