@@ -3,6 +3,7 @@ pragma solidity ^0.8.25;
 
 import {SigManager} from "../../../managers/extendable/SigManager.sol";
 import {BN254} from "../../../libraries/BN254.sol";
+import "forge-std/console.sol";
 
 /**
  * @title BLSSig
@@ -29,8 +30,11 @@ contract BLSSig is SigManager {
         (BN254.G1Point memory pubkeyG1, BN254.G2Point memory pubkeyG2) =
             abi.decode(key_, (BN254.G1Point, BN254.G2Point));
         BN254.G1Point memory sig = abi.decode(signature, (BN254.G1Point));
-        bytes32 messageHash =
-            keccak256(abi.encodePacked(operator, BN254.hashG1Point(pubkeyG1), BN254.hashG2Point(pubkeyG2)));
+        bytes memory message = abi.encode(operator, pubkeyG1, pubkeyG2);
+        console.log("key ", pubkeyG1.X, pubkeyG1.Y);
+        console.logBytes(message);
+        bytes32 messageHash = keccak256(message);
+        console.logBytes32(messageHash);
         return verify(pubkeyG1, pubkeyG2, sig, messageHash);
     }
 

@@ -5,8 +5,9 @@ pragma solidity ^0.8.25;
 
 // work based on eth2 deposit contract, which is used under CC0-1.0
 
-uint256 constant TREE_DEPTH = 32;
+uint256 constant TREE_DEPTH = 16;
 uint256 constant MAX_LEAVES = 2 ** TREE_DEPTH - 1;
+uint256 constant MASK = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe;
 
 /**
  * @title MerkleLib
@@ -15,6 +16,14 @@ uint256 constant MAX_LEAVES = 2 ** TREE_DEPTH - 1;
  *
  */
 library MerkleLib {
+    using MerkleLib for Tree;
+
+    event UpdateLeaf(uint256 index, bytes32 node);
+
+    error InvalidProof();
+    error FullMerkleTree();
+    error InvalidIndex();
+
     /**
      * @notice Struct representing incremental merkle tree. Contains current
      * branch and the number of inserted leaves in the tree.
@@ -32,7 +41,11 @@ library MerkleLib {
      *
      */
     function insert(Tree storage _tree, bytes32 _node) internal {
-        require(_tree.count < MAX_LEAVES, "merkle tree full");
+        if (_tree.count >= MAX_LEAVES) {
+            revert FullMerkleTree();
+        }
+
+        emit UpdateLeaf(_tree.count, _node);
 
         _tree.count += 1;
         uint256 size = _tree.count;
@@ -49,17 +62,52 @@ library MerkleLib {
         assert(false);
     }
 
+    function update(
+        Tree storage _tree,
+        bytes32 _node,
+        bytes32 _oldNode,
+        bytes32[TREE_DEPTH] memory _branch,
+        uint256 _index
+    ) internal {
+        if (_index >= _tree.count) {
+            revert InvalidIndex();
+        }
+
+        bytes32 _root = branchRoot(_oldNode, _branch, _index);
+        if (_root != _tree.root()) {
+            // should be cheap enough, if it's not filled fully, mb optimize by checking root externally
+            revert InvalidProof();
+        }
+
+        emit UpdateLeaf(_index, _node);
+
+        uint256 lastIndex = _tree.count - 1;
+        for (uint256 i = 0; i < TREE_DEPTH; i++) {
+            if ((lastIndex / 2 * 2) == _index) {
+                _tree.branch[i] = _node;
+                return;
+            }
+            if (_index & 0x01 == 1) {
+                _node = keccak256(abi.encodePacked(_branch[i], _node));
+            } else {
+                _node = keccak256(abi.encodePacked(_node, _branch[i]));
+            }
+            lastIndex /= 2;
+            _index /= 2;
+        }
+
+        assert(false);
+    }
+
     /**
-     * @notice Calculates and returns`_tree`'s current root given array of zero
-     * hashes
-     * @param _zeroes Array of zero hashes
+     * @notice Calculates and returns`_tree`'s current root
      * @return _current Calculated root of `_tree`
      *
      */
-    function rootWithCtx(
-        Tree storage _tree,
-        bytes32[TREE_DEPTH] memory _zeroes
+    function root(
+        Tree storage _tree
     ) internal view returns (bytes32 _current) {
+        bytes32[TREE_DEPTH] memory _zeroes = zeroHashes();
         uint256 _index = _tree.count;
 
         for (uint256 i = 0; i < TREE_DEPTH; i++) {
@@ -71,13 +119,6 @@ library MerkleLib {
                 _current = keccak256(abi.encodePacked(_current, _zeroes[i]));
             }
         }
-    }
-
-    /// @notice Calculates and returns`_tree`'s current root
-    function root(
-        Tree storage _tree
-    ) internal view returns (bytes32) {
-        return rootWithCtx(_tree, zeroHashes());
     }
 
     /// @notice Returns array of TREE_DEPTH zero hashes
@@ -99,22 +140,6 @@ library MerkleLib {
         _zeroes[13] = Z_13;
         _zeroes[14] = Z_14;
         _zeroes[15] = Z_15;
-        _zeroes[16] = Z_16;
-        _zeroes[17] = Z_17;
-        _zeroes[18] = Z_18;
-        _zeroes[19] = Z_19;
-        _zeroes[20] = Z_20;
-        _zeroes[21] = Z_21;
-        _zeroes[22] = Z_22;
-        _zeroes[23] = Z_23;
-        _zeroes[24] = Z_24;
-        _zeroes[25] = Z_25;
-        _zeroes[26] = Z_26;
-        _zeroes[27] = Z_27;
-        _zeroes[28] = Z_28;
-        _zeroes[29] = Z_29;
-        _zeroes[30] = Z_30;
-        _zeroes[31] = Z_31;
     }
 
     /**
@@ -145,37 +170,6 @@ library MerkleLib {
         }
     }
 
-    /**
-     * @notice Calculates and returns the merkle root as if the index is
-     * the topmost leaf in the tree.
-     * @param _item Merkle leaf
-     * @param _branch Merkle proof
-     * @param _index Index of `_item` in tree
-     * @dev Replaces siblings greater than the index (right subtrees) with zeroes.
-     * @return _current Calculated merkle root
-     *
-     */
-    function reconstructRoot(
-        bytes32 _item,
-        bytes32[TREE_DEPTH] memory _branch, // cheaper than calldata indexing
-        uint256 _index
-    ) internal pure returns (bytes32 _current) {
-        _current = _item;
-
-        bytes32[TREE_DEPTH] memory _zeroes = zeroHashes();
-
-        for (uint256 i = 0; i < TREE_DEPTH; i++) {
-            uint256 _ithBit = (_index >> i) & 0x01;
-            // cheaper than calldata indexing _branch[i*32:(i+1)*32];
-            if (_ithBit == 1) {
-                _current = keccak256(abi.encodePacked(_branch[i], _current));
-            } else {
-                // remove right subtree from proof
-                _current = keccak256(abi.encodePacked(_current, _zeroes[i]));
-            }
-        }
-    }
-
     // keccak256 zero hashes
     bytes32 internal constant Z_0 = hex"0000000000000000000000000000000000000000000000000000000000000000";
     bytes32 internal constant Z_1 = hex"ad3228b676f7d3cd4284a5443f17f1962b36e491b30a40b2405849e597ba5fb5";
@@ -193,20 +187,4 @@ library MerkleLib {
     bytes32 internal constant Z_13 = hex"c1df82d9c4b87413eae2ef048f94b4d3554cea73d92b0f7af96e0271c691e2bb";
     bytes32 internal constant Z_14 = hex"5c67add7c6caf302256adedf7ab114da0acfe870d449a3a489f781d659e8becc";
     bytes32 internal constant Z_15 = hex"da7bce9f4e8618b6bd2f4132ce798cdc7a60e7e1460a7299e3c6342a579626d2";
-    bytes32 internal constant Z_16 = hex"2733e50f526ec2fa19a22b31e8ed50f23cd1fdf94c9154ed3a7609a2f1ff981f";
-    bytes32 internal constant Z_17 = hex"e1d3b5c807b281e4683cc6d6315cf95b9ade8641defcb32372f1c126e398ef7a";
-    bytes32 internal constant Z_18 = hex"5a2dce0a8a7f68bb74560f8f71837c2c2ebbcbf7fffb42ae1896f13f7c7479a0";
-    bytes32 internal constant Z_19 = hex"b46a28b6f55540f89444f63de0378e3d121be09e06cc9ded1c20e65876d36aa0";
-    bytes32 internal constant Z_20 = hex"c65e9645644786b620e2dd2ad648ddfcbf4a7e5b1a3a4ecfe7f64667a3f0b7e2";
-    bytes32 internal constant Z_21 = hex"f4418588ed35a2458cffeb39b93d26f18d2ab13bdce6aee58e7b99359ec2dfd9";
-    bytes32 internal constant Z_22 = hex"5a9c16dc00d6ef18b7933a6f8dc65ccb55667138776f7dea101070dc8796e377";
-    bytes32 internal constant Z_23 = hex"4df84f40ae0c8229d0d6069e5c8f39a7c299677a09d367fc7b05e3bc380ee652";
-    bytes32 internal constant Z_24 = hex"cdc72595f74c7b1043d0e1ffbab734648c838dfb0527d971b602bc216c9619ef";
-    bytes32 internal constant Z_25 = hex"0abf5ac974a1ed57f4050aa510dd9c74f508277b39d7973bb2dfccc5eeb0618d";
-    bytes32 internal constant Z_26 = hex"b8cd74046ff337f0a7bf2c8e03e10f642c1886798d71806ab1e888d9e5ee87d0";
-    bytes32 internal constant Z_27 = hex"838c5655cb21c6cb83313b5a631175dff4963772cce9108188b34ac87c81c41e";
-    bytes32 internal constant Z_28 = hex"662ee4dd2dd7b2bc707961b1e646c4047669dcb6584f0d8d770daf5d7e7deb2e";
-    bytes32 internal constant Z_29 = hex"388ab20e2573d171a88108e79d820e98f26c0b84aa8b2f4aa4968dbb818ea322";
-    bytes32 internal constant Z_30 = hex"93237c50ba75ee485f4c22adf2f741400bdf8d6a9cc7df7ecae576221665d735";
-    bytes32 internal constant Z_31 = hex"8448818bb4ae4562849e949e17ac16e0be16688e156b5cf15e098c627c0056a9";
 }
