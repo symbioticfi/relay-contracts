@@ -20,7 +20,7 @@ abstract contract BaseOperators is BaseMiddleware {
     function _registerOperatorImpl(address operator, bytes memory key, address vault) internal virtual {
         _beforeRegisterOperator(operator, key, vault);
         _registerOperator(operator);
-        _updateKey(operator, key);
+        _updateOperatorKeyImpl(operator, key);
         if (vault != address(0)) {
             _beforeRegisterOperatorVault(operator, vault);
             _registerOperatorVault(operator, vault);
