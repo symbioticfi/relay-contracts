@@ -1,6 +1,6 @@
 # Middleware Development Guide
 
-**Warning: The SDK is a work in progress and is currently under audits. Use with caution.**
+**Warning: The SDK is a work in progress and is currently under audits. Major breaking changes are planned. Use with caution.**
 
 This repository provides a framework for developing middleware in a modular and extensible way. It leverages various base contracts and extensions to handle key functionalities such as operator management, access control, key storage, timestamp capturing and stake to power calculation.
 
