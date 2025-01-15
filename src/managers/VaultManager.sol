@@ -435,7 +435,7 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
         address[] memory vaults = _activeVaultsAt(timestamp, operator);
         uint160[] memory subnetworks = _activeSubnetworksAt(timestamp);
 
-        return _getOperatorPower(operator, vaults, subnetworks);
+        return _getOperatorPowerAt(timestamp, operator, vaults, subnetworks);
     }
 
     /**
