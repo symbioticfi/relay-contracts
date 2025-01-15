@@ -4,6 +4,7 @@ pragma solidity ^0.8.25;
 import {SelfRegisterOperators} from "./SelfRegisterOperators.sol";
 import {IForcePauseSelfRegisterOperators} from
     "../../interfaces/extensions/operators/IForcePauseSelfRegisterOperators.sol";
+import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 
 /**
  * @title ForcePauseSelfRegisterOperators
@@ -11,6 +12,8 @@ import {IForcePauseSelfRegisterOperators} from
  * @dev Implements force pause functionality and prevents unpausing of force-paused operators
  */
 abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IForcePauseSelfRegisterOperators {
+    using EnumerableMap for EnumerableMap.AddressToAddressMap;
+
     uint64 public constant ForcePauseSelfRegisterOperators_VERSION = 1;
 
     struct ForcePauseSelfRegisterOperatorsStorage {
@@ -51,6 +54,9 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
     ) external checkAccess {
         ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
         $.forcePaused[operator] = false;
+        if (!_isOperatorRegistered(operator)) {
+            return;
+        }
         _beforeUnpauseOperator(operator);
         _unpauseOperator(operator);
     }
@@ -83,6 +89,10 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
     function forceUnpauseOperatorVault(address operator, address vault) external checkAccess {
         ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
         $.forcePausedVault[operator][vault] = false;
+        VaultManagerStorage storage s = _getVaultManagerStorage();
+        if (!s._vaultOperator.contains(vault)) {
+            return;
+        }
         _beforeUnpauseOperatorVault(operator, vault);
         _unpauseOperatorVault(operator, vault);
     }
