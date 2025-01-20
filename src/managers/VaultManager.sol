@@ -43,7 +43,6 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
     error NoSlasher();
     error TooOldTimestampSlash();
     error NotOperatorSpecificVault();
-    error FutureTimestampSlash();
 
     /// @custom:storage-location erc7201:symbiotic.storage.VaultManager
     struct VaultManagerStorage {
@@ -645,11 +644,6 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
         bytes memory hints
     ) internal returns (uint256 response) {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
-
-        if (timestamp > _now()) {
-            revert FutureTimestampSlash();
-        }
-
         if (!($._sharedVaults.contains(vault) || $._operatorVaults[operator].contains(vault))) {
             revert NotOperatorVault();
         }
