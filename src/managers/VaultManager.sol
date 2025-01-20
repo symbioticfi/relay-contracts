@@ -63,8 +63,8 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
     }
 
     enum DelegatorType {
-        FULL_RESTAKE,
         NETWORK_RESTAKE,
+        FULL_RESTAKE,
         OPERATOR_SPECIFIC,
         OPERATOR_NETWORK_SPECIFIC
     }
