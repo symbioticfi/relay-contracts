@@ -21,6 +21,7 @@ import {KeyManagerAddress} from "../../extensions/managers/keys/KeyManagerAddres
 import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
 import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
 
+// WARING: this is a simple example, it's not secure and should not be used in production
 /**
  * @title SelfRegisterSqrtTaskMiddleware
  * @notice Middleware for managing sqrt computation tasks with self-registering operators

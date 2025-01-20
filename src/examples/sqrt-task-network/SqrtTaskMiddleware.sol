@@ -18,6 +18,7 @@ import {NoKeyManager} from "../../extensions/managers/keys/NoKeyManager.sol";
 import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
 import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
 
+// WARING: this is a simple example, it's not secure and should not be used in production
 contract SqrtTaskMiddleware is
     SharedVaults,
     Operators,
