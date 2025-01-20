@@ -13,7 +13,7 @@ import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SharedVaults} from "../../extensions/SharedVaults.sol";
 import {Operators} from "../../extensions/operators/Operators.sol";
 
-import {OzAccessControl} from "../../extensions/managers/access/OzAccessControl.sol";
+import {OwnableAccessManager} from "../../extensions/managers/access/OwnableAccessManager.sol";
 import {NoKeyManager} from "../../extensions/managers/keys/NoKeyManager.sol";
 import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
 import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
@@ -23,7 +23,7 @@ contract SqrtTaskMiddleware is
     Operators,
     NoKeyManager,
     EIP712,
-    OzAccessControl,
+    OwnableAccessManager,
     TimestampCapture,
     EqualStakePower
 {
@@ -45,7 +45,6 @@ contract SqrtTaskMiddleware is
     }
 
     bytes32 private constant COMPLETE_TASK_TYPEHASH = keccak256("CompleteTask(uint256 taskIndex,uint256 answer)");
-    bytes32 private constant COMPLETE_TASK_ROLE = keccak256("COMPLETE_TASK_ROLE");
 
     Task[] public tasks;
 
@@ -71,8 +70,7 @@ contract SqrtTaskMiddleware is
         address owner
     ) internal initializer {
         __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader);
-        __OzAccessControl_init(owner);
-        _setSelectorRole(this.completeTask.selector, COMPLETE_TASK_ROLE);
+        __OwnableAccessManager_init(owner);
     }
 
     function createTask(uint256 value, address operator) external returns (uint256 taskIndex) {
@@ -170,11 +168,5 @@ contract SqrtTaskMiddleware is
 
     function executeSlash(address vault, uint256 slashIndex, bytes memory hints) external checkAccess {
         _executeSlash(vault, slashIndex, hints);
-    }
-
-    // it's intended that operator can test slashing by themself
-    function _beforeRegisterOperator(address operator, bytes memory key, address vault) internal override {
-        super._beforeRegisterOperator(operator, key, vault);
-        _grantRole(COMPLETE_TASK_ROLE, operator);
     }
 }

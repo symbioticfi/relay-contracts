@@ -16,7 +16,7 @@ import {SharedVaults} from "../../extensions/SharedVaults.sol";
 import {SelfRegisterOperators} from "../../extensions/operators/SelfRegisterOperators.sol";
 
 import {ECDSASig} from "../../extensions/managers/sigs/ECDSASig.sol";
-import {OzAccessControl} from "../../extensions/managers/access/OzAccessControl.sol";
+import {OwnableAccessManager} from "../../extensions/managers/access/OwnableAccessManager.sol";
 import {KeyManagerAddress} from "../../extensions/managers/keys/KeyManagerAddress.sol";
 import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
 import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
@@ -33,7 +33,7 @@ contract SelfRegisterSqrtTaskMiddleware is
     SelfRegisterOperators,
     ECDSASig,
     KeyManagerAddress,
-    OzAccessControl,
+    OwnableAccessManager,
     TimestampCapture,
     EqualStakePower
 {
@@ -56,7 +56,6 @@ contract SelfRegisterSqrtTaskMiddleware is
     }
 
     bytes32 private constant COMPLETE_TASK_TYPEHASH = keccak256("CompleteTask(uint256 taskIndex,uint256 answer)");
-    bytes32 private constant COMPLETE_TASK_ROLE = keccak256("COMPLETE_TASK_ROLE");
 
     uint256 public constant MAX_OPERATOR_VAULTS = 20;
 
@@ -85,9 +84,8 @@ contract SelfRegisterSqrtTaskMiddleware is
     ) internal initializer {
         INetworkRegistry(networkRegistry).registerNetwork();
         __BaseMiddleware_init(address(this), slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader);
-        __OzAccessControl_init(owner);
+        __OwnableAccessManager_init(owner);
         __SelfRegisterOperators_init("SelfRegisterSqrtTaskMiddleware");
-        _setSelectorRole(this.completeTask.selector, COMPLETE_TASK_ROLE);
     }
 
     function createTask(uint256 value, address validator) external returns (uint256 taskIndex) {
@@ -204,12 +202,6 @@ contract SelfRegisterSqrtTaskMiddleware is
 
     function executeSlash(address vault, uint256 slashIndex, bytes memory hints) external checkAccess {
         _executeSlash(vault, slashIndex, hints);
-    }
-
-    // it's intended that operator can test slashing by themself
-    function _beforeRegisterOperator(address operator, bytes memory key, address vault) internal override {
-        super._beforeRegisterOperator(operator, key, vault);
-        _grantRole(COMPLETE_TASK_ROLE, operator);
     }
 
     function _beforeRegisterOperatorVault(address operator, address vault) internal override {
