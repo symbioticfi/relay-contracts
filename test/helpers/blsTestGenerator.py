@@ -41,25 +41,34 @@ def aggregate_public_keys_G1(pubkeys: list[Tuple[FQ, FQ, FQ]]) -> Tuple[FQ, FQ, 
     return res
 
 
-def hash_to_point(data: str):
-    return map_to_point(keccak(data))
-
-
-def map_to_point(x):
-    # Convert bytes to int and mod by field modulus
-    x_int = int.from_bytes(x, 'big') % curve_order
-
+def hash_to_point(data: bytes):
+    x = int.from_bytes(data, byteorder='big') % field_modulus
+    
     while True:
-        # Calculate x^3 + 3 mod p
-        beta = (pow(x_int, 3, field_modulus) + 3) % field_modulus
+        beta, y = find_y_from_x(x)
         
-        # Try to find y such tha    t y^2 = beta
-        y, found = sqrt(beta)
-        
-        if found:
-            return (FQ(x_int), FQ(y), FQ(1))
+        # Check if y^2 == beta
+        if pow(y, 2, field_modulus) == beta:
+            return FQ(x), FQ(y), FQ(1)
             
-        x_int = (x_int + 1) % field_modulus
+        x = (x + 1) % field_modulus
+
+
+def find_y_from_x(x: int) -> Tuple[int, int]:
+    """
+    Given x coordinate, find y coordinate on BN254 curve
+    Returns (beta, y) where:
+        beta = x^3 + 3 (mod p)  
+        y = sqrt(beta) if it exists
+    """
+    # Calculate beta = x^3 + 3 mod p
+    beta = (pow(x, 3, field_modulus) + 3) % field_modulus
+    
+    # Calculate y = beta^((p+1)/4) mod p
+    # Using same exponent as in BN254.sol: 0xc19139cb84c680a6e14116da060561765e05aa45a1c72a34f082305b61f3f52
+    y = pow(beta, 0xc19139cb84c680a6e14116da060561765e05aa45a1c72a34f082305b61f3f52, field_modulus)
+
+    return beta, y
 
 
 def sqrt(x_square: int) -> Tuple[int, bool]:
@@ -87,8 +96,8 @@ def format_G1(g1_element: Tuple[FQ, FQ, FQ]) -> Tuple[FQ, FQ]:
 
 def format_G2(g2_element: Tuple[FQ2, FQ2, FQ2]) -> Tuple[FQ2, FQ2]:
     x, y = normalize(g2_element)
-    x1, x2 = x.coeffs
-    y1, y2 = y.coeffs
+    x2, x1 = x.coeffs
+    y2, y1 = y.coeffs
     return x1, x2, y1, y2
 
 
@@ -112,7 +121,7 @@ def generate_operator_address() -> str:
     return acc.address
 
 
-secret_key = 123
+secret_key = 69
 
 public_key = get_public_key(secret_key)
 public_key_g1 = get_public_key_G1(secret_key)
@@ -125,15 +134,15 @@ operator = generate_operator_address()
 message = eth_abi.encode(
     ['address', 'uint256', 'uint256', 'uint256[2]', 'uint256[2]'],
     [
-        operator, *[int(formatted_pubkey_g1[0]), int(formatted_pubkey_g1[1])], 
-        *[[int(formatted_pubkey[0]), int(formatted_pubkey[1])], 
-        [int(formatted_pubkey[2]), int(formatted_pubkey[3])]]
+        operator, int(formatted_pubkey_g1[0]), int(formatted_pubkey_g1[1]), 
+        [int(formatted_pubkey[0]), int(formatted_pubkey[1])], 
+        [int(formatted_pubkey[2]), int(formatted_pubkey[3])]
     ]
 )
 
 print("key: ", int(public_key_g1[0]), int(public_key_g1[1]))
 message_hash = keccak(message)
-print(message_hash.hex())
+print("message_hash: ", message_hash.hex())
 print(message.hex())
 data = message_hash
 
@@ -167,6 +176,6 @@ with open('test/helpers/blsTestVectors.json', 'w') as f:
     json.dump(test_vectors, f, indent=4)
 
 
-520925e2bc69aebedb68bde43f4fb41adf43e56cf056dbd49c93995b7df9c1a2
-000000000000000000000000f413e32f01fdaf718c8dc2fab8a925bd38a8038d1aa125a22bd902874034e67868aed40267e5575d5919677987e3bc6dd42a32fe1bacc186725464068956d9a191455c2d6f6db282d83645c610510d8d4efbaee02a9de38d14bef2cf9afc3c698a4211fa7ada7b4f036a2dfef0dc122b423259d01f1954b33144db2b5c90da089e8bde287ec7089d5d6433f3b6becaefdb678b
-000000000000000000000000f413e32f01fdaf718c8dc2fab8a925bd38a8038d1aa125a22bd902874034e67868aed40267e5575d5919677987e3bc6dd42a32fe1bacc186725464068956d9a191455c2d6f6db282d83645c610510d8d4efbaee02a9de38d14bef2cf9afc3c698a4211fa7ada7b4f036a2dfef0dc122b423259d01f1954b33144db2b5c90da089e8bde287ec7089d5d6433f3b6becaefdb678b1b1bf37ecdba226629c20908c7f475c5b3a7628ce26d696436eab0b0148034dfcd1659dc18b57722ecf6a4beb4d04dfe780a660c4c3bb2b165ab8486114c464c62
+# 520925e2bc69aebedb68bde43f4fb41adf43e56cf056dbd49c93995b7df9c1a2
+# 000000000000000000000000f413e32f01fdaf718c8dc2fab8a925bd38a8038d1aa125a22bd902874034e67868aed40267e5575d5919677987e3bc6dd42a32fe1bacc186725464068956d9a191455c2d6f6db282d83645c610510d8d4efbaee02a9de38d14bef2cf9afc3c698a4211fa7ada7b4f036a2dfef0dc122b423259d01f1954b33144db2b5c90da089e8bde287ec7089d5d6433f3b6becaefdb678b
+# 000000000000000000000000f413e32f01fdaf718c8dc2fab8a925bd38a8038d1aa125a22bd902874034e67868aed40267e5575d5919677987e3bc6dd42a32fe1bacc186725464068956d9a191455c2d6f6db282d83645c610510d8d4efbaee02a9de38d14bef2cf9afc3c698a4211fa7ada7b4f036a2dfef0dc122b423259d01f1954b33144db2b5c90da089e8bde287ec7089d5d6433f3b6becaefdb678b1b1bf37ecdba226629c20908c7f475c5b3a7628ce26d696436eab0b0148034dfcd1659dc18b57722ecf6a4beb4d04dfe780a660c4c3bb2b165ab8486114c464c62

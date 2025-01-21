@@ -58,16 +58,28 @@ contract OperatorsRegistrationTest is POCBaseTest {
         vm.warp(vm.getBlockTimestamp() + 1);
     }
 
-      function testBLSRegisterOperator() public {
+    function testBLSRegisterOperator() public {
         string memory json = vm.readFile(BLS_TEST_DATA);
         address operator = abi.decode(vm.parseJson(json, ".operator"), (address));
         uint256[] memory keyg1 = vm.parseJsonUintArray(json, ".publicKeyG1");
         uint256[] memory keyg2 = vm.parseJsonUintArray(json, ".publicKeyG2");
+
         BN254.G1Point memory keyG1 = BN254.G1Point(keyg1[0], keyg1[1]);
         BN254.G2Point memory keyG2 = BN254.G2Point([keyg2[0], keyg2[1]], [keyg2[2], keyg2[3]]);
+
         uint256[] memory sig = vm.parseJsonUintArray(json, ".signature");
-        bytes memory signature = abi.encode(sig[0], sig[1]);
+
+       // BN254.G1Point memory sigG1 = BN254.G1Point(sig[0], sig[1]);
+
+        bytes memory message = abi.encode(operator, keyG1, keyG2);
+
+        bytes32 messageHash = keccak256(message);
+        BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash);
+        BN254.G1Point memory sigG1 = BN254.scalar_mul(messageG1, uint256(69));
+
+        bytes memory signature = abi.encode(sigG1);
         bytes memory key = abi.encode(keyG1, keyG2);
+
         console.log("key: ", keyG1.X, keyG1.Y);
         console.logBytes(key);
 
@@ -78,10 +90,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
         // Verify operator is registered correctly
         assertTrue(IBaseMiddlewareReader(address(middleware)).isOperatorRegistered(operator));
 
-        assertEq(
-            abi.decode(IBaseMiddlewareReader(address(middleware)).operatorKey(operator), (bytes32)),
-            bytes32(0)
-        );
+        assertEq(abi.decode(IBaseMiddlewareReader(address(middleware)).operatorKey(operator), (bytes32)), bytes32(0));
         vm.warp(block.timestamp + 2);
         assertEq(
             abi.decode(IBaseMiddlewareReader(address(middleware)).operatorKey(operator), (BN254.G1Point)).X, keyG1.X
