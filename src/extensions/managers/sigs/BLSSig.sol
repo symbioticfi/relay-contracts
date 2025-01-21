@@ -79,8 +79,6 @@ contract BLSSig is SigManager {
         BN254.G1Point memory a1 = signature.plus(pubkeyG1.scalar_mul(alpha));
         BN254.G1Point memory b1 = messageG1.plus(BN254.generatorG1().scalar_mul(alpha));
 
-        BN254.safePairing(a1, BN254.negGeneratorG2(), b1, pubkeyG2, 120000000);
-        return true;
-        //return BN254.pairing(a1, BN254.negGeneratorG2(), b1, pubkeyG2);
+        return BN254.pairing(a1, BN254.negGeneratorG2(), b1, pubkeyG2);
     }
 }
