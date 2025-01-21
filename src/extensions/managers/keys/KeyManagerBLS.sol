@@ -138,14 +138,14 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
         KeyManagerBLSStorage storage $ = _getKeyManagerBLSStorage();
         uint48 timestamp = _now();
         uint256 x = $._aggregatedKey.latest();
-        (, uint256 y) = BN254.findYFromX(x);
+        uint256 y = 0;
+        if (x != 0) {
+            (, y) = BN254.findYFromX(x);
+        }
         BN254.G1Point memory aggregatedKey = BN254.G1Point(x, y);
         BN254.G1Point memory prevKey = $._prevKey[operator];
         BN254.G1Point memory currentKey = $._key[operator];
-        BN254.G1Point memory key;
-        assembly {
-            key := key_
-        }
+        BN254.G1Point memory key = abi.decode(key_, (BN254.G1Point));
 
         if ($._keyData[key.X].value != address(0)) {
             revert DuplicateKey();
