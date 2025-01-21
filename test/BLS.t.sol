@@ -69,13 +69,13 @@ contract OperatorsRegistrationTest is POCBaseTest {
 
         uint256[] memory sig = vm.parseJsonUintArray(json, ".signature");
 
-       // BN254.G1Point memory sigG1 = BN254.G1Point(sig[0], sig[1]);
+        BN254.G1Point memory sigG1 = BN254.G1Point(sig[0], sig[1]);
 
-        bytes memory message = abi.encode(operator, keyG1, keyG2);
-
-        bytes32 messageHash = keccak256(message);
-        BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash);
-        BN254.G1Point memory sigG1 = BN254.scalar_mul(messageG1, uint256(69));
+        // to calc sig in solidity
+        // bytes memory message = abi.encode(operator, keyG1, keyG2);
+        // bytes32 messageHash = keccak256(message);
+        // BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash);
+        // BN254.G1Point memory sigG1 = BN254.scalar_mul(messageG1, uint256(69));
 
         bytes memory signature = abi.encode(sigG1);
         bytes memory key = abi.encode(keyG1, keyG2);
