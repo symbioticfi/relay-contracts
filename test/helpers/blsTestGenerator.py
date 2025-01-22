@@ -140,10 +140,8 @@ message = eth_abi.encode(
     ]
 )
 
-print("key: ", int(public_key_g1[0]), int(public_key_g1[1]))
 message_hash = keccak(message)
 print("message_hash: ", message_hash.hex())
-print(message.hex())
 data = message_hash
 
 message = hash_to_point(data)
@@ -156,7 +154,6 @@ formatted_sig = format_G1(signature)
 # Verify the signature
 is_valid = verify(data, signature, public_key)
 print(f"\nSignature valid: {is_valid}")
-
 
 print("Test values:")
 print(f"Public key: {formatted_pubkey}")
@@ -174,8 +171,3 @@ test_vectors = {
 
 with open('test/helpers/blsTestVectors.json', 'w') as f:
     json.dump(test_vectors, f, indent=4)
-
-
-# 520925e2bc69aebedb68bde43f4fb41adf43e56cf056dbd49c93995b7df9c1a2
-# 000000000000000000000000f413e32f01fdaf718c8dc2fab8a925bd38a8038d1aa125a22bd902874034e67868aed40267e5575d5919677987e3bc6dd42a32fe1bacc186725464068956d9a191455c2d6f6db282d83645c610510d8d4efbaee02a9de38d14bef2cf9afc3c698a4211fa7ada7b4f036a2dfef0dc122b423259d01f1954b33144db2b5c90da089e8bde287ec7089d5d6433f3b6becaefdb678b
-# 000000000000000000000000f413e32f01fdaf718c8dc2fab8a925bd38a8038d1aa125a22bd902874034e67868aed40267e5575d5919677987e3bc6dd42a32fe1bacc186725464068956d9a191455c2d6f6db282d83645c610510d8d4efbaee02a9de38d14bef2cf9afc3c698a4211fa7ada7b4f036a2dfef0dc122b423259d01f1954b33144db2b5c90da089e8bde287ec7089d5d6433f3b6becaefdb678b1b1bf37ecdba226629c20908c7f475c5b3a7628ce26d696436eab0b0148034dfcd1659dc18b57722ecf6a4beb4d04dfe780a660c4c3bb2b165ab8486114c464c62

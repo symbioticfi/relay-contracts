@@ -20,7 +20,6 @@ import "forge-std/console.sol";
 //import {VetoSlasher} from "@symbiotic/contracts/slasher/VetoSlasher.sol";
 
 contract OperatorsRegistrationTest is POCBaseTest {
-    
     // using Subnetwork for bytes32;
     // using Subnetwork for address;
     using Math for uint256;
@@ -61,9 +60,12 @@ contract OperatorsRegistrationTest is POCBaseTest {
         vm.warp(vm.getBlockTimestamp() + 1);
     }
 
-    function getG2Key(uint256 privateKey) public view returns (BN254.G2Point memory) {
+    function getG2Key(
+        uint256 privateKey
+    ) public view returns (BN254.G2Point memory) {
         BN254.G2Point memory G2 = BN254.generatorG2();
-        (uint256 x1, uint256 x2, uint256 y1, uint256 y2) = BN254G2.ECTwistMul(privateKey, G2.X[1], G2.X[0], G2.Y[1], G2.Y[0]);
+        (uint256 x1, uint256 x2, uint256 y1, uint256 y2) =
+            BN254G2.ECTwistMul(privateKey, G2.X[1], G2.X[0], G2.Y[1], G2.Y[0]);
         return BN254.G2Point([x2, x1], [y2, y1]);
     }
 
@@ -73,7 +75,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
 
         // get G1 public key
         BN254.G1Point memory keyG1 = BN254.generatorG1().scalar_mul(privateKey);
-        // get G2 public key 
+        // get G2 public key
         BN254.G2Point memory keyG2 = getG2Key(privateKey);
 
         // craft message [operator, keyG1, keyG2]

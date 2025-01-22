@@ -8,7 +8,9 @@ contract SimpleMerkle {
 
     MerkleLib.Tree private tree;
 
-    function insert(bytes32 _node) external {
+    function insert(
+        bytes32 _node
+    ) external {
         tree.insert(_node);
     }
 

@@ -27,8 +27,10 @@ contract FullMerkle {
         zeroValues[15] = 0xda7bce9f4e8618b6bd2f4132ce798cdc7a60e7e1460a7299e3c6342a579626d2;
     }
 
-    function insert(bytes32 _node) public {
-        require(currentLeafIndex < 2**DEPTH, "Tree is full");
+    function insert(
+        bytes32 _node
+    ) public {
+        require(currentLeafIndex < 2 ** DEPTH, "Tree is full");
 
         uint256 leafPos = currentLeafIndex;
         leaves.push(_node);
@@ -51,22 +53,24 @@ contract FullMerkle {
         return nodes[DEPTH][0];
     }
 
-    function getProof(uint256 _index) public view returns (bytes32[16] memory) {
+    function getProof(
+        uint256 _index
+    ) public view returns (bytes32[16] memory) {
         require(_index < leaves.length, "Leaf index out of bounds");
 
         bytes32[16] memory proof;
         uint256 currentIndex = _index;
 
-        for(uint256 i = 0; i < DEPTH; i++) {
+        for (uint256 i = 0; i < DEPTH; i++) {
             uint256 siblingIndex;
-            if(currentIndex % 2 == 0) {
+            if (currentIndex % 2 == 0) {
                 siblingIndex = currentIndex + 1;
             } else {
                 siblingIndex = currentIndex - 1;
             }
 
             bytes32 sibling = nodes[i][siblingIndex];
-            if(sibling == bytes32(0)) {
+            if (sibling == bytes32(0)) {
                 sibling = zeroValues[i];
             }
             proof[i] = sibling;
@@ -81,9 +85,9 @@ contract FullMerkle {
         bytes32 computedHash = _node;
         uint256 currentIndex = _index;
 
-        for(uint256 i = 0; i < DEPTH; i++) {
+        for (uint256 i = 0; i < DEPTH; i++) {
             bytes32 sibling = _proof[i];
-            if(currentIndex % 2 == 0) {
+            if (currentIndex % 2 == 0) {
                 computedHash = keccak256(abi.encodePacked(computedHash, sibling));
             } else {
                 computedHash = keccak256(abi.encodePacked(sibling, computedHash));
@@ -94,19 +98,21 @@ contract FullMerkle {
         return computedHash == nodes[DEPTH][0];
     }
 
-    function _updatePath(uint256 currentPos) private {
-        for(uint256 depth = 0; depth < DEPTH; depth++) {
+    function _updatePath(
+        uint256 currentPos
+    ) private {
+        for (uint256 depth = 0; depth < DEPTH; depth++) {
             uint256 leftPos = (currentPos / 2) * 2;
             uint256 rightPos = leftPos + 1;
 
             bytes32 left = nodes[depth][leftPos];
             bytes32 right = nodes[depth][rightPos];
-            if(left == bytes32(0)) left = zeroValues[depth];
-            if(right == bytes32(0)) right = zeroValues[depth];
+            if (left == bytes32(0)) left = zeroValues[depth];
+            if (right == bytes32(0)) right = zeroValues[depth];
 
             bytes32 parent = keccak256(abi.encodePacked(left, right));
-            nodes[depth+1][currentPos/2] = parent;
-            currentPos = currentPos/2;
+            nodes[depth + 1][currentPos / 2] = parent;
+            currentPos = currentPos / 2;
         }
     }
 }
