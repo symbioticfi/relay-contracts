@@ -7,7 +7,7 @@ pragma solidity ^0.8.25;
 
 uint256 constant TREE_DEPTH = 16;
 uint256 constant MAX_LEAVES = 2 ** TREE_DEPTH - 1;
-uint256 constant MASK = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe;
+bytes32 constant ZERO_ELEMENT = bytes32(0);
 
 /**
  * @title MerkleLib
@@ -19,10 +19,14 @@ library MerkleLib {
     using MerkleLib for Tree;
 
     event UpdateLeaf(uint256 index, bytes32 node);
+    event PopLeaf();
 
     error InvalidProof();
     error FullMerkleTree();
     error InvalidIndex();
+    error SameNodeUpdate();
+    error ZeroElementStoring();
+    error EmptyTree();
 
     /**
      * @notice Struct representing incremental merkle tree. Contains current
@@ -32,14 +36,7 @@ library MerkleLib {
     struct Tree {
         bytes32[TREE_DEPTH] branch;
         uint256 count;
-    }
-
-    function upsert(Tree storage _tree, bytes32 _node, bytes memory _proof, uint256 _index) internal {
-        if (_proof.length != 0) {
-            update(_tree, _node, bytes32(0), _proof, _index);
-        } else {
-            insert(_tree, _node);
-        }
+        bytes32 lastNode;
     }
 
     /**
@@ -52,18 +49,21 @@ library MerkleLib {
         if (_tree.count >= MAX_LEAVES) {
             revert FullMerkleTree();
         }
+        if (_node == ZERO_ELEMENT) {
+            revert ZeroElementStoring();
+        }
 
-        emit UpdateLeaf(_tree.count, _node);
+        uint256 _index = _tree.count++;
+        emit UpdateLeaf(_index, _node);
 
-        _tree.count += 1;
-        uint256 size = _tree.count;
+        _tree.lastNode = _node;
         for (uint256 i = 0; i < TREE_DEPTH; i++) {
-            if ((size & 1) == 1) {
+            if ((_index & 1) == 0) {
                 _tree.branch[i] = _node;
                 return;
             }
             _node = keccak256(abi.encodePacked(_tree.branch[i], _node));
-            size /= 2;
+            _index >>= 1;
         }
         // As the loop should always end prematurely with the `return` statement,
         // this code should be unreachable. We assert `false` just to be safe.
@@ -74,11 +74,11 @@ library MerkleLib {
         Tree storage _tree,
         bytes32 _node,
         bytes32 _oldNode,
-        bytes memory _branch,
+        bytes32[TREE_DEPTH] memory _branch,
         uint256 _index
     ) internal {
-        if (_index >= _tree.count) {
-            revert InvalidIndex();
+        if (_node == _oldNode) {
+            revert SameNodeUpdate();
         }
 
         bytes32 _root = branchRoot(_oldNode, _branch, _index);
@@ -87,28 +87,116 @@ library MerkleLib {
             revert InvalidProof();
         }
 
+        unsafeUpdate(_tree, _node, _branch, _index);
+    }
+
+    // without proof checking
+    function unsafeUpdate(
+        Tree storage _tree,
+        bytes32 _node,
+        bytes32[TREE_DEPTH] memory _branch,
+        uint256 _index
+    ) internal {
+        if (_index >= _tree.count) {
+            revert InvalidIndex();
+        }
+
+        if (_node == bytes32(0)) {
+            revert ZeroElementStoring();
+        }
+
         emit UpdateLeaf(_index, _node);
 
-        uint256 lastIndex = _tree.count - 1;
+        uint256 lastIndex = _tree.count;
         for (uint256 i = 0; i < TREE_DEPTH; i++) {
             if ((lastIndex / 2 * 2) == _index) {
                 _tree.branch[i] = _node;
                 return;
             }
-            bytes32 _next;
-            assembly {
-                _next := mload(add(_branch, add(mul(i, 32), 32)))
-            }
-            if (_index & 0x01 == 1) {
-                _node = keccak256(abi.encodePacked(_next, _node));
+            if ((_index & 1) == 1) {
+                _node = keccak256(abi.encodePacked(_branch[i], _node));
             } else {
-                _node = keccak256(abi.encodePacked(_node, _next));
+                _node = keccak256(abi.encodePacked(_node, _branch[i]));
             }
-            lastIndex /= 2;
-            _index /= 2;
+            lastIndex >>= 1;
+            _index >>= 1;
         }
 
         assert(false);
+    }
+
+    function pop(Tree storage _tree, bytes32 _secondLastNode, bytes32[TREE_DEPTH] memory _secondLastBranch) internal {
+        if (_tree.count > 1) {
+            bytes32 _root = branchRoot(_secondLastNode, _secondLastBranch, _tree.count - 2);
+            if (_root != _tree.root()) {
+                revert InvalidProof();
+            }
+        }
+
+        unsafePop(_tree, _secondLastNode, _secondLastBranch);
+    }
+
+    function unsafePop(
+        Tree storage _tree,
+        bytes32 _secondLastNode,
+        bytes32[TREE_DEPTH] memory _secondLastBranch
+    ) internal {
+        if (_tree.count == 0) {
+            revert EmptyTree();
+        }
+
+        // edge-case for single node tree, in this case _secondLastNode is bytes32(0) and _secondLastBranch is full of zero hashes
+        if (_tree.count == 1) {
+            emit PopLeaf();
+            _tree.count = 0;
+            _tree.lastNode = bytes32(0);
+            _tree.branch[0] = bytes32(0);
+            return;
+        }
+
+        uint256 _lastIndex = --_tree.count; // tree.count - 2
+        uint256 _index = _lastIndex - 1;
+
+        emit PopLeaf();
+
+        _tree.lastNode = _secondLastNode;
+        for (uint256 i = 0; i < TREE_DEPTH; i++) {
+            if ((_lastIndex / 2 * 2) == (_index / 2 * 2)) {
+                _tree.branch[i] = _secondLastNode;
+                return;
+            }
+            if ((_index & 1) == 1) {
+                _secondLastNode = keccak256(abi.encodePacked(_secondLastBranch[i], _secondLastNode));
+            } else {
+                _secondLastNode = keccak256(abi.encodePacked(_secondLastNode, _secondLastBranch[i]));
+            }
+            _lastIndex >>= 1;
+            _index >>= 1;
+        }
+    }
+
+    function remove(
+        Tree storage _tree,
+        bytes32 _node,
+        bytes32[TREE_DEPTH] memory _branch,
+        uint256 _index,
+        bytes32 _secondLastNode,
+        bytes32[TREE_DEPTH] memory _secondLastBranch
+    ) internal {
+        bytes32 _root = _tree.root();
+        bytes32 _updateRoot = branchRoot(_node, _branch, _index);
+        if (_updateRoot != _root) {
+            revert InvalidProof();
+        }
+        if (_tree.count > 1) {
+            bytes32 _popRoot = branchRoot(_secondLastNode, _secondLastBranch, _tree.count - 2);
+            if (_popRoot != _root) {
+                revert InvalidProof();
+            }
+        }
+
+        unsafeUpdate(_tree, _tree.lastNode, _branch, _index);
+        unsafePop(_tree, _secondLastNode, _secondLastBranch);
     }
 
     /**
@@ -165,7 +253,7 @@ library MerkleLib {
      */
     function branchRoot(
         bytes32 _item,
-        bytes memory _branch, // cheaper than calldata indexing
+        bytes32[TREE_DEPTH] memory _branch, // cheaper than calldata indexing
         uint256 _index
     ) internal pure returns (bytes32 _current) {
         _current = _item;
@@ -173,10 +261,7 @@ library MerkleLib {
         for (uint256 i = 0; i < TREE_DEPTH; i++) {
             uint256 _ithBit = (_index >> i) & 0x01;
             // cheaper than calldata indexing _branch[i*32:(i+1)*32];
-            bytes32 _next;
-            assembly {
-                _next := mload(add(_branch, add(mul(i, 32), 32)))
-            }
+            bytes32 _next = _branch[i];
             if (_ithBit == 1) {
                 _current = keccak256(abi.encodePacked(_next, _current));
             } else {

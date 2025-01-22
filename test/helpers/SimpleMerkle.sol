@@ -8,7 +8,9 @@ contract SimpleMerkle {
 
     MerkleLib.Tree private tree;
 
-    function insert(bytes32 _node) external {
+    function insert(
+        bytes32 _node
+    ) external {
         tree.insert(_node);
     }
 
@@ -18,6 +20,20 @@ contract SimpleMerkle {
 
     function verify(bytes32 _node, bytes32[TREE_DEPTH] memory _proof, uint256 _index) external view returns (bool) {
         return tree.root() == MerkleLib.branchRoot(_node, _proof, _index);
+    }
+
+    function pop(bytes32 _secondLastNode, bytes32[TREE_DEPTH] memory _secondLastBranch) external {
+        tree.pop(_secondLastNode, _secondLastBranch);
+    }
+
+    function remove(
+        bytes32 _node,
+        bytes32[TREE_DEPTH] memory _proof,
+        uint256 _index,
+        bytes32 _secondLastNode,
+        bytes32[TREE_DEPTH] memory _secondLastBranch
+    ) external {
+        tree.remove(_node, _proof, _index, _secondLastNode, _secondLastBranch);
     }
 
     function root() external view returns (bytes32) {

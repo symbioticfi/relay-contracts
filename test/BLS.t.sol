@@ -58,7 +58,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
         vm.warp(vm.getBlockTimestamp() + 1);
     }
 
-      function testBLSRegisterOperator() public {
+    function testBLSRegisterOperator() public {
         string memory json = vm.readFile(BLS_TEST_DATA);
         address operator = abi.decode(vm.parseJson(json, ".operator"), (address));
         uint256[] memory keyg1 = vm.parseJsonUintArray(json, ".publicKeyG1");
@@ -78,10 +78,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
         // Verify operator is registered correctly
         assertTrue(IBaseMiddlewareReader(address(middleware)).isOperatorRegistered(operator));
 
-        assertEq(
-            abi.decode(IBaseMiddlewareReader(address(middleware)).operatorKey(operator), (bytes32)),
-            bytes32(0)
-        );
+        assertEq(abi.decode(IBaseMiddlewareReader(address(middleware)).operatorKey(operator), (bytes32)), bytes32(0));
         vm.warp(block.timestamp + 2);
         assertEq(
             abi.decode(IBaseMiddlewareReader(address(middleware)).operatorKey(operator), (BN254.G1Point)).X, keyG1.X

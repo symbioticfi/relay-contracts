@@ -5,7 +5,6 @@ contract FullMerkle {
     uint256 public constant DEPTH = 16;
     bytes32[DEPTH] public zeroValues;
     mapping(uint256 => mapping(uint256 => bytes32)) public nodes;
-    bytes32[] public leaves;
     uint256 public currentLeafIndex;
 
     constructor() {
@@ -27,11 +26,12 @@ contract FullMerkle {
         zeroValues[15] = 0xda7bce9f4e8618b6bd2f4132ce798cdc7a60e7e1460a7299e3c6342a579626d2;
     }
 
-    function insert(bytes32 _node) public {
-        require(currentLeafIndex < 2**DEPTH, "Tree is full");
+    function insert(
+        bytes32 _node
+    ) public {
+        require(currentLeafIndex < 2 ** DEPTH, "Tree is full");
 
         uint256 leafPos = currentLeafIndex;
-        leaves.push(_node);
         nodes[0][leafPos] = _node;
 
         _updatePath(leafPos);
@@ -39,34 +39,52 @@ contract FullMerkle {
     }
 
     function update(bytes32 _node, uint256 _index) public {
-        require(_index < leaves.length, "Leaf index out of bounds");
+        require(_index < currentLeafIndex, "Leaf index out of bounds");
 
-        leaves[_index] = _node;
         nodes[0][_index] = _node;
 
         _updatePath(_index);
+    }
+
+    function pop() public {
+        require(currentLeafIndex > 0, "Tree is empty");
+
+        uint256 leafPos = currentLeafIndex - 1;
+        nodes[0][leafPos] = bytes32(0);
+
+        _updatePath(leafPos);
+        currentLeafIndex--;
+    }
+
+    function remove(
+        uint256 _index
+    ) public {
+        require(_index < currentLeafIndex, "Leaf index out of bounds");
+
+        update(nodes[0][currentLeafIndex - 1], _index);
+        pop();
     }
 
     function root() public view returns (bytes32) {
         return nodes[DEPTH][0];
     }
 
-    function getProof(uint256 _index) public view returns (bytes32[16] memory) {
-        require(_index < leaves.length, "Leaf index out of bounds");
-
-        bytes32[16] memory proof;
+    function getProof(
+        uint256 _index
+    ) public view returns (bytes32[16] memory proof) {
+        require(_index < currentLeafIndex, "Leaf index out of bounds");
         uint256 currentIndex = _index;
 
-        for(uint256 i = 0; i < DEPTH; i++) {
+        for (uint256 i = 0; i < DEPTH; i++) {
             uint256 siblingIndex;
-            if(currentIndex % 2 == 0) {
+            if (currentIndex % 2 == 0) {
                 siblingIndex = currentIndex + 1;
             } else {
                 siblingIndex = currentIndex - 1;
             }
 
             bytes32 sibling = nodes[i][siblingIndex];
-            if(sibling == bytes32(0)) {
+            if (sibling == bytes32(0)) {
                 sibling = zeroValues[i];
             }
             proof[i] = sibling;
@@ -81,9 +99,9 @@ contract FullMerkle {
         bytes32 computedHash = _node;
         uint256 currentIndex = _index;
 
-        for(uint256 i = 0; i < DEPTH; i++) {
+        for (uint256 i = 0; i < DEPTH; i++) {
             bytes32 sibling = _proof[i];
-            if(currentIndex % 2 == 0) {
+            if (currentIndex % 2 == 0) {
                 computedHash = keccak256(abi.encodePacked(computedHash, sibling));
             } else {
                 computedHash = keccak256(abi.encodePacked(sibling, computedHash));
@@ -94,19 +112,21 @@ contract FullMerkle {
         return computedHash == nodes[DEPTH][0];
     }
 
-    function _updatePath(uint256 currentPos) private {
-        for(uint256 depth = 0; depth < DEPTH; depth++) {
+    function _updatePath(
+        uint256 currentPos
+    ) private {
+        for (uint256 depth = 0; depth < DEPTH; depth++) {
             uint256 leftPos = (currentPos / 2) * 2;
             uint256 rightPos = leftPos + 1;
 
             bytes32 left = nodes[depth][leftPos];
             bytes32 right = nodes[depth][rightPos];
-            if(left == bytes32(0)) left = zeroValues[depth];
-            if(right == bytes32(0)) right = zeroValues[depth];
+            if (left == bytes32(0)) left = zeroValues[depth];
+            if (right == bytes32(0)) right = zeroValues[depth];
 
             bytes32 parent = keccak256(abi.encodePacked(left, right));
-            nodes[depth+1][currentPos/2] = parent;
-            currentPos = currentPos/2;
+            nodes[depth + 1][currentPos / 2] = parent;
+            currentPos = currentPos / 2;
         }
     }
 }
