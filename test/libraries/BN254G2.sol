@@ -6,6 +6,8 @@ pragma solidity ^0.8.0;
  * @dev Homepage: https://github.com/musalbas/solidity-BN256G2
  */
 
+ // WARNING: this code is used ONLY for testing purposes, DO NOT USE IN PRODUCTION
+
 library BN254G2 {
     uint256 internal constant FIELD_MODULUS = 0x30644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd47;
     uint256 internal constant TWISTBX = 0x2b149d40ceb8aaae81be18991be06ac3b5b4c5e559dbefa33267e6dc24a138e5;
