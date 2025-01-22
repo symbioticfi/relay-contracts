@@ -37,7 +37,7 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.KeyManagerBLS")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant KeyManagerBLSStorageLocation =
-        0x4da47716e6090d5a5545e03387f4dac112d37cd069a5573bb81de8579bd9dc00;
+        0xd7c6d1e3027b949fd4edf42b481934f7c4e193928cd161b15a475e3400c5ed00;
 
     function _getKeyManagerBLSStorage() internal pure returns (KeyManagerBLSStorage storage s) {
         bytes32 location = KeyManagerBLSStorageLocation;
