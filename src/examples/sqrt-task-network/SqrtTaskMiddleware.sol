@@ -18,6 +18,7 @@ import {NoKeyManager} from "../../extensions/managers/keys/NoKeyManager.sol";
 import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
 import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
 
+// WARING: this is a simple example, it's not secure and should not be used in production
 contract SqrtTaskMiddleware is
     SharedVaults,
     Operators,
@@ -166,14 +167,7 @@ contract SqrtTaskMiddleware is
         }
     }
 
-    function executeSlash(
-        uint48 epochStart,
-        address vault,
-        bytes32 subnetwork,
-        address operator,
-        uint256 amount,
-        bytes memory hints
-    ) external checkAccess {
-        _slashVault(epochStart, vault, subnetwork, operator, amount, hints);
+    function executeSlash(address vault, uint256 slashIndex, bytes memory hints) external checkAccess {
+        _executeSlash(vault, slashIndex, hints);
     }
 }

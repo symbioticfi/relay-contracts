@@ -4,6 +4,7 @@ pragma solidity ^0.8.25;
 import {SelfRegisterOperators} from "./SelfRegisterOperators.sol";
 import {IForcePauseSelfRegisterOperators} from
     "../../interfaces/extensions/operators/IForcePauseSelfRegisterOperators.sol";
+import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 
 /**
  * @title ForcePauseSelfRegisterOperators
@@ -11,6 +12,8 @@ import {IForcePauseSelfRegisterOperators} from
  * @dev Implements force pause functionality and prevents unpausing of force-paused operators
  */
 abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IForcePauseSelfRegisterOperators {
+    using EnumerableMap for EnumerableMap.AddressToAddressMap;
+
     uint64 public constant ForcePauseSelfRegisterOperators_VERSION = 1;
 
     struct ForcePauseSelfRegisterOperatorsStorage {
@@ -37,9 +40,8 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
     ) external checkAccess {
         ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
         $.forcePaused[operator] = true;
-        _beforePauseOperator(operator);
-        if (_operatorWasActiveAt(_now(), operator)) {
-            _pauseOperator(operator);
+        if (_operatorWasActiveAt(_now() + 1, operator)) {
+            _pauseOperatorImpl(operator);
         }
     }
 
@@ -51,8 +53,10 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
     ) external checkAccess {
         ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
         $.forcePaused[operator] = false;
-        _beforeUnpauseOperator(operator);
-        _unpauseOperator(operator);
+        if (!_isOperatorRegistered(operator)) {
+            return;
+        }
+        _unpauseOperatorImpl(operator);
     }
 
     /**
@@ -61,8 +65,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
     function forceUnregisterOperator(
         address operator
     ) external checkAccess {
-        _beforeUnregisterOperator(operator);
-        _unregisterOperator(operator);
+        _unregisterOperatorImpl(operator);
     }
 
     /**
@@ -71,9 +74,8 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
     function forcePauseOperatorVault(address operator, address vault) external checkAccess {
         ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
         $.forcePausedVault[operator][vault] = true;
-        _beforePauseOperatorVault(operator, vault);
-        if (_operatorVaultWasActiveAt(_now(), operator, vault)) {
-            _pauseOperatorVault(operator, vault);
+        if (_operatorVaultWasActiveAt(_now() + 1, operator, vault)) {
+            _pauseOperatorVaultImpl(operator, vault);
         }
     }
 
@@ -83,16 +85,18 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
     function forceUnpauseOperatorVault(address operator, address vault) external checkAccess {
         ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
         $.forcePausedVault[operator][vault] = false;
-        _beforeUnpauseOperatorVault(operator, vault);
-        _unpauseOperatorVault(operator, vault);
+        VaultManagerStorage storage s = _getVaultManagerStorage();
+        if (!s._vaultOperator.contains(vault)) {
+            return;
+        }
+        _unpauseOperatorVaultImpl(operator, vault);
     }
 
     /**
      * @inheritdoc IForcePauseSelfRegisterOperators
      */
     function forceUnregisterOperatorVault(address operator, address vault) external checkAccess {
-        _beforeUnregisterOperatorVault(operator, vault);
-        _unregisterOperatorVault(operator, vault);
+        _unregisterOperatorVaultImpl(operator, vault);
     }
 
     /**
@@ -108,15 +112,14 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
     }
 
     /**
-     * @notice Override to prevent unregistering force-paused operators
+     * @notice Override to prevent registering force-paused operators
      * @param operator The operator address
+     * @param key The operator's public key
+     * @param vault The vault address
      */
-    function _beforeUnregisterOperator(
-        address operator
-    ) internal virtual override {
-        super._beforeUnregisterOperator(operator);
-        ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
-        if ($.forcePaused[operator]) revert OperatorForcePaused();
+    function _beforeRegisterOperator(address operator, bytes memory key, address vault) internal virtual override {
+        super._beforeRegisterOperator(operator, key, vault);
+        if (_operatorForcePaused(operator)) revert OperatorForcePaused();
     }
 
     /**
@@ -126,18 +129,28 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
      */
     function _beforeUnpauseOperatorVault(address operator, address vault) internal virtual override {
         super._beforeUnpauseOperatorVault(operator, vault);
-        ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
-        if ($.forcePausedVault[operator][vault]) revert OperatorVaultForcePaused();
+        if (_operatorVaultForcePaused(operator, vault)) revert OperatorVaultForcePaused();
     }
 
     /**
-     * @notice Override to prevent unregistering force-paused operator-vault pairs
+     * @notice Override to prevent registering force-paused operator-vault pairs
      * @param operator The operator address
      * @param vault The vault address
      */
-    function _beforeUnregisterOperatorVault(address operator, address vault) internal virtual override {
-        super._beforeUnregisterOperatorVault(operator, vault);
+    function _beforeRegisterOperatorVault(address operator, address vault) internal virtual override {
+        super._beforeRegisterOperatorVault(operator, vault);
+        if (_operatorVaultForcePaused(operator, vault)) revert OperatorVaultForcePaused();
+    }
+
+    function _operatorForcePaused(
+        address operator
+    ) private view returns (bool) {
         ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
-        if ($.forcePausedVault[operator][vault]) revert OperatorVaultForcePaused();
+        return $.forcePaused[operator];
+    }
+
+    function _operatorVaultForcePaused(address operator, address vault) private view returns (bool) {
+        ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
+        return $.forcePausedVault[operator][vault];
     }
 }

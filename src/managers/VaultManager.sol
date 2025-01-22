@@ -434,7 +434,7 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
         address[] memory vaults = _activeVaultsAt(timestamp, operator);
         uint160[] memory subnetworks = _activeSubnetworksAt(timestamp);
 
-        return _getOperatorPower(operator, vaults, subnetworks);
+        return _getOperatorPowerAt(timestamp, operator, vaults, subnetworks);
     }
 
     /**
@@ -683,7 +683,7 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
     function _executeSlash(
         address vault,
         uint256 slashIndex,
-        bytes calldata hints
+        bytes memory hints
     ) internal returns (uint256 slashedAmount) {
         address slasher = IVault(vault).slasher();
         uint64 slasherType = IEntity(slasher).TYPE();
