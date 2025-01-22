@@ -14,7 +14,7 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {BaseMiddlewareReader} from "../src/middleware/BaseMiddlewareReader.sol";
 import {BN254} from "../src/libraries/BN254.sol";
-import {BN254G2} from "./BN254G2.sol";
+import {BN254G2} from "../test/libraries/BN254G2.sol";
 import "forge-std/console.sol";
 //import {Slasher} from "@symbiotic/contracts/slasher/Slasher.sol";
 //import {VetoSlasher} from "@symbiotic/contracts/slasher/VetoSlasher.sol";
@@ -93,7 +93,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
 
         // opt-in operator to network
         _optInOperatorNetwork(operator, network);
-        
+
         // Register operator using BLS bn254 signature in middleware
         vm.prank(operator);
         middleware.registerOperator(key, address(0), signature);
