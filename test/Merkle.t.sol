@@ -128,24 +128,22 @@ contract MerkleTest is Test {
         }
 
         for (uint256 i = 0; i < _nodes.length; i++) {
-            // simpleMerkle.insert(_nodes[i]);
+            simpleMerkle.insert(_nodes[i]);
             fullMerkle.insert(_nodes[i]);
+            assertEq(simpleMerkle.root(), fullMerkle.root());
         }
 
         bytes32[16] memory proof = fullMerkle.getProof(_index);
-        bytes32[16] memory secondLastBranch;
-        bytes32 secondLastNode;
-        if (_nodes.length > 1) {
-            secondLastNode = _nodes[_nodes.length - 2];
-            secondLastBranch = fullMerkle.getProof(_nodes.length - 2);
-        }
-        // simpleMerkle.remove(_nodes[_index], proof, _index, secondLastNode, secondLastBranch);
+        simpleMerkle.remove(_nodes[_index], proof, _index);
         fullMerkle.remove(_index);
+        assertEq(simpleMerkle.root(), fullMerkle.root());
+
+        _nodes[_index] = _nodes[_nodes.length - 1];
 
         for (uint256 i = 0; i < _nodes.length - 1; i++) {
             proof = fullMerkle.getProof(i);
             assertTrue(fullMerkle.verify(_nodes[i], proof, i));
-            // assertTrue(simpleMerkle.verify(_nodes[i], proof, i));
+            assertTrue(simpleMerkle.verify(_nodes[i], proof, i));
         }
     }
 }

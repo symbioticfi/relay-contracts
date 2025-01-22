@@ -184,10 +184,10 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
         // remove current key from merkle tree and aggregated key when new key is zero else update
         aggregatedKey = aggregatedKey.plus(currentKey.negate());
         if (key.X == 0 && key.Y == 0) {
-            $._keyMerkle.update(bytes32(0), bytes32(currentKey.X), proof, index);
+            $._keyMerkle.remove(bytes32(currentKey.X), proof, index);
         } else {
             aggregatedKey = aggregatedKey.plus(key);
-            $._keyMerkle.update(bytes32(key.X), bytes32(prevKey.X), proof, index);
+            $._keyMerkle.update(bytes32(key.X), bytes32(prevKey.X), proof, index, false);
         }
 
         $._aggregatedKey.push(_now(), aggregatedKey.X);

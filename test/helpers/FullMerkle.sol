@@ -49,10 +49,7 @@ contract FullMerkle {
     function pop() public {
         require(currentLeafIndex > 0, "Tree is empty");
 
-        uint256 leafPos = currentLeafIndex - 1;
-        nodes[0][leafPos] = bytes32(0);
-
-        _updatePath(leafPos);
+        update(bytes32(0), currentLeafIndex - 1);
         currentLeafIndex--;
     }
 

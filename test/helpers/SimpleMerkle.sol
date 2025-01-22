@@ -15,25 +15,19 @@ contract SimpleMerkle {
     }
 
     function update(bytes32 _node, bytes32 _oldNode, bytes32[TREE_DEPTH] memory _proof, uint256 _index) external {
-        tree.update(_node, _oldNode, _proof, _index);
+        tree.update(_node, _oldNode, _proof, _index, false);
     }
 
     function verify(bytes32 _node, bytes32[TREE_DEPTH] memory _proof, uint256 _index) external view returns (bool) {
         return tree.root() == MerkleLib.branchRoot(_node, _proof, _index);
     }
 
-    function pop(bytes32 _secondLastNode, bytes32[TREE_DEPTH] memory _secondLastBranch) external {
-        tree.pop(_secondLastNode, _secondLastBranch);
+    function pop() external {
+        tree.pop();
     }
 
-    function remove(
-        bytes32 _node,
-        bytes32[TREE_DEPTH] memory _proof,
-        uint256 _index,
-        bytes32 _secondLastNode,
-        bytes32[TREE_DEPTH] memory _secondLastBranch
-    ) external {
-        tree.remove(_node, _proof, _index, _secondLastNode, _secondLastBranch);
+    function remove(bytes32 _node, bytes32[TREE_DEPTH] memory _proof, uint256 _index) external {
+        tree.remove(_node, _proof, _index);
     }
 
     function root() external view returns (bytes32) {
@@ -41,6 +35,6 @@ contract SimpleMerkle {
     }
 
     function count() external view returns (uint256) {
-        return tree.count;
+        return tree.leaves.length;
     }
 }
