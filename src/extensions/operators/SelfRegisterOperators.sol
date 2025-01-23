@@ -294,7 +294,7 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
             revert OperatorNotRegistered();
         }
 
-        if (!_isOperatorBelowPowerThreshold(operator)) {
+        if (!_isOperatorBelowPowerThreshold(operator, address(0))) {
             revert OperatorAbovePowerThreshold();
         }
 
@@ -305,6 +305,26 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
 
         if (_getOperatorManagerStorage()._operators.checkUnregister(_now(), _SLASHING_WINDOW(), operator)) {
             _unregisterOperatorImpl(operator);
+        }
+    }
+
+    /**
+     * @notice Attempts to kick an operator if they are below the power threshold
+     * @dev Will pause the operator if they are active, or unregister them if they are inactive
+     * @param operator The address of the operator to try kicking
+     */
+    function tryKickOperatorVault(address operator, address vault) public {
+        if (!_isOperatorBelowPowerThreshold(operator, address(0))) {
+            revert OperatorAbovePowerThreshold();
+        }
+
+        if (_operatorVaultWasActiveAt(_now(), operator, vault)) {
+            _pauseOperatorVaultImpl(operator, vault);
+            return;
+        }
+
+        if (_getVaultManagerStorage()._operatorVaults[operator].checkUnregister(_now(), _SLASHING_WINDOW(), vault)) {
+            _unregisterOperatorVaultImpl(operator, vault);
         }
     }
 
@@ -334,27 +354,29 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
 
     function _beforeRegisterOperator(address operator, bytes memory key, address vault) internal virtual override {
         super._beforeRegisterOperator(operator, key, vault);
-        _checkOperatorPowerThreshold(operator);
+        _checkOperatorPowerThreshold(operator, vault);
     }
 
     function _beforeUnpauseOperator(
         address operator
     ) internal virtual override {
         super._beforeUnpauseOperator(operator);
-        _checkOperatorPowerThreshold(operator);
+        _checkOperatorPowerThreshold(operator, address(0));
     }
 
-    function _checkOperatorPowerThreshold(
-        address operator
-    ) private view {
-        if (_isOperatorBelowPowerThreshold(operator)) {
+    function _checkOperatorPowerThreshold(address operator, address vault) private view {
+        if (_isOperatorBelowPowerThreshold(operator, vault)) {
             revert OperatorPowerBelowThreshold();
         }
     }
 
-    function _isOperatorBelowPowerThreshold(
-        address operator
-    ) private view returns (bool) {
-        return _getOperatorPower(operator) < _getSelfRegisterOperatorsStorage().minPowerThreshold;
+    function _isOperatorBelowPowerThreshold(address operator, address vault) private view returns (bool) {
+        address[] memory _vaults = _activeOperatorVaults(operator);
+        address[] memory vaults = new address[](1);
+        vaults[0] = vault;
+        uint160[] memory _subnetworks = _activeSubnetworks();
+        uint256 power = _getOperatorPower(operator, _vaults, _subnetworks);
+        power += _getOperatorPower(operator, vaults, _subnetworks);
+        return power < _getSelfRegisterOperatorsStorage().minPowerThreshold;
     }
 }
