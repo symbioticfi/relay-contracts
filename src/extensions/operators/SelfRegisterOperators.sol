@@ -298,7 +298,7 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
             revert OperatorAbovePowerThreshold();
         }
 
-        if (_operatorWasActiveAt(_now() + 1, operator)) {
+        if (_operatorWasActiveAt(_now(), operator)) {
             _pauseOperatorImpl(operator);
             return;
         }
