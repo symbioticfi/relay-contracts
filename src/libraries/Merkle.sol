@@ -7,7 +7,6 @@ pragma solidity ^0.8.25;
 
 uint256 constant TREE_DEPTH = 16;
 uint256 constant MAX_LEAVES = 2 ** TREE_DEPTH - 1;
-uint256 constant MASK = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe;
 
 /**
  * @title MerkleLib
@@ -19,10 +18,13 @@ library MerkleLib {
     using MerkleLib for Tree;
 
     event UpdateLeaf(uint256 index, bytes32 node);
+    event PopLeaf();
 
     error InvalidProof();
     error FullMerkleTree();
     error InvalidIndex();
+    error SameNodeUpdate();
+    error EmptyTree();
 
     /**
      * @notice Struct representing incremental merkle tree. Contains current
@@ -31,7 +33,7 @@ library MerkleLib {
      */
     struct Tree {
         bytes32[TREE_DEPTH] branch;
-        uint256 count;
+        bytes32[] leaves;
     }
 
     /**
@@ -41,21 +43,22 @@ library MerkleLib {
      *
      */
     function insert(Tree storage _tree, bytes32 _node) internal {
-        if (_tree.count >= MAX_LEAVES) {
+        uint256 _size = _tree.leaves.length;
+
+        if (_size >= MAX_LEAVES) {
             revert FullMerkleTree();
         }
 
-        emit UpdateLeaf(_tree.count, _node);
+        emit UpdateLeaf(_size, _node);
+        _tree.leaves.push(_node);
 
-        _tree.count += 1;
-        uint256 size = _tree.count;
         for (uint256 i = 0; i < TREE_DEPTH; i++) {
-            if ((size & 1) == 1) {
+            if ((_size & 1) == 0) {
                 _tree.branch[i] = _node;
                 return;
             }
             _node = keccak256(abi.encodePacked(_tree.branch[i], _node));
-            size /= 2;
+            _size >>= 1;
         }
         // As the loop should always end prematurely with the `return` statement,
         // this code should be unreachable. We assert `false` just to be safe.
@@ -65,12 +68,13 @@ library MerkleLib {
     function update(
         Tree storage _tree,
         bytes32 _node,
-        bytes32 _oldNode,
+        bytes32 _oldNode, // we could read from storage, but we already have to check the old node proof validity
         bytes32[TREE_DEPTH] memory _branch,
-        uint256 _index
+        uint256 _index,
+        bool isRemove
     ) internal {
-        if (_index >= _tree.count) {
-            revert InvalidIndex();
+        if (_node == _oldNode) {
+            revert SameNodeUpdate();
         }
 
         bytes32 _root = branchRoot(_oldNode, _branch, _index);
@@ -79,24 +83,60 @@ library MerkleLib {
             revert InvalidProof();
         }
 
+        uint256 size = _tree.leaves.length;
+        if (_index >= size) {
+            revert InvalidIndex();
+        }
+
+        if (isRemove) {
+            size--;
+        }
+
+        _tree.leaves[_index] = _node;
         emit UpdateLeaf(_index, _node);
 
-        uint256 lastIndex = _tree.count - 1;
         for (uint256 i = 0; i < TREE_DEPTH; i++) {
-            if ((lastIndex / 2 * 2) == _index) {
+            if ((size / 2 * 2) == _index) {
                 _tree.branch[i] = _node;
                 return;
             }
-            if (_index & 0x01 == 1) {
+            if ((_index & 1) == 1) {
                 _node = keccak256(abi.encodePacked(_branch[i], _node));
             } else {
                 _node = keccak256(abi.encodePacked(_node, _branch[i]));
             }
-            lastIndex /= 2;
-            _index /= 2;
+            size >>= 1;
+            _index >>= 1;
         }
 
         assert(false);
+    }
+
+    function pop(
+        Tree storage _tree
+    ) internal {
+        _tree.leaves.pop();
+        uint256 size = _tree.leaves.length;
+        bytes32 _node = bytes32(0);
+        emit PopLeaf();
+
+        for (uint256 i = 0; i < TREE_DEPTH; i++) {
+            if ((size & 1) == 0) {
+                _tree.branch[i] = _node;
+                return;
+            }
+            _node = keccak256(abi.encodePacked(_tree.branch[i], _node));
+            size >>= 1;
+        }
+
+        assert(false);
+    }
+
+    function remove(Tree storage _tree, bytes32 _node, bytes32[TREE_DEPTH] memory _branch, uint256 _index) internal {
+        if (_index != _tree.leaves.length - 1) {
+            update(_tree, _tree.leaves[_tree.leaves.length - 1], _node, _branch, _index, true);
+        }
+        pop(_tree);
     }
 
     /**
@@ -108,10 +148,10 @@ library MerkleLib {
         Tree storage _tree
     ) internal view returns (bytes32 _current) {
         bytes32[TREE_DEPTH] memory _zeroes = zeroHashes();
-        uint256 _index = _tree.count;
+        uint256 _size = _tree.leaves.length;
 
         for (uint256 i = 0; i < TREE_DEPTH; i++) {
-            uint256 _ithBit = (_index >> i) & 0x01;
+            uint256 _ithBit = (_size >> i) & 0x01;
             bytes32 _next = _tree.branch[i];
             if (_ithBit == 1) {
                 _current = keccak256(abi.encodePacked(_next, _current));

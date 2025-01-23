@@ -87,6 +87,8 @@ contract MerkleTest is Test {
     function testFuzzInsert(
         bytes32 node
     ) public {
+        vm.assume(node != bytes32(0));
+
         simpleMerkle.insert(node);
         fullMerkle.insert(node);
 
@@ -97,19 +99,51 @@ contract MerkleTest is Test {
         assertEq(simpleMerkle.root(), fullMerkle.root());
     }
 
-    function testFuzzUpdate(bytes32 oldNode, bytes32 newNode) public {
-        simpleMerkle.insert(oldNode);
-        fullMerkle.insert(oldNode);
+    function testFuzzUpdate(bytes32[8] memory _nodes, uint256 _index, bytes32 newNode) public {
+        vm.assume(_index < _nodes.length);
+        vm.assume(_nodes[_index] != bytes32(0));
+        vm.assume(newNode != _nodes[_index]);
 
-        bytes32[16] memory proof = fullMerkle.getProof(0);
+        for (uint256 i = 0; i < _nodes.length; i++) {
+            simpleMerkle.insert(_nodes[i]);
+            fullMerkle.insert(_nodes[i]);
+        }
 
-        simpleMerkle.update(newNode, oldNode, proof, 0);
-        fullMerkle.update(newNode, 0);
+        bytes32[16] memory proof = fullMerkle.getProof(_index);
+
+        fullMerkle.update(newNode, _index);
+        simpleMerkle.update(newNode, _nodes[_index], proof, _index);
 
         // Verify new node
-        proof = fullMerkle.getProof(0);
-        assertTrue(simpleMerkle.verify(newNode, proof, 0));
-        assertTrue(fullMerkle.verify(newNode, proof, 0));
+        // proof = fullMerkle.getProof(_index);
+        assertTrue(fullMerkle.verify(newNode, proof, _index));
+        assertTrue(simpleMerkle.verify(newNode, proof, _index));
         assertEq(simpleMerkle.root(), fullMerkle.root());
+    }
+
+    function testFuzzRemove(bytes32[8] memory _nodes, uint256 _index) public {
+        vm.assume(_index < _nodes.length);
+        for (uint256 i = 0; i < _nodes.length; i++) {
+            vm.assume(_nodes[i] != bytes32(0));
+        }
+
+        for (uint256 i = 0; i < _nodes.length; i++) {
+            simpleMerkle.insert(_nodes[i]);
+            fullMerkle.insert(_nodes[i]);
+            assertEq(simpleMerkle.root(), fullMerkle.root());
+        }
+
+        bytes32[16] memory proof = fullMerkle.getProof(_index);
+        simpleMerkle.remove(_nodes[_index], proof, _index);
+        fullMerkle.remove(_index);
+        assertEq(simpleMerkle.root(), fullMerkle.root());
+
+        _nodes[_index] = _nodes[_nodes.length - 1];
+
+        for (uint256 i = 0; i < _nodes.length - 1; i++) {
+            proof = fullMerkle.getProof(i);
+            assertTrue(fullMerkle.verify(_nodes[i], proof, i));
+            assertTrue(simpleMerkle.verify(_nodes[i], proof, i));
+        }
     }
 }

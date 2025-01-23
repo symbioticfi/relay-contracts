@@ -5,7 +5,6 @@ contract FullMerkle {
     uint256 public constant DEPTH = 16;
     bytes32[DEPTH] public zeroValues;
     mapping(uint256 => mapping(uint256 => bytes32)) public nodes;
-    bytes32[] public leaves;
     uint256 public currentLeafIndex;
 
     constructor() {
@@ -33,7 +32,6 @@ contract FullMerkle {
         require(currentLeafIndex < 2 ** DEPTH, "Tree is full");
 
         uint256 leafPos = currentLeafIndex;
-        leaves.push(_node);
         nodes[0][leafPos] = _node;
 
         _updatePath(leafPos);
@@ -41,12 +39,27 @@ contract FullMerkle {
     }
 
     function update(bytes32 _node, uint256 _index) public {
-        require(_index < leaves.length, "Leaf index out of bounds");
+        require(_index < currentLeafIndex, "Leaf index out of bounds");
 
-        leaves[_index] = _node;
         nodes[0][_index] = _node;
 
         _updatePath(_index);
+    }
+
+    function pop() public {
+        require(currentLeafIndex > 0, "Tree is empty");
+
+        update(bytes32(0), currentLeafIndex - 1);
+        currentLeafIndex--;
+    }
+
+    function remove(
+        uint256 _index
+    ) public {
+        require(_index < currentLeafIndex, "Leaf index out of bounds");
+
+        update(nodes[0][currentLeafIndex - 1], _index);
+        pop();
     }
 
     function root() public view returns (bytes32) {
@@ -55,10 +68,8 @@ contract FullMerkle {
 
     function getProof(
         uint256 _index
-    ) public view returns (bytes32[16] memory) {
-        require(_index < leaves.length, "Leaf index out of bounds");
-
-        bytes32[16] memory proof;
+    ) public view returns (bytes32[16] memory proof) {
+        require(_index < currentLeafIndex, "Leaf index out of bounds");
         uint256 currentIndex = _index;
 
         for (uint256 i = 0; i < DEPTH; i++) {
