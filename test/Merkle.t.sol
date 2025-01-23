@@ -4,6 +4,7 @@ pragma solidity ^0.8.25;
 import "forge-std/Test.sol";
 import "./helpers/SimpleMerkle.sol";
 import "./helpers/FullMerkle.sol";
+import "../src/libraries/Merkle.sol";
 
 contract MerkleTest is Test {
     SimpleMerkle internal simpleMerkle;
@@ -145,5 +146,24 @@ contract MerkleTest is Test {
             assertTrue(fullMerkle.verify(_nodes[i], proof, i));
             assertTrue(simpleMerkle.verify(_nodes[i], proof, i));
         }
+    }
+
+    function testTreeRoot(
+        bytes32[8] memory _leaves
+    ) public {
+        for (uint256 i = 0; i < _leaves.length; i++) {
+            vm.assume(_leaves[i] != bytes32(0));
+        }
+
+        for (uint256 i = 0; i < _leaves.length; i++) {
+            simpleMerkle.insert(_leaves[i]);
+        }
+
+        bytes32[] memory leaves = new bytes32[](_leaves.length);
+        for (uint256 i = 0; i < _leaves.length; i++) {
+            leaves[i] = _leaves[i];
+        }
+
+        assertEq(MerkleLib.treeRoot(leaves), simpleMerkle.root());
     }
 }

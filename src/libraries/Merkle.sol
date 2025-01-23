@@ -210,6 +210,27 @@ library MerkleLib {
         }
     }
 
+    function treeRoot(
+        bytes32[] memory _leaves
+    ) internal view returns (bytes32) {
+        uint256 _size = _leaves.length;
+        bytes32[TREE_DEPTH] memory _zeroes = zeroHashes();
+
+        for (uint256 depth = 0; depth < TREE_DEPTH; depth++) {
+            for (uint256 i = 0; i < _size - 1; i += 2) {
+                _leaves[i / 2] = keccak256(abi.encodePacked(_leaves[i], _leaves[i + 1]));
+            }
+
+            if (_size % 2 == 1) {
+                _leaves[(_size - 1) / 2] = keccak256(abi.encodePacked(_leaves[_size - 1], _zeroes[depth]));
+            }
+
+            _size = (_size + 1) / 2;
+        }
+
+        return _leaves[0];
+    }
+
     // keccak256 zero hashes
     bytes32 internal constant Z_0 = hex"0000000000000000000000000000000000000000000000000000000000000000";
     bytes32 internal constant Z_1 = hex"ad3228b676f7d3cd4284a5443f17f1962b36e491b30a40b2405849e597ba5fb5";
