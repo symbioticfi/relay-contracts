@@ -6,6 +6,7 @@ import {SigManager} from "../../managers/extendable/SigManager.sol";
 import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
 import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import {ISelfRegisterOperators} from "../../interfaces/extensions/operators/ISelfRegisterOperators.sol";
+import {PauseableEnumerableSet} from "../../libraries/PauseableEnumerableSet.sol";
 
 /**
  * @title SelfRegisterOperators
@@ -14,6 +15,8 @@ import {ISelfRegisterOperators} from "../../interfaces/extensions/operators/ISel
  * @dev CAUTION: If activeOperators functionality is needed, use ApprovalRegisterOperators instead to prevent DOS attacks
  */
 abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgradeable, ISelfRegisterOperators {
+    using PauseableEnumerableSet for PauseableEnumerableSet.AddressSet;
+
     uint64 public constant SelfRegisterOperators_VERSION = 1;
 
     // EIP-712 TypeHash constants
@@ -36,6 +39,7 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
 
     struct SelfRegisterOperatorsStorage {
         mapping(address => uint256) nonces;
+        uint256 minPowerThreshold;
     }
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.SelfRegisterOperators")) - 1)) & ~bytes32(uint256(0xff))
@@ -55,14 +59,17 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
         return _getSelfRegisterOperatorsStorage().nonces[operator];
     }
 
+    function minPowerThreshold() external view returns (uint256) {
+        return _getSelfRegisterOperatorsStorage().minPowerThreshold;
+    }
+
     /**
      * @notice Initializes the contract with EIP712 domain separator
      * @param name The name to use for the EIP712 domain separator
      */
-    function __SelfRegisterOperators_init(
-        string memory name
-    ) internal onlyInitializing {
+    function __SelfRegisterOperators_init(string memory name, uint256 minPowerThreshold) internal onlyInitializing {
         __EIP712_init(name, "1");
+        _getSelfRegisterOperatorsStorage().minPowerThreshold = minPowerThreshold;
     }
 
     /**
@@ -266,6 +273,62 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
     }
 
     /**
+     * @notice Updates the minimum power threshold for operators, be careful, this will allow to kick operators below the threshold
+     * @param minPowerThreshold The new minimum power threshold
+     */
+    function updatePowerThreshold(
+        uint256 minPowerThreshold
+    ) external checkAccess {
+        _getSelfRegisterOperatorsStorage().minPowerThreshold = minPowerThreshold;
+    }
+
+    /**
+     * @notice Attempts to kick an operator if they are below the power threshold
+     * @dev Will pause the operator if they are active, or unregister them if they are inactive
+     * @param operator The address of the operator to try kicking
+     */
+    function tryKickOperator(
+        address operator
+    ) public {
+        if (!_isOperatorRegistered(operator)) {
+            revert OperatorNotRegistered();
+        }
+
+        if (!_isOperatorBelowPowerThreshold(operator, address(0))) {
+            revert OperatorAbovePowerThreshold();
+        }
+
+        if (_operatorWasActiveAt(_now(), operator)) {
+            _pauseOperatorImpl(operator);
+            return;
+        }
+
+        if (_getOperatorManagerStorage()._operators.checkUnregister(_now(), _SLASHING_WINDOW(), operator)) {
+            _unregisterOperatorImpl(operator);
+        }
+    }
+
+    /**
+     * @notice Attempts to kick an operator if they are below the power threshold
+     * @dev Will pause the operator if they are active, or unregister them if they are inactive
+     * @param operator The address of the operator to try kicking
+     */
+    function tryKickOperatorVault(address operator, address vault) public {
+        if (!_isOperatorBelowPowerThreshold(operator, address(0))) {
+            revert OperatorAbovePowerThreshold();
+        }
+
+        if (_operatorVaultWasActiveAt(_now(), operator, vault)) {
+            _pauseOperatorVaultImpl(operator, vault);
+            return;
+        }
+
+        if (_getVaultManagerStorage()._operatorVaults[operator].checkUnregister(_now(), _SLASHING_WINDOW(), vault)) {
+            _unregisterOperatorVaultImpl(operator, vault);
+        }
+    }
+
+    /**
      * @notice Verifies a key signature
      * @param operator The address of the operator
      * @param key The public key to verify (zero key is allowed for deletion)
@@ -287,5 +350,33 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
         if (!SignatureChecker.isValidSignatureNow(operator, _hashTypedDataV4(structHash), signature)) {
             revert InvalidSignature();
         }
+    }
+
+    function _beforeRegisterOperator(address operator, bytes memory key, address vault) internal virtual override {
+        super._beforeRegisterOperator(operator, key, vault);
+        _checkOperatorPowerThreshold(operator, vault);
+    }
+
+    function _beforeUnpauseOperator(
+        address operator
+    ) internal virtual override {
+        super._beforeUnpauseOperator(operator);
+        _checkOperatorPowerThreshold(operator, address(0));
+    }
+
+    function _checkOperatorPowerThreshold(address operator, address vault) private view {
+        if (_isOperatorBelowPowerThreshold(operator, vault)) {
+            revert OperatorPowerBelowThreshold();
+        }
+    }
+
+    function _isOperatorBelowPowerThreshold(address operator, address vault) private view returns (bool) {
+        address[] memory _vaults = _activeOperatorVaults(operator);
+        address[] memory vaults = new address[](1);
+        vaults[0] = vault;
+        uint160[] memory _subnetworks = _activeSubnetworks();
+        uint256 power = _getOperatorPower(operator, _vaults, _subnetworks);
+        power += _getOperatorPower(operator, vaults, _subnetworks);
+        return power < _getSelfRegisterOperatorsStorage().minPowerThreshold;
     }
 }
