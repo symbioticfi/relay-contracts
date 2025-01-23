@@ -52,7 +52,7 @@ contract SelfRegisterMiddleware is
         address owner
     ) internal initializer {
         __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn, reader);
-        __SelfRegisterOperators_init("SelfRegisterMiddleware");
+        __SelfRegisterOperators_init("SelfRegisterMiddleware", 0);
         __OwnableAccessManager_init(owner);
     }
 }

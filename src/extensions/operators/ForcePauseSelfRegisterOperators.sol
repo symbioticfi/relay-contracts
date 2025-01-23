@@ -38,8 +38,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
     function forcePauseOperator(
         address operator
     ) external checkAccess {
-        ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
-        $.forcePaused[operator] = true;
+        _getForcePauseStorage().forcePaused[operator] = true;
         if (_operatorWasActiveAt(_now() + 1, operator)) {
             _pauseOperatorImpl(operator);
         }
@@ -51,8 +50,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
     function forceUnpauseOperator(
         address operator
     ) external checkAccess {
-        ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
-        $.forcePaused[operator] = false;
+        _getForcePauseStorage().forcePaused[operator] = false;
         if (!_isOperatorRegistered(operator)) {
             return;
         }
@@ -72,8 +70,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
      * @inheritdoc IForcePauseSelfRegisterOperators
      */
     function forcePauseOperatorVault(address operator, address vault) external checkAccess {
-        ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
-        $.forcePausedVault[operator][vault] = true;
+        _getForcePauseStorage().forcePausedVault[operator][vault] = true;
         if (_operatorVaultWasActiveAt(_now() + 1, operator, vault)) {
             _pauseOperatorVaultImpl(operator, vault);
         }
@@ -83,10 +80,8 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
      * @inheritdoc IForcePauseSelfRegisterOperators
      */
     function forceUnpauseOperatorVault(address operator, address vault) external checkAccess {
-        ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
-        $.forcePausedVault[operator][vault] = false;
-        VaultManagerStorage storage s = _getVaultManagerStorage();
-        if (!s._vaultOperator.contains(vault)) {
+        _getForcePauseStorage().forcePausedVault[operator][vault] = false;
+        if (!_getVaultManagerStorage()._vaultOperator.contains(vault)) {
             return;
         }
         _unpauseOperatorVaultImpl(operator, vault);
@@ -107,8 +102,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
         address operator
     ) internal virtual override {
         super._beforeUnpauseOperator(operator);
-        ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
-        if ($.forcePaused[operator]) revert OperatorForcePaused();
+        if (_operatorForcePaused(operator)) revert OperatorForcePaused();
     }
 
     /**
@@ -145,12 +139,10 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
     function _operatorForcePaused(
         address operator
     ) private view returns (bool) {
-        ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
-        return $.forcePaused[operator];
+        return _getForcePauseStorage().forcePaused[operator];
     }
 
     function _operatorVaultForcePaused(address operator, address vault) private view returns (bool) {
-        ForcePauseSelfRegisterOperatorsStorage storage $ = _getForcePauseStorage();
-        return $.forcePausedVault[operator][vault];
+        return _getForcePauseStorage().forcePausedVault[operator][vault];
     }
 }
