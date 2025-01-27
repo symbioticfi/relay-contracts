@@ -12,18 +12,15 @@ import {PauseableEnumerableSet} from "../../../libraries/PauseableEnumerableSet.
 abstract contract KeyManagerAddress is KeyManager {
     uint64 public constant KeyManagerAddress_VERSION = 1;
 
-    using PauseableEnumerableSet for PauseableEnumerableSet.AddressSet;
+    using PauseableEnumerableSet for PauseableEnumerableSet.Status;
 
     error DuplicateKey();
-    error MaxDisabledKeysReached();
-
-    uint256 private constant MAX_DISABLED_KEYS = 1;
+    error PreviousKeySlashable();
 
     struct KeyManagerAddressStorage {
-        /// @notice Mapping from operator addresses to their keys
-        mapping(address => PauseableEnumerableSet.AddressSet) _keys;
-        /// @notice Mapping from keys to operator addresses
-        mapping(address => address) _keyToOperator;
+        mapping(address => address) _key;
+        mapping(address => address) _prevKey;
+        mapping(address => PauseableEnumerableSet.InnerAddress) _keyData;
     }
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.KeyManagerAddress")) - 1)) & ~bytes32(uint256(0xff))
@@ -46,7 +43,7 @@ abstract contract KeyManagerAddress is KeyManager {
         bytes memory key
     ) public view override returns (address) {
         KeyManagerAddressStorage storage $ = _getKeyManagerAddressStorage();
-        return $._keyToOperator[abi.decode(key, (address))];
+        return $._keyData[abi.decode(key, (address))].value;
     }
 
     /**
@@ -58,11 +55,16 @@ abstract contract KeyManagerAddress is KeyManager {
         address operator
     ) public view override returns (bytes memory) {
         KeyManagerAddressStorage storage $ = _getKeyManagerAddressStorage();
-        address[] memory active = $._keys[operator].getActive(getCaptureTimestamp());
-        if (active.length == 0) {
-            return abi.encode(address(0));
+        uint48 timestamp = getCaptureTimestamp();
+        address key = $._key[operator];
+        if (key != address(0) && $._keyData[key].status.wasActiveAt(timestamp)) {
+            return abi.encode(key);
         }
-        return abi.encode(active[0]);
+        key = $._prevKey[operator];
+        if (key != address(0) && $._keyData[key].status.wasActiveAt(timestamp)) {
+            return abi.encode(key);
+        }
+        return abi.encode(address(0));
     }
 
     /**
@@ -74,7 +76,7 @@ abstract contract KeyManagerAddress is KeyManager {
     function keyWasActiveAt(uint48 timestamp, bytes memory key_) public view override returns (bool) {
         KeyManagerAddressStorage storage $ = _getKeyManagerAddressStorage();
         address key = abi.decode(key_, (address));
-        return $._keys[$._keyToOperator[key]].wasActiveAt(timestamp, key);
+        return $._keyData[key].status.wasActiveAt(timestamp);
     }
 
     /**
@@ -88,31 +90,29 @@ abstract contract KeyManagerAddress is KeyManager {
         address key = abi.decode(key_, (address));
         uint48 timestamp = _now();
 
-        if ($._keyToOperator[key] != address(0)) {
+        if ($._keyData[key].value != address(0)) {
             revert DuplicateKey();
         }
 
-        // check if we have reached the max number of disabled keys
-        // this allow us to limit the number times we can change the key
-        if (key != address(0) && $._keys[operator].length() > MAX_DISABLED_KEYS + 1) {
-            revert MaxDisabledKeysReached();
+        address prevKey = $._prevKey[operator];
+        if (prevKey != address(0)) {
+            if (!$._keyData[prevKey].status.checkUnregister(timestamp, _SLASHING_WINDOW())) {
+                revert PreviousKeySlashable();
+            }
+            delete $._keyData[prevKey];
         }
 
-        if ($._keys[operator].length() > 0) {
-            // try to remove disabled keys
-            address prevKey = address($._keys[operator].set.array[0].value);
-            if ($._keys[operator].checkUnregister(timestamp, _SLASHING_WINDOW(), prevKey)) {
-                $._keys[operator].unregister(timestamp, _SLASHING_WINDOW(), prevKey);
-                delete $._keyToOperator[prevKey];
-            } else if ($._keys[operator].wasActiveAt(timestamp, prevKey)) {
-                $._keys[operator].pause(timestamp, prevKey);
-            }
+        address currentKey = $._key[operator];
+        if (currentKey != address(0)) {
+            $._keyData[currentKey].status.disable(timestamp);
         }
+
+        $._prevKey[operator] = currentKey;
+        $._key[operator] = key;
 
         if (key != address(0)) {
-            // register the new key
-            $._keys[operator].register(timestamp, key);
-            $._keyToOperator[key] = operator;
+            $._keyData[key].value = operator;
+            $._keyData[key].status.set(timestamp);
         }
     }
 }

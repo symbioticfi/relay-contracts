@@ -12,19 +12,15 @@ import {PauseableEnumerableSet} from "../../../libraries/PauseableEnumerableSet.
 abstract contract KeyManager256 is KeyManager {
     uint64 public constant KeyManager256_VERSION = 1;
 
-    using PauseableEnumerableSet for PauseableEnumerableSet.Bytes32Set;
+    using PauseableEnumerableSet for PauseableEnumerableSet.Status;
 
     error DuplicateKey();
-    error MaxDisabledKeysReached();
-
-    bytes32 private constant ZERO_BYTES32 = bytes32(0);
-    uint256 private constant MAX_DISABLED_KEYS = 1;
+    error PreviousKeySlashable();
 
     struct KeyManager256Storage {
-        /// @notice Mapping from operator addresses to their keys
-        mapping(address => PauseableEnumerableSet.Bytes32Set) _keys;
-        /// @notice Mapping from keys to operator addresses
-        mapping(bytes32 => address) _keyToOperator;
+        mapping(address => bytes32) _key;
+        mapping(address => bytes32) _prevKey;
+        mapping(bytes32 => PauseableEnumerableSet.InnerAddress) _keyData;
     }
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.KeyManager256")) - 1)) & ~bytes32(uint256(0xff))
@@ -47,7 +43,7 @@ abstract contract KeyManager256 is KeyManager {
         bytes memory key
     ) public view override returns (address) {
         KeyManager256Storage storage $ = _getKeyManager256Storage();
-        return $._keyToOperator[abi.decode(key, (bytes32))];
+        return $._keyData[abi.decode(key, (bytes32))].value;
     }
 
     /**
@@ -59,11 +55,16 @@ abstract contract KeyManager256 is KeyManager {
         address operator
     ) public view override returns (bytes memory) {
         KeyManager256Storage storage $ = _getKeyManager256Storage();
-        bytes32[] memory active = $._keys[operator].getActive(getCaptureTimestamp());
-        if (active.length == 0) {
-            return abi.encode(ZERO_BYTES32);
+        uint48 timestamp = getCaptureTimestamp();
+        bytes32 key = $._key[operator];
+        if (key != bytes32(0) && $._keyData[key].status.wasActiveAt(timestamp)) {
+            return abi.encode(key);
         }
-        return abi.encode(active[0]);
+        key = $._prevKey[operator];
+        if (key != bytes32(0) && $._keyData[key].status.wasActiveAt(timestamp)) {
+            return abi.encode(key);
+        }
+        return abi.encode(bytes32(0));
     }
 
     /**
@@ -75,7 +76,7 @@ abstract contract KeyManager256 is KeyManager {
     function keyWasActiveAt(uint48 timestamp, bytes memory key_) public view override returns (bool) {
         KeyManager256Storage storage $ = _getKeyManager256Storage();
         bytes32 key = abi.decode(key_, (bytes32));
-        return $._keys[$._keyToOperator[key]].wasActiveAt(timestamp, key);
+        return $._keyData[key].status.wasActiveAt(timestamp);
     }
 
     /**
@@ -89,31 +90,29 @@ abstract contract KeyManager256 is KeyManager {
         bytes32 key = abi.decode(key_, (bytes32));
         uint48 timestamp = _now();
 
-        if ($._keyToOperator[key] != address(0)) {
+        if ($._keyData[key].value != address(0)) {
             revert DuplicateKey();
         }
 
-        // check if we have reached the max number of disabled keys
-        // this allow us to limit the number times we can change the key
-        if (key != ZERO_BYTES32 && $._keys[operator].length() > MAX_DISABLED_KEYS + 1) {
-            revert MaxDisabledKeysReached();
-        }
-
-        if ($._keys[operator].length() > 0) {
-            // try to remove disabled keys
-            bytes32 prevKey = $._keys[operator].array[0].value;
-            if ($._keys[operator].checkUnregister(timestamp, _SLASHING_WINDOW(), prevKey)) {
-                $._keys[operator].unregister(timestamp, _SLASHING_WINDOW(), prevKey);
-                delete $._keyToOperator[prevKey];
-            } else if ($._keys[operator].wasActiveAt(timestamp, prevKey)) {
-                $._keys[operator].pause(timestamp, prevKey);
+        bytes32 prevKey = $._prevKey[operator];
+        if (prevKey != bytes32(0)) {
+            if (!$._keyData[prevKey].status.checkUnregister(timestamp, _SLASHING_WINDOW())) {
+                revert PreviousKeySlashable();
             }
+            delete $._keyData[prevKey];
         }
 
-        if (key != ZERO_BYTES32) {
-            // register the new key
-            $._keys[operator].register(timestamp, key);
-            $._keyToOperator[key] = operator;
+        bytes32 currentKey = $._key[operator];
+        if (currentKey != bytes32(0)) {
+            $._keyData[currentKey].status.disable(timestamp);
+        }
+
+        $._prevKey[operator] = currentKey;
+        $._key[operator] = key;
+
+        if (key != bytes32(0)) {
+            $._keyData[key].value = operator;
+            $._keyData[key].status.set(timestamp);
         }
     }
 }
