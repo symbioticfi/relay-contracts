@@ -30,16 +30,15 @@ abstract contract OwnableAccessManager is AccessManager, IOwnableAccessManager {
     function __OwnableAccessManager_init(
         address owner_
     ) internal onlyInitializing {
+        if (owner_ == address(0)) {
+            revert InvalidOwner(address(0));
+        }
         _setOwner(owner_);
     }
 
     function _setOwner(
         address owner_
     ) private {
-        if (owner_ == address(0)) {
-            revert InvalidOwner(address(0));
-        }
-
         bytes32 location = OwnableAccessManagerStorageLocation;
         assembly {
             sstore(location, owner_)
@@ -69,6 +68,9 @@ abstract contract OwnableAccessManager is AccessManager, IOwnableAccessManager {
     function setOwner(
         address owner_
     ) public checkAccess {
+        if (owner_ == address(0)) {
+            revert InvalidOwner(address(0));
+        }
         _setOwner(owner_);
     }
 

@@ -147,7 +147,7 @@ contract SimplePosMiddleware is
 
         params.vaults = _activeVaultsAt(params.epochStart, params.operator);
         params.subnetworks = _activeSubnetworksAt(params.epochStart);
-        params.totalPower = _getOperatorPower(params.operator, params.vaults, params.subnetworks);
+        params.totalPower = _getOperatorPowerAt(params.epochStart, params.operator, params.vaults, params.subnetworks);
         uint256 vaultsLength = params.vaults.length;
         uint256 subnetworksLength = params.subnetworks.length;
 
@@ -178,15 +178,8 @@ contract SimplePosMiddleware is
         }
     }
 
-    function executeSlash(
-        uint48 epochStart,
-        address vault,
-        bytes32 subnetwork,
-        address operator,
-        uint256 amount,
-        bytes memory hints
-    ) external checkAccess {
-        _slashVault(epochStart, vault, subnetwork, operator, amount, hints);
+    function executeSlash(address vault, uint256 slashIndex, bytes memory hints) external checkAccess {
+        _executeSlash(vault, slashIndex, hints);
     }
 
     function _checkCanSlash(uint48 epochStart, bytes32 key, address operator) internal view {

@@ -63,9 +63,10 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
     }
 
     enum DelegatorType {
-        FULL_RESTAKE,
         NETWORK_RESTAKE,
-        OPERATOR_SPECIFIC
+        FULL_RESTAKE,
+        OPERATOR_SPECIFIC,
+        OPERATOR_NETWORK_SPECIFIC
     }
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.VaultManager")) - 1)) & ~bytes32(uint256(0xff))
@@ -433,7 +434,7 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
         address[] memory vaults = _activeVaultsAt(timestamp, operator);
         uint160[] memory subnetworks = _activeSubnetworksAt(timestamp);
 
-        return _getOperatorPower(operator, vaults, subnetworks);
+        return _getOperatorPowerAt(timestamp, operator, vaults, subnetworks);
     }
 
     /**
@@ -682,7 +683,7 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
     function _executeSlash(
         address vault,
         uint256 slashIndex,
-        bytes calldata hints
+        bytes memory hints
     ) internal returns (uint256 slashedAmount) {
         address slasher = IVault(vault).slasher();
         uint64 slasherType = IEntity(slasher).TYPE();
@@ -732,9 +733,12 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
 
     function _validateOperatorVault(address operator, address vault) internal view {
         address delegator = IVault(vault).delegator();
+        uint64 delegatorType = IEntity(delegator).TYPE();
         if (
-            IEntity(delegator).TYPE() != uint64(DelegatorType.OPERATOR_SPECIFIC)
-                || IOperatorSpecificDelegator(delegator).operator() != operator
+            (
+                delegatorType != uint64(DelegatorType.OPERATOR_SPECIFIC)
+                    && delegatorType != uint64(DelegatorType.OPERATOR_NETWORK_SPECIFIC)
+            ) || IOperatorSpecificDelegator(delegator).operator() != operator
         ) {
             revert NotOperatorSpecificVault();
         }

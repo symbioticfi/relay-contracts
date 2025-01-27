@@ -11,7 +11,7 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 abstract contract SlashingWindowStorage is Initializable {
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.SlashingWindowStorage")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant SlashingWindowStorageLocation =
-        0x52becd5b30d67421b1f63b9d90d513daf82b3973912d3edfdac9468c1743c000;
+        0x937e0d2984afc3afaa413d74098ba180cc0c6aae6527cc2713827ed6bc72f200;
 
     /**
      * @notice Initializes the SlashingWindowStorage contract

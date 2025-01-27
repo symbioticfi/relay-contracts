@@ -7,13 +7,14 @@ pragma solidity ^0.8.25;
  */
 interface ISelfRegisterOperators {
     error InvalidSignature();
-    error NotEnoughPower();
-
+    error OperatorPowerBelowThreshold();
+    error OperatorAbovePowerThreshold();
     /**
      * @notice Returns the nonce for an operator address
      * @param operator The operator address to check
      * @return The current nonce value
      */
+
     function nonces(
         address operator
     ) external view returns (uint256);
