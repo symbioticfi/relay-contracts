@@ -191,7 +191,7 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
             $._keyMerkle.remove(bytes32(currentKey.X), proof, index);
         } else {
             aggregatedKey = aggregatedKey.plus(key);
-            $._keyMerkle.update(bytes32(key.X), bytes32(prevKey.X), proof, index, false);
+            $._keyMerkle.update(bytes32(key.X), bytes32(currentKey.X), proof, index, false);
         }
 
         $._aggregatedKey.push(_now(), aggregatedKey.X);
