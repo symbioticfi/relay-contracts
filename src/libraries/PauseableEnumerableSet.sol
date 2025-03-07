@@ -80,7 +80,6 @@ library PauseableEnumerableSet {
      */
     function disable(Status storage self, uint48 timestamp) internal {
         if (self.disabled != 0) revert NotEnabled();
-        self.enabled = 0;
         self.disabled = timestamp;
     }
 
