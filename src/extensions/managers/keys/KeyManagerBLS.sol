@@ -165,7 +165,7 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
         if (currentKey.X != 0 || currentKey.Y != 0) {
             $._keyData[currentKey.X].status.disable(timestamp);
         }
-        
+
         if (key.X != 0 || key.Y != 0) {
             $._keyData[key.X].value = operator;
             $._keyData[key.X].status.set(timestamp);
@@ -178,12 +178,11 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
             $._aggregatedKey.push(_now(), aggregatedKey.X);
             return;
         }
-
         bytes32[16] memory proof;
         uint256 index;
         assembly {
-            proof := add(key_, 64)
-            index := add(key_, 576) // 64 + 32 * 16
+            proof := add(key_, 96)
+            index := mload(add(key_, 608)) // 32 + 64 + (16 * 32)
         }
 
         // remove current key from merkle tree and aggregated key when new key is zero else update
