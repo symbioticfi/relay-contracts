@@ -170,7 +170,7 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
             aggregatedKey = aggregatedKey.plus(key);
             $._keyMerkle.insert(bytes32(key.X));
             $._keyMerkleRoot.push(_now(), uint256($._keyMerkle.root()));
-            $._aggregatedKey.push(_now(), key.X);
+            $._aggregatedKey.push(_now(), aggregatedKey.X);
             return;
         }
 
