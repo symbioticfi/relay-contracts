@@ -161,6 +161,11 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
 
         $._prevKey[operator] = currentKey;
         $._key[operator] = key;
+
+        if (currentKey.X != 0 || currentKey.Y != 0) {
+            $._keyData[currentKey.X].status.disable(timestamp);
+        }
+        
         if (key.X != 0 || key.Y != 0) {
             $._keyData[key.X].value = operator;
             $._keyData[key.X].status.set(timestamp);
