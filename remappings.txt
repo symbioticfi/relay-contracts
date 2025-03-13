@@ -1,5 +1,5 @@
 @openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/
 @openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/
-@symbiotic/=lib/core/src/
-@symbiotic-test=lib/core/test
+@symbioticfi/core/=lib/core/
+@symbioticfi-test=lib/core/test
 @crypto-lib/=lib/crypto-lib/src/
