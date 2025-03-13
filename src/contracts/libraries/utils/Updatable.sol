@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {UpdatableEnumerableSet} from "./UpdatableEnumerableSet.sol";
-
 library Updatable {
     modifier checkTimepoints(uint48 currentTimepoint, uint48 nextValueTimepoint) {
         if (nextValueTimepoint <= currentTimepoint) {
@@ -11,17 +9,17 @@ library Updatable {
         _;
     }
 
-    struct Uint48Value {
-        uint48 value;
-        uint48 nextValue;
+    struct Uint104Value {
+        uint104 value;
+        uint104 nextValue;
         uint48 nextValueTimepoint;
     }
 
     function set(
-        Uint48Value storage self,
+        Uint104Value storage self,
         uint48 currentTimepoint,
         uint48 nextValueTimepoint,
-        uint48 value
+        uint104 value
     ) internal checkTimepoints(currentTimepoint, nextValueTimepoint) returns (bool) {
         if (self.nextValueTimepoint != 0 && self.nextValueTimepoint <= currentTimepoint) {
             self.value = self.nextValue;
@@ -38,43 +36,8 @@ library Updatable {
             return true;
         }
 
-        self.nextValue = value;
-        self.nextValueTimepoint = nextValueTimepoint;
-        return true;
-    }
-
-    function get(Uint48Value storage self, uint48 currentTimepoint) internal view returns (uint48) {
-        if (self.nextValueTimepoint != 0 && self.nextValueTimepoint <= currentTimepoint) {
-            return self.nextValue;
-        }
-        return self.value;
-    }
-
-    struct Uint256Value {
-        uint256 value;
-        uint256 nextValue;
-        uint48 nextValueTimepoint;
-    }
-
-    function set(
-        Uint256Value storage self,
-        uint48 currentTimepoint,
-        uint48 nextValueTimepoint,
-        uint256 value
-    ) internal checkTimepoints(currentTimepoint, nextValueTimepoint) returns (bool) {
-        if (self.nextValueTimepoint != 0 && self.nextValueTimepoint <= currentTimepoint) {
-            self.value = self.nextValue;
-            delete self.nextValue;
-            delete self.nextValueTimepoint;
-        }
-
-        if (self.value == value) {
-            if (self.nextValueTimepoint == 0) {
-                return false;
-            }
-            delete self.nextValue;
-            delete self.nextValueTimepoint;
-            return true;
+        if (self.nextValueTimepoint == nextValueTimepoint && self.nextValue == value) {
+            return false;
         }
 
         self.nextValue = value;
@@ -82,124 +45,7 @@ library Updatable {
         return true;
     }
 
-    function get(Uint256Value storage self, uint48 currentTimepoint) internal view returns (uint256) {
-        if (self.nextValueTimepoint != 0 && self.nextValueTimepoint <= currentTimepoint) {
-            return self.nextValue;
-        }
-        return self.value;
-    }
-
-    struct Bytes32Value {
-        bytes32 value;
-        bytes32 nextValue;
-        uint48 nextValueTimepoint;
-    }
-
-    function set(
-        Bytes32Value storage self,
-        uint48 currentTimepoint,
-        uint48 nextValueTimepoint,
-        bytes32 value
-    ) internal checkTimepoints(currentTimepoint, nextValueTimepoint) returns (bool) {
-        if (self.nextValueTimepoint != 0 && self.nextValueTimepoint <= currentTimepoint) {
-            self.value = self.nextValue;
-            delete self.nextValue;
-            delete self.nextValueTimepoint;
-        }
-
-        if (self.value == value) {
-            if (self.nextValueTimepoint == 0) {
-                return false;
-            }
-            delete self.nextValue;
-            delete self.nextValueTimepoint;
-            return true;
-        }
-
-        self.nextValue = value;
-        self.nextValueTimepoint = nextValueTimepoint;
-        return true;
-    }
-
-    function get(Bytes32Value storage self, uint48 currentTimepoint) internal view returns (bytes32) {
-        if (self.nextValueTimepoint != 0 && self.nextValueTimepoint <= currentTimepoint) {
-            return self.nextValue;
-        }
-        return self.value;
-    }
-
-    struct BoolValue {
-        bool value;
-        bool nextValue;
-        uint48 nextValueTimepoint;
-    }
-
-    function set(
-        BoolValue storage self,
-        uint48 currentTimepoint,
-        uint48 nextValueTimepoint,
-        bool value
-    ) internal checkTimepoints(currentTimepoint, nextValueTimepoint) returns (bool) {
-        if (self.nextValueTimepoint != 0 && self.nextValueTimepoint <= currentTimepoint) {
-            self.value = self.nextValue;
-            delete self.nextValue;
-            delete self.nextValueTimepoint;
-        }
-
-        if (self.value == value) {
-            if (self.nextValueTimepoint == 0) {
-                return false;
-            }
-            delete self.nextValue;
-            delete self.nextValueTimepoint;
-            return true;
-        }
-
-        self.nextValue = value;
-        self.nextValueTimepoint = nextValueTimepoint;
-        return true;
-    }
-
-    function get(BoolValue storage self, uint48 currentTimepoint) internal view returns (bool) {
-        if (self.nextValueTimepoint != 0 && self.nextValueTimepoint <= currentTimepoint) {
-            return self.nextValue;
-        }
-        return self.value;
-    }
-
-    struct AddressValue {
-        address value;
-        address nextValue;
-        uint48 nextValueTimepoint;
-    }
-
-    function set(
-        AddressValue storage self,
-        uint48 currentTimepoint,
-        uint48 nextValueTimepoint,
-        address value
-    ) internal checkTimepoints(currentTimepoint, nextValueTimepoint) returns (bool) {
-        if (self.nextValueTimepoint != 0 && self.nextValueTimepoint <= currentTimepoint) {
-            self.value = self.nextValue;
-            delete self.nextValue;
-            delete self.nextValueTimepoint;
-        }
-
-        if (self.value == value) {
-            if (self.nextValueTimepoint == 0) {
-                return false;
-            }
-            delete self.nextValue;
-            delete self.nextValueTimepoint;
-            return true;
-        }
-
-        self.nextValue = value;
-        self.nextValueTimepoint = nextValueTimepoint;
-        return true;
-    }
-
-    function get(AddressValue storage self, uint48 currentTimepoint) internal view returns (address) {
+    function get(Uint104Value storage self, uint48 currentTimepoint) internal view returns (uint104) {
         if (self.nextValueTimepoint != 0 && self.nextValueTimepoint <= currentTimepoint) {
             return self.nextValue;
         }
@@ -233,6 +79,10 @@ library Updatable {
             return true;
         }
 
+        if (self.nextValueTimepoint == nextValueTimepoint && self.nextValue == value) {
+            return false;
+        }
+
         self.nextValue = value;
         self.nextValueTimepoint = nextValueTimepoint;
         return true;
@@ -245,39 +95,96 @@ library Updatable {
         return self.value;
     }
 
+    struct Bytes32Value {
+        bytes32 value;
+        bytes32 nextValue;
+        uint48 nextValueTimepoint;
+    }
+
     function set(
-        UpdatableEnumerableSet.AddressInner storage self,
+        Bytes32Value storage self,
         uint48 currentTimepoint,
         uint48 nextValueTimepoint,
-        bool isIncluded
+        bytes32 value
     ) internal checkTimepoints(currentTimepoint, nextValueTimepoint) returns (bool) {
-        if (self.nextIsIncludedTimepoint != 0 && self.nextIsIncludedTimepoint <= currentTimepoint) {
-            self.isIncluded = self.nextIsIncluded;
-            delete self.nextIsIncluded;
-            delete self.nextIsIncludedTimepoint;
+        if (self.nextValueTimepoint != 0 && self.nextValueTimepoint <= currentTimepoint) {
+            self.value = self.nextValue;
+            delete self.nextValue;
+            delete self.nextValueTimepoint;
         }
 
-        if (self.isIncluded == isIncluded) {
-            if (self.nextIsIncludedTimepoint == 0) {
+        if (self.value == value) {
+            if (self.nextValueTimepoint == 0) {
                 return false;
             }
-            delete self.nextIsIncluded;
-            delete self.nextIsIncludedTimepoint;
+            delete self.nextValue;
+            delete self.nextValueTimepoint;
             return true;
         }
 
-        self.nextIsIncluded = isIncluded;
-        self.nextIsIncludedTimepoint = nextValueTimepoint;
+        if (self.nextValueTimepoint == nextValueTimepoint && self.nextValue == value) {
+            return false;
+        }
+
+        self.nextValue = value;
+        self.nextValueTimepoint = nextValueTimepoint;
         return true;
     }
 
-    function get(
-        UpdatableEnumerableSet.AddressInner storage self,
-        uint48 currentTimepoint
-    ) internal view returns (bool) {
-        if (self.nextIsIncludedTimepoint != 0 && self.nextIsIncludedTimepoint <= currentTimepoint) {
-            return self.nextIsIncluded;
+    function get(Bytes32Value storage self, uint48 currentTimepoint) internal view returns (bytes32) {
+        if (self.nextValueTimepoint != 0 && self.nextValueTimepoint <= currentTimepoint) {
+            return self.nextValue;
         }
-        return self.isIncluded;
+        return self.value;
+    }
+
+    struct Bytes64Value {
+        bytes32 value1;
+        bytes32 value2;
+        bytes32 nextValue1;
+        bytes32 nextValue2;
+        uint48 nextValueTimepoint;
+    }
+
+    function set(
+        Bytes64Value storage self,
+        uint48 currentTimepoint,
+        uint48 nextValueTimepoint,
+        bytes32 value1,
+        bytes32 value2
+    ) internal checkTimepoints(currentTimepoint, nextValueTimepoint) returns (bool) {
+        if (self.nextValueTimepoint != 0 && self.nextValueTimepoint <= currentTimepoint) {
+            self.value1 = self.nextValue1;
+            self.value2 = self.nextValue2;
+            delete self.nextValue1;
+            delete self.nextValue2;
+            delete self.nextValueTimepoint;
+        }
+
+        if (self.value1 == value1 && self.value2 == value2) {
+            if (self.nextValueTimepoint == 0) {
+                return false;
+            }
+            delete self.nextValue1;
+            delete self.nextValue2;
+            delete self.nextValueTimepoint;
+            return true;
+        }
+
+        if (self.nextValueTimepoint == nextValueTimepoint && self.nextValue1 == value1 && self.nextValue2 == value2) {
+            return false;
+        }
+
+        self.nextValue1 = value1;
+        self.nextValue2 = value2;
+        self.nextValueTimepoint = nextValueTimepoint;
+        return true;
+    }
+
+    function get(Bytes64Value storage self, uint48 currentTimepoint) internal view returns (bytes32, bytes32) {
+        if (self.nextValueTimepoint != 0 && self.nextValueTimepoint <= currentTimepoint) {
+            return (self.nextValue1, self.nextValue2);
+        }
+        return (self.value1, self.value2);
     }
 }

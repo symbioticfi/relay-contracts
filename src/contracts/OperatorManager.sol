@@ -4,30 +4,35 @@ pragma solidity ^0.8.25;
 import {NetworkConfig} from "./NetworkConfig.sol";
 import {Updatable} from "./libraries/utils/Updatable.sol";
 import {OperatorManagerLogic} from "./libraries/logic/OperatorManagerLogic.sol";
-import {UpdatableEnumerableSet} from "./libraries/utils/UpdatableEnumerableSet.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 contract OperatorManager is NetworkConfig {
     struct OperatorManagerInitParams {
         NetworkConfig.NetworkConfigInitParams baseParams;
-        uint48 requiredKeyTags; // bitmap with key tags (000000000000000000000000000000000000000000000011 means BN254 and SECP256K1)
+        uint128 requiredKeyTags;
     }
 
     /// @custom:storage-location erc7201:symbiotic.storage.OperatorManager
     struct OperatorManagerStorage {
-        Updatable.Uint48Value _requiredKeyTags;
-        mapping(address => mapping(KeyTag => Updatable.Bytes32Value)) _keys;
-        mapping(bytes32 => address) _operatorsByKeys;
-        UpdatableEnumerableSet.AddressSet _operators;
+        Updatable.Uint208Value _requiredKeyTags;
+        mapping(address => mapping(uint8 => Updatable.Bytes32Value)) _keys32;
+        mapping(address => mapping(uint8 => Updatable.Bytes64Value)) _keys64;
+        mapping(bytes32 => address) _operatorByKeyHash;
+        mapping(KeyType => mapping(bytes32 => address)) _operatorByTypeAndKeyHash;
+        mapping(uint8 => mapping(bytes32 => address)) _operatorByTagAndKeyHash;
+        EnumerableSet.AddressSet _operators;
+        mapping(address => Updatable.Uint104Value) _operatorPaused;
     }
 
-    enum KeyTag {
-        BN254,
-        SECP256K1,
-        EDDSA
+    enum KeyType {
+        BLS_BN254,
+        ECDSA_SECP256K1,
+        EDDSA_ED25519
     }
+    // BLS_BLS12381
 
     struct KeyWithTag {
-        KeyTag keyTag;
+        uint8 tag;
         bytes key;
     }
 
@@ -37,26 +42,38 @@ contract OperatorManager is NetworkConfig {
 
     bytes32 public constant REQUIRED_KEY_TAGS_SET_ROLE = keccak256("REQUIRED_KEY_TAGS_SET_ROLE");
 
+    bytes32 public constant OPERATOR_UNREGISTER_ROLE = keccak256("OPERATOR_UNREGISTER_ROLE");
+
+    bytes32 public constant OPERATOR_PAUSE_ROLE = keccak256("OPERATOR_PAUSE_ROLE");
+
+    bytes32 public constant OPERATOR_UNPAUSE_ROLE = keccak256("OPERATOR_UNPAUSE_ROLE");
+
     constructor(
         address factory
     ) NetworkConfig(factory) {}
 
-    function getRequiredKeyTags() public view returns (uint48) {
+    function getRequiredKeyTags() public view returns (uint128) {
         return OperatorManagerLogic.getRequiredKeyTags(_getOperatorManagerStorage(), _getNetworkConfigStorage());
     }
 
-    function getKey(address operator, KeyTag keyTag) public view returns (bytes memory) {
-        return OperatorManagerLogic.getKey(_getOperatorManagerStorage(), _getNetworkConfigStorage(), operator, keyTag);
+    function getKey(address operator, uint8 tag) public view returns (bytes memory) {
+        return OperatorManagerLogic.getKey(_getOperatorManagerStorage(), _getNetworkConfigStorage(), operator, tag);
+    }
+
+    function getCompressedKey(address operator, uint8 tag) public view returns (bytes memory) {
+        return OperatorManagerLogic.getCompressedKey(
+            _getOperatorManagerStorage(), _getNetworkConfigStorage(), operator, tag
+        );
     }
 
     function getOperator(
-        bytes32 key
+        bytes memory compressedKey
     ) public view returns (address) {
-        return OperatorManagerLogic.getOperator(_getOperatorManagerStorage(), _getNetworkConfigStorage(), key);
+        return OperatorManagerLogic.getOperator(_getOperatorManagerStorage(), _getNetworkConfigStorage(), compressedKey);
     }
 
     function setRequiredKeyTags(
-        uint48 requiredKeyTags
+        uint128 requiredKeyTags
     ) public onlyRole(REQUIRED_KEY_TAGS_SET_ROLE) {
         OperatorManagerLogic.setRequiredKeyTags(
             _getOperatorManagerStorage(), _getNetworkConfigStorage(), requiredKeyTags
@@ -69,14 +86,40 @@ contract OperatorManager is NetworkConfig {
         );
     }
 
-    function updateKey(address operator, KeyTag tag, bytes memory key, bytes memory signature) public {
+    function updateKey(address operator, uint8 tag, bytes memory key, bytes memory signature) public {
         OperatorManagerLogic.updateKey(
             _getOperatorManagerStorage(), _getNetworkConfigStorage(), operator, tag, key, signature
         );
     }
 
+    function unregisterOperator(
+        address operator
+    ) public onlyRole(OPERATOR_UNREGISTER_ROLE) {
+        OperatorManagerLogic.unregisterOperator(_getOperatorManagerStorage(), _getNetworkConfigStorage(), operator);
+    }
+
     function unregisterOperator() public {
         OperatorManagerLogic.unregisterOperator(_getOperatorManagerStorage(), _getNetworkConfigStorage());
+    }
+
+    function pauseOperator(
+        address operator
+    ) public onlyRole(OPERATOR_PAUSE_ROLE) {
+        OperatorManagerLogic.pauseOperator(_getOperatorManagerStorage(), _getNetworkConfigStorage(), operator);
+    }
+
+    function pauseOperator() public {
+        OperatorManagerLogic.pauseOperator(_getOperatorManagerStorage(), _getNetworkConfigStorage());
+    }
+
+    function unpauseOperator(
+        address operator
+    ) public onlyRole(OPERATOR_UNPAUSE_ROLE) {
+        OperatorManagerLogic.unpauseOperator(_getOperatorManagerStorage(), _getNetworkConfigStorage(), operator);
+    }
+
+    function unpauseOperator() public {
+        OperatorManagerLogic.unpauseOperator(_getOperatorManagerStorage(), _getNetworkConfigStorage());
     }
 
     function _getOperatorManagerStorage() internal pure returns (OperatorManagerStorage storage $) {

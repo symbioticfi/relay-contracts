@@ -20,7 +20,7 @@ contract NetworkConfig is MigratableEntity, AccessControlUpgradeable {
         address _network;
         uint96 _subnetworkID;
         Updatable.Uint208Value _epochDurationData; // 8 empty bytes + 6 bytes for epochDurationInitIndex + 6 bytes for epochDurationInitTimestamp + 6 bytes for epochDuration
-        Updatable.AddressValue _hookReceiver;
+        Updatable.Uint208Value _hookReceiver;
     }
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.NetworkConfig")) - 1)) & ~bytes32(uint256(0xff))
@@ -39,9 +39,7 @@ contract NetworkConfig is MigratableEntity, AccessControlUpgradeable {
     }
 
     function getSubnetworkIdentifier() public view returns (uint96) {
-        return NetworkConfigLogic.getSubnetworkID(
-            _getNetworkConfigStorage()
-        );
+        return NetworkConfigLogic.getSubnetworkID(_getNetworkConfigStorage());
     }
 
     function getSubnetwork() public view returns (bytes32) {

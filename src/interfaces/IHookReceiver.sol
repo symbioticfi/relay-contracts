@@ -14,12 +14,20 @@ interface IHookReceiver {
     function onUpdateKey(
         address msgSender,
         address operator,
-        OperatorManager.KeyTag keyTag,
+        uint8 tag,
         bytes memory key,
         bytes memory signature
     ) external;
 
     function onUnregisterOperator(
+        address msgSender
+    ) external;
+
+    function onPauseOperator(
+        address msgSender
+    ) external;
+
+    function onUnpauseOperator(
         address msgSender
     ) external;
 }

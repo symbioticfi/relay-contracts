@@ -10,7 +10,6 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
 library NetworkConfigLogic {
     using Subnetwork for address;
-    using Updatable for Updatable.AddressValue;
     using Updatable for Updatable.Uint208Value;
 
     function getNetwork(
@@ -60,7 +59,7 @@ library NetworkConfigLogic {
     function getHookReceiver(
         NetworkConfig.NetworkConfigStorage storage self
     ) public view returns (address) {
-        return self._hookReceiver.get(getCurrentEpoch(self));
+        return address(uint160(self._hookReceiver.get(getCurrentEpoch(self))));
     }
 
     function initialize(
@@ -71,7 +70,7 @@ library NetworkConfigLogic {
             revert("Epoch duration must be greater than 0");
         }
         self._epochDurationData.value = initParams.epochDuration << 48 | Time.timestamp();
-        self._hookReceiver.value = initParams.hookReceiver;
+        self._hookReceiver.value = uint160(initParams.hookReceiver);
     }
 
     function setEpochDuration(NetworkConfig.NetworkConfigStorage storage self, uint48 epochDuration) public {
@@ -84,6 +83,6 @@ library NetworkConfigLogic {
 
     function setHookReceiver(NetworkConfig.NetworkConfigStorage storage self, address hookReceiver) public {
         uint48 currentEpoch = getCurrentEpoch(self);
-        self._hookReceiver.set(currentEpoch, currentEpoch + 1, hookReceiver);
+        self._hookReceiver.set(currentEpoch, currentEpoch + 1, uint160(hookReceiver));
     }
 }
