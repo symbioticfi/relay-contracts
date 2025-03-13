@@ -142,6 +142,7 @@ library OperatorManagerLogic {
         if (!self._operators.add(operator)) {
             revert("Failed to add operator");
         }
+        unpauseOperator(self, networkConfigStorage, operator);
 
         uint128 inputtedTags;
         uint128 requiredKeyTags = getRequiredKeyTags(self, networkConfigStorage);
@@ -178,6 +179,9 @@ library OperatorManagerLogic {
         bytes memory key,
         bytes memory signature
     ) public {
+        if (!self._operators.contains(operator)) {
+            revert("Operator does not exist");
+        }
         bytes memory compressedKeyEncoded = _validateKey(self, operator, tag, key, signature);
         if (!_setKey(self, networkConfigStorage, operator, tag, compressedKeyEncoded)) {
             revert("Failed to set key");
@@ -195,14 +199,15 @@ library OperatorManagerLogic {
     ) public {
         uint48 currentEpoch = NetworkConfigLogic.getCurrentEpoch(networkConfigStorage);
         if (
-            self._operatorPaused[operator].get(currentEpoch) != 1
-                || self._operatorPaused[operator].get(currentEpoch + 1) != 1
+            self._operatorUnpaused[operator].get(currentEpoch) != 0
+                || self._operatorUnpaused[operator].get(currentEpoch + 1) != 0
         ) {
             revert("Operator is not paused");
         }
         if (!self._operators.remove(operator)) {
             revert("Failed to remove operator");
         }
+        self._operatorUnpaused[operator].clear();
     }
 
     function unregisterOperator(
@@ -225,7 +230,7 @@ library OperatorManagerLogic {
         address operator
     ) public {
         uint48 currentEpoch = NetworkConfigLogic.getCurrentEpoch(networkConfigStorage);
-        if (!self._operatorPaused[operator].set(currentEpoch, currentEpoch + 1, uint104(1))) {
+        if (!self._operatorUnpaused[operator].set(currentEpoch, currentEpoch + 1, uint104(0))) {
             revert("Failed to set operator paused");
         }
     }
@@ -250,7 +255,7 @@ library OperatorManagerLogic {
         address operator
     ) public {
         uint48 currentEpoch = NetworkConfigLogic.getCurrentEpoch(networkConfigStorage);
-        if (!self._operatorPaused[operator].set(currentEpoch, currentEpoch + 1, uint104(0))) {
+        if (!self._operatorUnpaused[operator].set(currentEpoch, currentEpoch + 1, uint104(1))) {
             revert("Failed to set operator unpaused");
         }
     }

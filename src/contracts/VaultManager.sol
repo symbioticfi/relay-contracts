@@ -5,7 +5,6 @@
 // import {NetworkConfig} from "./NetworkConfig.sol";
 // import {Updatable} from "./libraries/utils/Updatable.sol";
 // import {VaultManagerLogic} from "./libraries/logic/VaultManagerLogic.sol";
-// import {UpdatableEnumerableSet} from "./libraries/utils/UpdatableEnumerableSet.sol";
 
 // contract VaultManager is NetworkConfig {
 //     struct VaultManagerInitParams {
@@ -15,7 +14,12 @@
 
 //     /// @custom:storage-location erc7201:symbiotic.storage.VaultManager
 //     struct VaultManagerStorage {
-//         uint256 a;
+//         EnumerableSet.AddressSet _tokens;
+//         mapping(address => Updatable.Uint208Value) _tokenPrice;
+//         EnumerableSet.AddressSet _sharedVaults;
+//         EnumerableSet.AddressSet _allOperatorVaults;
+//         mapping(address => EnumerableSet.AddressSet) _operatorVaults;
+//         mapping(address => Updatable.Uint208Value) _vaultWeight;
 //     }
 
 //     address public immutable VAULT_FACTORY;
@@ -160,9 +164,14 @@
 //         );
 //     }
 
-//     function executeSlash(uint256 slashIndex, bytes memory hints) public onlyRole(SLASH_EXECUTE_ROLE) {
+//     function executeSlash(address vault, uint256 slashIndex, bytes memory hints) public onlyRole(SLASH_EXECUTE_ROLE) {
 //         VaultManagerLogic.executeSlash(
-//             _getVaultManagerStorage(), _getOperatorManagerStorage(), _getNetworkConfigStorage(), slashIndex, hints
+//             _getVaultManagerStorage(),
+//             _getOperatorManagerStorage(),
+//             _getNetworkConfigStorage(),
+//             vault,
+//             slashIndex,
+//             hints
 //         );
 //     }
 

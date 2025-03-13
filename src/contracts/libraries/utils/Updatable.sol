@@ -52,6 +52,14 @@ library Updatable {
         return self.value;
     }
 
+    function clear(
+        Uint104Value storage self
+    ) internal {
+        delete self.value;
+        delete self.nextValue;
+        delete self.nextValueTimepoint;
+    }
+
     struct Uint208Value {
         uint208 value;
         uint208 nextValue;
@@ -95,6 +103,14 @@ library Updatable {
         return self.value;
     }
 
+    function clear(
+        Uint208Value storage self
+    ) internal {
+        delete self.value;
+        delete self.nextValue;
+        delete self.nextValueTimepoint;
+    }
+
     struct Bytes32Value {
         bytes32 value;
         bytes32 nextValue;
@@ -136,6 +152,14 @@ library Updatable {
             return self.nextValue;
         }
         return self.value;
+    }
+
+    function clear(
+        Bytes32Value storage self
+    ) internal {
+        delete self.value;
+        delete self.nextValue;
+        delete self.nextValueTimepoint;
     }
 
     struct Bytes64Value {
@@ -186,5 +210,15 @@ library Updatable {
             return (self.nextValue1, self.nextValue2);
         }
         return (self.value1, self.value2);
+    }
+
+    function clear(
+        Bytes64Value storage self
+    ) internal {
+        delete self.value1;
+        delete self.value2;
+        delete self.nextValue1;
+        delete self.nextValue2;
+        delete self.nextValueTimepoint;
     }
 }

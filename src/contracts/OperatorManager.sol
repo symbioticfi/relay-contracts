@@ -21,7 +21,7 @@ contract OperatorManager is NetworkConfig {
         mapping(KeyType => mapping(bytes32 => address)) _operatorByTypeAndKeyHash;
         mapping(uint8 => mapping(bytes32 => address)) _operatorByTagAndKeyHash;
         EnumerableSet.AddressSet _operators;
-        mapping(address => Updatable.Uint104Value) _operatorPaused;
+        mapping(address => Updatable.Uint104Value) _operatorUnpaused;
     }
 
     enum KeyType {

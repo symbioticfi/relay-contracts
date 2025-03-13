@@ -7,19 +7,21 @@
 // import {OperatorManager} from "../../OperatorManager.sol";
 // import {OperatorManagerLogic} from "./OperatorManagerLogic.sol";
 // import {Updatable} from "../utils/Updatable.sol";
-// import {UpdatableEnumerableSet} from "../utils/UpdatableEnumerableSet.sol";
 
 // import {IHookReceiver} from "../../../interfaces/IHookReceiver.sol";
 
-// import {IEntity} from "@symbioticfi/core/src/contracts/interfaces/common/IEntity.sol";
-// import {IVault} from "@symbioticfi/core/src/contracts/interfaces/vault/IVault.sol";
-// import {ISlasher} from "@symbioticfi/core/src/contracts/interfaces/slasher/ISlasher.sol";
-// import {IVetoSlasher} from "@symbioticfi/core/src/contracts/interfaces/slasher/IVetoSlasher.sol";
+// import {IRegistry} from "@symbioticfi/core/src/interfaces/common/IRegistry.sol";
+// import {IEntity} from "@symbioticfi/core/src/interfaces/common/IEntity.sol";
+// import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
+// import {ISlasher} from "@symbioticfi/core/src/interfaces/slasher/ISlasher.sol";
+// import {IVetoSlasher} from "@symbioticfi/core/src/interfaces/slasher/IVetoSlasher.sol";
+
+// import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 // library VaultManagerLogic {
 //     using Updatable for Updatable.Uint208Value;
 //     using Updatable for Updatable.Bytes32Value;
-//     using UpdatableEnumerableSet for UpdatableEnumerableSet.AddressSet;
+//     using EnumerableSet for EnumerableSet.AddressSet;
 
 //     enum SlasherType {
 //         INSTANT,
@@ -39,7 +41,7 @@
 //         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
 //         address token
 //     ) public view returns (uint208) {
-//         return self._tokenPrices[token].get(NetworkConfigLogic.getCurrentEpoch(networkConfigStorage));
+//         return self._tokenPrice[token].get(NetworkConfigLogic.getCurrentEpoch(networkConfigStorage));
 //     }
 
 //     function getVaultWeight(
@@ -48,7 +50,7 @@
 //         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
 //         address vault
 //     ) public view returns (uint208) {
-//         return self._vaultWeights[vault].get(NetworkConfigLogic.getCurrentEpoch(networkConfigStorage));
+//         return self._vaultWeight[vault].get(NetworkConfigLogic.getCurrentEpoch(networkConfigStorage));
 //     }
 
 //     function getSharedVaults(
@@ -91,7 +93,7 @@
 //         if (!self._tokens.add(currentEpoch, currentEpoch + 1, token)) {
 //             revert("Failed to add token");
 //         }
-//         if (!self._tokenPrices[token].set(currentEpoch, currentEpoch + 1, price)) {
+//         if (!self._tokenPrice[token].set(currentEpoch, currentEpoch + 1, price)) {
 //             revert("Failed to set token price");
 //         }
 //     }
@@ -107,7 +109,7 @@
 //         if (!self._tokens.isIncluded(currentEpoch + 1, token)) {
 //             revert("Token is not included");
 //         }
-//         if (!self._tokenPrices[token].set(currentEpoch, currentEpoch + 1, price)) {
+//         if (!self._tokenPrice[token].set(currentEpoch, currentEpoch + 1, price)) {
 //             revert("Failed to set token price");
 //         }
 //     }
@@ -122,7 +124,7 @@
 //         if (!self._tokens.remove(currentEpoch, currentEpoch + 1, token)) {
 //             revert("Failed to remove token");
 //         }
-//         if (!self._tokenPrices[token].set(currentEpoch, currentEpoch + 1, 0)) {
+//         if (!self._tokenPrice[token].set(currentEpoch, currentEpoch + 1, 0)) {
 //             revert("Failed to set token price");
 //         }
 //     }
@@ -198,6 +200,7 @@
 //         VaultManager.VaultManagerStorage storage self,
 //         OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
 //         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+//         address vault,
 //         uint256 slashIndex,
 //         bytes memory hints
 //     ) public returns (bytes memory response) {
