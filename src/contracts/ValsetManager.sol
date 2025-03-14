@@ -127,7 +127,10 @@ contract ValSetManager is VaultManager {
 
     function getValSet() public view returns (ValidatorSet memory) {
         return ValSetManagerLogic.getValSet(
-            _getVaultManagerStorage(), _getOperatorManagerStorage(), _getNetworkConfigStorage()
+            _getValSetManagerStorage(),
+            _getVaultManagerStorage(),
+            _getOperatorManagerStorage(),
+            _getNetworkConfigStorage()
         );
     }
 

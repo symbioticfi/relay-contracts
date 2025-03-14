@@ -9,6 +9,7 @@ import {VaultManagerLogic} from "./VaultManagerLogic.sol";
 import {OperatorManagerLogic} from "./OperatorManagerLogic.sol";
 import {NetworkConfigLogic} from "./NetworkConfigLogic.sol";
 import {Updatable} from "../utils/Updatable.sol";
+import {QuickSorts} from "../utils/QuickSorts.sol";
 
 import {ISigVerifier} from "../../../interfaces/ISigVerifier.sol";
 import {IForceCommitVerifier} from "../../../interfaces/IForceCommitVerifier.sol";
@@ -56,29 +57,46 @@ library ValSetManagerLogic {
     }
 
     function getValSet(
+        ValSetManager.ValSetManagerStorage storage self,
         VaultManager.VaultManagerStorage storage vaultManagerStorage,
         OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage
     ) public view returns (ValSetManager.ValidatorSet memory) {
-        // address[] memory operators = OperatorManagerLogic.getOperators(operatorManagerStorage);
+        address[] memory operators = OperatorManagerLogic.getOperators(operatorManagerStorage);
 
-        // uint256 totalActiveVotingPower;
-        // ValSetManager.Validator[] memory validators = new ValSetManager.Validator[](operators.length);
-        // for (uint256 i; i < operators.length; ++i) {
-        //     (uint256 votingPower, ValSetManager.Vault[] memory vaults) =
-        //         _getVaults(vaultManagerStorage, operatorManagerStorage, networkConfigStorage, operators[i]);
-        //     validators[i] = ValSetManager.Validator({
-        //         operator: operators[i],
-        //         votingPower: votingPower,
-        //         isActive: OperatorManagerLogic.isUnpaused(operatorManagerStorage, networkConfigStorage, operators[i]),
-        //         keys: _getKeys(operatorManagerStorage, networkConfigStorage, operators[i]),
-        //         vaults: vaults
-        //     });
-        //     if (validators[i].isActive) {
-        //         totalActiveVotingPower += votingPower;
-        //     }
-        // }
-        // return ValSetManager.ValidatorSet({totalActiveVotingPower: totalActiveVotingPower, validators: validators});
+        uint256 totalActiveVotingPower;
+        ValSetManager.Validator[] memory validators = new ValSetManager.Validator[](operators.length);
+        for (uint256 i; i < operators.length; ++i) {
+            (uint256 votingPower, ValSetManager.Vault[] memory vaults) =
+                _getVaults(vaultManagerStorage, operatorManagerStorage, networkConfigStorage, operators[i]);
+            validators[i] = ValSetManager.Validator({
+                operator: operators[i],
+                votingPower: votingPower,
+                isActive: false,
+                keys: _getKeys(operatorManagerStorage, networkConfigStorage, operators[i]),
+                vaults: vaults
+            });
+        }
+
+        QuickSorts.sortValidatorsByVotingPowerDesc(validators);
+
+        uint256 minInclusionPower = getMinInclusionPower(self, networkConfigStorage);
+        uint104 maxValidatorsCount = getMaxValidatorsCount(self, networkConfigStorage);
+        uint104 activeValidatorsCount;
+        for (uint256 i; i < validators.length; ++i) {
+            if (validators[i].votingPower >= minInclusionPower) {
+                validators[i].isActive = true;
+                totalActiveVotingPower += validators[i].votingPower;
+
+                if (++activeValidatorsCount >= maxValidatorsCount) {
+                    break;
+                }
+            }
+        }
+
+        QuickSorts.sortValidatorsByAddressAsc(validators);
+
+        return ValSetManager.ValidatorSet({totalActiveVotingPower: totalActiveVotingPower, validators: validators});
     }
 
     function _getKeys(
