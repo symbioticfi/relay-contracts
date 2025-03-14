@@ -16,12 +16,21 @@ import {IForceCommitVerifier} from "../../../interfaces/IForceCommitVerifier.sol
 
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
+import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
 library ValSetManagerLogic {
     using Updatable for Updatable.Uint104Value;
     using Updatable for Updatable.Uint208Value;
     using Updatable for Updatable.Bytes32Value;
     using EnumerableSet for EnumerableSet.AddressSet;
+
+    string private constant EIP712Name = "ValSet";
+    string private constant EIP712Version = "1";
+
+    bytes32 private constant TYPE_HASH =
+        keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
+    bytes32 private constant VALSET_HEADER_COMMIT_TYPEHASH =
+        keccak256("ValSetHeaderCommit(bytes32 subnetwork,uint48 epoch,bytes32 headerHash)");
 
     function getCommitDuration(
         ValSetManager.ValSetManagerStorage storage self
@@ -276,19 +285,20 @@ library ValSetManagerLogic {
         if (getCurrentPhase(self, networkConfigStorage) != ValSetManager.ValSetPhase.COMMIT) {
             revert("Invalid valSet phase");
         }
-        bytes32 digest = keccak256(
-            abi.encode(
-                "ValSet:",
-                NetworkConfigLogic.getSubnetwork(networkConfigStorage),
-                NetworkConfigLogic.getCurrentEpoch(networkConfigStorage),
-                keccak256(abi.encode(header))
-            )
-        );
         if (
             !verifyQuorumSig(
                 self,
                 networkConfigStorage,
-                digest,
+                _hashTypedDataV4(
+                    keccak256(
+                        abi.encode(
+                            VALSET_HEADER_COMMIT_TYPEHASH,
+                            NetworkConfigLogic.getSubnetwork(networkConfigStorage),
+                            NetworkConfigLogic.getCurrentEpoch(networkConfigStorage),
+                            keccak256(abi.encode(header))
+                        )
+                    )
+                ),
                 getRequiredKeyTag(self),
                 getValSetCommitQuorumThreshold(self, networkConfigStorage),
                 proof
@@ -398,5 +408,53 @@ library ValSetManagerLogic {
         }
         headerStorage.validatorsSszMRoot = header.validatorsSszMRoot;
         headerStorage.extraData = header.extraData;
+    }
+
+    // ############ EIP712 ############
+
+    function _domainSeparatorV4() internal view returns (bytes32) {
+        return _buildDomainSeparator();
+    }
+
+    function _buildDomainSeparator() private view returns (bytes32) {
+        return keccak256(abi.encode(TYPE_HASH, _EIP712NameHash(), _EIP712VersionHash(), block.chainid, address(this)));
+    }
+
+    function _hashTypedDataV4(
+        bytes32 structHash
+    ) internal view returns (bytes32) {
+        return MessageHashUtils.toTypedDataHash(_domainSeparatorV4(), structHash);
+    }
+
+    function eip712Domain()
+        public
+        view
+        returns (
+            bytes1 fields,
+            string memory name,
+            string memory version,
+            uint256 chainId,
+            address verifyingContract,
+            bytes32 salt,
+            uint256[] memory extensions
+        )
+    {
+        return (hex"0f", _EIP712Name(), _EIP712Version(), block.chainid, address(this), bytes32(0), new uint256[](0));
+    }
+
+    function _EIP712Name() internal view returns (string memory) {
+        return EIP712Name;
+    }
+
+    function _EIP712Version() internal view returns (string memory) {
+        return EIP712Version;
+    }
+
+    function _EIP712NameHash() internal view returns (bytes32) {
+        return keccak256(bytes(_EIP712Name()));
+    }
+
+    function _EIP712VersionHash() internal view returns (bytes32) {
+        return keccak256(bytes(_EIP712Version()));
     }
 }

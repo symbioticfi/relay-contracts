@@ -138,6 +138,22 @@ contract ValSetManager is VaultManager {
         return ValSetManagerLogic.getCommitVerifier(_getValSetManagerStorage(), _getNetworkConfigStorage());
     }
 
+    function eip712Domain()
+        public
+        view
+        returns (
+            bytes1 fields,
+            string memory name,
+            string memory version,
+            uint256 chainId,
+            address verifyingContract,
+            bytes32 salt,
+            uint256[] memory extensions
+        )
+    {
+        return ValSetManagerLogic.eip712Domain();
+    }
+
     function verifyQuorumSig(
         bytes32 digest,
         uint8 keyTag,
