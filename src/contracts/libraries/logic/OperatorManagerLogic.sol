@@ -106,6 +106,13 @@ library OperatorManagerLogic {
         return self._operatorByKeyHash[keccak256(compressedKey)];
     }
 
+    function getOperators(
+        OperatorManager.OperatorManagerStorage storage self,
+        NetworkConfig.NetworkConfigStorage storage /* networkConfigStorage */
+    ) public view returns (address[] memory) {
+        return self._operators.values();
+    }
+
     function initialize(
         OperatorManager.OperatorManagerStorage storage self,
         OperatorManager.OperatorManagerInitParams memory initParams
