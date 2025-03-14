@@ -93,7 +93,6 @@ library OperatorManagerLogic {
         uint8 tag
     ) public view returns (bytes memory) {
         OperatorManager.KeyType type_ = _getType(tag);
-        uint48 currentEpoch = NetworkConfigLogic.getCurrentEpoch(networkConfigStorage);
         if (type_ == OperatorManager.KeyType.BLS_BN254) {
             return abi.encode(_getKeys32(self, networkConfigStorage, operator, tag));
         }
@@ -108,15 +107,13 @@ library OperatorManagerLogic {
 
     function getOperator(
         OperatorManager.OperatorManagerStorage storage self,
-        NetworkConfig.NetworkConfigStorage storage, /* networkConfigStorage */
         bytes memory compressedKey
     ) public view returns (address) {
         return self._operatorByKeyHash[keccak256(compressedKey)];
     }
 
     function getOperators(
-        OperatorManager.OperatorManagerStorage storage self,
-        NetworkConfig.NetworkConfigStorage storage /* networkConfigStorage */
+        OperatorManager.OperatorManagerStorage storage self
     ) public view returns (address[] memory) {
         return self._operators.values();
     }
@@ -360,7 +357,6 @@ library OperatorManagerLogic {
         self._operatorByTypeAndKeyHash[type_][compressedKeyHash] = operator;
         self._operatorByTagAndKeyHash[tag][compressedKeyHash] = operator;
 
-        uint48 currentEpoch = NetworkConfigLogic.getCurrentEpoch(networkConfigStorage);
         if (type_ == OperatorManager.KeyType.BLS_BN254) {
             bytes32 compressedKey = abi.decode(compressedKeyEncoded, (bytes32));
             return _setKey32(self, networkConfigStorage, operator, tag, compressedKey);

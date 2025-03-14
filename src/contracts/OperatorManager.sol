@@ -69,7 +69,7 @@ contract OperatorManager is NetworkConfig {
     function getOperator(
         bytes memory compressedKey
     ) public view returns (address) {
-        return OperatorManagerLogic.getOperator(_getOperatorManagerStorage(), _getNetworkConfigStorage(), compressedKey);
+        return OperatorManagerLogic.getOperator(_getOperatorManagerStorage(), compressedKey);
     }
 
     function setRequiredKeyTags(
@@ -123,7 +123,7 @@ contract OperatorManager is NetworkConfig {
     }
 
     function _getOperatorManagerStorage() internal pure returns (OperatorManagerStorage storage $) {
-        assembly {
+        assembly ("memory-safe") {
             $.slot := OperatorManagerStorageLocation
         }
     }

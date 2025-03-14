@@ -3,8 +3,7 @@ pragma solidity ^0.8.25;
 
 import {Updatable} from "./libraries/utils/Updatable.sol";
 import {NetworkConfigLogic} from "./libraries/logic/NetworkConfigLogic.sol";
-
-import {MigratableEntity} from "@symbioticfi/core/src/contracts/common/MigratableEntity.sol";
+import {MigratableEntity} from "./MigratableEntity.sol";
 
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
@@ -75,7 +74,7 @@ contract NetworkConfig is MigratableEntity, AccessControlUpgradeable {
     }
 
     function _getNetworkConfigStorage() internal pure returns (NetworkConfigStorage storage $) {
-        assembly {
+        assembly ("memory-safe") {
             $.slot := NetworkConfigStorageLocation
         }
     }

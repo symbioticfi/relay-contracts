@@ -5,6 +5,7 @@ import {VaultManager} from "../../VaultManager.sol";
 import {OperatorManager} from "../../OperatorManager.sol";
 import {NetworkConfig} from "../../NetworkConfig.sol";
 import {NetworkConfigLogic} from "./NetworkConfigLogic.sol";
+import {OperatorManagerLogic} from "./OperatorManagerLogic.sol";
 import {Updatable} from "../utils/Updatable.sol";
 
 import {IRegistry} from "@symbioticfi/core/src/interfaces/common/IRegistry.sol";
@@ -32,19 +33,17 @@ library VaultManagerLogic {
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address operator
     ) public view returns (uint256 votingPower) {
-        uint48 currentEpochStartTs = NetworkConfigLogic.getCurrentEpochStartTs(networkConfigStorage);
-        address[] memory sharedVaults = getSharedVaults(self, operatorManagerStorage, networkConfigStorage);
-        for (uint256 j; j < sharedVaults.length; ++j) {
-            votingPower += _getVotingPower(
-                self, operatorManagerStorage, networkConfigStorage, sharedVaults[j], operator, currentEpochStartTs
-            );
+        if (!OperatorManagerLogic.isUnpaused(operatorManagerStorage, networkConfigStorage, operator)) {
+            return 0;
         }
-        address[] memory operatorVaults =
-            getOperatorVaults(self, operatorManagerStorage, networkConfigStorage, operator);
+        uint48 currentEpochStartTs = NetworkConfigLogic.getCurrentEpochStartTs(networkConfigStorage);
+        address[] memory sharedVaults = getSharedVaults(self);
+        for (uint256 j; j < sharedVaults.length; ++j) {
+            votingPower += _getVotingPower(self, networkConfigStorage, sharedVaults[j], operator, currentEpochStartTs);
+        }
+        address[] memory operatorVaults = getOperatorVaults(self, operator);
         for (uint256 j; j < operatorVaults.length; ++j) {
-            votingPower += _getVotingPower(
-                self, operatorManagerStorage, networkConfigStorage, operatorVaults[j], operator, currentEpochStartTs
-            );
+            votingPower += _getVotingPower(self, networkConfigStorage, operatorVaults[j], operator, currentEpochStartTs);
         }
         return votingPower;
     }
@@ -55,17 +54,18 @@ library VaultManagerLogic {
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address operator
     ) public view returns (uint256 votingPower, address[] memory vaults, uint256[] memory votingPowers) {
+        if (!OperatorManagerLogic.isUnpaused(operatorManagerStorage, networkConfigStorage, operator)) {
+            return (0, new address[](0), new uint256[](0));
+        }
         uint48 currentEpochStartTs = NetworkConfigLogic.getCurrentEpochStartTs(networkConfigStorage);
         uint256 length;
-        address[] memory sharedVaults = getSharedVaults(self, operatorManagerStorage, networkConfigStorage);
-        address[] memory operatorVaults =
-            getOperatorVaults(self, operatorManagerStorage, networkConfigStorage, operator);
+        address[] memory sharedVaults = getSharedVaults(self);
+        address[] memory operatorVaults = getOperatorVaults(self, operator);
         vaults = new address[](sharedVaults.length + operatorVaults.length);
         votingPowers = new uint256[](sharedVaults.length + operatorVaults.length);
         for (uint256 j; j < sharedVaults.length; ++j) {
-            uint256 votingPower_ = _getVotingPower(
-                self, operatorManagerStorage, networkConfigStorage, sharedVaults[j], operator, currentEpochStartTs
-            );
+            uint256 votingPower_ =
+                _getVotingPower(self, networkConfigStorage, sharedVaults[j], operator, currentEpochStartTs);
             if (votingPower_ > 0) {
                 vaults[length] = sharedVaults[j];
                 votingPowers[length++] = votingPower_;
@@ -73,9 +73,8 @@ library VaultManagerLogic {
             }
         }
         for (uint256 j; j < operatorVaults.length; ++j) {
-            uint256 votingPower_ = _getVotingPower(
-                self, operatorManagerStorage, networkConfigStorage, operatorVaults[j], operator, currentEpochStartTs
-            );
+            uint256 votingPower_ =
+                _getVotingPower(self, networkConfigStorage, operatorVaults[j], operator, currentEpochStartTs);
             if (votingPower_ > 0) {
                 vaults[length] = operatorVaults[j];
                 votingPowers[length++] = votingPower_;
@@ -91,7 +90,6 @@ library VaultManagerLogic {
 
     function getTokenPrice(
         VaultManager.VaultManagerStorage storage self,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address token
     ) public view returns (uint208) {
@@ -100,7 +98,6 @@ library VaultManagerLogic {
 
     function getVaultWeight(
         VaultManager.VaultManagerStorage storage self,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address vault
     ) public view returns (uint208) {
@@ -108,17 +105,13 @@ library VaultManagerLogic {
     }
 
     function getSharedVaults(
-        VaultManager.VaultManagerStorage storage self,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage
+        VaultManager.VaultManagerStorage storage self
     ) public view returns (address[] memory) {
         return self._sharedVaults.values();
     }
 
     function getOperatorVaults(
         VaultManager.VaultManagerStorage storage self,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address operator
     ) public view returns (address[] memory) {
         return self._operatorVaults[operator].values();
@@ -131,7 +124,6 @@ library VaultManagerLogic {
 
     function addToken(
         VaultManager.VaultManagerStorage storage self,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address token,
         uint208 price
@@ -153,7 +145,6 @@ library VaultManagerLogic {
 
     function updateTokenPrice(
         VaultManager.VaultManagerStorage storage self,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address token,
         uint208 price
@@ -169,7 +160,6 @@ library VaultManagerLogic {
 
     function removeToken(
         VaultManager.VaultManagerStorage storage self,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address token
     ) public {
@@ -185,13 +175,12 @@ library VaultManagerLogic {
 
     function addSharedVault(
         VaultManager.VaultManagerStorage storage self,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address vaultFactory,
         address vault,
         uint208 weight
     ) public {
-        _validateVault(self, operatorManagerStorage, networkConfigStorage, vaultFactory, vault);
+        _validateVault(self, networkConfigStorage, vaultFactory, vault);
         if (weight == 0) {
             revert("Weight cannot be zero");
         }
@@ -206,14 +195,13 @@ library VaultManagerLogic {
 
     function addOperatorVault(
         VaultManager.VaultManagerStorage storage self,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address vaultFactory,
         address operator,
         address vault,
         uint208 weight
     ) public {
-        _validateVault(self, operatorManagerStorage, networkConfigStorage, vaultFactory, vault);
+        _validateVault(self, networkConfigStorage, vaultFactory, vault);
         if (weight == 0) {
             revert("Weight cannot be zero");
         }
@@ -231,7 +219,6 @@ library VaultManagerLogic {
 
     function updateVaultWeight(
         VaultManager.VaultManagerStorage storage self,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address vault,
         uint208 weight
@@ -247,7 +234,6 @@ library VaultManagerLogic {
 
     function removeSharedVault(
         VaultManager.VaultManagerStorage storage self,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address vault
     ) public {
@@ -263,7 +249,6 @@ library VaultManagerLogic {
 
     function removeOperatorVault(
         VaultManager.VaultManagerStorage storage self,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address operator,
         address vault
@@ -279,8 +264,6 @@ library VaultManagerLogic {
     }
 
     function requestSlash(
-        VaultManager.VaultManagerStorage storage self,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address operator,
         address vault,
@@ -310,9 +293,6 @@ library VaultManagerLogic {
     }
 
     function executeSlash(
-        VaultManager.VaultManagerStorage storage self,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address vault,
         uint256 slashIndex,
         bytes memory hints
@@ -332,7 +312,6 @@ library VaultManagerLogic {
 
     function _validateVault(
         VaultManager.VaultManagerStorage storage self,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address vaultFactory,
         address vault
@@ -368,20 +347,17 @@ library VaultManagerLogic {
 
     function _getVotingPower(
         VaultManager.VaultManagerStorage storage self,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address vault,
         address operator,
         uint48 captureTimestamp
     ) internal view returns (uint256) {
-        return _getStake(self, operatorManagerStorage, networkConfigStorage, vault, operator, captureTimestamp)
-            * getVaultWeight(self, operatorManagerStorage, networkConfigStorage, vault)
-            * getTokenPrice(self, operatorManagerStorage, networkConfigStorage, IVault(vault).collateral());
+        return _getStake(networkConfigStorage, vault, operator, captureTimestamp)
+            * getVaultWeight(self, networkConfigStorage, vault)
+            * getTokenPrice(self, networkConfigStorage, IVault(vault).collateral());
     }
 
     function _getStake(
-        VaultManager.VaultManagerStorage storage self,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address vault,
         address operator,

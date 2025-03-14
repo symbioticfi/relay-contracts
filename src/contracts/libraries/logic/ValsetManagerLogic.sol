@@ -10,11 +10,10 @@ import {OperatorManagerLogic} from "./OperatorManagerLogic.sol";
 import {NetworkConfigLogic} from "./NetworkConfigLogic.sol";
 import {Updatable} from "../utils/Updatable.sol";
 
-import {ISoftVerifier} from "../../../interfaces/ISoftVerifier.sol";
-import {IForceVerifier} from "../../../interfaces/IForceVerifier.sol";
+import {ISigVerifier} from "../../../interfaces/ISigVerifier.sol";
+import {IForceCommitVerifier} from "../../../interfaces/IForceCommitVerifier.sol";
 
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
 library ValSetManagerLogic {
     using Updatable for Updatable.Uint104Value;
@@ -23,19 +22,13 @@ library ValSetManagerLogic {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     function getCommitDuration(
-        ValSetManager.ValSetManagerStorage storage self,
-        VaultManager.VaultManagerStorage storage vaultManagerStorage,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage
+        ValSetManager.ValSetManagerStorage storage self
     ) public view returns (uint48) {
         return self._commit_duration;
     }
 
     function getAcceptDuration(
-        ValSetManager.ValSetManagerStorage storage self,
-        VaultManager.VaultManagerStorage storage vaultManagerStorage,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage
+        ValSetManager.ValSetManagerStorage storage self
     ) public view returns (uint48) {
         return self._accept_duration;
     }
@@ -51,59 +44,44 @@ library ValSetManagerLogic {
 
     function getValSetCommitQuorumThreshold(
         ValSetManager.ValSetManagerStorage storage self,
-        VaultManager.VaultManagerStorage storage vaultManagerStorage,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage
     ) public view returns (uint104) {
         return self._quorumThreshold.get(NetworkConfigLogic.getCurrentEpoch(networkConfigStorage));
     }
 
     function getRequiredKeyTag(
-        ValSetManager.ValSetManagerStorage storage self,
-        VaultManager.VaultManagerStorage storage vaultManagerStorage,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage
+        ValSetManager.ValSetManagerStorage storage self
     ) public view returns (uint8) {
         return self._requiredKeyTag;
     }
 
     function getValSet(
-        ValSetManager.ValSetManagerStorage storage self,
         VaultManager.VaultManagerStorage storage vaultManagerStorage,
         OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
-        uint8 validatorVersion,
-        uint8 validatorSetVersion
+        NetworkConfig.NetworkConfigStorage storage networkConfigStorage
     ) public view returns (ValSetManager.ValidatorSet memory) {
-        address[] memory operators = OperatorManagerLogic.getOperators(operatorManagerStorage, networkConfigStorage);
+        // address[] memory operators = OperatorManagerLogic.getOperators(operatorManagerStorage);
 
-        uint256 totalActiveVotingPower;
-        ValSetManager.Validator[] memory validators = new ValSetManager.Validator[](operators.length);
-        for (uint256 i; i < operators.length; ++i) {
-            (uint256 votingPower, ValSetManager.Vault[] memory vaults) =
-                _getVaults(self, vaultManagerStorage, operatorManagerStorage, networkConfigStorage, operators[i]);
-            validators[i] = ValSetManager.Validator({
-                version: validatorVersion,
-                operator: operators[i],
-                votingPower: votingPower,
-                isActive: OperatorManagerLogic.isUnpaused(operatorManagerStorage, networkConfigStorage, operators[i]),
-                keys: _getKeys(self, vaultManagerStorage, operatorManagerStorage, networkConfigStorage, operators[i]),
-                vaults: vaults
-            });
-            if (validators[i].isActive) {
-                totalActiveVotingPower += votingPower;
-            }
-        }
-        return ValSetManager.ValidatorSet({
-            version: validatorSetVersion,
-            totalActiveVotingPower: totalActiveVotingPower,
-            validators: validators
-        });
+        // uint256 totalActiveVotingPower;
+        // ValSetManager.Validator[] memory validators = new ValSetManager.Validator[](operators.length);
+        // for (uint256 i; i < operators.length; ++i) {
+        //     (uint256 votingPower, ValSetManager.Vault[] memory vaults) =
+        //         _getVaults(vaultManagerStorage, operatorManagerStorage, networkConfigStorage, operators[i]);
+        //     validators[i] = ValSetManager.Validator({
+        //         operator: operators[i],
+        //         votingPower: votingPower,
+        //         isActive: OperatorManagerLogic.isUnpaused(operatorManagerStorage, networkConfigStorage, operators[i]),
+        //         keys: _getKeys(operatorManagerStorage, networkConfigStorage, operators[i]),
+        //         vaults: vaults
+        //     });
+        //     if (validators[i].isActive) {
+        //         totalActiveVotingPower += votingPower;
+        //     }
+        // }
+        // return ValSetManager.ValidatorSet({totalActiveVotingPower: totalActiveVotingPower, validators: validators});
     }
 
     function _getKeys(
-        ValSetManager.ValSetManagerStorage storage self,
-        VaultManager.VaultManagerStorage storage vaultManagerStorage,
         OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address operator
@@ -122,7 +100,6 @@ library ValSetManagerLogic {
     }
 
     function _getVaults(
-        ValSetManager.ValSetManagerStorage storage self,
         VaultManager.VaultManagerStorage storage vaultManagerStorage,
         OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
@@ -139,17 +116,29 @@ library ValSetManagerLogic {
 
     function getValSetHeader(
         ValSetManager.ValSetManagerStorage storage self,
-        VaultManager.VaultManagerStorage storage vaultManagerStorage,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage
-    ) public view returns (bytes32) {
-        return self._valSetHeader.get(NetworkConfigLogic.getCurrentEpoch(networkConfigStorage));
+    ) public view returns (ValSetManager.ValidatorSetHeader memory) {
+        ValSetManager.ValidatorSetHeaderStorage storage headerStorage =
+            self._valSetHeader[NetworkConfigLogic.getCurrentEpoch(networkConfigStorage)];
+        ValSetManager.Key[] memory activeAggregatedKeys = new ValSetManager.Key[](headerStorage.keyTags.length);
+        for (uint256 i; i < headerStorage.keyTags.length; ++i) {
+            activeAggregatedKeys[i] = ValSetManager.Key({
+                tag: headerStorage.keyTags[i],
+                payload: headerStorage.activeAggregatedKeysByTag[headerStorage.keyTags[i]]
+            });
+        }
+        return ValSetManager.ValidatorSetHeader({
+            version: headerStorage.version,
+            totalActiveVotingPower: headerStorage.totalActiveVotingPower,
+            valSetKeyTag: headerStorage.valSetKeyTag,
+            activeAggregatedKeys: activeAggregatedKeys,
+            validatorsSszMRoot: headerStorage.validatorsSszMRoot,
+            extraData: headerStorage.extraData
+        });
     }
 
     function getForceCommitVerifier(
         ValSetManager.ValSetManagerStorage storage self,
-        VaultManager.VaultManagerStorage storage vaultManagerStorage,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage
     ) public view returns (address) {
         return address(uint160(self._forceCommitVerifier.get(NetworkConfigLogic.getCurrentEpoch(networkConfigStorage))));
@@ -157,8 +146,6 @@ library ValSetManagerLogic {
 
     function getCommitVerifier(
         ValSetManager.ValSetManagerStorage storage self,
-        VaultManager.VaultManagerStorage storage vaultManagerStorage,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage
     ) public view returns (address) {
         return address(uint160(self._commitVerifier.get(NetworkConfigLogic.getCurrentEpoch(networkConfigStorage))));
@@ -166,25 +153,19 @@ library ValSetManagerLogic {
 
     function verifyQuorumSig(
         ValSetManager.ValSetManagerStorage storage self,
-        VaultManager.VaultManagerStorage storage vaultManagerStorage,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         bytes32 digest,
         uint8 keyTag,
         uint104 quorumThreshold,
-        ValSetManager.Proof calldata proof
+        bytes calldata proof
     ) public view returns (bool) {
         uint48 currentEpoch = NetworkConfigLogic.getCurrentEpoch(networkConfigStorage);
         address commitVerifier = address(uint160(self._commitVerifier.get(currentEpoch)));
-        return ISoftVerifier(commitVerifier).verifyQuorumSig(
-            self._valSetHeader.get(currentEpoch), digest, keyTag, quorumThreshold, proof
-        );
+        return ISigVerifier(commitVerifier).verifyQuorumSig(address(this), digest, keyTag, quorumThreshold, proof);
     }
 
     function getMinInclusionPower(
         ValSetManager.ValSetManagerStorage storage self,
-        VaultManager.VaultManagerStorage storage vaultManagerStorage,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage
     ) public view returns (uint256) {
         return uint256(self._minInclusionPower.get(NetworkConfigLogic.getCurrentEpoch(networkConfigStorage)));
@@ -192,8 +173,6 @@ library ValSetManagerLogic {
 
     function getMaxValidatorsCount(
         ValSetManager.ValSetManagerStorage storage self,
-        VaultManager.VaultManagerStorage storage vaultManagerStorage,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage
     ) public view returns (uint104) {
         return self._maxValidatorsCount.get(NetworkConfigLogic.getCurrentEpoch(networkConfigStorage));
@@ -201,11 +180,10 @@ library ValSetManagerLogic {
 
     function initialize(
         ValSetManager.ValSetManagerStorage storage self,
-        ValSetManager.ValSetManagerInitParams memory initParams
+        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        ValSetManager.ValSetManagerInitParams memory initParams,
+        uint8 valSetVersion
     ) public {
-        if (initParams.valSetHeader == bytes32(0)) {
-            revert("Header is required");
-        }
         if (initParams.quorumThreshold == 0) {
             revert("Quorum threshold is required");
         }
@@ -221,7 +199,6 @@ library ValSetManagerLogic {
         if (initParams.commitVerifier == address(0)) {
             revert("Commit verifier is required");
         }
-        self._valSetHeader.value = initParams.valSetHeader;
         self._quorumThreshold.value = initParams.quorumThreshold;
         self._requiredKeyTag = initParams.requiredKeyTag;
         self._commit_duration = initParams.commit_duration;
@@ -230,12 +207,11 @@ library ValSetManagerLogic {
         self._maxValidatorsCount.value = initParams.maxValidatorsCount;
         self._forceCommitVerifier.value = uint160(initParams.forceCommitVerifier);
         self._commitVerifier.value = uint160(initParams.commitVerifier);
+        _setValSetHeader(self, networkConfigStorage, initParams.valSetHeader, valSetVersion);
     }
 
     function setValSetCommitQuorumThreshold(
         ValSetManager.ValSetManagerStorage storage self,
-        VaultManager.VaultManagerStorage storage vaultManagerStorage,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         uint104 quorumThreshold
     ) public {
@@ -247,77 +223,53 @@ library ValSetManagerLogic {
 
     function commitValSetHeader(
         ValSetManager.ValSetManagerStorage storage self,
-        VaultManager.VaultManagerStorage storage vaultManagerStorage,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
-        bytes32 header,
-        ValSetManager.Proof calldata proof
+        uint8 valSetVersion,
+        ValSetManager.ValidatorSetHeader memory header,
+        bytes calldata proof
     ) public {
         bytes32 digest = keccak256(
             abi.encode(
                 "ValSet:",
                 NetworkConfigLogic.getSubnetwork(networkConfigStorage),
                 NetworkConfigLogic.getCurrentEpoch(networkConfigStorage),
-                header
+                keccak256(abi.encode(header))
             )
         );
         if (
             !verifyQuorumSig(
                 self,
-                vaultManagerStorage,
-                operatorManagerStorage,
                 networkConfigStorage,
                 digest,
-                self._requiredKeyTag,
-                getValSetCommitQuorumThreshold(self, vaultManagerStorage, operatorManagerStorage, networkConfigStorage),
+                getRequiredKeyTag(self),
+                getValSetCommitQuorumThreshold(self, networkConfigStorage),
                 proof
             )
         ) {
             revert("Failed to verify quorum sig");
         }
 
-        if (
-            !self._valSetHeader.set(
-                Time.timestamp(),
-                NetworkConfigLogic.getCurrentEpochStartTs(networkConfigStorage) + self._commit_duration
-                    + self._accept_duration,
-                header
-            )
-        ) {
-            revert("Failed to set valSet header");
-        }
+        _setValSetHeader(self, networkConfigStorage, header, valSetVersion);
     }
 
     function forceCommitValSetHeader(
         ValSetManager.ValSetManagerStorage storage self,
-        VaultManager.VaultManagerStorage storage vaultManagerStorage,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
-        bytes32 header,
+        uint8 valSetVersion,
+        ValSetManager.ValidatorSetHeader memory header,
         bytes calldata proof
     ) public {
         address forceCommitVerifier =
             address(uint160(self._forceCommitVerifier.get(NetworkConfigLogic.getCurrentEpoch(networkConfigStorage))));
-        if (!IForceVerifier(forceCommitVerifier).verifyForceCommit(address(this), header, proof)) {
+        if (!IForceCommitVerifier(forceCommitVerifier).verifyForceCommit(address(this), header, proof)) {
             revert("Failed to verify force commit");
         }
 
-        if (
-            !self._valSetHeader.set(
-                Time.timestamp(),
-                NetworkConfigLogic.getCurrentEpochStartTs(networkConfigStorage) + self._commit_duration
-                    + self._accept_duration,
-                header
-            )
-        ) {
-            revert("Failed to set valSet header");
-        }
+        _setValSetHeader(self, networkConfigStorage, header, valSetVersion);
     }
 
     function setForceCommitVerifier(
         ValSetManager.ValSetManagerStorage storage self,
-        VaultManager.VaultManagerStorage storage vaultManagerStorage,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address verifier
     ) public {
@@ -329,8 +281,6 @@ library ValSetManagerLogic {
 
     function setCommitVerifier(
         ValSetManager.ValSetManagerStorage storage self,
-        VaultManager.VaultManagerStorage storage vaultManagerStorage,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address verifier
     ) public {
@@ -342,8 +292,6 @@ library ValSetManagerLogic {
 
     function setMinInclusionPower(
         ValSetManager.ValSetManagerStorage storage self,
-        VaultManager.VaultManagerStorage storage vaultManagerStorage,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         uint256 minInclusionPower
     ) public {
@@ -355,8 +303,6 @@ library ValSetManagerLogic {
 
     function setMaxValidatorsCount(
         ValSetManager.ValSetManagerStorage storage self,
-        VaultManager.VaultManagerStorage storage vaultManagerStorage,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         uint104 maxValidatorsCount
     ) public {
@@ -364,5 +310,39 @@ library ValSetManagerLogic {
         if (!self._maxValidatorsCount.set(currentEpoch, currentEpoch + 1, maxValidatorsCount)) {
             revert("Failed to set max validators count");
         }
+    }
+
+    function _setValSetHeader(
+        ValSetManager.ValSetManagerStorage storage self,
+        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        ValSetManager.ValidatorSetHeader memory header,
+        uint8 valSetVersion
+    ) internal {
+        if (header.validatorsSszMRoot == bytes32(0)) {
+            revert("Validators SszMRoot is required");
+        }
+        if (header.version != valSetVersion) {
+            revert("Invalid valSet version");
+        }
+        if (header.valSetKeyTag != getRequiredKeyTag(self)) {
+            revert("Invalid valSet key tag");
+        }
+
+        ValSetManager.ValidatorSetHeaderStorage storage headerStorage =
+            self._valSetHeader[NetworkConfigLogic.getCurrentEpoch(networkConfigStorage)];
+        if (headerStorage.version != 0) {
+            revert("ValSet header already set");
+        }
+
+        headerStorage.version = header.version;
+        headerStorage.totalActiveVotingPower = header.totalActiveVotingPower;
+        headerStorage.valSetKeyTag = header.valSetKeyTag;
+        for (uint256 i; i < header.activeAggregatedKeys.length; ++i) {
+            headerStorage.keyTags.push(header.activeAggregatedKeys[i].tag);
+            headerStorage.activeAggregatedKeysByTag[header.activeAggregatedKeys[i].tag] =
+                header.activeAggregatedKeys[i].payload;
+        }
+        headerStorage.validatorsSszMRoot = header.validatorsSszMRoot;
+        headerStorage.extraData = header.extraData;
     }
 }

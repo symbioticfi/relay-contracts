@@ -1,14 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {ValSetManager} from "../contracts/ValSetManager.sol";
-
-interface ISoftVerifier {
+interface ISigVerifier {
     function verifyQuorumSig(
-        bytes32 valSetHeader,
+        address middleware,
         bytes32 digest,
         uint8 keyTag,
         uint104 quorumThreshold,
-        ValSetManager.Proof calldata proof
+        bytes calldata proof
     ) external view returns (bool);
 }
