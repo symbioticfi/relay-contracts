@@ -35,8 +35,20 @@ library OperatorManagerLogic {
     function getRequiredKeyTags(
         OperatorManager.OperatorManagerStorage storage self,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage
-    ) public view returns (uint128) {
-        return uint128(self._requiredKeyTags.get(NetworkConfigLogic.getCurrentEpoch(networkConfigStorage)));
+    ) public view returns (uint8[] memory requiredKeyTags) {
+        uint128 compressedRequiredKeyTags =
+            uint128(self._requiredKeyTags.get(NetworkConfigLogic.getCurrentEpoch(networkConfigStorage)));
+
+        uint8 length;
+        requiredKeyTags = new uint8[](128);
+        for (uint8 i; i < 128; ++i) {
+            if ((compressedRequiredKeyTags & (1 << i)) != 0) {
+                requiredKeyTags[length++] = i;
+            }
+        }
+        assembly ("memory-safe") {
+            mstore(requiredKeyTags, length)
+        }
     }
 
     function getKey(
@@ -47,8 +59,7 @@ library OperatorManagerLogic {
     ) public view returns (bytes memory) {
         OperatorManager.KeyType type_ = _getType(tag);
         if (type_ == OperatorManager.KeyType.BLS_BN254) {
-            bytes32 compressedKey =
-                self._keys32[operator][tag].get(NetworkConfigLogic.getCurrentEpoch(networkConfigStorage));
+            bytes32 compressedKey = _getKeys32(self, networkConfigStorage, operator, tag);
             if (compressedKey == bytes32(0)) {
                 return abi.encode(BN254.G1Point({X: 0, Y: 0}));
             }
@@ -61,18 +72,15 @@ library OperatorManagerLogic {
             );
         }
         if (type_ == OperatorManager.KeyType.ECDSA_SECP256K1) {
-            bytes32 compressedKey =
-                self._keys32[operator][tag].get(NetworkConfigLogic.getCurrentEpoch(networkConfigStorage));
+            bytes32 compressedKey = _getKeys32(self, networkConfigStorage, operator, tag);
             return abi.encode(compressedKey);
         }
         if (type_ == OperatorManager.KeyType.EDDSA_ED25519) {
-            bytes32 compressedKey =
-                self._keys32[operator][tag].get(NetworkConfigLogic.getCurrentEpoch(networkConfigStorage));
+            bytes32 compressedKey = _getKeys32(self, networkConfigStorage, operator, tag);
             return abi.encode(bytes32(compressedKey));
         }
         // if (type_ == OperatorManager.KeyType.BLS_BLS12381) {
-        //     (bytes32 compressedKey1, bytes32 compressedKey2) =
-        //         self._keys64[operator][tag].get(NetworkConfigLogic.getCurrentEpoch(networkConfigStorage));
+        //     (bytes32 compressedKey1, bytes32 compressedKey2) = _getKeys64(self, networkConfigStorage, operator, tag);
         //     return abi.encode(compressedKey1, compressedKey2);
         // }
         revert("Invalid key type");
@@ -87,13 +95,13 @@ library OperatorManagerLogic {
         OperatorManager.KeyType type_ = _getType(tag);
         uint48 currentEpoch = NetworkConfigLogic.getCurrentEpoch(networkConfigStorage);
         if (type_ == OperatorManager.KeyType.BLS_BN254) {
-            return abi.encode(self._keys32[operator][tag].get(currentEpoch));
+            return abi.encode(_getKeys32(self, networkConfigStorage, operator, tag));
         }
         if (type_ == OperatorManager.KeyType.ECDSA_SECP256K1) {
-            return abi.encode(self._keys32[operator][tag].get(currentEpoch));
+            return abi.encode(_getKeys32(self, networkConfigStorage, operator, tag));
         }
         if (type_ == OperatorManager.KeyType.EDDSA_ED25519) {
-            return abi.encode(self._keys32[operator][tag].get(currentEpoch));
+            return abi.encode(_getKeys32(self, networkConfigStorage, operator, tag));
         }
         revert("Invalid key type");
     }
@@ -113,6 +121,14 @@ library OperatorManagerLogic {
         return self._operators.values();
     }
 
+    function isUnpaused(
+        OperatorManager.OperatorManagerStorage storage self,
+        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        address operator
+    ) public view returns (bool) {
+        return self._operatorUnpaused[operator].get(NetworkConfigLogic.getCurrentEpoch(networkConfigStorage)) == 1;
+    }
+
     function initialize(
         OperatorManager.OperatorManagerStorage storage self,
         OperatorManager.OperatorManagerInitParams memory initParams
@@ -126,13 +142,17 @@ library OperatorManagerLogic {
     function setRequiredKeyTags(
         OperatorManager.OperatorManagerStorage storage self,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
-        uint128 requiredKeyTags
+        uint8[] memory requiredKeyTags
     ) public {
-        if (requiredKeyTags >> uint256(type(OperatorManager.KeyType).max) + 1 > 0) {
+        uint128 compressedRequiredKeyTags;
+        for (uint256 i; i < requiredKeyTags.length; ++i) {
+            compressedRequiredKeyTags |= uint128(1 << requiredKeyTags[i]);
+        }
+        if (compressedRequiredKeyTags >> uint256(type(OperatorManager.KeyType).max) + 1 > 0) {
             revert("Only predetermined key tags are allowed");
         }
         uint48 currentEpoch = NetworkConfigLogic.getCurrentEpoch(networkConfigStorage);
-        self._requiredKeyTags.set(currentEpoch, currentEpoch + 1, requiredKeyTags);
+        self._requiredKeyTags.set(currentEpoch, currentEpoch + 1, compressedRequiredKeyTags);
     }
 
     function registerOperator(
@@ -152,7 +172,7 @@ library OperatorManagerLogic {
         unpauseOperator(self, networkConfigStorage, operator);
 
         uint128 inputtedTags;
-        uint128 requiredKeyTags = getRequiredKeyTags(self, networkConfigStorage);
+        uint8[] memory requiredKeyTags = getRequiredKeyTags(self, networkConfigStorage);
         for (uint256 i; i < keysWithTags.length; ++i) {
             OperatorManager.KeyWithTag memory keyWithTag = keysWithTags[i];
 
@@ -166,8 +186,8 @@ library OperatorManagerLogic {
             inputtedTags |= uint128(1 << keyWithTag.tag);
         }
 
-        for (uint256 i; i < 128; ++i) {
-            if ((requiredKeyTags & (1 << i)) == 1 && (inputtedTags & (1 << i)) == 0) {
+        for (uint256 i; i < requiredKeyTags.length; ++i) {
+            if ((inputtedTags & (1 << requiredKeyTags[i])) == 0) {
                 revert("Missing required key tag");
             }
         }
@@ -343,21 +363,62 @@ library OperatorManagerLogic {
         uint48 currentEpoch = NetworkConfigLogic.getCurrentEpoch(networkConfigStorage);
         if (type_ == OperatorManager.KeyType.BLS_BN254) {
             bytes32 compressedKey = abi.decode(compressedKeyEncoded, (bytes32));
-            return self._keys32[operator][tag].set(currentEpoch, currentEpoch + 1, compressedKey);
+            return _setKey32(self, networkConfigStorage, operator, tag, compressedKey);
         }
         if (type_ == OperatorManager.KeyType.ECDSA_SECP256K1) {
             bytes32 compressedKey = abi.decode(compressedKeyEncoded, (bytes32));
-            return self._keys32[operator][tag].set(currentEpoch, currentEpoch + 1, compressedKey);
+            return _setKey32(self, networkConfigStorage, operator, tag, compressedKey);
         }
         if (type_ == OperatorManager.KeyType.EDDSA_ED25519) {
             bytes32 compressedKey = abi.decode(compressedKeyEncoded, (bytes32));
-            return self._keys32[operator][tag].set(currentEpoch, currentEpoch + 1, compressedKey);
+            return _setKey32(self, networkConfigStorage, operator, tag, compressedKey);
         }
         // if (type_ == OperatorManager.KeyType.BLS_BLS12381) {
         //     (bytes32 compressedKey1, bytes32 compressedKey2) = abi.decode(compressedKeyEncoded, (bytes32, bytes32));
-        //     return self._keys64[operator][tag].set(currentEpoch, currentEpoch + 1, compressedKey1, compressedKey2);
+        //     return _setKey64(self, networkConfigStorage, operator, tag, compressedKey1, compressedKey2);
         // }
         revert("Invalid key type");
+    }
+
+    function _setKey32(
+        OperatorManager.OperatorManagerStorage storage self,
+        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        address operator,
+        uint8 tag,
+        bytes32 compressedKey
+    ) internal returns (bool) {
+        uint48 currentEpoch = NetworkConfigLogic.getCurrentEpoch(networkConfigStorage);
+        return self._keys32[operator][tag].set(currentEpoch, currentEpoch + 1, compressedKey);
+    }
+
+    function _setKey64(
+        OperatorManager.OperatorManagerStorage storage self,
+        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        address operator,
+        uint8 tag,
+        bytes32 compressedKey1,
+        bytes32 compressedKey2
+    ) internal returns (bool) {
+        uint48 currentEpoch = NetworkConfigLogic.getCurrentEpoch(networkConfigStorage);
+        return self._keys64[operator][tag].set(currentEpoch, currentEpoch + 1, compressedKey1, compressedKey2);
+    }
+
+    function _getKeys32(
+        OperatorManager.OperatorManagerStorage storage self,
+        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        address operator,
+        uint8 tag
+    ) internal view returns (bytes32) {
+        return self._keys32[operator][tag].get(NetworkConfigLogic.getCurrentEpoch(networkConfigStorage));
+    }
+
+    function _getKeys64(
+        OperatorManager.OperatorManagerStorage storage self,
+        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        address operator,
+        uint8 tag
+    ) internal view returns (bytes32, bytes32) {
+        return self._keys64[operator][tag].get(NetworkConfigLogic.getCurrentEpoch(networkConfigStorage));
     }
 
     function _blockingCall(

@@ -52,7 +52,7 @@ contract OperatorManager is NetworkConfig {
         address factory
     ) NetworkConfig(factory) {}
 
-    function getRequiredKeyTags() public view returns (uint128) {
+    function getRequiredKeyTags() public view returns (uint8[] memory) {
         return OperatorManagerLogic.getRequiredKeyTags(_getOperatorManagerStorage(), _getNetworkConfigStorage());
     }
 
@@ -73,7 +73,7 @@ contract OperatorManager is NetworkConfig {
     }
 
     function setRequiredKeyTags(
-        uint128 requiredKeyTags
+        uint8[] memory requiredKeyTags
     ) public onlyRole(REQUIRED_KEY_TAGS_SET_ROLE) {
         OperatorManagerLogic.setRequiredKeyTags(
             _getOperatorManagerStorage(), _getNetworkConfigStorage(), requiredKeyTags

@@ -36,35 +36,28 @@ contract ValSetManager is VaultManager {
         Updatable.Uint208Value _commitVerifier;
     }
 
-    struct Key32 {
+    struct Key {
         uint8 tag;
-        bytes32 payload;
-    }
-
-    struct Key64 {
-        uint8 tag;
-        bytes32 payload_p1;
-        bytes32 payload_p2;
+        bytes payload;
     }
 
     struct Vault {
         address vault;
-        uint96 votingPower;
+        uint256 votingPower;
     }
 
     struct Validator {
         uint8 version;
         address operator;
-        uint96 votingPower;
+        uint256 votingPower;
         bool isActive;
-        Key32[] keys32;
-        Key64[] keys64;
+        Key[] keys;
         Vault[] vaults;
     }
 
     struct ValidatorSet {
         uint8 version;
-        uint96 totalActiveVotingPower;
+        uint256 totalActiveVotingPower;
         Validator[] validators;
     }
 
@@ -92,7 +85,8 @@ contract ValSetManager is VaultManager {
     bytes32 internal constant MIN_INCLUSION_POWER_SET_ROLE = keccak256("MIN_INCLUSION_POWER_SET_ROLE");
     bytes32 internal constant MAX_VALIDATORS_COUNT_SET_ROLE = keccak256("MAX_VALIDATORS_COUNT_SET_ROLE");
 
-    uint8 public constant VALSET_VERSION = 1;
+    uint8 public constant VALIDATOR_VERSION = 1;
+    uint8 public constant VALIDATOR_SET_VERSION = 1;
 
     constructor(address factory, address vaultFactory) VaultManager(factory, vaultFactory) {}
 
@@ -147,7 +141,8 @@ contract ValSetManager is VaultManager {
             _getVaultManagerStorage(),
             _getOperatorManagerStorage(),
             _getNetworkConfigStorage(),
-            VALSET_VERSION
+            VALIDATOR_VERSION,
+            VALIDATOR_SET_VERSION
         );
     }
 

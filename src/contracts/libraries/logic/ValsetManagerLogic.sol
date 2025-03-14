@@ -5,6 +5,8 @@ import {ValSetManager} from "../../ValSetManager.sol";
 import {VaultManager} from "../../VaultManager.sol";
 import {OperatorManager} from "../../OperatorManager.sol";
 import {NetworkConfig} from "../../NetworkConfig.sol";
+import {VaultManagerLogic} from "./VaultManagerLogic.sol";
+import {OperatorManagerLogic} from "./OperatorManagerLogic.sol";
 import {NetworkConfigLogic} from "./NetworkConfigLogic.sol";
 import {Updatable} from "../utils/Updatable.sol";
 
@@ -70,9 +72,73 @@ library ValSetManagerLogic {
         VaultManager.VaultManagerStorage storage vaultManagerStorage,
         OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
-        uint8 version
+        uint8 validatorVersion,
+        uint8 validatorSetVersion
     ) public view returns (ValSetManager.ValidatorSet memory) {
-        // TODO
+        address[] memory operators = OperatorManagerLogic.getOperators(operatorManagerStorage, networkConfigStorage);
+        uint8[] memory requiredKeyTags =
+            OperatorManagerLogic.getRequiredKeyTags(operatorManagerStorage, networkConfigStorage);
+
+        uint256 totalActiveVotingPower;
+        ValSetManager.Validator[] memory validators = new ValSetManager.Validator[](operators.length);
+        for (uint256 i; i < operators.length; ++i) {
+            (uint256 votingPower, ValSetManager.Vault[] memory vaults) =
+                _getVaults(self, vaultManagerStorage, operatorManagerStorage, networkConfigStorage, operators[i]);
+            bool isActive = OperatorManagerLogic.isUnpaused(operatorManagerStorage, networkConfigStorage, operators[i]);
+            validators[i] = ValSetManager.Validator({
+                version: validatorVersion,
+                operator: operators[i],
+                votingPower: votingPower,
+                isActive: isActive,
+                keys: _getKeys(
+                    self, vaultManagerStorage, operatorManagerStorage, networkConfigStorage, operators[i], requiredKeyTags
+                ),
+                vaults: vaults
+            });
+            if (isActive) {
+                totalActiveVotingPower += votingPower;
+            }
+        }
+        return ValSetManager.ValidatorSet({
+            version: validatorSetVersion,
+            totalActiveVotingPower: totalActiveVotingPower,
+            validators: validators
+        });
+    }
+
+    function _getKeys(
+        ValSetManager.ValSetManagerStorage storage self,
+        VaultManager.VaultManagerStorage storage vaultManagerStorage,
+        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
+        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        address operator,
+        uint8[] memory requiredKeyTags
+    ) internal view returns (ValSetManager.Key[] memory keys) {
+        keys = new ValSetManager.Key[](requiredKeyTags.length);
+        for (uint256 j; j < requiredKeyTags.length; ++j) {
+            keys[j] = ValSetManager.Key({
+                tag: requiredKeyTags[j],
+                payload: OperatorManagerLogic.getKey(
+                    operatorManagerStorage, networkConfigStorage, operator, requiredKeyTags[j]
+                )
+            });
+        }
+    }
+
+    function _getVaults(
+        ValSetManager.ValSetManagerStorage storage self,
+        VaultManager.VaultManagerStorage storage vaultManagerStorage,
+        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
+        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        address operator
+    ) internal view returns (uint256, ValSetManager.Vault[] memory) {
+        (uint256 votingPower, address[] memory vaults, uint256[] memory votingPowers) = VaultManagerLogic
+            .getVotingPowerWithVaults(vaultManagerStorage, operatorManagerStorage, networkConfigStorage, operator);
+        ValSetManager.Vault[] memory vaults_ = new ValSetManager.Vault[](vaults.length);
+        for (uint256 i; i < vaults.length; ++i) {
+            vaults_[i] = ValSetManager.Vault({vault: vaults[i], votingPower: votingPowers[i]});
+        }
+        return (votingPower, vaults_);
     }
 
     function getValSetHeader(
