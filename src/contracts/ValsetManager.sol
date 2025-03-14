@@ -2,12 +2,9 @@
 pragma solidity ^0.8.25;
 
 import {VaultManager} from "./VaultManager.sol";
-import {OperatorManager} from "./OperatorManager.sol";
-import {NetworkConfig} from "./NetworkConfig.sol";
+
 import {Updatable} from "./libraries/utils/Updatable.sol";
 import {ValSetManagerLogic} from "./libraries/logic/ValSetManagerLogic.sol";
-
-import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 contract ValSetManager is VaultManager {
     struct ValSetManagerInitParams {

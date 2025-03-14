@@ -2,12 +2,11 @@
 pragma solidity ^0.8.25;
 
 import {VaultManager} from "../../VaultManager.sol";
-import {OperatorManager} from "../../OperatorManager.sol";
 import {NetworkConfig} from "../../NetworkConfig.sol";
 import {NetworkConfigLogic} from "./NetworkConfigLogic.sol";
-import {OperatorManagerLogic} from "./OperatorManagerLogic.sol";
 import {Updatable} from "../utils/Updatable.sol";
 import {QuickSorts} from "../utils/QuickSorts.sol";
+
 import {IRegistry} from "@symbioticfi/core/src/interfaces/common/IRegistry.sol";
 import {IEntity} from "@symbioticfi/core/src/interfaces/common/IEntity.sol";
 import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";

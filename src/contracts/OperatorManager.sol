@@ -2,8 +2,10 @@
 pragma solidity ^0.8.25;
 
 import {NetworkConfig} from "./NetworkConfig.sol";
+
 import {Updatable} from "./libraries/utils/Updatable.sol";
 import {OperatorManagerLogic} from "./libraries/logic/OperatorManagerLogic.sol";
+
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 contract OperatorManager is NetworkConfig {

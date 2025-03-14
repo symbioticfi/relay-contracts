@@ -2,7 +2,7 @@
 pragma solidity ^0.8.25;
 
 import {OperatorManager} from "./OperatorManager.sol";
-import {NetworkConfig} from "./NetworkConfig.sol";
+
 import {Updatable} from "./libraries/utils/Updatable.sol";
 import {VaultManagerLogic} from "./libraries/logic/VaultManagerLogic.sol";
 

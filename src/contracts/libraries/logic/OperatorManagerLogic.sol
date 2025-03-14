@@ -4,9 +4,9 @@ pragma solidity ^0.8.25;
 import {OperatorManager} from "../../OperatorManager.sol";
 import {NetworkConfig} from "../../NetworkConfig.sol";
 import {NetworkConfigLogic} from "./NetworkConfigLogic.sol";
+
 import {BN254} from "../utils/BN254.sol";
 import {Updatable} from "../utils/Updatable.sol";
-
 import {BLSSig} from "./sigs/BLSSig.sol";
 import {ECDSASig} from "./sigs/ECDSASig.sol";
 import {EdDSASig} from "./sigs/EdDSASig.sol";

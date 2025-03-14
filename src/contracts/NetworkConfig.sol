@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
+import {MigratableEntity} from "./MigratableEntity.sol";
+
 import {Updatable} from "./libraries/utils/Updatable.sol";
 import {NetworkConfigLogic} from "./libraries/logic/NetworkConfigLogic.sol";
-import {MigratableEntity} from "./MigratableEntity.sol";
 
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
