@@ -85,12 +85,12 @@ contract ValSetManager is VaultManager {
     bytes32 private constant ValSetManagerStorageLocation =
         0xfd87879bc98f37af7578af722aecfbe5843e5ad354da2d1e70cb5157c4ec8800;
 
-    bytes32 public constant VALSET_COMMIT_QUORUM_THRESHOLD_SET_ROLE =
+    bytes32 internal constant VALSET_COMMIT_QUORUM_THRESHOLD_SET_ROLE =
         keccak256("VALSET_COMMIT_QUORUM_THRESHOLD_SET_ROLE");
-    bytes32 public constant FORCE_COMMIT_VERIFIER_SET_ROLE = keccak256("FORCE_COMMIT_VERIFIER_SET_ROLE");
-    bytes32 public constant COMMIT_VERIFIER_SET_ROLE = keccak256("COMMIT_VERIFIER_SET_ROLE");
-    bytes32 public constant MIN_INCLUSION_POWER_SET_ROLE = keccak256("MIN_INCLUSION_POWER_SET_ROLE");
-    bytes32 public constant MAX_VALIDATORS_COUNT_SET_ROLE = keccak256("MAX_VALIDATORS_COUNT_SET_ROLE");
+    bytes32 internal constant FORCE_COMMIT_VERIFIER_SET_ROLE = keccak256("FORCE_COMMIT_VERIFIER_SET_ROLE");
+    bytes32 internal constant COMMIT_VERIFIER_SET_ROLE = keccak256("COMMIT_VERIFIER_SET_ROLE");
+    bytes32 internal constant MIN_INCLUSION_POWER_SET_ROLE = keccak256("MIN_INCLUSION_POWER_SET_ROLE");
+    bytes32 internal constant MAX_VALIDATORS_COUNT_SET_ROLE = keccak256("MAX_VALIDATORS_COUNT_SET_ROLE");
 
     uint8 public constant VALSET_VERSION = 1;
 
