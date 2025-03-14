@@ -29,7 +29,6 @@ library VaultManagerLogic {
 
     function getVotingPower(
         VaultManager.VaultManagerStorage storage self,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address operator
     ) public view returns (uint256 votingPower) {
@@ -47,7 +46,6 @@ library VaultManagerLogic {
 
     function getVotingPowerWithVaults(
         VaultManager.VaultManagerStorage storage self,
-        OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address operator
     ) public view returns (uint256 votingPower, address[] memory vaults, uint256[] memory votingPowers) {

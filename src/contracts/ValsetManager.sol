@@ -109,12 +109,7 @@ contract ValSetManager is VaultManager {
     }
 
     function getCurrentPhase() public view returns (ValSetPhase) {
-        return ValSetManagerLogic.getCurrentPhase(
-            _getValSetManagerStorage(),
-            _getVaultManagerStorage(),
-            _getOperatorManagerStorage(),
-            _getNetworkConfigStorage()
-        );
+        return ValSetManagerLogic.getCurrentPhase(_getValSetManagerStorage(), _getNetworkConfigStorage());
     }
 
     function getValSetCommitQuorumThreshold() public view returns (uint104) {

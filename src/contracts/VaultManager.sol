@@ -56,9 +56,7 @@ contract VaultManager is OperatorManager {
     function getVotingPower(
         address operator
     ) public view returns (uint256) {
-        return VaultManagerLogic.getVotingPower(
-            _getVaultManagerStorage(), _getOperatorManagerStorage(), _getNetworkConfigStorage(), operator
-        );
+        return VaultManagerLogic.getVotingPower(_getVaultManagerStorage(), _getNetworkConfigStorage(), operator);
     }
 
     function getTokenPrice(
