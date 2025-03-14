@@ -29,25 +29,25 @@ contract VaultManager is OperatorManager {
     bytes32 private constant VaultManagerStorageLocation =
         0xfd87879bc98f37af7578af722aecfbe5843e5ad354da2d1e70cb5157c4ec8800;
 
-    bytes32 public constant TOKEN_ADD_ROLE = keccak256("TOKEN_ADD_ROLE");
+    bytes32 internal constant TOKEN_ADD_ROLE = keccak256("TOKEN_ADD_ROLE");
 
-    bytes32 public constant TOKEN_PRICE_UPDATE_ROLE = keccak256("TOKEN_PRICE_UPDATE_ROLE");
+    bytes32 internal constant TOKEN_PRICE_UPDATE_ROLE = keccak256("TOKEN_PRICE_UPDATE_ROLE");
 
-    bytes32 public constant TOKEN_REMOVE_ROLE = keccak256("TOKEN_REMOVE_ROLE");
+    bytes32 internal constant TOKEN_REMOVE_ROLE = keccak256("TOKEN_REMOVE_ROLE");
 
-    bytes32 public constant SHARED_VAULT_ADD_ROLE = keccak256("SHARED_VAULT_ADD_ROLE");
+    bytes32 internal constant SHARED_VAULT_ADD_ROLE = keccak256("SHARED_VAULT_ADD_ROLE");
 
-    bytes32 public constant OPERATOR_VAULT_ADD_ROLE = keccak256("OPERATOR_VAULT_ADD_ROLE");
+    bytes32 internal constant OPERATOR_VAULT_ADD_ROLE = keccak256("OPERATOR_VAULT_ADD_ROLE");
 
-    bytes32 public constant VAULT_WEIGHT_UPDATE_ROLE = keccak256("VAULT_WEIGHT_UPDATE_ROLE");
+    bytes32 internal constant VAULT_WEIGHT_UPDATE_ROLE = keccak256("VAULT_WEIGHT_UPDATE_ROLE");
 
-    bytes32 public constant SHARED_VAULT_REMOVE_ROLE = keccak256("SHARED_VAULT_REMOVE_ROLE");
+    bytes32 internal constant SHARED_VAULT_REMOVE_ROLE = keccak256("SHARED_VAULT_REMOVE_ROLE");
 
-    bytes32 public constant OPERATOR_VAULT_REMOVE_ROLE = keccak256("OPERATOR_VAULT_REMOVE_ROLE");
+    bytes32 internal constant OPERATOR_VAULT_REMOVE_ROLE = keccak256("OPERATOR_VAULT_REMOVE_ROLE");
 
-    bytes32 public constant SLASH_REQUEST_ROLE = keccak256("SLASH_REQUEST_ROLE");
+    bytes32 internal constant SLASH_REQUEST_ROLE = keccak256("SLASH_REQUEST_ROLE");
 
-    bytes32 public constant SLASH_EXECUTE_ROLE = keccak256("SLASH_EXECUTE_ROLE");
+    bytes32 internal constant SLASH_EXECUTE_ROLE = keccak256("SLASH_EXECUTE_ROLE");
 
     constructor(address factory, address vaultFactory) OperatorManager(factory) {
         VAULT_FACTORY = vaultFactory;

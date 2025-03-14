@@ -27,8 +27,8 @@ contract NetworkConfig is MigratableEntity, AccessControlUpgradeable {
     bytes32 private constant NetworkConfigStorageLocation =
         0xfd87879bc98f37af7578af722aecfbe5843e5ad354da2d1e70cb5157c4ec8800;
 
-    bytes32 public constant EPOCH_DURATION_SET_ROLE = keccak256("EPOCH_DURATION_SET_ROLE");
-    bytes32 public constant HOOK_RECEIVER_SET_ROLE = keccak256("HOOK_RECEIVER_SET_ROLE");
+    bytes32 internal constant EPOCH_DURATION_SET_ROLE = keccak256("EPOCH_DURATION_SET_ROLE");
+    bytes32 internal constant HOOK_RECEIVER_SET_ROLE = keccak256("HOOK_RECEIVER_SET_ROLE");
 
     constructor(
         address factory

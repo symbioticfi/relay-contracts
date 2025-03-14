@@ -40,13 +40,13 @@ contract OperatorManager is NetworkConfig {
     bytes32 private constant OperatorManagerStorageLocation =
         0xfd87879bc98f37af7578af722aecfbe5843e5ad354da2d1e70cb5157c4ec8800;
 
-    bytes32 public constant REQUIRED_KEY_TAGS_SET_ROLE = keccak256("REQUIRED_KEY_TAGS_SET_ROLE");
+    bytes32 internal constant REQUIRED_KEY_TAGS_SET_ROLE = keccak256("REQUIRED_KEY_TAGS_SET_ROLE");
 
-    bytes32 public constant OPERATOR_UNREGISTER_ROLE = keccak256("OPERATOR_UNREGISTER_ROLE");
+    bytes32 internal constant OPERATOR_UNREGISTER_ROLE = keccak256("OPERATOR_UNREGISTER_ROLE");
 
-    bytes32 public constant OPERATOR_PAUSE_ROLE = keccak256("OPERATOR_PAUSE_ROLE");
+    bytes32 internal constant OPERATOR_PAUSE_ROLE = keccak256("OPERATOR_PAUSE_ROLE");
 
-    bytes32 public constant OPERATOR_UNPAUSE_ROLE = keccak256("OPERATOR_UNPAUSE_ROLE");
+    bytes32 internal constant OPERATOR_UNPAUSE_ROLE = keccak256("OPERATOR_UNPAUSE_ROLE");
 
     constructor(
         address factory
