@@ -76,26 +76,21 @@ library ValSetManagerLogic {
         uint8 validatorSetVersion
     ) public view returns (ValSetManager.ValidatorSet memory) {
         address[] memory operators = OperatorManagerLogic.getOperators(operatorManagerStorage, networkConfigStorage);
-        uint8[] memory requiredKeyTags =
-            OperatorManagerLogic.getRequiredKeyTags(operatorManagerStorage, networkConfigStorage);
 
         uint256 totalActiveVotingPower;
         ValSetManager.Validator[] memory validators = new ValSetManager.Validator[](operators.length);
         for (uint256 i; i < operators.length; ++i) {
             (uint256 votingPower, ValSetManager.Vault[] memory vaults) =
                 _getVaults(self, vaultManagerStorage, operatorManagerStorage, networkConfigStorage, operators[i]);
-            bool isActive = OperatorManagerLogic.isUnpaused(operatorManagerStorage, networkConfigStorage, operators[i]);
             validators[i] = ValSetManager.Validator({
                 version: validatorVersion,
                 operator: operators[i],
                 votingPower: votingPower,
-                isActive: isActive,
-                keys: _getKeys(
-                    self, vaultManagerStorage, operatorManagerStorage, networkConfigStorage, operators[i], requiredKeyTags
-                ),
+                isActive: OperatorManagerLogic.isUnpaused(operatorManagerStorage, networkConfigStorage, operators[i]),
+                keys: _getKeys(self, vaultManagerStorage, operatorManagerStorage, networkConfigStorage, operators[i]),
                 vaults: vaults
             });
-            if (isActive) {
+            if (validators[i].isActive) {
                 totalActiveVotingPower += votingPower;
             }
         }
@@ -111,9 +106,10 @@ library ValSetManagerLogic {
         VaultManager.VaultManagerStorage storage vaultManagerStorage,
         OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
-        address operator,
-        uint8[] memory requiredKeyTags
+        address operator
     ) internal view returns (ValSetManager.Key[] memory keys) {
+        uint8[] memory requiredKeyTags =
+            OperatorManagerLogic.getRequiredKeyTags(operatorManagerStorage, networkConfigStorage);
         keys = new ValSetManager.Key[](requiredKeyTags.length);
         for (uint256 j; j < requiredKeyTags.length; ++j) {
             keys[j] = ValSetManager.Key({
