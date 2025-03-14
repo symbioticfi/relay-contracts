@@ -33,9 +33,6 @@ library VaultManagerLogic {
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address operator
     ) public view returns (uint256 votingPower) {
-        if (!OperatorManagerLogic.isUnpaused(operatorManagerStorage, networkConfigStorage, operator)) {
-            return 0;
-        }
         uint48 currentEpochStartTs = NetworkConfigLogic.getCurrentEpochStartTs(networkConfigStorage);
         address[] memory sharedVaults = getSharedVaults(self);
         for (uint256 j; j < sharedVaults.length; ++j) {
@@ -54,9 +51,6 @@ library VaultManagerLogic {
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address operator
     ) public view returns (uint256 votingPower, address[] memory vaults, uint256[] memory votingPowers) {
-        if (!OperatorManagerLogic.isUnpaused(operatorManagerStorage, networkConfigStorage, operator)) {
-            return (0, new address[](0), new uint256[](0));
-        }
         uint48 currentEpochStartTs = NetworkConfigLogic.getCurrentEpochStartTs(networkConfigStorage);
         uint256 length;
         address[] memory sharedVaults = getSharedVaults(self);

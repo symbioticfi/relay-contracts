@@ -113,9 +113,21 @@ library OperatorManagerLogic {
     }
 
     function getOperators(
-        OperatorManager.OperatorManagerStorage storage self
-    ) public view returns (address[] memory) {
-        return self._operators.values();
+        OperatorManager.OperatorManagerStorage storage self,
+        NetworkConfig.NetworkConfigStorage storage networkConfigStorage
+    ) public view returns (address[] memory operators) {
+        address[] memory allOperators = self._operators.values();
+
+        uint256 length;
+        operators = new address[](allOperators.length);
+        for (uint256 i; i < allOperators.length; ++i) {
+            if (isUnpaused(self, networkConfigStorage, allOperators[i])) {
+                operators[length++] = allOperators[i];
+            }
+        }
+        assembly ("memory-safe") {
+            mstore(operators, length)
+        }
     }
 
     function isUnpaused(

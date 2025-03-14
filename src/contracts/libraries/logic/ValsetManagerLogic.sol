@@ -62,7 +62,7 @@ library ValSetManagerLogic {
         OperatorManager.OperatorManagerStorage storage operatorManagerStorage,
         NetworkConfig.NetworkConfigStorage storage networkConfigStorage
     ) public view returns (ValSetManager.ValidatorSet memory) {
-        address[] memory operators = OperatorManagerLogic.getOperators(operatorManagerStorage);
+        address[] memory operators = OperatorManagerLogic.getOperators(operatorManagerStorage, networkConfigStorage);
 
         uint256 totalActiveVotingPower;
         ValSetManager.Validator[] memory validators = new ValSetManager.Validator[](operators.length);
