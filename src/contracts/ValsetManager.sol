@@ -3,7 +3,6 @@ pragma solidity ^0.8.25;
 
 import {VaultManager} from "./VaultManager.sol";
 
-import {Updatable} from "./libraries/utils/Updatable.sol";
 import {ValSetManagerLogic} from "./libraries/logic/ValSetManagerLogic.sol";
 
 import {IValSetManager} from "../interfaces/IValSetManager.sol";
