@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {OperatorManager} from "../../OperatorManager.sol";
-import {NetworkConfig} from "../../NetworkConfig.sol";
 import {NetworkConfigLogic} from "./NetworkConfigLogic.sol";
 
 import {BN254} from "../utils/BN254.sol";
@@ -11,6 +9,8 @@ import {BLSSig} from "./sigs/BLSSig.sol";
 import {ECDSASig} from "./sigs/ECDSASig.sol";
 import {EdDSASig} from "./sigs/EdDSASig.sol";
 
+import {IOperatorManager} from "../../../interfaces/IOperatorManager.sol";
+import {INetworkConfig} from "../../../interfaces/INetworkConfig.sol";
 import {IHookReceiver} from "../../../interfaces/IHookReceiver.sol";
 
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
@@ -33,8 +33,8 @@ library OperatorManagerLogic {
     uint256 public constant ON_PAUSE_OPERATOR_RESERVE = 20_000;
 
     function getRequiredKeyTags(
-        OperatorManager.OperatorManagerStorage storage self,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage
+        IOperatorManager.OperatorManagerStorage storage self,
+        INetworkConfig.NetworkConfigStorage storage networkConfigStorage
     ) public view returns (uint8[] memory requiredKeyTags) {
         uint128 compressedRequiredKeyTags =
             uint128(self._requiredKeyTags.get(NetworkConfigLogic.getCurrentEpoch(networkConfigStorage)));
@@ -52,13 +52,13 @@ library OperatorManagerLogic {
     }
 
     function getKey(
-        OperatorManager.OperatorManagerStorage storage self,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        IOperatorManager.OperatorManagerStorage storage self,
+        INetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address operator,
         uint8 tag
     ) public view returns (bytes memory) {
-        OperatorManager.KeyType type_ = _getType(tag);
-        if (type_ == OperatorManager.KeyType.BLS_BN254) {
+        IOperatorManager.KeyType type_ = _getType(tag);
+        if (type_ == IOperatorManager.KeyType.BLS_BN254) {
             bytes32 compressedKey = _getKeys32(self, networkConfigStorage, operator, tag);
             if (compressedKey == bytes32(0)) {
                 return abi.encode(BN254.G1Point({X: 0, Y: 0}));
@@ -71,15 +71,15 @@ library OperatorManagerLogic {
                     : BN254.G1Point({X: X, Y: Y})
             );
         }
-        if (type_ == OperatorManager.KeyType.ECDSA_SECP256K1) {
+        if (type_ == IOperatorManager.KeyType.ECDSA_SECP256K1) {
             bytes32 compressedKey = _getKeys32(self, networkConfigStorage, operator, tag);
             return abi.encode(compressedKey);
         }
-        if (type_ == OperatorManager.KeyType.EDDSA_ED25519) {
+        if (type_ == IOperatorManager.KeyType.EDDSA_ED25519) {
             bytes32 compressedKey = _getKeys32(self, networkConfigStorage, operator, tag);
             return abi.encode(bytes32(compressedKey));
         }
-        // if (type_ == OperatorManager.KeyType.BLS_BLS12381) {
+        // if (type_ == IOperatorManager.KeyType.BLS_BLS12381) {
         //     (bytes32 compressedKey1, bytes32 compressedKey2) = _getKeys64(self, networkConfigStorage, operator, tag);
         //     return abi.encode(compressedKey1, compressedKey2);
         // }
@@ -87,34 +87,34 @@ library OperatorManagerLogic {
     }
 
     function getCompressedKey(
-        OperatorManager.OperatorManagerStorage storage self,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        IOperatorManager.OperatorManagerStorage storage self,
+        INetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address operator,
         uint8 tag
     ) public view returns (bytes memory) {
-        OperatorManager.KeyType type_ = _getType(tag);
-        if (type_ == OperatorManager.KeyType.BLS_BN254) {
+        IOperatorManager.KeyType type_ = _getType(tag);
+        if (type_ == IOperatorManager.KeyType.BLS_BN254) {
             return abi.encode(_getKeys32(self, networkConfigStorage, operator, tag));
         }
-        if (type_ == OperatorManager.KeyType.ECDSA_SECP256K1) {
+        if (type_ == IOperatorManager.KeyType.ECDSA_SECP256K1) {
             return abi.encode(_getKeys32(self, networkConfigStorage, operator, tag));
         }
-        if (type_ == OperatorManager.KeyType.EDDSA_ED25519) {
+        if (type_ == IOperatorManager.KeyType.EDDSA_ED25519) {
             return abi.encode(_getKeys32(self, networkConfigStorage, operator, tag));
         }
         revert("Invalid key type");
     }
 
     function getOperator(
-        OperatorManager.OperatorManagerStorage storage self,
+        IOperatorManager.OperatorManagerStorage storage self,
         bytes memory compressedKey
     ) public view returns (address) {
         return self._operatorByKeyHash[keccak256(compressedKey)];
     }
 
     function getOperators(
-        OperatorManager.OperatorManagerStorage storage self,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage
+        IOperatorManager.OperatorManagerStorage storage self,
+        INetworkConfig.NetworkConfigStorage storage networkConfigStorage
     ) public view returns (address[] memory operators) {
         address[] memory allOperators = self._operators.values();
 
@@ -131,33 +131,33 @@ library OperatorManagerLogic {
     }
 
     function isUnpaused(
-        OperatorManager.OperatorManagerStorage storage self,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        IOperatorManager.OperatorManagerStorage storage self,
+        INetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address operator
     ) public view returns (bool) {
         return self._operatorUnpaused[operator].get(NetworkConfigLogic.getCurrentEpoch(networkConfigStorage)) == 1;
     }
 
     function initialize(
-        OperatorManager.OperatorManagerStorage storage self,
-        OperatorManager.OperatorManagerInitParams memory initParams
+        IOperatorManager.OperatorManagerStorage storage self,
+        IOperatorManager.OperatorManagerInitParams memory initParams
     ) public {
-        if (initParams.requiredKeyTags >> uint256(type(OperatorManager.KeyType).max) + 1 > 0) {
+        if (initParams.requiredKeyTags >> uint256(type(IOperatorManager.KeyType).max) + 1 > 0) {
             revert("Only predetermined key tags are allowed");
         }
         self._requiredKeyTags.value = initParams.requiredKeyTags;
     }
 
     function setRequiredKeyTags(
-        OperatorManager.OperatorManagerStorage storage self,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        IOperatorManager.OperatorManagerStorage storage self,
+        INetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         uint8[] memory requiredKeyTags
     ) public {
         uint128 compressedRequiredKeyTags;
         for (uint256 i; i < requiredKeyTags.length; ++i) {
             compressedRequiredKeyTags |= uint128(1 << requiredKeyTags[i]);
         }
-        if (compressedRequiredKeyTags >> uint256(type(OperatorManager.KeyType).max) + 1 > 0) {
+        if (compressedRequiredKeyTags >> uint256(type(IOperatorManager.KeyType).max) + 1 > 0) {
             revert("Only predetermined key tags are allowed");
         }
         uint48 currentEpoch = NetworkConfigLogic.getCurrentEpoch(networkConfigStorage);
@@ -165,10 +165,10 @@ library OperatorManagerLogic {
     }
 
     function registerOperator(
-        OperatorManager.OperatorManagerStorage storage self,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        IOperatorManager.OperatorManagerStorage storage self,
+        INetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address operator,
-        OperatorManager.KeyWithTag[] memory keysWithTags,
+        IOperatorManager.KeyWithTag[] memory keysWithTags,
         bytes[] memory signatures
     ) public {
         if (keysWithTags.length != signatures.length) {
@@ -183,7 +183,7 @@ library OperatorManagerLogic {
         uint128 inputtedTags;
         uint8[] memory requiredKeyTags = getRequiredKeyTags(self, networkConfigStorage);
         for (uint256 i; i < keysWithTags.length; ++i) {
-            OperatorManager.KeyWithTag memory keyWithTag = keysWithTags[i];
+            IOperatorManager.KeyWithTag memory keyWithTag = keysWithTags[i];
 
             bytes memory compressedKeyEncoded =
                 _validateKey(self, operator, keyWithTag.tag, keyWithTag.key, signatures[i]);
@@ -208,8 +208,8 @@ library OperatorManagerLogic {
     }
 
     function updateKey(
-        OperatorManager.OperatorManagerStorage storage self,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        IOperatorManager.OperatorManagerStorage storage self,
+        INetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address operator,
         uint8 tag,
         bytes memory key,
@@ -229,8 +229,8 @@ library OperatorManagerLogic {
     }
 
     function unregisterOperator(
-        OperatorManager.OperatorManagerStorage storage self,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        IOperatorManager.OperatorManagerStorage storage self,
+        INetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address operator
     ) public {
         uint48 currentEpoch = NetworkConfigLogic.getCurrentEpoch(networkConfigStorage);
@@ -247,8 +247,8 @@ library OperatorManagerLogic {
     }
 
     function unregisterOperator(
-        OperatorManager.OperatorManagerStorage storage self,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage
+        IOperatorManager.OperatorManagerStorage storage self,
+        INetworkConfig.NetworkConfigStorage storage networkConfigStorage
     ) public {
         unregisterOperator(self, networkConfigStorage, msg.sender);
 
@@ -261,8 +261,8 @@ library OperatorManagerLogic {
     }
 
     function pauseOperator(
-        OperatorManager.OperatorManagerStorage storage self,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        IOperatorManager.OperatorManagerStorage storage self,
+        INetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address operator
     ) public {
         uint48 currentEpoch = NetworkConfigLogic.getCurrentEpoch(networkConfigStorage);
@@ -272,8 +272,8 @@ library OperatorManagerLogic {
     }
 
     function pauseOperator(
-        OperatorManager.OperatorManagerStorage storage self,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage
+        IOperatorManager.OperatorManagerStorage storage self,
+        INetworkConfig.NetworkConfigStorage storage networkConfigStorage
     ) public {
         pauseOperator(self, networkConfigStorage, msg.sender);
 
@@ -286,8 +286,8 @@ library OperatorManagerLogic {
     }
 
     function unpauseOperator(
-        OperatorManager.OperatorManagerStorage storage self,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        IOperatorManager.OperatorManagerStorage storage self,
+        INetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address operator
     ) public {
         uint48 currentEpoch = NetworkConfigLogic.getCurrentEpoch(networkConfigStorage);
@@ -297,8 +297,8 @@ library OperatorManagerLogic {
     }
 
     function unpauseOperator(
-        OperatorManager.OperatorManagerStorage storage self,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage
+        IOperatorManager.OperatorManagerStorage storage self,
+        INetworkConfig.NetworkConfigStorage storage networkConfigStorage
     ) public {
         unpauseOperator(self, networkConfigStorage, msg.sender);
 
@@ -307,30 +307,30 @@ library OperatorManagerLogic {
 
     function _getType(
         uint8 tag
-    ) internal pure returns (OperatorManager.KeyType) {
+    ) internal pure returns (IOperatorManager.KeyType) {
         uint8 type_ = tag >> 4;
         if (type_ >= 8) {
             revert("Impossible key type");
         }
-        return OperatorManager.KeyType(type_);
+        return IOperatorManager.KeyType(type_);
     }
 
     function _validateKey(
-        OperatorManager.OperatorManagerStorage storage self,
+        IOperatorManager.OperatorManagerStorage storage self,
         address operator,
         uint8 tag,
         bytes memory key,
         bytes memory signature
     ) internal returns (bytes memory compressedKey) {
-        OperatorManager.KeyType type_ = _getType(tag);
-        if (type_ == OperatorManager.KeyType.BLS_BN254) {
+        IOperatorManager.KeyType type_ = _getType(tag);
+        if (type_ == IOperatorManager.KeyType.BLS_BN254) {
             compressedKey = abi.encode(BLSSig.verifyKeySignature(operator, key, signature));
-        } else if (type_ == OperatorManager.KeyType.ECDSA_SECP256K1) {
+        } else if (type_ == IOperatorManager.KeyType.ECDSA_SECP256K1) {
             compressedKey = abi.encode(ECDSASig.verifyKeySignature(operator, key, signature));
-        } else if (type_ == OperatorManager.KeyType.EDDSA_ED25519) {
+        } else if (type_ == IOperatorManager.KeyType.EDDSA_ED25519) {
             compressedKey = abi.encode(EdDSASig.verifyKeySignature(operator, key, signature));
         }
-        // else if (type_ == OperatorManager.KeyType.BLS_BLS12381) {
+        // else if (type_ == IOperatorManager.KeyType.BLS_BLS12381) {
         //     compressedKey = abi.encode(EdDSASig.verifyKeySignature(operator, key, signature));
         // }
         else {
@@ -356,32 +356,32 @@ library OperatorManagerLogic {
     }
 
     function _setKey(
-        OperatorManager.OperatorManagerStorage storage self,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        IOperatorManager.OperatorManagerStorage storage self,
+        INetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address operator,
         uint8 tag,
         bytes memory compressedKeyEncoded
     ) internal returns (bool) {
-        OperatorManager.KeyType type_ = _getType(tag);
+        IOperatorManager.KeyType type_ = _getType(tag);
 
         bytes32 compressedKeyHash = keccak256(compressedKeyEncoded);
         self._operatorByKeyHash[compressedKeyHash] = operator;
         self._operatorByTypeAndKeyHash[type_][compressedKeyHash] = operator;
         self._operatorByTagAndKeyHash[tag][compressedKeyHash] = operator;
 
-        if (type_ == OperatorManager.KeyType.BLS_BN254) {
+        if (type_ == IOperatorManager.KeyType.BLS_BN254) {
             bytes32 compressedKey = abi.decode(compressedKeyEncoded, (bytes32));
             return _setKey32(self, networkConfigStorage, operator, tag, compressedKey);
         }
-        if (type_ == OperatorManager.KeyType.ECDSA_SECP256K1) {
+        if (type_ == IOperatorManager.KeyType.ECDSA_SECP256K1) {
             bytes32 compressedKey = abi.decode(compressedKeyEncoded, (bytes32));
             return _setKey32(self, networkConfigStorage, operator, tag, compressedKey);
         }
-        if (type_ == OperatorManager.KeyType.EDDSA_ED25519) {
+        if (type_ == IOperatorManager.KeyType.EDDSA_ED25519) {
             bytes32 compressedKey = abi.decode(compressedKeyEncoded, (bytes32));
             return _setKey32(self, networkConfigStorage, operator, tag, compressedKey);
         }
-        // if (type_ == OperatorManager.KeyType.BLS_BLS12381) {
+        // if (type_ == IOperatorManager.KeyType.BLS_BLS12381) {
         //     (bytes32 compressedKey1, bytes32 compressedKey2) = abi.decode(compressedKeyEncoded, (bytes32, bytes32));
         //     return _setKey64(self, networkConfigStorage, operator, tag, compressedKey1, compressedKey2);
         // }
@@ -389,8 +389,8 @@ library OperatorManagerLogic {
     }
 
     function _setKey32(
-        OperatorManager.OperatorManagerStorage storage self,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        IOperatorManager.OperatorManagerStorage storage self,
+        INetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address operator,
         uint8 tag,
         bytes32 compressedKey
@@ -400,8 +400,8 @@ library OperatorManagerLogic {
     }
 
     function _setKey64(
-        OperatorManager.OperatorManagerStorage storage self,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        IOperatorManager.OperatorManagerStorage storage self,
+        INetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address operator,
         uint8 tag,
         bytes32 compressedKey1,
@@ -412,8 +412,8 @@ library OperatorManagerLogic {
     }
 
     function _getKeys32(
-        OperatorManager.OperatorManagerStorage storage self,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        IOperatorManager.OperatorManagerStorage storage self,
+        INetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address operator,
         uint8 tag
     ) internal view returns (bytes32) {
@@ -421,8 +421,8 @@ library OperatorManagerLogic {
     }
 
     function _getKeys64(
-        OperatorManager.OperatorManagerStorage storage self,
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        IOperatorManager.OperatorManagerStorage storage self,
+        INetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         address operator,
         uint8 tag
     ) internal view returns (bytes32, bytes32) {
@@ -430,7 +430,7 @@ library OperatorManagerLogic {
     }
 
     function _blockingCall(
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        INetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         bytes memory calldata_
     ) internal {
         address hookReceiver = NetworkConfigLogic.getHookReceiver(networkConfigStorage);
@@ -440,7 +440,7 @@ library OperatorManagerLogic {
     }
 
     function _nonBlockingCall(
-        NetworkConfig.NetworkConfigStorage storage networkConfigStorage,
+        INetworkConfig.NetworkConfigStorage storage networkConfigStorage,
         bytes memory calldata_,
         uint256 reserve,
         uint256 gasLimit

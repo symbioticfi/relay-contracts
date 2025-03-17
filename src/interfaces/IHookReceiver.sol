@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {OperatorManager} from "../contracts/OperatorManager.sol";
+import {IOperatorManager} from "./IOperatorManager.sol";
 
 interface IHookReceiver {
     function onRegisterOperator(
         address msgSender,
         address operator,
-        OperatorManager.KeyWithTag[] memory keysWithTags,
+        IOperatorManager.KeyWithTag[] memory keysWithTags,
         bytes[] memory signatures
     ) external;
 

@@ -6,82 +6,9 @@ import {VaultManager} from "./VaultManager.sol";
 import {Updatable} from "./libraries/utils/Updatable.sol";
 import {ValSetManagerLogic} from "./libraries/logic/ValSetManagerLogic.sol";
 
-contract ValSetManager is VaultManager {
-    struct ValSetManagerInitParams {
-        VaultManager.VaultManagerInitParams baseParams;
-        ValidatorSetHeader valSetHeader;
-        uint104 quorumThreshold;
-        uint8 requiredKeyTag;
-        uint48 commit_duration;
-        uint48 accept_duration;
-        uint256 minInclusionPower;
-        uint104 maxValidatorsCount;
-        address forceCommitVerifier;
-        address commitVerifier;
-    }
+import {IValSetManager} from "../interfaces/IValSetManager.sol";
 
-    /// @custom:storage-location erc7201:symbiotic.storage.ValSetManager
-    struct ValSetManagerStorage {
-        Updatable.Uint104Value _quorumThreshold;
-        uint8 _requiredKeyTag;
-        uint48 _commit_duration;
-        uint48 _accept_duration;
-        Updatable.Bytes32Value _minInclusionPower;
-        Updatable.Uint104Value _maxValidatorsCount;
-        Updatable.Uint208Value _forceCommitVerifier;
-        Updatable.Uint208Value _commitVerifier;
-        mapping(uint48 => ValidatorSetHeaderStorage) _valSetHeader;
-    }
-
-    struct Key {
-        uint8 tag;
-        bytes payload;
-    }
-
-    struct Vault {
-        address vault;
-        uint256 votingPower;
-    }
-
-    struct Validator {
-        address operator;
-        uint256 votingPower;
-        bool isActive;
-        Key[] keys;
-        Vault[] vaults;
-    }
-
-    struct ValidatorSet {
-        uint256 totalActiveVotingPower;
-        Validator[] validators;
-    }
-
-    struct ValidatorSetHeader {
-        uint8 version;
-        uint256 totalActiveVotingPower;
-        uint8 valSetKeyTag;
-        Key[] activeAggregatedKeys;
-        bytes32 validatorsSszMRoot;
-        bytes32 extraData;
-    }
-
-    struct ValidatorSetHeaderStorage {
-        uint8 version;
-        uint256 totalActiveVotingPower;
-        uint8 valSetKeyTag;
-        uint8[] keyTags;
-        mapping(uint8 => bytes) activeAggregatedKeysByTag;
-        bytes32 validatorsSszMRoot;
-        bytes32 extraData;
-    }
-
-    enum ValSetPhase {
-        IDLE,
-        COMMIT,
-        ACCEPT,
-        FAIL
-    }
-
+contract ValSetManager is VaultManager, IValSetManager {
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.ValSetManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant ValSetManagerStorageLocation =
         0xfd87879bc98f37af7578af722aecfbe5843e5ad354da2d1e70cb5157c4ec8800;

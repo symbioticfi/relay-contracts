@@ -6,23 +6,11 @@ import {MigratableEntity} from "./MigratableEntity.sol";
 import {Updatable} from "./libraries/utils/Updatable.sol";
 import {NetworkConfigLogic} from "./libraries/logic/NetworkConfigLogic.sol";
 
+import {INetworkConfig} from "../interfaces/INetworkConfig.sol";
+
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-contract NetworkConfig is MigratableEntity, AccessControlUpgradeable {
-    struct NetworkConfigInitParams {
-        address defaultAdminRoleHolder;
-        uint48 epochDuration;
-        address hookReceiver;
-    }
-
-    /// @custom:storage-location erc7201:symbiotic.storage.NetworkConfig
-    struct NetworkConfigStorage {
-        address _network;
-        uint96 _subnetworkID;
-        Updatable.Uint208Value _epochDurationData; // 8 empty bytes + 6 bytes for epochDurationInitIndex + 6 bytes for epochDurationInitTimestamp + 6 bytes for epochDuration
-        Updatable.Uint208Value _hookReceiver;
-    }
-
+contract NetworkConfig is MigratableEntity, AccessControlUpgradeable, INetworkConfig {
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.NetworkConfig")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant NetworkConfigStorageLocation =
         0xfd87879bc98f37af7578af722aecfbe5843e5ad354da2d1e70cb5157c4ec8800;
