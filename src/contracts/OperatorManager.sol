@@ -3,41 +3,11 @@ pragma solidity ^0.8.25;
 
 import {NetworkConfig} from "./NetworkConfig.sol";
 
-import {Updatable} from "./libraries/utils/Updatable.sol";
 import {OperatorManagerLogic} from "./libraries/logic/OperatorManagerLogic.sol";
 
-import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {IOperatorManager} from "../interfaces/IOperatorManager.sol";
 
-contract OperatorManager is NetworkConfig {
-    struct OperatorManagerInitParams {
-        NetworkConfig.NetworkConfigInitParams baseParams;
-        uint128 requiredKeyTags;
-    }
-
-    /// @custom:storage-location erc7201:symbiotic.storage.OperatorManager
-    struct OperatorManagerStorage {
-        Updatable.Uint208Value _requiredKeyTags;
-        mapping(address => mapping(uint8 => Updatable.Bytes32Value)) _keys32;
-        mapping(address => mapping(uint8 => Updatable.Bytes64Value)) _keys64;
-        mapping(bytes32 => address) _operatorByKeyHash;
-        mapping(KeyType => mapping(bytes32 => address)) _operatorByTypeAndKeyHash;
-        mapping(uint8 => mapping(bytes32 => address)) _operatorByTagAndKeyHash;
-        EnumerableSet.AddressSet _operators;
-        mapping(address => Updatable.Uint104Value) _operatorUnpaused;
-    }
-
-    enum KeyType {
-        BLS_BN254,
-        ECDSA_SECP256K1,
-        EDDSA_ED25519
-    }
-    // BLS_BLS12381
-
-    struct KeyWithTag {
-        uint8 tag;
-        bytes key;
-    }
-
+contract OperatorManager is NetworkConfig, IOperatorManager {
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OperatorManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant OperatorManagerStorageLocation =
         0xfd87879bc98f37af7578af722aecfbe5843e5ad354da2d1e70cb5157c4ec8800;

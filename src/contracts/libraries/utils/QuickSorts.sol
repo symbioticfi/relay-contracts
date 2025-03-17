@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {ValSetManager} from "../../ValSetManager.sol";
+import {IValSetManager} from "../../../interfaces/IValSetManager.sol";
 
 library QuickSorts {
     function sortVaultsWithVotingPowersAsc(address[] memory arr1, uint256[] memory arr2) public pure {
@@ -54,7 +54,7 @@ library QuickSorts {
     }
 
     function sortValidatorsByVotingPowerDesc(
-        ValSetManager.Validator[] memory validators
+        IValSetManager.Validator[] memory validators
     ) public pure {
         if (validators.length > 1) {
             _quickSortValidatorsByVotingPowerDesc(validators, 0, validators.length - 1);
@@ -62,7 +62,7 @@ library QuickSorts {
     }
 
     function _quickSortValidatorsByVotingPowerDesc(
-        ValSetManager.Validator[] memory validators,
+        IValSetManager.Validator[] memory validators,
         uint256 left,
         uint256 right
     ) internal pure {
@@ -78,7 +78,7 @@ library QuickSorts {
     }
 
     function _partitionValidatorsByVotingPowerDesc(
-        ValSetManager.Validator[] memory arr,
+        IValSetManager.Validator[] memory arr,
         uint256 left,
         uint256 right
     ) internal pure returns (uint256 pivotIndex) {
@@ -93,13 +93,13 @@ library QuickSorts {
         _swapValidators(arr, pivotIndex, right);
     }
 
-    function _swapValidators(ValSetManager.Validator[] memory arr, uint256 i, uint256 j) internal pure {
+    function _swapValidators(IValSetManager.Validator[] memory arr, uint256 i, uint256 j) internal pure {
         if (i == j) return;
         (arr[i], arr[j]) = (arr[j], arr[i]);
     }
 
     function sortValidatorsByAddressAsc(
-        ValSetManager.Validator[] memory validators
+        IValSetManager.Validator[] memory validators
     ) public pure {
         if (validators.length > 1) {
             _quickSortValidatorsByAddressAsc(validators, 0, validators.length - 1);
@@ -107,7 +107,7 @@ library QuickSorts {
     }
 
     function _quickSortValidatorsByAddressAsc(
-        ValSetManager.Validator[] memory validators,
+        IValSetManager.Validator[] memory validators,
         uint256 left,
         uint256 right
     ) internal pure {
@@ -123,7 +123,7 @@ library QuickSorts {
     }
 
     function _partitionValidatorsByAddressAsc(
-        ValSetManager.Validator[] memory arr,
+        IValSetManager.Validator[] memory arr,
         uint256 left,
         uint256 right
     ) internal pure returns (uint256 pivotIndex) {
