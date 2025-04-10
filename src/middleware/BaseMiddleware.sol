@@ -18,7 +18,7 @@ import {KeyManager} from "../managers/extendable/KeyManager.sol";
  * This contract serves as a foundation for building custom middleware by providing essential
  * management capabilities that can be extended with additional functionality.
  */
-abstract contract BaseMiddleware is VaultManager, OperatorManager, AccessManager, KeyManager {
+abstract contract BaseMiddleware is VaultManager, AccessManager, KeyManager {
     // This constant aggregates changes of all not extendable managers
     uint64 public constant BaseMiddleware_VERSION = 1;
 

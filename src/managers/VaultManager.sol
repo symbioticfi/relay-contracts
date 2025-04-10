@@ -12,11 +12,9 @@ import {IOperatorSpecificDelegator} from "@symbiotic/interfaces/delegator/IOpera
 
 import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 
-import {StakePowerManager} from "./extendable/StakePowerManager.sol";
-import {CaptureTimestampManager} from "./extendable/CaptureTimestampManager.sol";
+import {OperatorManager} from "./OperatorManager.sol";
 
-import {NetworkStorage} from "./storages/NetworkStorage.sol";
-import {SlashingWindowStorage} from "./storages/SlashingWindowStorage.sol";
+import {StakePowerManager} from "./extendable/StakePowerManager.sol";
 
 import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
@@ -25,19 +23,22 @@ import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
  * @notice Abstract contract for managing vaults and their relationships with operators and subnetworks
  * @dev Extends BaseManager and provides functionality for registering, pausing, and managing vaults
  */
-abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, CaptureTimestampManager, StakePowerManager {
+abstract contract VaultManager is OperatorManager, StakePowerManager {
     using EnumerableMap for EnumerableMap.AddressToUintMap;
     using EnumerableMap for EnumerableMap.AddressToAddressMap;
     using PauseableEnumerableSet for PauseableEnumerableSet.AddressSet;
     using PauseableEnumerableSet for PauseableEnumerableSet.Uint160Set;
     using Subnetwork for address;
+    using Subnetwork for bytes32;
 
     error NotVault();
     error NotOperatorVault();
     error VaultNotInitialized();
     error VaultAlreadyRegistered();
     error VaultEpochTooShort();
+    error InactiveOperatorSlash();
     error InactiveVaultSlash();
+    error InactiveSubnetworkSlash();
     error UnknownSlasherType();
     error NonVetoSlasher();
     error NoSlasher();
@@ -644,13 +645,16 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
         uint256 amount,
         bytes memory hints
     ) internal returns (uint256 response) {
-        VaultManagerStorage storage $ = _getVaultManagerStorage();
-        if (!($._sharedVaults.contains(vault) || $._operatorVaults[operator].contains(vault))) {
-            revert NotOperatorVault();
+        if (!_operatorWasActiveAt(timestamp, operator)) {
+            revert InactiveOperatorSlash();
         }
 
         if (!_vaultWasActiveAt(timestamp, operator, vault)) {
             revert InactiveVaultSlash();
+        }
+
+        if (!_subnetworkWasActiveAt(timestamp, subnetwork.identifier())) {
+            revert InactiveSubnetworkSlash();
         }
 
         if (timestamp + _SLASHING_WINDOW() < _now()) {

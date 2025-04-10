@@ -28,7 +28,6 @@ contract SimplePosMiddleware is
     using Subnetwork for address;
 
     error InactiveKeySlash(); // Error thrown when trying to slash an inactive key
-    error InactiveOperatorSlash(); // Error thrown when trying to slash an inactive operator
     error NotExistKeySlash(); // Error thrown when the key does not exist for slashing
     error InvalidHints(); // Error thrown for invalid hints provided
 
@@ -189,10 +188,6 @@ contract SimplePosMiddleware is
 
         if (!keyWasActiveAt(epochStart, abi.encode(key))) {
             revert InactiveKeySlash(); // Revert if the key is inactive
-        }
-
-        if (!_operatorWasActiveAt(epochStart, operator)) {
-            revert InactiveOperatorSlash(); // Revert if the operator wasn't active
         }
     }
 }
