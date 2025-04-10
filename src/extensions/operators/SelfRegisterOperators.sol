@@ -294,11 +294,11 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
             revert OperatorNotRegistered();
         }
 
-        if (!_isOperatorBelowPowerThreshold(operator, address(0))) {
+        if (_operatorWasActiveAt(_now() + 1, operator) && !_isOperatorBelowPowerThreshold(operator, address(0))) {
             revert OperatorAbovePowerThreshold();
         }
 
-        if (_operatorWasActiveAt(_now(), operator)) {
+        if (_operatorWasActiveAt(_now() + 1, operator)) {
             _pauseOperatorImpl(operator);
             return;
         }
@@ -314,11 +314,12 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
      * @param operator The address of the operator to try kicking
      */
     function tryKickOperatorVault(address operator, address vault) public {
-        if (!_isOperatorBelowPowerThreshold(operator, address(0))) {
+        if (_operatorVaultWasActiveAt(_now() + 1, operator, vault) && !_isOperatorBelowPowerThreshold(operator, vault))
+        {
             revert OperatorAbovePowerThreshold();
         }
 
-        if (_operatorVaultWasActiveAt(_now(), operator, vault)) {
+        if (_operatorVaultWasActiveAt(_now() + 1, operator, vault)) {
             _pauseOperatorVaultImpl(operator, vault);
             return;
         }

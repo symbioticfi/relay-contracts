@@ -402,6 +402,7 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
      * @param vault The vault address
      * @param subnetwork The subnetwork identifier
      * @return uint256 The power amount at the timestamp
+     * @dev Doesn't consider active statuses.
      */
     function _getOperatorPowerAt(
         uint48 timestamp,
