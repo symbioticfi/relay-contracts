@@ -62,7 +62,7 @@ abstract contract BaseMiddleware is VaultManager, AccessManager, KeyManager {
         assembly {
             reader_ := sload(ReaderStorageLocation)
         }
-        (bool success, bytes memory returndata) = reader_.delegatecall(abi.encodePacked(msg.data, address(this)));
+        (bool success, bytes memory returndata) = reader_.delegatecall(msg.data);
         if (!success) {
             assembly {
                 revert(add(returndata, 0x20), mload(returndata))
