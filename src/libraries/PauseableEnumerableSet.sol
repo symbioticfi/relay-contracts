@@ -116,7 +116,7 @@ library PauseableEnumerableSet {
      * @return bool Whether the value was active
      */
     function wasActiveAt(Status storage self, uint48 timestamp) internal view returns (bool) {
-        return self.enabled < timestamp && (self.disabled == 0 || self.disabled >= timestamp);
+        return self.enabled != 0 && self.enabled < timestamp && (self.disabled == 0 || self.disabled >= timestamp);
     }
 
     // AddressSet functions
