@@ -138,11 +138,11 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
 
     function _operatorForcePaused(
         address operator
-    ) private view returns (bool) {
+    ) internal view returns (bool) {
         return _getForcePauseStorage().forcePaused[operator];
     }
 
-    function _operatorVaultForcePaused(address operator, address vault) private view returns (bool) {
+    function _operatorVaultForcePaused(address operator, address vault) internal view returns (bool) {
         return _getForcePauseStorage().forcePausedVault[operator][vault];
     }
 }

@@ -57,8 +57,8 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
         EnumerableMap.AddressToAddressMap _vaultOperator;
     }
 
-    event InstantSlash(address vault, bytes32 subnetwork, uint256 amount);
-    event VetoSlash(address vault, bytes32 subnetwork, uint256 index);
+    event InstantSlash(address vault, bytes32 subnetwork, uint256 slashedAmount);
+    event VetoSlash(address vault, bytes32 subnetwork, uint256 slashIndex);
 
     enum SlasherType {
         INSTANT, // Instant slasher type
@@ -383,7 +383,7 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
         address operator,
         address vault,
         uint96 subnetwork
-    ) private view returns (uint256) {
+    ) internal view returns (uint256) {
         bytes32 subnetworkId = _NETWORK().subnetwork(subnetwork);
         return IBaseDelegator(IVault(vault).delegator()).stakeAt(subnetworkId, operator, timestamp, "");
     }
@@ -639,6 +639,7 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
      * @param operator The operator to slash
      * @param amount The amount to slash
      * @param hints Additional data for the slasher
+     * @return success True if the slash was executed successfully, false otherwise
      * @return response index for veto slashing or amount for instant slashing
      */
     function _slashVault(
@@ -648,7 +649,7 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
         address operator,
         uint256 amount,
         bytes memory hints
-    ) internal returns (uint256 response) {
+    ) internal virtual returns (bool success, bytes memory response) {
         if (!_operatorWasActiveAt(timestamp, operator)) {
             revert InactiveOperatorSlash();
         }
@@ -672,11 +673,24 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
 
         uint64 slasherType = IEntity(slasher).TYPE();
         if (slasherType == uint64(SlasherType.INSTANT)) {
-            response = ISlasher(slasher).slash(subnetwork, operator, amount, timestamp, hints);
-            emit InstantSlash(vault, subnetwork, response);
+            try ISlasher(slasher).slash(subnetwork, operator, amount, timestamp, hints) returns (uint256 slashedAmount)
+            {
+                emit InstantSlash(vault, subnetwork, slashedAmount);
+                success = true;
+                response = abi.encode(slashedAmount);
+            } catch {
+                success = false;
+            }
         } else if (slasherType == uint64(SlasherType.VETO)) {
-            response = IVetoSlasher(slasher).requestSlash(subnetwork, operator, amount, timestamp, hints);
-            emit VetoSlash(vault, subnetwork, response);
+            try IVetoSlasher(slasher).requestSlash(subnetwork, operator, amount, timestamp, hints) returns (
+                uint256 slashIndex
+            ) {
+                emit VetoSlash(vault, subnetwork, slashIndex);
+                success = true;
+                response = abi.encode(slashIndex);
+            } catch {
+                success = false;
+            }
         } else {
             revert UnknownSlasherType();
         }
@@ -687,20 +701,26 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
      * @param vault The vault address
      * @param slashIndex The index of the slash to execute
      * @param hints Additional data for the veto slasher
+     * @return success True if the slash was executed successfully, false otherwise
      * @return slashedAmount The amount that was slashed
      */
     function _executeSlash(
         address vault,
         uint256 slashIndex,
         bytes memory hints
-    ) internal returns (uint256 slashedAmount) {
+    ) internal virtual returns (bool success, uint256 slashedAmount) {
         address slasher = IVault(vault).slasher();
         uint64 slasherType = IEntity(slasher).TYPE();
         if (slasherType != uint64(SlasherType.VETO)) {
             revert NonVetoSlasher();
         }
 
-        return IVetoSlasher(slasher).executeSlash(slashIndex, hints);
+        try IVetoSlasher(slasher).executeSlash(slashIndex, hints) returns (uint256 slashedAmount_) {
+            success = true;
+            slashedAmount = slashedAmount_;
+        } catch {
+            success = false;
+        }
     }
 
     /**
@@ -709,7 +729,7 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
      */
     function _validateVault(
         address vault
-    ) private view {
+    ) internal view virtual {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         if (!IRegistry(_VAULT_REGISTRY()).isEntity(vault)) {
             revert NotVault();
@@ -742,7 +762,7 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
 
     function _validateSharedVault(
         address vault
-    ) internal view {
+    ) internal view virtual {
         address delegator = IVault(vault).delegator();
         uint64 delegatorType = IEntity(delegator).TYPE();
         if (
@@ -755,7 +775,7 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
         }
     }
 
-    function _validateOperatorVault(address operator, address vault) internal view {
+    function _validateOperatorVault(address operator, address vault) internal view virtual {
         address delegator = IVault(vault).delegator();
         uint64 delegatorType = IEntity(delegator).TYPE();
         if (

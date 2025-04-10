@@ -425,7 +425,7 @@ contract BaseMiddlewareReader is BaseMiddleware, NoAccessManager, NoKeyManager {
      * @notice Gets the middleware address from the calldata
      * @return The middleware address
      */
-    function _getMiddleware() private pure returns (address) {
+    function _getMiddleware() internal pure returns (address) {
         address middleware;
         assembly {
             middleware := shr(96, calldataload(sub(calldatasize(), 20)))

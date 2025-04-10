@@ -16,7 +16,7 @@ abstract contract OwnableAccessManager is AccessManager, IOwnableAccessManager {
     bytes32 private constant OwnableAccessManagerStorageLocation =
         0xcee92923a0c63eca6fc0402d78c9efde9f9f3dc73e6f9e14501bf734ed77f100;
 
-    function _owner() private view returns (address owner_) {
+    function _owner() internal view returns (address owner_) {
         bytes32 location = OwnableAccessManagerStorageLocation;
         assembly {
             owner_ := sload(location)
@@ -38,7 +38,7 @@ abstract contract OwnableAccessManager is AccessManager, IOwnableAccessManager {
 
     function _setOwner(
         address owner_
-    ) private {
+    ) internal {
         bytes32 location = OwnableAccessManagerStorageLocation;
         assembly {
             sstore(location, owner_)

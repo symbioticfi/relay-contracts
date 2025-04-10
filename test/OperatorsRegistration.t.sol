@@ -438,15 +438,15 @@ contract OperatorsRegistrationTest is POCBaseTest {
         assertEq(activeOps.length, 0, "Should have no active operators");
     }
 
-    function skipEpoch() private {
+    function skipEpoch() internal {
         vm.warp(block.timestamp + epochDuration);
     }
 
-    function skipImmutablePeriod() private {
+    function skipImmutablePeriod() internal {
         vm.warp(block.timestamp + slashingWindow);
     }
 
-    function skipOneSecond() private {
+    function skipOneSecond() internal {
         vm.warp(block.timestamp + 1);
     }
 }

@@ -30,6 +30,8 @@ contract SimplePosMiddleware is
     error InactiveKeySlash(); // Error thrown when trying to slash an inactive key
     error NotExistKeySlash(); // Error thrown when the key does not exist for slashing
     error InvalidHints(); // Error thrown for invalid hints provided
+    error SlashFailed(); // Error thrown when the slash fails
+    error InvalidVault(); // Error thrown when the vault is invalid
 
     struct ValidatorData {
         uint256 power; // Power of the validator
@@ -177,8 +179,16 @@ contract SimplePosMiddleware is
         }
     }
 
-    function executeSlash(address vault, uint256 slashIndex, bytes memory hints) external checkAccess {
-        _executeSlash(vault, slashIndex, hints);
+    function executeSlash(
+        address vault,
+        uint256 slashIndex,
+        bytes memory hints
+    ) external checkAccess returns (uint256) {
+        (bool success, uint256 slashedAmount) = _executeSlash(vault, slashIndex, hints);
+        if (!success) {
+            revert SlashFailed();
+        }
+        return slashedAmount;
     }
 
     function _checkCanSlash(uint48 epochStart, bytes32 key, address operator) internal view {
@@ -189,5 +199,14 @@ contract SimplePosMiddleware is
         if (!keyWasActiveAt(epochStart, abi.encode(key))) {
             revert InactiveKeySlash(); // Revert if the key is inactive
         }
+    }
+
+    function _validateVault(
+        address vault
+    ) internal view override {
+        if (IVault(vault).slasher() == address(0)) {
+            revert InvalidVault();
+        }
+        super._validateVault(vault);
     }
 }

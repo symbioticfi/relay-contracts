@@ -20,7 +20,7 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
     uint64 public constant SelfRegisterOperators_VERSION = 1;
 
     // EIP-712 TypeHash constants
-    bytes32 internal constant REGISTER_OPERATOR_TYPEHASH =
+    bytes32 private constant REGISTER_OPERATOR_TYPEHASH =
         keccak256("RegisterOperator(address operator,bytes key,address vault,uint256 nonce)");
     bytes32 private constant UNREGISTER_OPERATOR_TYPEHASH =
         keccak256("UnregisterOperator(address operator,uint256 nonce)");
@@ -365,13 +365,13 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
         _checkOperatorPowerThreshold(operator, address(0));
     }
 
-    function _checkOperatorPowerThreshold(address operator, address vault) private view {
+    function _checkOperatorPowerThreshold(address operator, address vault) internal view {
         if (_isOperatorBelowPowerThreshold(operator, vault)) {
             revert OperatorPowerBelowThreshold();
         }
     }
 
-    function _isOperatorBelowPowerThreshold(address operator, address vault) private view returns (bool) {
+    function _isOperatorBelowPowerThreshold(address operator, address vault) internal view returns (bool) {
         address[] memory _vaults = _activeVaults(operator);
         uint160[] memory _subnetworks = _activeSubnetworks();
         uint256 power = _getOperatorPower(operator, _vaults, _subnetworks);

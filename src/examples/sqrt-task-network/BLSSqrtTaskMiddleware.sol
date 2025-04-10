@@ -96,7 +96,7 @@ contract BLSSqrtTaskMiddleware is
         emit CompleteTask(taskIndex, true);
     }
 
-    function _verify(uint256 taskIndex, uint256 answer, bytes calldata signature) private view returns (bool) {
+    function _verify(uint256 taskIndex, uint256 answer, bytes calldata signature) internal view returns (bool) {
         if (tasks[taskIndex].completed) {
             revert TaskCompleted();
         }
@@ -104,7 +104,7 @@ contract BLSSqrtTaskMiddleware is
         return _verifyAnswer(taskIndex, answer);
     }
 
-    function _verifyAnswer(uint256 taskIndex, uint256 answer) private view returns (bool) {
+    function _verifyAnswer(uint256 taskIndex, uint256 answer) internal view returns (bool) {
         uint256 value = tasks[taskIndex].value;
         uint256 square = answer ** 2;
         if (square == value) {
@@ -130,7 +130,7 @@ contract BLSSqrtTaskMiddleware is
         return false;
     }
 
-    // function _slash(uint256 taskIndex, bytes[] calldata stakeHints, bytes[] calldata slashHints) private {
+    // function _slash(uint256 taskIndex, bytes[] calldata stakeHints, bytes[] calldata slashHints) internal {
     //     Task storage task = tasks[taskIndex];
     //     address[] memory vaults = _activeVaultsAt(task.captureTimestamp, task.operator);
     //     uint256 vaultsLength = vaults.length;
