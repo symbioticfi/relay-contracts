@@ -43,12 +43,12 @@ contract SimplePosMiddleware is
         address operator;
         uint256 totalPower;
         address[] vaults;
-        uint160[] subnetworks;
     }
 
     /**
      * @notice Constructor for initializing the SimplePosMiddleware contract
      * @param network The address of the network
+     * @param subnetworkID The subnetwork ID
      * @param slashingWindow The duration of the slashing window
      * @param vaultRegistry The address of the vault registry
      * @param operatorRegistry The address of the operator registry
@@ -59,6 +59,7 @@ contract SimplePosMiddleware is
      */
     constructor(
         address network,
+        uint96 subnetworkID,
         uint48 slashingWindow,
         address vaultRegistry,
         address operatorRegistry,
@@ -68,12 +69,21 @@ contract SimplePosMiddleware is
         uint48 epochDuration
     ) {
         initialize(
-            network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader, owner, epochDuration
+            network,
+            subnetworkID,
+            slashingWindow,
+            vaultRegistry,
+            operatorRegistry,
+            operatorNetOptin,
+            reader,
+            owner,
+            epochDuration
         );
     }
 
     function initialize(
         address network,
+        uint96 subnetworkID,
         uint48 slashingWindow,
         address vaultRegistry,
         address operatorRegistry,
@@ -82,7 +92,9 @@ contract SimplePosMiddleware is
         address owner,
         uint48 epochDuration
     ) internal initializer {
-        __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader);
+        __BaseMiddleware_init(
+            network, subnetworkID, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader
+        );
         __OwnableAccessManager_init(owner);
         __EpochCapture_init(epochDuration);
     }
@@ -137,7 +149,7 @@ contract SimplePosMiddleware is
         uint48 epoch,
         bytes32 key,
         uint256 amount,
-        bytes[][] memory stakeHints,
+        bytes[] memory stakeHints,
         bytes[] memory slashHints
     ) public checkAccess {
         SlashParams memory params;
@@ -147,35 +159,27 @@ contract SimplePosMiddleware is
         _checkCanSlash(params.epochStart, key, params.operator);
 
         params.vaults = _activeVaultsAt(params.epochStart, params.operator);
-        params.subnetworks = _activeSubnetworksAt(params.epochStart);
-        params.totalPower = _getOperatorPowerAt(params.epochStart, params.operator, params.vaults, params.subnetworks);
+        params.totalPower = _getOperatorPowerAt(params.epochStart, params.operator, params.vaults);
         uint256 vaultsLength = params.vaults.length;
-        uint256 subnetworksLength = params.subnetworks.length;
 
         // Validate hints lengths upfront
-        if (stakeHints.length != slashHints.length || stakeHints.length != vaultsLength) {
+        if (slashHints.length != vaultsLength || stakeHints.length != vaultsLength) {
             revert InvalidHints();
         }
 
         for (uint256 i; i < vaultsLength; ++i) {
-            if (stakeHints[i].length != subnetworksLength) {
-                revert InvalidHints();
-            }
-
             address vault = params.vaults[i];
-            for (uint256 j; j < subnetworksLength; ++j) {
-                bytes32 subnetwork = _NETWORK().subnetwork(uint96(params.subnetworks[j]));
-                uint256 stake = IBaseDelegator(IVault(vault).delegator()).stakeAt(
-                    subnetwork, params.operator, params.epochStart, stakeHints[i][j]
-                );
+            bytes32 subnetwork = _SUBNETWORK();
+            uint256 stake = IBaseDelegator(IVault(vault).delegator()).stakeAt(
+                subnetwork, params.operator, params.epochStart, stakeHints[i]
+            );
 
-                uint256 slashAmount = Math.mulDiv(amount, stakeToPower(vault, stake), params.totalPower);
-                if (slashAmount == 0) {
-                    continue;
-                }
-
-                _slashVault(params.epochStart, vault, subnetwork, params.operator, slashAmount, slashHints[i]);
+            uint256 slashAmount = Math.mulDiv(amount, stakeToPower(vault, stake), params.totalPower);
+            if (slashAmount == 0) {
+                continue;
             }
+
+            _slashVault(params.epochStart, vault, params.operator, slashAmount, slashHints[i]);
         }
     }
 

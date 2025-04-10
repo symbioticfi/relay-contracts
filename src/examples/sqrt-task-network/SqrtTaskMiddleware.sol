@@ -51,6 +51,7 @@ contract SqrtTaskMiddleware is
 
     constructor(
         address network,
+        uint96 subnetworkID,
         uint48 slashingWindow,
         address operatorRegistry,
         address vaultRegistry,
@@ -58,11 +59,14 @@ contract SqrtTaskMiddleware is
         address reader,
         address owner
     ) EIP712("SqrtTaskMiddleware", "1") {
-        initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader, owner);
+        initialize(
+            network, subnetworkID, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader, owner
+        );
     }
 
     function initialize(
         address network,
+        uint96 subnetworkID,
         uint48 slashingWindow,
         address vaultRegistry,
         address operatorRegistry,
@@ -70,7 +74,9 @@ contract SqrtTaskMiddleware is
         address reader,
         address owner
     ) internal initializer {
-        __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader);
+        __BaseMiddleware_init(
+            network, subnetworkID, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader
+        );
         __OwnableAccessManager_init(owner);
     }
 
@@ -152,7 +158,7 @@ contract SqrtTaskMiddleware is
             revert InvalidHints();
         }
 
-        bytes32 subnetwork = _NETWORK().subnetwork(0);
+        bytes32 subnetwork = _SUBNETWORK();
         for (uint256 i; i < vaultsLength; ++i) {
             address vault = vaults[i];
             uint256 slashAmount = IBaseDelegator(IVault(vault).delegator()).stakeAt(
@@ -163,7 +169,7 @@ contract SqrtTaskMiddleware is
                 continue;
             }
 
-            _slashVault(task.captureTimestamp, vault, subnetwork, task.operator, slashAmount, slashHints[i]);
+            _slashVault(task.captureTimestamp, vault, task.operator, slashAmount, slashHints[i]);
         }
     }
 

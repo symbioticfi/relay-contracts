@@ -23,6 +23,7 @@ contract SelfRegisterMiddleware is
     /**
      * @notice Constructor for initializing the SelfRegisterMiddleware contract
      * @param network The address of the network
+     * @param subnetworkID The subnetwork ID
      * @param slashingWindow The duration of the slashing window
      * @param vaultRegistry The address of the vault registry
      * @param operatorRegistry The address of the operator registry
@@ -32,6 +33,7 @@ contract SelfRegisterMiddleware is
      */
     constructor(
         address network,
+        uint96 subnetworkID,
         uint48 slashingWindow,
         address vaultRegistry,
         address operatorRegistry,
@@ -39,11 +41,14 @@ contract SelfRegisterMiddleware is
         address reader,
         address owner
     ) {
-        initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader, owner);
+        initialize(
+            network, subnetworkID, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader, owner
+        );
     }
 
     function initialize(
         address network,
+        uint96 subnetworkID,
         uint48 slashingWindow,
         address vaultRegistry,
         address operatorRegistry,
@@ -51,7 +56,9 @@ contract SelfRegisterMiddleware is
         address reader,
         address owner
     ) internal initializer {
-        __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn, reader);
+        __BaseMiddleware_init(
+            network, subnetworkID, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn, reader
+        );
         __SelfRegisterOperators_init("SelfRegisterMiddleware", 0);
         __OwnableAccessManager_init(owner);
     }

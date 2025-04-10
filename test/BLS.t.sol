@@ -47,6 +47,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
         // Initialize middleware contract
         middleware = new BLSSqrtTaskMiddleware(
             address(network),
+            0,
             slashingWindow,
             address(operatorRegistry),
             address(vaultFactory),

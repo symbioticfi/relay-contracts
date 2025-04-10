@@ -45,6 +45,7 @@ contract SigTests is POCBaseTest {
         // Initialize both middlewares
         middleware = new SelfRegisterMiddleware(
             address(0x123),
+            0,
             1200, // slashing window
             address(vaultFactory),
             address(operatorRegistry),
@@ -55,6 +56,7 @@ contract SigTests is POCBaseTest {
 
         ed25519Middleware = new SelfRegisterEd25519Middleware(
             address(0x456),
+            0,
             1200, // slashing window
             address(vaultFactory),
             address(operatorRegistry),

@@ -130,54 +130,6 @@ contract BaseMiddlewareReader is BaseMiddleware, NoAccessManager, NoKeyManager {
     }
 
     /**
-     * @notice Gets the number of subnetworks
-     * @return The number of subnetworks
-     */
-    function subnetworksLength() external view returns (uint256) {
-        return _subnetworksLength();
-    }
-
-    /**
-     * @notice Gets the subnetwork and its times at a specific position
-     * @param pos The position
-     * @return The subnetwork address, start time, and end time
-     */
-    function subnetworkWithTimesAt(
-        uint256 pos
-    ) external view returns (uint160, uint48, uint48) {
-        return _subnetworkWithTimesAt(pos);
-    }
-
-    /**
-     * @notice Gets the list of active subnetworks
-     * @return The list of active subnetworks
-     */
-    function activeSubnetworks() external view returns (uint160[] memory) {
-        return _activeSubnetworks();
-    }
-
-    /**
-     * @notice Gets the list of active subnetworks at a specific timestamp
-     * @param timestamp The timestamp
-     * @return The list of active subnetworks at the given timestamp
-     */
-    function activeSubnetworksAt(
-        uint48 timestamp
-    ) external view returns (uint160[] memory) {
-        return _activeSubnetworksAt(timestamp);
-    }
-
-    /**
-     * @notice Checks if a subnetwork was active at a specific timestamp
-     * @param timestamp The timestamp
-     * @param subnetwork The subnetwork address
-     * @return True if the subnetwork was active at the given timestamp, false otherwise
-     */
-    function subnetworkWasActiveAt(uint48 timestamp, uint96 subnetwork) external view returns (bool) {
-        return _subnetworkWasActiveAt(timestamp, subnetwork);
-    }
-
-    /**
      * @notice Gets the number of shared vaults
      * @return The number of shared vaults
      */
@@ -330,31 +282,24 @@ contract BaseMiddlewareReader is BaseMiddleware, NoAccessManager, NoKeyManager {
     }
 
     /**
-     * @notice Gets the power of an operator for a specific vault and subnetwork
+     * @notice Gets the power of an operator for a specific vault
      * @param operator The operator address
      * @param vault The vault address
-     * @param subnetwork The subnetwork address
-     * @return The power of the operator for the given vault and subnetwork
+     * @return The power of the operator for the given vault
      */
-    function getOperatorPower(address operator, address vault, uint96 subnetwork) external view returns (uint256) {
-        return _getOperatorPower(operator, vault, subnetwork);
+    function getOperatorPower(address operator, address vault) external view returns (uint256) {
+        return _getOperatorPower(operator, vault);
     }
 
     /**
-     * @notice Gets the power of an operator for a specific vault and subnetwork at a specific timestamp
+     * @notice Gets the power of an operator for a specific vault at a specific timestamp
      * @param timestamp The timestamp
      * @param operator The operator address
      * @param vault The vault address
-     * @param subnetwork The subnetwork address
-     * @return The power of the operator for the given vault and subnetwork at the given timestamp
+     * @return The power of the operator for the given vault at the given timestamp
      */
-    function getOperatorPowerAt(
-        uint48 timestamp,
-        address operator,
-        address vault,
-        uint96 subnetwork
-    ) external view returns (uint256) {
-        return _getOperatorPowerAt(timestamp, operator, vault, subnetwork);
+    function getOperatorPowerAt(uint48 timestamp, address operator, address vault) external view returns (uint256) {
+        return _getOperatorPowerAt(timestamp, operator, vault);
     }
 
     /**
@@ -379,35 +324,28 @@ contract BaseMiddlewareReader is BaseMiddleware, NoAccessManager, NoKeyManager {
     }
 
     /**
-     * @notice Gets the power of an operator for specific vaults and subnetworks
+     * @notice Gets the power of an operator for specific vaults
      * @param operator The operator address
      * @param vaults The list of vault addresses
-     * @param subnetworks The list of subnetwork addresses
-     * @return The power of the operator for the given vaults and subnetworks
+     * @return The power of the operator for the given vaults
      */
-    function getOperatorPower(
-        address operator,
-        address[] memory vaults,
-        uint160[] memory subnetworks
-    ) external view returns (uint256) {
-        return _getOperatorPower(operator, vaults, subnetworks);
+    function getOperatorPower(address operator, address[] memory vaults) external view returns (uint256) {
+        return _getOperatorPower(operator, vaults);
     }
 
     /**
-     * @notice Gets the power of an operator for specific vaults and subnetworks at a specific timestamp
+     * @notice Gets the power of an operator for specific vaults at a specific timestamp
      * @param timestamp The timestamp
      * @param operator The operator address
      * @param vaults The list of vault addresses
-     * @param subnetworks The list of subnetwork addresses
-     * @return The power of the operator for the given vaults and subnetworks at the given timestamp
+     * @return The power of the operator for the given vaults at the given timestamp
      */
     function getOperatorPowerAt(
         uint48 timestamp,
         address operator,
-        address[] memory vaults,
-        uint160[] memory subnetworks
+        address[] memory vaults
     ) external view returns (uint256) {
-        return _getOperatorPowerAt(timestamp, operator, vaults, subnetworks);
+        return _getOperatorPowerAt(timestamp, operator, vaults);
     }
 
     /**

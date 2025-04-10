@@ -373,12 +373,11 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
 
     function _isOperatorBelowPowerThreshold(address operator, address vault) internal view returns (bool) {
         address[] memory _vaults = _activeVaults(operator);
-        uint160[] memory _subnetworks = _activeSubnetworks();
-        uint256 power = _getOperatorPower(operator, _vaults, _subnetworks);
+        uint256 power = _getOperatorPower(operator, _vaults);
         if (vault != address(0)) {
             address[] memory vaults = new address[](1);
             vaults[0] = vault;
-            power += _getOperatorPower(operator, vaults, _subnetworks);
+            power += _getOperatorPower(operator, vaults);
         }
         return power < _getSelfRegisterOperatorsStorage().minPowerThreshold;
     }

@@ -37,13 +37,14 @@ abstract contract BaseMiddleware is VaultManager, AccessManager, KeyManager {
      */
     function __BaseMiddleware_init(
         address network,
+        uint96 subnetworkID,
         uint48 slashingWindow,
         address vaultRegistry,
         address operatorRegistry,
         address operatorNetOptin,
         address reader
     ) internal onlyInitializing {
-        __NetworkStorage_init_private(network);
+        __NetworkManager_init_private(network, subnetworkID);
         __SlashingWindowStorage_init_private(slashingWindow);
         __VaultManager_init_private(vaultRegistry);
         __OperatorManager_init_private(operatorRegistry, operatorNetOptin);

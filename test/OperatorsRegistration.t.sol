@@ -44,6 +44,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
         // Initialize middleware contract
         middleware = new SimplePosMiddleware(
             address(network),
+            0,
             slashingWindow,
             address(vaultFactory),
             address(operatorRegistry),

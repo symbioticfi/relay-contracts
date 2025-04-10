@@ -66,6 +66,7 @@ contract SelfRegisterSqrtTaskMiddleware is
 
     constructor(
         address networkRegistry,
+        uint96 subnetworkID,
         uint48 slashingWindow,
         address operatorRegistry,
         address vaultRegistry,
@@ -73,11 +74,21 @@ contract SelfRegisterSqrtTaskMiddleware is
         address reader,
         address owner
     ) {
-        initialize(networkRegistry, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader, owner);
+        initialize(
+            networkRegistry,
+            subnetworkID,
+            slashingWindow,
+            vaultRegistry,
+            operatorRegistry,
+            operatorNetOptin,
+            reader,
+            owner
+        );
     }
 
     function initialize(
         address networkRegistry,
+        uint96 subnetworkID,
         uint48 slashingWindow,
         address vaultRegistry,
         address operatorRegistry,
@@ -86,7 +97,9 @@ contract SelfRegisterSqrtTaskMiddleware is
         address owner
     ) internal initializer {
         INetworkRegistry(networkRegistry).registerNetwork();
-        __BaseMiddleware_init(address(this), slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader);
+        __BaseMiddleware_init(
+            address(this), subnetworkID, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader
+        );
         __OwnableAccessManager_init(owner);
         __SelfRegisterOperators_init("SelfRegisterSqrtTaskMiddleware", 0);
     }
@@ -189,7 +202,7 @@ contract SelfRegisterSqrtTaskMiddleware is
             revert InvalidHints();
         }
 
-        bytes32 subnetwork = _NETWORK().subnetwork(0);
+        bytes32 subnetwork = _SUBNETWORK();
         for (uint256 i; i < vaultsLength; ++i) {
             address vault = vaults[i];
             uint256 slashAmount =
@@ -199,7 +212,7 @@ contract SelfRegisterSqrtTaskMiddleware is
                 continue;
             }
 
-            _slashVault(captureTimestamp, vault, subnetwork, operator, slashAmount, slashHints[i]);
+            _slashVault(captureTimestamp, vault, operator, slashAmount, slashHints[i]);
         }
     }
 
@@ -220,7 +233,7 @@ contract SelfRegisterSqrtTaskMiddleware is
         if (_operatorVaultsLength(operator) >= MAX_OPERATOR_VAULTS) {
             revert TooManyOperatorVaults();
         }
-        IBaseDelegator(IVault(vault).delegator()).setMaxNetworkLimit(DEFAULT_SUBNETWORK, type(uint256).max);
+        IBaseDelegator(IVault(vault).delegator()).setMaxNetworkLimit(_SUBNETWORK_IDENTIFIER(), type(uint256).max);
     }
 
     function _validateVault(

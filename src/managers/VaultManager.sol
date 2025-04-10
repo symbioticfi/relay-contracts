@@ -21,7 +21,7 @@ import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
 /**
  * @title VaultManager
- * @notice Abstract contract for managing vaults and their relationships with operators and subnetworks
+ * @notice Abstract contract for managing vaults and their relationships with operators
  * @dev Extends BaseManager and provides functionality for registering, pausing, and managing vaults
  */
 abstract contract VaultManager is OperatorManager, StakePowerManager {
@@ -39,7 +39,6 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
     error VaultEpochTooShort();
     error InactiveOperatorSlash();
     error InactiveVaultSlash();
-    error InactiveSubnetworkSlash();
     error UnknownSlasherType();
     error NonVetoSlasher();
     error NoSlasher();
@@ -51,14 +50,13 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
     /// @custom:storage-location erc7201:symbiotic.storage.VaultManager
     struct VaultManagerStorage {
         address _vaultRegistry;
-        PauseableEnumerableSet.Uint160Set _subnetworks;
         PauseableEnumerableSet.AddressSet _sharedVaults;
         mapping(address => PauseableEnumerableSet.AddressSet) _operatorVaults;
         EnumerableMap.AddressToAddressMap _vaultOperator;
     }
 
-    event InstantSlash(address vault, bytes32 subnetwork, uint256 slashedAmount);
-    event VetoSlash(address vault, bytes32 subnetwork, uint256 slashIndex);
+    event InstantSlash(address vault, address operator, uint256 slashedAmount);
+    event VetoSlash(address vault, address operator, uint256 slashIndex);
 
     enum SlasherType {
         INSTANT, // Instant slasher type
@@ -88,8 +86,6 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
         }
     }
 
-    uint96 internal constant DEFAULT_SUBNETWORK = 0;
-
     /**
      * @notice Initializes the VaultManager with required parameters
      * @param vaultRegistry The address of the vault registry contract
@@ -99,7 +95,6 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
     ) internal onlyInitializing {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         $._vaultRegistry = vaultRegistry;
-        _registerSubnetwork(DEFAULT_SUBNETWORK);
     }
 
     /**
@@ -109,61 +104,6 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
     function _VAULT_REGISTRY() internal view returns (address) {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         return $._vaultRegistry;
-    }
-
-    /**
-     * @notice Gets the total number of registered subnetworks
-     * @return uint256 The count of registered subnetworks
-     */
-    function _subnetworksLength() internal view returns (uint256) {
-        VaultManagerStorage storage $ = _getVaultManagerStorage();
-        return $._subnetworks.length();
-    }
-
-    /**
-     * @notice Gets the subnetwork information at a specific index
-     * @param pos The index position to query
-     * @return uint160 The subnetwork address
-     * @return uint48 The time when the subnetwork was enabled
-     * @return uint48 The time when the subnetwork was disabled
-     */
-    function _subnetworkWithTimesAt(
-        uint256 pos
-    ) internal view returns (uint160, uint48, uint48) {
-        VaultManagerStorage storage $ = _getVaultManagerStorage();
-        return $._subnetworks.at(pos);
-    }
-
-    /**
-     * @notice Gets all currently active subnetworks
-     * @return uint160[] Array of active subnetwork addresses
-     */
-    function _activeSubnetworks() internal view returns (uint160[] memory) {
-        VaultManagerStorage storage $ = _getVaultManagerStorage();
-        return $._subnetworks.getActive(getCaptureTimestamp());
-    }
-
-    /**
-     * @notice Gets all subnetworks that were active at a specific timestamp
-     * @param timestamp The timestamp to check
-     * @return uint160[] Array of subnetwork addresses that were active at the timestamp
-     */
-    function _activeSubnetworksAt(
-        uint48 timestamp
-    ) internal view returns (uint160[] memory) {
-        VaultManagerStorage storage $ = _getVaultManagerStorage();
-        return $._subnetworks.getActive(timestamp);
-    }
-
-    /**
-     * @notice Checks if a subnetwork was active at a specific timestamp
-     * @param timestamp The timestamp to check
-     * @param subnetwork The subnetwork identifier
-     * @return bool True if the subnetwork was active at the timestamp
-     */
-    function _subnetworkWasActiveAt(uint48 timestamp, uint96 subnetwork) internal view returns (bool) {
-        VaultManagerStorage storage $ = _getVaultManagerStorage();
-        return $._subnetworks.wasActiveAt(timestamp, uint160(subnetwork));
     }
 
     /**
@@ -371,55 +311,41 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
     }
 
     /**
-     * @notice Gets the stake amount for an operator in a vault and subnetwork at a specific timestamp
+     * @notice Gets the stake amount for an operator in a vault at a specific timestamp
      * @param timestamp The timestamp to check
      * @param operator The operator address
      * @param vault The vault address
-     * @param subnetwork The subnetwork identifier
      * @return uint256 The stake amount at the timestamp
      */
-    function _getOperatorStakeAt(
-        uint48 timestamp,
-        address operator,
-        address vault,
-        uint96 subnetwork
-    ) internal view returns (uint256) {
-        bytes32 subnetworkId = _NETWORK().subnetwork(subnetwork);
-        return IBaseDelegator(IVault(vault).delegator()).stakeAt(subnetworkId, operator, timestamp, "");
+    function _getOperatorStakeAt(uint48 timestamp, address operator, address vault) internal view returns (uint256) {
+        return IBaseDelegator(IVault(vault).delegator()).stakeAt(_SUBNETWORK(), operator, timestamp, "");
     }
 
     /**
-     * @notice Gets the power amount for an operator in a vault and subnetwork
+     * @notice Gets the power amount for an operator in a vault
      * @param operator The operator address
      * @param vault The vault address
-     * @param subnetwork The subnetwork identifier
      * @return uint256 The power amount
      */
-    function _getOperatorPower(address operator, address vault, uint96 subnetwork) internal view returns (uint256) {
-        return _getOperatorPowerAt(getCaptureTimestamp(), operator, vault, subnetwork);
+    function _getOperatorPower(address operator, address vault) internal view returns (uint256) {
+        return _getOperatorPowerAt(getCaptureTimestamp(), operator, vault);
     }
 
     /**
-     * @notice Gets the power amount for an operator in a vault and subnetwork at a specific timestamp
+     * @notice Gets the power amount for an operator in a vault at a specific timestamp
      * @param timestamp The timestamp to check
      * @param operator The operator address
      * @param vault The vault address
-     * @param subnetwork The subnetwork identifier
      * @return uint256 The power amount at the timestamp
      * @dev Doesn't consider active statuses.
      */
-    function _getOperatorPowerAt(
-        uint48 timestamp,
-        address operator,
-        address vault,
-        uint96 subnetwork
-    ) internal view returns (uint256) {
-        uint256 stake = _getOperatorStakeAt(timestamp, operator, vault, subnetwork);
+    function _getOperatorPowerAt(uint48 timestamp, address operator, address vault) internal view returns (uint256) {
+        uint256 stake = _getOperatorStakeAt(timestamp, operator, vault);
         return stakeToPower(vault, stake);
     }
 
     /**
-     * @notice Gets the total power amount for an operator across all vaults and subnetworks
+     * @notice Gets the total power amount for an operator across all vaults
      * @param operator The operator address
      * @return power The total power amount
      */
@@ -430,54 +356,42 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
     }
 
     /**
-     * @notice Gets the total power amount for an operator across all vaults and subnetworks at a specific timestamp
+     * @notice Gets the total power amount for an operator across all vaults at a specific timestamp
      * @param timestamp The timestamp to check
      * @param operator The operator address
      * @return power The total power amount at the timestamp
      */
     function _getOperatorPowerAt(uint48 timestamp, address operator) internal view returns (uint256 power) {
         address[] memory vaults = _activeVaultsAt(timestamp, operator);
-        uint160[] memory subnetworks = _activeSubnetworksAt(timestamp);
 
-        return _getOperatorPowerAt(timestamp, operator, vaults, subnetworks);
+        return _getOperatorPowerAt(timestamp, operator, vaults);
     }
 
     /**
-     * @notice Gets the total power amount for an operator across all vaults and subnetworks
+     * @notice Gets the total power amount for an operator across all vaults
      * @param operator The operator address
      * @param vaults The list of vault addresses
-     * @param subnetworks The list of subnetwork identifiers
      * @return power The total power amount
      */
-    function _getOperatorPower(
-        address operator,
-        address[] memory vaults,
-        uint160[] memory subnetworks
-    ) internal view returns (uint256 power) {
-        return _getOperatorPowerAt(getCaptureTimestamp(), operator, vaults, subnetworks);
+    function _getOperatorPower(address operator, address[] memory vaults) internal view returns (uint256 power) {
+        return _getOperatorPowerAt(getCaptureTimestamp(), operator, vaults);
     }
 
     /**
-     * @notice Gets the total power amount for an operator across all vaults and subnetworks at a specific timestamp
+     * @notice Gets the total power amount for an operator across all vaults at a specific timestamp
      * @param timestamp The timestamp to check
      * @param operator The operator address
      * @param vaults The list of vault addresses
-     * @param subnetworks The list of subnetwork identifiers
      * @return power The total power amount at the timestamp
      */
     function _getOperatorPowerAt(
         uint48 timestamp,
         address operator,
-        address[] memory vaults,
-        uint160[] memory subnetworks
+        address[] memory vaults
     ) internal view returns (uint256 power) {
         for (uint256 i; i < vaults.length; ++i) {
-            address vault = vaults[i];
-            for (uint256 j; j < subnetworks.length; ++j) {
-                power += _getOperatorPowerAt(timestamp, operator, vault, uint96(subnetworks[j]));
-            }
+            power += _getOperatorPowerAt(timestamp, operator, vaults[i]);
         }
-
         return power;
     }
 
@@ -494,50 +408,6 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
         }
 
         return power;
-    }
-
-    /**
-     * @notice Registers a new subnetwork
-     * @param subnetwork The subnetwork identifier to register
-     */
-    function _registerSubnetwork(
-        uint96 subnetwork
-    ) internal {
-        VaultManagerStorage storage $ = _getVaultManagerStorage();
-        $._subnetworks.register(_now(), uint160(subnetwork));
-    }
-
-    /**
-     * @notice Pauses a subnetwork
-     * @param subnetwork The subnetwork identifier to pause
-     */
-    function _pauseSubnetwork(
-        uint96 subnetwork
-    ) internal {
-        VaultManagerStorage storage $ = _getVaultManagerStorage();
-        $._subnetworks.pause(_now(), uint160(subnetwork));
-    }
-
-    /**
-     * @notice Unpauses a subnetwork
-     * @param subnetwork The subnetwork identifier to unpause
-     */
-    function _unpauseSubnetwork(
-        uint96 subnetwork
-    ) internal {
-        VaultManagerStorage storage $ = _getVaultManagerStorage();
-        $._subnetworks.unpause(_now(), _SLASHING_WINDOW(), uint160(subnetwork));
-    }
-
-    /**
-     * @notice Unregisters a subnetwork
-     * @param subnetwork The subnetwork identifier to unregister
-     */
-    function _unregisterSubnetwork(
-        uint96 subnetwork
-    ) internal {
-        VaultManagerStorage storage $ = _getVaultManagerStorage();
-        $._subnetworks.unregister(_now(), _SLASHING_WINDOW(), uint160(subnetwork));
     }
 
     /**
@@ -635,7 +505,6 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
      * @notice Slashes a vault based on provided conditions
      * @param timestamp The timestamp when the slash occurs
      * @param vault The vault address
-     * @param subnetwork The subnetwork identifier
      * @param operator The operator to slash
      * @param amount The amount to slash
      * @param hints Additional data for the slasher
@@ -645,7 +514,6 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
     function _slashVault(
         uint48 timestamp,
         address vault,
-        bytes32 subnetwork,
         address operator,
         uint256 amount,
         bytes memory hints
@@ -658,10 +526,6 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
             revert InactiveVaultSlash();
         }
 
-        if (!_subnetworkWasActiveAt(timestamp, subnetwork.identifier())) {
-            revert InactiveSubnetworkSlash();
-        }
-
         if (timestamp + _SLASHING_WINDOW() < _now()) {
             revert TooOldTimestampSlash();
         }
@@ -671,11 +535,12 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
             revert NoSlasher();
         }
 
+        bytes32 subnetwork = _SUBNETWORK();
         uint64 slasherType = IEntity(slasher).TYPE();
         if (slasherType == uint64(SlasherType.INSTANT)) {
             try ISlasher(slasher).slash(subnetwork, operator, amount, timestamp, hints) returns (uint256 slashedAmount)
             {
-                emit InstantSlash(vault, subnetwork, slashedAmount);
+                emit InstantSlash(vault, operator, slashedAmount);
                 success = true;
                 response = abi.encode(slashedAmount);
             } catch {
@@ -685,7 +550,7 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
             try IVetoSlasher(slasher).requestSlash(subnetwork, operator, amount, timestamp, hints) returns (
                 uint256 slashIndex
             ) {
-                emit VetoSlash(vault, subnetwork, slashIndex);
+                emit VetoSlash(vault, operator, slashIndex);
                 success = true;
                 response = abi.encode(slashIndex);
             } catch {
