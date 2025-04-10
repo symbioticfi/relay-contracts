@@ -67,7 +67,7 @@ library PauseableEnumerableSet {
      */
     function enable(Status storage self, uint48 timestamp, uint48 immutablePeriod) internal {
         if (wasActiveAt(self, timestamp + 1)) revert AlreadyEnabled();
-        if (self.disabled + immutablePeriod > timestamp) revert ImmutablePeriodNotPassed();
+        if (self.disabled + immutablePeriod >= timestamp) revert ImmutablePeriodNotPassed();
 
         self.enabled = timestamp;
         self.disabled = 0;
@@ -91,7 +91,7 @@ library PauseableEnumerableSet {
      */
     function validateUnregister(Status storage self, uint48 timestamp, uint48 immutablePeriod) internal view {
         if (wasActiveAt(self, timestamp + 1)) revert Enabled();
-        if (self.disabled + immutablePeriod > timestamp) revert ImmutablePeriodNotPassed();
+        if (self.disabled + immutablePeriod >= timestamp) revert ImmutablePeriodNotPassed();
     }
 
     /**
@@ -106,7 +106,7 @@ library PauseableEnumerableSet {
         uint48 timestamp,
         uint48 immutablePeriod
     ) internal view returns (bool) {
-        return !wasActiveAt(self, timestamp + 1) && self.disabled + immutablePeriod <= timestamp;
+        return !wasActiveAt(self, timestamp + 1) && self.disabled + immutablePeriod < timestamp;
     }
 
     /**
