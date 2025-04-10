@@ -9,6 +9,7 @@ import {IVetoSlasher} from "@symbiotic/interfaces/slasher/IVetoSlasher.sol";
 import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
 import {ISlasher} from "@symbiotic/interfaces/slasher/ISlasher.sol";
 import {IOperatorSpecificDelegator} from "@symbiotic/interfaces/delegator/IOperatorSpecificDelegator.sol";
+import {IOperatorNetworkSpecificDelegator} from "@symbiotic/interfaces/delegator/IOperatorNetworkSpecificDelegator.sol";
 
 import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 
@@ -43,7 +44,9 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
     error NonVetoSlasher();
     error NoSlasher();
     error TooOldTimestampSlash();
+    error NotSharedVault();
     error NotOperatorSpecificVault();
+    error InvalidOperatorNetwork();
 
     /// @custom:storage-location erc7201:symbiotic.storage.VaultManager
     struct VaultManagerStorage {
@@ -546,6 +549,7 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
     ) internal {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         _validateVault(vault);
+        _validateSharedVault(vault);
         $._sharedVaults.register(_now(), vault);
     }
 
@@ -736,6 +740,21 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
         }
     }
 
+    function _validateSharedVault(
+        address vault
+    ) internal view {
+        address delegator = IVault(vault).delegator();
+        uint64 delegatorType = IEntity(delegator).TYPE();
+        if (
+            (
+                delegatorType != uint64(DelegatorType.FULL_RESTAKE)
+                    && delegatorType != uint64(DelegatorType.NETWORK_RESTAKE)
+            )
+        ) {
+            revert NotSharedVault();
+        }
+    }
+
     function _validateOperatorVault(address operator, address vault) internal view {
         address delegator = IVault(vault).delegator();
         uint64 delegatorType = IEntity(delegator).TYPE();
@@ -746,6 +765,13 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
             ) || IOperatorSpecificDelegator(delegator).operator() != operator
         ) {
             revert NotOperatorSpecificVault();
+        }
+
+        if (
+            delegatorType == uint64(DelegatorType.OPERATOR_NETWORK_SPECIFIC)
+                && IOperatorNetworkSpecificDelegator(delegator).network() != _NETWORK()
+        ) {
+            revert InvalidOperatorNetwork();
         }
     }
 }
