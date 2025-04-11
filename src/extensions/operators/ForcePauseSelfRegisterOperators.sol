@@ -5,6 +5,7 @@ import {SelfRegisterOperators} from "./SelfRegisterOperators.sol";
 import {IForcePauseSelfRegisterOperators} from
     "../../interfaces/extensions/operators/IForcePauseSelfRegisterOperators.sol";
 import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
+import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
 /**
  * @title ForcePauseSelfRegisterOperators
@@ -39,7 +40,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
         address operator
     ) external checkAccess {
         _getForcePauseStorage().forcePaused[operator] = true;
-        if (_operatorWasActiveAt(_now() + 1, operator)) {
+        if (_isOperatorUnpaused(operator)) {
             _pauseOperatorImpl(operator);
         }
     }
@@ -71,7 +72,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
      */
     function forcePauseOperatorVault(address operator, address vault) external checkAccess {
         _getForcePauseStorage().forcePausedVault[operator][vault] = true;
-        if (_operatorVaultWasActiveAt(_now() + 1, operator, vault)) {
+        if (_isOperatorUnpaused(operator)) {
             _pauseOperatorVaultImpl(operator, vault);
         }
     }
@@ -81,7 +82,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
      */
     function forceUnpauseOperatorVault(address operator, address vault) external checkAccess {
         _getForcePauseStorage().forcePausedVault[operator][vault] = false;
-        if (!_getVaultManagerStorage()._vaultOperator.contains(vault)) {
+        if (_isVaultUnpaused(vault)) {
             return;
         }
         _unpauseOperatorVaultImpl(operator, vault);
@@ -108,11 +109,10 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
     /**
      * @notice Override to prevent registering force-paused operators
      * @param operator The operator address
-     * @param key The operator's public key
      * @param vault The vault address
      */
-    function _beforeRegisterOperator(address operator, bytes memory key, address vault) internal virtual override {
-        super._beforeRegisterOperator(operator, key, vault);
+    function _beforeRegisterOperator(address operator, address vault) internal virtual override {
+        super._beforeRegisterOperator(operator, vault);
         if (_operatorForcePaused(operator)) revert OperatorForcePaused();
     }
 

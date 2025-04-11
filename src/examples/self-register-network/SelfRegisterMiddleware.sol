@@ -7,59 +7,35 @@ import {SelfRegisterOperators} from "../../extensions/operators/SelfRegisterOper
 
 import {ECDSASig} from "../../extensions/managers/sigs/ECDSASig.sol";
 import {OwnableAccessManager} from "../../extensions/managers/access/OwnableAccessManager.sol";
-import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
 import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
-import {KeyManagerAddress} from "../../extensions/managers/keys/KeyManagerAddress.sol";
 
 contract SelfRegisterMiddleware is
     SharedVaults,
     SelfRegisterOperators,
-    KeyManagerAddress,
     ECDSASig,
     OwnableAccessManager,
-    TimestampCapture,
     EqualStakePower
 {
-    /**
-     * @notice Constructor for initializing the SelfRegisterMiddleware contract
-     * @param network The address of the network
-     * @param subnetworkID The subnetwork ID
-     * @param slashingWindow The duration of the slashing window
-     * @param vaultRegistry The address of the vault registry
-     * @param operatorRegistry The address of the operator registry
-     * @param operatorNetOptin The address of the operator network opt-in service
-     * @param reader The address of the reader contract used for delegatecall
-     * @param owner The address of the owner
-     */
     constructor(
+        address operatorRegistry,
+        address operatorNetworkOptInService,
+        address vaultFactory,
         address network,
         uint96 subnetworkID,
         uint48 slashingWindow,
-        address vaultRegistry,
-        address operatorRegistry,
-        address operatorNetOptin,
-        address reader,
-        address owner
-    ) {
-        initialize(
-            network, subnetworkID, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader, owner
-        );
+        address owner_
+    ) BaseMiddleware(operatorRegistry, operatorNetworkOptInService, vaultFactory) {
+        initialize(network, subnetworkID, slashingWindow, owner_);
     }
 
     function initialize(
         address network,
         uint96 subnetworkID,
         uint48 slashingWindow,
-        address vaultRegistry,
-        address operatorRegistry,
-        address operatorNetOptIn,
-        address reader,
-        address owner
+        address owner_
     ) internal initializer {
-        __BaseMiddleware_init(
-            network, subnetworkID, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn, reader
-        );
+        __BaseMiddleware_init(network, subnetworkID, slashingWindow);
         __SelfRegisterOperators_init("SelfRegisterMiddleware", 0);
-        __OwnableAccessManager_init(owner);
+        __OwnableAccessManager_init(owner_);
     }
 }

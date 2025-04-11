@@ -114,13 +114,13 @@ To develop your middleware:
      constructor(
          address network,
          uint48 slashingWindow,
-         address vaultRegistry,
+         address vaultFactory,
          address operatorRegistry,
-         address operatorNetOptIn,
+         address operatorNetworkOptInService,
          address readHelper,
          address admin
      ) {
-         initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn, readHelper, admin);
+         initialize(network, slashingWindow, vaultFactory, operatorRegistry, operatorNetworkOptInService, readHelper, admin);
      }
      ```
    - Example initialization pattern:
@@ -128,13 +128,13 @@ To develop your middleware:
      function initialize(
          address network,
          uint48 slashingWindow,
-         address vaultRegistry,
+         address vaultFactory,
          address operatorRegistry,
-         address operatorNetOptIn,
+         address operatorNetworkOptInService,
          address readHelper,
          address admin
      ) public initializer {
-         __BaseMiddleware_init(network, subnetworkID, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn, readHelper);
+         __BaseMiddleware_init(network, subnetworkID, slashingWindow, vaultFactory, operatorRegistry, operatorNetworkOptInService, readHelper);
          __OzAccessManaged_init(admin);
          __AdditionalExtension_init();
      }

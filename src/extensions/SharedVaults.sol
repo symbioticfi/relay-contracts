@@ -29,7 +29,7 @@ abstract contract SharedVaults is BaseMiddleware, ISharedVaults {
         address sharedVault
     ) public checkAccess {
         _beforePauseSharedVault(sharedVault);
-        _pauseSharedVault(sharedVault);
+        _pauseVault(sharedVault);
     }
 
     /**
@@ -39,7 +39,7 @@ abstract contract SharedVaults is BaseMiddleware, ISharedVaults {
         address sharedVault
     ) public checkAccess {
         _beforeUnpauseSharedVault(sharedVault);
-        _unpauseSharedVault(sharedVault);
+        _unpauseVault(sharedVault);
     }
 
     /**

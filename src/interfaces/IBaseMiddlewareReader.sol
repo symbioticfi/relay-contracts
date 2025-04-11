@@ -4,7 +4,7 @@ pragma solidity ^0.8.25;
 interface IBaseMiddlewareReader {
     function getCaptureTimestamp() external view returns (uint48 timestamp);
 
-    function stakeToPower(address vault, uint256 stake) external view returns (uint256 power);
+    function stakeToVotingPower(address vault, address operator, uint256 stake) external view returns (uint256 power);
 
     function keyWasActiveAt(uint48 timestamp, bytes memory key) external view returns (bool);
 
@@ -18,13 +18,13 @@ interface IBaseMiddlewareReader {
 
     function NETWORK() external view returns (address);
 
-    function SLASHING_WINDOW() external view returns (uint48);
+    function getSlashingWindow() external view returns (uint48);
 
-    function VAULT_REGISTRY() external view returns (address);
+    function VAULT_FACTORY() external view returns (address);
 
     function OPERATOR_REGISTRY() external view returns (address);
 
-    function OPERATOR_NET_OPTIN() external view returns (address);
+    function OPERATOR_NETWORK_OPT_IN_SERVICE() external view returns (address);
 
     function operatorsLength() external view returns (uint256);
 

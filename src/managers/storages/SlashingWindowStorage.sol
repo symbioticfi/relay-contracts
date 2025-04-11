@@ -29,7 +29,7 @@ abstract contract SlashingWindowStorage is Initializable {
      * @notice Returns the slashing window duration
      * @return slashingWindow The duration of the slashing window in seconds
      */
-    function _SLASHING_WINDOW() internal view returns (uint48) {
+    function _getSlashingWindow() internal view returns (uint48) {
         uint48 slashingWindow;
         assembly {
             slashingWindow := sload(SlashingWindowStorageLocation)

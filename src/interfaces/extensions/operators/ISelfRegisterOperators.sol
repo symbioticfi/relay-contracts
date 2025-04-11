@@ -19,29 +19,11 @@ interface ISelfRegisterOperators {
         address operator
     ) external view returns (uint256);
 
-    /**
-     * @notice Allows an operator to self-register with a key and optional vault
-     * @param key The operator's public key
-     * @param vault Optional vault address to associate with the operator
-     * @param signature Signature proving ownership of the key
-     */
-    function registerOperator(bytes memory key, address vault, bytes memory signature) external;
-
-    /**
-     * @notice Registers an operator on behalf of another address with signature verification
-     * @param operator The address of the operator to register
-     * @param key The operator's public key
-     * @param vault Optional vault address to associate
-     * @param signature EIP712 signature authorizing registration
-     * @param keySignature Signature proving ownership of the key
-     */
     function registerOperator(
-        address operator,
-        bytes memory key,
-        address vault,
-        bytes memory signature,
-        bytes memory keySignature
+        address vault
     ) external;
+
+    function registerOperator(address operator, address vault, bytes memory signature) external;
 
     /**
      * @notice Allows an operator to unregister themselves
@@ -78,27 +60,6 @@ interface ISelfRegisterOperators {
      * @param signature EIP712 signature authorizing unpause
      */
     function unpauseOperator(address operator, bytes memory signature) external;
-
-    /**
-     * @notice Allows an operator to update their own key
-     * @param key The new public key
-     * @param signature Signature proving ownership of the key
-     */
-    function updateOperatorKey(bytes memory key, bytes memory signature) external;
-
-    /**
-     * @notice Updates an operator's key with signature verification
-     * @param operator The address of the operator
-     * @param key The new public key
-     * @param signature EIP712 signature authorizing key update
-     * @param keySignature Signature proving ownership of the new key
-     */
-    function updateOperatorKey(
-        address operator,
-        bytes memory key,
-        bytes memory signature,
-        bytes memory keySignature
-    ) external;
 
     /**
      * @notice Allows an operator to register a vault association

@@ -5,6 +5,8 @@ import {BaseOperators} from "./BaseOperators.sol";
 import {SigManager} from "../../managers/extendable/SigManager.sol";
 import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
 import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
+import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
+
 import {ISelfRegisterOperators} from "../../interfaces/extensions/operators/ISelfRegisterOperators.sol";
 import {PauseableEnumerableSet} from "../../libraries/PauseableEnumerableSet.sol";
 
@@ -21,13 +23,11 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
 
     // EIP-712 TypeHash constants
     bytes32 private constant REGISTER_OPERATOR_TYPEHASH =
-        keccak256("RegisterOperator(address operator,bytes key,address vault,uint256 nonce)");
+        keccak256("RegisterOperator(address operator,address vault,uint256 nonce)");
     bytes32 private constant UNREGISTER_OPERATOR_TYPEHASH =
         keccak256("UnregisterOperator(address operator,uint256 nonce)");
     bytes32 private constant PAUSE_OPERATOR_TYPEHASH = keccak256("PauseOperator(address operator,uint256 nonce)");
     bytes32 private constant UNPAUSE_OPERATOR_TYPEHASH = keccak256("UnpauseOperator(address operator,uint256 nonce)");
-    bytes32 private constant UPDATE_OPERATOR_KEY_TYPEHASH =
-        keccak256("UpdateOperatorKey(address operator,bytes key,uint256 nonce)");
     bytes32 private constant REGISTER_OPERATOR_VAULT_TYPEHASH =
         keccak256("RegisterOperatorVault(address operator,address vault,uint256 nonce)");
     bytes32 private constant UNREGISTER_OPERATOR_VAULT_TYPEHASH =
@@ -72,37 +72,22 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
         _getSelfRegisterOperatorsStorage().minPowerThreshold = minPowerThreshold;
     }
 
-    /**
-     * @inheritdoc ISelfRegisterOperators
-     */
-    function registerOperator(bytes memory key, address vault, bytes memory signature) external virtual {
-        _verifyKey(msg.sender, key, signature);
-        _registerOperatorImpl(msg.sender, key, vault);
+    function registerOperator(
+        address vault
+    ) external virtual {
+        _registerOperatorImpl(msg.sender, vault);
     }
 
-    /**
-     * @inheritdoc ISelfRegisterOperators
-     */
-    function registerOperator(
-        address operator,
-        bytes memory key,
-        address vault,
-        bytes memory signature,
-        bytes memory keySignature
-    ) public virtual {
-        _verifyKey(operator, key, keySignature);
+    function registerOperator(address operator, address vault, bytes memory signature) public virtual {
         SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator,
-            keccak256(abi.encode(REGISTER_OPERATOR_TYPEHASH, operator, keccak256(key), vault, $.nonces[operator]++)),
+            keccak256(abi.encode(REGISTER_OPERATOR_TYPEHASH, operator, vault, $.nonces[operator]++)),
             signature
         );
-        _registerOperatorImpl(operator, key, vault);
+        _registerOperatorImpl(operator, vault);
     }
 
-    /**
-     * @inheritdoc ISelfRegisterOperators
-     */
     function unregisterOperator() external override {
         _unregisterOperatorImpl(msg.sender);
     }
@@ -152,33 +137,6 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
             operator, keccak256(abi.encode(UNPAUSE_OPERATOR_TYPEHASH, operator, $.nonces[operator]++)), signature
         );
         _unpauseOperatorImpl(operator);
-    }
-
-    /**
-     * @inheritdoc ISelfRegisterOperators
-     */
-    function updateOperatorKey(bytes memory key, bytes memory signature) external override {
-        _verifyKey(msg.sender, key, signature);
-        _updateOperatorKeyImpl(msg.sender, key);
-    }
-
-    /**
-     * @inheritdoc ISelfRegisterOperators
-     */
-    function updateOperatorKey(
-        address operator,
-        bytes memory key,
-        bytes memory signature,
-        bytes memory keySignature
-    ) public {
-        _verifyKey(operator, key, keySignature);
-        SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
-        _verifyEIP712(
-            operator,
-            keccak256(abi.encode(UPDATE_OPERATOR_KEY_TYPEHASH, operator, keccak256(key), $.nonces[operator]++)),
-            signature
-        );
-        _updateOperatorKeyImpl(operator, key);
     }
 
     /**
@@ -274,12 +232,12 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
 
     /**
      * @notice Updates the minimum power threshold for operators, be careful, this will allow to kick operators below the threshold
-     * @param minPowerThreshold The new minimum power threshold
+     * @param minPowerThreshold_ The new minimum power threshold
      */
     function updatePowerThreshold(
-        uint256 minPowerThreshold
+        uint256 minPowerThreshold_
     ) external checkAccess {
-        _getSelfRegisterOperatorsStorage().minPowerThreshold = minPowerThreshold;
+        _getSelfRegisterOperatorsStorage().minPowerThreshold = minPowerThreshold_;
     }
 
     /**
@@ -287,25 +245,14 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
      * @dev Will pause the operator if they are active, or unregister them if they are inactive
      * @param operator The address of the operator to try kicking
      */
-    function tryKickOperator(
+    function pauseOperator(
         address operator
     ) public {
-        if (!_isOperatorRegistered(operator)) {
-            revert OperatorNotRegistered();
-        }
-
-        if (_operatorWasActiveAt(_now() + 1, operator) && !_isOperatorBelowPowerThreshold(operator, address(0))) {
+        if (!_isOperatorBelowPowerThreshold(operator, address(0))) {
             revert OperatorAbovePowerThreshold();
         }
 
-        if (_operatorWasActiveAt(_now() + 1, operator)) {
-            _pauseOperatorImpl(operator);
-            return;
-        }
-
-        if (_getOperatorManagerStorage()._operators.checkUnregister(_now(), _SLASHING_WINDOW(), operator)) {
-            _unregisterOperatorImpl(operator);
-        }
+        _pauseOperatorImpl(operator);
     }
 
     /**
@@ -313,32 +260,12 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
      * @dev Will pause the operator if they are active, or unregister them if they are inactive
      * @param operator The address of the operator to try kicking
      */
-    function tryKickOperatorVault(address operator, address vault) public {
-        if (_operatorVaultWasActiveAt(_now() + 1, operator, vault) && !_isOperatorBelowPowerThreshold(operator, vault))
-        {
+    function pauseOperatorVault(address operator, address vault) public {
+        if (!_isOperatorBelowPowerThreshold(operator, vault)) {
             revert OperatorAbovePowerThreshold();
         }
 
-        if (_operatorVaultWasActiveAt(_now() + 1, operator, vault)) {
-            _pauseOperatorVaultImpl(operator, vault);
-            return;
-        }
-
-        if (_getVaultManagerStorage()._operatorVaults[operator].checkUnregister(_now(), _SLASHING_WINDOW(), vault)) {
-            _unregisterOperatorVaultImpl(operator, vault);
-        }
-    }
-
-    /**
-     * @notice Verifies a key signature
-     * @param operator The address of the operator
-     * @param key The public key to verify (zero key is allowed for deletion)
-     * @param signature The signature to verify
-     */
-    function _verifyKey(address operator, bytes memory key, bytes memory signature) internal {
-        if (key.length != 0 && !_verifyKeySignature(operator, key, signature)) {
-            revert InvalidSignature();
-        }
+        _pauseOperatorVaultImpl(operator, vault);
     }
 
     /**
@@ -353,32 +280,31 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
         }
     }
 
-    function _beforeRegisterOperator(address operator, bytes memory key, address vault) internal virtual override {
-        super._beforeRegisterOperator(operator, key, vault);
-        _checkOperatorPowerThreshold(operator, vault);
-    }
-
-    function _beforeUnpauseOperator(
-        address operator
-    ) internal virtual override {
-        super._beforeUnpauseOperator(operator);
-        _checkOperatorPowerThreshold(operator, address(0));
-    }
-
-    function _checkOperatorPowerThreshold(address operator, address vault) internal view {
+    function _registerOperatorImpl(address operator, address vault) internal virtual override {
         if (_isOperatorBelowPowerThreshold(operator, vault)) {
             revert OperatorPowerBelowThreshold();
         }
+        super._registerOperatorImpl(operator, vault);
+    }
+
+    function _unpauseOperatorImpl(
+        address operator
+    ) internal virtual override {
+        if (_isOperatorBelowPowerThreshold(operator)) {
+            revert OperatorPowerBelowThreshold();
+        }
+        super._unpauseOperatorImpl(operator);
+    }
+
+    function _isOperatorBelowPowerThreshold(
+        address operator
+    ) internal view returns (bool) {
+        return
+            _getOperatorVotingPowerAt(operator, Time.timestamp()) < _getSelfRegisterOperatorsStorage().minPowerThreshold;
     }
 
     function _isOperatorBelowPowerThreshold(address operator, address vault) internal view returns (bool) {
-        address[] memory _vaults = _activeVaults(operator);
-        uint256 power = _getOperatorPower(operator, _vaults);
-        if (vault != address(0)) {
-            address[] memory vaults = new address[](1);
-            vaults[0] = vault;
-            power += _getOperatorPower(operator, vaults);
-        }
-        return power < _getSelfRegisterOperatorsStorage().minPowerThreshold;
+        return _getOperatorVotingPowerAt(operator, vault, Time.timestamp())
+            < _getSelfRegisterOperatorsStorage().minPowerThreshold;
     }
 }
