@@ -18,7 +18,6 @@ abstract contract SharedVaults is BaseMiddleware, ISharedVaults {
     function registerSharedVault(
         address sharedVault
     ) public checkAccess {
-        _beforeRegisterSharedVault(sharedVault);
         _registerSharedVault(sharedVault);
     }
 
@@ -28,7 +27,6 @@ abstract contract SharedVaults is BaseMiddleware, ISharedVaults {
     function pauseSharedVault(
         address sharedVault
     ) public checkAccess {
-        _beforePauseSharedVault(sharedVault);
         _pauseVault(sharedVault);
     }
 
@@ -38,7 +36,6 @@ abstract contract SharedVaults is BaseMiddleware, ISharedVaults {
     function unpauseSharedVault(
         address sharedVault
     ) public checkAccess {
-        _beforeUnpauseSharedVault(sharedVault);
         _unpauseVault(sharedVault);
     }
 
@@ -48,39 +45,6 @@ abstract contract SharedVaults is BaseMiddleware, ISharedVaults {
     function unregisterSharedVault(
         address sharedVault
     ) public checkAccess {
-        _beforeUnregisterSharedVault(sharedVault);
         _unregisterSharedVault(sharedVault);
     }
-
-    /**
-     * @notice Hook called before registering a shared vault
-     * @param sharedVault The vault address
-     */
-    function _beforeRegisterSharedVault(
-        address sharedVault
-    ) internal virtual {}
-
-    /**
-     * @notice Hook called before pausing a shared vault
-     * @param sharedVault The vault address
-     */
-    function _beforePauseSharedVault(
-        address sharedVault
-    ) internal virtual {}
-
-    /**
-     * @notice Hook called before unpausing a shared vault
-     * @param sharedVault The vault address
-     */
-    function _beforeUnpauseSharedVault(
-        address sharedVault
-    ) internal virtual {}
-
-    /**
-     * @notice Hook called before unregistering a shared vault
-     * @param sharedVault The vault address
-     */
-    function _beforeUnregisterSharedVault(
-        address sharedVault
-    ) internal virtual {}
 }

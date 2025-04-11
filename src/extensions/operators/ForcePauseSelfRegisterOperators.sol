@@ -95,45 +95,29 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
         _unregisterOperatorVaultImpl(operator, vault);
     }
 
-    /**
-     * @notice Override to prevent unpausing force-paused operators
-     * @param operator The operator address
-     */
-    function _beforeUnpauseOperator(
+    function _unpauseOperatorImpl(
         address operator
     ) internal virtual override {
-        super._beforeUnpauseOperator(operator);
         if (_operatorForcePaused(operator)) revert OperatorForcePaused();
+        super._unpauseOperatorImpl(operator);
     }
 
-    /**
-     * @notice Override to prevent registering force-paused operators
-     * @param operator The operator address
-     * @param vault The vault address
-     */
-    function _beforeRegisterOperator(address operator, address vault) internal virtual override {
-        super._beforeRegisterOperator(operator, vault);
+    function _registerOperatorImpl(address operator, address vault) internal virtual override {
         if (_operatorForcePaused(operator)) revert OperatorForcePaused();
+        if (vault != address(0)) {
+            if (_operatorVaultForcePaused(operator, vault)) revert OperatorVaultForcePaused();
+        }
+        super._registerOperatorImpl(operator, vault);
     }
 
-    /**
-     * @notice Override to prevent unpausing force-paused operator-vault pairs
-     * @param operator The operator address
-     * @param vault The vault address
-     */
-    function _beforeUnpauseOperatorVault(address operator, address vault) internal virtual override {
-        super._beforeUnpauseOperatorVault(operator, vault);
+    function _unpauseOperatorVaultImpl(address operator, address vault) internal virtual override {
         if (_operatorVaultForcePaused(operator, vault)) revert OperatorVaultForcePaused();
+        super._unpauseOperatorVaultImpl(operator, vault);
     }
 
-    /**
-     * @notice Override to prevent registering force-paused operator-vault pairs
-     * @param operator The operator address
-     * @param vault The vault address
-     */
-    function _beforeRegisterOperatorVault(address operator, address vault) internal virtual override {
-        super._beforeRegisterOperatorVault(operator, vault);
+    function _registerOperatorVaultImpl(address operator, address vault) internal virtual override {
         if (_operatorVaultForcePaused(operator, vault)) revert OperatorVaultForcePaused();
+        super._registerOperatorVaultImpl(operator, vault);
     }
 
     function _operatorForcePaused(
