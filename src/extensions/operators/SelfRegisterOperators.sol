@@ -35,7 +35,7 @@ abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, ISe
 
     struct SelfRegisterOperatorsStorage {
         mapping(address => uint256) nonces;
-        uint256 minPowerThreshold;
+        uint256 minVotingPowerThreshold;
     }
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.SelfRegisterOperators")) - 1)) & ~bytes32(uint256(0xff))
@@ -55,17 +55,20 @@ abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, ISe
         return _getSelfRegisterOperatorsStorage().nonces[operator];
     }
 
-    function minPowerThreshold() external view returns (uint256) {
-        return _getSelfRegisterOperatorsStorage().minPowerThreshold;
+    function minVotingPowerThreshold() external view returns (uint256) {
+        return _getSelfRegisterOperatorsStorage().minVotingPowerThreshold;
     }
 
     /**
      * @notice Initializes the contract with EIP712 domain separator
      * @param name The name to use for the EIP712 domain separator
      */
-    function __SelfRegisterOperators_init(string memory name, uint256 minPowerThreshold) internal onlyInitializing {
+    function __SelfRegisterOperators_init(
+        string memory name,
+        uint256 minVotingPowerThreshold_
+    ) internal onlyInitializing {
         __EIP712_init(name, "1");
-        _getSelfRegisterOperatorsStorage().minPowerThreshold = minPowerThreshold;
+        _getSelfRegisterOperatorsStorage().minVotingPowerThreshold = minVotingPowerThreshold_;
     }
 
     function registerOperator(
@@ -228,12 +231,12 @@ abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, ISe
 
     /**
      * @notice Updates the minimum power threshold for operators, be careful, this will allow to kick operators below the threshold
-     * @param minPowerThreshold_ The new minimum power threshold
+     * @param minVotingPowerThreshold_ The new minimum power threshold
      */
     function updatePowerThreshold(
-        uint256 minPowerThreshold_
+        uint256 minVotingPowerThreshold_
     ) external checkAccess {
-        _getSelfRegisterOperatorsStorage().minPowerThreshold = minPowerThreshold_;
+        _getSelfRegisterOperatorsStorage().minVotingPowerThreshold = minVotingPowerThreshold_;
     }
 
     /**
@@ -295,12 +298,12 @@ abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, ISe
     function _isOperatorBelowPowerThreshold(
         address operator
     ) internal view returns (bool) {
-        return
-            _getOperatorVotingPowerAt(operator, Time.timestamp()) < _getSelfRegisterOperatorsStorage().minPowerThreshold;
+        return _getOperatorVotingPowerAt(operator, Time.timestamp())
+            < _getSelfRegisterOperatorsStorage().minVotingPowerThreshold;
     }
 
     function _isOperatorBelowPowerThreshold(address operator, address vault) internal view returns (bool) {
         return _getOperatorVotingPowerAt(operator, vault, Time.timestamp())
-            < _getSelfRegisterOperatorsStorage().minPowerThreshold;
+            < _getSelfRegisterOperatorsStorage().minVotingPowerThreshold;
     }
 }

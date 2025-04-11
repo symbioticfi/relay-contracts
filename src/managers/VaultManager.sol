@@ -231,7 +231,7 @@ abstract contract VaultManager is OperatorManager, StakeVotingPowerManager {
         address operator,
         uint48 timestamp
     ) internal view returns (uint256) {
-        return _stakeToVotingPower(vault, operator, _getOperatorStakeAt(vault, operator, timestamp));
+        return _stakeToVotingPower(vault, _getOperatorStakeAt(vault, operator, timestamp));
     }
 
     /**
