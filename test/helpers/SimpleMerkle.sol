@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import "../../src/libraries/Merkle.sol";
+import "../../src/libraries/structs/Merkle.sol";
 
 contract SimpleMerkle {
     using MerkleLib for MerkleLib.Tree;

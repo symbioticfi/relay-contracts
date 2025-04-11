@@ -4,7 +4,7 @@ pragma solidity ^0.8.25;
 import "forge-std/Test.sol";
 import "./helpers/SimpleMerkle.sol";
 import "./helpers/FullMerkle.sol";
-import "../src/libraries/Merkle.sol";
+import "../src/libraries/structs/Merkle.sol";
 
 contract MerkleTest is Test {
     SimpleMerkle internal simpleMerkle;

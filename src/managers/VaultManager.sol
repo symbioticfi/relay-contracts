@@ -19,7 +19,7 @@ import {OperatorManager} from "./OperatorManager.sol";
 
 import {StakeVotingPowerManager} from "./extendable/StakeVotingPowerManager.sol";
 
-import {Checkpoints} from "../libraries/Checkpoints.sol";
+import {Checkpoints} from "../libraries/structs/Checkpoints.sol";
 
 /**
  * @title VaultManager

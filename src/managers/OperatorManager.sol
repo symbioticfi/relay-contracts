@@ -9,8 +9,8 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
 import {NetworkManager} from "./NetworkManager.sol";
 
-import {Checkpoints} from "../libraries/Checkpoints.sol";
-import {CheckpointsEnumerableMap} from "../libraries/EnumerableMap.sol";
+import {Checkpoints} from "../libraries/structs/Checkpoints.sol";
+import {CheckpointsEnumerableMap} from "../libraries/structs/CheckpointsEnumerableMap.sol";
 
 /**
  * @title OperatorManager

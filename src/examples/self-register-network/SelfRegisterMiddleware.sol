@@ -5,17 +5,10 @@ import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SharedVaults} from "../../extensions/SharedVaults.sol";
 import {SelfRegisterOperators} from "../../extensions/operators/SelfRegisterOperators.sol";
 
-import {ECDSASig} from "../../extensions/managers/sigs/ECDSASig.sol";
 import {OwnableAccessManager} from "../../extensions/managers/access/OwnableAccessManager.sol";
 import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
 
-contract SelfRegisterMiddleware is
-    SharedVaults,
-    SelfRegisterOperators,
-    ECDSASig,
-    OwnableAccessManager,
-    EqualStakePower
-{
+contract SelfRegisterMiddleware is SharedVaults, SelfRegisterOperators, OwnableAccessManager, EqualStakePower {
     constructor(
         address operatorRegistry,
         address operatorNetworkOptInService,

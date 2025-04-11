@@ -2,23 +2,19 @@
 pragma solidity ^0.8.25;
 
 import {BaseOperators} from "./BaseOperators.sol";
-import {SigManager} from "../../managers/extendable/SigManager.sol";
 import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
 import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
 import {ISelfRegisterOperators} from "../../interfaces/extensions/operators/ISelfRegisterOperators.sol";
-import {PauseableEnumerableSet} from "../../libraries/PauseableEnumerableSet.sol";
 
 /**
  * @title SelfRegisterOperators
  * @notice Contract for self-registration and management of operators with signature verification
- * @dev Extends BaseMiddleware, SigManager, and EIP712Upgradeable to provide signature-based operator management
+ * @dev Extends BaseMiddleware, and EIP712Upgradeable to provide signature-based operator management
  * @dev CAUTION: If activeOperators functionality is needed, use ApprovalRegisterOperators instead to prevent DOS attacks
  */
-abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgradeable, ISelfRegisterOperators {
-    using PauseableEnumerableSet for PauseableEnumerableSet.AddressSet;
-
+abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, ISelfRegisterOperators {
     uint64 public constant SelfRegisterOperators_VERSION = 1;
 
     // EIP-712 TypeHash constants
