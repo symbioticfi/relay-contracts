@@ -75,7 +75,7 @@ abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, Acc
         _registerOperatorImpl(msg.sender, vault);
     }
 
-    function delegateRegisterOperator(address operator, address vault, bytes memory signature) public virtual {
+    function registerOperator(address operator, address vault, bytes memory signature) public virtual {
         SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator,
@@ -104,7 +104,7 @@ abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, Acc
     /**
      * @inheritdoc ISelfRegisterOperators
      */
-    function delegatePauseOperator(address operator, bytes memory signature) public {
+    function pauseOperator(address operator, bytes memory signature) public {
         SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator, keccak256(abi.encode(PAUSE_OPERATOR_TYPEHASH, operator, $.nonces[operator]++)), signature
@@ -122,7 +122,7 @@ abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, Acc
     /**
      * @inheritdoc ISelfRegisterOperators
      */
-    function delegateUnpauseOperator(address operator, bytes memory signature) public {
+    function unpauseOperator(address operator, bytes memory signature) public {
         SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator, keccak256(abi.encode(UNPAUSE_OPERATOR_TYPEHASH, operator, $.nonces[operator]++)), signature
@@ -142,7 +142,7 @@ abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, Acc
     /**
      * @inheritdoc ISelfRegisterOperators
      */
-    function delegateRegisterOperatorVault(address operator, address vault, bytes memory signature) public {
+    function registerOperatorVault(address operator, address vault, bytes memory signature) public {
         if (!_isOperatorRegistered(operator)) {
             revert OperatorNotRegistered();
         }
@@ -174,7 +174,7 @@ abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, Acc
     /**
      * @inheritdoc ISelfRegisterOperators
      */
-    function delegatePauseOperatorVault(address operator, address vault, bytes memory signature) public {
+    function pauseOperatorVault(address operator, address vault, bytes memory signature) public {
         SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator,
@@ -196,7 +196,7 @@ abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, Acc
     /**
      * @inheritdoc ISelfRegisterOperators
      */
-    function delegateUnpauseOperatorVault(address operator, address vault, bytes memory signature) public {
+    function unpauseOperatorVault(address operator, address vault, bytes memory signature) public {
         SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator,
@@ -221,8 +221,10 @@ abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, Acc
      * @dev Will pause the operator if they are active, or unregister them if they are inactive
      * @param operator The address of the operator to try kicking
      */
-    function pauseOperator(address operator, bytes memory hints) public {
-        if (!_isOperatorBelowPowerThreshold(operator, address(0), hints)) {
+    function pauseOperator(
+        address operator
+    ) public {
+        if (!isOperatorBelowPowerThreshold(operator)) {
             revert OperatorAbovePowerThreshold();
         }
 
@@ -234,8 +236,8 @@ abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, Acc
      * @dev Will pause the operator if they are active, or unregister them if they are inactive
      * @param operator The address of the operator to try kicking
      */
-    function pauseOperatorVault(address operator, address vault, bytes memory hints) public {
-        if (!_isOperatorBelowPowerThreshold(operator, vault, hints)) {
+    function pauseOperatorVault(address operator, address vault) public {
+        if (!isOperatorBelowPowerThreshold(operator, vault)) {
             revert OperatorAbovePowerThreshold();
         }
 
@@ -254,31 +256,49 @@ abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, Acc
         }
     }
 
-    function _registerOperatorImpl(address operator, address vault, bytes memory hints) internal virtual {
-        if (_isOperatorBelowPowerThreshold(operator, vault, hints)) {
-            revert OperatorPowerBelowThreshold();
+    function _registerOperatorImpl(address operator, address vault) internal virtual override {
+        if (vault == address(0)) {
+            if (isOperatorBelowPowerThreshold(operator)) {
+                revert OperatorPowerBelowThreshold();
+            }
+        } else {
+            if (isOperatorBelowPowerThreshold(operator, vault)) {
+                revert OperatorPowerBelowThreshold();
+            }
         }
         _registerOperatorImpl(operator, vault);
     }
 
-    function _unpauseOperatorImpl(address operator, bytes memory hints) internal virtual {
-        if (_isOperatorBelowPowerThreshold(operator, hints)) {
+    function _registerOperatorVaultImpl(address operator, address vault) internal virtual override {
+        if (isOperatorBelowPowerThreshold(operator, vault)) {
+            revert OperatorPowerBelowThreshold();
+        }
+        _registerOperatorVaultImpl(operator, vault);
+    }
+
+    function _unpauseOperatorImpl(
+        address operator
+    ) internal virtual override {
+        if (isOperatorBelowPowerThreshold(operator)) {
             revert OperatorPowerBelowThreshold();
         }
         _unpauseOperatorImpl(operator);
     }
 
-    function _isOperatorBelowPowerThreshold(address operator, bytes memory hints) internal view returns (bool) {
-        return _getOperatorVotingPowerAt(operator, Time.timestamp(), hints)
-            < _getSelfRegisterOperatorsStorage().minVotingPowerThreshold;
+    function _unpauseOperatorVaultImpl(address operator, address vault) internal virtual override {
+        if (isOperatorBelowPowerThreshold(operator, vault)) {
+            revert OperatorPowerBelowThreshold();
+        }
+        _unpauseOperatorVaultImpl(operator, vault);
     }
 
-    function _isOperatorBelowPowerThreshold(
-        address operator,
-        address vault,
-        bytes memory hints
-    ) internal view returns (bool) {
-        return _getOperatorVotingPowerAt(operator, vault, Time.timestamp(), hints)
-            < _getSelfRegisterOperatorsStorage().minVotingPowerThreshold;
+    function isOperatorBelowPowerThreshold(
+        address operator
+    ) public view virtual returns (bool) {
+        return _getOperatorVotingPower(operator) < _getSelfRegisterOperatorsStorage().minVotingPowerThreshold;
+    }
+
+    function isOperatorBelowPowerThreshold(address operator, address vault) public view virtual returns (bool) {
+        return _getOperatorVotingPower(operator, vault) < _getSelfRegisterOperatorsStorage().minVotingPowerThreshold;
     }
 }

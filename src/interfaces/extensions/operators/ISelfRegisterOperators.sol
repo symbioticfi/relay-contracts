@@ -23,7 +23,7 @@ interface ISelfRegisterOperators {
         address vault
     ) external;
 
-    function delegateRegisterOperator(address operator, address vault, bytes memory signature) external;
+    function registerOperator(address operator, address vault, bytes memory signature) external;
 
     /**
      * @notice Unregisters an operator
@@ -43,7 +43,7 @@ interface ISelfRegisterOperators {
      * @param operator The address of the operator to pause
      * @param signature EIP712 signature authorizing pause
      */
-    function delegatePauseOperator(address operator, bytes memory signature) external;
+    function pauseOperator(address operator, bytes memory signature) external;
 
     /**
      * @notice Allows an operator to unpause themselves
@@ -55,7 +55,7 @@ interface ISelfRegisterOperators {
      * @param operator The address of the operator to unpause
      * @param signature EIP712 signature authorizing unpause
      */
-    function delegateUnpauseOperator(address operator, bytes memory signature) external;
+    function unpauseOperator(address operator, bytes memory signature) external;
 
     /**
      * @notice Allows an operator to register a vault association
@@ -71,7 +71,7 @@ interface ISelfRegisterOperators {
      * @param vault The address of the vault
      * @param signature EIP712 signature authorizing vault registration
      */
-    function delegateRegisterOperatorVault(address operator, address vault, bytes memory signature) external;
+    function registerOperatorVault(address operator, address vault, bytes memory signature) external;
 
     /**
      * @notice Unregisters a vault association
@@ -94,7 +94,7 @@ interface ISelfRegisterOperators {
      * @param vault The address of the vault
      * @param signature EIP712 signature authorizing vault pause
      */
-    function delegatePauseOperatorVault(address operator, address vault, bytes memory signature) external;
+    function pauseOperatorVault(address operator, address vault, bytes memory signature) external;
 
     /**
      * @notice Allows an operator to unpause a vault association
@@ -110,5 +110,5 @@ interface ISelfRegisterOperators {
      * @param vault The address of the vault
      * @param signature EIP712 signature authorizing vault unpause
      */
-    function delegateUnpauseOperatorVault(address operator, address vault, bytes memory signature) external;
+    function unpauseOperatorVault(address operator, address vault, bytes memory signature) external;
 }

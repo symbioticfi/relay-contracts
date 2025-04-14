@@ -16,7 +16,7 @@ abstract contract BaseOperators is VaultManager {
     function _registerOperatorImpl(address operator, address vault) internal virtual {
         _registerOperator(operator);
         if (operator != address(0)) {
-            _registerOperatorVault(operator, operator);
+            _registerOperatorVault(operator, vault);
         }
     }
 

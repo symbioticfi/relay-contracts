@@ -13,6 +13,7 @@ import {NetworkManager} from "./NetworkManager.sol";
 import {Checkpoints} from "../libraries/structs/Checkpoints.sol";
 import {CheckpointsEnumerableMap} from "../libraries/structs/CheckpointsEnumerableMap.sol";
 import {Hints} from "../libraries/utils/Hints.sol";
+import {OperatorManagerLogic} from "../libraries/logic/OperatorManagerLogic.sol";
 
 /**
  * @title OperatorManager
@@ -34,19 +35,9 @@ abstract contract OperatorManager is NetworkManager, StaticDelegateCallable {
     error InvalidLength();
     error UnregisterNotAllowed();
 
-    /// @custom:storage-location erc7201:symbiotic.storage.OperatorManager
-    struct OperatorManagerStorage {
-        uint48 _oldestNeededTimestamp;
-        CheckpointsEnumerableMap.AddressToTrace208Map _operators;
-    }
-
     address public immutable OPERATOR_REGISTRY; // Address of the operator registry
 
     address public immutable OPERATOR_NETWORK_OPT_IN_SERVICE; // Address of the operator network opt-in service
-
-    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OperatorManager")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant OperatorManagerStorageLocation =
-        0x3b2b549db680c436ebf9aa3c8eeee850852f16da5cdb5137dbc0299ebb219e00;
 
     constructor(address operatorRegistry, address operatorNetworkOptInService) {
         OPERATOR_REGISTRY = operatorRegistry;
@@ -54,83 +45,61 @@ abstract contract OperatorManager is NetworkManager, StaticDelegateCallable {
     }
 
     /**
-     * @notice Gets the storage pointer for OperatorManager state
-     * @return $ Storage pointer to OperatorManagerStorage struct
-     */
-    function _getOperatorManagerStorage() internal pure returns (OperatorManagerStorage storage $) {
-        assembly {
-            $.slot := OperatorManagerStorageLocation
-        }
-    }
-
-    /**
      * @notice Initializes the OperatorManager with required parameters
      */
-    function __OperatorManager_init_private() internal onlyInitializing {}
+    function __OperatorManager_init_private() internal virtual onlyInitializing {}
 
-    function _getOldestNeededTimestamp() internal view returns (uint48) {
-        return _getOperatorManagerStorage()._oldestNeededTimestamp;
+    function _getOldestNeededTimestamp() internal view virtual returns (uint48) {
+        return OperatorManagerLogic.getOldestNeededTimestamp();
     }
 
     /**
      * @notice Returns the total number of registered operators, including both active and inactive
      * @return The number of registered operators
      */
-    function _getOperatorsLength() internal view returns (uint256) {
-        return _getOperatorManagerStorage()._operators.length();
+    function _getOperatorsLength() internal view virtual returns (uint256) {
+        return OperatorManagerLogic.getOperatorsLength();
     }
 
-    function _getOperators() internal view returns (address[] memory) {
-        return _getOperatorManagerStorage()._operators.keys();
+    function _getOperators() internal view virtual returns (address[] memory) {
+        return OperatorManagerLogic.getOperators();
     }
 
     function _isOperatorRegistered(
         address operator
-    ) internal view returns (bool) {
-        return _getOperatorManagerStorage()._operators.contains(operator);
+    ) internal view virtual returns (bool) {
+        return OperatorManagerLogic.isOperatorRegistered(operator);
     }
 
     function _isOperatorUnpaused(
         address operator
-    ) internal view returns (bool) {
-        (bool exists, Checkpoints.Trace208 storage checkpoints) =
-            _getOperatorManagerStorage()._operators.tryGet(operator);
-        return exists && checkpoints.latest() > 0;
+    ) internal view virtual returns (bool) {
+        return OperatorManagerLogic.isOperatorUnpaused(operator);
     }
 
     function _isOperatorUnpausedAt(
         address operator,
         uint48 timestamp,
         bytes memory hint
-    ) internal view returns (bool) {
-        (bool exists, Checkpoints.Trace208 storage checkpoints) =
-            _getOperatorManagerStorage()._operators.tryGet(operator);
-        return exists && checkpoints.upperLookupRecent(timestamp, hint) > 0;
+    ) internal view virtual returns (bool) {
+        return OperatorManagerLogic.isOperatorUnpausedAt(operator, timestamp, hint);
     }
 
     function _getActiveOperatorsAt(
         uint48 timestamp,
         bytes[] memory hints
-    ) internal view returns (address[] memory activeOperators) {
-        address[] memory registeredOperators = _getOperatorManagerStorage()._operators.keys();
-        uint256 registeredOperatorsLength = registeredOperators.length;
-        activeOperators = new address[](registeredOperatorsLength);
-        hints = hints.normalize(registeredOperatorsLength);
-        uint256 length;
-        for (uint256 i; i < registeredOperatorsLength; ++i) {
-            if (_isOperatorUnpausedAt(registeredOperators[i], timestamp, hints[i])) {
-                activeOperators[length++] = registeredOperators[i];
-            }
-        }
-        assembly ("memory-safe") {
-            mstore(activeOperators, length)
-        }
+    ) internal view virtual returns (address[] memory activeOperators) {
+        return OperatorManagerLogic.getActiveOperatorsAt(timestamp, hints);
+    }
+
+    function _getActiveOperators() internal view virtual returns (address[] memory activeOperators) {
+        return OperatorManagerLogic.getActiveOperators();
     }
 
     function _setOldestNeededTimestamp(
         uint48 oldestNeededTimestamp
-    ) internal {
-        _getOperatorManagerStorage()._oldestNeededTimestamp = oldestNeededTimestamp;
+    ) internal virtual {
+        OperatorManagerLogic.setOldestNeededTimestamp(oldestNeededTimestamp);
     }
 
     /**
@@ -139,18 +108,8 @@ abstract contract OperatorManager is NetworkManager, StaticDelegateCallable {
      */
     function _registerOperator(
         address operator
-    ) internal {
-        if (!IRegistry(OPERATOR_REGISTRY).isEntity(operator)) {
-            revert NotOperator();
-        }
-
-        if (!IOptInService(OPERATOR_NETWORK_OPT_IN_SERVICE).isOptedIn(operator, _NETWORK())) {
-            revert OperatorNotOptedIn();
-        }
-
-        if (!_getOperatorManagerStorage()._operators.set(operator, Time.timestamp(), 1)) {
-            revert OperatorAlreadyRegistered();
-        }
+    ) internal virtual {
+        OperatorManagerLogic.registerOperator(OPERATOR_REGISTRY, OPERATOR_NETWORK_OPT_IN_SERVICE, operator);
     }
 
     /**
@@ -159,10 +118,8 @@ abstract contract OperatorManager is NetworkManager, StaticDelegateCallable {
      */
     function _pauseOperator(
         address operator
-    ) internal {
-        if (_getOperatorManagerStorage()._operators.set(operator, Time.timestamp(), 0)) {
-            revert OperatorNotRegistered();
-        }
+    ) internal virtual {
+        OperatorManagerLogic.pauseOperator(operator);
     }
 
     /**
@@ -171,10 +128,8 @@ abstract contract OperatorManager is NetworkManager, StaticDelegateCallable {
      */
     function _unpauseOperator(
         address operator
-    ) internal {
-        if (_getOperatorManagerStorage()._operators.set(operator, Time.timestamp(), 1)) {
-            revert OperatorNotRegistered();
-        }
+    ) internal virtual {
+        OperatorManagerLogic.unpauseOperator(operator);
     }
 
     /**
@@ -183,12 +138,7 @@ abstract contract OperatorManager is NetworkManager, StaticDelegateCallable {
      */
     function _unregisterOperator(
         address operator
-    ) internal {
-        (bool exists, uint48 timestamp, uint208 value) =
-            _getOperatorManagerStorage()._operators.get(operator).latestCheckpoint();
-        if (!exists || timestamp >= _getOldestNeededTimestamp() || value > 0) {
-            revert UnregisterNotAllowed();
-        }
-        _getOperatorManagerStorage()._operators.remove(operator);
+    ) internal virtual {
+        OperatorManagerLogic.unregisterOperator(operator);
     }
 }
