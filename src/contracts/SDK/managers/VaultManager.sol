@@ -74,7 +74,7 @@ abstract contract VaultManager is OperatorManager, StakeVotingPowerManager, IVau
     /**
      * @notice Initializes the VaultManager with required parameters
      */
-    function __VaultManager_init_private(
+    function __VaultManager_init(
         uint48 slashingWindow
     ) internal virtual onlyInitializing {
         VaultManagerLogic.initialize(slashingWindow);

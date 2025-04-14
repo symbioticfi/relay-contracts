@@ -47,7 +47,7 @@ abstract contract OperatorManager is NetworkManager, StaticDelegateCallable {
     /**
      * @notice Initializes the OperatorManager with required parameters
      */
-    function __OperatorManager_init_private() internal virtual onlyInitializing {}
+    function __OperatorManager_init() internal virtual onlyInitializing {}
 
     function _getOldestNeededTimestamp() internal view virtual returns (uint48) {
         return OperatorManagerLogic.getOldestNeededTimestamp();

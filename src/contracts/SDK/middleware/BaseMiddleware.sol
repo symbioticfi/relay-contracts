@@ -38,9 +38,9 @@ abstract contract BaseMiddleware is VaultManager, AccessManager, DiamondProxy {
         uint96 subnetworkID,
         uint48 slashingWindow
     ) internal onlyInitializing {
-        __NetworkManager_init_private(network, subnetworkID);
-        __OperatorManager_init_private();
-        __VaultManager_init_private(slashingWindow);
+        __NetworkManager_init(network, subnetworkID);
+        __OperatorManager_init();
+        __VaultManager_init(slashingWindow);
     }
 
     /**

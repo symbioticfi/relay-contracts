@@ -17,7 +17,7 @@ abstract contract NetworkManager is Initializable {
      * @notice Initializes the NetworkManager contract
      * @param network The address of the network
      */
-    function __NetworkManager_init_private(address network, uint96 subnetworkID) internal virtual onlyInitializing {
+    function __NetworkManager_init(address network, uint96 subnetworkID) internal virtual onlyInitializing {
         NetworkManagerLogic.initialize(network, subnetworkID);
     }
 
