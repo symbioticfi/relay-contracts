@@ -2,7 +2,7 @@
 pragma solidity ^0.8.25;
 
 import {AccessManager} from "../../../managers/extendable/AccessManager.sol";
-import {IOzAccessControl} from "../../../interfaces/extensions/managers/access/IOzAccessControl.sol";
+import {IOzAccessControl} from "../../../../../interfaces/SDK/extensions/managers/access/IOzAccessControl.sol";
 
 /**
  * @title OzAccessControl

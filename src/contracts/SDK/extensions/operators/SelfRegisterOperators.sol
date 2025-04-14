@@ -8,7 +8,7 @@ import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/crypt
 import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
-import {ISelfRegisterOperators} from "../../interfaces/extensions/operators/ISelfRegisterOperators.sol";
+import {ISelfRegisterOperators} from "../../../../interfaces/SDK/extensions/operators/ISelfRegisterOperators.sol";
 
 /**
  * @title SelfRegisterOperators

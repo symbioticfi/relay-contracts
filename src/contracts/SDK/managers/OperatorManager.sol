@@ -10,9 +10,9 @@ import {Arrays} from "@openzeppelin/contracts/utils/Arrays.sol";
 
 import {NetworkManager} from "./NetworkManager.sol";
 
-import {Checkpoints} from "../libraries/structs/Checkpoints.sol";
-import {CheckpointsEnumerableMap} from "../libraries/structs/CheckpointsEnumerableMap.sol";
-import {Hints} from "../libraries/utils/Hints.sol";
+import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
+import {CheckpointsEnumerableMap} from "../../libraries/structs/CheckpointsEnumerableMap.sol";
+import {Hints} from "../../libraries/utils/Hints.sol";
 import {OperatorManagerLogic} from "../libraries/logic/OperatorManagerLogic.sol";
 
 /**

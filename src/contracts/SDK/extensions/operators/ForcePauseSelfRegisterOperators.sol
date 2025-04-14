@@ -3,7 +3,7 @@ pragma solidity ^0.8.25;
 
 import {SelfRegisterOperators} from "./SelfRegisterOperators.sol";
 import {IForcePauseSelfRegisterOperators} from
-    "../../interfaces/extensions/operators/IForcePauseSelfRegisterOperators.sol";
+    "../../../../interfaces/SDK/extensions/operators/IForcePauseSelfRegisterOperators.sol";
 import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 

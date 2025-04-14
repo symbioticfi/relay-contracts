@@ -3,7 +3,7 @@ pragma solidity ^0.8.25;
 
 import {VaultManager} from "../managers/VaultManager.sol";
 import {AccessManager} from "../managers/extendable/AccessManager.sol";
-import {ISharedVaults} from "../interfaces/extensions/ISharedVaults.sol";
+import {ISharedVaults} from "../../../interfaces/SDK/extensions/ISharedVaults.sol";
 
 /**
  * @title SharedVaults

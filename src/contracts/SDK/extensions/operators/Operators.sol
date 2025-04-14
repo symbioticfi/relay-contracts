@@ -4,7 +4,7 @@ pragma solidity ^0.8.25;
 import {BaseOperators} from "./BaseOperators.sol";
 import {AccessManager} from "../../managers/extendable/AccessManager.sol";
 
-import {IOperators} from "../../interfaces/extensions/operators/IOperators.sol";
+import {IOperators} from "../../../../interfaces/SDK/extensions/operators/IOperators.sol";
 
 /**
  * @title Operators

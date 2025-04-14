@@ -7,9 +7,9 @@ import {IOptInService} from "@symbiotic/interfaces/service/IOptInService.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Arrays} from "@openzeppelin/contracts/utils/Arrays.sol";
 
-import {Checkpoints} from "../structs/Checkpoints.sol";
-import {CheckpointsEnumerableMap} from "../structs/CheckpointsEnumerableMap.sol";
-import {Hints} from "../utils/Hints.sol";
+import {Checkpoints} from "../../../libraries/structs/Checkpoints.sol";
+import {CheckpointsEnumerableMap} from "../../../libraries/structs/CheckpointsEnumerableMap.sol";
+import {Hints} from "../../../libraries/utils/Hints.sol";
 import {NetworkManagerLogic} from "./NetworkManagerLogic.sol";
 
 library OperatorManagerLogic {

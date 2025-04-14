@@ -19,13 +19,13 @@ import {OperatorManager} from "../../managers/OperatorManager.sol";
 
 import {StakeVotingPowerManager} from "../../managers/extendable/StakeVotingPowerManager.sol";
 
-import {Checkpoints} from "../structs/Checkpoints.sol";
-import {CheckpointsEnumerableMap} from "../structs/CheckpointsEnumerableMap.sol";
-import {Hints} from "../utils/Hints.sol";
+import {Checkpoints} from "../../../libraries/structs/Checkpoints.sol";
+import {CheckpointsEnumerableMap} from "../../../libraries/structs/CheckpointsEnumerableMap.sol";
+import {Hints} from "../../../libraries/utils/Hints.sol";
 import {NetworkManagerLogic} from "./NetworkManagerLogic.sol";
 import {OperatorManagerLogic} from "./OperatorManagerLogic.sol";
 
-import {IVaultManager} from "../../interfaces/managers/IVaultManager.sol";
+import {IVaultManager} from "../../../../interfaces/SDK/managers/IVaultManager.sol";
 
 /**
  * @title VaultManager

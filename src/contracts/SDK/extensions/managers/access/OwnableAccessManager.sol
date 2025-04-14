@@ -2,7 +2,7 @@
 pragma solidity ^0.8.25;
 
 import {AccessManager} from "../../../managers/extendable/AccessManager.sol";
-import {IOwnableAccessManager} from "../../../interfaces/extensions/managers/access/IOwnableAccessManager.sol";
+import {IOwnableAccessManager} from "../../../../../interfaces/SDK/extensions/managers/access/IOwnableAccessManager.sol";
 
 /**
  * @title OwnableAccessManager
