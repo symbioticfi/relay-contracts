@@ -2,6 +2,8 @@
 pragma solidity ^0.8.25;
 
 import {BaseOperators} from "./BaseOperators.sol";
+import {AccessManager} from "../../managers/extendable/AccessManager.sol";
+
 import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
 import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
@@ -14,20 +16,16 @@ import {ISelfRegisterOperators} from "../../interfaces/extensions/operators/ISel
  * @dev Extends BaseMiddleware, and EIP712Upgradeable to provide signature-based operator management
  * @dev CAUTION: If activeOperators functionality is needed, use ApprovalRegisterOperators instead to prevent DOS attacks
  */
-abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, ISelfRegisterOperators {
+abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, AccessManager, ISelfRegisterOperators {
     uint64 public constant SelfRegisterOperators_VERSION = 1;
 
     // EIP-712 TypeHash constants
     bytes32 private constant REGISTER_OPERATOR_TYPEHASH =
         keccak256("RegisterOperator(address operator,address vault,uint256 nonce)");
-    bytes32 private constant UNREGISTER_OPERATOR_TYPEHASH =
-        keccak256("UnregisterOperator(address operator,uint256 nonce)");
     bytes32 private constant PAUSE_OPERATOR_TYPEHASH = keccak256("PauseOperator(address operator,uint256 nonce)");
     bytes32 private constant UNPAUSE_OPERATOR_TYPEHASH = keccak256("UnpauseOperator(address operator,uint256 nonce)");
     bytes32 private constant REGISTER_OPERATOR_VAULT_TYPEHASH =
         keccak256("RegisterOperatorVault(address operator,address vault,uint256 nonce)");
-    bytes32 private constant UNREGISTER_OPERATOR_VAULT_TYPEHASH =
-        keccak256("UnregisterOperatorVault(address operator,address vault,uint256 nonce)");
     bytes32 private constant PAUSE_OPERATOR_VAULT_TYPEHASH =
         keccak256("PauseOperatorVault(address operator,address vault,uint256 nonce)");
     bytes32 private constant UNPAUSE_OPERATOR_VAULT_TYPEHASH =
@@ -77,7 +75,7 @@ abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, ISe
         _registerOperatorImpl(msg.sender, vault);
     }
 
-    function registerOperator(address operator, address vault, bytes memory signature) public virtual {
+    function delegateRegisterOperator(address operator, address vault, bytes memory signature) public virtual {
         SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator,
@@ -87,18 +85,12 @@ abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, ISe
         _registerOperatorImpl(operator, vault);
     }
 
-    function unregisterOperator() external override {
-        _unregisterOperatorImpl(msg.sender);
-    }
-
     /**
      * @inheritdoc ISelfRegisterOperators
      */
-    function unregisterOperator(address operator, bytes memory signature) public {
-        SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
-        _verifyEIP712(
-            operator, keccak256(abi.encode(UNREGISTER_OPERATOR_TYPEHASH, operator, $.nonces[operator]++)), signature
-        );
+    function unregisterOperator(
+        address operator
+    ) public {
         _unregisterOperatorImpl(operator);
     }
 
@@ -112,7 +104,7 @@ abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, ISe
     /**
      * @inheritdoc ISelfRegisterOperators
      */
-    function pauseOperator(address operator, bytes memory signature) public {
+    function delegatePauseOperator(address operator, bytes memory signature) public {
         SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator, keccak256(abi.encode(PAUSE_OPERATOR_TYPEHASH, operator, $.nonces[operator]++)), signature
@@ -130,7 +122,7 @@ abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, ISe
     /**
      * @inheritdoc ISelfRegisterOperators
      */
-    function unpauseOperator(address operator, bytes memory signature) public {
+    function delegateUnpauseOperator(address operator, bytes memory signature) public {
         SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator, keccak256(abi.encode(UNPAUSE_OPERATOR_TYPEHASH, operator, $.nonces[operator]++)), signature
@@ -150,7 +142,7 @@ abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, ISe
     /**
      * @inheritdoc ISelfRegisterOperators
      */
-    function registerOperatorVault(address operator, address vault, bytes memory signature) public {
+    function delegateRegisterOperatorVault(address operator, address vault, bytes memory signature) public {
         if (!_isOperatorRegistered(operator)) {
             revert OperatorNotRegistered();
         }
@@ -166,22 +158,7 @@ abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, ISe
     /**
      * @inheritdoc ISelfRegisterOperators
      */
-    function unregisterOperatorVault(
-        address vault
-    ) external override {
-        _unregisterOperatorVaultImpl(msg.sender, vault);
-    }
-
-    /**
-     * @inheritdoc ISelfRegisterOperators
-     */
-    function unregisterOperatorVault(address operator, address vault, bytes memory signature) public {
-        SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
-        _verifyEIP712(
-            operator,
-            keccak256(abi.encode(UNREGISTER_OPERATOR_VAULT_TYPEHASH, operator, vault, $.nonces[operator]++)),
-            signature
-        );
+    function unregisterOperatorVault(address operator, address vault) external override {
         _unregisterOperatorVaultImpl(operator, vault);
     }
 
@@ -197,7 +174,7 @@ abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, ISe
     /**
      * @inheritdoc ISelfRegisterOperators
      */
-    function pauseOperatorVault(address operator, address vault, bytes memory signature) public {
+    function delegatePauseOperatorVault(address operator, address vault, bytes memory signature) public {
         SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator,
@@ -219,7 +196,7 @@ abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, ISe
     /**
      * @inheritdoc ISelfRegisterOperators
      */
-    function unpauseOperatorVault(address operator, address vault, bytes memory signature) public {
+    function delegateUnpauseOperatorVault(address operator, address vault, bytes memory signature) public {
         SelfRegisterOperatorsStorage storage $ = _getSelfRegisterOperatorsStorage();
         _verifyEIP712(
             operator,
@@ -244,10 +221,8 @@ abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, ISe
      * @dev Will pause the operator if they are active, or unregister them if they are inactive
      * @param operator The address of the operator to try kicking
      */
-    function pauseOperator(
-        address operator
-    ) public {
-        if (!_isOperatorBelowPowerThreshold(operator, address(0))) {
+    function pauseOperator(address operator, bytes memory hints) public {
+        if (!_isOperatorBelowPowerThreshold(operator, address(0), hints)) {
             revert OperatorAbovePowerThreshold();
         }
 
@@ -259,8 +234,8 @@ abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, ISe
      * @dev Will pause the operator if they are active, or unregister them if they are inactive
      * @param operator The address of the operator to try kicking
      */
-    function pauseOperatorVault(address operator, address vault) public {
-        if (!_isOperatorBelowPowerThreshold(operator, vault)) {
+    function pauseOperatorVault(address operator, address vault, bytes memory hints) public {
+        if (!_isOperatorBelowPowerThreshold(operator, vault, hints)) {
             revert OperatorAbovePowerThreshold();
         }
 
@@ -279,31 +254,31 @@ abstract contract SelfRegisterOperators is BaseOperators, EIP712Upgradeable, ISe
         }
     }
 
-    function _registerOperatorImpl(address operator, address vault) internal virtual override {
-        if (_isOperatorBelowPowerThreshold(operator, vault)) {
+    function _registerOperatorImpl(address operator, address vault, bytes memory hints) internal virtual {
+        if (_isOperatorBelowPowerThreshold(operator, vault, hints)) {
             revert OperatorPowerBelowThreshold();
         }
-        super._registerOperatorImpl(operator, vault);
+        _registerOperatorImpl(operator, vault);
     }
 
-    function _unpauseOperatorImpl(
-        address operator
-    ) internal virtual override {
-        if (_isOperatorBelowPowerThreshold(operator)) {
+    function _unpauseOperatorImpl(address operator, bytes memory hints) internal virtual {
+        if (_isOperatorBelowPowerThreshold(operator, hints)) {
             revert OperatorPowerBelowThreshold();
         }
-        super._unpauseOperatorImpl(operator);
+        _unpauseOperatorImpl(operator);
     }
 
-    function _isOperatorBelowPowerThreshold(
-        address operator
-    ) internal view returns (bool) {
-        return _getOperatorVotingPowerAt(operator, Time.timestamp())
+    function _isOperatorBelowPowerThreshold(address operator, bytes memory hints) internal view returns (bool) {
+        return _getOperatorVotingPowerAt(operator, Time.timestamp(), hints)
             < _getSelfRegisterOperatorsStorage().minVotingPowerThreshold;
     }
 
-    function _isOperatorBelowPowerThreshold(address operator, address vault) internal view returns (bool) {
-        return _getOperatorVotingPowerAt(operator, vault, Time.timestamp())
+    function _isOperatorBelowPowerThreshold(
+        address operator,
+        address vault,
+        bytes memory hints
+    ) internal view returns (bool) {
+        return _getOperatorVotingPowerAt(operator, vault, Time.timestamp(), hints)
             < _getSelfRegisterOperatorsStorage().minVotingPowerThreshold;
     }
 }

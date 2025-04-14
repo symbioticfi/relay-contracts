@@ -6,27 +6,33 @@ import {IOptInService} from "@symbiotic/interfaces/service/IOptInService.sol";
 import {StaticDelegateCallable} from "@symbiotic/contracts/common/StaticDelegateCallable.sol";
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
+import {Arrays} from "@openzeppelin/contracts/utils/Arrays.sol";
 
 import {NetworkManager} from "./NetworkManager.sol";
 
 import {Checkpoints} from "../libraries/structs/Checkpoints.sol";
 import {CheckpointsEnumerableMap} from "../libraries/structs/CheckpointsEnumerableMap.sol";
+import {Hints} from "../libraries/utils/Hints.sol";
 
 /**
  * @title OperatorManager
  * @notice Manages operator registration and validation for the protocol
- * @dev Inherits from NetworkManager and SlashingWindowStorage
+ * @dev Inherits from NetworkManager
  * to provide operator management functionality with network awareness and time-based features
  */
 abstract contract OperatorManager is NetworkManager, StaticDelegateCallable {
     using Checkpoints for Checkpoints.Trace208;
     using CheckpointsEnumerableMap for CheckpointsEnumerableMap.AddressToTrace208Map;
+    using Hints for bytes[];
+    using Arrays for address[];
 
     error NotOperator();
     error OperatorNotOptedIn();
     error OperatorAlreadyRegistered();
     error OperatorNotRegistered();
     error OperatorNotPaused();
+    error InvalidLength();
+    error UnregisterNotAllowed();
 
     /// @custom:storage-location erc7201:symbiotic.storage.OperatorManager
     struct OperatorManagerStorage {
@@ -92,20 +98,28 @@ abstract contract OperatorManager is NetworkManager, StaticDelegateCallable {
         return exists && checkpoints.latest() > 0;
     }
 
-    function _isOperatorUnpausedAt(address operator, uint48 timestamp) internal view returns (bool) {
+    function _isOperatorUnpausedAt(
+        address operator,
+        uint48 timestamp,
+        bytes memory hint
+    ) internal view returns (bool) {
         (bool exists, Checkpoints.Trace208 storage checkpoints) =
             _getOperatorManagerStorage()._operators.tryGet(operator);
-        return exists && checkpoints.upperLookupRecent(timestamp) > 0;
+        return exists && checkpoints.upperLookupRecent(timestamp, hint) > 0;
     }
 
     function _getActiveOperatorsAt(
-        uint48 timestamp
+        uint48 timestamp,
+        bytes[] memory hints
     ) internal view returns (address[] memory activeOperators) {
-        activeOperators = _getOperatorManagerStorage()._operators.keys();
+        address[] memory registeredOperators = _getOperatorManagerStorage()._operators.keys();
+        uint256 registeredOperatorsLength = registeredOperators.length;
+        activeOperators = new address[](registeredOperatorsLength);
+        hints = hints.normalize(registeredOperatorsLength);
         uint256 length;
-        for (uint256 i; i < activeOperators.length; ++i) {
-            if (_isOperatorUnpausedAt(activeOperators[i], timestamp)) {
-                ++length;
+        for (uint256 i; i < registeredOperatorsLength; ++i) {
+            if (_isOperatorUnpausedAt(registeredOperators[i], timestamp, hints[i])) {
+                activeOperators[length++] = registeredOperators[i];
             }
         }
         assembly ("memory-safe") {
@@ -170,12 +184,11 @@ abstract contract OperatorManager is NetworkManager, StaticDelegateCallable {
     function _unregisterOperator(
         address operator
     ) internal {
-        // TODO: allow to unregister only if no checkpoints after the oldest needed timestamp
-        if (_isOperatorUnpaused(operator)) {
-            revert OperatorNotPaused();
+        (bool exists, uint48 timestamp, uint208 value) =
+            _getOperatorManagerStorage()._operators.get(operator).latestCheckpoint();
+        if (!exists || timestamp >= _getOldestNeededTimestamp() || value > 0) {
+            revert UnregisterNotAllowed();
         }
-        if (_getOperatorManagerStorage()._operators.remove(operator)) {
-            revert OperatorNotRegistered();
-        }
+        _getOperatorManagerStorage()._operators.remove(operator);
     }
 }

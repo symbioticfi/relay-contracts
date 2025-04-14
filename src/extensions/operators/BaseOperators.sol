@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
-
+import {VaultManager} from "../../managers/VaultManager.sol";
 /**
  * @title BaseOperators
  * @notice Base contract for managing operator registration, and vault relationships
  * @dev Provides core operator management functionality with hooks for customization
  */
-abstract contract BaseOperators is BaseMiddleware {
+
+abstract contract BaseOperators is VaultManager {
     /**
      * @notice Internal implementation for registering an operator
      * @param operator The operator address to register

@@ -2,6 +2,8 @@
 pragma solidity ^0.8.25;
 
 import {BaseOperators} from "./BaseOperators.sol";
+import {AccessManager} from "../../managers/extendable/AccessManager.sol";
+
 import {IOperators} from "../../interfaces/extensions/operators/IOperators.sol";
 
 /**
@@ -9,7 +11,7 @@ import {IOperators} from "../../interfaces/extensions/operators/IOperators.sol";
  * @notice Base contract for managing operator registration, and vault relationships
  * @dev Provides core operator management functionality with hooks for customization
  */
-abstract contract Operators is BaseOperators, IOperators {
+abstract contract Operators is BaseOperators, AccessManager, IOperators {
     uint64 public constant Operators_VERSION = 1;
 
     function registerOperator(address operator, address vault) external checkAccess {

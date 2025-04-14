@@ -8,7 +8,13 @@ import {SelfRegisterOperators} from "../../extensions/operators/SelfRegisterOper
 import {OwnableAccessManager} from "../../extensions/managers/access/OwnableAccessManager.sol";
 import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
 
-contract SelfRegisterMiddleware is SharedVaults, SelfRegisterOperators, OwnableAccessManager, EqualStakePower {
+contract SelfRegisterMiddleware is
+    BaseMiddleware,
+    SharedVaults,
+    SelfRegisterOperators,
+    OwnableAccessManager,
+    EqualStakePower
+{
     constructor(
         address operatorRegistry,
         address operatorNetworkOptInService,

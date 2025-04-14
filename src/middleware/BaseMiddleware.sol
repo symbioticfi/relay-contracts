@@ -86,14 +86,12 @@ abstract contract BaseMiddleware is VaultManager, AccessManager {
         return _isOperatorUnpaused(operator);
     }
 
-    function isOperatorUnpausedAt(address operator, uint48 timestamp) external view returns (bool) {
-        return _isOperatorUnpausedAt(operator, timestamp);
+    function isOperatorUnpausedAt(address operator, uint48 timestamp, bytes memory hint) external view returns (bool) {
+        return _isOperatorUnpausedAt(operator, timestamp, hint);
     }
 
-    function getActiveOperatorsAt(
-        uint48 timestamp
-    ) external view returns (address[] memory) {
-        return _getActiveOperatorsAt(timestamp);
+    function getActiveOperatorsAt(uint48 timestamp, bytes[] memory hints) external view returns (address[] memory) {
+        return _getActiveOperatorsAt(timestamp, hints);
     }
 
     function getSlashingWindow() external view returns (uint48) {
@@ -106,8 +104,8 @@ abstract contract BaseMiddleware is VaultManager, AccessManager {
         return _isVaultUnpaused(vault);
     }
 
-    function isVaultUnpausedAt(address vault, uint48 timestamp) external view returns (bool) {
-        return _isVaultUnpausedAt(vault, timestamp);
+    function isVaultUnpausedAt(address vault, uint48 timestamp, bytes memory hint) external view returns (bool) {
+        return _isVaultUnpausedAt(vault, timestamp, hint);
     }
 
     function isSharedVaultRegistered(
@@ -120,10 +118,8 @@ abstract contract BaseMiddleware is VaultManager, AccessManager {
         return _getSharedVaults();
     }
 
-    function getActiveSharedVaultsAt(
-        uint48 timestamp
-    ) external view returns (address[] memory) {
-        return _getActiveSharedVaultsAt(timestamp);
+    function getActiveSharedVaultsAt(uint48 timestamp, bytes[] memory hints) external view returns (address[] memory) {
+        return _getActiveSharedVaultsAt(timestamp, hints);
     }
 
     function isOperatorVaultRegistered(address operator, address vault) external view returns (bool) {
@@ -136,32 +132,43 @@ abstract contract BaseMiddleware is VaultManager, AccessManager {
         return _getOperatorVaults(operator);
     }
 
-    function getActiveOperatorVaultsAt(address operator, uint48 timestamp) external view returns (address[] memory) {
-        return _getActiveOperatorVaultsAt(operator, timestamp);
+    function getActiveOperatorVaultsAt(
+        address operator,
+        uint48 timestamp,
+        bytes[] memory hints
+    ) external view returns (address[] memory) {
+        return _getActiveOperatorVaultsAt(operator, timestamp, hints);
     }
 
     function getOperatorVotingPowerAt(
         address vault,
         address operator,
-        uint48 timestamp
+        uint48 timestamp,
+        bytes memory hints
     ) external view returns (uint256) {
-        return _getOperatorVotingPowerAt(vault, operator, timestamp);
+        return _getOperatorVotingPowerAt(vault, operator, timestamp, hints);
     }
 
-    function getOperatorVotingPowerAt(address operator, uint48 timestamp) external view returns (uint256) {
-        return _getOperatorVotingPowerAt(operator, timestamp);
+    function getOperatorVotingPowerAt(
+        address operator,
+        uint48 timestamp,
+        bytes memory hints
+    ) external view returns (uint256) {
+        return _getOperatorVotingPowerAt(operator, timestamp, hints);
     }
 
     function getOperatorVotingPowersAt(
         address operator,
-        uint48 timestamp
+        uint48 timestamp,
+        bytes memory hints
     ) external view returns (VaultVotingPower[] memory vaultVotingPowers) {
-        return _getOperatorVotingPowersAt(operator, timestamp);
+        return _getOperatorVotingPowersAt(operator, timestamp, hints);
     }
 
     function getVotingPowersAt(
-        uint48 timestamp
+        uint48 timestamp,
+        bytes memory hints
     ) external view returns (OperatorVotingPower[] memory operatorVotingPowers) {
-        return _getVotingPowersAt(timestamp);
+        return _getVotingPowersAt(timestamp, hints);
     }
 }

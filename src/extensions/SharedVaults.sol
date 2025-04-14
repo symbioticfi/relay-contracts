@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {BaseMiddleware} from "../middleware/BaseMiddleware.sol";
+import {VaultManager} from "../managers/VaultManager.sol";
+import {AccessManager} from "../managers/extendable/AccessManager.sol";
 import {ISharedVaults} from "../interfaces/extensions/ISharedVaults.sol";
 
 /**
@@ -9,7 +10,7 @@ import {ISharedVaults} from "../interfaces/extensions/ISharedVaults.sol";
  * @notice Contract for managing shared vaults that can be used by multiple operators
  * @dev Extends BaseMiddleware to provide access control for vault management functions
  */
-abstract contract SharedVaults is BaseMiddleware, ISharedVaults {
+abstract contract SharedVaults is VaultManager, AccessManager, ISharedVaults {
     uint64 public constant SharedVaults_VERSION = 1;
 
     /**
