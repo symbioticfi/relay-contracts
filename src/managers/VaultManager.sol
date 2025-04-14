@@ -84,6 +84,41 @@ abstract contract VaultManager is OperatorManager, StakeVotingPowerManager, IVau
         return VaultManagerLogic.getSlashingWindow();
     }
 
+    function _isTokenUnpaused(
+        address token
+    ) internal view virtual returns (bool) {
+        return VaultManagerLogic.isTokenUnpaused(token);
+    }
+
+    function _isTokenUnpausedAt(
+        address token,
+        uint48 timestamp,
+        bytes memory hint
+    ) internal view virtual returns (bool) {
+        return VaultManagerLogic.isTokenUnpausedAt(token, timestamp, hint);
+    }
+
+    function _isTokenRegistered(
+        address token
+    ) internal view virtual returns (bool) {
+        return VaultManagerLogic.isTokenRegistered(token);
+    }
+
+    function _tokensLength() internal view virtual returns (uint256) {
+        return VaultManagerLogic.tokensLength();
+    }
+
+    function _getTokens() internal view virtual returns (address[] memory) {
+        return VaultManagerLogic.getTokens();
+    }
+
+    function _getActiveTokensAt(
+        uint48 timestamp,
+        bytes[] memory hints
+    ) internal view virtual returns (address[] memory activeTokens) {
+        return VaultManagerLogic.getActiveTokensAt(timestamp, hints);
+    }
+
     function _isVaultUnpaused(
         address vault
     ) internal view virtual returns (bool) {

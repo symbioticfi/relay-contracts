@@ -20,6 +20,7 @@ import {OperatorManager} from "../../managers/OperatorManager.sol";
 import {StakeVotingPowerManager} from "../../managers/extendable/StakeVotingPowerManager.sol";
 
 import {Checkpoints} from "../structs/Checkpoints.sol";
+import {CheckpointsEnumerableMap} from "../structs/CheckpointsEnumerableMap.sol";
 import {Hints} from "../utils/Hints.sol";
 import {NetworkManagerLogic} from "./NetworkManagerLogic.sol";
 import {OperatorManagerLogic} from "./OperatorManagerLogic.sol";
@@ -38,6 +39,7 @@ library VaultManagerLogic {
     using Subnetwork for address;
     using Subnetwork for bytes32;
     using Checkpoints for Checkpoints.Trace208;
+    using CheckpointsEnumerableMap for CheckpointsEnumerableMap.AddressToTrace208Map;
     using Hints for bytes[];
 
     error NotVault();
@@ -65,6 +67,7 @@ library VaultManagerLogic {
 
     /// @custom:storage-location erc7201:symbiotic.storage.VaultManager
     struct VaultManagerStorage {
+        CheckpointsEnumerableMap.AddressToTrace208Map _tokens;
         EnumerableSet.AddressSet _sharedVaults;
         mapping(address operator => EnumerableSet.AddressSet) _operatorVaults;
         EnumerableSet.AddressSet _allOperatorVaults;
@@ -114,6 +117,66 @@ library VaultManagerLogic {
 
     function getSlashingWindow() public view returns (uint48) {
         return _getVaultManagerStorage()._slashingWindow;
+    }
+
+    function isTokenUnpaused(
+        address token
+    ) public view returns (bool) {
+        (bool exists, Checkpoints.Trace208 storage checkpoints) = _getVaultManagerStorage()._tokens.tryGet(token);
+        return exists && checkpoints.latest() > 0;
+    }
+
+    function isTokenUnpausedAt(address token, uint48 timestamp, bytes memory hint) public view returns (bool) {
+        (bool exists, Checkpoints.Trace208 storage checkpoints) = _getVaultManagerStorage()._tokens.tryGet(token);
+        return exists && checkpoints.upperLookupRecent(timestamp, hint) > 0;
+    }
+
+    function isTokenRegistered(
+        address token
+    ) public view returns (bool) {
+        return _getVaultManagerStorage()._tokens.contains(token);
+    }
+
+    function tokensLength() public view returns (uint256) {
+        return _getVaultManagerStorage()._tokens.length();
+    }
+
+    function getTokens() public view returns (address[] memory) {
+        return _getVaultManagerStorage()._tokens.keys();
+    }
+
+    function getActiveTokensAt(
+        uint48 timestamp,
+        bytes[] memory hints
+    ) public view returns (address[] memory activeTokens) {
+        address[] memory registeredTokens = _getVaultManagerStorage()._tokens.keys();
+        uint256 registeredTokensLength = registeredTokens.length;
+        activeTokens = new address[](registeredTokensLength);
+        hints = hints.normalize(registeredTokensLength);
+        uint256 length;
+        for (uint256 i; i < registeredTokensLength; ++i) {
+            if (isTokenUnpausedAt(registeredTokens[i], timestamp, hints[i])) {
+                activeTokens[length++] = registeredTokens[i];
+            }
+        }
+        assembly ("memory-safe") {
+            mstore(activeTokens, length)
+        }
+    }
+
+    function getActiveTokens() public view returns (address[] memory activeTokens) {
+        address[] memory registeredTokens = _getVaultManagerStorage()._tokens.keys();
+        uint256 registeredTokensLength = registeredTokens.length;
+        activeTokens = new address[](registeredTokensLength);
+        uint256 length;
+        for (uint256 i; i < registeredTokensLength; ++i) {
+            if (isTokenUnpaused(registeredTokens[i])) {
+                activeTokens[length++] = registeredTokens[i];
+            }
+        }
+        assembly ("memory-safe") {
+            mstore(activeTokens, length)
+        }
     }
 
     function isVaultUnpaused(
@@ -263,23 +326,40 @@ library VaultManagerLogic {
      */
     function getOperatorVotingPowerAt(
         function (address, uint256) external view returns (uint256) stakeToVotingPower,
-        address vault,
         address operator,
+        address vault,
         uint48 timestamp,
         bytes memory hints
     ) public view returns (uint256) {
-        if (!_validateVaultEpochDuration(vault)) {
+        IVaultManager.OperatorVaultVotingPowerHints memory operatorVaultVotingPowerHints;
+        if (hints.length > 0) {
+            operatorVaultVotingPowerHints = abi.decode(hints, (IVaultManager.OperatorVaultVotingPowerHints));
+        }
+
+        if (
+            !isTokenUnpausedAt(IVault(vault).collateral(), timestamp, operatorVaultVotingPowerHints.isTokenUnpausedHint)
+        ) {
             return 0;
         }
-        return stakeToVotingPower(vault, getOperatorStakeAt(vault, operator, timestamp, hints));
+        if (!_validateVaultEpochDuration(vault)) {
+            // TODO
+            return 0;
+        }
+        return stakeToVotingPower(
+            vault, getOperatorStakeAt(vault, operator, timestamp, operatorVaultVotingPowerHints.stakeHints)
+        );
     }
 
     function getOperatorVotingPower(
         function (address, uint256) external view returns (uint256) stakeToVotingPower,
-        address vault,
-        address operator
+        address operator,
+        address vault
     ) public view returns (uint256) {
+        if (!isTokenUnpaused(IVault(vault).collateral())) {
+            return 0;
+        }
         if (!_validateVaultEpochDuration(vault)) {
+            // TODO
             return 0;
         }
         return stakeToVotingPower(operator, getOperatorStake(vault, operator));
@@ -331,11 +411,11 @@ library VaultManagerLogic {
     ) public view returns (uint256 votingPower) {
         address[] memory sharedVaults = getActiveSharedVaults();
         for (uint256 i; i < sharedVaults.length; ++i) {
-            votingPower += getOperatorVotingPower(stakeToVotingPower, sharedVaults[i], operator);
+            votingPower += getOperatorVotingPower(stakeToVotingPower, operator, sharedVaults[i]);
         }
         address[] memory operatorVaults = getActiveOperatorVaults(operator);
         for (uint256 i; i < operatorVaults.length; ++i) {
-            votingPower += getOperatorVotingPower(stakeToVotingPower, operatorVaults[i], operator);
+            votingPower += getOperatorVotingPower(stakeToVotingPower, operator, operatorVaults[i]);
         }
     }
 
@@ -397,14 +477,14 @@ library VaultManagerLogic {
         address[] memory operatorVaults = getActiveOperatorVaults(operator);
         vaultVotingPowers = new IVaultManager.VaultVotingPower[](sharedVaults.length + operatorVaults.length);
         for (uint256 i; i < sharedVaults.length; ++i) {
-            uint256 votingPower_ = getOperatorVotingPower(stakeToVotingPower, sharedVaults[i], operator);
+            uint256 votingPower_ = getOperatorVotingPower(stakeToVotingPower, operator, sharedVaults[i]);
             if (votingPower_ > 0) {
                 vaultVotingPowers[length++] =
                     IVaultManager.VaultVotingPower({vault: sharedVaults[i], votingPower: votingPower_});
             }
         }
         for (uint256 i; i < operatorVaults.length; ++i) {
-            uint256 votingPower_ = getOperatorVotingPower(stakeToVotingPower, operatorVaults[i], operator);
+            uint256 votingPower_ = getOperatorVotingPower(stakeToVotingPower, operator, operatorVaults[i]);
             if (votingPower_ > 0) {
                 vaultVotingPowers[length++] =
                     IVaultManager.VaultVotingPower({vault: operatorVaults[i], votingPower: votingPower_});
@@ -676,6 +756,10 @@ library VaultManagerLogic {
         }
 
         if (!_validateVaultEpochDuration(vault)) {
+            return false;
+        }
+
+        if (!isTokenUnpaused(IVault(vault).collateral())) {
             return false;
         }
 

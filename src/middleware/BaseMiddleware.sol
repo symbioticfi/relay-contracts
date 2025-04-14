@@ -4,7 +4,7 @@ pragma solidity ^0.8.25;
 import {VaultManager} from "../managers/VaultManager.sol";
 import {OperatorManager} from "../managers/OperatorManager.sol";
 import {AccessManager} from "../managers/extendable/AccessManager.sol";
-
+import {DiamondProxy} from "../common/DiamondProxy.sol";
 /**
  * @title BaseMiddleware
  * @notice Abstract base contract that combines core manager functionality for building middleware
@@ -16,7 +16,8 @@ import {AccessManager} from "../managers/extendable/AccessManager.sol";
  * This contract serves as a foundation for building custom middleware by providing essential
  * management capabilities that can be extended with additional functionality.
  */
-abstract contract BaseMiddleware is VaultManager, AccessManager {
+
+abstract contract BaseMiddleware is VaultManager, AccessManager, DiamondProxy {
     // This constant aggregates changes of all not extendable managers
     uint64 public constant BaseMiddleware_VERSION = 1;
 
