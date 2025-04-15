@@ -6,7 +6,7 @@ import {SharedVaults} from "../../extensions/SharedVaults.sol";
 import {SelfRegisterOperators} from "../../extensions/operators/SelfRegisterOperators.sol";
 
 import {ECDSASig} from "../../extensions/managers/sigs/ECDSASig.sol";
-import {OwnableAccessManager} from "../../extensions/managers/access/OwnableAccessManager.sol";
+import {OzOwnable} from "../../extensions/managers/access/OzOwnable.sol";
 import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
 import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
 import {KeyManagerAddress} from "../../extensions/managers/keys/KeyManagerAddress.sol";
@@ -16,7 +16,7 @@ contract SelfRegisterMiddleware is
     SelfRegisterOperators,
     KeyManagerAddress,
     ECDSASig,
-    OwnableAccessManager,
+    OzOwnable,
     TimestampCapture,
     EqualStakePower
 {
@@ -53,6 +53,6 @@ contract SelfRegisterMiddleware is
     ) internal initializer {
         __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn, reader);
         __SelfRegisterOperators_init("SelfRegisterMiddleware", 0);
-        __OwnableAccessManager_init(owner);
+        __OzOwnable_init(owner);
     }
 }

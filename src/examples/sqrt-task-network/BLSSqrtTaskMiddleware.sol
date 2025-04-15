@@ -11,7 +11,7 @@ import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SharedVaults} from "../../extensions/SharedVaults.sol";
 import {SelfRegisterOperators} from "../../extensions/operators/SelfRegisterOperators.sol";
 
-import {OwnableAccessManager} from "../../extensions/managers/access/OwnableAccessManager.sol";
+import {OzOwnable} from "../../extensions/managers/access/OzOwnable.sol";
 import {KeyManagerBLS} from "../../extensions/managers/keys/KeyManagerBLS.sol";
 import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
 import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
@@ -20,7 +20,7 @@ contract BLSSqrtTaskMiddleware is
     SharedVaults,
     SelfRegisterOperators,
     KeyManagerBLS,
-    OwnableAccessManager,
+    OzOwnable,
     TimestampCapture,
     EqualStakePower
 {
@@ -65,7 +65,7 @@ contract BLSSqrtTaskMiddleware is
         address owner
     ) internal initializer {
         __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader);
-        __OwnableAccessManager_init(owner);
+        __OzOwnable_init(owner);
         __SelfRegisterOperators_init("BLS Sqrt Task", 0);
     }
 

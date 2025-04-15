@@ -12,20 +12,13 @@ import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/Signa
 import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SharedVaults} from "../../extensions/SharedVaults.sol";
 
-import {OwnableAccessManager} from "../../extensions/managers/access/OwnableAccessManager.sol";
+import {OzOwnable} from "../../extensions/managers/access/OzOwnable.sol";
 import {NoKeyManager} from "../../extensions/managers/keys/NoKeyManager.sol";
 import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
 import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
 
 // WARING: this is a simple example, it's not secure and should not be used in production
-contract SqrtTaskMiddleware is
-    SharedVaults,
-    NoKeyManager,
-    EIP712,
-    OwnableAccessManager,
-    TimestampCapture,
-    EqualStakePower
-{
+contract SqrtTaskMiddleware is SharedVaults, NoKeyManager, EIP712, OzOwnable, TimestampCapture, EqualStakePower {
     using Subnetwork for address;
     using Math for uint256;
 
@@ -71,7 +64,7 @@ contract SqrtTaskMiddleware is
         address owner
     ) internal initializer {
         __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader);
-        __OwnableAccessManager_init(owner);
+        __OzOwnable_init(owner);
     }
 
     function createTask(uint256 value, address operator) external returns (uint256 taskIndex) {

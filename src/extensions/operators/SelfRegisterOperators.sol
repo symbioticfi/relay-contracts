@@ -17,6 +17,8 @@ import {PauseableEnumerableSet} from "../../libraries/PauseableEnumerableSet.sol
 abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgradeable, ISelfRegisterOperators {
     using PauseableEnumerableSet for PauseableEnumerableSet.AddressSet;
 
+    event UpdatePowerThreshold(uint256 minPowerThreshold);
+
     uint64 public constant SelfRegisterOperators_VERSION = 1;
 
     // EIP-712 TypeHash constants
@@ -67,9 +69,9 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
      * @notice Initializes the contract with EIP712 domain separator
      * @param name The name to use for the EIP712 domain separator
      */
-    function __SelfRegisterOperators_init(string memory name, uint256 minPowerThreshold) internal onlyInitializing {
+    function __SelfRegisterOperators_init(string memory name, uint256 minPowerThreshold_) internal onlyInitializing {
         __EIP712_init(name, "1");
-        _getSelfRegisterOperatorsStorage().minPowerThreshold = minPowerThreshold;
+        _setPowerThreshold(minPowerThreshold_);
     }
 
     /**
@@ -274,12 +276,12 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
 
     /**
      * @notice Updates the minimum power threshold for operators, be careful, this will allow to kick operators below the threshold
-     * @param minPowerThreshold The new minimum power threshold
+     * @param minPowerThreshold_ The new minimum power threshold
      */
     function updatePowerThreshold(
-        uint256 minPowerThreshold
+        uint256 minPowerThreshold_
     ) external checkAccess {
-        _getSelfRegisterOperatorsStorage().minPowerThreshold = minPowerThreshold;
+        _setPowerThreshold(minPowerThreshold_);
     }
 
     /**
@@ -381,5 +383,12 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
             power += _getOperatorPower(operator, vaults, _subnetworks);
         }
         return power < _getSelfRegisterOperatorsStorage().minPowerThreshold;
+    }
+
+    function _setPowerThreshold(
+        uint256 minPowerThreshold_
+    ) internal {
+        _getSelfRegisterOperatorsStorage().minPowerThreshold = minPowerThreshold_;
+        emit UpdatePowerThreshold(minPowerThreshold_);
     }
 }

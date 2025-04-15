@@ -16,7 +16,7 @@ import {SharedVaults} from "../../extensions/SharedVaults.sol";
 import {SelfRegisterOperators} from "../../extensions/operators/SelfRegisterOperators.sol";
 
 import {ECDSASig} from "../../extensions/managers/sigs/ECDSASig.sol";
-import {OwnableAccessManager} from "../../extensions/managers/access/OwnableAccessManager.sol";
+import {OzOwnable} from "../../extensions/managers/access/OzOwnable.sol";
 import {KeyManagerAddress} from "../../extensions/managers/keys/KeyManagerAddress.sol";
 import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
 import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
@@ -34,7 +34,7 @@ contract SelfRegisterSqrtTaskMiddleware is
     SelfRegisterOperators,
     ECDSASig,
     KeyManagerAddress,
-    OwnableAccessManager,
+    OzOwnable,
     TimestampCapture,
     EqualStakePower
 {
@@ -87,7 +87,7 @@ contract SelfRegisterSqrtTaskMiddleware is
     ) internal initializer {
         INetworkRegistry(networkRegistry).registerNetwork();
         __BaseMiddleware_init(address(this), slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader);
-        __OwnableAccessManager_init(owner);
+        __OzOwnable_init(owner);
         __SelfRegisterOperators_init("SelfRegisterSqrtTaskMiddleware", 0);
     }
 

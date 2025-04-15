@@ -57,8 +57,21 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
         EnumerableMap.AddressToAddressMap _vaultOperator;
     }
 
+    event RegisterSubnetwork(uint96 subnetwork);
+    event PauseSubnetwork(uint96 subnetwork);
+    event UnpauseSubnetwork(uint96 subnetwork);
+    event UnregisterSubnetwork(uint96 subnetwork);
+    event RegisterSharedVault(address sharedVault);
+    event RegisterOperatorVault(address operator, address vault);
+    event PauseSharedVault(address sharedVault);
+    event UnpauseSharedVault(address sharedVault);
+    event PauseOperatorVault(address operator, address vault);
+    event UnpauseOperatorVault(address operator, address vault);
+    event UnregisterSharedVault(address sharedVault);
+    event UnregisterOperatorVault(address operator, address vault);
     event InstantSlash(address vault, bytes32 subnetwork, uint256 slashedAmount);
     event VetoSlash(address vault, bytes32 subnetwork, uint256 slashIndex);
+    event ExecuteSlash(address vault, uint256 slashIndex, uint256 slashedAmount);
 
     enum SlasherType {
         INSTANT, // Instant slasher type
@@ -505,6 +518,8 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
     ) internal {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         $._subnetworks.register(_now(), uint160(subnetwork));
+
+        emit RegisterSubnetwork(subnetwork);
     }
 
     /**
@@ -516,6 +531,8 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
     ) internal {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         $._subnetworks.pause(_now(), uint160(subnetwork));
+
+        emit PauseSubnetwork(subnetwork);
     }
 
     /**
@@ -527,6 +544,8 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
     ) internal {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         $._subnetworks.unpause(_now(), _SLASHING_WINDOW(), uint160(subnetwork));
+
+        emit UnpauseSubnetwork(subnetwork);
     }
 
     /**
@@ -538,6 +557,8 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
     ) internal {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         $._subnetworks.unregister(_now(), _SLASHING_WINDOW(), uint160(subnetwork));
+
+        emit UnregisterSubnetwork(subnetwork);
     }
 
     /**
@@ -551,6 +572,8 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
         _validateVault(vault);
         _validateSharedVault(vault);
         $._sharedVaults.register(_now(), vault);
+
+        emit RegisterSharedVault(vault);
     }
 
     /**
@@ -565,6 +588,8 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
 
         $._operatorVaults[operator].register(_now(), vault);
         $._vaultOperator.set(vault, operator);
+
+        emit RegisterOperatorVault(operator, vault);
     }
 
     /**
@@ -576,6 +601,8 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
     ) internal {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         $._sharedVaults.pause(_now(), vault);
+
+        emit PauseSharedVault(vault);
     }
 
     /**
@@ -587,6 +614,8 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
     ) internal {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         $._sharedVaults.unpause(_now(), _SLASHING_WINDOW(), vault);
+
+        emit UnpauseSharedVault(vault);
     }
 
     /**
@@ -597,6 +626,8 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
     function _pauseOperatorVault(address operator, address vault) internal {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         $._operatorVaults[operator].pause(_now(), vault);
+
+        emit PauseOperatorVault(operator, vault);
     }
 
     /**
@@ -607,6 +638,8 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
     function _unpauseOperatorVault(address operator, address vault) internal {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         $._operatorVaults[operator].unpause(_now(), _SLASHING_WINDOW(), vault);
+
+        emit UnpauseOperatorVault(operator, vault);
     }
 
     /**
@@ -618,6 +651,8 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
     ) internal {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         $._sharedVaults.unregister(_now(), _SLASHING_WINDOW(), vault);
+
+        emit UnregisterSharedVault(vault);
     }
 
     /**
@@ -629,6 +664,8 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         $._operatorVaults[operator].unregister(_now(), _SLASHING_WINDOW(), vault);
         $._vaultOperator.remove(vault);
+
+        emit UnregisterOperatorVault(operator, vault);
     }
 
     /**
@@ -675,9 +712,10 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
         if (slasherType == uint64(SlasherType.INSTANT)) {
             try ISlasher(slasher).slash(subnetwork, operator, amount, timestamp, hints) returns (uint256 slashedAmount)
             {
-                emit InstantSlash(vault, subnetwork, slashedAmount);
                 success = true;
                 response = abi.encode(slashedAmount);
+
+                emit InstantSlash(vault, subnetwork, slashedAmount);
             } catch {
                 success = false;
             }
@@ -685,9 +723,10 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
             try IVetoSlasher(slasher).requestSlash(subnetwork, operator, amount, timestamp, hints) returns (
                 uint256 slashIndex
             ) {
-                emit VetoSlash(vault, subnetwork, slashIndex);
                 success = true;
                 response = abi.encode(slashIndex);
+
+                emit VetoSlash(vault, subnetwork, slashIndex);
             } catch {
                 success = false;
             }
@@ -718,6 +757,8 @@ abstract contract VaultManager is OperatorManager, StakePowerManager {
         try IVetoSlasher(slasher).executeSlash(slashIndex, hints) returns (uint256 slashedAmount_) {
             success = true;
             slashedAmount = slashedAmount_;
+
+            emit ExecuteSlash(vault, slashIndex, slashedAmount_);
         } catch {
             success = false;
         }

@@ -23,6 +23,11 @@ abstract contract OperatorManager is NetworkStorage, SlashingWindowStorage, Capt
     error NotOperator();
     error OperatorNotOptedIn();
 
+    event RegisterOperator(address operator);
+    event PauseOperator(address operator);
+    event UnpauseOperator(address operator);
+    event UnregisterOperator(address operator);
+
     /// @custom:storage-location erc7201:symbiotic.storage.OperatorManager
     struct OperatorManagerStorage {
         address _operatorRegistry; // Address of the operator registry
@@ -160,6 +165,8 @@ abstract contract OperatorManager is NetworkStorage, SlashingWindowStorage, Capt
 
         OperatorManagerStorage storage $ = _getOperatorManagerStorage();
         $._operators.register(_now(), operator);
+
+        emit RegisterOperator(operator);
     }
 
     /**
@@ -171,6 +178,8 @@ abstract contract OperatorManager is NetworkStorage, SlashingWindowStorage, Capt
     ) internal {
         OperatorManagerStorage storage $ = _getOperatorManagerStorage();
         $._operators.pause(_now(), operator);
+
+        emit PauseOperator(operator);
     }
 
     /**
@@ -182,6 +191,8 @@ abstract contract OperatorManager is NetworkStorage, SlashingWindowStorage, Capt
     ) internal {
         OperatorManagerStorage storage $ = _getOperatorManagerStorage();
         $._operators.unpause(_now(), _SLASHING_WINDOW(), operator);
+
+        emit UnpauseOperator(operator);
     }
 
     /**
@@ -193,5 +204,7 @@ abstract contract OperatorManager is NetworkStorage, SlashingWindowStorage, Capt
     ) internal {
         OperatorManagerStorage storage $ = _getOperatorManagerStorage();
         $._operators.unregister(_now(), _SLASHING_WINDOW(), operator);
+
+        emit UnregisterOperator(operator);
     }
 }

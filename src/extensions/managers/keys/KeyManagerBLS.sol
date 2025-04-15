@@ -200,5 +200,7 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
 
         $._aggregatedKey.push(_now(), aggregatedKey.X);
         $._keyMerkleRoot.push(_now(), uint256($._keyMerkle.root()));
+
+        emit UpdateKey(operator, key_);
     }
 }
