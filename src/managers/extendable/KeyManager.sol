@@ -9,6 +9,8 @@ import {CaptureTimestampManager} from "./CaptureTimestampManager.sol";
  * @notice Abstract contract for managing keys
  */
 abstract contract KeyManager is SlashingWindowStorage, CaptureTimestampManager {
+    event UpdateKey(address operator, bytes key);
+
     /**
      * @notice Updates the key associated with an operator
      * @param operator The address of the operator

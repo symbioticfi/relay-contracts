@@ -114,5 +114,7 @@ abstract contract KeyManagerAddress is KeyManager {
             $._keyData[key].value = operator;
             $._keyData[key].status.set(timestamp);
         }
+
+        emit UpdateKey(operator, key_);
     }
 }

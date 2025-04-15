@@ -4,20 +4,21 @@ pragma solidity ^0.8.25;
 import {AccessManagedUpgradeable} from "@openzeppelin/contracts-upgradeable/access/manager/AccessManagedUpgradeable.sol";
 
 import {AccessManager} from "../../../managers/extendable/AccessManager.sol";
-
+import {IOzAccessManaged} from "../../../interfaces/extensions/managers/access/IOzAccessManaged.sol";
 /**
  * @title OzAccessManaged
  * @notice A middleware extension that integrates OpenZeppelin's AccessManaged for access control
  * @dev Implements AccessManager with OpenZeppelin's AccessManagedUpgradeable functionality
  */
-abstract contract OzAccessManaged is AccessManager, AccessManagedUpgradeable {
+
+abstract contract OzAccessManaged is AccessManager, AccessManagedUpgradeable, IOzAccessManaged {
     uint64 public constant OzAccessManaged_VERSION = 1;
+
     /**
      * @notice Initializes the contract with an authority address
      * @param authority The address to set as the access manager authority
      * @dev Can only be called during initialization
      */
-
     function __OzAccessManaged_init(
         address authority
     ) internal onlyInitializing {

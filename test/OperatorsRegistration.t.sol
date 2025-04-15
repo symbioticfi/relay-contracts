@@ -141,6 +141,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
         vm.expectRevert();
         middleware.unregisterOperator(operator);
         skipEpoch();
+        skipOneSecond();
         middleware.unregisterOperator(operator);
 
         operatorsLength = IBaseMiddlewareReader(address(middleware)).operatorsLength();
@@ -314,6 +315,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
 
         // Should work exactly at slashing window
         vm.warp(pauseTime + slashingWindow);
+        skipOneSecond();
         middleware.unpauseOperator(operator);
 
         // Test capture timestamp interactions
@@ -421,6 +423,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
         middleware.pauseOperator(operator1);
         middleware.pauseOperator(operator2);
         skipImmutablePeriod();
+        skipOneSecond();
 
         middleware.unregisterOperator(operator1);
         vm.expectRevert(); // Can't register same operator again
@@ -435,11 +438,15 @@ contract OperatorsRegistrationTest is POCBaseTest {
         assertEq(activeOps.length, 0, "Should have no active operators");
     }
 
-    function skipEpoch() private {
+    function skipEpoch() internal {
         vm.warp(block.timestamp + epochDuration);
     }
 
-    function skipImmutablePeriod() private {
+    function skipImmutablePeriod() internal {
         vm.warp(block.timestamp + slashingWindow);
+    }
+
+    function skipOneSecond() internal {
+        vm.warp(block.timestamp + 1);
     }
 }

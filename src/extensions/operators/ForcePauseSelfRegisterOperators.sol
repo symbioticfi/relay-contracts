@@ -14,6 +14,11 @@ import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap
 abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IForcePauseSelfRegisterOperators {
     using EnumerableMap for EnumerableMap.AddressToAddressMap;
 
+    event ForcePauseOperator(address operator);
+    event ForceUnpauseOperator(address operator);
+    event ForcePauseOperatorVault(address operator, address vault);
+    event ForceUnpauseOperatorVault(address operator, address vault);
+
     uint64 public constant ForcePauseSelfRegisterOperators_VERSION = 1;
 
     struct ForcePauseSelfRegisterOperatorsStorage {
@@ -42,6 +47,8 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
         if (_operatorWasActiveAt(_now() + 1, operator)) {
             _pauseOperatorImpl(operator);
         }
+
+        emit ForcePauseOperator(operator);
     }
 
     /**
@@ -55,6 +62,8 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
             return;
         }
         _unpauseOperatorImpl(operator);
+
+        emit ForceUnpauseOperator(operator);
     }
 
     /**
@@ -74,6 +83,8 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
         if (_operatorVaultWasActiveAt(_now() + 1, operator, vault)) {
             _pauseOperatorVaultImpl(operator, vault);
         }
+
+        emit ForcePauseOperatorVault(operator, vault);
     }
 
     /**
@@ -85,6 +96,8 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
             return;
         }
         _unpauseOperatorVaultImpl(operator, vault);
+
+        emit ForceUnpauseOperatorVault(operator, vault);
     }
 
     /**
@@ -138,11 +151,11 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
 
     function _operatorForcePaused(
         address operator
-    ) private view returns (bool) {
+    ) internal view returns (bool) {
         return _getForcePauseStorage().forcePaused[operator];
     }
 
-    function _operatorVaultForcePaused(address operator, address vault) private view returns (bool) {
+    function _operatorVaultForcePaused(address operator, address vault) internal view returns (bool) {
         return _getForcePauseStorage().forcePausedVault[operator][vault];
     }
 }

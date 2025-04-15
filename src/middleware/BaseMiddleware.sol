@@ -18,7 +18,7 @@ import {KeyManager} from "../managers/extendable/KeyManager.sol";
  * This contract serves as a foundation for building custom middleware by providing essential
  * management capabilities that can be extended with additional functionality.
  */
-abstract contract BaseMiddleware is VaultManager, OperatorManager, AccessManager, KeyManager {
+abstract contract BaseMiddleware is VaultManager, AccessManager, KeyManager {
     // This constant aggregates changes of all not extendable managers
     uint64 public constant BaseMiddleware_VERSION = 1;
 
@@ -62,7 +62,7 @@ abstract contract BaseMiddleware is VaultManager, OperatorManager, AccessManager
         assembly {
             reader_ := sload(ReaderStorageLocation)
         }
-        (bool success, bytes memory returndata) = reader_.delegatecall(abi.encodePacked(msg.data, address(this)));
+        (bool success, bytes memory returndata) = reader_.delegatecall(msg.data);
         if (!success) {
             assembly {
                 revert(add(returndata, 0x20), mload(returndata))

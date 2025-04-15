@@ -16,7 +16,7 @@ import {SharedVaults} from "../../extensions/SharedVaults.sol";
 import {SelfRegisterOperators} from "../../extensions/operators/SelfRegisterOperators.sol";
 
 import {ECDSASig} from "../../extensions/managers/sigs/ECDSASig.sol";
-import {OwnableAccessManager} from "../../extensions/managers/access/OwnableAccessManager.sol";
+import {OzOwnable} from "../../extensions/managers/access/OzOwnable.sol";
 import {KeyManagerAddress} from "../../extensions/managers/keys/KeyManagerAddress.sol";
 import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
 import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
@@ -34,7 +34,7 @@ contract SelfRegisterSqrtTaskMiddleware is
     SelfRegisterOperators,
     ECDSASig,
     KeyManagerAddress,
-    OwnableAccessManager,
+    OzOwnable,
     TimestampCapture,
     EqualStakePower
 {
@@ -45,6 +45,8 @@ contract SelfRegisterSqrtTaskMiddleware is
     error TaskCompleted();
     error TooManyOperatorVaults();
     error InactiveValidator();
+    error SlashFailed();
+    error InvalidVault();
 
     event CreateTask(uint256 indexed taskIndex, address indexed validator);
     event CompleteTask(uint256 indexed taskIndex, bool isValidAnswer);
@@ -85,7 +87,7 @@ contract SelfRegisterSqrtTaskMiddleware is
     ) internal initializer {
         INetworkRegistry(networkRegistry).registerNetwork();
         __BaseMiddleware_init(address(this), slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader);
-        __OwnableAccessManager_init(owner);
+        __OzOwnable_init(owner);
         __SelfRegisterOperators_init("SelfRegisterSqrtTaskMiddleware", 0);
     }
 
@@ -124,7 +126,7 @@ contract SelfRegisterSqrtTaskMiddleware is
         emit CompleteTask(taskIndex, isValidAnswer);
     }
 
-    function _verify(uint256 taskIndex, uint256 answer, bytes calldata signature) private view returns (bool) {
+    function _verify(uint256 taskIndex, uint256 answer, bytes calldata signature) internal view returns (bool) {
         if (tasks[taskIndex].completed) {
             revert TaskCompleted();
         }
@@ -132,7 +134,7 @@ contract SelfRegisterSqrtTaskMiddleware is
         return _verifyAnswer(taskIndex, answer);
     }
 
-    function _verifySignature(uint256 taskIndex, uint256 answer, bytes calldata signature) private view {
+    function _verifySignature(uint256 taskIndex, uint256 answer, bytes calldata signature) internal view {
         Task storage task = tasks[taskIndex];
 
         bytes32 hash_ = _hashTypedDataV4(keccak256(abi.encode(COMPLETE_TASK_TYPEHASH, taskIndex, answer)));
@@ -142,7 +144,7 @@ contract SelfRegisterSqrtTaskMiddleware is
         }
     }
 
-    function _verifyAnswer(uint256 taskIndex, uint256 answer) private view returns (bool) {
+    function _verifyAnswer(uint256 taskIndex, uint256 answer) internal view returns (bool) {
         uint256 value = tasks[taskIndex].value;
         uint256 square = answer ** 2;
         if (square == value) {
@@ -168,7 +170,7 @@ contract SelfRegisterSqrtTaskMiddleware is
         return false;
     }
 
-    function _slash(uint256 taskIndex, bytes[] calldata stakeHints, bytes[] calldata slashHints) private {
+    function _slash(uint256 taskIndex, bytes[] calldata stakeHints, bytes[] calldata slashHints) internal {
         Task storage task = tasks[taskIndex];
         address operator = operatorByKey(abi.encode(task.validator));
         _slashOperator(task.captureTimestamp, operator, stakeHints, slashHints);
@@ -179,7 +181,7 @@ contract SelfRegisterSqrtTaskMiddleware is
         address operator,
         bytes[] calldata stakeHints,
         bytes[] calldata slashHints
-    ) private {
+    ) internal {
         address[] memory vaults = _activeVaultsAt(captureTimestamp, operator);
         uint256 vaultsLength = vaults.length;
 
@@ -201,8 +203,16 @@ contract SelfRegisterSqrtTaskMiddleware is
         }
     }
 
-    function executeSlash(address vault, uint256 slashIndex, bytes memory hints) external checkAccess {
-        _executeSlash(vault, slashIndex, hints);
+    function executeSlash(
+        address vault,
+        uint256 slashIndex,
+        bytes memory hints
+    ) external checkAccess returns (uint256) {
+        (bool success, uint256 slashedAmount) = _executeSlash(vault, slashIndex, hints);
+        if (!success) {
+            revert SlashFailed();
+        }
+        return slashedAmount;
     }
 
     function _beforeRegisterOperatorVault(address operator, address vault) internal override {
@@ -211,5 +221,14 @@ contract SelfRegisterSqrtTaskMiddleware is
             revert TooManyOperatorVaults();
         }
         IBaseDelegator(IVault(vault).delegator()).setMaxNetworkLimit(DEFAULT_SUBNETWORK, type(uint256).max);
+    }
+
+    function _validateVault(
+        address vault
+    ) internal view override {
+        if (IVault(vault).slasher() == address(0)) {
+            revert InvalidVault();
+        }
+        super._validateVault(vault);
     }
 }

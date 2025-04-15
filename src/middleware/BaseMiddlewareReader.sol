@@ -17,7 +17,7 @@ contract BaseMiddlewareReader is BaseMiddleware, NoAccessManager, NoKeyManager {
      * @return timestamp The capture timestamp
      */
     function getCaptureTimestamp() public view override returns (uint48 timestamp) {
-        return BaseMiddleware(_getMiddleware()).getCaptureTimestamp();
+        return BaseMiddleware(address(this)).getCaptureTimestamp();
     }
 
     /**
@@ -27,7 +27,7 @@ contract BaseMiddlewareReader is BaseMiddleware, NoAccessManager, NoKeyManager {
      * @return power The calculated voting power (equal to stake)
      */
     function stakeToPower(address vault, uint256 stake) public view override returns (uint256 power) {
-        return BaseMiddleware(_getMiddleware()).stakeToPower(vault, stake);
+        return BaseMiddleware(address(this)).stakeToPower(vault, stake);
     }
 
     /**
@@ -419,17 +419,5 @@ contract BaseMiddlewareReader is BaseMiddleware, NoAccessManager, NoKeyManager {
         address[] memory operators
     ) external view returns (uint256) {
         return _totalPower(operators);
-    }
-
-    /**
-     * @notice Gets the middleware address from the calldata
-     * @return The middleware address
-     */
-    function _getMiddleware() private pure returns (address) {
-        address middleware;
-        assembly {
-            middleware := shr(96, calldataload(sub(calldatasize(), 20)))
-        }
-        return middleware;
     }
 }

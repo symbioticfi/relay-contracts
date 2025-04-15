@@ -112,5 +112,7 @@ abstract contract KeyManagerBytes is KeyManager {
             $._keyData[key_].value = operator;
             $._keyData[key_].status.set(timestamp);
         }
+
+        emit UpdateKey(operator, key_);
     }
 }

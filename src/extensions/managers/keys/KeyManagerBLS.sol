@@ -137,12 +137,16 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
     function _updateKey(address operator, bytes memory key_) internal override {
         KeyManagerBLSStorage storage $ = _getKeyManagerBLSStorage();
         uint48 timestamp = _now();
-        uint256 x = $._aggregatedKey.latest();
-        uint256 y = 0;
-        if (x != 0) {
-            (, y) = BN254.findYFromX(x);
+        uint256 compressedKey = $._aggregatedKey.latest();
+        BN254.G1Point memory aggregatedKey;
+        uint256 derivedY;
+        if (compressedKey != 0) {
+            uint256 X = uint256(compressedKey) >> 1;
+            (derivedY,) = BN254.findYFromX(X);
+            aggregatedKey = (compressedKey & 1) == 1
+                ? BN254.negate(BN254.G1Point({X: X, Y: derivedY}))
+                : BN254.G1Point({X: X, Y: derivedY});
         }
-        BN254.G1Point memory aggregatedKey = BN254.G1Point(x, y);
         BN254.G1Point memory prevKey = $._prevKey[operator];
         BN254.G1Point memory currentKey = $._key[operator];
         BN254.G1Point memory key = abi.decode(key_, (BN254.G1Point));
@@ -175,7 +179,7 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
             aggregatedKey = aggregatedKey.plus(key);
             $._keyMerkle.insert(bytes32(key.X));
             $._keyMerkleRoot.push(_now(), uint256($._keyMerkle.root()));
-            $._aggregatedKey.push(_now(), aggregatedKey.X);
+            $._aggregatedKey.push(_now(), (aggregatedKey.X << 1) | (derivedY == aggregatedKey.Y ? 0 : 1));
             return;
         }
         bytes32[16] memory proof;
@@ -196,5 +200,7 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
 
         $._aggregatedKey.push(_now(), aggregatedKey.X);
         $._keyMerkleRoot.push(_now(), uint256($._keyMerkle.root()));
+
+        emit UpdateKey(operator, key_);
     }
 }

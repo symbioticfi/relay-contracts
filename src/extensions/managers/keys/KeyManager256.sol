@@ -114,5 +114,7 @@ abstract contract KeyManager256 is KeyManager {
             $._keyData[key].value = operator;
             $._keyData[key].status.set(timestamp);
         }
+
+        emit UpdateKey(operator, key_);
     }
 }
