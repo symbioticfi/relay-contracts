@@ -4,7 +4,8 @@ pragma solidity ^0.8.25;
 import {POCBaseTest} from "@symbiotic-test/POCBase.t.sol";
 
 import {BLSSqrtTaskMiddleware} from "../src/examples/sqrt-task-network/BLSSqrtTaskMiddleware.sol";
-import {IBaseMiddlewareReader} from "../src/interfaces/IBaseMiddlewareReader.sol";
+import {IBaseMiddlewareReader} from "../src/interfaces/middleware/IBaseMiddlewareReader.sol";
+import {IKeyManager} from "../src/interfaces/managers/extendable/IKeyManager.sol";
 
 //import {IVault} from "@symbiotic/interfaces/vault/IVault.sol";
 //import {IBaseDelegator} from "@symbiotic/interfaces/delegator/IBaseDelegator.sol";
@@ -104,10 +105,8 @@ contract OperatorsRegistrationTest is POCBaseTest {
         assertTrue(IBaseMiddlewareReader(address(middleware)).isOperatorRegistered(operator));
 
         // Verify operator key is registered correctly
-        assertEq(abi.decode(IBaseMiddlewareReader(address(middleware)).operatorKey(operator), (bytes32)), bytes32(0));
+        assertEq(abi.decode(IKeyManager(address(middleware)).operatorKey(operator), (bytes32)), bytes32(0));
         vm.warp(block.timestamp + 2);
-        assertEq(
-            abi.decode(IBaseMiddlewareReader(address(middleware)).operatorKey(operator), (BN254.G1Point)).X, keyG1.X
-        );
+        assertEq(abi.decode(IKeyManager(address(middleware)).operatorKey(operator), (BN254.G1Point)).X, keyG1.X);
     }
 }

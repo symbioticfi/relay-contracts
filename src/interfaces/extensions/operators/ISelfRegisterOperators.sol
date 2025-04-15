@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
+import {IBaseOperators} from "./IBaseOperators.sol";
+import {ISigManager} from "../../managers/extendable/ISigManager.sol";
+
+import {IERC5267} from "@openzeppelin/contracts/interfaces/IERC5267.sol";
+
 /**
  * @title ISelfRegisterOperators
  * @notice Interface for self-registration and management of operators with signature verification
@@ -9,15 +14,26 @@ interface ISelfRegisterOperators {
     error InvalidSignature();
     error OperatorPowerBelowThreshold();
     error OperatorAbovePowerThreshold();
+
+    struct SelfRegisterOperatorsStorage {
+        mapping(address => uint256) nonces;
+        uint256 minPowerThreshold;
+    }
+
+    event UpdatePowerThreshold(uint256 minPowerThreshold);
+
+    function SelfRegisterOperators_VERSION() external view returns (uint64);
+
     /**
      * @notice Returns the nonce for an operator address
      * @param operator The operator address to check
      * @return The current nonce value
      */
-
     function nonces(
         address operator
     ) external view returns (uint256);
+
+    function minPowerThreshold() external view returns (uint256);
 
     /**
      * @notice Allows an operator to self-register with a key and optional vault
@@ -163,4 +179,28 @@ interface ISelfRegisterOperators {
      * @param signature EIP712 signature authorizing vault unpause
      */
     function unpauseOperatorVault(address operator, address vault, bytes memory signature) external;
+
+    /**
+     * @notice Updates the minimum power threshold for operators, be careful, this will allow to kick operators below the threshold
+     * @param minPowerThreshold_ The new minimum power threshold
+     */
+    function updatePowerThreshold(
+        uint256 minPowerThreshold_
+    ) external;
+
+    /**
+     * @notice Attempts to kick an operator if they are below the power threshold
+     * @dev Will pause the operator if they are active, or unregister them if they are inactive
+     * @param operator The address of the operator to try kicking
+     */
+    function tryKickOperator(
+        address operator
+    ) external;
+
+    /**
+     * @notice Attempts to kick an operator if they are below the power threshold
+     * @dev Will pause the operator if they are active, or unregister them if they are inactive
+     * @param operator The address of the operator to try kicking
+     */
+    function tryKickOperatorVault(address operator, address vault) external;
 }

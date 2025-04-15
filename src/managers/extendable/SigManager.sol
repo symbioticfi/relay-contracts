@@ -3,12 +3,14 @@ pragma solidity ^0.8.25;
 
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
+import {ISigManager} from "../../interfaces/managers/extendable/ISigManager.sol";
+
 /**
  * @title SigManager
  * @notice Abstract contract for verifying signatures against operator keys
  * @dev Provides signature verification functionality for operator keys
  */
-abstract contract SigManager is Initializable {
+abstract contract SigManager is Initializable, ISigManager {
     /**
      * @notice Verifies that a signature was created by the owner of a key
      * @param operator The address of the operator that owns the key

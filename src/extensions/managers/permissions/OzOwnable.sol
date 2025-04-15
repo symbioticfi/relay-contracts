@@ -3,15 +3,19 @@ pragma solidity ^0.8.25;
 
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-import {AccessManager} from "../../../managers/extendable/AccessManager.sol";
-import {IOzOwnable} from "../../../interfaces/extensions/managers/access/IOzOwnable.sol";
+import {PermissionManager} from "../../../managers/extendable/PermissionManager.sol";
+
+import {IOzOwnable} from "../../../interfaces/extensions/managers/permissions/IOzOwnable.sol";
 
 /**
  * @title OzOwnable
  * @notice A middleware extension that restricts access to a single owner address
- * @dev Implements AccessManager with owner-based access control
+ * @dev Implements PermissionManager with owner-based access control
  */
-abstract contract OzOwnable is AccessManager, OwnableUpgradeable, IOzOwnable {
+abstract contract OzOwnable is PermissionManager, OwnableUpgradeable, IOzOwnable {
+    /**
+     * @inheritdoc IOzOwnable
+     */
     uint64 public constant OzOwnable_VERSION = 1;
 
     /**
@@ -25,8 +29,7 @@ abstract contract OzOwnable is AccessManager, OwnableUpgradeable, IOzOwnable {
     }
 
     /**
-     * @notice Checks if the caller has access (is the owner)
-     * @dev Reverts if the caller is not the owner
+     * @inheritdoc PermissionManager
      */
     function _checkAccess() internal view virtual override {
         _checkOwner();

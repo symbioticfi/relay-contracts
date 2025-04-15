@@ -2,6 +2,7 @@
 pragma solidity ^0.8.25;
 
 import {BaseOperators} from "./BaseOperators.sol";
+
 import {IOperators} from "../../interfaces/extensions/operators/IOperators.sol";
 
 /**
@@ -10,6 +11,9 @@ import {IOperators} from "../../interfaces/extensions/operators/IOperators.sol";
  * @dev Provides core operator management functionality with hooks for customization
  */
 abstract contract Operators is BaseOperators, IOperators {
+    /**
+     * @inheritdoc IOperators
+     */
     uint64 public constant Operators_VERSION = 1;
 
     /**

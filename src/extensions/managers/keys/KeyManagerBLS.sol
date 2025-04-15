@@ -2,10 +2,15 @@
 pragma solidity ^0.8.25;
 
 import {KeyManager} from "../../../managers/extendable/KeyManager.sol";
+import {BLSSig} from "../sigs/BLSSig.sol";
+
 import {PauseableEnumerableSet} from "../../../libraries/PauseableEnumerableSet.sol";
 import {BN254} from "../../../libraries/BN254.sol";
-import {BLSSig} from "../sigs/BLSSig.sol";
 import {MerkleLib} from "../../../libraries/Merkle.sol";
+
+import {IKeyManagerBLS} from "../../../interfaces/extensions/managers/keys/IKeyManagerBLS.sol";
+import {IKeyManager} from "../../../interfaces/managers/extendable/IKeyManager.sol";
+
 import {Checkpoints} from "@symbiotic/contracts/libraries/Checkpoints.sol";
 
 /**
@@ -13,27 +18,19 @@ import {Checkpoints} from "@symbiotic/contracts/libraries/Checkpoints.sol";
  * @notice Manages storage and validation of operator keys using BLS G1 points
  * @dev Extends KeyManager to provide key management functionality
  */
-abstract contract KeyManagerBLS is KeyManager, BLSSig {
+abstract contract KeyManagerBLS is KeyManager, BLSSig, IKeyManagerBLS {
     using BN254 for BN254.G1Point;
     using PauseableEnumerableSet for PauseableEnumerableSet.Status;
     using MerkleLib for MerkleLib.Tree;
     using Checkpoints for Checkpoints.Trace256;
 
+    /**
+     * @inheritdoc IKeyManagerBLS
+     */
     uint64 public constant KeyManagerBLS_VERSION = 1;
+
     // must be same as TREE_DEPTH in MerkleLib.sol
     uint256 private constant _TREE_DEPTH = 16;
-
-    error DuplicateKey();
-    error PreviousKeySlashable();
-
-    struct KeyManagerBLSStorage {
-        mapping(address => BN254.G1Point) _key;
-        mapping(address => BN254.G1Point) _prevKey;
-        mapping(uint256 => PauseableEnumerableSet.InnerAddress) _keyData;
-        Checkpoints.Trace256 _aggregatedKey;
-        MerkleLib.Tree _keyMerkle;
-        Checkpoints.Trace256 _keyMerkleRoot;
-    }
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.KeyManagerBLS")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant KeyManagerBLSStorageLocation =
@@ -46,6 +43,9 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
         }
     }
 
+    /**
+     * @inheritdoc IKeyManagerBLS
+     */
     function verifyAggregate(
         uint48 timestamp,
         BN254.G1Point memory aggregateG1Key,
@@ -83,9 +83,7 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
     }
 
     /**
-     * @notice Gets the operator address associated with a key
-     * @param key The key to lookup
-     * @return The operator address that owns the key, or zero address if none
+     * @inheritdoc IKeyManager
      */
     function operatorByKey(
         bytes memory key
@@ -96,9 +94,7 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
     }
 
     /**
-     * @notice Gets an operator's active key at the current capture timestamp
-     * @param operator The operator address to lookup
-     * @return The operator's active key encoded as bytes, or encoded zero bytes if none
+     * @inheritdoc IKeyManager
      */
     function operatorKey(
         address operator
@@ -117,10 +113,7 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
     }
 
     /**
-     * @notice Checks if a key was active at a specific timestamp
-     * @param timestamp The timestamp to check
-     * @param key_ The key to check
-     * @return True if the key was active at the timestamp, false otherwise
+     * @inheritdoc IKeyManager
      */
     function keyWasActiveAt(uint48 timestamp, bytes memory key_) public view override returns (bool) {
         KeyManagerBLSStorage storage $ = _getKeyManagerBLSStorage();
@@ -129,10 +122,7 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
     }
 
     /**
-     * @notice Updates an operator's key
-     * @dev Handles key rotation by disabling old key and registering new one
-     * @param operator The operator address to update
-     * @param key_ The new key to register, encoded as bytes
+     * @inheritdoc KeyManager
      */
     function _updateKey(address operator, bytes memory key_) internal override {
         KeyManagerBLSStorage storage $ = _getKeyManagerBLSStorage();

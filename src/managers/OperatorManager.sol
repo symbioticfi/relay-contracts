@@ -11,29 +11,21 @@ import {CaptureTimestampManager} from "./extendable/CaptureTimestampManager.sol"
 
 import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
+import {IOperatorManager} from "../interfaces/managers/IOperatorManager.sol";
+
 /**
  * @title OperatorManager
  * @notice Manages operator registration and validation for the protocol
  * @dev Inherits from NetworkStorage, SlashingWindowStorage, and CaptureTimestampManager
  * to provide operator management functionality with network awareness and time-based features
  */
-abstract contract OperatorManager is NetworkStorage, SlashingWindowStorage, CaptureTimestampManager {
+abstract contract OperatorManager is
+    NetworkStorage,
+    SlashingWindowStorage,
+    CaptureTimestampManager,
+    IOperatorManager
+{
     using PauseableEnumerableSet for PauseableEnumerableSet.AddressSet;
-
-    error NotOperator();
-    error OperatorNotOptedIn();
-
-    event RegisterOperator(address operator);
-    event PauseOperator(address operator);
-    event UnpauseOperator(address operator);
-    event UnregisterOperator(address operator);
-
-    /// @custom:storage-location erc7201:symbiotic.storage.OperatorManager
-    struct OperatorManagerStorage {
-        address _operatorRegistry; // Address of the operator registry
-        address _operatorNetOptin; // Address of the operator network opt-in service
-        PauseableEnumerableSet.AddressSet _operators;
-    }
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OperatorManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant OperatorManagerStorageLocation =

@@ -2,6 +2,7 @@
 pragma solidity ^0.8.25;
 
 import {BaseMiddleware} from "../middleware/BaseMiddleware.sol";
+
 import {ISharedVaults} from "../interfaces/extensions/ISharedVaults.sol";
 
 /**
@@ -10,6 +11,9 @@ import {ISharedVaults} from "../interfaces/extensions/ISharedVaults.sol";
  * @dev Extends BaseMiddleware to provide access control for vault management functions
  */
 abstract contract SharedVaults is BaseMiddleware, ISharedVaults {
+    /**
+     * @inheritdoc ISharedVaults
+     */
     uint64 public constant SharedVaults_VERSION = 1;
 
     /**

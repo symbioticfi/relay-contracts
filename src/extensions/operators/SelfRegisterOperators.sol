@@ -17,8 +17,9 @@ import {PauseableEnumerableSet} from "../../libraries/PauseableEnumerableSet.sol
 abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgradeable, ISelfRegisterOperators {
     using PauseableEnumerableSet for PauseableEnumerableSet.AddressSet;
 
-    event UpdatePowerThreshold(uint256 minPowerThreshold);
-
+    /**
+     * @inheritdoc ISelfRegisterOperators
+     */
     uint64 public constant SelfRegisterOperators_VERSION = 1;
 
     // EIP-712 TypeHash constants
@@ -39,11 +40,6 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
     bytes32 private constant UNPAUSE_OPERATOR_VAULT_TYPEHASH =
         keccak256("UnpauseOperatorVault(address operator,address vault,uint256 nonce)");
 
-    struct SelfRegisterOperatorsStorage {
-        mapping(address => uint256) nonces;
-        uint256 minPowerThreshold;
-    }
-
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.SelfRegisterOperators")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant SelfResgisterOperators_STORAGE_LOCATION =
         0x7c1bcd600c3fcfbc53470fac03a90d5cf6aa7b77c3f1ed10e6c6bd4d192eaf00;
@@ -55,12 +51,18 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
         }
     }
 
+    /**
+     * @inheritdoc ISelfRegisterOperators
+     */
     function nonces(
         address operator
     ) public view returns (uint256) {
         return _getSelfRegisterOperatorsStorage().nonces[operator];
     }
 
+    /**
+     * @inheritdoc ISelfRegisterOperators
+     */
     function minPowerThreshold() external view returns (uint256) {
         return _getSelfRegisterOperatorsStorage().minPowerThreshold;
     }
@@ -275,8 +277,7 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
     }
 
     /**
-     * @notice Updates the minimum power threshold for operators, be careful, this will allow to kick operators below the threshold
-     * @param minPowerThreshold_ The new minimum power threshold
+     * @inheritdoc ISelfRegisterOperators
      */
     function updatePowerThreshold(
         uint256 minPowerThreshold_
@@ -285,9 +286,7 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
     }
 
     /**
-     * @notice Attempts to kick an operator if they are below the power threshold
-     * @dev Will pause the operator if they are active, or unregister them if they are inactive
-     * @param operator The address of the operator to try kicking
+     * @inheritdoc ISelfRegisterOperators
      */
     function tryKickOperator(
         address operator
@@ -311,9 +310,7 @@ abstract contract SelfRegisterOperators is BaseOperators, SigManager, EIP712Upgr
     }
 
     /**
-     * @notice Attempts to kick an operator if they are below the power threshold
-     * @dev Will pause the operator if they are active, or unregister them if they are inactive
-     * @param operator The address of the operator to try kicking
+     * @inheritdoc ISelfRegisterOperators
      */
     function tryKickOperatorVault(address operator, address vault) public {
         if (_operatorVaultWasActiveAt(_now() + 1, operator, vault) && !_isOperatorBelowPowerThreshold(operator, vault))

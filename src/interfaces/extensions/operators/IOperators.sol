@@ -1,11 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
+import {IBaseOperators} from "./IBaseOperators.sol";
+
 /**
  * @title IOperators
  * @notice Interface for managing operator registration, keys, and vault relationships
  */
 interface IOperators {
+    function Operators_VERSION() external view returns (uint64);
+
     /**
      * @notice Registers a new operator with an optional vault association
      * @param operator The address of the operator to register

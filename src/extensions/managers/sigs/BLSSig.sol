@@ -4,22 +4,22 @@ pragma solidity ^0.8.25;
 import {SigManager} from "../../../managers/extendable/SigManager.sol";
 import {BN254} from "../../../libraries/BN254.sol";
 
+import {IBLSSig} from "../../../interfaces/extensions/managers/sigs/IBLSSig.sol";
+
 /**
  * @title BLSSig
  * @notice Manages BLS public keys and signature verification
  */
-contract BLSSig is SigManager {
+abstract contract BLSSig is SigManager, IBLSSig {
     using BN254 for BN254.G1Point;
 
+    /**
+     * @inheritdoc IBLSSig
+     */
     uint64 public constant BLSSig_VERSION = 1;
 
     /**
-     * @notice Verifies that a signature was created by the owner of a key
-     * @param operator The address of the operator that owns the key
-     * @param key_ The BLS public key encoded as bytes
-     * @param signature The BLS signature to verify
-     * @return True if the signature was created by the key owner, false otherwise
-     * @dev The key is expected to be ABI encoded (G1Point, G2Point) tuple
+     * @inheritdoc SigManager
      */
     function _verifyKeySignature(
         address operator,
@@ -37,12 +37,7 @@ contract BLSSig is SigManager {
     }
 
     /**
-     * @notice Verifies a BLS signature
-     * @param pubkeyG1 The G1 public key to verify against
-     * @param pubkeyG2 The G2 public key to verify against
-     * @param signature The signature to verify
-     * @param messageHash The message hash that was signed
-     * @return True if signature is valid, false otherwise
+     * @inheritdoc IBLSSig
      */
     function verify(
         BN254.G1Point memory pubkeyG1,

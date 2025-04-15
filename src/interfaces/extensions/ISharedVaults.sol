@@ -1,11 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
+import {IBaseMiddleware} from "../middleware/IBaseMiddleware.sol";
+
 /**
  * @title ISharedVaults
  * @notice Interface for managing shared vaults that can be used by multiple operators
  */
 interface ISharedVaults {
+    function SharedVaults_VERSION() external view returns (uint64);
+
     /**
      * @notice Registers a new shared vault
      * @param sharedVault The address of the vault to register
