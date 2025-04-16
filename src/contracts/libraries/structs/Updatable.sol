@@ -2,9 +2,11 @@
 pragma solidity ^0.8.25;
 
 library Updatable {
+    error NextTimepointMustBeGreaterThanCurrentTimepoint();
+
     modifier checkTimepoints(uint48 currentTimepoint, uint48 nextValueTimepoint) {
         if (nextValueTimepoint <= currentTimepoint) {
-            revert("Next timepoint must be greater than current timepoint");
+            revert NextTimepointMustBeGreaterThanCurrentTimepoint();
         }
         _;
     }
@@ -64,7 +66,10 @@ library Updatable {
         if (self.nextValueTimepoint != 0 && self.nextValueTimepoint <= currentTimepoint) {
             return self.nextValue;
         }
-        if (self.valueTimepoint <= currentTimepoint) {
+        if (
+            (self.valueTimepoint != 0 && self.valueTimepoint <= currentTimepoint)
+                || (self.valueTimepoint == 0 && self.value != 0)
+        ) {
             return self.value;
         }
         return self.prevValue;
@@ -77,22 +82,13 @@ library Updatable {
         if (self.nextValueTimepoint != 0 && self.nextValueTimepoint <= currentTimepoint) {
             return (self.nextValueTimepoint, self.nextValue);
         }
-        if (self.valueTimepoint <= currentTimepoint) {
+        if (
+            (self.valueTimepoint != 0 && self.valueTimepoint <= currentTimepoint)
+                || (self.valueTimepoint == 0 && self.value != 0)
+        ) {
             return (self.valueTimepoint, self.value);
         }
         return (0, self.prevValue);
-    }
-
-    function getCurrent(
-        Uint48Value storage self
-    ) internal view returns (uint48, uint48) {
-        return (self.valueTimepoint, self.value);
-    }
-
-    function getNext(
-        Uint48Value storage self
-    ) internal view returns (uint48, uint48) {
-        return (self.nextValueTimepoint, self.nextValue);
     }
 
     function clear(
@@ -159,7 +155,10 @@ library Updatable {
         if (self.nextValueTimepoint != 0 && self.nextValueTimepoint <= currentTimepoint) {
             return self.nextValue;
         }
-        if (self.valueTimepoint <= currentTimepoint) {
+        if (
+            (self.valueTimepoint != 0 && self.valueTimepoint <= currentTimepoint)
+                || (self.valueTimepoint == 0 && self.value != 0)
+        ) {
             return self.value;
         }
         return self.prevValue;
@@ -172,22 +171,13 @@ library Updatable {
         if (self.nextValueTimepoint != 0 && self.nextValueTimepoint <= currentTimepoint) {
             return (self.nextValueTimepoint, self.nextValue);
         }
-        if (self.valueTimepoint <= currentTimepoint) {
+        if (
+            (self.valueTimepoint != 0 && self.valueTimepoint <= currentTimepoint)
+                || (self.valueTimepoint == 0 && self.value != 0)
+        ) {
             return (self.valueTimepoint, self.value);
         }
         return (0, self.prevValue);
-    }
-
-    function getCurrent(
-        Uint128Value storage self
-    ) internal view returns (uint48, uint128) {
-        return (self.valueTimepoint, self.value);
-    }
-
-    function getNext(
-        Uint128Value storage self
-    ) internal view returns (uint48, uint128) {
-        return (self.nextValueTimepoint, self.nextValue);
     }
 
     function clear(
@@ -254,7 +244,10 @@ library Updatable {
         if (self.nextValueTimepoint != 0 && self.nextValueTimepoint <= currentTimepoint) {
             return self.nextValue;
         }
-        if (self.valueTimepoint <= currentTimepoint) {
+        if (
+            (self.valueTimepoint != 0 && self.valueTimepoint <= currentTimepoint)
+                || (self.valueTimepoint == 0 && self.value != 0)
+        ) {
             return self.value;
         }
         return self.prevValue;
@@ -267,22 +260,13 @@ library Updatable {
         if (self.nextValueTimepoint != 0 && self.nextValueTimepoint <= currentTimepoint) {
             return (self.nextValueTimepoint, self.nextValue);
         }
-        if (self.valueTimepoint <= currentTimepoint) {
+        if (
+            (self.valueTimepoint != 0 && self.valueTimepoint <= currentTimepoint)
+                || (self.valueTimepoint == 0 && self.value != 0)
+        ) {
             return (self.valueTimepoint, self.value);
         }
         return (0, self.prevValue);
-    }
-
-    function getCurrent(
-        Uint208Value storage self
-    ) internal view returns (uint48, uint208) {
-        return (self.valueTimepoint, self.value);
-    }
-
-    function getNext(
-        Uint208Value storage self
-    ) internal view returns (uint48, uint208) {
-        return (self.nextValueTimepoint, self.nextValue);
     }
 
     function clear(
@@ -349,7 +333,10 @@ library Updatable {
         if (self.nextValueTimepoint != 0 && self.nextValueTimepoint <= currentTimepoint) {
             return self.nextValue;
         }
-        if (self.valueTimepoint != 0 && self.valueTimepoint <= currentTimepoint) {
+        if (
+            (self.valueTimepoint != 0 && self.valueTimepoint <= currentTimepoint)
+                || (self.valueTimepoint == 0 && self.value != bytes32(0))
+        ) {
             return self.value;
         }
         return self.prevValue;
@@ -362,22 +349,13 @@ library Updatable {
         if (self.nextValueTimepoint != 0 && self.nextValueTimepoint <= currentTimepoint) {
             return (self.nextValueTimepoint, self.nextValue);
         }
-        if (self.valueTimepoint != 0 && self.valueTimepoint <= currentTimepoint) {
+        if (
+            (self.valueTimepoint != 0 && self.valueTimepoint <= currentTimepoint)
+                || (self.valueTimepoint == 0 && self.value != bytes32(0))
+        ) {
             return (self.valueTimepoint, self.value);
         }
         return (0, self.prevValue);
-    }
-
-    function getCurrent(
-        Bytes32Value storage self
-    ) internal view returns (uint48, bytes32) {
-        return (self.valueTimepoint, self.value);
-    }
-
-    function getNext(
-        Bytes32Value storage self
-    ) internal view returns (uint48, bytes32) {
-        return (self.nextValueTimepoint, self.nextValue);
     }
 
     function clear(

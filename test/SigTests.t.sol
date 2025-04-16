@@ -2,11 +2,11 @@
 // pragma solidity ^0.8.25;
 
 // import {Test, Vm, console} from "forge-std/Test.sol";
-// import {POCBaseTest} from "@symbiotic-test/POCBase.t.sol";
-// import {IOperatorSpecificDelegator} from "@symbiotic/interfaces/delegator/IOperatorSpecificDelegator.sol";
-// import {IVault} from "@symbiotic/interfaces/vault/IVault.sol";
-// import {IVaultConfigurator} from "@symbiotic/interfaces/IVaultConfigurator.sol";
-// import {IBaseDelegator} from "@symbiotic/interfaces/delegator/IBaseDelegator.sol";
+// import {POCBaseTest} from "@symbioticfi/core/test/POCBase.t.sol";
+// import {IOperatorSpecificDelegator} from "@symbioticfi/core/src/interfaces/delegator/IOperatorSpecificDelegator.sol";
+// import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
+// import {IVaultConfigurator} from "@symbioticfi/core/src/interfaces/IVaultConfigurator.sol";
+// import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
 
 // import {IBaseMiddlewareReader} from "../src/interfaces/IBaseMiddlewareReader.sol";
 

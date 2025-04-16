@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
+import {Subnetwork} from "@symbioticfi/core/src/contracts/libraries/Subnetwork.sol";
 
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
@@ -25,15 +25,15 @@ abstract contract NetworkManager is Initializable {
      * @notice Returns the address of the network
      * @return network The address of the network
      */
-    function _NETWORK() internal view virtual returns (address) {
+    function NETWORK() internal view virtual returns (address) {
         return NetworkManagerLogic.NETWORK();
     }
 
-    function _SUBNETWORK_IDENTIFIER() internal view virtual returns (uint96) {
+    function SUBNETWORK_IDENTIFIER() internal view virtual returns (uint96) {
         return NetworkManagerLogic.SUBNETWORK_IDENTIFIER();
     }
 
-    function _SUBNETWORK() internal view virtual returns (bytes32) {
+    function SUBNETWORK() internal view virtual returns (bytes32) {
         return NetworkManagerLogic.SUBNETWORK();
     }
 }

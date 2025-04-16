@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {IRegistry} from "@symbiotic/interfaces/common/IRegistry.sol";
-import {IOptInService} from "@symbiotic/interfaces/service/IOptInService.sol";
-import {StaticDelegateCallable} from "@symbiotic/contracts/common/StaticDelegateCallable.sol";
+import {IRegistry} from "@symbioticfi/core/src/interfaces/common/IRegistry.sol";
+import {IOptInService} from "@symbioticfi/core/src/interfaces/service/IOptInService.sol";
+import {StaticDelegateCallable} from "@symbioticfi/core/src/contracts/common/StaticDelegateCallable.sol";
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Arrays} from "@openzeppelin/contracts/utils/Arrays.sol";

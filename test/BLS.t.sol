@@ -1,14 +1,14 @@
 // // SPDX-License-Identifier: MIT
 // pragma solidity ^0.8.25;
 
-// import {POCBaseTest} from "@symbiotic-test/POCBase.t.sol";
+// import {POCBaseTest} from "@symbioticfi/core/test/POCBase.t.sol";
 
 // import {BLSSqrtTaskMiddleware} from "../src/examples/sqrt-task-network/BLSSqrtTaskMiddleware.sol";
 // import {IBaseMiddlewareReader} from "../src/interfaces/IBaseMiddlewareReader.sol";
 
-// //import {IVault} from "@symbiotic/interfaces/vault/IVault.sol";
-// //import {IBaseDelegator} from "@symbiotic/interfaces/delegator/IBaseDelegator.sol";
-// // import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
+// //import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
+// //import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
+// // import {Subnetwork} from "@symbioticfi/core/src/contracts/libraries/Subnetwork.sol";
 // import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 // import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 // import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
@@ -16,8 +16,8 @@
 // import {BN254} from "../src/libraries/BN254.sol";
 // import {BN254G2} from "../test/libraries/BN254G2.sol";
 // import "forge-std/console.sol";
-// //import {Slasher} from "@symbiotic/contracts/slasher/Slasher.sol";
-// //import {VetoSlasher} from "@symbiotic/contracts/slasher/VetoSlasher.sol";
+// //import {Slasher} from "@symbioticfi/core/src/contracts/slasher/Slasher.sol";
+// //import {VetoSlasher} from "@symbioticfi/core/src/contracts/slasher/VetoSlasher.sol";
 
 // contract OperatorsRegistrationTest is POCBaseTest {
 //     // using Subnetwork for bytes32;

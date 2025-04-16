@@ -6,6 +6,7 @@ import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/crypt
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
 import {Checkpoints} from "../libraries/structs/Checkpoints.sol";
+
 import {KeyTag} from "../libraries/utils/KeyTag.sol";
 import {KeyBlsBn254} from "../libraries/keys/KeyBlsBn254.sol";
 import {KeyEcdsaSecp256k1} from "../libraries/keys/KeyEcdsaSecp256k1.sol";

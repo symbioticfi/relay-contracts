@@ -1,9 +1,9 @@
 // // SPDX-License-Identifier: MIT
 // pragma solidity ^0.8.25;
 
-// import {IVault} from "@symbiotic/interfaces/vault/IVault.sol";
-// import {IBaseDelegator} from "@symbiotic/interfaces/delegator/IBaseDelegator.sol";
-// import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
+// import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
+// import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
+// import {Subnetwork} from "@symbioticfi/core/src/contracts/libraries/Subnetwork.sol";
 
 // import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
@@ -165,7 +165,7 @@
 
 //         for (uint256 i; i < vaultsLength; ++i) {
 //             address vault = params.vaults[i];
-//             bytes32 subnetwork = _SUBNETWORK();
+//             bytes32 subnetwork = SUBNETWORK();
 //             uint256 stake = IBaseDelegator(IVault(vault).delegator()).stakeAt(
 //                 subnetwork, params.operator, params.epochStart, stakeHints[i]
 //             );

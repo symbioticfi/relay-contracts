@@ -43,30 +43,6 @@ abstract contract BaseMiddleware is VaultManager, AccessManager, DiamondProxy {
         __VaultManager_init(slashingWindow);
     }
 
-    /**
-     * @notice Gets the network address
-     * @return The network address
-     */
-    function NETWORK() external view returns (address) {
-        return _NETWORK();
-    }
-
-    /**
-     * @notice Gets the subnetwork identifier
-     * @return The subnetwork identifier
-     */
-    function SUBNETWORK_IDENTIFIER() external view returns (uint96) {
-        return _SUBNETWORK_IDENTIFIER();
-    }
-
-    /**
-     * @notice Gets the subnetwork
-     * @return The subnetwork
-     */
-    function SUBNETWORK() external view returns (bytes32) {
-        return _SUBNETWORK();
-    }
-
     function getOldestNeededTimestamp() external view returns (uint48) {
         return _getOldestNeededTimestamp();
     }

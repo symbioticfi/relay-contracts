@@ -1,90 +1,66 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
+import {MigratableEntity} from "./common/MigratableEntity.sol";
+import {NetworkManager} from "../SDK/managers/NetworkManager.sol";
+
+import {Updatable} from "../libraries/structs/Updatable.sol";
+
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
-import {Updatable} from "../libraries/utils/Updatable.sol";
-
-contract EpochManager {
+contract EpochManager is MigratableEntity, NetworkManager {
     using Updatable for Updatable.Uint208Value;
 
     error InvalidEpochDuration();
+    error TooOldTimestamp();
 
-    /// @custom:storage-location erc7201:symbiotic.storage.EpochManager
-    struct EpochManagerStorage {
-        Updatable.Uint208Value _epochDurationData; // 8 empty bytes + 6 bytes for epochDurationIndex + 6 bytes for epochDurationTimestamp + 6 bytes for epochDuration
+    struct EpochManagerInitParams {
+        uint48 epochDuration;
+        uint48 epochDurationTimestamp;
     }
 
-    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.EpochManager")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant EpochManagerStorageLocation =
-        0xab930e9b836b4d72502da14061937ab080936446173403910135ea983863d400;
+    Updatable.Uint208Value _epochDurationData; // 14 empty bytes + 6 bytes for epochDurationIndex + 6 bytes for epochDuration
 
-    function _getEpochManagerStorage() internal pure returns (EpochManagerStorage storage $) {
-        assembly ("memory-safe") {
-            $.slot := EpochManagerStorageLocation
-        }
+    constructor(
+        address factory
+    ) MigratableEntity(factory) {}
+
+    function getCurrentEpoch() public view returns (uint48) {
+        return _getEpoch(Time.timestamp());
     }
 
-    function _getEpochDurationData(
-        uint48 timestamp
-    ) internal view returns (uint48, uint48, uint48) {
-        (uint48 epochDurationTimestamp, uint208 epochDurationData) = _getEpochManagerStorage()._epochDurationData.getWithTimepoint(timestamp);
-
-        return (uint48(epochDurationData), epochDurationTimestamp, uint48(epochDurationData >> 48));
-    }
-
-    function _getEpochDurationData() internal view returns (uint48, uint48, uint48) {
-        return _getEpochDurationData(Time.timestamp());
-    }
-
-    function _getEpochDuration(
-        uint48 timestamp
-    ) internal view returns (uint48 epochDuration) {
-        (epochDuration,,) = _getEpochDurationData(timestamp);
-    }
-
-    function _getEpochDuration() internal view returns (uint48) {
+    function getCurrentEpochDuration() public view returns (uint48) {
         return _getEpochDuration(Time.timestamp());
     }
 
-    function _getCurrentEpoch() internal view returns (uint48) {
+    function getCurrentEpochStart() public view returns (uint48) {
         (uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex) = _getEpochDurationData();
-        return epochDurationIndex + (Time.timestamp() - epochDurationTimestamp) / epochDuration;
+        return epochDurationTimestamp + (getCurrentEpoch() - epochDurationIndex) * epochDuration;
     }
 
-    function _getCurrentEpochStart() internal view returns (uint48) {
-        (uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex) = _getEpochDurationData();
-        return epochDurationTimestamp + (_getCurrentEpoch() - epochDurationIndex) * epochDuration;
+    function getNextEpochDuration() public view returns (uint48) {
+        return _getEpochDuration(getNextEpochStart());
     }
 
-    function _getNextEpochDuration() internal view returns (uint48) {
-        return _getEpochDuration(_getNextEpochStart());
+    function getNextEpochStart() public view returns (uint48) {
+        return getCurrentEpochStart() + getCurrentEpochDuration();
     }
 
-    function _getNextEpochStart() internal view returns (uint48) {
-        return _getCurrentEpochStart() + _getEpochDuration();
+    function getPreviousEpochDuration() public view returns (uint48) {
+        return _getEpochDuration(getCurrentEpochStart() - 1);
     }
 
-    function _getPreviousEpochDuration() internal view returns (uint48) {
-        return _getEpochDuration(_getCurrentEpochStart() - 1);
+    function getPreviousEpochStart() public view returns (uint48) {
+        return getCurrentEpochStart() - getPreviousEpochDuration();
     }
 
-    function _getPreviousEpochStart() internal view returns (uint48) {
-        return _getCurrentEpochStart() - _getPreviousEpochDuration();
-    }
-
-    function __EpochManager_init(uint48 epochDuration, uint48 epochDurationTimestamp) public {
-        _setEpochDuration(epochDuration, epochDurationTimestamp, 0);
-    }
-
-    function _setEpochDuration(
+    function setEpochDuration(
         uint48 epochDuration
-    ) internal {
-        uint48 nextEpochDurationTimepoint = _getCurrentEpochStart() + _getEpochDuration();
-        _getEpochManagerStorage()._epochDurationData.set(
+    ) public {
+        _epochDurationData.set(
             Time.timestamp(),
-            nextEpochDurationTimepoint,
-            _compressEpochDurationData(epochDuration, _getCurrentEpoch() + 1)
+            getCurrentEpochStart() + getCurrentEpochDuration(),
+            _serializeEpochDurationData(epochDuration, getCurrentEpoch() + 1)
         );
     }
 
@@ -93,12 +69,75 @@ contract EpochManager {
         uint48 epochDurationTimestamp,
         uint48 epochDurationIndex
     ) internal {
-        _getEpochManagerStorage()._epochDurationData.set(
-            epochDurationTimestamp, _compressEpochDurationData(epochDuration, epochDurationIndex)
-        );
+        _epochDurationData.set(epochDurationTimestamp, _serializeEpochDurationData(epochDuration, epochDurationIndex));
     }
 
-    function _compressEpochDurationData(
+    function _initialize(
+        uint64, /* initialVersion */
+        address, /* owner */
+        bytes memory data
+    ) internal virtual override {
+        EpochManagerInitParams memory initParams = abi.decode(data, (EpochManagerInitParams));
+
+        _setEpochDuration(initParams.epochDuration, initParams.epochDurationTimestamp, 0);
+    }
+
+    function _migrate(
+        uint64, /* oldVersion */
+        uint64, /* newVersion */
+        bytes calldata /* data */
+    ) internal virtual override {
+        revert();
+    }
+
+    function _getEpochDurationData(
+        uint48 timestamp
+    ) internal view returns (uint48, uint48, uint48) {
+        (uint48 epochDurationTimestamp, uint208 epochDurationData) = _epochDurationData.getWithTimepoint(timestamp);
+        (uint48 epochDuration, uint48 epochDurationIndex) = _deserializeEpochDurationData(epochDurationData);
+        return (epochDuration, epochDurationTimestamp, epochDurationIndex);
+    }
+
+    function _getEpochDurationData() internal view returns (uint48, uint48, uint48) {
+        return _getEpochDurationData(Time.timestamp());
+    }
+
+    function _getEpoch(
+        uint48 timestamp
+    ) internal view returns (uint48) {
+        (uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex) =
+            _getEpochDurationData(timestamp);
+
+        if (epochDurationTimestamp == 0) {
+            (, uint48 currentEpochDurationTimestamp, uint48 currentEpochDurationIndex) =
+                _getEpochDurationData(Time.timestamp());
+            if (timestamp < currentEpochDurationTimestamp - epochDuration) {
+                revert TooOldTimestamp();
+            }
+            return currentEpochDurationIndex - 1;
+        }
+
+        return epochDurationIndex + (timestamp - epochDurationTimestamp) / epochDuration;
+    }
+
+    function _getEpochDuration(
+        uint48 timestamp
+    ) internal view returns (uint48 epochDuration) {
+        (epochDuration,,) = _getEpochDurationData(timestamp);
+    }
+
+    function _getNextEpoch() internal view returns (uint48) {
+        return getCurrentEpoch() + 1;
+    }
+
+    function _deserializeEpochDurationData(
+        uint208 epochDurationData
+    ) internal pure returns (uint48 epochDuration, uint48 epochDurationIndex) {
+        epochDuration = uint48(epochDurationData);
+        epochDurationIndex = uint48(epochDurationData >> 48);
+    }
+
+    function _serializeEpochDurationData(
         uint48 epochDuration,
         uint48 epochDurationIndex
     ) internal pure returns (uint208) {

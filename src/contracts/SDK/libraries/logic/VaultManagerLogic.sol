@@ -1,15 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {IVault} from "@symbiotic/interfaces/vault/IVault.sol";
-import {IBaseDelegator} from "@symbiotic/interfaces/delegator/IBaseDelegator.sol";
-import {IRegistry} from "@symbiotic/interfaces/common/IRegistry.sol";
-import {IEntity} from "@symbiotic/interfaces/common/IEntity.sol";
-import {IVetoSlasher} from "@symbiotic/interfaces/slasher/IVetoSlasher.sol";
-import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
-import {ISlasher} from "@symbiotic/interfaces/slasher/ISlasher.sol";
-import {IOperatorSpecificDelegator} from "@symbiotic/interfaces/delegator/IOperatorSpecificDelegator.sol";
-import {IOperatorNetworkSpecificDelegator} from "@symbiotic/interfaces/delegator/IOperatorNetworkSpecificDelegator.sol";
+import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
+import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
+import {IRegistry} from "@symbioticfi/core/src/interfaces/common/IRegistry.sol";
+import {IEntity} from "@symbioticfi/core/src/interfaces/common/IEntity.sol";
+import {IVetoSlasher} from "@symbioticfi/core/src/interfaces/slasher/IVetoSlasher.sol";
+import {Subnetwork} from "@symbioticfi/core/src/contracts/libraries/Subnetwork.sol";
+import {ISlasher} from "@symbioticfi/core/src/interfaces/slasher/ISlasher.sol";
+import {IOperatorSpecificDelegator} from "@symbioticfi/core/src/interfaces/delegator/IOperatorSpecificDelegator.sol";
+import {IOperatorNetworkSpecificDelegator} from
+    "@symbioticfi/core/src/interfaces/delegator/IOperatorNetworkSpecificDelegator.sol";
 
 import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";

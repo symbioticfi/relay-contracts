@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
+import {Subnetwork} from "@symbioticfi/core/src/contracts/libraries/Subnetwork.sol";
 
 library NetworkManagerLogic {
     using Subnetwork for address;
