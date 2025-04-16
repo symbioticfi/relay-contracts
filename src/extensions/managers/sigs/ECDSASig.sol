@@ -23,6 +23,7 @@ abstract contract ECDSASig is SigManager, IECDSASig {
 
     /**
      * @inheritdoc SigManager
+     * @dev The key is expected to be a bytes32 that can be converted to an Ethereum address
      */
     function _verifyKeySignature(
         address operator,

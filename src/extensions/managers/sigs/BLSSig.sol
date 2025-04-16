@@ -20,6 +20,7 @@ abstract contract BLSSig is SigManager, IBLSSig {
 
     /**
      * @inheritdoc SigManager
+     * @dev The key is expected to be ABI encoded (G1Point, G2Point) tuple
      */
     function _verifyKeySignature(
         address operator,
