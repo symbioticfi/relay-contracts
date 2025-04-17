@@ -2,6 +2,7 @@
 pragma solidity ^0.8.25;
 
 import {SelfRegisterOperators} from "./SelfRegisterOperators.sol";
+
 import {IForcePauseSelfRegisterOperators} from
     "../../interfaces/extensions/operators/IForcePauseSelfRegisterOperators.sol";
 import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
@@ -14,17 +15,10 @@ import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap
 abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IForcePauseSelfRegisterOperators {
     using EnumerableMap for EnumerableMap.AddressToAddressMap;
 
-    event ForcePauseOperator(address operator);
-    event ForceUnpauseOperator(address operator);
-    event ForcePauseOperatorVault(address operator, address vault);
-    event ForceUnpauseOperatorVault(address operator, address vault);
-
+    /**
+     * @inheritdoc IForcePauseSelfRegisterOperators
+     */
     uint64 public constant ForcePauseSelfRegisterOperators_VERSION = 1;
-
-    struct ForcePauseSelfRegisterOperatorsStorage {
-        mapping(address => bool) forcePaused;
-        mapping(address => mapping(address => bool)) forcePausedVault;
-    }
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.ForcePauseSelfRegisterOperators")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant ForcePauseSelfRegisterOperatorsStorageLocation =

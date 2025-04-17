@@ -3,15 +3,15 @@ pragma solidity ^0.8.25;
 
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-import {AccessManager} from "../../../managers/extendable/AccessManager.sol";
-import {IOzAccessControl} from "../../../interfaces/extensions/managers/access/IOzAccessControl.sol";
+import {PermissionManager} from "../../../managers/extendable/PermissionManager.sol";
+import {IOzAccessControl} from "../../../interfaces/extensions/managers/permissions/IOzAccessControl.sol";
 
 /**
  * @title OzAccessControl
  * @notice A middleware extension that implements role-based access control
- * @dev Implements AccessManager with role-based access control functionality
+ * @dev Implements PermissionManager with role-based access control functionality
  */
-abstract contract OzAccessControl is AccessManager, AccessControlUpgradeable, IOzAccessControl {
+abstract contract OzAccessControl is PermissionManager, AccessControlUpgradeable, IOzAccessControl {
     event SelectorRoleSet(bytes4 selector, bytes32 role);
 
     uint64 public constant OzAccessControl_VERSION = 1;
@@ -60,8 +60,7 @@ abstract contract OzAccessControl is AccessManager, AccessControlUpgradeable, IO
     }
 
     /**
-     * @notice Checks access based on role required for the function selector
-     * @dev Implements BaseMiddleware's _checkAccess function
+     * @inheritdoc PermissionManager
      */
     function _checkAccess() internal view virtual override {
         _checkRole(getRole(msg.sig));

@@ -3,15 +3,19 @@ pragma solidity ^0.8.25;
 
 import {AccessManagedUpgradeable} from "@openzeppelin/contracts-upgradeable/access/manager/AccessManagedUpgradeable.sol";
 
-import {AccessManager} from "../../../managers/extendable/AccessManager.sol";
-import {IOzAccessManaged} from "../../../interfaces/extensions/managers/access/IOzAccessManaged.sol";
+import {PermissionManager} from "../../../managers/extendable/PermissionManager.sol";
+
+import {IOzAccessManaged} from "../../../interfaces/extensions/managers/permissions/IOzAccessManaged.sol";
 /**
  * @title OzAccessManaged
  * @notice A middleware extension that integrates OpenZeppelin's AccessManaged for access control
- * @dev Implements AccessManager with OpenZeppelin's AccessManagedUpgradeable functionality
+ * @dev Implements PermissionManager with OpenZeppelin's AccessManagedUpgradeable functionality
  */
 
-abstract contract OzAccessManaged is AccessManager, AccessManagedUpgradeable, IOzAccessManaged {
+abstract contract OzAccessManaged is PermissionManager, AccessManagedUpgradeable, IOzAccessManaged {
+    /**
+     * @inheritdoc IOzAccessManaged
+     */
     uint64 public constant OzAccessManaged_VERSION = 1;
 
     /**
@@ -26,8 +30,7 @@ abstract contract OzAccessManaged is AccessManager, AccessManagedUpgradeable, IO
     }
 
     /**
-     * @notice Checks if the caller has access through the OpenZeppelin AccessManaged
-     * @dev Delegates access check to OpenZeppelin's _checkCanCall function
+     * @inheritdoc PermissionManager
      */
     function _checkAccess() internal virtual override {
         _checkCanCall(msg.sender, msg.data);

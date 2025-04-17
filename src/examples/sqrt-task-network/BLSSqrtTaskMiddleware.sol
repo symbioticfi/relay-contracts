@@ -11,7 +11,7 @@ import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SharedVaults} from "../../extensions/SharedVaults.sol";
 import {SelfRegisterOperators} from "../../extensions/operators/SelfRegisterOperators.sol";
 
-import {OzOwnable} from "../../extensions/managers/access/OzOwnable.sol";
+import {OzOwnable} from "../../extensions/managers/permissions/OzOwnable.sol";
 import {KeyManagerBLS} from "../../extensions/managers/keys/KeyManagerBLS.sol";
 import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
 import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";

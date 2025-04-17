@@ -3,13 +3,15 @@ pragma solidity ^0.8.25;
 
 import {VaultManager} from "../managers/VaultManager.sol";
 import {OperatorManager} from "../managers/OperatorManager.sol";
-import {AccessManager} from "../managers/extendable/AccessManager.sol";
+import {PermissionManager} from "../managers/extendable/PermissionManager.sol";
 import {KeyManager} from "../managers/extendable/KeyManager.sol";
+
+import {IBaseMiddleware} from "../interfaces/middleware/IBaseMiddleware.sol";
 
 /**
  * @title BaseMiddleware
  * @notice Abstract base contract that combines core manager functionality for building middleware
- * @dev Inherits from VaultManager, OperatorManager, AccessManager, and KeyManager to provide:
+ * @dev Inherits from VaultManager, OperatorManager, PermissionManager, and KeyManager to provide:
  *      - Vault management and registration
  *      - Operator management and registration
  *      - Access management
@@ -18,8 +20,10 @@ import {KeyManager} from "../managers/extendable/KeyManager.sol";
  * This contract serves as a foundation for building custom middleware by providing essential
  * management capabilities that can be extended with additional functionality.
  */
-abstract contract BaseMiddleware is VaultManager, AccessManager, KeyManager {
-    // This constant aggregates changes of all not extendable managers
+abstract contract BaseMiddleware is VaultManager, PermissionManager, KeyManager, IBaseMiddleware {
+    /**
+     * inheritdoc IBaseMiddleware
+     */
     uint64 public constant BaseMiddleware_VERSION = 1;
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.BaseMiddleware")) - 1)) & ~bytes32(uint256(0xff))

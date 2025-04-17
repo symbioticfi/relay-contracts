@@ -12,7 +12,7 @@ import {VaultManager} from "../../managers/VaultManager.sol";
 import {SharedVaults} from "../../extensions/SharedVaults.sol";
 import {Operators} from "../../extensions/operators/Operators.sol";
 
-import {OzOwnable} from "../../extensions/managers/access/OzOwnable.sol";
+import {OzOwnable} from "../../extensions/managers/permissions/OzOwnable.sol";
 import {EpochCapture} from "../../extensions/managers/capture-timestamps/EpochCapture.sol";
 import {KeyManager256} from "../../extensions/managers/keys/KeyManager256.sol";
 import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";

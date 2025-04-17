@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.0;
+
+import {ICaptureTimestampManager} from "../../../managers/extendable/ICaptureTimestampManager.sol";
 
 /**
  * @title IEpochCapture
@@ -7,6 +9,13 @@ pragma solidity ^0.8.25;
  * @dev Implements timestamp capture using fixed time periods (epochs) from a base timestamp
  */
 interface IEpochCapture {
+    struct EpochCaptureStorage {
+        uint48 startTimestamp;
+        uint48 epochDuration;
+    }
+
+    function EpochCapture_VERSION() external view returns (uint64);
+
     /**
      * @notice Returns the start timestamp for a given epoch
      * @param epoch The epoch number

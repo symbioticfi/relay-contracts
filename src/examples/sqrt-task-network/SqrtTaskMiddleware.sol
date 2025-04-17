@@ -12,7 +12,7 @@ import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/Signa
 import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SharedVaults} from "../../extensions/SharedVaults.sol";
 
-import {OzOwnable} from "../../extensions/managers/access/OzOwnable.sol";
+import {OzOwnable} from "../../extensions/managers/permissions/OzOwnable.sol";
 import {NoKeyManager} from "../../extensions/managers/keys/NoKeyManager.sol";
 import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
 import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";

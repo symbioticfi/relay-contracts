@@ -19,72 +19,20 @@ import {StakePowerManager} from "./extendable/StakePowerManager.sol";
 
 import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
 
+import {IVaultManager} from "../interfaces/managers/IVaultManager.sol";
+
 /**
  * @title VaultManager
  * @notice Abstract contract for managing vaults and their relationships with operators and subnetworks
  * @dev Extends BaseManager and provides functionality for registering, pausing, and managing vaults
  */
-abstract contract VaultManager is OperatorManager, StakePowerManager {
+abstract contract VaultManager is OperatorManager, StakePowerManager, IVaultManager {
     using EnumerableMap for EnumerableMap.AddressToUintMap;
     using EnumerableMap for EnumerableMap.AddressToAddressMap;
     using PauseableEnumerableSet for PauseableEnumerableSet.AddressSet;
     using PauseableEnumerableSet for PauseableEnumerableSet.Uint160Set;
     using Subnetwork for address;
     using Subnetwork for bytes32;
-
-    error NotVault();
-    error NotOperatorVault();
-    error VaultNotInitialized();
-    error VaultAlreadyRegistered();
-    error VaultEpochTooShort();
-    error InactiveOperatorSlash();
-    error InactiveVaultSlash();
-    error InactiveSubnetworkSlash();
-    error UnknownSlasherType();
-    error NonVetoSlasher();
-    error NoSlasher();
-    error TooOldTimestampSlash();
-    error NotSharedVault();
-    error NotOperatorSpecificVault();
-    error InvalidOperatorNetwork();
-
-    /// @custom:storage-location erc7201:symbiotic.storage.VaultManager
-    struct VaultManagerStorage {
-        address _vaultRegistry;
-        PauseableEnumerableSet.Uint160Set _subnetworks;
-        PauseableEnumerableSet.AddressSet _sharedVaults;
-        mapping(address => PauseableEnumerableSet.AddressSet) _operatorVaults;
-        EnumerableMap.AddressToAddressMap _vaultOperator;
-    }
-
-    event RegisterSubnetwork(uint96 subnetwork);
-    event PauseSubnetwork(uint96 subnetwork);
-    event UnpauseSubnetwork(uint96 subnetwork);
-    event UnregisterSubnetwork(uint96 subnetwork);
-    event RegisterSharedVault(address sharedVault);
-    event RegisterOperatorVault(address operator, address vault);
-    event PauseSharedVault(address sharedVault);
-    event UnpauseSharedVault(address sharedVault);
-    event PauseOperatorVault(address operator, address vault);
-    event UnpauseOperatorVault(address operator, address vault);
-    event UnregisterSharedVault(address sharedVault);
-    event UnregisterOperatorVault(address operator, address vault);
-    event InstantSlash(address vault, bytes32 subnetwork, uint256 slashedAmount);
-    event VetoSlash(address vault, bytes32 subnetwork, uint256 slashIndex);
-    event ExecuteSlash(address vault, uint256 slashIndex, uint256 slashedAmount);
-
-    enum SlasherType {
-        INSTANT, // Instant slasher type
-        VETO // Veto slasher type
-
-    }
-
-    enum DelegatorType {
-        NETWORK_RESTAKE,
-        FULL_RESTAKE,
-        OPERATOR_SPECIFIC,
-        OPERATOR_NETWORK_SPECIFIC
-    }
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.VaultManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant VaultManagerStorageLocation =

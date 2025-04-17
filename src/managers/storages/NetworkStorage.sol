@@ -3,12 +3,14 @@ pragma solidity ^0.8.25;
 
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
+import {INetworkStorage} from "../../interfaces/managers/storages/INetworkStorage.sol";
+
 /**
  * @title NetworkStorage
  * @notice Storage contract for managing the network address
  * @dev Uses a single storage slot to store the network address value
  */
-abstract contract NetworkStorage is Initializable {
+abstract contract NetworkStorage is Initializable, INetworkStorage {
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.NetworkStorage")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant NetworkStorageLocation = 0x933223a21808ea6583da836861e2265bfa3c7e3b9070740cd75dc9ff6fb41700;
 

@@ -9,14 +9,14 @@ import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
-import {AccessManager} from "../../managers/extendable/AccessManager.sol";
+import {PermissionManager} from "../../managers/extendable/PermissionManager.sol";
 
 import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SharedVaults} from "../../extensions/SharedVaults.sol";
 import {SelfRegisterOperators} from "../../extensions/operators/SelfRegisterOperators.sol";
 
 import {ECDSASig} from "../../extensions/managers/sigs/ECDSASig.sol";
-import {OzOwnable} from "../../extensions/managers/access/OzOwnable.sol";
+import {OzOwnable} from "../../extensions/managers/permissions/OzOwnable.sol";
 import {KeyManagerAddress} from "../../extensions/managers/keys/KeyManagerAddress.sol";
 import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
 import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";

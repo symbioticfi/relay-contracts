@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.0;
+
+import {ISigManager} from "../../../managers/extendable/ISigManager.sol";
 
 /**
  * @title IEdDSASig
@@ -7,6 +9,8 @@ pragma solidity ^0.8.25;
  * @dev Extends ISigManager interface for EdDSA signature verification
  */
 interface IEdDSASig {
+    function EdDSASig_VERSION() external view returns (uint64);
+
     /**
      * @notice Verifies an Ed25519 signature against a message and public key
      * @param message The message that was signed

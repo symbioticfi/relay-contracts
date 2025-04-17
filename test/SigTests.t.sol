@@ -8,7 +8,8 @@ import {IVault} from "@symbiotic/interfaces/vault/IVault.sol";
 import {IVaultConfigurator} from "@symbiotic/interfaces/IVaultConfigurator.sol";
 import {IBaseDelegator} from "@symbiotic/interfaces/delegator/IBaseDelegator.sol";
 
-import {IBaseMiddlewareReader} from "../src/interfaces/IBaseMiddlewareReader.sol";
+import {IBaseMiddlewareReader} from "../src/interfaces/middleware/IBaseMiddlewareReader.sol";
+import {IKeyManager} from "../src/interfaces/managers/extendable/IKeyManager.sol";
 
 import {BaseMiddlewareReader} from "../src/middleware/BaseMiddlewareReader.sol";
 import {SelfRegisterMiddleware} from "../src/examples/self-register-network/SelfRegisterMiddleware.sol";
@@ -90,13 +91,10 @@ contract SigTests is POCBaseTest {
         assertTrue(IBaseMiddlewareReader(address(ed25519Middleware)).isOperatorRegistered(ed25519Operator));
 
         assertEq(
-            abi.decode(IBaseMiddlewareReader(address(ed25519Middleware)).operatorKey(ed25519Operator), (bytes32)),
-            bytes32(0)
+            abi.decode(IKeyManager(address(ed25519Middleware)).operatorKey(ed25519Operator), (bytes32)), bytes32(0)
         );
         vm.warp(block.timestamp + 2);
-        assertEq(
-            abi.decode(IBaseMiddlewareReader(address(ed25519Middleware)).operatorKey(ed25519Operator), (bytes32)), key
-        );
+        assertEq(abi.decode(IKeyManager(address(ed25519Middleware)).operatorKey(ed25519Operator), (bytes32)), key);
     }
 
     function testEd25519RegisterOperatorInvalidSignature() public {
@@ -133,7 +131,7 @@ contract SigTests is POCBaseTest {
 
     function testSelfRegisterOperator() public {
         // Create registration message
-        bytes32 messageHash = keccak256(abi.encodePacked(operator, operator));
+        bytes32 messageHash = keccak256(abi.encode(operator, operator));
         // Sign message with operator's private key
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(operatorPrivateKey, messageHash);
         bytes memory signature = abi.encodePacked(r, s, v);
@@ -144,15 +142,15 @@ contract SigTests is POCBaseTest {
         // Verify operator is registered correctly
         assertTrue(IBaseMiddlewareReader(address(middleware)).isOperatorRegistered(operator));
 
-        assertEq(abi.decode(IBaseMiddlewareReader(address(middleware)).operatorKey(operator), (address)), address(0));
+        assertEq(abi.decode(IKeyManager(address(middleware)).operatorKey(operator), (address)), address(0));
         vm.warp(vm.getBlockTimestamp() + 100);
-        assertEq(abi.decode(IBaseMiddlewareReader(address(middleware)).operatorKey(operator), (address)), operator);
+        assertEq(abi.decode(IKeyManager(address(middleware)).operatorKey(operator), (address)), operator);
     }
 
     function testSelxfRegisterOperatorInvalidSignature() public {
         // Create registration message with wrong key
         address wrongKey = address(uint160(uint256(1)));
-        bytes32 messageHash = keccak256(abi.encodePacked(operator, wrongKey));
+        bytes32 messageHash = keccak256(abi.encode(operator, wrongKey));
         // Sign message
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(operatorPrivateKey, messageHash);
         bytes memory signature = abi.encodePacked(r, s, v);
@@ -165,7 +163,7 @@ contract SigTests is POCBaseTest {
 
     function testSelfxRegisterOperatorWrongSender() public {
         // Create valid registration message
-        bytes32 messageHash = keccak256(abi.encodePacked(operator, operator));
+        bytes32 messageHash = keccak256(abi.encode(operator, operator));
         // Sign message with operator's key
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(operatorPrivateKey, messageHash);
         bytes memory signature = abi.encodePacked(r, s, v);
@@ -178,7 +176,7 @@ contract SigTests is POCBaseTest {
 
     function testSelxfRegisterOperatorAlreadyRegistered() public {
         // Create registration message
-        bytes32 messageHash = keccak256(abi.encodePacked(operator, operator));
+        bytes32 messageHash = keccak256(abi.encode(operator, operator));
         // Sign message
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(operatorPrivateKey, messageHash);
         bytes memory signature = abi.encodePacked(r, s, v);
@@ -204,7 +202,7 @@ contract SigTests is POCBaseTest {
     }
 
     function _getOperatorVault(
-        address operator
+        address operator_
     ) internal returns (IVault) {
         address[] memory networkLimitSetRoleHolders = new address[](1);
         networkLimitSetRoleHolders[0] = alice;
@@ -238,7 +236,7 @@ contract SigTests is POCBaseTest {
                             hookSetRoleHolder: alice
                         }),
                         networkLimitSetRoleHolders: networkLimitSetRoleHolders,
-                        operator: operator
+                        operator: operator_
                     })
                 ),
                 withSlasher: false,

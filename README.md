@@ -8,7 +8,7 @@ This repository provides a framework for developing middleware in a modular and 
 
 ![Middleware Architecture](img/middleware.png)
 
-- **BaseMiddleware**: The foundational contract that combines core manager functionalities from `VaultManager`, `OperatorManager`, `AccessManager`, and `KeyManager`.
+- **BaseMiddleware**: The foundational contract that combines core manager functionalities from `VaultManager`, `OperatorManager`, `PermissionManager`, and `KeyManager`.
 
 - **Extensions**: Modular contracts that provide additional functionalities. Key extensions include:
 
@@ -16,7 +16,7 @@ This repository provides a framework for developing middleware in a modular and 
 
   - **KeyManager**: Manages operator keys. Variants include `KeyManagerAddress`, `KeyManager256`, `KeyManagerBytes`, and `NoKeyManager`.
 
-  - **AccessManager**: Controls access to restricted functions. Implementations include `OzOwnable`, `OzAccessControl`, `OzAccessManaged`, and `NoAccessManager`.
+  - **PermissionManager**: Controls access to restricted functions. Implementations include `OzOwnable`, `OzAccessControl`, `OzAccessManaged`, and `NoPermissionManager`.
 
   - **CaptureTimestamp**: Captures the active state at specific timestamps. Options are `EpochCapture` and `TimestampCapture`.
 
@@ -63,7 +63,7 @@ Features:
 #### SelfRegisterMiddleware
 
 ```solidity
-contract SelfRegisterMiddleware is SharedVaults, SelfRegisterOperators, KeyManagerAddress, ECDSASig, NoAccessManager, TimestampCapture, EqualStakePower {
+contract SelfRegisterMiddleware is SharedVaults, SelfRegisterOperators, KeyManagerAddress, ECDSASig, NoPermissionManager, TimestampCapture, EqualStakePower {
     // Implementation details...
 }
 ```
@@ -77,7 +77,7 @@ Features:
 #### SelfRegisterEd25519Middleware
 
 ```solidity
-contract SelfRegisterEd25519Middleware is SharedVaults, SelfRegisterOperators, KeyManager256, EdDSASig, NoAccessManager, TimestampCapture {
+contract SelfRegisterEd25519Middleware is SharedVaults, SelfRegisterOperators, KeyManager256, EdDSASig, NoPermissionManager, TimestampCapture {
     // Implementation details...
 }
 ```
@@ -203,8 +203,8 @@ contract MyCustomMiddleware is BaseMiddleware, Operators, KeyStorage256, OzOwnab
 
 - **Versioning**: Include a public constant variable for versioning in your contracts (e.g., `uint64 public constant MyExtension_VERSION = 1;`).
 
-- **Access Control**: Choose an appropriate `AccessManager` based on your needs:
-  - `NoAccessManager`: Allows unrestricted access to all functions
+- **Access Control**: Choose an appropriate `PermissionManager` based on your needs:
+  - `NoPermissionManager`: Allows unrestricted access to all functions
   - `OzOwnable`: Restricts access to a single owner address
   - `OzAccessControl`: Implements OpenZeppelin-style role-based access control where different roles can be assigned to specific function selectors. Roles can be granted and revoked by role admins, with a default admin role that can manage all other roles. Roles can be set up by:
     1. Granting roles to addresses using `grantRole(bytes32 role, address account)`

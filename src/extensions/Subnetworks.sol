@@ -2,6 +2,7 @@
 pragma solidity ^0.8.25;
 
 import {BaseMiddleware} from "../middleware/BaseMiddleware.sol";
+
 import {ISubnetworks} from "../interfaces/extensions/ISubnetworks.sol";
 
 /**
@@ -10,6 +11,9 @@ import {ISubnetworks} from "../interfaces/extensions/ISubnetworks.sol";
  * @dev Extends BaseMiddleware to provide access control for subnetwork management functions
  */
 abstract contract Subnetworks is BaseMiddleware, ISubnetworks {
+    /**
+     * @inheritdoc ISubnetworks
+     */
     uint64 public constant Subnetworks_VERSION = 1;
 
     /**

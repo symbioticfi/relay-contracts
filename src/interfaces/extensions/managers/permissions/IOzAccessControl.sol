@@ -1,5 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.0;
+
+import {IPermissionManager} from "../../../managers/extendable/IPermissionManager.sol";
+
+import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 /**
  * @title IOzAccessControl

@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.0;
+
+import {ISigManager} from "../../../managers/extendable/ISigManager.sol";
 
 /**
  * @title IECDSASig
@@ -7,6 +9,8 @@ pragma solidity ^0.8.25;
  * @dev Extends ISigManager interface for ECDSA signature verification
  */
 interface IECDSASig {
+    function ECDSASig_VERSION() external view returns (uint64);
+
     /**
      * @notice Recovers the signer address from a hash and signature
      * @param hash The message hash that was signed

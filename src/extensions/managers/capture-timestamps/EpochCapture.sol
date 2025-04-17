@@ -3,6 +3,7 @@ pragma solidity ^0.8.25;
 
 import {CaptureTimestampManager} from "../../../managers/extendable/CaptureTimestampManager.sol";
 import {IEpochCapture} from "../../../interfaces/extensions/managers/capture-timestamps/IEpochCapture.sol";
+import {ICaptureTimestampManager} from "../../../interfaces/managers/extendable/ICaptureTimestampManager.sol";
 
 /**
  * @title EpochCapture
@@ -11,12 +12,10 @@ import {IEpochCapture} from "../../../interfaces/extensions/managers/capture-tim
  * @dev Epochs are fixed time periods starting from a base timestamp
  */
 abstract contract EpochCapture is CaptureTimestampManager, IEpochCapture {
+    /**
+     * @inheritdoc IEpochCapture
+     */
     uint64 public constant EpochCapture_VERSION = 1;
-
-    struct EpochCaptureStorage {
-        uint48 startTimestamp;
-        uint48 epochDuration;
-    }
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.EpochCapture")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant EpochCaptureStorageLocation =
@@ -63,19 +62,18 @@ abstract contract EpochCapture is CaptureTimestampManager, IEpochCapture {
         return (_now() - $.startTimestamp - 1) / $.epochDuration;
     }
 
-    /* 
-     * @notice Returns the capture timestamp for the current epoch.
-     * @return The capture timestamp.
-     */
-    function getCaptureTimestamp() public view override returns (uint48 timestamp) {
-        return getEpochStart(getCurrentEpoch());
-    }
-
     /**
      * @inheritdoc IEpochCapture
      */
     function getEpochDuration() public view returns (uint48) {
         EpochCaptureStorage storage $ = _getEpochCaptureStorage();
         return $.epochDuration;
+    }
+
+    /**
+     * @inheritdoc ICaptureTimestampManager
+     */
+    function getCaptureTimestamp() public view override returns (uint48 timestamp) {
+        return getEpochStart(getCurrentEpoch());
     }
 }

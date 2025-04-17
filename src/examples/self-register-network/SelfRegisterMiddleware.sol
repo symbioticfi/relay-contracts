@@ -6,7 +6,7 @@ import {SharedVaults} from "../../extensions/SharedVaults.sol";
 import {SelfRegisterOperators} from "../../extensions/operators/SelfRegisterOperators.sol";
 
 import {ECDSASig} from "../../extensions/managers/sigs/ECDSASig.sol";
-import {OzOwnable} from "../../extensions/managers/access/OzOwnable.sol";
+import {OzOwnable} from "../../extensions/managers/permissions/OzOwnable.sol";
 import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
 import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
 import {KeyManagerAddress} from "../../extensions/managers/keys/KeyManagerAddress.sol";
