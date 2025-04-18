@@ -27,14 +27,6 @@ abstract contract OperatorManager is NetworkManager, StaticDelegateCallable {
     using Hints for bytes[];
     using Arrays for address[];
 
-    error NotOperator();
-    error OperatorNotOptedIn();
-    error OperatorAlreadyRegistered();
-    error OperatorNotRegistered();
-    error OperatorNotPaused();
-    error InvalidLength();
-    error UnregisterNotAllowed();
-
     address public immutable OPERATOR_REGISTRY; // Address of the operator registry
 
     address public immutable OPERATOR_NETWORK_OPT_IN_SERVICE; // Address of the operator network opt-in service
@@ -49,40 +41,36 @@ abstract contract OperatorManager is NetworkManager, StaticDelegateCallable {
      */
     function __OperatorManager_init() internal virtual onlyInitializing {}
 
-    function _getOldestNeededTimestamp() internal view virtual returns (uint48) {
-        return OperatorManagerLogic.getOldestNeededTimestamp();
-    }
-
-    /**
-     * @notice Returns the total number of registered operators, including both active and inactive
-     * @return The number of registered operators
-     */
-    function _getOperatorsLength() internal view virtual returns (uint256) {
-        return OperatorManagerLogic.getOperatorsLength();
-    }
-
-    function _getOperators() internal view virtual returns (address[] memory) {
-        return OperatorManagerLogic.getOperators();
-    }
-
     function _isOperatorRegistered(
         address operator
     ) internal view virtual returns (bool) {
         return OperatorManagerLogic.isOperatorRegistered(operator);
     }
 
-    function _isOperatorUnpaused(
-        address operator
-    ) internal view virtual returns (bool) {
-        return OperatorManagerLogic.isOperatorUnpaused(operator);
+    /**
+     * @notice Returns the total number of registered operators, including both active and inactive
+     * @return The number of registered operators
+     */
+    function _getAllOperatorsLength() internal view virtual returns (uint256) {
+        return OperatorManagerLogic.getAllOperatorsLength();
     }
 
-    function _isOperatorUnpausedAt(
+    function _getAllOperators() internal view virtual returns (address[] memory) {
+        return OperatorManagerLogic.getAllOperators();
+    }
+
+    function _isOperatorActive(
+        address operator
+    ) internal view virtual returns (bool) {
+        return OperatorManagerLogic.isOperatorActive(operator);
+    }
+
+    function _isOperatorActiveAt(
         address operator,
         uint48 timestamp,
         bytes memory hint
     ) internal view virtual returns (bool) {
-        return OperatorManagerLogic.isOperatorUnpausedAt(operator, timestamp, hint);
+        return OperatorManagerLogic.isOperatorActiveAt(operator, timestamp, hint);
     }
 
     function _getActiveOperatorsAt(
@@ -96,10 +84,12 @@ abstract contract OperatorManager is NetworkManager, StaticDelegateCallable {
         return OperatorManagerLogic.getActiveOperators();
     }
 
-    function _setOldestNeededTimestamp(
-        uint48 oldestNeededTimestamp
-    ) internal virtual {
-        OperatorManagerLogic.setOldestNeededTimestamp(oldestNeededTimestamp);
+    function _getActiveOperatorsLength() internal view virtual returns (uint256) {
+        return OperatorManagerLogic.getActiveOperatorsLength();
+    }
+
+    function _getActiveOperatorsLengthAt(uint48 timestamp, bytes memory hint) internal view virtual returns (uint256) {
+        return OperatorManagerLogic.getActiveOperatorsLengthAt(timestamp, hint);
     }
 
     /**
@@ -110,26 +100,6 @@ abstract contract OperatorManager is NetworkManager, StaticDelegateCallable {
         address operator
     ) internal virtual {
         OperatorManagerLogic.registerOperator(OPERATOR_REGISTRY, OPERATOR_NETWORK_OPT_IN_SERVICE, operator);
-    }
-
-    /**
-     * @notice Pauses a registered operator
-     * @param operator The address of the operator to pause
-     */
-    function _pauseOperator(
-        address operator
-    ) internal virtual {
-        OperatorManagerLogic.pauseOperator(operator);
-    }
-
-    /**
-     * @notice Unpauses a paused operator
-     * @param operator The address of the operator to unpause
-     */
-    function _unpauseOperator(
-        address operator
-    ) internal virtual {
-        OperatorManagerLogic.unpauseOperator(operator);
     }
 
     /**

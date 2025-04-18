@@ -33,100 +33,61 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
         }
     }
 
-    /**
-     * @inheritdoc IForcePauseSelfRegisterOperators
-     */
-    function forcePauseOperator(
+    function isOperatorForcePaused(
         address operator
-    ) external checkAccess {
-        _getForcePauseStorage().forcePaused[operator] = true;
-        if (_isOperatorUnpaused(operator)) {
-            _pauseOperatorImpl(operator);
-        }
-    }
-
-    /**
-     * @inheritdoc IForcePauseSelfRegisterOperators
-     */
-    function forceUnpauseOperator(
-        address operator
-    ) external checkAccess {
-        _getForcePauseStorage().forcePaused[operator] = false;
-        if (!_isOperatorRegistered(operator)) {
-            return;
-        }
-        _unpauseOperatorImpl(operator);
-    }
-
-    /**
-     * @inheritdoc IForcePauseSelfRegisterOperators
-     */
-    function forceUnregisterOperator(
-        address operator
-    ) external checkAccess {
-        _unregisterOperatorImpl(operator);
-    }
-
-    /**
-     * @inheritdoc IForcePauseSelfRegisterOperators
-     */
-    function forcePauseOperatorVault(address operator, address vault) external checkAccess {
-        _getForcePauseStorage().forcePausedVault[operator][vault] = true;
-        if (_isOperatorUnpaused(operator)) {
-            _pauseOperatorVaultImpl(operator, vault);
-        }
-    }
-
-    /**
-     * @inheritdoc IForcePauseSelfRegisterOperators
-     */
-    function forceUnpauseOperatorVault(address operator, address vault) external checkAccess {
-        _getForcePauseStorage().forcePausedVault[operator][vault] = false;
-        if (_isVaultUnpaused(vault)) {
-            return;
-        }
-        _unpauseOperatorVaultImpl(operator, vault);
-    }
-
-    /**
-     * @inheritdoc IForcePauseSelfRegisterOperators
-     */
-    function forceUnregisterOperatorVault(address operator, address vault) external checkAccess {
-        _unregisterOperatorVaultImpl(operator, vault);
-    }
-
-    function _unpauseOperatorImpl(
-        address operator
-    ) internal virtual override {
-        if (_operatorForcePaused(operator)) revert OperatorForcePaused();
-        super._unpauseOperatorImpl(operator);
-    }
-
-    function _registerOperatorImpl(address operator, address vault) internal virtual override {
-        if (_operatorForcePaused(operator)) revert OperatorForcePaused();
-        if (vault != address(0)) {
-            if (_operatorVaultForcePaused(operator, vault)) revert OperatorVaultForcePaused();
-        }
-        super._registerOperatorImpl(operator, vault);
-    }
-
-    function _unpauseOperatorVaultImpl(address operator, address vault) internal virtual override {
-        if (_operatorVaultForcePaused(operator, vault)) revert OperatorVaultForcePaused();
-        super._unpauseOperatorVaultImpl(operator, vault);
-    }
-
-    function _registerOperatorVaultImpl(address operator, address vault) internal virtual override {
-        if (_operatorVaultForcePaused(operator, vault)) revert OperatorVaultForcePaused();
-        super._registerOperatorVaultImpl(operator, vault);
-    }
-
-    function _operatorForcePaused(
-        address operator
-    ) internal view returns (bool) {
+    ) public view returns (bool) {
         return _getForcePauseStorage().forcePaused[operator];
     }
 
-    function _operatorVaultForcePaused(address operator, address vault) internal view returns (bool) {
+    function isOperatorVaultForcePaused(address operator, address vault) public view returns (bool) {
         return _getForcePauseStorage().forcePausedVault[operator][vault];
+    }
+
+    function forceUnpauseOperator(
+        address operator
+    ) external virtual checkAccess {
+        if (!isOperatorForcePaused(operator)) {
+            revert OperatorNotForcePaused();
+        }
+        _getForcePauseStorage().forcePaused[operator] = false;
+    }
+
+    function forcePauseOperator(
+        address operator
+    ) external virtual checkAccess {
+        if (isOperatorForcePaused(operator)) {
+            revert OperatorForcePaused();
+        }
+        _getForcePauseStorage().forcePaused[operator] = true;
+        if (_isOperatorActive(operator)) {
+            _unregisterOperator(operator);
+        }
+    }
+
+    function forceUnpauseOperatorVault(address operator, address vault) external virtual checkAccess {
+        if (!isOperatorVaultForcePaused(operator, vault)) {
+            revert OperatorVaultNotForcePaused();
+        }
+        _getForcePauseStorage().forcePausedVault[operator][vault] = false;
+    }
+
+    function forcePauseOperatorVault(address operator, address vault) external virtual checkAccess {
+        if (isOperatorVaultForcePaused(operator, vault)) {
+            revert OperatorVaultForcePaused();
+        }
+        _getForcePauseStorage().forcePausedVault[operator][vault] = true;
+        if (_isOperatorVaultActive(operator, vault)) {
+            _unregisterOperatorVault(operator, vault);
+        }
+    }
+
+    function _registerOperatorImpl(address operator, address vault) internal virtual override {
+        if (isOperatorForcePaused(operator)) revert OperatorForcePaused();
+        super._registerOperatorImpl(operator, vault);
+    }
+
+    function _registerOperatorVaultImpl(address operator, address vault) internal virtual override {
+        if (isOperatorVaultForcePaused(operator, vault)) revert OperatorVaultForcePaused();
+        super._registerOperatorVaultImpl(operator, vault);
     }
 }

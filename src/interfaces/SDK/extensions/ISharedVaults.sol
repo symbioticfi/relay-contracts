@@ -15,22 +15,6 @@ interface ISharedVaults {
     ) external;
 
     /**
-     * @notice Pauses a shared vault
-     * @param sharedVault The address of the vault to pause
-     */
-    function pauseSharedVault(
-        address sharedVault
-    ) external;
-
-    /**
-     * @notice Unpauses a shared vault
-     * @param sharedVault The address of the vault to unpause
-     */
-    function unpauseSharedVault(
-        address sharedVault
-    ) external;
-
-    /**
      * @notice Unregisters a shared vault
      * @param sharedVault The address of the vault to unregister
      */

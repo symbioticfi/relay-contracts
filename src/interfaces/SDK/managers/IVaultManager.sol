@@ -27,7 +27,7 @@ interface IVaultManager {
     }
 
     struct OperatorVaultVotingPowerHints {
-        bytes isTokenUnpausedHint;
+        bytes isTokenActiveHint;
         bytes stakeHints;
     }
 
@@ -37,8 +37,9 @@ interface IVaultManager {
     }
 
     struct SlashVaultHints {
-        bytes operatorUnpausedHint;
-        bytes vaultUnpausedHint;
+        bytes operatorActiveHint;
+        bytes operatorVaultActiveHint;
+        bytes sharedVaultActiveHint;
         bytes slashHints;
     }
 }

@@ -25,24 +25,6 @@ abstract contract SharedVaults is VaultManager, AccessManager, ISharedVaults {
     /**
      * @inheritdoc ISharedVaults
      */
-    function pauseSharedVault(
-        address sharedVault
-    ) public checkAccess {
-        _pauseVault(sharedVault);
-    }
-
-    /**
-     * @inheritdoc ISharedVaults
-     */
-    function unpauseSharedVault(
-        address sharedVault
-    ) public checkAccess {
-        _unpauseVault(sharedVault);
-    }
-
-    /**
-     * @inheritdoc ISharedVaults
-     */
     function unregisterSharedVault(
         address sharedVault
     ) public checkAccess {

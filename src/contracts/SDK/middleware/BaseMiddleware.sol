@@ -4,7 +4,6 @@ pragma solidity ^0.8.25;
 import {VaultManager} from "../managers/VaultManager.sol";
 import {OperatorManager} from "../managers/OperatorManager.sol";
 import {AccessManager} from "../managers/extendable/AccessManager.sol";
-import {DiamondProxy} from "../common/DiamondProxy.sol";
 /**
  * @title BaseMiddleware
  * @notice Abstract base contract that combines core manager functionality for building middleware
@@ -17,7 +16,7 @@ import {DiamondProxy} from "../common/DiamondProxy.sol";
  * management capabilities that can be extended with additional functionality.
  */
 
-abstract contract BaseMiddleware is VaultManager, AccessManager, DiamondProxy {
+abstract contract BaseMiddleware is VaultManager, AccessManager {
     // This constant aggregates changes of all not extendable managers
     uint64 public constant BaseMiddleware_VERSION = 1;
 
@@ -43,12 +42,18 @@ abstract contract BaseMiddleware is VaultManager, AccessManager, DiamondProxy {
         __VaultManager_init(slashingWindow);
     }
 
-    function getOldestNeededTimestamp() external view returns (uint48) {
-        return _getOldestNeededTimestamp();
+    function getAllOperatorsLength() external view returns (uint256) {
+        return _getAllOperatorsLength();
     }
 
-    function getOperators() external view returns (address[] memory) {
-        return _getOperators();
+    function getAllOperators() external view returns (address[] memory) {
+        return _getAllOperators();
+    }
+
+    function isOperatorActive(
+        address operator
+    ) external view returns (bool) {
+        return _isOperatorActive(operator);
     }
 
     function isOperatorRegistered(
@@ -57,56 +62,143 @@ abstract contract BaseMiddleware is VaultManager, AccessManager, DiamondProxy {
         return _isOperatorRegistered(operator);
     }
 
-    function isOperatorUnpaused(
-        address operator
-    ) external view returns (bool) {
-        return _isOperatorUnpaused(operator);
+    function isOperatorActiveAt(address operator, uint48 timestamp, bytes memory hint) external view returns (bool) {
+        return _isOperatorActiveAt(operator, timestamp, hint);
     }
 
-    function isOperatorUnpausedAt(address operator, uint48 timestamp, bytes memory hint) external view returns (bool) {
-        return _isOperatorUnpausedAt(operator, timestamp, hint);
+    function getActiveOperators() external view returns (address[] memory) {
+        return _getActiveOperators();
     }
 
     function getActiveOperatorsAt(uint48 timestamp, bytes[] memory hints) external view returns (address[] memory) {
         return _getActiveOperatorsAt(timestamp, hints);
     }
 
+    function getActiveOperatorsLength() external view returns (uint256) {
+        return _getActiveOperatorsLength();
+    }
+
+    function getActiveOperatorsLengthAt(uint48 timestamp, bytes memory hint) external view returns (uint256) {
+        return _getActiveOperatorsLengthAt(timestamp, hint);
+    }
+
     function getSlashingWindow() external view returns (uint48) {
         return _getSlashingWindow();
     }
 
-    function isVaultUnpaused(
-        address vault
+    function isTokenRegistered(
+        address token
     ) external view returns (bool) {
-        return _isVaultUnpaused(vault);
+        return _isTokenRegistered(token);
     }
 
-    function isVaultUnpausedAt(address vault, uint48 timestamp, bytes memory hint) external view returns (bool) {
-        return _isVaultUnpausedAt(vault, timestamp, hint);
+    function isTokenActive(
+        address token
+    ) external view returns (bool) {
+        return _isTokenActive(token);
+    }
+
+    function isTokenActiveAt(address token, uint48 timestamp, bytes memory hint) external view returns (bool) {
+        return _isTokenActiveAt(token, timestamp, hint);
+    }
+
+    function getAllTokensLength() external view returns (uint256) {
+        return _getAllTokensLength();
+    }
+
+    function getAllTokens() external view returns (address[] memory) {
+        return _getAllTokens();
+    }
+
+    function getActiveTokensAt(uint48 timestamp, bytes[] memory hints) external view returns (address[] memory) {
+        return _getActiveTokensAt(timestamp, hints);
+    }
+
+    function getActiveTokens() external view returns (address[] memory) {
+        return _getActiveTokens();
+    }
+
+    function getActiveTokensLength() external view returns (uint256) {
+        return _getActiveTokensLength();
+    }
+
+    function getActiveTokensLengthAt(uint48 timestamp, bytes memory hint) external view returns (uint256) {
+        return _getActiveTokensLengthAt(timestamp, hint);
     }
 
     function isSharedVaultRegistered(
-        address sharedVault
+        address vault
     ) external view returns (bool) {
-        return _isSharedVaultRegistered(sharedVault);
+        return _isSharedVaultRegistered(vault);
     }
 
-    function getSharedVaults() external view returns (address[] memory) {
-        return _getSharedVaults();
+    function isSharedVaultActive(
+        address vault
+    ) external view returns (bool) {
+        return _isSharedVaultActive(vault);
+    }
+
+    function isSharedVaultActiveAt(address vault, uint48 timestamp, bytes memory hint) external view returns (bool) {
+        return _isSharedVaultActiveAt(vault, timestamp, hint);
+    }
+
+    function getAllSharedVaultsLength() external view returns (uint256) {
+        return _getAllSharedVaultsLength();
+    }
+
+    function getAllSharedVaults() external view returns (address[] memory) {
+        return _getAllSharedVaults();
     }
 
     function getActiveSharedVaultsAt(uint48 timestamp, bytes[] memory hints) external view returns (address[] memory) {
         return _getActiveSharedVaultsAt(timestamp, hints);
     }
 
+    function getActiveSharedVaults() external view returns (address[] memory) {
+        return _getActiveSharedVaults();
+    }
+
+    function getActiveSharedVaultsLength() external view returns (uint256) {
+        return _getActiveSharedVaultsLength();
+    }
+
+    function getActiveSharedVaultsLengthAt(uint48 timestamp, bytes memory hint) external view returns (uint256) {
+        return _getActiveSharedVaultsLengthAt(timestamp, hint);
+    }
+
     function isOperatorVaultRegistered(address operator, address vault) external view returns (bool) {
         return _isOperatorVaultRegistered(operator, vault);
     }
 
-    function getOperatorVaults(
+    function isOperatorVaultActive(address operator, address vault) external view returns (bool) {
+        return _isOperatorVaultActive(operator, vault);
+    }
+
+    function isOperatorVaultActiveAt(
+        address operator,
+        address vault,
+        uint48 timestamp,
+        bytes memory hint
+    ) external view returns (bool) {
+        return _isOperatorVaultActiveAt(operator, vault, timestamp, hint);
+    }
+
+    function getAllOperatorVaultsLength(
+        address operator
+    ) external view returns (uint256) {
+        return _getAllOperatorVaultsLength(operator);
+    }
+
+    function getAllOperatorVaults(
         address operator
     ) external view returns (address[] memory) {
-        return _getOperatorVaults(operator);
+        return _getAllOperatorVaults(operator);
+    }
+
+    function getActiveOperatorVaults(
+        address operator
+    ) external view returns (address[] memory) {
+        return _getActiveOperatorVaults(operator);
     }
 
     function getActiveOperatorVaultsAt(
@@ -117,7 +209,21 @@ abstract contract BaseMiddleware is VaultManager, AccessManager, DiamondProxy {
         return _getActiveOperatorVaultsAt(operator, timestamp, hints);
     }
 
-    function getOperatorVotingPowerAt(
+    function getActiveOperatorVaultsLength(
+        address operator
+    ) external view returns (uint256) {
+        return _getActiveOperatorVaultsLength(operator);
+    }
+
+    function getActiveOperatorVaultsLengthAt(
+        address operator,
+        uint48 timestamp,
+        bytes memory hint
+    ) external view returns (uint256) {
+        return _getActiveOperatorVaultsLengthAt(operator, timestamp, hint);
+    }
+
+    function getOperatorStakeAt(
         address vault,
         address operator,
         uint48 timestamp,

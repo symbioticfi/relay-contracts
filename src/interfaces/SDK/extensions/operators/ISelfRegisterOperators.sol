@@ -8,7 +8,9 @@ pragma solidity ^0.8.25;
 interface ISelfRegisterOperators {
     error InvalidSignature();
     error OperatorPowerBelowThreshold();
-    error OperatorAbovePowerThreshold();
+    error OperatorPowerAboveThreshold();
+    error OperatorVaultPowerBelowThreshold();
+    error OperatorVaultPowerAboveThreshold();
     /**
      * @notice Returns the nonce for an operator address
      * @param operator The operator address to check
@@ -34,30 +36,6 @@ interface ISelfRegisterOperators {
     ) external;
 
     /**
-     * @notice Allows an operator to pause themselves
-     */
-    function pauseOperator() external;
-
-    /**
-     * @notice Pauses an operator with signature verification
-     * @param operator The address of the operator to pause
-     * @param signature EIP712 signature authorizing pause
-     */
-    function pauseOperator(address operator, bytes memory signature) external;
-
-    /**
-     * @notice Allows an operator to unpause themselves
-     */
-    function unpauseOperator() external;
-
-    /**
-     * @notice Unpauses an operator with signature verification
-     * @param operator The address of the operator to unpause
-     * @param signature EIP712 signature authorizing unpause
-     */
-    function unpauseOperator(address operator, bytes memory signature) external;
-
-    /**
      * @notice Allows an operator to register a vault association
      * @param vault The address of the vault to associate
      */
@@ -79,36 +57,4 @@ interface ISelfRegisterOperators {
      * @param vault The address of the vault
      */
     function unregisterOperatorVault(address operator, address vault) external;
-
-    /**
-     * @notice Allows an operator to pause a vault association
-     * @param vault The address of the vault to pause
-     */
-    function pauseOperatorVault(
-        address vault
-    ) external;
-
-    /**
-     * @notice Pauses a vault association with signature verification
-     * @param operator The address of the operator
-     * @param vault The address of the vault
-     * @param signature EIP712 signature authorizing vault pause
-     */
-    function pauseOperatorVault(address operator, address vault, bytes memory signature) external;
-
-    /**
-     * @notice Allows an operator to unpause a vault association
-     * @param vault The address of the vault to unpause
-     */
-    function unpauseOperatorVault(
-        address vault
-    ) external;
-
-    /**
-     * @notice Unpauses a vault association with signature verification
-     * @param operator The address of the operator
-     * @param vault The address of the vault
-     * @param signature EIP712 signature authorizing vault unpause
-     */
-    function unpauseOperatorVault(address operator, address vault, bytes memory signature) external;
 }

@@ -48,17 +48,17 @@ contract SettlementConfigManager is EpochManager {
         }
     }
 
-    function isStakeProviderUnpaused(
+    function isStakeProviderActive(
         CrossChainAddress memory stakeProvider,
         uint48 timestamp
     ) public view returns (bool) {
         return _stakeProviderStatuses[_serializeCrossChainAddress(stakeProvider)].get(_getEpoch(timestamp)) == 1;
     }
 
-    function isStakeProviderUnpaused(
+    function isStakeProviderActive(
         CrossChainAddress memory stakeProvider
     ) public view returns (bool) {
-        return isStakeProviderUnpaused(stakeProvider, Time.timestamp());
+        return isStakeProviderActive(stakeProvider, Time.timestamp());
     }
 
     function getActiveStakeProviders(
@@ -67,7 +67,7 @@ contract SettlementConfigManager is EpochManager {
         CrossChainAddress[] memory allStakeProviders = getAllStakeProviders();
         uint256 length;
         for (uint256 i; i < allStakeProviders.length; ++i) {
-            if (isStakeProviderUnpaused(allStakeProviders[i], timestamp)) {
+            if (isStakeProviderActive(allStakeProviders[i], timestamp)) {
                 activeStakeProviders[length++] = allStakeProviders[i];
             }
         }
@@ -97,14 +97,14 @@ contract SettlementConfigManager is EpochManager {
         }
     }
 
-    function isReplicaUnpaused(CrossChainAddress memory replica, uint48 timestamp) public view returns (bool) {
+    function isReplicaActive(CrossChainAddress memory replica, uint48 timestamp) public view returns (bool) {
         return _replicaStatuses[_serializeCrossChainAddress(replica)].get(_getEpoch(timestamp)) == 1;
     }
 
-    function isReplicaUnpaused(
+    function isReplicaActive(
         CrossChainAddress memory replica
     ) public view returns (bool) {
-        return isReplicaUnpaused(replica, Time.timestamp());
+        return isReplicaActive(replica, Time.timestamp());
     }
 
     function getActiveReplicas(
@@ -113,7 +113,7 @@ contract SettlementConfigManager is EpochManager {
         CrossChainAddress[] memory allReplicas = getAllReplicas();
         uint256 length;
         for (uint256 i; i < allReplicas.length; ++i) {
-            if (isReplicaUnpaused(allReplicas[i], timestamp)) {
+            if (isReplicaActive(allReplicas[i], timestamp)) {
                 activeReplicas[length++] = allReplicas[i];
             }
         }

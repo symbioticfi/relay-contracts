@@ -9,7 +9,7 @@ import {Checkpoints} from "../structs/Checkpoints.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-library PersistentEnumerableSet {
+library PersistentSet {
     using EnumerableSet for EnumerableSet.Bytes32Set;
     using Checkpoints for Checkpoints.Trace256;
     using Math for uint256;
@@ -59,6 +59,15 @@ library PersistentEnumerableSet {
         return true;
     }
 
+    function _contains(Set storage set, bytes32 value) private view returns (bool) {
+        uint256 positionRaw = set._elements._inner._positions[value];
+        if (positionRaw == 0) {
+            return false;
+        }
+        (uint256 row, uint256 column) = _getRowAndColumn(positionRaw - 1);
+        return (set._statuses[row].latest() >> column) & 1 == 1;
+    }
+
     function _contains(Set storage set, uint48 key, bytes32 value, bytes memory hint) private view returns (bool) {
         uint256 positionRaw = set._elements._inner._positions[value];
         if (positionRaw == 0) {
@@ -68,8 +77,34 @@ library PersistentEnumerableSet {
         return (set._statuses[row].upperLookupRecent(key, hint) >> column) & 1 == 1;
     }
 
+    function _length(
+        Set storage set
+    ) private view returns (uint256) {
+        return set._length.latest();
+    }
+
     function _length(Set storage set, uint48 key, bytes memory hint) private view returns (uint256) {
         return set._length.upperLookupRecent(key, hint);
+    }
+
+    function _values(
+        Set storage set
+    ) private view returns (bytes32[] memory values_) {
+        uint256 totalLength = set._elements.length();
+        values_ = new bytes32[](totalLength);
+        uint256 rows = totalLength.ceilDiv(256);
+        uint256 setLength;
+        for (uint256 i; i < rows; ++i) {
+            uint256 statusBitMap = set._statuses[i].latest();
+            for (uint256 j; j < 256; ++j) {
+                if ((statusBitMap >> j) & 1 == 1) {
+                    values_[setLength++] = set._elements.at(i * 256 + j);
+                }
+            }
+        }
+        assembly ("memory-safe") {
+            mstore(values_, setLength)
+        }
     }
 
     function _values(
@@ -94,6 +129,12 @@ library PersistentEnumerableSet {
         }
     }
 
+    function _allValues(
+        Set storage set
+    ) private view returns (EnumerableSet.Bytes32Set storage) {
+        return set._elements;
+    }
+
     function _getRowAndColumn(
         uint256 position
     ) private pure returns (uint256, uint256) {
@@ -114,6 +155,10 @@ library PersistentEnumerableSet {
         return _remove(set._inner, key, value);
     }
 
+    function contains(Bytes32Set storage set, bytes32 value) internal view returns (bool) {
+        return _contains(set._inner, value);
+    }
+
     function contains(
         Bytes32Set storage set,
         uint48 key,
@@ -123,23 +168,43 @@ library PersistentEnumerableSet {
         return _contains(set._inner, key, value, hint);
     }
 
+    function length(
+        Bytes32Set storage set
+    ) internal view returns (uint256) {
+        return _length(set._inner);
+    }
+
     function length(Bytes32Set storage set, uint48 key, bytes memory hint) internal view returns (uint256) {
         return _length(set._inner, key, hint);
+    }
+
+    function values(
+        Bytes32Set storage set
+    ) internal view returns (bytes32[] memory result) {
+        bytes32[] memory store = _values(set._inner);
+        assembly ("memory-safe") {
+            result := store
+        }
     }
 
     function values(
         Bytes32Set storage set,
         uint48 key,
         bytes[] memory hints
-    ) internal view returns (bytes32[] memory) {
+    ) internal view returns (bytes32[] memory result) {
         bytes32[] memory store = _values(set._inner, key, hints);
-        bytes32[] memory result;
-
         assembly ("memory-safe") {
             result := store
         }
+    }
 
-        return result;
+    function allValues(
+        Bytes32Set storage set
+    ) internal view returns (EnumerableSet.Bytes32Set storage result) {
+        EnumerableSet.Bytes32Set storage store = _allValues(set._inner);
+        assembly ("memory-safe") {
+            result.slot := store.slot
+        }
     }
 
     // AddressSet
@@ -156,6 +221,10 @@ library PersistentEnumerableSet {
         return _remove(set._inner, key, bytes32(uint256(uint160(value))));
     }
 
+    function contains(AddressSet storage set, address value) internal view returns (bool) {
+        return _contains(set._inner, bytes32(uint256(uint160(value))));
+    }
+
     function contains(
         AddressSet storage set,
         uint48 key,
@@ -165,22 +234,42 @@ library PersistentEnumerableSet {
         return _contains(set._inner, key, bytes32(uint256(uint160(value))), hint);
     }
 
+    function length(
+        AddressSet storage set
+    ) internal view returns (uint256) {
+        return _length(set._inner);
+    }
+
     function length(AddressSet storage set, uint48 key, bytes memory hint) internal view returns (uint256) {
         return _length(set._inner, key, hint);
+    }
+
+    function values(
+        AddressSet storage set
+    ) internal view returns (address[] memory result) {
+        bytes32[] memory store = _values(set._inner);
+        assembly ("memory-safe") {
+            result := store
+        }
     }
 
     function values(
         AddressSet storage set,
         uint48 key,
         bytes[] memory hints
-    ) internal view returns (address[] memory) {
+    ) internal view returns (address[] memory result) {
         bytes32[] memory store = _values(set._inner, key, hints);
-        address[] memory result;
-
         assembly ("memory-safe") {
             result := store
         }
+    }
 
-        return result;
+    function allValues(
+        AddressSet storage set
+    ) internal view returns (EnumerableSet.AddressSet storage result) {
+        EnumerableSet.Bytes32Set storage store = _allValues(set._inner);
+        assembly ("memory-safe") {
+            result.slot := store.slot
+        }
     }
 }

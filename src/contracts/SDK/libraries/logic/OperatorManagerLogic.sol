@@ -6,30 +6,30 @@ import {IOptInService} from "@symbioticfi/core/src/interfaces/service/IOptInServ
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Arrays} from "@openzeppelin/contracts/utils/Arrays.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 import {Checkpoints} from "../../../libraries/structs/Checkpoints.sol";
-import {CheckpointsEnumerableMap} from "../../../libraries/structs/CheckpointsEnumerableMap.sol";
+import {PersistentSet} from "../../../libraries/structs/PersistentSet.sol";
 import {Hints} from "../../../libraries/utils/Hints.sol";
 import {NetworkManagerLogic} from "./NetworkManagerLogic.sol";
 
 library OperatorManagerLogic {
     using Checkpoints for Checkpoints.Trace208;
-    using CheckpointsEnumerableMap for CheckpointsEnumerableMap.AddressToTrace208Map;
     using Hints for bytes[];
     using Arrays for address[];
+    using PersistentSet for PersistentSet.AddressSet;
+    using EnumerableSet for EnumerableSet.AddressSet;
 
     error NotOperator();
     error OperatorNotOptedIn();
     error OperatorAlreadyRegistered();
     error OperatorNotRegistered();
-    error OperatorNotPaused();
     error InvalidLength();
     error UnregisterNotAllowed();
 
     /// @custom:storage-location erc7201:symbiotic.storage.OperatorManager
     struct OperatorManagerStorage {
-        uint48 _oldestNeededTimestamp;
-        CheckpointsEnumerableMap.AddressToTrace208Map _operators;
+        PersistentSet.AddressSet _operators;
     }
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OperatorManager")) - 1)) & ~bytes32(uint256(0xff))
@@ -51,80 +51,51 @@ library OperatorManagerLogic {
      */
     function initialize() public {}
 
-    function getOldestNeededTimestamp() public view returns (uint48) {
-        return _getOperatorManagerStorage()._oldestNeededTimestamp;
-    }
-
-    /**
-     * @notice Returns the total number of registered operators, including both active and inactive
-     * @return The number of registered operators
-     */
-    function getOperatorsLength() public view returns (uint256) {
-        return _getOperatorManagerStorage()._operators.length();
-    }
-
-    function getOperators() public view returns (address[] memory) {
-        return _getOperatorManagerStorage()._operators.keys();
-    }
-
     function isOperatorRegistered(
         address operator
     ) public view returns (bool) {
         return _getOperatorManagerStorage()._operators.contains(operator);
     }
 
-    function isOperatorUnpaused(
-        address operator
-    ) public view returns (bool) {
-        (bool exists, Checkpoints.Trace208 storage checkpoints) =
-            _getOperatorManagerStorage()._operators.tryGet(operator);
-        return exists && checkpoints.latest() > 0;
+    /**
+     * @notice Returns the total number of registered operators, including both active and inactive
+     * @return The number of registered operators
+     */
+    function getAllOperatorsLength() public view returns (uint256) {
+        return _getOperatorManagerStorage()._operators.allValues().length();
     }
 
-    function isOperatorUnpausedAt(address operator, uint48 timestamp, bytes memory hint) public view returns (bool) {
-        (bool exists, Checkpoints.Trace208 storage checkpoints) =
-            _getOperatorManagerStorage()._operators.tryGet(operator);
-        return exists && checkpoints.upperLookupRecent(timestamp, hint) > 0;
+    function getAllOperators() public view returns (address[] memory) {
+        return _getOperatorManagerStorage()._operators.allValues().values();
+    }
+
+    function isOperatorActive(
+        address operator
+    ) public view returns (bool) {
+        return _getOperatorManagerStorage()._operators.contains(operator);
+    }
+
+    function isOperatorActiveAt(address operator, uint48 timestamp, bytes memory hint) public view returns (bool) {
+        return _getOperatorManagerStorage()._operators.contains(timestamp, operator, hint);
     }
 
     function getActiveOperatorsAt(
         uint48 timestamp,
         bytes[] memory hints
     ) public view returns (address[] memory activeOperators) {
-        address[] memory registeredOperators = _getOperatorManagerStorage()._operators.keys();
-        uint256 registeredOperatorsLength = registeredOperators.length;
-        activeOperators = new address[](registeredOperatorsLength);
-        hints = hints.normalize(registeredOperatorsLength);
-        uint256 length;
-        for (uint256 i; i < registeredOperatorsLength; ++i) {
-            if (isOperatorUnpausedAt(registeredOperators[i], timestamp, hints[i])) {
-                activeOperators[length++] = registeredOperators[i];
-            }
-        }
-        assembly ("memory-safe") {
-            mstore(activeOperators, length)
-        }
+        return _getOperatorManagerStorage()._operators.values(timestamp, hints);
     }
 
     function getActiveOperators() public view returns (address[] memory activeOperators) {
-        address[] memory registeredOperators = _getOperatorManagerStorage()._operators.keys();
-        uint256 registeredOperatorsLength = registeredOperators.length;
-        activeOperators = new address[](registeredOperatorsLength);
-        uint256 length;
-        for (uint256 i; i < registeredOperatorsLength; ++i) {
-            if (isOperatorUnpaused(registeredOperators[i])) {
-                activeOperators[length++] = registeredOperators[i];
-            }
-        }
-        assembly ("memory-safe") {
-            mstore(activeOperators, length)
-        }
+        return _getOperatorManagerStorage()._operators.values();
     }
 
-    function setOldestNeededTimestamp(
-        uint48 oldestNeededTimestamp
-    ) public {
-        _getOperatorManagerStorage()._oldestNeededTimestamp = oldestNeededTimestamp;
+    function getActiveOperatorsLength() public view returns (uint256) {
+        return _getOperatorManagerStorage()._operators.length();
+    }
+
+    function getActiveOperatorsLengthAt(uint48 timestamp, bytes memory hint) public view returns (uint256) {
+        return _getOperatorManagerStorage()._operators.length(timestamp, hint);
     }
 
     /**
@@ -144,32 +115,8 @@ library OperatorManagerLogic {
             revert OperatorNotOptedIn();
         }
 
-        if (!_getOperatorManagerStorage()._operators.set(operator, Time.timestamp(), 1)) {
+        if (!_getOperatorManagerStorage()._operators.add(Time.timestamp(), operator)) {
             revert OperatorAlreadyRegistered();
-        }
-    }
-
-    /**
-     * @notice Pauses a registered operator
-     * @param operator The address of the operator to pause
-     */
-    function pauseOperator(
-        address operator
-    ) public {
-        if (_getOperatorManagerStorage()._operators.set(operator, Time.timestamp(), 0)) {
-            revert OperatorNotRegistered();
-        }
-    }
-
-    /**
-     * @notice Unpauses a paused operator
-     * @param operator The address of the operator to unpause
-     */
-    function unpauseOperator(
-        address operator
-    ) public {
-        if (_getOperatorManagerStorage()._operators.set(operator, Time.timestamp(), 1)) {
-            revert OperatorNotRegistered();
         }
     }
 
@@ -180,11 +127,8 @@ library OperatorManagerLogic {
     function unregisterOperator(
         address operator
     ) public {
-        (bool exists, uint48 timestamp, uint208 value) =
-            _getOperatorManagerStorage()._operators.get(operator).latestCheckpoint();
-        if (!exists || timestamp >= getOldestNeededTimestamp() || value > 0) {
-            revert UnregisterNotAllowed();
+        if (!_getOperatorManagerStorage()._operators.remove(Time.timestamp(), operator)) {
+            revert OperatorNotRegistered();
         }
-        _getOperatorManagerStorage()._operators.remove(operator);
     }
 }

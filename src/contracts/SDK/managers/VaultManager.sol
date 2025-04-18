@@ -40,28 +40,6 @@ abstract contract VaultManager is OperatorManager, StakeVotingPowerManager, IVau
     using Checkpoints for Checkpoints.Trace208;
     using Hints for bytes[];
 
-    error NotVault();
-    error NotOperatorVault();
-    error VaultNotInitialized();
-    error VaultAlreadyRegistered();
-    error VaultEpochTooShort();
-    error InactiveOperatorSlash();
-    error InactiveVaultSlash();
-    error UnknownSlasherType();
-    error NonVetoSlasher();
-    error NoSlasher();
-    error TooOldTimestampSlash();
-    error NotSharedVault();
-    error NotOperatorSpecificVault();
-    error InvalidOperatorNetwork();
-    error InvalidSharedVault();
-    error InvalidVault();
-    error InvalidOperatorVault();
-    error OperatorNotAdded();
-    error VaultNotRegistered();
-    error OperatorVaultNotRegistered();
-    error VaultNotPaused();
-
     address public immutable VAULT_FACTORY;
 
     constructor(
@@ -85,32 +63,32 @@ abstract contract VaultManager is OperatorManager, StakeVotingPowerManager, IVau
         return VaultManagerLogic.getSlashingWindow();
     }
 
-    function _isTokenUnpaused(
-        address token
-    ) internal view virtual returns (bool) {
-        return VaultManagerLogic.isTokenUnpaused(token);
-    }
-
-    function _isTokenUnpausedAt(
-        address token,
-        uint48 timestamp,
-        bytes memory hint
-    ) internal view virtual returns (bool) {
-        return VaultManagerLogic.isTokenUnpausedAt(token, timestamp, hint);
-    }
-
     function _isTokenRegistered(
         address token
     ) internal view virtual returns (bool) {
         return VaultManagerLogic.isTokenRegistered(token);
     }
 
-    function _tokensLength() internal view virtual returns (uint256) {
-        return VaultManagerLogic.tokensLength();
+    function _isTokenActive(
+        address token
+    ) internal view virtual returns (bool) {
+        return VaultManagerLogic.isTokenActive(token);
     }
 
-    function _getTokens() internal view virtual returns (address[] memory) {
-        return VaultManagerLogic.getTokens();
+    function _isTokenActiveAt(
+        address token,
+        uint48 timestamp,
+        bytes memory hint
+    ) internal view virtual returns (bool) {
+        return VaultManagerLogic.isTokenActiveAt(token, timestamp, hint);
+    }
+
+    function _getAllTokensLength() internal view virtual returns (uint256) {
+        return VaultManagerLogic.getAllTokensLength();
+    }
+
+    function _getAllTokens() internal view virtual returns (address[] memory) {
+        return VaultManagerLogic.getAllTokens();
     }
 
     function _getActiveTokensAt(
@@ -120,18 +98,16 @@ abstract contract VaultManager is OperatorManager, StakeVotingPowerManager, IVau
         return VaultManagerLogic.getActiveTokensAt(timestamp, hints);
     }
 
-    function _isVaultUnpaused(
-        address vault
-    ) internal view virtual returns (bool) {
-        return VaultManagerLogic.isVaultUnpaused(vault);
+    function _getActiveTokens() internal view virtual returns (address[] memory activeTokens) {
+        return VaultManagerLogic.getActiveTokens();
     }
 
-    function _isVaultUnpausedAt(
-        address vault,
-        uint48 timestamp,
-        bytes memory hint
-    ) internal view virtual returns (bool) {
-        return VaultManagerLogic.isVaultUnpausedAt(vault, timestamp, hint);
+    function _getActiveTokensLength() internal view virtual returns (uint256) {
+        return VaultManagerLogic.getActiveTokensLength();
+    }
+
+    function _getActiveTokensLengthAt(uint48 timestamp, bytes memory hint) internal view virtual returns (uint256) {
+        return VaultManagerLogic.getActiveTokensLengthAt(timestamp, hint);
     }
 
     function _isSharedVaultRegistered(
@@ -140,16 +116,30 @@ abstract contract VaultManager is OperatorManager, StakeVotingPowerManager, IVau
         return VaultManagerLogic.isSharedVaultRegistered(vault);
     }
 
+    function _isSharedVaultActive(
+        address vault
+    ) internal view virtual returns (bool) {
+        return VaultManagerLogic.isSharedVaultActive(vault);
+    }
+
+    function _isSharedVaultActiveAt(
+        address vault,
+        uint48 timestamp,
+        bytes memory hint
+    ) internal view virtual returns (bool) {
+        return VaultManagerLogic.isSharedVaultActiveAt(vault, timestamp, hint);
+    }
+
     /**
      * @notice Gets the total number of shared vaults
      * @return uint256 The count of shared vaults
      */
-    function _sharedVaultsLength() internal view virtual returns (uint256) {
-        return VaultManagerLogic.sharedVaultsLength();
+    function _getAllSharedVaultsLength() internal view virtual returns (uint256) {
+        return VaultManagerLogic.getAllSharedVaultsLength();
     }
 
-    function _getSharedVaults() internal view virtual returns (address[] memory) {
-        return VaultManagerLogic.getSharedVaults();
+    function _getAllSharedVaults() internal view virtual returns (address[] memory) {
+        return VaultManagerLogic.getAllSharedVaults();
     }
 
     function _getActiveSharedVaultsAt(
@@ -163,20 +153,44 @@ abstract contract VaultManager is OperatorManager, StakeVotingPowerManager, IVau
         return VaultManagerLogic.getActiveSharedVaults();
     }
 
+    function _getActiveSharedVaultsLength() internal view virtual returns (uint256) {
+        return VaultManagerLogic.getActiveSharedVaultsLength();
+    }
+
+    function _getActiveSharedVaultsLengthAt(
+        uint48 timestamp,
+        bytes memory hint
+    ) internal view virtual returns (uint256) {
+        return VaultManagerLogic.getActiveSharedVaultsLengthAt(timestamp, hint);
+    }
+
     function _isOperatorVaultRegistered(address operator, address vault) internal view virtual returns (bool) {
         return VaultManagerLogic.isOperatorVaultRegistered(operator, vault);
     }
 
-    function _getOperatorVaultsLength(
-        address operator
-    ) internal view virtual returns (uint256) {
-        return VaultManagerLogic.operatorVaultsLength(operator);
+    function _isOperatorVaultActive(address operator, address vault) internal view virtual returns (bool) {
+        return VaultManagerLogic.isOperatorVaultActive(operator, vault);
     }
 
-    function _getOperatorVaults(
+    function _isOperatorVaultActiveAt(
+        address operator,
+        address vault,
+        uint48 timestamp,
+        bytes memory hint
+    ) internal view virtual returns (bool) {
+        return VaultManagerLogic.isOperatorVaultActiveAt(operator, vault, timestamp, hint);
+    }
+
+    function _getAllOperatorVaultsLength(
+        address operator
+    ) internal view virtual returns (uint256) {
+        return VaultManagerLogic.getAllOperatorVaultsLength(operator);
+    }
+
+    function _getAllOperatorVaults(
         address operator
     ) internal view virtual returns (address[] memory) {
-        return VaultManagerLogic.getOperatorVaults(operator);
+        return VaultManagerLogic.getAllOperatorVaults(operator);
     }
 
     function _getActiveOperatorVaultsAt(
@@ -191,6 +205,20 @@ abstract contract VaultManager is OperatorManager, StakeVotingPowerManager, IVau
         address operator
     ) internal view virtual returns (address[] memory activeOperatorVaults) {
         return VaultManagerLogic.getActiveOperatorVaults(operator);
+    }
+
+    function _getActiveOperatorVaultsLength(
+        address operator
+    ) internal view virtual returns (uint256) {
+        return VaultManagerLogic.getActiveOperatorVaultsLength(operator);
+    }
+
+    function _getActiveOperatorVaultsLengthAt(
+        address operator,
+        uint48 timestamp,
+        bytes memory hint
+    ) internal view virtual returns (uint256) {
+        return VaultManagerLogic.getActiveOperatorVaultsLengthAt(operator, timestamp, hint);
     }
 
     /**
@@ -295,26 +323,6 @@ abstract contract VaultManager is OperatorManager, StakeVotingPowerManager, IVau
      */
     function _registerOperatorVault(address operator, address vault) internal virtual {
         VaultManagerLogic.registerOperatorVault(VAULT_FACTORY, operator, vault);
-    }
-
-    /**
-     * @notice Pauses a vault
-     * @param vault The vault address to pause
-     */
-    function _pauseVault(
-        address vault
-    ) internal virtual {
-        VaultManagerLogic.pauseVault(vault);
-    }
-
-    /**
-     * @notice Unpauses a vault
-     * @param vault The vault address to unpause
-     */
-    function _unpauseVault(
-        address vault
-    ) internal virtual {
-        VaultManagerLogic.unpauseVault(vault);
     }
 
     /**

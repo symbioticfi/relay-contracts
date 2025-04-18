@@ -23,22 +23,6 @@ interface IOperators {
     ) external;
 
     /**
-     * @notice Pauses an operator
-     * @param operator The address of the operator to pause
-     */
-    function pauseOperator(
-        address operator
-    ) external;
-
-    /**
-     * @notice Unpauses an operator
-     * @param operator The address of the operator to unpause
-     */
-    function unpauseOperator(
-        address operator
-    ) external;
-
-    /**
      * @notice Updates an operator's public key
      * @param operator The address of the operator
      * @param key The new public key
@@ -58,18 +42,4 @@ interface IOperators {
      * @param vault The address of the vault
      */
     function unregisterOperatorVault(address operator, address vault) external;
-
-    /**
-     * @notice Pauses an operator's association with a specific vault
-     * @param operator The address of the operator
-     * @param vault The address of the vault
-     */
-    function pauseOperatorVault(address operator, address vault) external;
-
-    /**
-     * @notice Unpauses an operator's association with a specific vault
-     * @param operator The address of the operator
-     * @param vault The address of the vault
-     */
-    function unpauseOperatorVault(address operator, address vault) external;
 }
