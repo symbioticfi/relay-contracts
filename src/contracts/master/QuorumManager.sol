@@ -1,184 +1,244 @@
-// // SPDX-License-Identifier: MIT
-// pragma solidity ^0.8.25;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.25;
 
-// import {ValSetManager} from "./ValSetManager.sol";
+import {SettlementConfigManager} from "./SettlementConfigManager.sol";
 
-// import {QuorumManagerLogic} from "./libraries/logic/QuorumManagerLogic.sol";
+import {EpochCapture} from "../SDK/extensions/managers/capture-timestamps/EpochCapture.sol";
 
-// import {IQuorumManager} from "../interfaces/IQuorumManager.sol";
+import {Checkpoints} from "../libraries/structs/Checkpoints.sol";
 
-// contract QuorumManager is ValSetManager, IQuorumManager {
-//     address internal immutable SIG_VERIFIER_REGISTRY;
 
-//     constructor(
-//         address factory,
-//         address networkRegistry,
-//         address operatorRegistry,
-//         address vaultFactory,
-//         address sigVerifierRegistry
-//     ) ValSetManager(factory, networkRegistry, operatorRegistry, vaultFactory) {
-//         SIG_VERIFIER_REGISTRY = sigVerifierRegistry;
-//     }
+contract QuorumManager is EpochCapture {
+    address internal immutable SIG_VERIFIER_REGISTRY;
 
-//     function GENESIS_SET_ROLE() external pure returns (bytes32) {
-//         return QuorumManagerLogic.GENESIS_SET_ROLE;
-//     }
+    enum ValSetPhase {
+        IDLE,
+        COMMIT,
+        FAIL
+    }
 
-//     function VALSET_COMMIT_QUORUM_THRESHOLD_SET_ROLE() external pure returns (bytes32) {
-//         return QuorumManagerLogic.VALSET_COMMIT_QUORUM_THRESHOLD_SET_ROLE;
-//     }
+    struct Key {
+        uint8 tag;
+        bytes payload;
+    }
 
-//     function COMMIT_DURATION_SET_ROLE() external pure returns (bytes32) {
-//         return QuorumManagerLogic.COMMIT_DURATION_SET_ROLE;
-//     }
+    struct ValidatorSetHeader {
+        uint8 version;
+        Key[] activeAggregatedKeys;
+        uint256 totalActiveVotingPower;
+        bytes32 validatorsSszMRoot;
+        bytes extraData;
+    }
 
-//     function REQUIRED_KEY_TAG_SET_ROLE() external pure returns (bytes32) {
-//         return QuorumManagerLogic.REQUIRED_KEY_TAG_SET_ROLE;
-//     }
+    struct QuorumManagerStorage {
+        Checkpoints.Trace208 _requiredKeyTag;
+        Checkpoints.Trace208 _commitDuration;
+        mapping(uint8 => Checkpoints.Trace208) _quorumThreshold;
+        Checkpoints.Trace208 _sigVerifier;
+        mapping(uint48 epoch => ValidatorSetHeaderStorage) _valSetHeader;
+    }
 
-//     function SIG_VERIFIER_SET_ROLE() external pure returns (bytes32) {
-//         return QuorumManagerLogic.SIG_VERIFIER_SET_ROLE;
-//     }
+    struct ActiveAggregatedKeysStorage {
+        uint8[] keyTags;
+        mapping(uint8 => bytes) keyByTag;
+    }
 
-//     function getCurrentValSetBlockNumber() external view override returns (uint256) {
-//         return QuorumManagerLogic.getCurrentValSetBlockNumber();
-//     }
+    struct ValidatorSetHeaderStorage {
+        uint8 version;
+        uint8 valSetKeyTag;
+        ActiveAggregatedKeysStorage activeAggregatedKeys;
+        uint256 totalActiveVotingPower;
+        bytes32 validatorsSszMRoot;
+        bytes extraData;
+    }
 
-//     function getCommitDuration() external view returns (uint48) {
-//         return QuorumManagerLogic.getCommitDuration();
-//     }
+    struct QuorumThreshold {
+        uint8 keyTag;
+        uint104 threshold;
+    }
 
-//     function isValSetHeaderSubmitted(
-//         uint48 epoch
-//     ) external view returns (bool) {
-//         return QuorumManagerLogic.isValSetHeaderSubmitted(epoch);
-//     }
+    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.SettlementConfigManager")) - 1)) & ~bytes32(uint256(0xff))
+    bytes32 private constant QuorumManagerStorageLocation =
+        0xcee92923a0c63eca6fc0402d78c9efde9f9f3dc73e6f9e14501bf734ed77f100;
 
-//     function isValSetHeaderSubmitted() external view returns (bool) {
-//         return QuorumManagerLogic.isValSetHeaderSubmitted();
-//     }
+    function _getQuorumManagerStorage() internal pure returns (QuorumManagerStorage storage $) {
+        bytes32 location = QuorumManagerStorageLocation;
+        assembly {
+            $.slot := location
+        }
+    }
 
-//     function getCurrentPhase() external view returns (ValSetPhase) {
-//         return QuorumManagerLogic.getCurrentPhase();
-//     }
+    function __QuorumManager_init(
+        uint48 epochDuration,
+        uint48 epochDurationTimestamp,
+        QuorumThreshold[] quorumThresholds,
+        uint48 commitDuration,
+        uint8 requiredKeyTag,
+        address sigVerifier
 
-//     function getQuorumThreshold(
-//         uint8 keyTag
-//     ) external view returns (uint104) {
-//         return QuorumManagerLogic.getQuorumThreshold(keyTag);
-//     }
+    ) internal virtual onlyInitializing {
+        __EpochCapture_init(epochDuration, epochDurationTimestamp);
 
-//     function getRequiredKeyTag() external view returns (uint8) {
-//         return QuorumManagerLogic.getRequiredKeyTag();
-//     }
+        QuorumManagerStorage storage $ = _getQuorumManagerStorage();
 
-//     function getValSetHeader(
-//         uint48 epoch
-//     ) external view returns (ValidatorSetHeader memory) {
-//         return QuorumManagerLogic.getValSetHeader(epoch);
-//     }
+        if (epochDuration <= commitDuration) {
+            revert("Epoch duration is too short");
+        }
+        for (uint256 i; i < quorumThresholds.length; ++i) {
+            $._quorumThreshold[quorumThresholds[i].keyTag].push(0, quorumThresholds[i].threshold);
+        }
+        $._commitDuration.push(0, commitDuration);
+        $._requiredKeyTag.push(0, requiredKeyTag);
+        $._sigVerifier.push(0, uint160(sigVerifier));
+    }
 
-//     function getValSetHeader() external view returns (ValidatorSetHeader memory) {
-//         return QuorumManagerLogic.getValSetHeader();
-//     }
+    function getCurrentValSetTimestamp() public view returns (uint256) {
+        ValSetPhase currentPhase = getCurrentPhase();
+        if (currentPhase == ValSetPhase.IDLE || currentPhase == ValSetPhase.FAIL) {
+            return getCurrentEpochStart();
+        }
+        return getEpochStart(getCurrentEpoch() - 1, new bytes(0));
+    }
 
-//     function getSigVerifier() external view returns (address) {
-//         return QuorumManagerLogic.getSigVerifier();
-//     }
+    function getCommitDurationAt(uint48 epoch) public view returns (uint48) {
+        return uint48(_getCurrentValue(_getQuorumManagerStorage()._commitDuration, epoch));
+    }
 
-//     function getVersionFromValSetHeader(
-//         uint48 epoch
-//     ) external view returns (uint8) {
-//         return QuorumManagerLogic.getVersionFromValSetHeader(epoch);
-//     }
+    function getCommitDuration() public view returns (uint48) {
+        return getCommitDurationAt(getCurrentEpoch());
+    }
 
-//     function getActiveAggregatedKeyFromValSetHeader(uint48 epoch, uint8 keyTag) external view returns (bytes memory) {
-//         return QuorumManagerLogic.getActiveAggregatedKeyFromValSetHeader(epoch, keyTag);
-//     }
+    function isValSetHeaderSubmitted(
+        uint48 epoch
+    ) public view returns (bool) {
+        return QuorumManagerLogic.isValSetHeaderSubmitted(epoch);
+    }
 
-//     function getTotalActiveVotingPowerFromValSetHeader(
-//         uint48 epoch
-//     ) external view returns (uint256) {
-//         return QuorumManagerLogic.getTotalActiveVotingPowerFromValSetHeader(epoch);
-//     }
+    function isValSetHeaderSubmitted() public view returns (bool) {
+        return QuorumManagerLogic.isValSetHeaderSubmitted();
+    }
 
-//     function getValidatorsSszMRootFromValSetHeader(
-//         uint48 epoch
-//     ) external view returns (bytes32) {
-//         return QuorumManagerLogic.getValidatorsSszMRootFromValSetHeader(epoch);
-//     }
+    function getCurrentPhase() public view returns (ValSetPhase) {
+        return QuorumManagerLogic.getCurrentPhase();
+    }
 
-//     function getExtraDataFromValSetHeader(
-//         uint48 epoch
-//     ) external view returns (bytes memory) {
-//         return QuorumManagerLogic.getExtraDataFromValSetHeader(epoch);
-//     }
+    function getQuorumThreshold(
+        uint8 keyTag
+    ) public view returns (uint104) {
+        return QuorumManagerLogic.getQuorumThreshold(keyTag);
+    }
 
-//     function verifyQuorumSig(
-//         bytes memory message,
-//         uint8 keyTag,
-//         uint104 quorumThreshold,
-//         bytes calldata proof
-//     ) external view returns (bool) {
-//         return QuorumManagerLogic.verifyQuorumSig(message, keyTag, quorumThreshold, proof);
-//     }
+    function getRequiredKeyTag() public view returns (uint8) {
+        return QuorumManagerLogic.getRequiredKeyTag();
+    }
 
-//     function setEpochDuration(
-//         uint48 epochDuration
-//     ) external override {
-//         QuorumManagerLogic.setEpochDuration(epochDuration);
-//     }
+    function getValSetHeader(
+        uint48 epoch
+    ) public view returns (ValidatorSetHeader memory) {
+        return QuorumManagerLogic.getValSetHeader(epoch);
+    }
 
-//     function setRequiredKeyTag(
-//         uint8 requiredKeyTag
-//     ) external {
-//         QuorumManagerLogic.setRequiredKeyTag(requiredKeyTag);
-//     }
+    function getValSetHeader() public view returns (ValidatorSetHeader memory) {
+        return QuorumManagerLogic.getValSetHeader();
+    }
 
-//     function setGenesis(
-//         ValidatorSetHeader memory valSetHeader
-//     ) external {
-//         QuorumManagerLogic.setGenesis(valSetHeader);
-//     }
+    function getSigVerifier() public view returns (address) {
+        return QuorumManagerLogic.getSigVerifier();
+    }
 
-//     function setQuorumThreshold(uint8 keyTag, uint104 quorumThreshold) external {
-//         QuorumManagerLogic.setQuorumThreshold(keyTag, quorumThreshold);
-//     }
+    function getVersionFromValSetHeader(
+        uint48 epoch
+    ) public view returns (uint8) {
+        return QuorumManagerLogic.getVersionFromValSetHeader(epoch);
+    }
 
-//     function commitValSetHeader(ValidatorSetHeader memory header, bytes calldata proof) external {
-//         QuorumManagerLogic.commitValSetHeader(header, proof);
-//     }
+    function getActiveAggregatedKeyFromValSetHeader(uint48 epoch, uint8 keyTag) public view returns (bytes memory) {
+        return QuorumManagerLogic.getActiveAggregatedKeyFromValSetHeader(epoch, keyTag);
+    }
 
-//     function setSigVerifier(
-//         address verifier
-//     ) external {
-//         QuorumManagerLogic.setSigVerifier(SIG_VERIFIER_REGISTRY, verifier);
-//     }
+    function getTotalActiveVotingPowerFromValSetHeader(
+        uint48 epoch
+    ) public view returns (uint256) {
+        return QuorumManagerLogic.getTotalActiveVotingPowerFromValSetHeader(epoch);
+    }
 
-//     function _initialize(
-//         uint64, /* initialVersion */
-//         address, /* owner */
-//         bytes memory data
-//     ) internal virtual override {
-//         QuorumManagerInitParams memory initParams = abi.decode(data, (QuorumManagerInitParams));
-//         super._initialize(initialVersion, owner, initParams.baseParams);
+    function getValidatorsSszMRootFromValSetHeader(
+        uint48 epoch
+    ) public view returns (bytes32) {
+        return QuorumManagerLogic.getValidatorsSszMRootFromValSetHeader(epoch);
+    }
 
-//         for (uint256 i; i < initParams.settlementConfig.stakeProviders.length; ++i) {
-//             bytes32 compressedStakeProvider = _serializeCrossChainAddress(initParams.settlementConfig.stakeProviders[i]);
-//             if (!_stakeProviders.add(compressedStakeProvider)) {
-//                 revert Duplicate();
-//             }
-//             _stakeProviderStatuses[compressedStakeProvider].set(0, 1);
-//         }
+    function getExtraDataFromValSetHeader(
+        uint48 epoch
+    ) public view returns (bytes memory) {
+        return QuorumManagerLogic.getExtraDataFromValSetHeader(epoch);
+    }
 
-//         _keysProvider.set(0, _serializeCrossChainAddress(initParams.settlementConfig.keysProvider));
+    function verifyQuorumSig(
+        bytes memory message,
+        uint8 keyTag,
+        uint104 quorumThreshold,
+        bytes calldata proof
+    ) public view returns (bool) {
+        return QuorumManagerLogic.verifyQuorumSig(message, keyTag, quorumThreshold, proof);
+    }
 
-//         for (uint256 i; i < initParams.settlementConfig.replicas.length; ++i) {
-//             bytes32 compressedReplica = _serializeCrossChainAddress(initParams.settlementConfig.replicas[i]);
-//             if (!_replicas.add(compressedReplica)) {
-//                 revert Duplicate();
-//             }
-//             _replicaStatuses[compressedReplica].set(0, 1);
-//         }
-//     }
-// }
+    function setEpochDuration(
+        uint48 epochDuration
+    ) public override {
+        QuorumManagerLogic.setEpochDuration(epochDuration);
+    }
+
+    function setRequiredKeyTag(
+        uint8 requiredKeyTag
+    ) public {
+        QuorumManagerLogic.setRequiredKeyTag(requiredKeyTag);
+    }
+
+    function setGenesis(
+        ValidatorSetHeader memory valSetHeader
+    ) public {
+        QuorumManagerLogic.setGenesis(valSetHeader);
+    }
+
+    function setQuorumThreshold(uint8 keyTag, uint104 quorumThreshold) public {
+        QuorumManagerLogic.setQuorumThreshold(keyTag, quorumThreshold);
+    }
+
+    function commitValSetHeader(ValidatorSetHeader memory header, bytes calldata proof) public {
+        QuorumManagerLogic.commitValSetHeader(header, proof);
+    }
+
+    function setSigVerifier(
+        address verifier
+    ) public {
+        QuorumManagerLogic.setSigVerifier(SIG_VERIFIER_REGISTRY, verifier);
+    }
+
+    function _initialize(
+        uint64, /* initialVersion */
+        address, /* owner */
+        bytes memory data
+    ) internal virtual override {
+        QuorumManagerInitParams memory initParams = abi.decode(data, (QuorumManagerInitParams));
+        super._initialize(initialVersion, owner, initParams.baseParams);
+
+        for (uint256 i; i < initParams.settlementConfig.stakeProviders.length; ++i) {
+            bytes32 compressedStakeProvider = _serializeCrossChainAddress(initParams.settlementConfig.stakeProviders[i]);
+            if (!_stakeProviders.add(compressedStakeProvider)) {
+                revert Duplicate();
+            }
+            _stakeProviderStatuses[compressedStakeProvider].set(0, 1);
+        }
+
+        _keysProvider.set(0, _serializeCrossChainAddress(initParams.settlementConfig.keysProvider));
+
+        for (uint256 i; i < initParams.settlementConfig.replicas.length; ++i) {
+            bytes32 compressedReplica = _serializeCrossChainAddress(initParams.settlementConfig.replicas[i]);
+            if (!_replicas.add(compressedReplica)) {
+                revert Duplicate();
+            }
+            _replicaStatuses[compressedReplica].set(0, 1);
+        }
+    }
+}

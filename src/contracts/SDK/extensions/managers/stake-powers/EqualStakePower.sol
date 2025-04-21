@@ -9,7 +9,7 @@ import {StakeVotingPowerManager} from "../../../managers/extendable/StakeVotingP
  * @dev Simply returns the stake amount as the power amount without any modifications
  */
 abstract contract EqualStakePower is StakeVotingPowerManager {
-    function _stakeToVotingPower(address, /* vault */ uint256 stake) internal pure override returns (uint256 power) {
+    function stakeToVotingPower(address, /* vault */ uint256 stake) public pure override returns (uint256 power) {
         return stake;
     }
 }
