@@ -9,21 +9,23 @@ import {Checkpoints} from "../libraries/structs/Checkpoints.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
-abstract contract SettlementConfigManager is AccessManager {
+abstract contract MasterConfigManager is AccessManager {
     using EnumerableSet for EnumerableSet.Bytes32Set;
     using Checkpoints for Checkpoints.Trace256;
     using PersistentSet for PersistentSet.Bytes32Set;
 
+    uint64 public constant MasterConfigManager_VERSION = 1;
+
     error AlreadyAdded();
     error NotAdded();
 
-    struct SettlementConfigHints {
+    struct MasterConfigHints {
         bytes[] stakeProvidersHints;
         bytes keysProviderHint;
         bytes[] replicasHints;
     }
 
-    struct SettlementConfig {
+    struct MasterConfig {
         CrossChainAddress[] stakeProviders;
         CrossChainAddress keysProvider;
         CrossChainAddress[] replicas;
@@ -34,51 +36,49 @@ abstract contract SettlementConfigManager is AccessManager {
         uint64 chainId;
     }
 
-    struct SettlementConfigManagerStorage {
+    struct MasterConfigManagerStorage {
         PersistentSet.Bytes32Set _stakeProviders;
         Checkpoints.Trace256 _keysProvider;
         PersistentSet.Bytes32Set _replicas;
     }
 
-    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.SettlementConfigManager")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant SettlementConfigManagerStorageLocation =
+    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.MasterConfigManager")) - 1)) & ~bytes32(uint256(0xff))
+    bytes32 private constant MasterConfigManagerStorageLocation =
         0xcee92923a0c63eca6fc0402d78c9efde9f9f3dc73e6f9e14501bf734ed77f100;
 
-    function _getSettlementConfigManagerStorage() internal pure returns (SettlementConfigManagerStorage storage $) {
-        bytes32 location = SettlementConfigManagerStorageLocation;
+    function _getMasterConfigManagerStorage() internal pure returns (MasterConfigManagerStorage storage $) {
+        bytes32 location = MasterConfigManagerStorageLocation;
         assembly {
             $.slot := location
         }
     }
 
-    function __SettlementConfigManager_init(
-        SettlementConfig memory settlementConfig
+    function __MasterConfigManager_init(
+        MasterConfig memory masterConfig
     ) internal virtual onlyInitializing {
-        SettlementConfigManagerStorage storage $ = _getSettlementConfigManagerStorage();
+        MasterConfigManagerStorage storage $ = _getMasterConfigManagerStorage();
 
-        for (uint256 i; i < settlementConfig.stakeProviders.length; ++i) {
-            if (
-                !$._stakeProviders.add(Time.timestamp(), _serializeCrossChainAddress(settlementConfig.stakeProviders[i]))
-            ) {
+        for (uint256 i; i < masterConfig.stakeProviders.length; ++i) {
+            if (!$._stakeProviders.add(Time.timestamp(), _serializeCrossChainAddress(masterConfig.stakeProviders[i]))) {
                 revert AlreadyAdded();
             }
         }
 
-        $._keysProvider.push(Time.timestamp(), uint256(_serializeCrossChainAddress(settlementConfig.keysProvider)));
+        $._keysProvider.push(Time.timestamp(), uint256(_serializeCrossChainAddress(masterConfig.keysProvider)));
 
-        for (uint256 i; i < settlementConfig.replicas.length; ++i) {
-            if (!$._replicas.add(Time.timestamp(), _serializeCrossChainAddress(settlementConfig.replicas[i]))) {
+        for (uint256 i; i < masterConfig.replicas.length; ++i) {
+            if (!$._replicas.add(Time.timestamp(), _serializeCrossChainAddress(masterConfig.replicas[i]))) {
                 revert AlreadyAdded();
             }
         }
     }
 
-    function isStakeProviderActive(
+    function isStakeProviderActiveAt(
         CrossChainAddress memory stakeProvider,
         uint48 timestamp,
         bytes memory hint
     ) public view returns (bool) {
-        return _getSettlementConfigManagerStorage()._stakeProviders.contains(
+        return _getMasterConfigManagerStorage()._stakeProviders.contains(
             timestamp, _serializeCrossChainAddress(stakeProvider), hint
         );
     }
@@ -86,15 +86,15 @@ abstract contract SettlementConfigManager is AccessManager {
     function isStakeProviderActive(
         CrossChainAddress memory stakeProvider
     ) public view returns (bool) {
-        return _getSettlementConfigManagerStorage()._stakeProviders.contains(_serializeCrossChainAddress(stakeProvider));
+        return _getMasterConfigManagerStorage()._stakeProviders.contains(_serializeCrossChainAddress(stakeProvider));
     }
 
-    function getActiveStakeProviders(
+    function getActiveStakeProvidersAt(
         uint48 timestamp,
         bytes[] memory hints
     ) public view returns (CrossChainAddress[] memory activeStakeProviders) {
         bytes32[] memory activeStakeProvidersRaw =
-            _getSettlementConfigManagerStorage()._stakeProviders.values(timestamp, hints);
+            _getMasterConfigManagerStorage()._stakeProviders.values(timestamp, hints);
         activeStakeProviders = new CrossChainAddress[](activeStakeProvidersRaw.length);
         for (uint256 i; i < activeStakeProvidersRaw.length; ++i) {
             activeStakeProviders[i] = _deserializeCrossChainAddress(activeStakeProvidersRaw[i]);
@@ -102,44 +102,43 @@ abstract contract SettlementConfigManager is AccessManager {
     }
 
     function getActiveStakeProviders() public view returns (CrossChainAddress[] memory activeStakeProviders) {
-        bytes32[] memory activeStakeProvidersRaw = _getSettlementConfigManagerStorage()._stakeProviders.values();
+        bytes32[] memory activeStakeProvidersRaw = _getMasterConfigManagerStorage()._stakeProviders.values();
         activeStakeProviders = new CrossChainAddress[](activeStakeProvidersRaw.length);
         for (uint256 i; i < activeStakeProvidersRaw.length; ++i) {
             activeStakeProviders[i] = _deserializeCrossChainAddress(activeStakeProvidersRaw[i]);
         }
     }
 
-    function getKeysProvider(uint48 timestamp, bytes memory hint) public view returns (CrossChainAddress memory) {
+    function getKeysProviderAt(uint48 timestamp, bytes memory hint) public view returns (CrossChainAddress memory) {
         return _deserializeCrossChainAddress(
-            bytes32(_getSettlementConfigManagerStorage()._keysProvider.upperLookupRecent(timestamp, hint))
+            bytes32(_getMasterConfigManagerStorage()._keysProvider.upperLookupRecent(timestamp, hint))
         );
     }
 
     function getKeysProvider() public view returns (CrossChainAddress memory) {
-        return _deserializeCrossChainAddress(bytes32(_getSettlementConfigManagerStorage()._keysProvider.latest()));
+        return _deserializeCrossChainAddress(bytes32(_getMasterConfigManagerStorage()._keysProvider.latest()));
     }
 
-    function isReplicaActive(
+    function isReplicaActiveAt(
         CrossChainAddress memory replica,
         uint48 timestamp,
         bytes memory hint
     ) public view returns (bool) {
-        return _getSettlementConfigManagerStorage()._replicas.contains(
-            timestamp, _serializeCrossChainAddress(replica), hint
-        );
+        return
+            _getMasterConfigManagerStorage()._replicas.contains(timestamp, _serializeCrossChainAddress(replica), hint);
     }
 
     function isReplicaActive(
         CrossChainAddress memory replica
     ) public view returns (bool) {
-        return _getSettlementConfigManagerStorage()._replicas.contains(_serializeCrossChainAddress(replica));
+        return _getMasterConfigManagerStorage()._replicas.contains(_serializeCrossChainAddress(replica));
     }
 
-    function getActiveReplicas(
+    function getActiveReplicasAt(
         uint48 timestamp,
         bytes[] memory hints
     ) public view returns (CrossChainAddress[] memory activeReplicas) {
-        bytes32[] memory activeReplicasRaw = _getSettlementConfigManagerStorage()._replicas.values(timestamp, hints);
+        bytes32[] memory activeReplicasRaw = _getMasterConfigManagerStorage()._replicas.values(timestamp, hints);
         activeReplicas = new CrossChainAddress[](activeReplicasRaw.length);
         for (uint256 i; i < activeReplicasRaw.length; ++i) {
             activeReplicas[i] = _deserializeCrossChainAddress(activeReplicasRaw[i]);
@@ -147,28 +146,28 @@ abstract contract SettlementConfigManager is AccessManager {
     }
 
     function getActiveReplicas() public view returns (CrossChainAddress[] memory activeReplicas) {
-        bytes32[] memory activeReplicasRaw = _getSettlementConfigManagerStorage()._replicas.values();
+        bytes32[] memory activeReplicasRaw = _getMasterConfigManagerStorage()._replicas.values();
         activeReplicas = new CrossChainAddress[](activeReplicasRaw.length);
         for (uint256 i; i < activeReplicasRaw.length; ++i) {
             activeReplicas[i] = _deserializeCrossChainAddress(activeReplicasRaw[i]);
         }
     }
 
-    function getSettlementConfig(uint48 timestamp, bytes memory hints) public view returns (SettlementConfig memory) {
-        SettlementConfigHints memory settlementConfigHints;
+    function getMasterConfigAt(uint48 timestamp, bytes memory hints) public view returns (MasterConfig memory) {
+        MasterConfigHints memory masterConfigHints;
         if (hints.length > 0) {
-            settlementConfigHints = abi.decode(hints, (SettlementConfigHints));
+            masterConfigHints = abi.decode(hints, (MasterConfigHints));
         }
 
-        return SettlementConfig({
-            stakeProviders: getActiveStakeProviders(timestamp, settlementConfigHints.stakeProvidersHints),
-            keysProvider: getKeysProvider(timestamp, settlementConfigHints.keysProviderHint),
-            replicas: getActiveReplicas(timestamp, settlementConfigHints.replicasHints)
+        return MasterConfig({
+            stakeProviders: getActiveStakeProvidersAt(timestamp, masterConfigHints.stakeProvidersHints),
+            keysProvider: getKeysProviderAt(timestamp, masterConfigHints.keysProviderHint),
+            replicas: getActiveReplicasAt(timestamp, masterConfigHints.replicasHints)
         });
     }
 
-    function getSettlementConfig() public view returns (SettlementConfig memory) {
-        return SettlementConfig({
+    function getMasterConfig() public view returns (MasterConfig memory) {
+        return MasterConfig({
             stakeProviders: getActiveStakeProviders(),
             keysProvider: getKeysProvider(),
             replicas: getActiveReplicas()
@@ -179,7 +178,7 @@ abstract contract SettlementConfigManager is AccessManager {
         CrossChainAddress memory stakeProvider
     ) public checkAccess {
         if (
-            !_getSettlementConfigManagerStorage()._stakeProviders.add(
+            !_getMasterConfigManagerStorage()._stakeProviders.add(
                 Time.timestamp(), _serializeCrossChainAddress(stakeProvider)
             )
         ) {
@@ -191,7 +190,7 @@ abstract contract SettlementConfigManager is AccessManager {
         CrossChainAddress memory stakeProvider
     ) public checkAccess {
         if (
-            !_getSettlementConfigManagerStorage()._stakeProviders.remove(
+            !_getMasterConfigManagerStorage()._stakeProviders.remove(
                 Time.timestamp(), _serializeCrossChainAddress(stakeProvider)
             )
         ) {
@@ -202,7 +201,7 @@ abstract contract SettlementConfigManager is AccessManager {
     function setKeysProvider(
         CrossChainAddress memory keysProvider
     ) public checkAccess {
-        _getSettlementConfigManagerStorage()._keysProvider.push(
+        _getMasterConfigManagerStorage()._keysProvider.push(
             Time.timestamp(), uint256(_serializeCrossChainAddress(keysProvider))
         );
     }
@@ -210,8 +209,7 @@ abstract contract SettlementConfigManager is AccessManager {
     function addReplica(
         CrossChainAddress memory replica
     ) public checkAccess {
-        if (!_getSettlementConfigManagerStorage()._replicas.add(Time.timestamp(), _serializeCrossChainAddress(replica)))
-        {
+        if (!_getMasterConfigManagerStorage()._replicas.add(Time.timestamp(), _serializeCrossChainAddress(replica))) {
             revert AlreadyAdded();
         }
     }
@@ -219,11 +217,8 @@ abstract contract SettlementConfigManager is AccessManager {
     function removeReplica(
         CrossChainAddress memory replica
     ) public checkAccess {
-        if (
-            !_getSettlementConfigManagerStorage()._replicas.remove(
-                Time.timestamp(), _serializeCrossChainAddress(replica)
-            )
-        ) {
+        if (!_getMasterConfigManagerStorage()._replicas.remove(Time.timestamp(), _serializeCrossChainAddress(replica)))
+        {
             revert NotAdded();
         }
     }

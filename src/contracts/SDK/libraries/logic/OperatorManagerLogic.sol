@@ -10,12 +10,10 @@ import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet
 
 import {Checkpoints} from "../../../libraries/structs/Checkpoints.sol";
 import {PersistentSet} from "../../../libraries/structs/PersistentSet.sol";
-import {Hints} from "../../../libraries/utils/Hints.sol";
 import {NetworkManagerLogic} from "./NetworkManagerLogic.sol";
 
 library OperatorManagerLogic {
     using Checkpoints for Checkpoints.Trace208;
-    using Hints for bytes[];
     using Arrays for address[];
     using PersistentSet for PersistentSet.AddressSet;
     using EnumerableSet for EnumerableSet.AddressSet;

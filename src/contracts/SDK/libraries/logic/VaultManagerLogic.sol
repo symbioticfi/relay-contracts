@@ -22,7 +22,6 @@ import {StakeVotingPowerManager} from "../../managers/extendable/StakeVotingPowe
 
 import {Checkpoints} from "../../../libraries/structs/Checkpoints.sol";
 import {PersistentSet} from "../../../libraries/structs/PersistentSet.sol";
-import {Hints} from "../../../libraries/utils/Hints.sol";
 import {NetworkManagerLogic} from "./NetworkManagerLogic.sol";
 import {OperatorManagerLogic} from "./OperatorManagerLogic.sol";
 
@@ -41,7 +40,6 @@ library VaultManagerLogic {
     using Subnetwork for bytes32;
     using Checkpoints for Checkpoints.Trace208;
     using PersistentSet for PersistentSet.AddressSet;
-    using Hints for bytes[];
 
     error NotVault();
     error NotOperatorVault();

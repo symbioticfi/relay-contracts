@@ -12,7 +12,6 @@ import {NetworkManager} from "./NetworkManager.sol";
 
 import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
 import {CheckpointsEnumerableMap} from "../../libraries/structs/CheckpointsEnumerableMap.sol";
-import {Hints} from "../../libraries/utils/Hints.sol";
 import {OperatorManagerLogic} from "../libraries/logic/OperatorManagerLogic.sol";
 
 /**
@@ -24,7 +23,6 @@ import {OperatorManagerLogic} from "../libraries/logic/OperatorManagerLogic.sol"
 abstract contract OperatorManager is NetworkManager, StaticDelegateCallable {
     using Checkpoints for Checkpoints.Trace208;
     using CheckpointsEnumerableMap for CheckpointsEnumerableMap.AddressToTrace208Map;
-    using Hints for bytes[];
     using Arrays for address[];
 
     address public immutable OPERATOR_REGISTRY; // Address of the operator registry

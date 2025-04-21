@@ -21,7 +21,6 @@ import {OperatorManager} from "./OperatorManager.sol";
 import {StakeVotingPowerManager} from "./extendable/StakeVotingPowerManager.sol";
 
 import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
-import {Hints} from "../../libraries/utils/Hints.sol";
 import {VaultManagerLogic} from "../libraries/logic/VaultManagerLogic.sol";
 
 import {IVaultManager} from "../../../interfaces/SDK/managers/IVaultManager.sol";
@@ -38,7 +37,6 @@ abstract contract VaultManager is OperatorManager, StakeVotingPowerManager, IVau
     using Subnetwork for address;
     using Subnetwork for bytes32;
     using Checkpoints for Checkpoints.Trace208;
-    using Hints for bytes[];
 
     address public immutable VAULT_FACTORY;
 

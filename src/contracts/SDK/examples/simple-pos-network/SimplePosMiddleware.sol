@@ -108,7 +108,7 @@
 //      * @notice Returns the current validator set as an array of ValidatorData.
 //      * @return An array of ValidatorData containing the power and key of each validator.
 //      */
-//     function getValidatorSet() public view returns (ValidatorData[] memory validatorSet) {
+//     function getValSet() public view returns (ValidatorData[] memory validatorSet) {
 //         address[] memory operators = _activeOperators(); // Get the list of active operators
 //         validatorSet = new ValidatorData[](operators.length); // Initialize the validator set
 //         uint256 len = 0; // Length counter

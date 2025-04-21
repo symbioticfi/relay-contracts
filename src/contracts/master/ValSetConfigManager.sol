@@ -14,8 +14,22 @@ abstract contract ValSetConfigManager is AccessManager {
     using Checkpoints for Checkpoints.Trace256;
     using PersistentSet for PersistentSet.Bytes32Set;
 
+    uint64 public constant ValSetConfigManager_VERSION = 1;
+
     error AlreadyAdded();
     error NotAdded();
+
+    struct ValSetConfig {
+        uint256 maxVotingPower;
+        uint256 minInclusionVotingPower;
+        uint256 maxValidatorsCount;
+    }
+
+    struct ValSetConfigHints {
+        bytes maxVotingPowerHint;
+        bytes minInclusionVotingPowerHint;
+        bytes maxValidatorsCountHint;
+    }
 
     struct ValSetConfigManagerStorage {
         Checkpoints.Trace256 _maxVotingPower;
@@ -46,7 +60,7 @@ abstract contract ValSetConfigManager is AccessManager {
         $._maxValidatorsCount.push(Time.timestamp(), maxValidatorsCount);
     }
 
-    function getMaxVotingPower(uint48 timestamp, bytes memory hint) public view returns (uint256) {
+    function getMaxVotingPowerAt(uint48 timestamp, bytes memory hint) public view returns (uint256) {
         return _getValSetConfigManagerStorage()._maxVotingPower.upperLookupRecent(timestamp, hint);
     }
 
@@ -54,7 +68,7 @@ abstract contract ValSetConfigManager is AccessManager {
         return _getValSetConfigManagerStorage()._maxVotingPower.latest();
     }
 
-    function getMinInclusionVotingPower(uint48 timestamp, bytes memory hint) public view returns (uint256) {
+    function getMinInclusionVotingPowerAt(uint48 timestamp, bytes memory hint) public view returns (uint256) {
         return _getValSetConfigManagerStorage()._minInclusionVotingPower.upperLookupRecent(timestamp, hint);
     }
 
@@ -62,12 +76,33 @@ abstract contract ValSetConfigManager is AccessManager {
         return _getValSetConfigManagerStorage()._minInclusionVotingPower.latest();
     }
 
-    function getMaxValidatorsCount(uint48 timestamp, bytes memory hint) public view returns (uint256) {
+    function getMaxValidatorsCountAt(uint48 timestamp, bytes memory hint) public view returns (uint256) {
         return _getValSetConfigManagerStorage()._maxValidatorsCount.upperLookupRecent(timestamp, hint);
     }
 
     function getMaxValidatorsCount() public view returns (uint256) {
         return _getValSetConfigManagerStorage()._maxValidatorsCount.latest();
+    }
+
+    function getValSetConfigAt(uint48 timestamp, bytes memory hints) public view returns (ValSetConfig memory) {
+        ValSetConfigHints memory valSetConfigHints;
+        if (hints.length > 0) {
+            valSetConfigHints = abi.decode(hints, (ValSetConfigHints));
+        }
+
+        return ValSetConfig({
+            maxVotingPower: getMaxVotingPowerAt(timestamp, valSetConfigHints.maxVotingPowerHint),
+            minInclusionVotingPower: getMinInclusionVotingPowerAt(timestamp, valSetConfigHints.minInclusionVotingPowerHint),
+            maxValidatorsCount: getMaxValidatorsCountAt(timestamp, valSetConfigHints.maxValidatorsCountHint)
+        });
+    }
+
+    function getValSetConfig() public view returns (ValSetConfig memory) {
+        return ValSetConfig({
+            maxVotingPower: getMaxVotingPower(),
+            minInclusionVotingPower: getMinInclusionVotingPower(),
+            maxValidatorsCount: getMaxValidatorsCount()
+        });
     }
 
     function setMaxVotingPower(

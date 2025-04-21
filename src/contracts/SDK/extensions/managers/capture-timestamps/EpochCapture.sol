@@ -80,8 +80,12 @@ abstract contract EpochCapture is CaptureTimestampManager, AccessManager {
 
     function setEpochDuration(
         uint48 epochDuration
-    ) public checkAccess {
+    ) public virtual checkAccess {
         _setEpochDuration(epochDuration, getCurrentEpochStart() + getCurrentEpochDuration(), getCurrentEpoch() + 1);
+    }
+
+    function _getNextEpoch() internal view returns (uint48) {
+        return getCurrentEpoch() + 1;
     }
 
     function _setEpochDuration(
