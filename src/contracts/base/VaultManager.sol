@@ -297,6 +297,18 @@ abstract contract VaultManager is OperatorManager, StakeVotingPowerManager, IVau
         return VaultManagerLogic.getOperatorStake(vault, operator);
     }
 
+    function _registerToken(
+        address token
+    ) internal virtual {
+        VaultManagerLogic.registerToken(token);
+    }
+
+    function _unregisterToken(
+        address token
+    ) internal virtual {
+        VaultManagerLogic.unregisterToken(token);
+    }
+
     /**
      * @notice Registers a new shared vault
      * @param vault The vault address to register

@@ -4,18 +4,18 @@ pragma solidity ^0.8.25;
 import {VaultManager} from "../../../base/VaultManager.sol";
 import {PermissionManager} from "../../../base/PermissionManager.sol";
 
-abstract contract SharedVaults is VaultManager, PermissionManager {
-    uint64 public constant SharedVaults_VERSION = 1;
+abstract contract Tokens is VaultManager, PermissionManager {
+    uint64 public constant Tokens_VERSION = 1;
 
-    function registerSharedVault(
-        address sharedVault
+    function registerToken(
+        address token
     ) public checkPermission {
-        _registerSharedVault(sharedVault);
+        _registerToken(token);
     }
 
-    function unregisterSharedVault(
-        address sharedVault
+    function unregisterToken(
+        address token
     ) public checkPermission {
-        _unregisterSharedVault(sharedVault);
+        _unregisterToken(token);
     }
 }

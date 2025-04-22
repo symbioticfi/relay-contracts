@@ -3,13 +3,14 @@ pragma solidity ^0.8.25;
 
 import {SharedVaults} from "../../../features/registration/vaults/SharedVaults.sol";
 import {SelfRegisterOperators} from "../../../features/registration/operators/SelfRegisterOperators.sol";
+import {Tokens} from "../../../features/registration/tokens/Tokens.sol";
 
 import {OzOwnable} from "../../../features/permissions/OzOwnable.sol";
 import {EqualStakePower} from "../../../features/stake-powers/EqualStakePower.sol";
 
 import {VaultManager} from "../../../base/VaultManager.sol";
 
-contract SelfRegisterStakeProvider is SharedVaults, SelfRegisterOperators, OzOwnable, EqualStakePower {
+contract SelfRegisterStakeProvider is SharedVaults, SelfRegisterOperators, Tokens, OzOwnable, EqualStakePower {
     constructor(
         address operatorRegistry,
         address operatorNetworkOptInService,
