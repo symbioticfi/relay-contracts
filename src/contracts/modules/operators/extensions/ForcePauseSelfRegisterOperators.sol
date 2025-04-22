@@ -45,7 +45,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
 
     function forceUnpauseOperator(
         address operator
-    ) external virtual checkAccess {
+    ) external virtual checkPermission {
         if (!isOperatorForcePaused(operator)) {
             revert OperatorNotForcePaused();
         }
@@ -54,7 +54,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
 
     function forcePauseOperator(
         address operator
-    ) external virtual checkAccess {
+    ) external virtual checkPermission {
         if (isOperatorForcePaused(operator)) {
             revert OperatorForcePaused();
         }
@@ -64,14 +64,14 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
         }
     }
 
-    function forceUnpauseOperatorVault(address operator, address vault) external virtual checkAccess {
+    function forceUnpauseOperatorVault(address operator, address vault) external virtual checkPermission {
         if (!isOperatorVaultForcePaused(operator, vault)) {
             revert OperatorVaultNotForcePaused();
         }
         _getForcePauseStorage().forcePausedVault[operator][vault] = false;
     }
 
-    function forcePauseOperatorVault(address operator, address vault) external virtual checkAccess {
+    function forcePauseOperatorVault(address operator, address vault) external virtual checkPermission {
         if (isOperatorVaultForcePaused(operator, vault)) {
             revert OperatorVaultForcePaused();
         }

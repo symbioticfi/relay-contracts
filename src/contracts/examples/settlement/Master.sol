@@ -5,9 +5,9 @@ import {SettlementManager} from "./SettlementManager.sol";
 import {ValSetConfigManager} from "./ValSetConfigManager.sol";
 import {MasterConfigManager} from "./MasterConfigManager.sol";
 
-import {OwnableAccessManager} from "../../modules/access/OwnableAccessManager.sol";
+import {OzOwnable} from "../../modules/permissions/OzOwnable.sol";
 
-contract Master is SettlementManager, ValSetConfigManager, MasterConfigManager, OwnableAccessManager {
+contract Master is SettlementManager, ValSetConfigManager, MasterConfigManager, OzOwnable {
     function initialize(
         ValSetConfig memory valSetConfig,
         MasterConfig memory masterConfig,

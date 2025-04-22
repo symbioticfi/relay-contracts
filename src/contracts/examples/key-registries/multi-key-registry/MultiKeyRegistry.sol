@@ -2,7 +2,7 @@
 pragma solidity ^0.8.25;
 
 import {MultiKeyManager} from "../../../modules/keys/MultiKeyManager.sol";
-import {OzAccessControl} from "../../../modules/access/OzAccessControl.sol";
+import {OzAccessControl} from "../../../modules/permissions/OzAccessControl.sol";
 
 contract MultiKeyRegistry is MultiKeyManager, OzAccessControl {
     constructor() {
@@ -25,19 +25,14 @@ contract MultiKeyRegistry is MultiKeyManager, OzAccessControl {
         return _getOperators();
     }
 
-    function initialize(
-        string memory name,
-        string memory version,
-        uint8[] memory requiredKeyTags,
-        address defaultAdmin
-    ) public initializer {
+    function initialize(string memory name, string memory version, uint8[] memory requiredKeyTags) public initializer {
         __KeyManager_init(name, version, requiredKeyTags);
-        __OzAccessControl_init(defaultAdmin);
+        __OzAccessControl_init();
     }
 
     function setRequiredKeyTags(
         uint8[] memory requiredKeyTags
-    ) public checkAccess {
+    ) public checkPermission {
         _setRequiredKeyTags(requiredKeyTags);
     }
 

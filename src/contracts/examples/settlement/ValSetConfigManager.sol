@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {AccessManager} from "../../base/abstracts/AccessManager.sol";
+import {PermissionManager} from "../../base/abstracts/PermissionManager.sol";
 
 import {PersistentSet} from "../../libraries/structs/PersistentSet.sol";
 import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
@@ -9,7 +9,7 @@ import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
-abstract contract ValSetConfigManager is AccessManager {
+abstract contract ValSetConfigManager is PermissionManager {
     using EnumerableSet for EnumerableSet.Bytes32Set;
     using Checkpoints for Checkpoints.Trace256;
     using PersistentSet for PersistentSet.Bytes32Set;
@@ -102,19 +102,19 @@ abstract contract ValSetConfigManager is AccessManager {
 
     function setMaxVotingPower(
         uint256 maxVotingPower
-    ) public checkAccess {
+    ) public checkPermission {
         _getValSetConfigManagerStorage()._maxVotingPower.push(Time.timestamp(), maxVotingPower);
     }
 
     function setMinInclusionVotingPower(
         uint256 minInclusionVotingPower
-    ) public checkAccess {
+    ) public checkPermission {
         _getValSetConfigManagerStorage()._minInclusionVotingPower.push(Time.timestamp(), minInclusionVotingPower);
     }
 
     function setMaxValidatorsCount(
         uint256 maxValidatorsCount
-    ) public checkAccess {
+    ) public checkPermission {
         _getValSetConfigManagerStorage()._maxValidatorsCount.push(Time.timestamp(), maxValidatorsCount);
     }
 }

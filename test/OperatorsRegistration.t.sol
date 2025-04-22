@@ -10,7 +10,7 @@
 // //import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
 // // import {Subnetwork} from "@symbioticfi/core/src/contracts/libraries/Subnetwork.sol";
 // import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
-// import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+// import {Ownable} from "@openzeppelin/contracts/permissions/Ownable.sol";
 // import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 // import {BaseMiddlewareReader} from "../src/middleware/BaseMiddlewareReader.sol";
 // import "forge-std/console.sol";

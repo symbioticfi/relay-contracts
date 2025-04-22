@@ -3,12 +3,12 @@ pragma solidity ^0.8.25;
 
 import {VaultManager} from "./base/VaultManager.sol";
 import {OperatorManager} from "./base/OperatorManager.sol";
-import {AccessManager} from "./base/abstracts/AccessManager.sol";
+import {PermissionManager} from "./base/abstracts/PermissionManager.sol";
 
 /**
  * @title BaseMiddleware
  * @notice Abstract base contract that combines core manager functionality for building middleware
- * @dev Inherits from VaultManager, OperatorManager, and AccessManager to provide:
+ * @dev Inherits from VaultManager, OperatorManager, and PermissionManager to provide:
  *      - Vault management and registration
  *      - Operator management and registration
  *      - Access management
@@ -16,7 +16,7 @@ import {AccessManager} from "./base/abstracts/AccessManager.sol";
  * This contract serves as a foundation for building custom middleware by providing essential
  * management capabilities that can be extended with additional functionality.
  */
-abstract contract BaseMiddleware is VaultManager, AccessManager {
+abstract contract BaseMiddleware is VaultManager, PermissionManager {
     // This constant aggregates changes of all not abstracts managers
     uint64 public constant BaseMiddleware_VERSION = 1;
 

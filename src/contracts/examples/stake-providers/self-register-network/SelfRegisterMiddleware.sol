@@ -5,16 +5,10 @@ import {BaseMiddleware} from "../../../BaseMiddleware.sol";
 import {SharedVaults} from "../../../modules/vaults/SharedVaults.sol";
 import {SelfRegisterOperators} from "../../../modules/operators/SelfRegisterOperators.sol";
 
-import {OwnableAccessManager} from "../../../modules/access/OwnableAccessManager.sol";
+import {OzOwnable} from "../../../modules/permissions/OzOwnable.sol";
 import {EqualStakePower} from "../../../modules/stake-powers/EqualStakePower.sol";
 
-contract SelfRegisterMiddleware is
-    BaseMiddleware,
-    SharedVaults,
-    SelfRegisterOperators,
-    OwnableAccessManager,
-    EqualStakePower
-{
+contract SelfRegisterMiddleware is BaseMiddleware, SharedVaults, SelfRegisterOperators, OzOwnable, EqualStakePower {
     constructor(
         address operatorRegistry,
         address operatorNetworkOptInService,
@@ -35,6 +29,6 @@ contract SelfRegisterMiddleware is
     ) internal initializer {
         __BaseMiddleware_init(network, subnetworkID, slashingWindow);
         __SelfRegisterOperators_init("SelfRegisterMiddleware", 0);
-        __OwnableAccessManager_init(owner_);
+        __OzOwnable_init(owner_);
     }
 }

@@ -8,7 +8,7 @@ This repository provides a framework for developing middleware in a modular and 
 
 ![Middleware Architecture](img/middleware.png)
 
-- **BaseMiddleware**: The foundational contract that combines core manager functionalities from `VaultManager`, `OperatorManager`, `AccessManager`, and `MultiKeyManager`.
+- **BaseMiddleware**: The foundational contract that combines core manager functionalities from `VaultManager`, `OperatorManager`, `PermissionManager`, and `MultiKeyManager`.
 
 - **Extensions**: Modular contracts that provide additional functionalities. Key extensions include:
 
@@ -16,7 +16,7 @@ This repository provides a framework for developing middleware in a modular and 
 
   - **MultiKeyManager**: Manages operator keys. Variants include `KeyManagerAddress`, `KeyManager256`, `KeyManagerBytes`, and `NoKeyManager`.
 
-  - **AccessManager**: Controls access to restricted functions. Implementations include `OwnableAccessManager`, `OzAccessControl`, `OzAccessManaged`, and `NoAccessManager`.
+  - **PermissionManager**: Controls access to restricted functions. Implementations include `OzOwnable`, `OzAccessControl`, `OzAccessManaged`, and `NoPermissionManager`.
 
   - **CaptureTimestamp**: Captures the active state at specific timestamps. Options are `EpochCapture` and `TimestampCapture`.
 
@@ -33,7 +33,7 @@ Below are examples of middleware implementations using different combinations of
 #### SimplePosMiddleware
 
 ```solidity
-contract SimplePosMiddleware is SharedVaults, Operators, KeyManager256, OwnableAccessManager, EpochCapture, EqualStakePower {
+contract SimplePosMiddleware is SharedVaults, Operators, KeyManager256, OzOwnable, EpochCapture, EqualStakePower {
     // Implementation details...
 }
 ```
@@ -47,7 +47,7 @@ Features:
 #### SqrtTaskMiddleware
 
 ```solidity
-contract SqrtTaskMiddleware is SharedVaults, Operators, NoKeyManager, EIP712, OwnableAccessManager, TimestampCapture, EqualStakePower {
+contract SqrtTaskMiddleware is SharedVaults, Operators, NoKeyManager, EIP712, OzOwnable, TimestampCapture, EqualStakePower {
     // Implementation details...
 }
 ```
@@ -61,7 +61,7 @@ Features:
 #### SelfRegisterMiddleware
 
 ```solidity
-contract SelfRegisterMiddleware is SharedVaults, SelfRegisterOperators, KeyManagerAddress, ECDSASig, NoAccessManager, TimestampCapture, EqualStakePower {
+contract SelfRegisterMiddleware is SharedVaults, SelfRegisterOperators, KeyManagerAddress, ECDSASig, NoPermissionManager, TimestampCapture, EqualStakePower {
     // Implementation details...
 }
 ```
@@ -75,7 +75,7 @@ Features:
 #### SelfRegisterEd25519Middleware
 
 ```solidity
-contract SelfRegisterEd25519Middleware is SharedVaults, SelfRegisterOperators, KeyManager256, EdDSASig, NoAccessManager, TimestampCapture {
+contract SelfRegisterEd25519Middleware is SharedVaults, SelfRegisterOperators, KeyManager256, EdDSASig, NoPermissionManager, TimestampCapture {
     // Implementation details...
 }
 ```
@@ -87,7 +87,7 @@ Features:
 #### SelfRegisterSqrtTaskMiddleware
 
 ```solidity
-contract SelfRegisterSqrtTaskMiddleware is SharedVaults, SelfRegisterOperators, KeyManagerAddress, ECDSASig, OwnableAccessManager, TimestampCapture, EqualStakePower {
+contract SelfRegisterSqrtTaskMiddleware is SharedVaults, SelfRegisterOperators, KeyManagerAddress, ECDSASig, OzOwnable, TimestampCapture, EqualStakePower {
     // Implementation details...
 }
 ```
@@ -145,7 +145,7 @@ To develop your middleware:
 ## Example: Creating a Custom Middleware
 
 ```solidity
-contract MyCustomMiddleware is BaseMiddleware, Operators, KeyStorage256, OwnableAccessManager {
+contract MyCustomMiddleware is BaseMiddleware, Operators, KeyStorage256, OzOwnable {
     uint64 public constant MyCustomMiddleware_VERSION = 1;
 
     /**
@@ -178,7 +178,7 @@ contract MyCustomMiddleware is BaseMiddleware, Operators, KeyStorage256, Ownable
    function initialize(...) public initializer {
        // Initialize base contracts
        __BaseMiddleware_init(...);
-       __OzAccessControl_init(admin);
+       __OzAccessControl_init();
 
        // Set up role hierarchy
        _setRoleAdmin(OPERATOR_ROLE, MANAGER_ROLE); // Manager role can grant/revoke operator role
@@ -201,9 +201,9 @@ contract MyCustomMiddleware is BaseMiddleware, Operators, KeyStorage256, Ownable
 
 - **Versioning**: Include a public constant variable for versioning in your contracts (e.g., `uint64 public constant MyExtension_VERSION = 1;`).
 
-- **Access Control**: Choose an appropriate `AccessManager` based on your needs:
-  - `NoAccessManager`: Allows unrestricted access to all functions
-  - `OwnableAccessManager`: Restricts access to a single owner address
+- **Access Control**: Choose an appropriate `PermissionManager` based on your needs:
+  - `NoPermissionManager`: Allows unrestricted access to all functions
+  - `OzOwnable`: Restricts access to a single owner address
   - `OzAccessControl`: Implements OpenZeppelin-style role-based access control where different roles can be assigned to specific function selectors. Roles can be granted and revoked by role admins, with a default admin role that can manage all other roles. Roles can be set up by:
     1. Granting roles to addresses using `grantRole(bytes32 role, address account)`
     2. Setting role admins with `_setRoleAdmin(bytes32 role, bytes32 adminRole)`

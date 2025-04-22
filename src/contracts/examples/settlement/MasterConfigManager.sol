@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {AccessManager} from "../../base/abstracts/AccessManager.sol";
+import {PermissionManager} from "../../base/abstracts/PermissionManager.sol";
 
 import {PersistentSet} from "../../libraries/structs/PersistentSet.sol";
 import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
@@ -9,7 +9,7 @@ import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
-abstract contract MasterConfigManager is AccessManager {
+abstract contract MasterConfigManager is PermissionManager {
     using EnumerableSet for EnumerableSet.Bytes32Set;
     using Checkpoints for Checkpoints.Trace256;
     using PersistentSet for PersistentSet.Bytes32Set;
@@ -176,7 +176,7 @@ abstract contract MasterConfigManager is AccessManager {
 
     function addStakeProvider(
         CrossChainAddress memory stakeProvider
-    ) public checkAccess {
+    ) public checkPermission {
         if (
             !_getMasterConfigManagerStorage()._stakeProviders.add(
                 Time.timestamp(), _serializeCrossChainAddress(stakeProvider)
@@ -188,7 +188,7 @@ abstract contract MasterConfigManager is AccessManager {
 
     function removeStakeProvider(
         CrossChainAddress memory stakeProvider
-    ) public checkAccess {
+    ) public checkPermission {
         if (
             !_getMasterConfigManagerStorage()._stakeProviders.remove(
                 Time.timestamp(), _serializeCrossChainAddress(stakeProvider)
@@ -200,7 +200,7 @@ abstract contract MasterConfigManager is AccessManager {
 
     function setKeysProvider(
         CrossChainAddress memory keysProvider
-    ) public checkAccess {
+    ) public checkPermission {
         _getMasterConfigManagerStorage()._keysProvider.push(
             Time.timestamp(), uint256(_serializeCrossChainAddress(keysProvider))
         );
@@ -208,7 +208,7 @@ abstract contract MasterConfigManager is AccessManager {
 
     function addReplica(
         CrossChainAddress memory replica
-    ) public checkAccess {
+    ) public checkPermission {
         if (!_getMasterConfigManagerStorage()._replicas.add(Time.timestamp(), _serializeCrossChainAddress(replica))) {
             revert MasterConfigManager_AlreadyAdded();
         }
@@ -216,7 +216,7 @@ abstract contract MasterConfigManager is AccessManager {
 
     function removeReplica(
         CrossChainAddress memory replica
-    ) public checkAccess {
+    ) public checkPermission {
         if (!_getMasterConfigManagerStorage()._replicas.remove(Time.timestamp(), _serializeCrossChainAddress(replica)))
         {
             revert MasterConfigManager_NotAdded();

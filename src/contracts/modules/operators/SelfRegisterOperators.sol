@@ -2,7 +2,7 @@
 pragma solidity ^0.8.25;
 
 import {VaultManager} from "../../base/VaultManager.sol";
-import {AccessManager} from "../../base/abstracts/AccessManager.sol";
+import {PermissionManager} from "../../base/abstracts/PermissionManager.sol";
 
 import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
 import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
@@ -15,7 +15,12 @@ import {ISelfRegisterOperators} from "../../../interfaces/modules/operators/ISel
  * @dev Extends BaseMiddleware, and EIP712Upgradeable to provide signature-based operator management
  * @dev CAUTION: If activeOperators functionality is needed, use ApprovalRegisterOperators instead to prevent DOS attacks
  */
-abstract contract SelfRegisterOperators is VaultManager, EIP712Upgradeable, AccessManager, ISelfRegisterOperators {
+abstract contract SelfRegisterOperators is
+    VaultManager,
+    EIP712Upgradeable,
+    PermissionManager,
+    ISelfRegisterOperators
+{
     uint64 public constant SelfRegisterOperators_VERSION = 1;
 
     // EIP-712 TypeHash constants
@@ -170,7 +175,7 @@ abstract contract SelfRegisterOperators is VaultManager, EIP712Upgradeable, Acce
      */
     function updatePowerThreshold(
         uint256 minVotingPowerThreshold_
-    ) external checkAccess {
+    ) external checkPermission {
         _getSelfRegisterOperatorsStorage().minVotingPowerThreshold = minVotingPowerThreshold_;
     }
 

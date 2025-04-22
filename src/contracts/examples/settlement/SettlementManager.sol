@@ -333,7 +333,7 @@ abstract contract SettlementManager is NetworkManager, EpochCapture, EIP712Upgra
 
     function setGenesis(
         ValSetHeader memory valSetHeader
-    ) public checkAccess {
+    ) public checkPermission {
         if (getCurrentPhase() != ValSetPhase.FAIL) {
             revert SettlementManager_InvalidPhase();
         }

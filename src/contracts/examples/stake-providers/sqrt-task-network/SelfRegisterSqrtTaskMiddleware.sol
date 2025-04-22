@@ -9,14 +9,14 @@
 // import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 // import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
-// import {AccessManager} from "../../base/abstracts/AccessManager.sol";
+// import {PermissionManager} from "../../base/abstracts/PermissionManager.sol";
 
 // import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 // import {SharedVaults} from "../../extensions/SharedVaults.sol";
 // import {SelfRegisterOperators} from "../../extensions/operators/SelfRegisterOperators.sol";
 
 // import {ECDSASig} from "../../extensions/managers/sigs/ECDSASig.sol";
-// import {OwnableAccessManager} from "../../extensions/managers/access/OwnableAccessManager.sol";
+// import {OzOwnable} from "../../extensions/managers/permissions/OzOwnable.sol";
 // import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
 // import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
 
@@ -32,7 +32,7 @@
 //     SharedVaults,
 //     SelfRegisterOperators,
 //     ECDSASig,
-//     OwnableAccessManager,
+//     OzOwnable,
 //     TimestampCapture,
 //     EqualStakePower
 // {
@@ -98,7 +98,7 @@
 //         __BaseMiddleware_init(
 //             address(this), subnetworkID, slashingWindow, vaultFactory, operatorRegistry, operatorNetworkOptInService, reader
 //         );
-//         __OwnableAccessManager_init(owner);
+//         __OzOwnable_init(owner);
 //         __SelfRegisterOperators_init("SelfRegisterSqrtTaskMiddleware", 0);
 //     }
 
@@ -218,7 +218,7 @@
 //         address vault,
 //         uint256 slashIndex,
 //         bytes memory hints
-//     ) external checkAccess returns (uint256) {
+//     ) external checkPermission returns (uint256) {
 //         (bool success, uint256 slashedAmount) = _executeSlash(vault, slashIndex, hints);
 //         if (!success) {
 //             revert SlashFailed();

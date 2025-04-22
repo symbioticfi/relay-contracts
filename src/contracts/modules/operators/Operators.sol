@@ -2,7 +2,7 @@
 pragma solidity ^0.8.25;
 
 import {VaultManager} from "../../base/VaultManager.sol";
-import {AccessManager} from "../../base/abstracts/AccessManager.sol";
+import {PermissionManager} from "../../base/abstracts/PermissionManager.sol";
 
 import {IOperators} from "../../../interfaces/modules/operators/IOperators.sol";
 
@@ -11,10 +11,10 @@ import {IOperators} from "../../../interfaces/modules/operators/IOperators.sol";
  * @notice Base contract for managing operator registration, and vault relationships
  * @dev Provides core operator management functionality with hooks for customization
  */
-abstract contract Operators is VaultManager, AccessManager, IOperators {
+abstract contract Operators is VaultManager, PermissionManager, IOperators {
     uint64 public constant Operators_VERSION = 1;
 
-    function registerOperator(address operator, address vault) public virtual checkAccess {
+    function registerOperator(address operator, address vault) public virtual checkPermission {
         _registerOperator(operator);
         if (vault != address(0)) {
             _registerOperatorVault(operator, vault);
@@ -23,15 +23,15 @@ abstract contract Operators is VaultManager, AccessManager, IOperators {
 
     function unregisterOperator(
         address operator
-    ) public virtual checkAccess {
+    ) public virtual checkPermission {
         _unregisterOperator(operator);
     }
 
-    function registerOperatorVault(address operator, address vault) public virtual checkAccess {
+    function registerOperatorVault(address operator, address vault) public virtual checkPermission {
         _registerOperatorVault(operator, vault);
     }
 
-    function unregisterOperatorVault(address operator, address vault) public virtual checkAccess {
+    function unregisterOperatorVault(address operator, address vault) public virtual checkPermission {
         _unregisterOperatorVault(operator, vault);
     }
 }

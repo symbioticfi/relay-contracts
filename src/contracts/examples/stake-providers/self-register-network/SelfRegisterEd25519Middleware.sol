@@ -5,7 +5,7 @@
 // import {SharedVaults} from "../../extensions/SharedVaults.sol";
 // import {SelfRegisterOperators} from "../../extensions/operators/SelfRegisterOperators.sol";
 
-// import {OwnableAccessManager} from "../../extensions/managers/access/OwnableAccessManager.sol";
+// import {OzOwnable} from "../../extensions/managers/permissions/OzOwnable.sol";
 // import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
 // import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
 // import {EdDSASig} from "../../extensions/managers/sigs/EdDSASig.sol";
@@ -14,7 +14,7 @@
 //     SharedVaults,
 //     SelfRegisterOperators,
 //     EdDSASig,
-//     OwnableAccessManager,
+//     OzOwnable,
 //     TimestampCapture,
 //     EqualStakePower
 // {
@@ -58,6 +58,6 @@
 //             network, subnetworkID, slashingWindow, vaultFactory, operatorRegistry, operatorNetworkOptInService, reader
 //         );
 //         __SelfRegisterOperators_init("SelfRegisterEd25519Middleware", 0);
-//         __OwnableAccessManager_init(owner);
+//         __OzOwnable_init(owner);
 //     }
 // }

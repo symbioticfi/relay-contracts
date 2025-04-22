@@ -1,20 +1,22 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
+import {IPermissionManager} from "../../../interfaces/base/abstracts/IPermissionManager.sol";
+
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 /**
- * @title AccessManager
+ * @title PermissionManager
  * @notice Abstract contract for managing access control
  * @dev Provides a modifier and internal function for checking access permissions
  */
-abstract contract AccessManager is Initializable {
+abstract contract PermissionManager is Initializable, IPermissionManager {
     /**
      * @notice Modifier that checks access before executing a function
-     * @dev Calls internal _checkAccess function and continues if allowed
+     * @dev Calls internal _checkPermission function and continues if allowed
      */
-    modifier checkAccess() {
-        _checkAccess();
+    modifier checkPermission() {
+        _checkPermission();
         _;
     }
 
@@ -22,5 +24,5 @@ abstract contract AccessManager is Initializable {
      * @notice Internal function to check if caller has required access
      * @dev Must be implemented by inheriting contracts
      */
-    function _checkAccess() internal virtual;
+    function _checkPermission() internal virtual;
 }

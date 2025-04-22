@@ -12,14 +12,14 @@
 // import {SharedVaults} from "../../extensions/SharedVaults.sol";
 // import {Operators} from "../../extensions/operators/Operators.sol";
 
-// import {OwnableAccessManager} from "../../extensions/managers/access/OwnableAccessManager.sol";
+// import {OzOwnable} from "../../extensions/managers/permissions/OzOwnable.sol";
 // import {EpochCapture} from "../../extensions/managers/capture-timestamps/EpochCapture.sol";
 // import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
 
 // contract SimplePosMiddleware is
 //     SharedVaults,
 //     Operators,
-//     OwnableAccessManager,
+//     OzOwnable,
 //     EpochCapture,
 //     EqualStakePower
 // {
@@ -91,7 +91,7 @@
 //         __BaseMiddleware_init(
 //             network, subnetworkID, slashingWindow, vaultFactory, operatorRegistry, operatorNetworkOptInService, reader
 //         );
-//         __OwnableAccessManager_init(owner);
+//         __OzOwnable_init(owner);
 //         __EpochCapture_init(epochDuration);
 //     }
 
@@ -147,7 +147,7 @@
 //         uint256 amount,
 //         bytes[] memory stakeHints,
 //         bytes[] memory slashHints
-//     ) public checkAccess {
+//     ) public checkPermission {
 //         SlashParams memory params;
 //         params.epochStart = getEpochStart(epoch);
 //         params.operator = operatorByKey(abi.encode(key));
@@ -183,7 +183,7 @@
 //         address vault,
 //         uint256 slashIndex,
 //         bytes memory hints
-//     ) external checkAccess returns (uint256) {
+//     ) external checkPermission returns (uint256) {
 //         (bool success, uint256 slashedAmount) = _executeSlash(vault, slashIndex, hints);
 //         if (!success) {
 //             revert SlashFailed();

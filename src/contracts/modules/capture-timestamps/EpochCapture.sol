@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {AccessManager} from "../../base/abstracts/AccessManager.sol";
+import {PermissionManager} from "../../base/abstracts/PermissionManager.sol";
 import {CaptureTimestampManager} from "../../base/abstracts/CaptureTimestampManager.sol";
 import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
-abstract contract EpochCapture is CaptureTimestampManager, AccessManager {
+abstract contract EpochCapture is CaptureTimestampManager, PermissionManager {
     using Checkpoints for Checkpoints.Trace208;
 
     uint64 public constant EpochCapture_VERSION = 1;
@@ -80,7 +80,7 @@ abstract contract EpochCapture is CaptureTimestampManager, AccessManager {
 
     function setEpochDuration(
         uint48 epochDuration
-    ) public virtual checkAccess {
+    ) public virtual checkPermission {
         _setEpochDuration(epochDuration, getCurrentEpochStart() + getCurrentEpochDuration(), getCurrentEpoch() + 1);
     }
 
