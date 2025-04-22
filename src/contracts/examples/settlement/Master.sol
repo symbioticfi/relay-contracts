@@ -5,7 +5,7 @@ import {SettlementManager} from "./SettlementManager.sol";
 import {ValSetConfigManager} from "./ValSetConfigManager.sol";
 import {MasterConfigManager} from "./MasterConfigManager.sol";
 
-import {OzOwnable} from "../../modules/permissions/OzOwnable.sol";
+import {OzOwnable} from "../../features/permissions/OzOwnable.sol";
 
 contract Master is SettlementManager, ValSetConfigManager, MasterConfigManager, OzOwnable {
     function initialize(

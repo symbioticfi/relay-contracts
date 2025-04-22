@@ -11,7 +11,6 @@ import {Arrays} from "@openzeppelin/contracts/utils/Arrays.sol";
 import {NetworkManager} from "./NetworkManager.sol";
 
 import {Checkpoints} from "../libraries/structs/Checkpoints.sol";
-import {CheckpointsEnumerableMap} from "../libraries/structs/CheckpointsEnumerableMap.sol";
 import {OperatorManagerLogic} from "./logic/OperatorManagerLogic.sol";
 
 /**
@@ -22,7 +21,6 @@ import {OperatorManagerLogic} from "./logic/OperatorManagerLogic.sol";
  */
 abstract contract OperatorManager is NetworkManager, StaticDelegateCallable {
     using Checkpoints for Checkpoints.Trace208;
-    using CheckpointsEnumerableMap for CheckpointsEnumerableMap.AddressToTrace208Map;
     using Arrays for address[];
 
     address public immutable OPERATOR_REGISTRY; // Address of the operator registry

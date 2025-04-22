@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {PermissionManager} from "../../base/abstracts/PermissionManager.sol";
+import {PermissionManager} from "../../base/PermissionManager.sol";
 
 import {PersistentSet} from "../../libraries/structs/PersistentSet.sol";
 import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";

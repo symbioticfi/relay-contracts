@@ -18,7 +18,7 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
 import {OperatorManager} from "./OperatorManager.sol";
 
-import {StakeVotingPowerManager} from "./abstracts/StakeVotingPowerManager.sol";
+import {StakeVotingPowerManager} from "./StakeVotingPowerManager.sol";
 
 import {Checkpoints} from "../libraries/structs/Checkpoints.sol";
 import {VaultManagerLogic} from "./logic/VaultManagerLogic.sol";

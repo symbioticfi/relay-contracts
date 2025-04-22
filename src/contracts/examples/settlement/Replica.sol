@@ -3,7 +3,7 @@ pragma solidity ^0.8.25;
 
 import {SettlementManager} from "./SettlementManager.sol";
 
-import {OzOwnable} from "../../modules/permissions/OzOwnable.sol";
+import {OzOwnable} from "../../features/permissions/OzOwnable.sol";
 
 contract Replica is SettlementManager, OzOwnable {
     function initialize(

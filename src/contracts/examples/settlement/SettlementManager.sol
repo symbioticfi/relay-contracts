@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {EpochCapture} from "../../modules/capture-timestamps/EpochCapture.sol";
+import {EpochManager} from "../../base/EpochManager.sol";
 import {NetworkManager} from "../../base/NetworkManager.sol";
 
 import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
@@ -11,7 +11,7 @@ import {ISigVerifier} from "../../../interfaces/other/ISigVerifier.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
 
-abstract contract SettlementManager is NetworkManager, EpochCapture, EIP712Upgradeable {
+abstract contract SettlementManager is NetworkManager, EpochManager, EIP712Upgradeable {
     using Checkpoints for Checkpoints.Trace208;
 
     uint64 public constant SettlementManager_VERSION = 1;
@@ -96,7 +96,7 @@ abstract contract SettlementManager is NetworkManager, EpochCapture, EIP712Upgra
         address sigVerifier
     ) internal virtual onlyInitializing {
         __NetworkManager_init(network, subnetworkID);
-        __EpochCapture_init(epochDuration, epochDurationTimestamp);
+        __EpochManager_init(epochDuration, epochDurationTimestamp);
         __EIP712_init(name, "1");
 
         SettlementManagerStorage storage $ = _getSettlementManagerStorage();

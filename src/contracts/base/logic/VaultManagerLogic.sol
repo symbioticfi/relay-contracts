@@ -16,10 +16,6 @@ import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
-import {OperatorManager} from "../../base/OperatorManager.sol";
-
-import {StakeVotingPowerManager} from "../../base/abstracts/StakeVotingPowerManager.sol";
-
 import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
 import {PersistentSet} from "../../libraries/structs/PersistentSet.sol";
 import {NetworkManagerLogic} from "./NetworkManagerLogic.sol";

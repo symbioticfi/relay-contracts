@@ -1,4 +1,4 @@
-# Middleware Development Guide
+# StakeProvider Development Guide
 
 **Warning: The SDK is a work in progress and is currently under audits. Breaking changes may occur in SDK updates as well as backward compatibility is not guaranteed. Use with caution.**
 
@@ -6,19 +6,19 @@ This repository provides a framework for developing middleware in a modular and 
 
 ## Key Components:
 
-![Middleware Architecture](img/middleware.png)
+![StakeProvider Architecture](img/middleware.png)
 
-- **BaseMiddleware**: The foundational contract that combines core manager functionalities from `VaultManager`, `OperatorManager`, `PermissionManager`, and `MultiKeyManager`.
+- **BaseStakeProvider**: The foundational contract that combines core manager functionalities from `VaultManager`, `OperatorManager`, `PermissionManager`, and `KeyManager`.
 
 - **Extensions**: Modular contracts that provide additional functionalities. Key extensions include:
 
   - **Operators**: Manages operator registration and operator's vault.
 
-  - **MultiKeyManager**: Manages operator keys. Variants include `KeyManagerAddress`, `KeyManager256`, `KeyManagerBytes`, and `NoKeyManager`.
+  - **KeyManager**: Manages operator keys. Variants include `KeyManagerAddress`, `KeyManager256`, `KeyManagerBytes`, and `NoKeyManager`.
 
   - **PermissionManager**: Controls access to restricted functions. Implementations include `OzOwnable`, `OzAccessControl`, `OzAccessManaged`, and `NoPermissionManager`.
 
-  - **CaptureTimestamp**: Captures the active state at specific timestamps. Options are `EpochCapture` and `TimestampCapture`.
+  - **CaptureTimestamp**: Captures the active state at specific timestamps. Options are `EpochManager` and `TimestampCapture`.
 
   - **Signature Verification**: Verifies operator signatures. Implementations include `ECDSASig` and `EdDSASig`.
 
@@ -26,14 +26,14 @@ This repository provides a framework for developing middleware in a modular and 
 
   - **SharedVaults**: Manages vaults shared between all operators.
 
-## Middleware Examples
+## StakeProvider Examples
 
 Below are examples of middleware implementations using different combinations of the extensions.
 
-#### SimplePosMiddleware
+#### SimplePosStakeProvider
 
 ```solidity
-contract SimplePosMiddleware is SharedVaults, Operators, KeyManager256, OzOwnable, EpochCapture, EqualStakePower {
+contract SimplePosStakeProvider is SharedVaults, Operators, KeyManager256, OzOwnable, EpochManager, EqualStakePower {
     // Implementation details...
 }
 ```
@@ -44,10 +44,10 @@ Features:
 - Retrieves validator sets and total stakes.
 - Implements slashing logic based on epochs.
 
-#### SqrtTaskMiddleware
+#### SqrtTaskStakeProvider
 
 ```solidity
-contract SqrtTaskMiddleware is SharedVaults, Operators, NoKeyManager, EIP712, OzOwnable, TimestampCapture, EqualStakePower {
+contract SqrtTaskStakeProvider is SharedVaults, Operators, NoKeyManager, EIP712, OzOwnable, TimestampCapture, EqualStakePower {
     // Implementation details...
 }
 ```
@@ -58,10 +58,10 @@ Features:
 - Verifies task completion using signatures.
 - Implements slashing for incorrect task completion.
 
-#### SelfRegisterMiddleware
+#### SelfRegisterStakeProvider
 
 ```solidity
-contract SelfRegisterMiddleware is SharedVaults, SelfRegisterOperators, KeyManagerAddress, ECDSASig, NoPermissionManager, TimestampCapture, EqualStakePower {
+contract SelfRegisterStakeProvider is SharedVaults, SelfRegisterOperators, KeyManagerAddress, ECDSASig, NoPermissionManager, TimestampCapture, EqualStakePower {
     // Implementation details...
 }
 ```
@@ -72,29 +72,29 @@ Features:
 - Manages operator keys and vault associations.
 - No access restrictions on functions.
 
-#### SelfRegisterEd25519Middleware
+#### SelfRegisterEd25519StakeProvider
 
 ```solidity
-contract SelfRegisterEd25519Middleware is SharedVaults, SelfRegisterOperators, KeyManager256, EdDSASig, NoPermissionManager, TimestampCapture {
+contract SelfRegisterEd25519StakeProvider is SharedVaults, SelfRegisterOperators, KeyManager256, EdDSASig, NoPermissionManager, TimestampCapture {
     // Implementation details...
 }
 ```
 
 Features:
 
-- Similar to `SelfRegisterMiddleware` but uses Ed25519 keys and EdDSA signatures.
+- Similar to `SelfRegisterStakeProvider` but uses Ed25519 keys and EdDSA signatures.
 
-#### SelfRegisterSqrtTaskMiddleware
+#### SelfRegisterSqrtTaskStakeProvider
 
 ```solidity
-contract SelfRegisterSqrtTaskMiddleware is SharedVaults, SelfRegisterOperators, KeyManagerAddress, ECDSASig, OzOwnable, TimestampCapture, EqualStakePower {
+contract SelfRegisterSqrtTaskStakeProvider is SharedVaults, SelfRegisterOperators, KeyManagerAddress, ECDSASig, OzOwnable, TimestampCapture, EqualStakePower {
     // Implementation details...
 }
 ```
 
 Features:
 
-- Similar to `SqrtTaskMiddleware` but allows self-registration of operators, permissionless shared vaults management and uses ECDSA signatures and keys.
+- Similar to `SqrtTaskStakeProvider` but allows self-registration of operators, permissionless shared vaults management and uses ECDSA signatures and keys.
 
 ## Getting Started
 
@@ -106,7 +106,7 @@ To develop your middleware:
 
    - Write an initialization function with the `initializer` modifier
    - Call `_disableInitializers()` in the constructor for upgradeable contracts
-   - Initialize `BaseMiddleware` and extensions in the correct order
+   - Initialize `BaseStakeProvider` and extensions in the correct order
    - Pass required parameters to each contract's initialization function
    - Follow initialization order from most base to most derived contract
    - Note: If your contract is not upgradeable, initialization can be done directly in the constructor:
@@ -134,7 +134,7 @@ To develop your middleware:
          address readHelper,
          address admin
      ) public initializer {
-         __BaseMiddleware_init(network, subnetworkID, slashingWindow, vaultFactory, operatorRegistry, operatorNetworkOptInService, readHelper);
+         __BaseStakeProvider_init(network, subnetworkID, slashingWindow, vaultFactory, operatorRegistry, operatorNetworkOptInService, readHelper);
          __OzAccessManaged_init(admin);
          __AdditionalExtension_init();
      }
@@ -142,11 +142,11 @@ To develop your middleware:
 
 3. **Custom Logic** (Optional): Override manager functions to implement custom logic without using extensions (e.g. `StakePower` manager). Additionally, implement your own functions to extend the middleware's capabilities.
 
-## Example: Creating a Custom Middleware
+## Example: Creating a Custom StakeProvider
 
 ```solidity
-contract MyCustomMiddleware is BaseMiddleware, Operators, KeyStorage256, OzOwnable {
-    uint64 public constant MyCustomMiddleware_VERSION = 1;
+contract MyCustomStakeProvider is BaseStakeProvider, Operators, KeyStorage256, OzOwnable {
+    uint64 public constant MyCustomStakeProvider_VERSION = 1;
 
     /**
      * @notice Override getCaptureTimestamp to provide custom timestamp logic
@@ -177,7 +177,7 @@ contract MyCustomMiddleware is BaseMiddleware, Operators, KeyStorage256, OzOwnab
 
    function initialize(...) public initializer {
        // Initialize base contracts
-       __BaseMiddleware_init(...);
+       __BaseStakeProvider_init(...);
        __OzAccessControl_init();
 
        // Set up role hierarchy
@@ -209,7 +209,7 @@ contract MyCustomMiddleware is BaseMiddleware, Operators, KeyStorage256, OzOwnab
     2. Setting role admins with `_setRoleAdmin(bytes32 role, bytes32 adminRole)`
     3. Assigning roles to function selectors via `_setSelectorRole(bytes4 selector, bytes32 role)`
   - `OzAccessManaged`: Wraps OpenZeppelin's AccessManaged contract to integrate with external access control systems. This allows for more complex access control scenarios where permissions are managed externally, providing flexibility and scalability in managing roles and permissions.
-- **Key Manager**: Choose a `MultiKeyManager` implementation that suits your key management needs. Use `KeyManagerAddress` for managing address keys, `KeyManager256` for managing 256-bit keys, `KeyManagerBytes` for handling arbitrary-length keys, or `NoKeyManager` if key management is not required.
+- **Key Manager**: Choose a `KeyManager` implementation that suits your key management needs. Use `KeyManagerAddress` for managing address keys, `KeyManager256` for managing 256-bit keys, `KeyManagerBytes` for handling arbitrary-length keys, or `NoKeyManager` if key management is not required.
 
 This framework provides flexibility in building middleware by allowing you to mix and match various extensions based on your requirements. By following the modular approach and best practices outlined, you can develop robust middleware solutions that integrate seamlessly with the network.
 
