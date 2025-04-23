@@ -44,10 +44,14 @@ abstract contract KeyManager is EIP712Upgradeable, IBaseKeyManager {
         bytes extraData;
     }
 
+    struct OperatorRequiredKeysHints {
+        bytes requiredKeyTagsHint;
+        bytes[] requiredKeysHints;
+    }
+
     struct RequiredKeysHints {
         bytes[] operatorsHints;
-        bytes requiredKeyTagsHint;
-        bytes[][] requiredKeysHints;
+        bytes[] operatorRequiredKeysHints;
     }
 
     /// @custom:storage-location erc7201:symbiotic.storage.VaultManager
@@ -160,6 +164,38 @@ abstract contract KeyManager is EIP712Upgradeable, IBaseKeyManager {
     }
 
     function getRequiredKeysAt(
+        address operator,
+        uint48 timestamp,
+        bytes memory hints
+    ) public view returns (Key[] memory requiredKeys) {
+        OperatorRequiredKeysHints memory operatorRequiredKeysHints;
+        if (hints.length > 0) {
+            operatorRequiredKeysHints = abi.decode(hints, (OperatorRequiredKeysHints));
+        }
+
+        uint8[] memory requiredKeyTags = getRequiredKeyTagsAt(timestamp, operatorRequiredKeysHints.requiredKeyTagsHint);
+        requiredKeys = new Key[](requiredKeyTags.length);
+        operatorRequiredKeysHints.requiredKeysHints =
+            operatorRequiredKeysHints.requiredKeysHints.normalize(requiredKeyTags.length);
+        for (uint256 i; i < requiredKeyTags.length; ++i) {
+            requiredKeys[i] = Key({
+                tag: requiredKeyTags[i],
+                payload: getKeyAt(operator, requiredKeyTags[i], timestamp, operatorRequiredKeysHints.requiredKeysHints[i])
+            });
+        }
+    }
+
+    function getRequiredKeys(
+        address operator
+    ) public view returns (Key[] memory requiredKeys) {
+        uint8[] memory requiredKeyTags = getRequiredKeyTags();
+        requiredKeys = new Key[](requiredKeyTags.length);
+        for (uint256 i; i < requiredKeyTags.length; ++i) {
+            requiredKeys[i] = Key({tag: requiredKeyTags[i], payload: getKey(operator, requiredKeyTags[i])});
+        }
+    }
+
+    function getRequiredKeysAt(
         uint48 timestamp,
         bytes memory hints
     ) public view override returns (OperatorWithKeys[] memory requiredKeys) {
@@ -168,55 +204,43 @@ abstract contract KeyManager is EIP712Upgradeable, IBaseKeyManager {
             requiredKeysHints = abi.decode(hints, (RequiredKeysHints));
         }
 
-        address[] memory operators = _getOperatorsAt(timestamp, requiredKeysHints.operatorsHints);
-        requiredKeysHints.requiredKeysHints = requiredKeysHints.requiredKeysHints.normalize(operators.length);
-        uint8[] memory requiredKeyTags = getRequiredKeyTagsAt(timestamp, requiredKeysHints.requiredKeyTagsHint);
+        address[] memory operators = _getKeysOperatorsAt(timestamp, requiredKeysHints.operatorsHints);
+        requiredKeysHints.operatorRequiredKeysHints =
+            requiredKeysHints.operatorRequiredKeysHints.normalize(operators.length);
         requiredKeys = new OperatorWithKeys[](operators.length);
         for (uint256 i; i < operators.length; ++i) {
-            requiredKeys[i] = OperatorWithKeys({operator: operators[i], keys: new Key[](requiredKeyTags.length)});
-            requiredKeysHints.requiredKeysHints[i] =
-                requiredKeysHints.requiredKeysHints[i].normalize(requiredKeyTags.length);
-            for (uint8 j; j < requiredKeyTags.length; ++j) {
-                requiredKeys[i].keys[j] = Key({
-                    tag: requiredKeyTags[j],
-                    payload: getKeyAt(
-                        operators[i], requiredKeyTags[j], timestamp, requiredKeysHints.requiredKeysHints[i][j]
-                    )
-                });
-            }
+            requiredKeys[i].operator = operators[i];
+            requiredKeys[i].keys =
+                getRequiredKeysAt(operators[i], timestamp, requiredKeysHints.operatorRequiredKeysHints[i]);
         }
     }
 
     function getRequiredKeys() public view override returns (OperatorWithKeys[] memory requiredKeys) {
-        address[] memory operators = _getOperators();
-        uint8[] memory requiredKeyTags = getRequiredKeyTags();
+        address[] memory operators = _getKeysOperators();
         requiredKeys = new OperatorWithKeys[](operators.length);
         for (uint256 i; i < operators.length; ++i) {
-            requiredKeys[i] = OperatorWithKeys({operator: operators[i], keys: new Key[](requiredKeyTags.length)});
-            for (uint8 j; j < requiredKeyTags.length; ++j) {
-                requiredKeys[i].keys[j] =
-                    Key({tag: requiredKeyTags[j], payload: getKey(operators[i], requiredKeyTags[j])});
-            }
+            requiredKeys[i].operator = operators[i];
+            requiredKeys[i].keys = getRequiredKeys(operators[i]);
         }
     }
 
-    function _getOperatorsLengthAt(uint48 timestamp, bytes memory hint) internal view returns (uint256) {
-        return _getKeyManagerConfig()._operators.length(timestamp, hint);
-    }
-
-    function _getOperatorsLength() internal view returns (uint256) {
-        return _getKeyManagerConfig()._operators.length();
-    }
-
-    function _getOperatorsAt(
+    function _getKeysOperatorsAt(
         uint48 timestamp,
         bytes[] memory hints
     ) internal view returns (address[] memory operators) {
         return _getKeyManagerConfig()._operators.values(timestamp, hints);
     }
 
-    function _getOperators() internal view returns (address[] memory operators) {
+    function _getKeysOperators() internal view returns (address[] memory operators) {
         return _getKeyManagerConfig()._operators.values();
+    }
+
+    function _getKeysOperatorsLengthAt(uint48 timestamp, bytes memory hint) internal view returns (uint256) {
+        return _getKeyManagerConfig()._operators.length(timestamp, hint);
+    }
+
+    function _getKeysOperatorsLength() internal view returns (uint256) {
+        return _getKeyManagerConfig()._operators.length();
     }
 
     function _setRequiredKeyTags(

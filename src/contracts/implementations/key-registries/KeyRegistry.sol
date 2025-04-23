@@ -10,19 +10,19 @@ contract KeyRegistry is KeyManager, OzAccessControl {
     }
 
     function getOperatorsLengthAt(uint48 timestamp, bytes memory hint) public view returns (uint256) {
-        return _getOperatorsLengthAt(timestamp, hint);
+        return _getKeysOperatorsLengthAt(timestamp, hint);
     }
 
     function getOperatorsLength() public view returns (uint256) {
-        return _getOperatorsLength();
+        return _getKeysOperatorsLength();
     }
 
     function getOperatorsAt(uint48 timestamp, bytes[] memory hints) public view returns (address[] memory) {
-        return _getOperatorsAt(timestamp, hints);
+        return _getKeysOperatorsAt(timestamp, hints);
     }
 
     function getOperators() public view returns (address[] memory) {
-        return _getOperators();
+        return _getKeysOperators();
     }
 
     function initialize(string memory name, string memory version, uint8[] memory requiredKeyTags) public initializer {

@@ -7,20 +7,22 @@
 
 // import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-// import {BaseStakeProvider} from "../../middleware/BaseStakeProvider.sol";
-// import {VaultManager} from "../../base/VaultManager.sol";
-// import {SharedVaults} from "../../extensions/SharedVaults.sol";
-// import {Operators} from "../../extensions/operators/Operators.sol";
+// import {SharedVaults} from "../../../features/registration/vaults/SharedVaults.sol";
+// import {Operators} from "../../../features/registration/operators/Operators.sol";
+// import {Tokens} from "../../../features/registration/tokens/Tokens.sol";
 
-// import {OzOwnable} from "../../extensions/managers/permissions/OzOwnable.sol";
-// import {EpochManager} from "../../extensions/managers/capture-timestamps/EpochManager.sol";
-// import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
+// import {OzOwnable} from "../../../features/permissions/OzOwnable.sol";
+// import {EpochManager} from "../../../base/EpochManager.sol";
+// import {EqualStakePower} from "../../../features/stake-powers/EqualStakePower.sol";
+// import {KeyManager} from "../../../base/KeyManager.sol";
 
 // contract SimplePosStakeProvider is
 //     SharedVaults,
 //     Operators,
+//     Tokens,
 //     OzOwnable,
 //     EpochManager,
+//     KeyManager,
 //     EqualStakePower
 // {
 //     using Subnetwork for address;
@@ -29,9 +31,10 @@
 //     error SlashFailed(); // Error thrown when the slash fails
 //     error InvalidVault(); // Error thrown when the vault is invalid
 
-//     struct ValidatorData {
-//         uint256 power; // Power of the validator
-//         bytes32 key; // Key associated with the validator
+//     struct Validator {
+//         address operator;
+//         Key[] keys;
+//         VaultVotingPower[] vaults;
 //     }
 
 //     struct SlashParams {
@@ -88,71 +91,38 @@
 //         address owner,
 //         uint48 epochDuration
 //     ) internal initializer {
-//         __BaseStakeProvider_init(
-//             network, subnetworkID, slashingWindow, vaultFactory, operatorRegistry, operatorNetworkOptInService, reader
-//         );
+//         __NetworkManager_init(network, subnetworkID);
+//         __OperatorManager_init();
+//         __VaultManager_init(slashingWindow);
 //         __OzOwnable_init(owner);
 //         __EpochManager_init(epochDuration);
 //     }
 
-//     /*
-//      * @notice Returns the total power for the active operators in the current epoch.
-//      * @return The total power amount.
-//      */
-//     function getTotalPower() public view returns (uint256) {
-//         address[] memory operators = _activeOperators(); // Get the list of active operators
-//         return _totalPower(operators); // Return the total power for the current epoch
-//     }
-
-//     /*
-//      * @notice Returns the current validator set as an array of ValidatorData.
-//      * @return An array of ValidatorData containing the power and key of each validator.
-//      */
-//     function getValSet() public view returns (ValidatorData[] memory validatorSet) {
-//         address[] memory operators = _activeOperators(); // Get the list of active operators
-//         validatorSet = new ValidatorData[](operators.length); // Initialize the validator set
-//         uint256 len = 0; // Length counter
-
-//         for (uint256 i; i < operators.length; ++i) {
-//             address operator = operators[i]; // Get the operator address
-
-//             bytes32 key = abi.decode(operatorKey(operator), (bytes32)); // Get the key for the operator
-//             if (key == bytes32(0) || !keyWasActiveAt(getCaptureTimestamp(), abi.encode(key))) {
-//                 continue; // Skip if the key is inactive
-//             }
-
-//             uint256 power = _getOperatorPower(operator); // Get the operator's power
-//             validatorSet[len++] = ValidatorData(power, key); // Store the validator data
-//         }
-
-//         assembly ("memory-safe") {
-//             mstore(validatorSet, len) // Update the length of the array
+//     function getValSet() public view returns (Validator[] memory validatorSet) {
+//         OperatorVotingPower[] memory operatorVotingPowers = getVotingPowers();
+//         validatorSet = new Validator[](operatorVotingPowers.length);
+//         for (uint256 i; i < operatorVotingPowers.length; ++i) {
+//             validatorSet[i].operator = operatorVotingPowers[i].operator;
+//             validatorSet[i].keys = getRequiredKeys(operatorVotingPowers[i].operator);
+//             validatorSet[i].vaults = operatorVotingPowers[i].vaults;
 //         }
 //     }
 
-//     /*
-//      * @notice Slashes a validator based on the provided parameters.
-//      * Here are the hints getter
-//      * https://github.com/symbioticfi/core/blob/main/src/contracts/hints/SlasherHints.sol
-//      * https://github.com/symbioticfi/core/blob/main/src/contracts/hints/DelegatorHints.sol
-//      * @param epoch The epoch for which the slashing occurs.
-//      * @param key The key of the operator to slash.
-//      * @param amount The amount to slash.
-//      * @param stakeHints Hints for determining stakes.
-//      * @param slashHints Hints for the slashing process.
-//      */
 //     function slash(
 //         uint48 epoch,
-//         bytes32 key,
+//         bytes memory key,
 //         uint256 amount,
 //         bytes[] memory stakeHints,
 //         bytes[] memory slashHints
 //     ) public checkPermission {
+//         uint48 captureTimestamp = getEpochStart(epoch);
+//         address operator = getOperator(key);
+
 //         SlashParams memory params;
 //         params.epochStart = getEpochStart(epoch);
-//         params.operator = operatorByKey(abi.encode(key));
+//         params.operator = getOperator(key);
 
-//         _checkCanSlash(params.epochStart, key, params.operator);
+//         _checkCanSlash(params.epochStart, key, operator);
 
 //         params.vaults = _activeVaultsAt(params.epochStart, params.operator);
 //         params.totalPower = _getOperatorPowerAt(params.epochStart, params.operator, params.vaults);
@@ -191,12 +161,12 @@
 //         return slashedAmount;
 //     }
 
-//     function _checkCanSlash(uint48 epochStart, bytes32 key, address operator) internal view {
+//     function _checkCanSlash(uint48 epochStart, bytes memory key, address operator) internal view {
 //         if (operator == address(0)) {
 //             revert NotExistKeySlash(); // Revert if the operator does not exist
 //         }
 
-//         if (!keyWasActiveAt(epochStart, abi.encode(key))) {
+//         if (!isKeyActiveAt(epochStart, abi.encode(key))) {
 //             revert InactiveKeySlash(); // Revert if the key is inactive
 //         }
 //     }
