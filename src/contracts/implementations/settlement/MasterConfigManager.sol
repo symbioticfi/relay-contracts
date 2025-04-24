@@ -59,7 +59,11 @@ abstract contract MasterConfigManager is PermissionManager {
         MasterConfigManagerStorage storage $ = _getMasterConfigManagerStorage();
 
         for (uint256 i; i < masterConfig.votingPowerProviders.length; ++i) {
-            if (!$._votingPowerProviders.add(Time.timestamp(), _serializeCrossChainAddress(masterConfig.votingPowerProviders[i]))) {
+            if (
+                !$._votingPowerProviders.add(
+                    Time.timestamp(), _serializeCrossChainAddress(masterConfig.votingPowerProviders[i])
+                )
+            ) {
                 revert MasterConfigManager_AlreadyAdded();
             }
         }
@@ -86,7 +90,9 @@ abstract contract MasterConfigManager is PermissionManager {
     function isVotingPowerProviderActive(
         CrossChainAddress memory votingPowerProvider
     ) public view returns (bool) {
-        return _getMasterConfigManagerStorage()._votingPowerProviders.contains(_serializeCrossChainAddress(votingPowerProvider));
+        return _getMasterConfigManagerStorage()._votingPowerProviders.contains(
+            _serializeCrossChainAddress(votingPowerProvider)
+        );
     }
 
     function getActiveVotingPowerProvidersAt(
@@ -101,7 +107,11 @@ abstract contract MasterConfigManager is PermissionManager {
         }
     }
 
-    function getActiveVotingPowerProviders() public view returns (CrossChainAddress[] memory activeVotingPowerProviders) {
+    function getActiveVotingPowerProviders()
+        public
+        view
+        returns (CrossChainAddress[] memory activeVotingPowerProviders)
+    {
         bytes32[] memory activeVotingPowerProvidersRaw = _getMasterConfigManagerStorage()._votingPowerProviders.values();
         activeVotingPowerProviders = new CrossChainAddress[](activeVotingPowerProvidersRaw.length);
         for (uint256 i; i < activeVotingPowerProvidersRaw.length; ++i) {
