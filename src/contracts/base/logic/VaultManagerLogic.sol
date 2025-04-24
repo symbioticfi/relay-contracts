@@ -18,6 +18,8 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
 import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
 import {PersistentSet} from "../../libraries/structs/PersistentSet.sol";
+import {InputNormalizer} from "../../libraries/utils/InputNormalizer.sol";
+
 import {NetworkManagerLogic} from "./NetworkManagerLogic.sol";
 import {OperatorManagerLogic} from "./OperatorManagerLogic.sol";
 
@@ -36,6 +38,7 @@ library VaultManagerLogic {
     using Subnetwork for bytes32;
     using Checkpoints for Checkpoints.Trace208;
     using PersistentSet for PersistentSet.AddressSet;
+    using InputNormalizer for bytes[];
 
     error NotVault();
     error NotOperatorVault();
@@ -365,6 +368,10 @@ library VaultManagerLogic {
 
         address[] memory sharedVaults =
             getActiveSharedVaultsAt(timestamp, operatorVotingPowersHints.activeSharedVaultsHints);
+        operatorVotingPowersHints.sharedVaultsVotingPowerHints =
+            operatorVotingPowersHints.sharedVaultsVotingPowerHints.normalize(sharedVaults.length);
+        operatorVotingPowersExtraData.sharedVaultsExtraData =
+            operatorVotingPowersExtraData.sharedVaultsExtraData.normalize(sharedVaults.length);
         for (uint256 i; i < sharedVaults.length; ++i) {
             votingPower += getOperatorVotingPowerAt(
                 stakeToVotingPowerAt,
@@ -377,6 +384,10 @@ library VaultManagerLogic {
         }
         address[] memory operatorVaults =
             getActiveOperatorVaultsAt(operator, timestamp, operatorVotingPowersHints.activeOperatorVaultsHints);
+        operatorVotingPowersHints.operatorVaultsVotingPowerHints =
+            operatorVotingPowersHints.operatorVaultsVotingPowerHints.normalize(operatorVaults.length);
+        operatorVotingPowersExtraData.operatorVaultsExtraData =
+            operatorVotingPowersExtraData.operatorVaultsExtraData.normalize(operatorVaults.length);
         for (uint256 i; i < operatorVaults.length; ++i) {
             votingPower += getOperatorVotingPowerAt(
                 stakeToVotingPowerAt,
@@ -400,12 +411,16 @@ library VaultManagerLogic {
         }
 
         address[] memory sharedVaults = getActiveSharedVaults();
+        operatorVotingPowersExtraData.sharedVaultsExtraData =
+            operatorVotingPowersExtraData.sharedVaultsExtraData.normalize(sharedVaults.length);
         for (uint256 i; i < sharedVaults.length; ++i) {
             votingPower += getOperatorVotingPower(
                 stakeToVotingPower, operator, sharedVaults[i], operatorVotingPowersExtraData.sharedVaultsExtraData[i]
             );
         }
         address[] memory operatorVaults = getActiveOperatorVaults(operator);
+        operatorVotingPowersExtraData.operatorVaultsExtraData =
+            operatorVotingPowersExtraData.operatorVaultsExtraData.normalize(operatorVaults.length);
         for (uint256 i; i < operatorVaults.length; ++i) {
             votingPower += getOperatorVotingPower(
                 stakeToVotingPower,
@@ -438,6 +453,10 @@ library VaultManagerLogic {
         address[] memory operatorVaults =
             getActiveOperatorVaultsAt(operator, timestamp, operatorVotingPowersHints.activeOperatorVaultsHints);
         vaultVotingPowers = new IVaultManager.VaultVotingPower[](sharedVaults.length + operatorVaults.length);
+        operatorVotingPowersHints.sharedVaultsVotingPowerHints =
+            operatorVotingPowersHints.sharedVaultsVotingPowerHints.normalize(sharedVaults.length);
+        operatorVotingPowersExtraData.sharedVaultsExtraData =
+            operatorVotingPowersExtraData.sharedVaultsExtraData.normalize(sharedVaults.length);
         for (uint256 i; i < sharedVaults.length; ++i) {
             uint256 votingPower_ = getOperatorVotingPowerAt(
                 stakeToVotingPowerAt,
@@ -452,6 +471,10 @@ library VaultManagerLogic {
                     IVaultManager.VaultVotingPower({vault: sharedVaults[i], votingPower: votingPower_});
             }
         }
+        operatorVotingPowersHints.operatorVaultsVotingPowerHints =
+            operatorVotingPowersHints.operatorVaultsVotingPowerHints.normalize(operatorVaults.length);
+        operatorVotingPowersExtraData.operatorVaultsExtraData =
+            operatorVotingPowersExtraData.operatorVaultsExtraData.normalize(operatorVaults.length);
         for (uint256 i; i < operatorVaults.length; ++i) {
             uint256 votingPower_ = getOperatorVotingPowerAt(
                 stakeToVotingPowerAt,
@@ -486,6 +509,8 @@ library VaultManagerLogic {
         address[] memory sharedVaults = getActiveSharedVaults();
         address[] memory operatorVaults = getActiveOperatorVaults(operator);
         vaultVotingPowers = new IVaultManager.VaultVotingPower[](sharedVaults.length + operatorVaults.length);
+        operatorVotingPowersExtraData.sharedVaultsExtraData =
+            operatorVotingPowersExtraData.sharedVaultsExtraData.normalize(sharedVaults.length);
         for (uint256 i; i < sharedVaults.length; ++i) {
             uint256 votingPower_ = getOperatorVotingPower(
                 stakeToVotingPower, operator, sharedVaults[i], operatorVotingPowersExtraData.sharedVaultsExtraData[i]
@@ -495,6 +520,8 @@ library VaultManagerLogic {
                     IVaultManager.VaultVotingPower({vault: sharedVaults[i], votingPower: votingPower_});
             }
         }
+        operatorVotingPowersExtraData.operatorVaultsExtraData =
+            operatorVotingPowersExtraData.operatorVaultsExtraData.normalize(sharedVaults.length);
         for (uint256 i; i < operatorVaults.length; ++i) {
             uint256 votingPower_ = getOperatorVotingPower(
                 stakeToVotingPower,
@@ -526,6 +553,9 @@ library VaultManagerLogic {
 
         address[] memory operators =
             OperatorManagerLogic.getActiveOperatorsAt(timestamp, votingPowersHints.activeOperatorsHints);
+        votingPowersHints.operatorVotingPowersHints =
+            votingPowersHints.operatorVotingPowersHints.normalize(operators.length);
+        extraData = extraData.normalize(operators.length);
         for (uint256 i; i < operators.length; ++i) {
             votingPower += getOperatorVotingPowerAt(
                 stakeToVotingPowerAt,
@@ -542,6 +572,7 @@ library VaultManagerLogic {
         bytes[] memory extraData
     ) public view returns (uint256 votingPower) {
         address[] memory operators = OperatorManagerLogic.getActiveOperators();
+        extraData = extraData.normalize(operators.length);
         for (uint256 i; i < operators.length; ++i) {
             votingPower += getOperatorVotingPower(stakeToVotingPower, operators[i], extraData[i]);
         }
@@ -562,6 +593,9 @@ library VaultManagerLogic {
         address[] memory operators =
             OperatorManagerLogic.getActiveOperatorsAt(timestamp, votingPowersHints.activeOperatorsHints);
         operatorVotingPowers = new IVaultManager.OperatorVotingPower[](operators.length);
+        votingPowersHints.operatorVotingPowersHints =
+            votingPowersHints.operatorVotingPowersHints.normalize(operators.length);
+        extraData = extraData.normalize(operators.length);
         for (uint256 i; i < operators.length; ++i) {
             IVaultManager.VaultVotingPower[] memory votingPowers = getOperatorVotingPowersAt(
                 stakeToVotingPowerAt,
@@ -587,6 +621,7 @@ library VaultManagerLogic {
         uint256 length;
         address[] memory operators = OperatorManagerLogic.getActiveOperators();
         operatorVotingPowers = new IVaultManager.OperatorVotingPower[](operators.length);
+        extraData = extraData.normalize(operators.length);
         for (uint256 i; i < operators.length; ++i) {
             IVaultManager.VaultVotingPower[] memory votingPowers =
                 getOperatorVotingPowers(stakeToVotingPower, operators[i], extraData[i]);

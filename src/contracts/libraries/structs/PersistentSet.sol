@@ -5,7 +5,7 @@
 pragma solidity ^0.8.20;
 
 import {Checkpoints} from "../structs/Checkpoints.sol";
-import {Hints} from "../utils/Hints.sol";
+import {InputNormalizer} from "../utils/InputNormalizer.sol";
 
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
@@ -14,7 +14,7 @@ library PersistentSet {
     using EnumerableSet for EnumerableSet.Bytes32Set;
     using Checkpoints for Checkpoints.Trace256;
     using Math for uint256;
-    using Hints for bytes[];
+    using InputNormalizer for bytes[];
 
     struct Set {
         EnumerableSet.Bytes32Set _elements;
@@ -117,7 +117,7 @@ library PersistentSet {
         uint256 totalLength = set._elements.length();
         values_ = new bytes32[](totalLength);
         uint256 rows = totalLength.ceilDiv(256);
-        hints = Hints.normalize(hints, rows);
+        hints = InputNormalizer.normalize(hints, rows);
         uint256 setLength;
         for (uint256 i; i < rows; ++i) {
             uint256 statusBitMap = set._statuses[i].upperLookupRecent(key, hints[i]);

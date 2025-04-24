@@ -6,7 +6,7 @@ import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/crypt
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
 import {Checkpoints} from "../libraries/structs/Checkpoints.sol";
-import {Hints} from "../libraries/utils/Hints.sol";
+import {InputNormalizer} from "../libraries/utils/InputNormalizer.sol";
 import {PersistentSet} from "../libraries/structs/PersistentSet.sol";
 
 import {KeyTag} from "../libraries/utils/KeyTag.sol";
@@ -27,8 +27,8 @@ abstract contract KeyManager is EIP712Upgradeable, IBaseKeyManager {
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
     using KeyEcdsaSecp256k1 for KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1;
     using KeyEddsaCurve25519 for KeyEddsaCurve25519.KEY_EDDSA_CURVE25519;
-    using Hints for bytes[];
-    using Hints for bytes[][];
+    using InputNormalizer for bytes[];
+    using InputNormalizer for bytes[][];
     using PersistentSet for PersistentSet.AddressSet;
 
     enum KeyType {
