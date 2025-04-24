@@ -1,7 +1,7 @@
 // // SPDX-License-Identifier: MIT
 // pragma solidity ^0.8.25;
 
-// import {BaseStakeProvider} from "../../middleware/BaseStakeProvider.sol";
+// import {BaseVotingPowerProvider} from "../../middleware/BaseVotingPowerProvider.sol";
 // import {SharedVaults} from "../../extensions/SharedVaults.sol";
 // import {SelfRegisterOperators} from "../../extensions/operators/SelfRegisterOperators.sol";
 
@@ -10,7 +10,7 @@
 // import {EqualStakeToVP} from "../../extensions/managers/stakeToVotingPower/EqualStakeToVP.sol";
 // import {EdDSASig} from "../../extensions/managers/sigs/EdDSASig.sol";
 
-// contract SelfRegisterEd25519StakeProvider is
+// contract SelfRegisterEd25519VotingPowerProvider is
 //     SharedVaults,
 //     SelfRegisterOperators,
 //     EdDSASig,
@@ -19,7 +19,7 @@
 //     EqualStakeToVP
 // {
 //     /**
-//      * @notice Constructor for initializing the SelfRegisterEd25519StakeProvider contract
+//      * @notice Constructor for initializing the SelfRegisterEd25519VotingPowerProvider contract
 //      * @param network The address of the network
 //      * @param subnetworkID The subnetwork ID
 //      * @param slashingWindow The duration of the slashing window
@@ -54,10 +54,10 @@
 //         address reader,
 //         address owner
 //     ) internal initializer {
-//         __BaseStakeProvider_init(
+//         __BaseVotingPowerProvider_init(
 //             network, subnetworkID, slashingWindow, vaultFactory, operatorRegistry, operatorNetworkOptInService, reader
 //         );
-//         __SelfRegisterOperators_init("SelfRegisterEd25519StakeProvider", 0);
+//         __SelfRegisterOperators_init("SelfRegisterEd25519VotingPowerProvider", 0);
 //         __OzOwnable_init(owner);
 //     }
 // }

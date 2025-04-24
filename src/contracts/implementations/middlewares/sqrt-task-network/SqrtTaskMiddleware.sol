@@ -1,37 +1,25 @@
 // // SPDX-License-Identifier: MIT
 // pragma solidity ^0.8.25;
 
-// import {INetworkRegistry} from "@symbioticfi/core/src/interfaces/INetworkRegistry.sol";
 // import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
 // import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
 // import {Subnetwork} from "@symbioticfi/core/src/contracts/libraries/Subnetwork.sol";
 
 // import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+// import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 // import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
-// import {PermissionManager} from "../../base/PermissionManager.sol";
-
-// import {BaseStakeProvider} from "../../middleware/BaseStakeProvider.sol";
+// import {BaseVotingPowerProvider} from "../../middleware/BaseVotingPowerProvider.sol";
 // import {SharedVaults} from "../../extensions/SharedVaults.sol";
-// import {SelfRegisterOperators} from "../../extensions/operators/SelfRegisterOperators.sol";
 
-// import {ECDSASig} from "../../extensions/managers/sigs/ECDSASig.sol";
 // import {OzOwnable} from "../../extensions/managers/permissions/OzOwnable.sol";
 // import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
 // import {EqualStakeToVP} from "../../extensions/managers/stakeToVotingPower/EqualStakeToVP.sol";
 
 // // WARING: this is a simple example, it's not secure and should not be used in production
-// /**
-//  * @title SelfRegisterSqrtTaskStakeProvider
-//  * @notice StakeProvider for managing sqrt computation tasks with self-registering operators
-//  * @dev Uses SelfRegisterOperators for operator management because it allows permissionless registration.
-//  * Task validation is done by a single validator chosen at task creation time because this avoids
-//  * having to iterate over all operators, making it more gas efficient and avoiding potential DOS attacks.
-//  */
-// contract SelfRegisterSqrtTaskStakeProvider is
+// contract SqrtTaskMiddleware is
 //     SharedVaults,
-//     SelfRegisterOperators,
-//     ECDSASig,
+//     EIP712,
 //     OzOwnable,
 //     TimestampCapture,
 //     EqualStakeToVP
@@ -40,30 +28,27 @@
 //     using Math for uint256;
 
 //     error InvalidHints();
+//     error InvalidSignature();
 //     error TaskCompleted();
-//     error TooManyOperatorVaults();
-//     error InactiveValidator();
 //     error SlashFailed();
 //     error InvalidVault();
 
-//     event CreateTask(uint256 indexed taskIndex, address indexed validator);
+//     event CreateTask(uint256 indexed taskIndex, address indexed operator);
 //     event CompleteTask(uint256 indexed taskIndex, bool isValidAnswer);
 
 //     struct Task {
 //         uint48 captureTimestamp;
 //         uint256 value;
-//         address validator;
+//         address operator;
 //         bool completed;
 //     }
 
 //     bytes32 private constant COMPLETE_TASK_TYPEHASH = keccak256("CompleteTask(uint256 taskIndex,uint256 answer)");
 
-//     uint256 public constant MAX_OPERATOR_VAULTS = 20;
-
 //     Task[] public tasks;
 
 //     constructor(
-//         address networkRegistry,
+//         address network,
 //         uint96 subnetworkID,
 //         uint48 slashingWindow,
 //         address operatorRegistry,
@@ -71,21 +56,14 @@
 //         address operatorNetworkOptInService,
 //         address reader,
 //         address owner
-//     ) {
+//     ) EIP712("SqrtTaskMiddleware", "1") {
 //         initialize(
-//             networkRegistry,
-//             subnetworkID,
-//             slashingWindow,
-//             vaultFactory,
-//             operatorRegistry,
-//             operatorNetworkOptInService,
-//             reader,
-//             owner
+//             network, subnetworkID, slashingWindow, vaultFactory, operatorRegistry, operatorNetworkOptInService, reader, owner
 //         );
 //     }
 
 //     function initialize(
-//         address networkRegistry,
+//         address network,
 //         uint96 subnetworkID,
 //         uint48 slashingWindow,
 //         address vaultFactory,
@@ -94,29 +72,17 @@
 //         address reader,
 //         address owner
 //     ) internal initializer {
-//         INetworkRegistry(networkRegistry).registerNetwork();
-//         __BaseStakeProvider_init(
-//             address(this), subnetworkID, slashingWindow, vaultFactory, operatorRegistry, operatorNetworkOptInService, reader
+//         __BaseVotingPowerProvider_init(
+//             network, subnetworkID, slashingWindow, vaultFactory, operatorRegistry, operatorNetworkOptInService, reader
 //         );
 //         __OzOwnable_init(owner);
-//         __SelfRegisterOperators_init("SelfRegisterSqrtTaskStakeProvider", 0);
 //     }
 
-//     function createTask(uint256 value, address validator) external returns (uint256 taskIndex) {
-//         bytes memory key = abi.encode(validator);
-//         address operator = operatorByKey(key);
-//         if (!keyWasActiveAt(getCaptureTimestamp(), key)) {
-//             revert InactiveValidator();
-//         }
-//         if (!_isOperatorRegistered(operator)) {
-//             revert OperatorNotRegistered();
-//         }
+//     function createTask(uint256 value, address operator) external returns (uint256 taskIndex) {
 //         taskIndex = tasks.length;
-//         tasks.push(
-//             Task({captureTimestamp: getCaptureTimestamp(), value: value, validator: validator, completed: false})
-//         );
+//         tasks.push(Task({captureTimestamp: getCaptureTimestamp(), value: value, operator: operator, completed: false}));
 
-//         emit CreateTask(taskIndex, validator);
+//         emit CreateTask(taskIndex, operator);
 //     }
 
 //     function completeTask(
@@ -150,7 +116,7 @@
 
 //         bytes32 hash_ = _hashTypedDataV4(keccak256(abi.encode(COMPLETE_TASK_TYPEHASH, taskIndex, answer)));
 
-//         if (!SignatureChecker.isValidSignatureNow(task.validator, hash_, signature)) {
+//         if (!SignatureChecker.isValidSignatureNow(task.operator, hash_, signature)) {
 //             revert InvalidSignature();
 //         }
 //     }
@@ -183,17 +149,7 @@
 
 //     function _slash(uint256 taskIndex, bytes[] calldata stakeHints, bytes[] calldata slashHints) internal {
 //         Task storage task = tasks[taskIndex];
-//         address operator = operatorByKey(abi.encode(task.validator));
-//         _slashOperator(task.captureTimestamp, operator, stakeHints, slashHints);
-//     }
-
-//     function _slashOperator(
-//         uint48 captureTimestamp,
-//         address operator,
-//         bytes[] calldata stakeHints,
-//         bytes[] calldata slashHints
-//     ) internal {
-//         address[] memory vaults = _activeVaultsAt(captureTimestamp, operator);
+//         address[] memory vaults = _activeVaultsAt(task.captureTimestamp, task.operator);
 //         uint256 vaultsLength = vaults.length;
 
 //         if (stakeHints.length != slashHints.length || stakeHints.length != vaultsLength) {
@@ -203,14 +159,15 @@
 //         bytes32 subnetwork = SUBNETWORK();
 //         for (uint256 i; i < vaultsLength; ++i) {
 //             address vault = vaults[i];
-//             uint256 slashAmount =
-//                 IBaseDelegator(IVault(vault).delegator()).stakeAt(subnetwork, operator, captureTimestamp, stakeHints[i]);
+//             uint256 slashAmount = IBaseDelegator(IVault(vault).delegator()).stakeAt(
+//                 subnetwork, task.operator, task.captureTimestamp, stakeHints[i]
+//             );
 
 //             if (slashAmount == 0) {
 //                 continue;
 //             }
 
-//             _slashVault(captureTimestamp, vault, operator, slashAmount, slashHints[i]);
+//             _slashVault(task.captureTimestamp, vault, task.operator, slashAmount, slashHints[i]);
 //         }
 //     }
 
@@ -224,14 +181,6 @@
 //             revert SlashFailed();
 //         }
 //         return slashedAmount;
-//     }
-
-//     function _beforeRegisterOperatorVault(address operator, address vault) internal override {
-//         super._beforeRegisterOperatorVault(operator, vault);
-//         if (_operatorVaultsLength(operator) >= MAX_OPERATOR_VAULTS) {
-//             revert TooManyOperatorVaults();
-//         }
-//         IBaseDelegator(IVault(vault).delegator()).setMaxNetworkLimit(SUBNETWORK_IDENTIFIER(), type(uint256).max);
 //     }
 
 //     function _validateVault(

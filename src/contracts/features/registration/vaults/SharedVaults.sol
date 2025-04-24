@@ -8,7 +8,7 @@ import {ISharedVaults} from "../../../../interfaces/features/registration/vaults
 /**
  * @title SharedVaults
  * @notice Contract for managing shared vaults that can be used by multiple operators
- * @dev Extends BaseStakeProvider to provide access control for vault management functions
+ * @dev Extends BaseVotingPowerProvider to provide access control for vault management functions
  */
 abstract contract SharedVaults is VaultManager, PermissionManager, ISharedVaults {
     uint64 public constant SharedVaults_VERSION = 1;

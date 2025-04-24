@@ -1,4 +1,4 @@
-# StakeProvider Development Guide
+# VotingPowerProvider Development Guide
 
 **Warning: The SDK is a work in progress and is currently under audits. Breaking changes may occur in SDK updates as well as backward compatibility is not guaranteed. Use with caution.**
 
@@ -6,9 +6,9 @@ This repository provides a framework for developing middleware in a modular and 
 
 ## Key Components:
 
-![StakeProvider Architecture](img/middleware.png)
+![VotingPowerProvider Architecture](img/middleware.png)
 
-- **BaseStakeProvider**: The foundational contract that combines core manager functionalities from `VaultManager`, `OperatorManager`, `PermissionManager`, and `KeyManager`.
+- **BaseVotingPowerProvider**: The foundational contract that combines core manager functionalities from `VaultManager`, `OperatorManager`, `PermissionManager`, and `KeyManager`.
 
 - **Extensions**: Modular contracts that provide additional functionalities. Key extensions include:
 
@@ -26,14 +26,14 @@ This repository provides a framework for developing middleware in a modular and 
 
   - **SharedVaults**: Manages vaults shared between all operators.
 
-## StakeProvider Examples
+## VotingPowerProvider Examples
 
 Below are examples of middleware implementations using different combinations of the extensions.
 
-#### SimplePosStakeProvider
+#### SimplePosMiddleware
 
 ```solidity
-contract SimplePosStakeProvider is SharedVaults, Operators, KeyManager256, OzOwnable, EpochManager, EqualStakeToVP {
+contract SimplePosMiddleware is SharedVaults, Operators, KeyManager256, OzOwnable, EpochManager, EqualStakeToVP {
     // Implementation details...
 }
 ```
@@ -44,10 +44,10 @@ Features:
 - Retrieves validator sets and total stakes.
 - Implements slashing logic based on epochs.
 
-#### SqrtTaskStakeProvider
+#### SqrtTaskMiddleware
 
 ```solidity
-contract SqrtTaskStakeProvider is SharedVaults, Operators, NoKeyManager, EIP712, OzOwnable, TimestampCapture, EqualStakeToVP {
+contract SqrtTaskMiddleware is SharedVaults, Operators, NoKeyManager, EIP712, OzOwnable, TimestampCapture, EqualStakeToVP {
     // Implementation details...
 }
 ```
@@ -58,10 +58,10 @@ Features:
 - Verifies task completion using signatures.
 - Implements slashing for incorrect task completion.
 
-#### SelfRegisterStakeProvider
+#### SelfRegisterVotingPowerProvider
 
 ```solidity
-contract SelfRegisterStakeProvider is SharedVaults, SelfRegisterOperators, KeyManagerAddress, ECDSASig, NoPermissionManager, TimestampCapture, EqualStakeToVP {
+contract SelfRegisterVotingPowerProvider is SharedVaults, SelfRegisterOperators, KeyManagerAddress, ECDSASig, NoPermissionManager, TimestampCapture, EqualStakeToVP {
     // Implementation details...
 }
 ```
@@ -72,29 +72,29 @@ Features:
 - Manages operator keys and vault associations.
 - No access restrictions on functions.
 
-#### SelfRegisterEd25519StakeProvider
+#### SelfRegisterEd25519VotingPowerProvider
 
 ```solidity
-contract SelfRegisterEd25519StakeProvider is SharedVaults, SelfRegisterOperators, KeyManager256, EdDSASig, NoPermissionManager, TimestampCapture {
+contract SelfRegisterEd25519VotingPowerProvider is SharedVaults, SelfRegisterOperators, KeyManager256, EdDSASig, NoPermissionManager, TimestampCapture {
     // Implementation details...
 }
 ```
 
 Features:
 
-- Similar to `SelfRegisterStakeProvider` but uses Ed25519 keys and EdDSA signatures.
+- Similar to `SelfRegisterVotingPowerProvider` but uses Ed25519 keys and EdDSA signatures.
 
-#### SelfRegisterSqrtTaskStakeProvider
+#### SelfRegisterSqrtTaskVotingPowerProvider
 
 ```solidity
-contract SelfRegisterSqrtTaskStakeProvider is SharedVaults, SelfRegisterOperators, KeyManagerAddress, ECDSASig, OzOwnable, TimestampCapture, EqualStakeToVP {
+contract SelfRegisterSqrtTaskVotingPowerProvider is SharedVaults, SelfRegisterOperators, KeyManagerAddress, ECDSASig, OzOwnable, TimestampCapture, EqualStakeToVP {
     // Implementation details...
 }
 ```
 
 Features:
 
-- Similar to `SqrtTaskStakeProvider` but allows self-registration of operators, permissionless shared vaults management and uses ECDSA signatures and keys.
+- Similar to `SqrtTaskMiddleware` but allows self-registration of operators, permissionless shared vaults management and uses ECDSA signatures and keys.
 
 ## Getting Started
 
@@ -106,7 +106,7 @@ To develop your middleware:
 
    - Write an initialization function with the `initializer` modifier
    - Call `_disableInitializers()` in the constructor for upgradeable contracts
-   - Initialize `BaseStakeProvider` and extensions in the correct order
+   - Initialize `BaseVotingPowerProvider` and extensions in the correct order
    - Pass required parameters to each contract's initialization function
    - Follow initialization order from most base to most derived contract
    - Note: If your contract is not upgradeable, initialization can be done directly in the constructor:
@@ -134,7 +134,7 @@ To develop your middleware:
          address readHelper,
          address admin
      ) public initializer {
-         __BaseStakeProvider_init(network, subnetworkID, slashingWindow, vaultFactory, operatorRegistry, operatorNetworkOptInService, readHelper);
+         __BaseVotingPowerProvider_init(network, subnetworkID, slashingWindow, vaultFactory, operatorRegistry, operatorNetworkOptInService, readHelper);
          __OzAccessManaged_init(admin);
          __AdditionalExtension_init();
      }
@@ -142,11 +142,11 @@ To develop your middleware:
 
 3. **Custom Logic** (Optional): Override manager functions to implement custom logic without using extensions (e.g. `StakePower` manager). Additionally, implement your own functions to extend the middleware's capabilities.
 
-## Example: Creating a Custom StakeProvider
+## Example: Creating a Custom VotingPowerProvider
 
 ```solidity
-contract MyCustomStakeProvider is BaseStakeProvider, Operators, KeyStorage256, OzOwnable {
-    uint64 public constant MyCustomStakeProvider_VERSION = 1;
+contract MyCustomVotingPowerProvider is BaseVotingPowerProvider, Operators, KeyStorage256, OzOwnable {
+    uint64 public constant MyCustomVotingPowerProvider_VERSION = 1;
 
     /**
      * @notice Override getCaptureTimestamp to provide custom timestamp logic
@@ -177,7 +177,7 @@ contract MyCustomStakeProvider is BaseStakeProvider, Operators, KeyStorage256, O
 
    function initialize(...) public initializer {
        // Initialize base contracts
-       __BaseStakeProvider_init(...);
+       __BaseVotingPowerProvider_init(...);
        __OzAccessControl_init();
 
        // Set up role hierarchy

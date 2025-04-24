@@ -3,8 +3,8 @@
 
 // import {POCBaseTest} from "@symbioticfi/core/test/POCBase.t.sol";
 
-// import {BLSSqrtTaskStakeProvider} from "../src/examples/sqrt-task-network/BLSSqrtTaskStakeProvider.sol";
-// import {IBaseStakeProviderReader} from "../src/interfaces/IBaseStakeProviderReader.sol";
+// import {SelfRegisterSqrtTaskMiddleware} from "../src/examples/sqrt-task-network/SelfRegisterSqrtTaskMiddleware.sol";
+// import {IBaseVotingPowerProviderReader} from "../src/interfaces/IBaseVotingPowerProviderReader.sol";
 
 // //import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
 // //import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
@@ -12,7 +12,7 @@
 // import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 // import {Ownable} from "@openzeppelin/contracts/permissions/Ownable.sol";
 // import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
-// import {BaseStakeProviderReader} from "../src/middleware/BaseStakeProviderReader.sol";
+// import {BaseVotingPowerProviderReader} from "../src/middleware/BaseVotingPowerProviderReader.sol";
 // import {BN254} from "../src/libraries/BN254.sol";
 // import {BN254G2} from "../test/libraries/BN254G2.sol";
 // import "forge-std/console.sol";
@@ -27,7 +27,7 @@
 
 //     address network = address(0x123);
 
-//     BLSSqrtTaskStakeProvider internal middleware;
+//     SelfRegisterSqrtTaskMiddleware internal middleware;
 
 //     uint48 internal slashingWindow = 1200; // 20 minutes
 //     string internal constant BLS_TEST_DATA = "test/helpers/blsTestVectors.json";
@@ -42,10 +42,10 @@
 //         _deposit(vault2, alice, 1000 ether);
 //         _deposit(vault3, alice, 1000 ether);
 
-//         address readHelper = address(new BaseStakeProviderReader());
+//         address readHelper = address(new BaseVotingPowerProviderReader());
 
 //         // Initialize middleware contract
-//         middleware = new BLSSqrtTaskStakeProvider(
+//         middleware = new SelfRegisterSqrtTaskMiddleware(
 //             address(network),
 //             0,
 //             slashingWindow,
@@ -102,13 +102,13 @@
 //         middleware.registerOperator(key, address(0), signature);
 
 //         // Verify operator is registered correctly
-//         assertTrue(IBaseStakeProviderReader(address(middleware)).isOperatorRegistered(operator));
+//         assertTrue(IBaseVotingPowerProviderReader(address(middleware)).isOperatorRegistered(operator));
 
 //         // Verify operator key is registered correctly
-//         assertEq(abi.decode(IBaseStakeProviderReader(address(middleware)).operatorKey(operator), (bytes32)), bytes32(0));
+//         assertEq(abi.decode(IBaseVotingPowerProviderReader(address(middleware)).operatorKey(operator), (bytes32)), bytes32(0));
 //         vm.warp(block.timestamp + 2);
 //         assertEq(
-//             abi.decode(IBaseStakeProviderReader(address(middleware)).operatorKey(operator), (BN254.G1Point)).X, keyG1.X
+//             abi.decode(IBaseVotingPowerProviderReader(address(middleware)).operatorKey(operator), (BN254.G1Point)).X, keyG1.X
 //         );
 //     }
 // }

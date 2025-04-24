@@ -27,7 +27,7 @@
   { "type": "fallback", "stateMutability": "nonpayable" },
   {
     "type": "function",
-    "name": "BaseStakeProvider_VERSION",
+    "name": "BaseVotingPowerProvider_VERSION",
     "inputs": [],
     "outputs": [{ "name": "", "type": "uint64", "internalType": "uint64" }],
     "stateMutability": "view"

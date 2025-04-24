@@ -16,7 +16,7 @@
 // import {EqualStakeToVP} from "../../../features/stakeToVotingPower/EqualStakeToVP.sol";
 // import {KeyManager} from "../../../base/KeyManager.sol";
 
-// contract SimplePosStakeProvider is
+// contract SimplePosMiddleware is
 //     SharedVaults,
 //     Operators,
 //     Tokens,
@@ -45,7 +45,7 @@
 //     }
 
 //     /**
-//      * @notice Constructor for initializing the SimplePosStakeProvider contract
+//      * @notice Constructor for initializing the SimplePosMiddleware contract
 //      * @param network The address of the network
 //      * @param subnetworkID The subnetwork ID
 //      * @param slashingWindow The duration of the slashing window

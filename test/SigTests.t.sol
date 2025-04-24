@@ -8,11 +8,11 @@
 // import {IVaultConfigurator} from "@symbioticfi/core/src/interfaces/IVaultConfigurator.sol";
 // import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
 
-// import {IBaseStakeProviderReader} from "../src/interfaces/IBaseStakeProviderReader.sol";
+// import {IBaseVotingPowerProviderReader} from "../src/interfaces/IBaseVotingPowerProviderReader.sol";
 
-// import {BaseStakeProviderReader} from "../src/middleware/BaseStakeProviderReader.sol";
-// import {SelfRegisterStakeProvider} from "../src/examples/self-register-network/SelfRegisterStakeProvider.sol";
-// import {SelfRegisterEd25519StakeProvider} from "../src/examples/self-register-network/SelfRegisterEd25519StakeProvider.sol";
+// import {BaseVotingPowerProviderReader} from "../src/middleware/BaseVotingPowerProviderReader.sol";
+// import {SelfRegisterVotingPowerProvider} from "../src/examples/self-register-network/SelfRegisterVotingPowerProvider.sol";
+// import {SelfRegisterEd25519VotingPowerProvider} from "../src/examples/self-register-network/SelfRegisterEd25519VotingPowerProvider.sol";
 // import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 // import {EdDSA} from "../src/libraries/EdDSA.sol";
 // import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
@@ -21,8 +21,8 @@
 //     using ECDSA for bytes32;
 //     using MessageHashUtils for bytes32;
 
-//     SelfRegisterStakeProvider internal middleware;
-//     SelfRegisterEd25519StakeProvider internal ed25519StakeProvider;
+//     SelfRegisterVotingPowerProvider internal middleware;
+//     SelfRegisterEd25519VotingPowerProvider internal ed25519VotingPowerProvider;
 //     uint256 internal operatorPrivateKey;
 //     address internal operator;
 //     string internal constant ED25519_TEST_DATA = "test/helpers/ed25519TestData.json";
@@ -40,10 +40,10 @@
 //         string memory json = vm.readFile(ED25519_TEST_DATA);
 //         ed25519Operator = abi.decode(vm.parseJson(json, ".operator"), (address));
 
-//         address readHelper = address(new BaseStakeProviderReader());
+//         address readHelper = address(new BaseVotingPowerProviderReader());
 
 //         // Initialize both middlewares
-//         middleware = new SelfRegisterStakeProvider(
+//         middleware = new SelfRegisterVotingPowerProvider(
 //             address(0x123),
 //             0,
 //             1200, // slashing window
@@ -54,7 +54,7 @@
 //             alice
 //         );
 
-//         ed25519StakeProvider = new SelfRegisterEd25519StakeProvider(
+//         ed25519VotingPowerProvider = new SelfRegisterEd25519VotingPowerProvider(
 //             address(0x456),
 //             0,
 //             1200, // slashing window
@@ -66,7 +66,7 @@
 //         );
 
 //         _registerNetwork(address(0x123), address(middleware));
-//         _registerNetwork(address(0x456), address(ed25519StakeProvider));
+//         _registerNetwork(address(0x456), address(ed25519VotingPowerProvider));
 //         _registerOperator(operator);
 //         _registerOperator(ed25519Operator);
 //         _optInOperatorNetwork(operator, address(0x123));
@@ -86,18 +86,18 @@
 
 //         // Register operator using Ed25519 signature
 //         vm.prank(ed25519Operator);
-//         ed25519StakeProvider.registerOperator(abi.encode(key), address(vaultEd), signature);
+//         ed25519VotingPowerProvider.registerOperator(abi.encode(key), address(vaultEd), signature);
 
 //         // Verify operator is registered correctly
-//         assertTrue(IBaseStakeProviderReader(address(ed25519StakeProvider)).isOperatorRegistered(ed25519Operator));
+//         assertTrue(IBaseVotingPowerProviderReader(address(ed25519VotingPowerProvider)).isOperatorRegistered(ed25519Operator));
 
 //         assertEq(
-//             abi.decode(IBaseStakeProviderReader(address(ed25519StakeProvider)).operatorKey(ed25519Operator), (bytes32)),
+//             abi.decode(IBaseVotingPowerProviderReader(address(ed25519VotingPowerProvider)).operatorKey(ed25519Operator), (bytes32)),
 //             bytes32(0)
 //         );
 //         vm.warp(block.timestamp + 2);
 //         assertEq(
-//             abi.decode(IBaseStakeProviderReader(address(ed25519StakeProvider)).operatorKey(ed25519Operator), (bytes32)), key
+//             abi.decode(IBaseVotingPowerProviderReader(address(ed25519VotingPowerProvider)).operatorKey(ed25519Operator), (bytes32)), key
 //         );
 //     }
 
@@ -113,7 +113,7 @@
 //         // Attempt to register with invalid signature should fail
 //         vm.prank(ed25519Operator);
 //         vm.expectRevert();
-//         ed25519StakeProvider.registerOperator(abi.encode(key), address(vaultEd), signature);
+//         ed25519VotingPowerProvider.registerOperator(abi.encode(key), address(vaultEd), signature);
 //     }
 
 //     function testEd25519RegisterOperatorWrongSender() public {
@@ -130,7 +130,7 @@
 //         // Attempt to register from different address should fail
 //         vm.prank(alice);
 //         vm.expectRevert();
-//         ed25519StakeProvider.registerOperator(abi.encode(key), address(vaultEd), abi.encodePacked(r, s));
+//         ed25519VotingPowerProvider.registerOperator(abi.encode(key), address(vaultEd), abi.encodePacked(r, s));
 //     }
 
 //     function testSelfRegisterOperator() public {
@@ -144,11 +144,11 @@
 //         middleware.registerOperator(abi.encode(operator), address(vault), signature);
 
 //         // Verify operator is registered correctly
-//         assertTrue(IBaseStakeProviderReader(address(middleware)).isOperatorRegistered(operator));
+//         assertTrue(IBaseVotingPowerProviderReader(address(middleware)).isOperatorRegistered(operator));
 
-//         assertEq(abi.decode(IBaseStakeProviderReader(address(middleware)).operatorKey(operator), (address)), address(0));
+//         assertEq(abi.decode(IBaseVotingPowerProviderReader(address(middleware)).operatorKey(operator), (address)), address(0));
 //         vm.warp(vm.getBlockTimestamp() + 100);
-//         assertEq(abi.decode(IBaseStakeProviderReader(address(middleware)).operatorKey(operator), (address)), operator);
+//         assertEq(abi.decode(IBaseVotingPowerProviderReader(address(middleware)).operatorKey(operator), (address)), operator);
 //     }
 
 //     function testSelxfRegisterOperatorInvalidSignature() public {
@@ -202,7 +202,7 @@
 //         // Attempt to register with mismatched key and signature should fail
 //         vm.prank(ed25519Operator);
 //         vm.expectRevert();
-//         ed25519StakeProvider.registerOperator(abi.encode(key), address(vault), signature);
+//         ed25519VotingPowerProvider.registerOperator(abi.encode(key), address(vault), signature);
 //     }
 
 //     function _getOperatorVault(

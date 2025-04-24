@@ -7,7 +7,7 @@
 
 // import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-// import {BaseStakeProvider} from "../../middleware/BaseStakeProvider.sol";
+// import {BaseVotingPowerProvider} from "../../middleware/BaseVotingPowerProvider.sol";
 // import {SharedVaults} from "../../extensions/SharedVaults.sol";
 // import {SelfRegisterOperators} from "../../extensions/operators/SelfRegisterOperators.sol";
 
@@ -15,7 +15,7 @@
 // import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
 // import {EqualStakeToVP} from "../../extensions/managers/stakeToVotingPower/EqualStakeToVP.sol";
 
-// contract BLSSqrtTaskStakeProvider is
+// contract SelfRegisterSqrtTaskMiddleware is
 //     SharedVaults,
 //     SelfRegisterOperators,
 //     OzOwnable,
@@ -66,7 +66,7 @@
 //         address reader,
 //         address owner
 //     ) internal initializer {
-//         __BaseStakeProvider_init(
+//         __BaseVotingPowerProvider_init(
 //             network, subnetworkID, slashingWindow, vaultFactory, operatorRegistry, operatorNetworkOptInService, reader
 //         );
 //         __OzOwnable_init(owner);

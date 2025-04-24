@@ -10,7 +10,7 @@ import {EqualStakeToVP} from "../../../features/stakeToVotingPower/EqualStakeToV
 
 import {VaultManager} from "../../../base/VaultManager.sol";
 
-contract SelfRegisterStakeProvider is SharedVaults, SelfRegisterOperators, Tokens, OzOwnable, EqualStakeToVP {
+contract SelfRegisterVotingPowerProvider is SharedVaults, SelfRegisterOperators, Tokens, OzOwnable, EqualStakeToVP {
     constructor(
         address operatorRegistry,
         address operatorNetworkOptInService,
@@ -32,7 +32,7 @@ contract SelfRegisterStakeProvider is SharedVaults, SelfRegisterOperators, Token
         __NetworkManager_init(network, subnetworkID);
         __OperatorManager_init();
         __VaultManager_init(slashingWindow);
-        __SelfRegisterOperators_init("SelfRegisterStakeProvider", 0);
+        __SelfRegisterOperators_init("SelfRegisterVotingPowerProvider", 0);
         __OzOwnable_init(owner_);
     }
 }

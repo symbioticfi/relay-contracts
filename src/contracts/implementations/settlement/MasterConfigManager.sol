@@ -20,13 +20,13 @@ abstract contract MasterConfigManager is PermissionManager {
     error MasterConfigManager_NotAdded();
 
     struct MasterConfigHints {
-        bytes[] stakeProvidersHints;
+        bytes[] votingPowerProvidersHints;
         bytes keysProviderHint;
         bytes[] replicasHints;
     }
 
     struct MasterConfig {
-        CrossChainAddress[] stakeProviders;
+        CrossChainAddress[] votingPowerProviders;
         CrossChainAddress keysProvider;
         CrossChainAddress[] replicas;
     }
@@ -37,7 +37,7 @@ abstract contract MasterConfigManager is PermissionManager {
     }
 
     struct MasterConfigManagerStorage {
-        PersistentSet.Bytes32Set _stakeProviders;
+        PersistentSet.Bytes32Set _votingPowerProviders;
         Checkpoints.Trace256 _keysProvider;
         PersistentSet.Bytes32Set _replicas;
     }
@@ -58,8 +58,8 @@ abstract contract MasterConfigManager is PermissionManager {
     ) internal virtual onlyInitializing {
         MasterConfigManagerStorage storage $ = _getMasterConfigManagerStorage();
 
-        for (uint256 i; i < masterConfig.stakeProviders.length; ++i) {
-            if (!$._stakeProviders.add(Time.timestamp(), _serializeCrossChainAddress(masterConfig.stakeProviders[i]))) {
+        for (uint256 i; i < masterConfig.votingPowerProviders.length; ++i) {
+            if (!$._votingPowerProviders.add(Time.timestamp(), _serializeCrossChainAddress(masterConfig.votingPowerProviders[i]))) {
                 revert MasterConfigManager_AlreadyAdded();
             }
         }
@@ -73,39 +73,39 @@ abstract contract MasterConfigManager is PermissionManager {
         }
     }
 
-    function isStakeProviderActiveAt(
-        CrossChainAddress memory stakeProvider,
+    function isVotingPowerProviderActiveAt(
+        CrossChainAddress memory votingPowerProvider,
         uint48 timestamp,
         bytes memory hint
     ) public view returns (bool) {
-        return _getMasterConfigManagerStorage()._stakeProviders.contains(
-            timestamp, _serializeCrossChainAddress(stakeProvider), hint
+        return _getMasterConfigManagerStorage()._votingPowerProviders.contains(
+            timestamp, _serializeCrossChainAddress(votingPowerProvider), hint
         );
     }
 
-    function isStakeProviderActive(
-        CrossChainAddress memory stakeProvider
+    function isVotingPowerProviderActive(
+        CrossChainAddress memory votingPowerProvider
     ) public view returns (bool) {
-        return _getMasterConfigManagerStorage()._stakeProviders.contains(_serializeCrossChainAddress(stakeProvider));
+        return _getMasterConfigManagerStorage()._votingPowerProviders.contains(_serializeCrossChainAddress(votingPowerProvider));
     }
 
-    function getActiveStakeProvidersAt(
+    function getActiveVotingPowerProvidersAt(
         uint48 timestamp,
         bytes[] memory hints
-    ) public view returns (CrossChainAddress[] memory activeStakeProviders) {
-        bytes32[] memory activeStakeProvidersRaw =
-            _getMasterConfigManagerStorage()._stakeProviders.values(timestamp, hints);
-        activeStakeProviders = new CrossChainAddress[](activeStakeProvidersRaw.length);
-        for (uint256 i; i < activeStakeProvidersRaw.length; ++i) {
-            activeStakeProviders[i] = _deserializeCrossChainAddress(activeStakeProvidersRaw[i]);
+    ) public view returns (CrossChainAddress[] memory activeVotingPowerProviders) {
+        bytes32[] memory activeVotingPowerProvidersRaw =
+            _getMasterConfigManagerStorage()._votingPowerProviders.values(timestamp, hints);
+        activeVotingPowerProviders = new CrossChainAddress[](activeVotingPowerProvidersRaw.length);
+        for (uint256 i; i < activeVotingPowerProvidersRaw.length; ++i) {
+            activeVotingPowerProviders[i] = _deserializeCrossChainAddress(activeVotingPowerProvidersRaw[i]);
         }
     }
 
-    function getActiveStakeProviders() public view returns (CrossChainAddress[] memory activeStakeProviders) {
-        bytes32[] memory activeStakeProvidersRaw = _getMasterConfigManagerStorage()._stakeProviders.values();
-        activeStakeProviders = new CrossChainAddress[](activeStakeProvidersRaw.length);
-        for (uint256 i; i < activeStakeProvidersRaw.length; ++i) {
-            activeStakeProviders[i] = _deserializeCrossChainAddress(activeStakeProvidersRaw[i]);
+    function getActiveVotingPowerProviders() public view returns (CrossChainAddress[] memory activeVotingPowerProviders) {
+        bytes32[] memory activeVotingPowerProvidersRaw = _getMasterConfigManagerStorage()._votingPowerProviders.values();
+        activeVotingPowerProviders = new CrossChainAddress[](activeVotingPowerProvidersRaw.length);
+        for (uint256 i; i < activeVotingPowerProvidersRaw.length; ++i) {
+            activeVotingPowerProviders[i] = _deserializeCrossChainAddress(activeVotingPowerProvidersRaw[i]);
         }
     }
 
@@ -160,7 +160,7 @@ abstract contract MasterConfigManager is PermissionManager {
         }
 
         return MasterConfig({
-            stakeProviders: getActiveStakeProvidersAt(timestamp, masterConfigHints.stakeProvidersHints),
+            votingPowerProviders: getActiveVotingPowerProvidersAt(timestamp, masterConfigHints.votingPowerProvidersHints),
             keysProvider: getKeysProviderAt(timestamp, masterConfigHints.keysProviderHint),
             replicas: getActiveReplicasAt(timestamp, masterConfigHints.replicasHints)
         });
@@ -168,30 +168,30 @@ abstract contract MasterConfigManager is PermissionManager {
 
     function getMasterConfig() public view returns (MasterConfig memory) {
         return MasterConfig({
-            stakeProviders: getActiveStakeProviders(),
+            votingPowerProviders: getActiveVotingPowerProviders(),
             keysProvider: getKeysProvider(),
             replicas: getActiveReplicas()
         });
     }
 
-    function addStakeProvider(
-        CrossChainAddress memory stakeProvider
+    function addVotingPowerProvider(
+        CrossChainAddress memory votingPowerProvider
     ) public checkPermission {
         if (
-            !_getMasterConfigManagerStorage()._stakeProviders.add(
-                Time.timestamp(), _serializeCrossChainAddress(stakeProvider)
+            !_getMasterConfigManagerStorage()._votingPowerProviders.add(
+                Time.timestamp(), _serializeCrossChainAddress(votingPowerProvider)
             )
         ) {
             revert MasterConfigManager_AlreadyAdded();
         }
     }
 
-    function removeStakeProvider(
-        CrossChainAddress memory stakeProvider
+    function removeVotingPowerProvider(
+        CrossChainAddress memory votingPowerProvider
     ) public checkPermission {
         if (
-            !_getMasterConfigManagerStorage()._stakeProviders.remove(
-                Time.timestamp(), _serializeCrossChainAddress(stakeProvider)
+            !_getMasterConfigManagerStorage()._votingPowerProviders.remove(
+                Time.timestamp(), _serializeCrossChainAddress(votingPowerProvider)
             )
         ) {
             revert MasterConfigManager_NotAdded();

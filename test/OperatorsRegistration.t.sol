@@ -3,8 +3,8 @@
 
 // import {POCBaseTest} from "@symbioticfi/core/test/POCBase.t.sol";
 
-// import {SimplePosStakeProvider} from "../src/examples/simple-pos-network/SimplePosStakeProvider.sol";
-// import {IBaseStakeProviderReader} from "../src/interfaces/IBaseStakeProviderReader.sol";
+// import {SimplePosMiddleware} from "../src/examples/simple-pos-network/SimplePosMiddleware.sol";
+// import {IBaseVotingPowerProviderReader} from "../src/interfaces/IBaseVotingPowerProviderReader.sol";
 
 // //import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
 // //import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
@@ -12,7 +12,7 @@
 // import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 // import {Ownable} from "@openzeppelin/contracts/permissions/Ownable.sol";
 // import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
-// import {BaseStakeProviderReader} from "../src/middleware/BaseStakeProviderReader.sol";
+// import {BaseVotingPowerProviderReader} from "../src/middleware/BaseVotingPowerProviderReader.sol";
 // import "forge-std/console.sol";
 // //import {Slasher} from "@symbioticfi/core/src/contracts/slasher/Slasher.sol";
 // //import {VetoSlasher} from "@symbioticfi/core/src/contracts/slasher/VetoSlasher.sol";
@@ -24,7 +24,7 @@
 
 //     address network = address(0x123);
 
-//     SimplePosStakeProvider internal middleware;
+//     SimplePosMiddleware internal middleware;
 
 //     uint48 internal epochDuration = 600; // 10 minutes
 //     uint48 internal slashingWindow = 1200; // 20 minutes
@@ -39,10 +39,10 @@
 //         _deposit(vault2, alice, 1000 ether);
 //         _deposit(vault3, alice, 1000 ether);
 
-//         address readHelper = address(new BaseStakeProviderReader());
+//         address readHelper = address(new BaseVotingPowerProviderReader());
 
 //         // Initialize middleware contract
-//         middleware = new SimplePosStakeProvider(
+//         middleware = new SimplePosMiddleware(
 //             address(network),
 //             0,
 //             slashingWindow,
@@ -62,7 +62,7 @@
 //     function testOperators() public {
 //         address operator = address(0x1337);
 //         bytes memory key = hex"0000000000000000000000000000000000000000000000000000000000000005";
-//         uint256 operatorsLength = IBaseStakeProviderReader(address(middleware)).operatorsLength();
+//         uint256 operatorsLength = IBaseVotingPowerProviderReader(address(middleware)).operatorsLength();
 //         assertEq(operatorsLength, 0, "Operators length should be 0");
 
 //         // can't register without registration
@@ -83,9 +83,9 @@
 
 //         middleware.registerOperator(operator, key, address(0));
 
-//         (address op, uint48 s, uint48 f) = IBaseStakeProviderReader(address(middleware)).operatorWithTimesAt(0);
+//         (address op, uint48 s, uint48 f) = IBaseVotingPowerProviderReader(address(middleware)).operatorWithTimesAt(0);
 
-//         operatorsLength = IBaseStakeProviderReader(address(middleware)).operatorsLength();
+//         operatorsLength = IBaseVotingPowerProviderReader(address(middleware)).operatorsLength();
 //         assertEq(operatorsLength, 1, "Operators length should be 1");
 
 //         // can't register twice
@@ -93,10 +93,10 @@
 //         middleware.registerOperator(operator, key, address(0));
 
 //         // activates on next epoch
-//         address[] memory operators = IBaseStakeProviderReader(address(middleware)).activeOperators();
+//         address[] memory operators = IBaseVotingPowerProviderReader(address(middleware)).activeOperators();
 //         assertEq(operators.length, 0, "1 Active operators length should be 0");
 //         skipEpoch();
-//         operators = IBaseStakeProviderReader(address(middleware)).activeOperators();
+//         operators = IBaseVotingPowerProviderReader(address(middleware)).activeOperators();
 //         assertEq(operators.length, 1, "2 Active operators length should be 1");
 
 //         // pause
@@ -107,7 +107,7 @@
 //         middleware.pauseOperator(operator);
 
 //         // pause applies on next epoch
-//         operators = IBaseStakeProviderReader(address(middleware)).activeOperators();
+//         operators = IBaseVotingPowerProviderReader(address(middleware)).activeOperators();
 //         assertEq(operators.length, 1, "3 Active operators length should be 1");
 
 //         // can't unpause right now, minumum one epoch before immutable period passed
@@ -116,20 +116,20 @@
 
 //         skipImmutablePeriod();
 //         skipImmutablePeriod();
-//         operators = IBaseStakeProviderReader(address(middleware)).activeOperators();
+//         operators = IBaseVotingPowerProviderReader(address(middleware)).activeOperators();
 //         assertEq(operators.length, 0, "4 Active operators length should be 0");
 
-//         (op, s, f) = IBaseStakeProviderReader(address(middleware)).operatorWithTimesAt(0);
+//         (op, s, f) = IBaseVotingPowerProviderReader(address(middleware)).operatorWithTimesAt(0);
 
 //         // unpause
 //         middleware.unpauseOperator(operator);
-//         (op, s, f) = IBaseStakeProviderReader(address(middleware)).operatorWithTimesAt(0);
+//         (op, s, f) = IBaseVotingPowerProviderReader(address(middleware)).operatorWithTimesAt(0);
 
 //         // unpause applies on next epoch
-//         operators = IBaseStakeProviderReader(address(middleware)).activeOperators();
+//         operators = IBaseVotingPowerProviderReader(address(middleware)).activeOperators();
 //         assertEq(operators.length, 0, "5 Active operators length should be 0");
 //         skipEpoch();
-//         operators = IBaseStakeProviderReader(address(middleware)).activeOperators();
+//         operators = IBaseVotingPowerProviderReader(address(middleware)).activeOperators();
 //         assertEq(operators.length, 1, "6 Active operators length should be 1");
 
 //         // pause and unregister
@@ -145,7 +145,7 @@
 //         skipOneSecond();
 //         middleware.unregisterOperator(operator);
 
-//         operatorsLength = IBaseStakeProviderReader(address(middleware)).operatorsLength();
+//         operatorsLength = IBaseVotingPowerProviderReader(address(middleware)).operatorsLength();
 //         assertEq(operatorsLength, 0, "7 Operators length should be 0");
 //     }
 
@@ -174,41 +174,41 @@
 //         skipEpoch();
 
 //         // Verify all operators are active
-//         address[] memory activeOps = IBaseStakeProviderReader(address(middleware)).activeOperators();
+//         address[] memory activeOps = IBaseVotingPowerProviderReader(address(middleware)).activeOperators();
 //         assertEq(activeOps.length, 3, "Should have 3 active operators");
 
 //         // Test complex pause/unpause sequence
 //         // Pause operator 0
 //         middleware.pauseOperator(operators[0]);
 //         skipEpoch();
-//         activeOps = IBaseStakeProviderReader(address(middleware)).activeOperators();
+//         activeOps = IBaseVotingPowerProviderReader(address(middleware)).activeOperators();
 //         assertEq(activeOps.length, 2, "Should have 2 active operators after pause");
 
 //         // Pause operator 1
 //         middleware.pauseOperator(operators[1]);
 //         skipEpoch();
-//         activeOps = IBaseStakeProviderReader(address(middleware)).activeOperators();
+//         activeOps = IBaseVotingPowerProviderReader(address(middleware)).activeOperators();
 //         assertEq(activeOps.length, 1, "Should have 1 active operator after second pause");
 
 //         // Wait for immutable period and try to unpause operator 0
 //         skipImmutablePeriod();
 //         middleware.unpauseOperator(operators[0]);
 //         skipEpoch();
-//         activeOps = IBaseStakeProviderReader(address(middleware)).activeOperators();
+//         activeOps = IBaseVotingPowerProviderReader(address(middleware)).activeOperators();
 //         assertEq(activeOps.length, 2, "Should have 2 active operators after unpause");
 
 //         // Test operator was active at specific timestamps
-//         uint48 currentTimestamp = IBaseStakeProviderReader(address(middleware)).getCaptureTimestamp();
+//         uint48 currentTimestamp = IBaseVotingPowerProviderReader(address(middleware)).getCaptureTimestamp();
 //         assertTrue(
-//             IBaseStakeProviderReader(address(middleware)).operatorWasActiveAt(currentTimestamp, operators[0]),
+//             IBaseVotingPowerProviderReader(address(middleware)).operatorWasActiveAt(currentTimestamp, operators[0]),
 //             "Operator 0 should be active"
 //         );
 //         assertFalse(
-//             IBaseStakeProviderReader(address(middleware)).operatorWasActiveAt(currentTimestamp, operators[1]),
+//             IBaseVotingPowerProviderReader(address(middleware)).operatorWasActiveAt(currentTimestamp, operators[1]),
 //             "Operator 1 should be inactive"
 //         );
 //         assertTrue(
-//             IBaseStakeProviderReader(address(middleware)).operatorWasActiveAt(currentTimestamp, operators[2]),
+//             IBaseVotingPowerProviderReader(address(middleware)).operatorWasActiveAt(currentTimestamp, operators[2]),
 //             "Operator 2 should be active"
 //         );
 
@@ -220,8 +220,8 @@
 //         middleware.unregisterOperator(operators[1]); // Should succeed - operator is paused
 
 //         // Verify final state
-//         assertEq(IBaseStakeProviderReader(address(middleware)).operatorsLength(), 2, "Should have 2 operators remaining");
-//         activeOps = IBaseStakeProviderReader(address(middleware)).activeOperators();
+//         assertEq(IBaseVotingPowerProviderReader(address(middleware)).operatorsLength(), 2, "Should have 2 operators remaining");
+//         activeOps = IBaseVotingPowerProviderReader(address(middleware)).activeOperators();
 //         assertEq(activeOps.length, 2, "Should still have 2 active operators");
 //     }
 
@@ -240,14 +240,14 @@
 //         // Skip epoch to activate operator
 //         skipEpoch();
 //         assertEq(
-//             IBaseStakeProviderReader(address(middleware)).activeOperators().length, 1, "Should have 1 active operator"
+//             IBaseVotingPowerProviderReader(address(middleware)).activeOperators().length, 1, "Should have 1 active operator"
 //         );
 
 //         // Pause operator
 //         middleware.pauseOperator(operator);
 //         skipEpoch();
 //         assertEq(
-//             IBaseStakeProviderReader(address(middleware)).activeOperators().length,
+//             IBaseVotingPowerProviderReader(address(middleware)).activeOperators().length,
 //             0,
 //             "Should have 0 active operators after pause"
 //         );
@@ -256,7 +256,7 @@
 //         skipImmutablePeriod();
 //         middleware.unregisterOperator(operator);
 //         assertEq(
-//             IBaseStakeProviderReader(address(middleware)).operatorsLength(), 0, "Should have 0 operators after unregister"
+//             IBaseVotingPowerProviderReader(address(middleware)).operatorsLength(), 0, "Should have 0 operators after unregister"
 //         );
 
 //         // Register same operator again
@@ -266,13 +266,13 @@
 //         // Skip epoch to activate operator
 //         skipEpoch();
 //         assertEq(
-//             IBaseStakeProviderReader(address(middleware)).activeOperators().length,
+//             IBaseVotingPowerProviderReader(address(middleware)).activeOperators().length,
 //             1,
 //             "Should have 1 active operator after reregistration"
 //         );
 //         assertTrue(
-//             IBaseStakeProviderReader(address(middleware)).operatorWasActiveAt(
-//                 IBaseStakeProviderReader(address(middleware)).getCaptureTimestamp(), operator
+//             IBaseVotingPowerProviderReader(address(middleware)).operatorWasActiveAt(
+//                 IBaseVotingPowerProviderReader(address(middleware)).getCaptureTimestamp(), operator
 //             ),
 //             "Operator should be active after reregistration"
 //         );
@@ -292,7 +292,7 @@
 //         middleware.registerOperator(operator, key, address(0));
 //         vm.warp(middleware.getEpochStart(1));
 //         assertEq(
-//             IBaseStakeProviderReader(address(middleware)).activeOperators().length,
+//             IBaseVotingPowerProviderReader(address(middleware)).activeOperators().length,
 //             0,
 //             "Should have no active operators before epoch"
 //         );
@@ -300,7 +300,7 @@
 //         // Check right at epoch boundary
 //         vm.warp(middleware.getEpochStart(1) + 1);
 //         assertEq(
-//             IBaseStakeProviderReader(address(middleware)).activeOperators().length,
+//             IBaseVotingPowerProviderReader(address(middleware)).activeOperators().length,
 //             1,
 //             "Should have 1 active operator at epoch start"
 //         );
@@ -326,14 +326,14 @@
 //         vm.warp(currentEpochStart - 1);
 //         middleware.pauseOperator(operator);
 //         assertTrue(
-//             IBaseStakeProviderReader(address(middleware)).operatorWasActiveAt(currentEpochStart - 1, operator),
+//             IBaseVotingPowerProviderReader(address(middleware)).operatorWasActiveAt(currentEpochStart - 1, operator),
 //             "Operator should be active before pause"
 //         );
 
 //         // Check status at capture timestamp
 //         vm.warp(currentEpochStart);
 //         assertFalse(
-//             IBaseStakeProviderReader(address(middleware)).operatorWasActiveAt(currentEpochStart, operator),
+//             IBaseVotingPowerProviderReader(address(middleware)).operatorWasActiveAt(currentEpochStart, operator),
 //             "Operator should be inactive at capture"
 //         );
 
@@ -385,13 +385,13 @@
 //         middleware.registerOperator(operator2, key2, address(0));
 
 //         // At this point, operator1 should be active, operator2 pending
-//         address[] memory activeOps = IBaseStakeProviderReader(address(middleware)).activeOperators();
+//         address[] memory activeOps = IBaseVotingPowerProviderReader(address(middleware)).activeOperators();
 //         assertEq(activeOps.length, 1, "Should have 1 active operator");
 //         assertEq(activeOps[0], operator1, "Active operator should be operator1");
 
 //         // Skip epoch to activate operator2
 //         skipEpoch();
-//         activeOps = IBaseStakeProviderReader(address(middleware)).activeOperators();
+//         activeOps = IBaseVotingPowerProviderReader(address(middleware)).activeOperators();
 //         assertEq(activeOps.length, 2, "Should have 2 active operators");
 
 //         // Pause operator1, wait partial immutable period, pause operator2
@@ -412,13 +412,13 @@
 
 //         // Skip epoch to activate both operators
 //         skipEpoch();
-//         activeOps = IBaseStakeProviderReader(address(middleware)).activeOperators();
+//         activeOps = IBaseVotingPowerProviderReader(address(middleware)).activeOperators();
 //         assertEq(activeOps.length, 2, "Should have 2 active operators again");
 
 //         // Test historical activity
-//         uint48 timestamp = IBaseStakeProviderReader(address(middleware)).getCaptureTimestamp();
-//         assertTrue(IBaseStakeProviderReader(address(middleware)).operatorWasActiveAt(timestamp, operator1));
-//         assertTrue(IBaseStakeProviderReader(address(middleware)).operatorWasActiveAt(timestamp, operator2));
+//         uint48 timestamp = IBaseVotingPowerProviderReader(address(middleware)).getCaptureTimestamp();
+//         assertTrue(IBaseVotingPowerProviderReader(address(middleware)).operatorWasActiveAt(timestamp, operator1));
+//         assertTrue(IBaseVotingPowerProviderReader(address(middleware)).operatorWasActiveAt(timestamp, operator2));
 
 //         // Pause both operators again but unregister at different times
 //         middleware.pauseOperator(operator1);
@@ -434,8 +434,8 @@
 //         middleware.unregisterOperator(operator2);
 
 //         // Verify final state
-//         assertEq(IBaseStakeProviderReader(address(middleware)).operatorsLength(), 0, "Should have no operators");
-//         activeOps = IBaseStakeProviderReader(address(middleware)).activeOperators();
+//         assertEq(IBaseVotingPowerProviderReader(address(middleware)).operatorsLength(), 0, "Should have no operators");
+//         activeOps = IBaseVotingPowerProviderReader(address(middleware)).activeOperators();
 //         assertEq(activeOps.length, 0, "Should have no active operators");
 //     }
 

@@ -3,7 +3,7 @@ import time
 import logging
 from eth_account import Account
 from web3 import Web3
-from web3.middleware import SignAndSendRawStakeProviderBuilder
+from web3.middleware import SignAndSendRawVotingPowerProviderBuilder
 import json
 import click
 from web3.providers import HTTPProvider
@@ -27,7 +27,7 @@ class SqrtTaskWorker:
         self.w3 = Web3(HTTPProvider(web3_url))
         self.account = Account.from_key(private_key)
         self.w3.middleware_onion.add(
-            SignAndSendRawStakeProviderBuilder.build(self.account)
+            SignAndSendRawVotingPowerProviderBuilder.build(self.account)
         )
         self.contract = self.w3.eth.contract(address=contract_address, abi=contract_abi)
 
@@ -57,7 +57,7 @@ class SqrtTaskWorker:
             },
             "primaryType": "CompleteTask",
             "domain": {
-                "name": "SelfRegisterSqrtTaskStakeProvider",
+                "name": "SelfRegisterSqrtTaskVotingPowerProvider",
                 "version": "1",
                 "chainId": self.w3.eth.chain_id,
                 "verifyingContract": self.contract.address
@@ -214,7 +214,7 @@ def register(validator_private_key, vault_address, web3_url, operator_private_ke
     w3 = Web3(HTTPProvider(web3_url))
     validator_account = Account.from_key(validator_private_key)
     operator_account = Account.from_key(operator_private_key)
-    w3.middleware_onion.add(SignAndSendRawStakeProviderBuilder.build(operator_account))
+    w3.middleware_onion.add(SignAndSendRawVotingPowerProviderBuilder.build(operator_account))
     contract = w3.eth.contract(address=CONTRACT_ADDRESS, abi=contract_abi)
     # Create message hash from packed operator and validator addresses
     message_hash = w3.solidity_keccak(
