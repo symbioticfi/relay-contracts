@@ -70,7 +70,7 @@ abstract contract KeyManager is EIP712Upgradeable, IBaseKeyManager {
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.KeyManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant KeyManagerLocation = 0x933223a21808ea6583da836861e2265bfa3c7e3b9070740cd75dc9ff6fb41700;
 
-    bytes32 private constant KEY_OWNERSHIP_TYPEHASH = keccak256("KeyOwnership(address operator,bytes key)");
+    bytes32 internal constant KEY_OWNERSHIP_TYPEHASH = keccak256("KeyOwnership(address operator,bytes key)");
 
     /**
      * @notice Internal helper to access the VaultManager storage struct
@@ -96,7 +96,7 @@ abstract contract KeyManager is EIP712Upgradeable, IBaseKeyManager {
     function getRequiredKeyTagsAt(
         uint48 timestamp,
         bytes memory hint
-    ) public view override returns (uint8[] memory requiredKeyTags) {
+    ) public view virtual override returns (uint8[] memory requiredKeyTags) {
         uint128 compressedRequiredKeyTags =
             uint128(_getKeyManagerConfig()._requiredKeyTags.upperLookupRecent(timestamp, hint));
         uint8 length;
@@ -111,7 +111,7 @@ abstract contract KeyManager is EIP712Upgradeable, IBaseKeyManager {
         }
     }
 
-    function getRequiredKeyTags() public view override returns (uint8[] memory requiredKeyTags) {
+    function getRequiredKeyTags() public view virtual override returns (uint8[] memory requiredKeyTags) {
         uint128 compressedRequiredKeyTags = uint128(_getKeyManagerConfig()._requiredKeyTags.latest());
 
         uint8 length;
@@ -161,7 +161,7 @@ abstract contract KeyManager is EIP712Upgradeable, IBaseKeyManager {
 
     function getOperator(
         bytes memory key
-    ) public view override returns (address) {
+    ) public view virtual override returns (address) {
         return _getKeyManagerConfig()._operatorByKeyHash[keccak256(key)];
     }
 
@@ -169,7 +169,7 @@ abstract contract KeyManager is EIP712Upgradeable, IBaseKeyManager {
         address operator,
         uint48 timestamp,
         bytes memory hints
-    ) public view returns (Key[] memory requiredKeys) {
+    ) public view virtual returns (Key[] memory requiredKeys) {
         OperatorRequiredKeysHints memory operatorRequiredKeysHints;
         if (hints.length > 0) {
             operatorRequiredKeysHints = abi.decode(hints, (OperatorRequiredKeysHints));
@@ -189,7 +189,7 @@ abstract contract KeyManager is EIP712Upgradeable, IBaseKeyManager {
 
     function getRequiredKeys(
         address operator
-    ) public view returns (Key[] memory requiredKeys) {
+    ) public view virtual returns (Key[] memory requiredKeys) {
         uint8[] memory requiredKeyTags = getRequiredKeyTags();
         requiredKeys = new Key[](requiredKeyTags.length);
         for (uint256 i; i < requiredKeyTags.length; ++i) {
@@ -200,7 +200,7 @@ abstract contract KeyManager is EIP712Upgradeable, IBaseKeyManager {
     function getRequiredKeysAt(
         uint48 timestamp,
         bytes memory hints
-    ) public view override returns (OperatorWithKeys[] memory requiredKeys) {
+    ) public view virtual override returns (OperatorWithKeys[] memory requiredKeys) {
         RequiredKeysHints memory requiredKeysHints;
         if (hints.length > 0) {
             requiredKeysHints = abi.decode(hints, (RequiredKeysHints));
@@ -217,7 +217,7 @@ abstract contract KeyManager is EIP712Upgradeable, IBaseKeyManager {
         }
     }
 
-    function getRequiredKeys() public view override returns (OperatorWithKeys[] memory requiredKeys) {
+    function getRequiredKeys() public view virtual override returns (OperatorWithKeys[] memory requiredKeys) {
         address[] memory operators = _getKeysOperators();
         requiredKeys = new OperatorWithKeys[](operators.length);
         for (uint256 i; i < operators.length; ++i) {
@@ -229,29 +229,29 @@ abstract contract KeyManager is EIP712Upgradeable, IBaseKeyManager {
     function _getKeysOperatorsAt(
         uint48 timestamp,
         bytes[] memory hints
-    ) internal view returns (address[] memory operators) {
+    ) internal view virtual returns (address[] memory operators) {
         return _getKeyManagerConfig()._operators.values(timestamp, hints);
     }
 
-    function _getKeysOperators() internal view returns (address[] memory operators) {
+    function _getKeysOperators() internal view virtual returns (address[] memory operators) {
         return _getKeyManagerConfig()._operators.values();
     }
 
-    function _getKeysOperatorsLengthAt(uint48 timestamp, bytes memory hint) internal view returns (uint256) {
+    function _getKeysOperatorsLengthAt(uint48 timestamp, bytes memory hint) internal view virtual returns (uint256) {
         return _getKeyManagerConfig()._operators.length(timestamp, hint);
     }
 
-    function _getKeysOperatorsLength() internal view returns (uint256) {
+    function _getKeysOperatorsLength() internal view virtual returns (uint256) {
         return _getKeyManagerConfig()._operators.length();
     }
 
     function _setRequiredKeyTags(
         uint8[] memory requiredKeyTags
-    ) public {
+    ) internal virtual {
         _getKeyManagerConfig()._requiredKeyTags.push(Time.timestamp(), _compressedRequiredKeyTags(requiredKeyTags));
     }
 
-    function _registerKeys(address operator, KeyWithSignature[] memory keysWithSignatures) public {
+    function _registerKeys(address operator, KeyWithSignature[] memory keysWithSignatures) internal virtual {
         uint128 inputtedTags;
         uint8[] memory requiredKeyTags = getRequiredKeyTags();
         for (uint256 i; i < keysWithSignatures.length; ++i) {
