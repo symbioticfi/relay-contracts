@@ -223,14 +223,21 @@ abstract contract VaultManager is OperatorManager, StakeVotingPowerManager, IVau
     function getOperatorVotingPowerAt(
         address vault,
         address operator,
+        bytes memory extraData,
         uint48 timestamp,
         bytes memory hints
     ) public view virtual returns (uint256) {
-        return VaultManagerLogic.getOperatorVotingPowerAt(this.stakeToVotingPower, vault, operator, timestamp, hints);
+        return VaultManagerLogic.getOperatorVotingPowerAt(
+            this.stakeToVotingPowerAt, vault, operator, extraData, timestamp, hints
+        );
     }
 
-    function getOperatorVotingPower(address vault, address operator) public view virtual returns (uint256) {
-        return VaultManagerLogic.getOperatorVotingPower(this.stakeToVotingPower, vault, operator);
+    function getOperatorVotingPower(
+        address vault,
+        address operator,
+        bytes memory extraData
+    ) public view virtual returns (uint256) {
+        return VaultManagerLogic.getOperatorVotingPower(this.stakeToVotingPower, vault, operator, extraData);
     }
 
     /**
@@ -240,41 +247,65 @@ abstract contract VaultManager is OperatorManager, StakeVotingPowerManager, IVau
      */
     function getOperatorVotingPowerAt(
         address operator,
+        bytes memory extraData,
         uint48 timestamp,
         bytes memory hints
     ) public view virtual returns (uint256 votingPower) {
-        return VaultManagerLogic.getOperatorVotingPowerAt(this.stakeToVotingPower, operator, timestamp, hints);
+        return
+            VaultManagerLogic.getOperatorVotingPowerAt(this.stakeToVotingPowerAt, operator, extraData, timestamp, hints);
     }
 
     function getOperatorVotingPower(
-        address operator
+        address operator,
+        bytes memory extraData
     ) public view virtual returns (uint256 votingPower) {
-        return VaultManagerLogic.getOperatorVotingPower(this.stakeToVotingPower, operator);
+        return VaultManagerLogic.getOperatorVotingPower(this.stakeToVotingPower, operator, extraData);
     }
 
     function getOperatorVotingPowersAt(
         address operator,
+        bytes memory extraData,
         uint48 timestamp,
         bytes memory hints
     ) public view virtual returns (VaultVotingPower[] memory vaultVotingPowers) {
-        return VaultManagerLogic.getOperatorVotingPowersAt(this.stakeToVotingPower, operator, timestamp, hints);
+        return VaultManagerLogic.getOperatorVotingPowersAt(
+            this.stakeToVotingPowerAt, operator, extraData, timestamp, hints
+        );
     }
 
     function getOperatorVotingPowers(
-        address operator
+        address operator,
+        bytes memory extraData
     ) public view virtual returns (VaultVotingPower[] memory vaultVotingPowers) {
-        return VaultManagerLogic.getOperatorVotingPowers(this.stakeToVotingPower, operator);
+        return VaultManagerLogic.getOperatorVotingPowers(this.stakeToVotingPower, operator, extraData);
+    }
+
+    function getTotalVotingPowerAt(
+        bytes[] memory extraData,
+        uint48 timestamp,
+        bytes memory hints
+    ) public view virtual returns (uint256 votingPower) {
+        return VaultManagerLogic.getTotalVotingPowerAt(this.stakeToVotingPowerAt, extraData, timestamp, hints);
+    }
+
+    function getTotalVotingPower(
+        bytes[] memory extraData
+    ) public view virtual returns (uint256 votingPower) {
+        return VaultManagerLogic.getTotalVotingPower(this.stakeToVotingPower, extraData);
     }
 
     function getVotingPowersAt(
+        bytes[] memory extraData,
         uint48 timestamp,
         bytes memory hints
     ) public view virtual returns (OperatorVotingPower[] memory operatorVotingPowers) {
-        return VaultManagerLogic.getVotingPowersAt(this.stakeToVotingPower, timestamp, hints);
+        return VaultManagerLogic.getVotingPowersAt(this.stakeToVotingPowerAt, extraData, timestamp, hints);
     }
 
-    function getVotingPowers() public view virtual returns (OperatorVotingPower[] memory operatorVotingPowers) {
-        return VaultManagerLogic.getVotingPowers(this.stakeToVotingPower);
+    function getVotingPowers(
+        bytes[] memory extraData
+    ) public view virtual returns (OperatorVotingPower[] memory operatorVotingPowers) {
+        return VaultManagerLogic.getVotingPowers(this.stakeToVotingPower, extraData);
     }
 
     /**

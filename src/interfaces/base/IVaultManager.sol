@@ -12,11 +12,9 @@ interface IVaultManager {
         VaultVotingPower[] vaults;
     }
 
-    struct OperatorVotingPowerHints {
-        bytes[] activeSharedVaultsHints;
-        bytes[] sharedVaultsVotingPowerHints;
-        bytes[] activeOperatorVaultsHints;
-        bytes[] operatorVaultsVotingPowerHints;
+    struct OperatorVaultVotingPowerHints {
+        bytes isTokenActiveHint;
+        bytes stakeHints;
     }
 
     struct OperatorVotingPowersHints {
@@ -26,9 +24,9 @@ interface IVaultManager {
         bytes[] operatorVaultsVotingPowerHints;
     }
 
-    struct OperatorVaultVotingPowerHints {
-        bytes isTokenActiveHint;
-        bytes stakeHints;
+    struct OperatorVotingPowersExtraData {
+        bytes[] sharedVaultsExtraData;
+        bytes[] operatorVaultsExtraData;
     }
 
     struct VotingPowersHints {

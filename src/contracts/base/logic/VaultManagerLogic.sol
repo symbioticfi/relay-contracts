@@ -299,9 +299,10 @@ library VaultManagerLogic {
      * @dev Doesn't consider active statuses.
      */
     function getOperatorVotingPowerAt(
-        function (address, uint256) external view returns (uint256) stakeToVotingPower,
+        function (address, uint256, bytes memory, uint48) external view returns (uint256) stakeToVotingPowerAt,
         address operator,
         address vault,
+        bytes memory extraData,
         uint48 timestamp,
         bytes memory hints
     ) public view returns (uint256) {
@@ -317,15 +318,19 @@ library VaultManagerLogic {
             // TODO: slashing window at
             return 0;
         }
-        return stakeToVotingPower(
-            vault, getOperatorStakeAt(vault, operator, timestamp, operatorVaultVotingPowerHints.stakeHints)
+        return stakeToVotingPowerAt(
+            vault,
+            getOperatorStakeAt(vault, operator, timestamp, operatorVaultVotingPowerHints.stakeHints),
+            extraData,
+            timestamp
         );
     }
 
     function getOperatorVotingPower(
-        function (address, uint256) external view returns (uint256) stakeToVotingPower,
+        function (address, uint256, bytes memory) external view returns (uint256) stakeToVotingPower,
         address operator,
-        address vault
+        address vault,
+        bytes memory extraData
     ) public view returns (uint256) {
         if (!isTokenActive(IVault(vault).collateral())) {
             return 0;
@@ -334,7 +339,7 @@ library VaultManagerLogic {
             // TODO
             return 0;
         }
-        return stakeToVotingPower(operator, getOperatorStake(vault, operator));
+        return stakeToVotingPower(operator, getOperatorStake(vault, operator), extraData);
     }
 
     /**
@@ -343,63 +348,88 @@ library VaultManagerLogic {
      * @return votingPower The total votingPower amount
      */
     function getOperatorVotingPowerAt(
-        function (address, uint256) external view returns (uint256) stakeToVotingPower,
+        function (address, uint256, bytes memory, uint48) external view returns (uint256) stakeToVotingPowerAt,
         address operator,
+        bytes memory extraData,
         uint48 timestamp,
         bytes memory hints
     ) public view returns (uint256 votingPower) {
-        IVaultManager.OperatorVotingPowerHints memory operatorVotingPowerHints;
+        IVaultManager.OperatorVotingPowersHints memory operatorVotingPowersHints;
         if (hints.length > 0) {
-            operatorVotingPowerHints = abi.decode(hints, (IVaultManager.OperatorVotingPowerHints));
+            operatorVotingPowersHints = abi.decode(hints, (IVaultManager.OperatorVotingPowersHints));
+        }
+        IVaultManager.OperatorVotingPowersExtraData memory operatorVotingPowersExtraData;
+        if (extraData.length > 0) {
+            operatorVotingPowersExtraData = abi.decode(extraData, (IVaultManager.OperatorVotingPowersExtraData));
         }
 
         address[] memory sharedVaults =
-            getActiveSharedVaultsAt(timestamp, operatorVotingPowerHints.activeSharedVaultsHints);
+            getActiveSharedVaultsAt(timestamp, operatorVotingPowersHints.activeSharedVaultsHints);
         for (uint256 i; i < sharedVaults.length; ++i) {
             votingPower += getOperatorVotingPowerAt(
-                stakeToVotingPower,
+                stakeToVotingPowerAt,
                 sharedVaults[i],
                 operator,
+                operatorVotingPowersExtraData.sharedVaultsExtraData[i],
                 timestamp,
-                operatorVotingPowerHints.sharedVaultsVotingPowerHints[i]
+                operatorVotingPowersHints.sharedVaultsVotingPowerHints[i]
             );
         }
         address[] memory operatorVaults =
-            getActiveOperatorVaultsAt(operator, timestamp, operatorVotingPowerHints.activeOperatorVaultsHints);
+            getActiveOperatorVaultsAt(operator, timestamp, operatorVotingPowersHints.activeOperatorVaultsHints);
         for (uint256 i; i < operatorVaults.length; ++i) {
             votingPower += getOperatorVotingPowerAt(
-                stakeToVotingPower,
+                stakeToVotingPowerAt,
                 operatorVaults[i],
                 operator,
+                operatorVotingPowersExtraData.operatorVaultsExtraData[i],
                 timestamp,
-                operatorVotingPowerHints.operatorVaultsVotingPowerHints[i]
+                operatorVotingPowersHints.operatorVaultsVotingPowerHints[i]
             );
         }
     }
 
     function getOperatorVotingPower(
-        function (address, uint256) external view returns (uint256) stakeToVotingPower,
-        address operator
+        function (address, uint256, bytes memory) external view returns (uint256) stakeToVotingPower,
+        address operator,
+        bytes memory extraData
     ) public view returns (uint256 votingPower) {
+        IVaultManager.OperatorVotingPowersExtraData memory operatorVotingPowersExtraData;
+        if (extraData.length > 0) {
+            operatorVotingPowersExtraData = abi.decode(extraData, (IVaultManager.OperatorVotingPowersExtraData));
+        }
+
         address[] memory sharedVaults = getActiveSharedVaults();
         for (uint256 i; i < sharedVaults.length; ++i) {
-            votingPower += getOperatorVotingPower(stakeToVotingPower, operator, sharedVaults[i]);
+            votingPower += getOperatorVotingPower(
+                stakeToVotingPower, operator, sharedVaults[i], operatorVotingPowersExtraData.sharedVaultsExtraData[i]
+            );
         }
         address[] memory operatorVaults = getActiveOperatorVaults(operator);
         for (uint256 i; i < operatorVaults.length; ++i) {
-            votingPower += getOperatorVotingPower(stakeToVotingPower, operator, operatorVaults[i]);
+            votingPower += getOperatorVotingPower(
+                stakeToVotingPower,
+                operator,
+                operatorVaults[i],
+                operatorVotingPowersExtraData.operatorVaultsExtraData[i]
+            );
         }
     }
 
     function getOperatorVotingPowersAt(
-        function (address, uint256) external view returns (uint256) stakeToVotingPower,
+        function (address, uint256, bytes memory, uint48) external view returns (uint256) stakeToVotingPowerAt,
         address operator,
+        bytes memory extraData,
         uint48 timestamp,
         bytes memory hints
     ) public view returns (IVaultManager.VaultVotingPower[] memory vaultVotingPowers) {
         IVaultManager.OperatorVotingPowersHints memory operatorVotingPowersHints;
         if (hints.length > 0) {
             operatorVotingPowersHints = abi.decode(hints, (IVaultManager.OperatorVotingPowersHints));
+        }
+        IVaultManager.OperatorVotingPowersExtraData memory operatorVotingPowersExtraData;
+        if (extraData.length > 0) {
+            operatorVotingPowersExtraData = abi.decode(extraData, (IVaultManager.OperatorVotingPowersExtraData));
         }
 
         uint256 length;
@@ -410,9 +440,10 @@ library VaultManagerLogic {
         vaultVotingPowers = new IVaultManager.VaultVotingPower[](sharedVaults.length + operatorVaults.length);
         for (uint256 i; i < sharedVaults.length; ++i) {
             uint256 votingPower_ = getOperatorVotingPowerAt(
-                stakeToVotingPower,
+                stakeToVotingPowerAt,
                 sharedVaults[i],
                 operator,
+                operatorVotingPowersExtraData.sharedVaultsExtraData[i],
                 timestamp,
                 operatorVotingPowersHints.sharedVaultsVotingPowerHints[i]
             );
@@ -423,9 +454,10 @@ library VaultManagerLogic {
         }
         for (uint256 i; i < operatorVaults.length; ++i) {
             uint256 votingPower_ = getOperatorVotingPowerAt(
-                stakeToVotingPower,
+                stakeToVotingPowerAt,
                 operatorVaults[i],
                 operator,
+                operatorVotingPowersExtraData.operatorVaultsExtraData[i],
                 timestamp,
                 operatorVotingPowersHints.operatorVaultsVotingPowerHints[i]
             );
@@ -441,22 +473,35 @@ library VaultManagerLogic {
     }
 
     function getOperatorVotingPowers(
-        function (address, uint256) external view returns (uint256) stakeToVotingPower,
-        address operator
+        function (address, uint256, bytes memory) external view returns (uint256) stakeToVotingPower,
+        address operator,
+        bytes memory extraData
     ) public view returns (IVaultManager.VaultVotingPower[] memory vaultVotingPowers) {
+        IVaultManager.OperatorVotingPowersExtraData memory operatorVotingPowersExtraData;
+        if (extraData.length > 0) {
+            operatorVotingPowersExtraData = abi.decode(extraData, (IVaultManager.OperatorVotingPowersExtraData));
+        }
+
         uint256 length;
         address[] memory sharedVaults = getActiveSharedVaults();
         address[] memory operatorVaults = getActiveOperatorVaults(operator);
         vaultVotingPowers = new IVaultManager.VaultVotingPower[](sharedVaults.length + operatorVaults.length);
         for (uint256 i; i < sharedVaults.length; ++i) {
-            uint256 votingPower_ = getOperatorVotingPower(stakeToVotingPower, operator, sharedVaults[i]);
+            uint256 votingPower_ = getOperatorVotingPower(
+                stakeToVotingPower, operator, sharedVaults[i], operatorVotingPowersExtraData.sharedVaultsExtraData[i]
+            );
             if (votingPower_ > 0) {
                 vaultVotingPowers[length++] =
                     IVaultManager.VaultVotingPower({vault: sharedVaults[i], votingPower: votingPower_});
             }
         }
         for (uint256 i; i < operatorVaults.length; ++i) {
-            uint256 votingPower_ = getOperatorVotingPower(stakeToVotingPower, operator, operatorVaults[i]);
+            uint256 votingPower_ = getOperatorVotingPower(
+                stakeToVotingPower,
+                operator,
+                operatorVaults[i],
+                operatorVotingPowersExtraData.operatorVaultsExtraData[i]
+            );
             if (votingPower_ > 0) {
                 vaultVotingPowers[length++] =
                     IVaultManager.VaultVotingPower({vault: operatorVaults[i], votingPower: votingPower_});
@@ -468,8 +513,43 @@ library VaultManagerLogic {
         }
     }
 
+    function getTotalVotingPowerAt(
+        function (address, uint256, bytes memory, uint48) external view returns (uint256) stakeToVotingPowerAt,
+        bytes[] memory extraData,
+        uint48 timestamp,
+        bytes memory hints
+    ) public view returns (uint256 votingPower) {
+        IVaultManager.VotingPowersHints memory votingPowersHints;
+        if (hints.length > 0) {
+            votingPowersHints = abi.decode(hints, (IVaultManager.VotingPowersHints));
+        }
+
+        address[] memory operators =
+            OperatorManagerLogic.getActiveOperatorsAt(timestamp, votingPowersHints.activeOperatorsHints);
+        for (uint256 i; i < operators.length; ++i) {
+            votingPower += getOperatorVotingPowerAt(
+                stakeToVotingPowerAt,
+                operators[i],
+                extraData[i],
+                timestamp,
+                votingPowersHints.operatorVotingPowersHints[i]
+            );
+        }
+    }
+
+    function getTotalVotingPower(
+        function (address, uint256, bytes memory) external view returns (uint256) stakeToVotingPower,
+        bytes[] memory extraData
+    ) public view returns (uint256 votingPower) {
+        address[] memory operators = OperatorManagerLogic.getActiveOperators();
+        for (uint256 i; i < operators.length; ++i) {
+            votingPower += getOperatorVotingPower(stakeToVotingPower, operators[i], extraData[i]);
+        }
+    }
+
     function getVotingPowersAt(
-        function (address, uint256) external view returns (uint256) stakeToVotingPower,
+        function (address, uint256, bytes memory, uint48) external view returns (uint256) stakeToVotingPowerAt,
+        bytes[] memory extraData,
         uint48 timestamp,
         bytes memory hints
     ) public view returns (IVaultManager.OperatorVotingPower[] memory operatorVotingPowers) {
@@ -484,7 +564,11 @@ library VaultManagerLogic {
         operatorVotingPowers = new IVaultManager.OperatorVotingPower[](operators.length);
         for (uint256 i; i < operators.length; ++i) {
             IVaultManager.VaultVotingPower[] memory votingPowers = getOperatorVotingPowersAt(
-                stakeToVotingPower, operators[i], timestamp, votingPowersHints.operatorVotingPowersHints[i]
+                stakeToVotingPowerAt,
+                operators[i],
+                extraData[i],
+                timestamp,
+                votingPowersHints.operatorVotingPowersHints[i]
             );
             if (votingPowers.length > 0) {
                 operatorVotingPowers[length++] =
@@ -497,14 +581,15 @@ library VaultManagerLogic {
     }
 
     function getVotingPowers(
-        function (address, uint256) external view returns (uint256) stakeToVotingPower
+        function (address, uint256, bytes memory) external view returns (uint256) stakeToVotingPower,
+        bytes[] memory extraData
     ) public view returns (IVaultManager.OperatorVotingPower[] memory operatorVotingPowers) {
         uint256 length;
         address[] memory operators = OperatorManagerLogic.getActiveOperators();
         operatorVotingPowers = new IVaultManager.OperatorVotingPower[](operators.length);
         for (uint256 i; i < operators.length; ++i) {
             IVaultManager.VaultVotingPower[] memory votingPowers =
-                getOperatorVotingPowers(stakeToVotingPower, operators[i]);
+                getOperatorVotingPowers(stakeToVotingPower, operators[i], extraData[i]);
             if (votingPowers.length > 0) {
                 operatorVotingPowers[length++] =
                     IVaultManager.OperatorVotingPower({operator: operators[i], vaults: votingPowers});

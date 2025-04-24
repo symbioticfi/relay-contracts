@@ -81,13 +81,17 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
         }
     }
 
-    function _registerOperatorImpl(address operator, address vault) internal virtual override {
+    function _registerOperatorImpl(address operator, address vault, bytes memory extraData) internal virtual override {
         if (isOperatorForcePaused(operator)) revert OperatorForcePaused();
-        super._registerOperatorImpl(operator, vault);
+        super._registerOperatorImpl(operator, vault, extraData);
     }
 
-    function _registerOperatorVaultImpl(address operator, address vault) internal virtual override {
+    function _registerOperatorVaultImpl(
+        address operator,
+        address vault,
+        bytes memory extraData
+    ) internal virtual override {
         if (isOperatorVaultForcePaused(operator, vault)) revert OperatorVaultForcePaused();
-        super._registerOperatorVaultImpl(operator, vault);
+        super._registerOperatorVaultImpl(operator, vault, extraData);
     }
 }

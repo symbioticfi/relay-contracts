@@ -21,27 +21,26 @@ interface ISelfRegisterOperators {
         address operator
     ) external view returns (uint256);
 
-    function registerOperator(
-        address vault
-    ) external;
+    function registerOperator(address vault, bytes memory extraData) external;
 
-    function registerOperator(address operator, address vault, bytes memory signature) external;
+    function registerOperatorWithSignature(
+        address operator,
+        address vault,
+        bytes memory signature,
+        bytes memory extraData
+    ) external;
 
     /**
      * @notice Unregisters an operator
      * @param operator The address of the operator to unregister
      */
-    function unregisterOperator(
-        address operator
-    ) external;
+    function unregisterOperator(address operator, bytes memory extraData) external;
 
     /**
      * @notice Allows an operator to register a vault association
      * @param vault The address of the vault to associate
      */
-    function registerOperatorVault(
-        address vault
-    ) external;
+    function registerOperatorVault(address vault, bytes memory extraData) external;
 
     /**
      * @notice Registers a vault association with signature verification
@@ -49,12 +48,17 @@ interface ISelfRegisterOperators {
      * @param vault The address of the vault
      * @param signature EIP712 signature authorizing vault registration
      */
-    function registerOperatorVault(address operator, address vault, bytes memory signature) external;
+    function registerOperatorVaultWithSignature(
+        address operator,
+        address vault,
+        bytes memory signature,
+        bytes memory extraData
+    ) external;
 
     /**
      * @notice Unregisters a vault association
      * @param operator The address of the operator
      * @param vault The address of the vault
      */
-    function unregisterOperatorVault(address operator, address vault) external;
+    function unregisterOperatorVault(address operator, address vault, bytes memory extraData) external;
 }
