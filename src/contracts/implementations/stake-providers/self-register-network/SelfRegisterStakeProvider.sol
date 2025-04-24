@@ -6,11 +6,11 @@ import {SelfRegisterOperators} from "../../../features/registration/operators/Se
 import {Tokens} from "../../../features/registration/tokens/Tokens.sol";
 
 import {OzOwnable} from "../../../features/permissions/OzOwnable.sol";
-import {EqualStakePower} from "../../../features/stake-powers/EqualStakePower.sol";
+import {EqualStakeToVP} from "../../../features/stakeToVotingPower/EqualStakeToVP.sol";
 
 import {VaultManager} from "../../../base/VaultManager.sol";
 
-contract SelfRegisterStakeProvider is SharedVaults, SelfRegisterOperators, Tokens, OzOwnable, EqualStakePower {
+contract SelfRegisterStakeProvider is SharedVaults, SelfRegisterOperators, Tokens, OzOwnable, EqualStakeToVP {
     constructor(
         address operatorRegistry,
         address operatorNetworkOptInService,

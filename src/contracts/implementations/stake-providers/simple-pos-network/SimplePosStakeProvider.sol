@@ -13,7 +13,7 @@
 
 // import {OzOwnable} from "../../../features/permissions/OzOwnable.sol";
 // import {EpochManager} from "../../../base/EpochManager.sol";
-// import {EqualStakePower} from "../../../features/stake-powers/EqualStakePower.sol";
+// import {EqualStakeToVP} from "../../../features/stakeToVotingPower/EqualStakeToVP.sol";
 // import {KeyManager} from "../../../base/KeyManager.sol";
 
 // contract SimplePosStakeProvider is
@@ -23,7 +23,7 @@
 //     OzOwnable,
 //     EpochManager,
 //     KeyManager,
-//     EqualStakePower
+//     EqualStakeToVP
 // {
 //     using Subnetwork for address;
 

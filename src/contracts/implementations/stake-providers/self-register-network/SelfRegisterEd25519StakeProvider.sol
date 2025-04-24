@@ -7,7 +7,7 @@
 
 // import {OzOwnable} from "../../extensions/managers/permissions/OzOwnable.sol";
 // import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
-// import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
+// import {EqualStakeToVP} from "../../extensions/managers/stakeToVotingPower/EqualStakeToVP.sol";
 // import {EdDSASig} from "../../extensions/managers/sigs/EdDSASig.sol";
 
 // contract SelfRegisterEd25519StakeProvider is
@@ -16,7 +16,7 @@
 //     EdDSASig,
 //     OzOwnable,
 //     TimestampCapture,
-//     EqualStakePower
+//     EqualStakeToVP
 // {
 //     /**
 //      * @notice Constructor for initializing the SelfRegisterEd25519StakeProvider contract

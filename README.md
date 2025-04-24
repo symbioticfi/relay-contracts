@@ -22,7 +22,7 @@ This repository provides a framework for developing middleware in a modular and 
 
   - **Signature Verification**: Verifies operator signatures. Implementations include `ECDSASig` and `EdDSASig`.
 
-  - **StakePower**: Calculates operator power based on stake. Implementations include `EqualStakePower` for 1:1 stake-to-power ratio, and can be extended for custom power calculations.
+  - **StakePower**: Calculates operator power based on stake. Implementations include `EqualStakeToVP` for 1:1 stake-to-power ratio, and can be extended for custom power calculations.
 
   - **SharedVaults**: Manages vaults shared between all operators.
 
@@ -33,7 +33,7 @@ Below are examples of middleware implementations using different combinations of
 #### SimplePosStakeProvider
 
 ```solidity
-contract SimplePosStakeProvider is SharedVaults, Operators, KeyManager256, OzOwnable, EpochManager, EqualStakePower {
+contract SimplePosStakeProvider is SharedVaults, Operators, KeyManager256, OzOwnable, EpochManager, EqualStakeToVP {
     // Implementation details...
 }
 ```
@@ -47,7 +47,7 @@ Features:
 #### SqrtTaskStakeProvider
 
 ```solidity
-contract SqrtTaskStakeProvider is SharedVaults, Operators, NoKeyManager, EIP712, OzOwnable, TimestampCapture, EqualStakePower {
+contract SqrtTaskStakeProvider is SharedVaults, Operators, NoKeyManager, EIP712, OzOwnable, TimestampCapture, EqualStakeToVP {
     // Implementation details...
 }
 ```
@@ -61,7 +61,7 @@ Features:
 #### SelfRegisterStakeProvider
 
 ```solidity
-contract SelfRegisterStakeProvider is SharedVaults, SelfRegisterOperators, KeyManagerAddress, ECDSASig, NoPermissionManager, TimestampCapture, EqualStakePower {
+contract SelfRegisterStakeProvider is SharedVaults, SelfRegisterOperators, KeyManagerAddress, ECDSASig, NoPermissionManager, TimestampCapture, EqualStakeToVP {
     // Implementation details...
 }
 ```
@@ -87,7 +87,7 @@ Features:
 #### SelfRegisterSqrtTaskStakeProvider
 
 ```solidity
-contract SelfRegisterSqrtTaskStakeProvider is SharedVaults, SelfRegisterOperators, KeyManagerAddress, ECDSASig, OzOwnable, TimestampCapture, EqualStakePower {
+contract SelfRegisterSqrtTaskStakeProvider is SharedVaults, SelfRegisterOperators, KeyManagerAddress, ECDSASig, OzOwnable, TimestampCapture, EqualStakeToVP {
     // Implementation details...
 }
 ```

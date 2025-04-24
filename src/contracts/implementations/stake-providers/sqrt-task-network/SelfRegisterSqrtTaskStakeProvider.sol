@@ -18,7 +18,7 @@
 // import {ECDSASig} from "../../extensions/managers/sigs/ECDSASig.sol";
 // import {OzOwnable} from "../../extensions/managers/permissions/OzOwnable.sol";
 // import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
-// import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
+// import {EqualStakeToVP} from "../../extensions/managers/stakeToVotingPower/EqualStakeToVP.sol";
 
 // // WARING: this is a simple example, it's not secure and should not be used in production
 // /**
@@ -34,7 +34,7 @@
 //     ECDSASig,
 //     OzOwnable,
 //     TimestampCapture,
-//     EqualStakePower
+//     EqualStakeToVP
 // {
 //     using Subnetwork for address;
 //     using Math for uint256;

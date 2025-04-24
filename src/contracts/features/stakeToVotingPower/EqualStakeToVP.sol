@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {StakeVotingPowerManager} from "../../base/StakeVotingPowerManager.sol";
+import {StakeToVotingPowerManager} from "../../base/StakeToVotingPowerManager.sol";
 
 /**
- * @title EqualStakePower
+ * @title EqualStakeToVP
  * @notice Implementation of a 1:1 stake to power conversion
  * @dev Simply returns the stake amount as the power amount without any modifications
  */
-abstract contract EqualStakePower is StakeVotingPowerManager {
+abstract contract EqualStakeToVP is StakeToVotingPowerManager {
     function stakeToVotingPowerAt(
         address, /* vault */
         uint256 stake,

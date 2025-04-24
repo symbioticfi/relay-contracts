@@ -13,14 +13,14 @@
 
 // import {OzOwnable} from "../../extensions/managers/permissions/OzOwnable.sol";
 // import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
-// import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
+// import {EqualStakeToVP} from "../../extensions/managers/stakeToVotingPower/EqualStakeToVP.sol";
 
 // contract BLSSqrtTaskStakeProvider is
 //     SharedVaults,
 //     SelfRegisterOperators,
 //     OzOwnable,
 //     TimestampCapture,
-//     EqualStakePower
+//     EqualStakeToVP
 // {
 //     using Subnetwork for address;
 //     using Math for uint256;

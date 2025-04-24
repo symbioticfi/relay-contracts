@@ -18,7 +18,7 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
 import {OperatorManager} from "./OperatorManager.sol";
 
-import {StakeVotingPowerManager} from "./StakeVotingPowerManager.sol";
+import {StakeToVotingPowerManager} from "./StakeToVotingPowerManager.sol";
 
 import {Checkpoints} from "../libraries/structs/Checkpoints.sol";
 import {VaultManagerLogic} from "./logic/VaultManagerLogic.sol";
@@ -30,7 +30,7 @@ import {IVaultManager} from "../../interfaces/base/IVaultManager.sol";
  * @notice Abstract contract for managing vaults and their relationships with operators
  * @dev Extends BaseManager and provides functionality for registering, pausing, and managing vaults
  */
-abstract contract VaultManager is OperatorManager, StakeVotingPowerManager, IVaultManager {
+abstract contract VaultManager is OperatorManager, StakeToVotingPowerManager, IVaultManager {
     using EnumerableMap for EnumerableMap.AddressToUintMap;
     using EnumerableMap for EnumerableMap.AddressToAddressMap;
     using EnumerableSet for EnumerableSet.AddressSet;
