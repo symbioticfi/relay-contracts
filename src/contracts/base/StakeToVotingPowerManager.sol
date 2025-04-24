@@ -8,6 +8,8 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
  * @notice Abstract contract for managing stake power conversion
  */
 abstract contract StakeToVotingPowerManager is Initializable {
+    uint64 public constant StakeToVotingPowerManager_VERSION = 1;
+
     function stakeToVotingPowerAt(
         address vault,
         uint256 stake,

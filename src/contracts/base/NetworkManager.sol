@@ -13,6 +13,8 @@ import {NetworkManagerLogic} from "./logic/NetworkManagerLogic.sol";
  * @dev Uses a single storage slot to store the network address value
  */
 abstract contract NetworkManager is Initializable {
+    uint64 public constant NetworkManager_VERSION = 1;
+
     /**
      * @notice Initializes the NetworkManager contract
      * @param network The address of the network

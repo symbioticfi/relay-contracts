@@ -31,6 +31,8 @@ abstract contract KeyManager is EIP712Upgradeable, IBaseKeyManager {
     using InputNormalizer for bytes[][];
     using PersistentSet for PersistentSet.AddressSet;
 
+    uint64 public constant KeyManager_VERSION = 1;
+
     enum KeyType {
         BLS_BN254,
         ECDSA_SECP256K1,

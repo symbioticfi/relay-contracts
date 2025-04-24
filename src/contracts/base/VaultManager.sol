@@ -38,6 +38,8 @@ abstract contract VaultManager is OperatorManager, StakeToVotingPowerManager, IV
     using Subnetwork for bytes32;
     using Checkpoints for Checkpoints.Trace208;
 
+    uint64 public constant VaultManager_VERSION = 1;
+
     address public immutable VAULT_FACTORY;
 
     constructor(

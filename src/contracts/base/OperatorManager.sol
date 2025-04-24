@@ -23,6 +23,8 @@ abstract contract OperatorManager is NetworkManager, StaticDelegateCallable {
     using Checkpoints for Checkpoints.Trace208;
     using Arrays for address[];
 
+    uint64 public constant OperatorManager_VERSION = 1;
+
     address public immutable OPERATOR_REGISTRY; // Address of the operator registry
 
     address public immutable OPERATOR_NETWORK_OPT_IN_SERVICE; // Address of the operator network opt-in service
