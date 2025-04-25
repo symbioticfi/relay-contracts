@@ -7,11 +7,6 @@ import {IOzAccessControl} from "../../../interfaces/features/permissions/IOzAcce
 
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-/**
- * @title OzAccessControl
- * @notice A middleware extension that implements role-based access control
- * @dev Implements PermissionManager with role-based access control functionality
- */
 abstract contract OzAccessControl is PermissionManager, AccessControlUpgradeable, IOzAccessControl {
     event SelectorRoleSet(bytes4 selector, bytes32 role);
 

@@ -5,11 +5,6 @@ import {PermissionManager} from "../../base/PermissionManager.sol";
 
 import {INoPermissionManager} from "../../../interfaces/features/permissions/INoPermissionManager.sol";
 
-/**
- * @title NoPermissionManager
- * @notice A middleware extension that denies all access by default
- * @dev Implements PermissionManager and always reverts on access checks
- */
 abstract contract NoPermissionManager is PermissionManager, INoPermissionManager {
     /**
      * @inheritdoc INoPermissionManager

@@ -7,11 +7,6 @@ import {IOzOwnable} from "../../../interfaces/features/permissions/IOzOwnable.so
 
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-/**
- * @title OzOwnable
- * @notice A middleware extension that restricts access to a single owner address
- * @dev Implements PermissionManager with owner-based access control
- */
 abstract contract OzOwnable is PermissionManager, OwnableUpgradeable, IOzOwnable {
     /**
      * @inheritdoc IOzOwnable

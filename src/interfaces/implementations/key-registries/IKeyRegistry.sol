@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import {IKeyManager} from "../../../interfaces/base/IKeyManager.sol";
+import {IOzEIP712} from "../../base/common/IOzEIP712.sol";
 
 interface IKeyRegistry {
     function getOperatorsLengthAt(uint48 timestamp, bytes memory hint) external view returns (uint256);
@@ -13,7 +14,8 @@ interface IKeyRegistry {
     function getOperators() external view returns (address[] memory);
 
     function initialize(
-        IKeyManager.KeyManagerInitParams memory keyManagerInitParams
+        IKeyManager.KeyManagerInitParams memory keyManagerInitParams,
+        IOzEIP712.OzEIP712InitParams memory ozEip712InitParams
     ) external;
 
     function setRequiredKeyTags(

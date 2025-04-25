@@ -3,24 +3,13 @@ pragma solidity ^0.8.25;
 
 import {VaultManager} from "../../../base/VaultManager.sol";
 import {PermissionManager} from "../../../base/PermissionManager.sol";
+import {OzEIP712} from "../../../base/common/OzEIP712.sol";
 
-import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
 import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
 import {ISelfRegisterOperators} from "../../../../interfaces/features/registration/operators/ISelfRegisterOperators.sol";
 
-/**
- * @title SelfRegisterOperators
- * @notice Contract for self-registration and management of operators with signature verification
- * @dev Extends EIP712Upgradeable to provide signature-based operator management
- * @dev CAUTION: If activeOperators functionality is needed, use ApprovalRegisterOperators instead to prevent DOS attacks
- */
-abstract contract SelfRegisterOperators is
-    VaultManager,
-    EIP712Upgradeable,
-    PermissionManager,
-    ISelfRegisterOperators
-{
+abstract contract SelfRegisterOperators is VaultManager, OzEIP712, PermissionManager, ISelfRegisterOperators {
     uint64 public constant SelfRegisterOperators_VERSION = 1;
 
     // EIP-712 TypeHash constants

@@ -7,11 +7,6 @@ import {IOzAccessManaged} from "../../../interfaces/features/permissions/IOzAcce
 
 import {AccessManagedUpgradeable} from "@openzeppelin/contracts-upgradeable/access/manager/AccessManagedUpgradeable.sol";
 
-/**
- * @title OzAccessManaged
- * @notice A middleware extension that integrates OpenZeppelin's AccessManaged for access control
- * @dev Implements PermissionManager with OpenZeppelin's AccessManagedUpgradeable functionality
- */
 abstract contract OzAccessManaged is PermissionManager, AccessManagedUpgradeable, IOzAccessManaged {
     /**
      * @inheritdoc IOzAccessManaged

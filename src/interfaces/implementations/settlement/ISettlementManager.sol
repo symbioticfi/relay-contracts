@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import {INetworkManager} from "../../base/INetworkManager.sol";
 import {IEpochManager} from "../../base/IEpochManager.sol";
 import {IBaseKeyManager} from "../../base/IBaseKeyManager.sol";
+import {IOzEIP712} from "../../base/common/IOzEIP712.sol";
 
 import {Checkpoints} from "../../../contracts/libraries/structs/Checkpoints.sol";
 
@@ -46,8 +47,7 @@ interface ISettlementManager {
     struct SettlementManagerInitParams {
         INetworkManager.NetworkManagerInitParams networkManagerInitParams;
         IEpochManager.EpochManagerInitParams epochManagerInitParams;
-        string name;
-        string version;
+        IOzEIP712.OzEIP712InitParams ozEip712InitParams;
         QuorumThreshold[] quorumThresholds;
         uint48 commitDuration;
         uint8 requiredKeyTag;

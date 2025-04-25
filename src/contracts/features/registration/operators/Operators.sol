@@ -6,11 +6,6 @@ import {PermissionManager} from "../../../base/PermissionManager.sol";
 
 import {IOperators} from "../../../../interfaces/features/registration/operators/IOperators.sol";
 
-/**
- * @title Operators
- * @notice Base contract for managing operator registration, and vault relationships
- * @dev Provides core operator management functionality with hooks for customization
- */
 abstract contract Operators is VaultManager, PermissionManager, IOperators {
     uint64 public constant Operators_VERSION = 1;
 

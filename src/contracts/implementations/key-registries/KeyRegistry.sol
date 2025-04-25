@@ -5,6 +5,7 @@ import {KeyManager} from "../../base/KeyManager.sol";
 import {OzAccessControl} from "../../features/permissions/OzAccessControl.sol";
 
 import {IKeyRegistry} from "../../../interfaces/implementations/key-registries/IKeyRegistry.sol";
+import {IOzEIP712} from "../../../interfaces/base/common/IOzEIP712.sol";
 
 contract KeyRegistry is KeyManager, OzAccessControl, IKeyRegistry {
     constructor() {
@@ -43,10 +44,12 @@ contract KeyRegistry is KeyManager, OzAccessControl, IKeyRegistry {
      * @inheritdoc IKeyRegistry
      */
     function initialize(
-        KeyManagerInitParams memory keyManagerInitParams
+        KeyManagerInitParams memory keyManagerInitParams,
+        OzEIP712InitParams memory ozEip712InitParams
     ) public virtual initializer {
         __KeyManager_init(keyManagerInitParams);
         __OzAccessControl_init();
+        __OzEIP712_init(ozEip712InitParams);
     }
 
     /**

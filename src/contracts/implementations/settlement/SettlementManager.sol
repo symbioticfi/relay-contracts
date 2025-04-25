@@ -5,16 +5,17 @@ import {EpochManager} from "../../base/EpochManager.sol";
 import {NetworkManager} from "../../base/NetworkManager.sol";
 
 import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
+import {EpochManagerLogic} from "../../base/logic/EpochManageLogic.sol";
 
 import {ISigVerifier} from "../../../interfaces/other/ISigVerifier.sol";
 import {IBaseKeyManager} from "../../../interfaces/base/IBaseKeyManager.sol";
 import {ISettlementManager} from "../../../interfaces/implementations/settlement/ISettlementManager.sol";
 import {IEpochManager} from "../../../interfaces/base/IEpochManager.sol";
+import {OzEIP712} from "../../base/common/OzEIP712.sol";
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
-import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
 
-abstract contract SettlementManager is NetworkManager, EpochManager, EIP712Upgradeable, ISettlementManager {
+abstract contract SettlementManager is NetworkManager, EpochManager, OzEIP712, ISettlementManager {
     using Checkpoints for Checkpoints.Trace208;
 
     /**
@@ -46,7 +47,7 @@ abstract contract SettlementManager is NetworkManager, EpochManager, EIP712Upgra
     ) internal virtual onlyInitializing {
         __NetworkManager_init(settlementManagerInitParams.networkManagerInitParams);
         __EpochManager_init(settlementManagerInitParams.epochManagerInitParams);
-        __EIP712_init(settlementManagerInitParams.name, settlementManagerInitParams.version);
+        __OzEIP712_init(settlementManagerInitParams.ozEip712InitParams);
 
         SettlementManagerStorage storage $ = _getSettlementManagerStorage();
 
@@ -72,9 +73,9 @@ abstract contract SettlementManager is NetworkManager, EpochManager, EIP712Upgra
     function getCurrentValSetTimestamp() public view virtual returns (uint48) {
         ValSetPhase currentPhase = getCurrentPhase();
         if (currentPhase == ValSetPhase.IDLE || currentPhase == ValSetPhase.FAIL) {
-            return getCurrentEpochStart();
+            return EpochManagerLogic.getCurrentEpochStart();
         }
-        return getEpochStart(getCurrentEpoch() - 1, new bytes(0));
+        return EpochManagerLogic.getEpochStart(getCurrentEpoch() - 1, new bytes(0));
     }
 
     /**

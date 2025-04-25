@@ -5,11 +5,6 @@ import {SelfRegisterOperators} from "../SelfRegisterOperators.sol";
 import {IForcePauseSelfRegisterOperators} from
     "../../../../../interfaces/features/registration/operators/extensions/IForcePauseSelfRegisterOperators.sol";
 
-/**
- * @title ForcePauseSelfRegisterOperators
- * @notice Extension of SelfRegisterOperators that allows authorized addresses to forcefully pause operators
- * @dev Implements force pause functionality and prevents unpausing of force-paused operators
- */
 abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IForcePauseSelfRegisterOperators {
     uint64 public constant ForcePauseSelfRegisterOperators_VERSION = 1;
 
