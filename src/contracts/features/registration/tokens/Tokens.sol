@@ -7,15 +7,17 @@ import {PermissionManager} from "../../../base/PermissionManager.sol";
 abstract contract Tokens is VaultManager, PermissionManager {
     uint64 public constant Tokens_VERSION = 1;
 
+    function __Tokens_init() internal virtual onlyInitializing {}
+
     function registerToken(
         address token
-    ) public checkPermission {
+    ) public virtual checkPermission {
         _registerToken(token);
     }
 
     function unregisterToken(
         address token
-    ) public checkPermission {
+    ) public virtual checkPermission {
         _unregisterToken(token);
     }
 }

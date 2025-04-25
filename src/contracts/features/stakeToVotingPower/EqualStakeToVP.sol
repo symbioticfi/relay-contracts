@@ -14,7 +14,7 @@ abstract contract EqualStakeToVP is StakeToVotingPowerManager {
         uint256 stake,
         bytes memory, /* extraData */
         uint48 /* timestamp */
-    ) public view override returns (uint256 power) {
+    ) public view virtual override returns (uint256) {
         return stake;
     }
 
@@ -22,7 +22,7 @@ abstract contract EqualStakeToVP is StakeToVotingPowerManager {
         address, /* vault */
         uint256 stake,
         bytes memory /* extraData */
-    ) public view override returns (uint256 power) {
+    ) public view virtual override returns (uint256) {
         return stake;
     }
 }

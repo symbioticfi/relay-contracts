@@ -3,11 +3,20 @@ pragma solidity ^0.8.25;
 
 import {Subnetwork} from "@symbioticfi/core/src/contracts/libraries/Subnetwork.sol";
 
+import {INetworkManager} from "../../../interfaces/base/INetworkManager.sol";
+
 library NetworkManagerLogic {
     using Subnetwork for address;
 
-    /// @custom:storage-location erc7201:symbiotic.storage.VaultManager
-    struct NetworkManagerConfig {
+    uint64 internal constant NetworkManager_VERSION = 1;
+
+    struct NetworkManagerInitParams {
+        address network;
+        uint96 subnetworkID;
+    }
+
+    /// @custom:storage-location erc7201:symbiotic.storage.NetworkManager
+    struct NetworkManagerStorage {
         address _network;
         uint96 _subnetworkID;
     }
@@ -20,32 +29,30 @@ library NetworkManagerLogic {
      * @dev Uses assembly to load storage location from a constant slot
      * @return $ Config pointer to the VaultManagerConfig struct
      */
-    function _getNetworkManagerConfig() internal pure returns (NetworkManagerConfig storage $) {
+    function _getNetworkManagerStorage() internal pure returns (NetworkManagerStorage storage $) {
         assembly {
             $.slot := NetworkManagerLocation
         }
     }
 
-    /**
-     * @notice Initializes the NetworkManager contract
-     * @param network The address of the network
-     */
-    function initialize(address network, uint96 subnetworkID) public {
-        NetworkManagerConfig storage $ = _getNetworkManagerConfig();
-        $._network = network;
-        $._subnetworkID = subnetworkID;
+    function initialize(
+        INetworkManager.NetworkManagerInitParams memory initParams
+    ) public {
+        NetworkManagerStorage storage $ = _getNetworkManagerStorage();
+        $._network = initParams.network;
+        $._subnetworkID = initParams.subnetworkID;
     }
 
     /**
      * @notice Returns the address of the network
      * @return network The address of the network
      */
-    function NETWORK() internal view returns (address) {
-        return _getNetworkManagerConfig()._network;
+    function NETWORK() public view returns (address) {
+        return _getNetworkManagerStorage()._network;
     }
 
-    function SUBNETWORK_IDENTIFIER() internal view returns (uint96) {
-        return _getNetworkManagerConfig()._subnetworkID;
+    function SUBNETWORK_IDENTIFIER() public view returns (uint96) {
+        return _getNetworkManagerStorage()._subnetworkID;
     }
 
     function SUBNETWORK() public view returns (bytes32) {

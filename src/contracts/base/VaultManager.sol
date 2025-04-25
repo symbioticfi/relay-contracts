@@ -38,7 +38,9 @@ abstract contract VaultManager is OperatorManager, StakeToVotingPowerManager, IV
     using Subnetwork for bytes32;
     using Checkpoints for Checkpoints.Trace208;
 
-    uint64 public constant VaultManager_VERSION = 1;
+    function VaultManager_VERSION() public pure returns (uint64) {
+        return VaultManagerLogic.VaultManager_VERSION;
+    }
 
     address public immutable VAULT_FACTORY;
 
@@ -54,9 +56,9 @@ abstract contract VaultManager is OperatorManager, StakeToVotingPowerManager, IV
      * @notice Initializes the VaultManager with required parameters
      */
     function __VaultManager_init(
-        uint48 slashingWindow
+        VaultManagerInitParams memory initParams
     ) internal virtual onlyInitializing {
-        VaultManagerLogic.initialize(slashingWindow);
+        VaultManagerLogic.initialize(initParams);
     }
 
     function getSlashingWindow() public view virtual returns (uint48) {

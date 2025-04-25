@@ -6,17 +6,22 @@ pragma solidity ^0.8.25;
  * @notice Interface for self-registration and management of operators with signature verification
  */
 interface ISelfRegisterOperators {
-    error InvalidSignature();
-    error OperatorPowerBelowThreshold();
-    error OperatorPowerAboveThreshold();
-    error OperatorVaultPowerBelowThreshold();
-    error OperatorVaultPowerAboveThreshold();
+    error SelfRegisterOperators_InvalidSignature();
+    error SelfRegisterOperators_OperatorPowerBelowThreshold();
+    error SelfRegisterOperators_OperatorPowerAboveThreshold();
+    error SelfRegisterOperators_OperatorVaultPowerBelowThreshold();
+    error SelfRegisterOperators_OperatorVaultPowerAboveThreshold();
+
+    struct SelfRegisterOperatorsInitParams {
+        string name;
+        uint256 minVotingPowerThreshold;
+    }
+
     /**
      * @notice Returns the nonce for an operator address
      * @param operator The operator address to check
      * @return The current nonce value
      */
-
     function nonces(
         address operator
     ) external view returns (uint256);

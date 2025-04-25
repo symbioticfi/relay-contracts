@@ -11,12 +11,17 @@ abstract contract EpochManager is PermissionManager {
 
     uint64 public constant EpochManager_VERSION = 1;
 
-    error InvalidEpochDuration();
-    error InvalidEpochDurationTimestamp();
-    error InvalidEpochDurationIndex();
-    error TooOldTimestamp();
-    error NoCheckpoint();
+    error EpochManager_InvalidEpochDuration();
+    error EpochManager_InvalidEpochDurationTimestamp();
+    error EpochManager_InvalidEpochDurationIndex();
+    error EpochManager_NoCheckpoint();
 
+    struct EpochManagerInitParams {
+        uint48 epochDuration;
+        uint48 epochDurationTimestamp;
+    }
+
+    /// @custom:storage-location erc7201:symbiotic.storage.EpochManager
     struct EpochManagerStorage {
         Checkpoints.Trace208 _epochDurationDataByTimestamp; // 14 empty bytes + 6 bytes for epochDurationIndex + 6 bytes for epochDuration
         Checkpoints.Trace208 _epochDurationDataByIndex; // 14 empty bytes + 6 bytes for epochDurationStart + 6 bytes for epochDuration
@@ -34,48 +39,55 @@ abstract contract EpochManager is PermissionManager {
     }
 
     function __EpochManager_init(
-        uint48 epochDuration,
-        uint48 epochDurationTimestamp
+        EpochManagerInitParams memory initParams
     ) internal virtual onlyInitializing {
-        _setEpochDuration(epochDuration, epochDurationTimestamp, 0);
+        _setEpochDuration(initParams.epochDuration, initParams.epochDurationTimestamp, 0);
     }
 
     /**
      * @notice Returns the current capture timestamp
      * @return timestamp The current capture timestamp
      */
-    function getCaptureTimestamp() public view returns (uint48) {
+    function getCaptureTimestamp() public view virtual returns (uint48) {
         return getCurrentEpochStart();
     }
 
-    function getCurrentEpoch() public view returns (uint48) {
+    function getCurrentEpoch() public view virtual returns (uint48) {
         (uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex) =
             _getCurrentEpochDurationData();
         return epochDurationIndex + (Time.timestamp() - epochDurationTimestamp) / epochDuration;
     }
 
-    function getCurrentEpochDuration() public view returns (uint48 epochDuration) {
+    function getCurrentEpochDuration() public view virtual returns (uint48 epochDuration) {
         (epochDuration,,) = _getCurrentEpochDurationData();
     }
 
-    function getCurrentEpochStart() public view returns (uint48) {
+    function getCurrentEpochStart() public view virtual returns (uint48) {
         (uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex) =
             _getCurrentEpochDurationData();
         return epochDurationTimestamp + (getCurrentEpoch() - epochDurationIndex) * epochDuration;
     }
 
-    function getEpochIndex(uint48 timestamp, bytes memory hint) public view returns (uint48) {
+    function getNextEpoch() public view virtual returns (uint48) {
+        return getCurrentEpoch() + 1;
+    }
+
+    function getNextEpochStart() public view virtual returns (uint48) {
+        return getCurrentEpochStart() + getCurrentEpochDuration();
+    }
+
+    function getEpochIndex(uint48 timestamp, bytes memory hint) public view virtual returns (uint48) {
         (uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex) =
             _getEpochDurationDataByTimestamp(timestamp, hint);
 
         return epochDurationIndex + (timestamp - epochDurationTimestamp) / epochDuration;
     }
 
-    function getEpochDuration(uint48 epoch, bytes memory hint) public view returns (uint48 epochDuration) {
+    function getEpochDuration(uint48 epoch, bytes memory hint) public view virtual returns (uint48 epochDuration) {
         (epochDuration,,) = _getEpochDurationDataByIndex(epoch, hint);
     }
 
-    function getEpochStart(uint48 epoch, bytes memory hint) public view returns (uint48) {
+    function getEpochStart(uint48 epoch, bytes memory hint) public view virtual returns (uint48) {
         (uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex) =
             _getEpochDurationDataByIndex(epoch, hint);
         return epochDurationTimestamp + (epoch - epochDurationIndex) * epochDuration;
@@ -85,33 +97,6 @@ abstract contract EpochManager is PermissionManager {
         uint48 epochDuration
     ) public virtual checkPermission {
         _setEpochDuration(epochDuration, getCurrentEpochStart() + getCurrentEpochDuration(), getCurrentEpoch() + 1);
-    }
-
-    function _getNextEpoch() internal view returns (uint48) {
-        return getCurrentEpoch() + 1;
-    }
-
-    function _setEpochDuration(
-        uint48 epochDuration,
-        uint48 epochDurationTimestamp,
-        uint48 epochDurationIndex
-    ) internal {
-        if (epochDuration == 0) {
-            revert InvalidEpochDuration();
-        }
-        if (epochDurationTimestamp < Time.timestamp()) {
-            revert InvalidEpochDurationTimestamp();
-        }
-        if (epochDurationIndex < getCurrentEpoch()) {
-            revert InvalidEpochDurationIndex();
-        }
-        _getEpochManagerStorage()._epochDurationDataByTimestamp.push(
-            epochDurationTimestamp,
-            _serializeEpochDurationData(epochDuration, epochDurationTimestamp, epochDurationIndex)
-        );
-        _getEpochManagerStorage()._epochDurationDataByIndex.push(
-            epochDurationIndex, _serializeEpochDurationData(epochDuration, epochDurationTimestamp, epochDurationIndex)
-        );
     }
 
     function _getEpochDurationDataByTimestamp(
@@ -138,10 +123,27 @@ abstract contract EpochManager is PermissionManager {
         );
     }
 
-    function _deserializeEpochDurationData(
-        uint208 epochDurationData
-    ) internal pure returns (uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex) {
-        return (uint48(epochDurationData), uint48(epochDurationData >> 48), uint48(epochDurationData >> 96));
+    function _setEpochDuration(
+        uint48 epochDuration,
+        uint48 epochDurationTimestamp,
+        uint48 epochDurationIndex
+    ) internal virtual {
+        if (epochDuration == 0) {
+            revert EpochManager_InvalidEpochDuration();
+        }
+        if (epochDurationTimestamp < Time.timestamp()) {
+            revert EpochManager_InvalidEpochDurationTimestamp();
+        }
+        if (epochDurationIndex < getCurrentEpoch()) {
+            revert EpochManager_InvalidEpochDurationIndex();
+        }
+        _getEpochManagerStorage()._epochDurationDataByTimestamp.push(
+            epochDurationTimestamp,
+            _serializeEpochDurationData(epochDuration, epochDurationTimestamp, epochDurationIndex)
+        );
+        _getEpochManagerStorage()._epochDurationDataByIndex.push(
+            epochDurationIndex, _serializeEpochDurationData(epochDuration, epochDurationTimestamp, epochDurationIndex)
+        );
     }
 
     function _serializeEpochDurationData(
@@ -152,20 +154,26 @@ abstract contract EpochManager is PermissionManager {
         return (uint208(epochDurationIndex) << 96) | (uint208(epochDurationTimestamp) << 48) | epochDuration;
     }
 
+    function _deserializeEpochDurationData(
+        uint208 epochDurationData
+    ) internal pure returns (uint48, uint48, uint48) {
+        return (uint48(epochDurationData), uint48(epochDurationData >> 48), uint48(epochDurationData >> 96));
+    }
+
     function _getCurrentValue(
         Checkpoints.Trace208 storage trace,
         uint48 currentTimepoint
-    ) internal view returns (uint208) {
+    ) internal view virtual returns (uint208) {
         uint256 length = trace.length();
         if (length == 0) {
-            revert NoCheckpoint();
+            revert EpochManager_NoCheckpoint();
         }
         Checkpoints.Checkpoint208 memory checkpoint = trace.at(uint32(length - 1));
         if (checkpoint._key <= currentTimepoint) {
             return checkpoint._value;
         }
         if (length == 1) {
-            revert NoCheckpoint();
+            revert EpochManager_NoCheckpoint();
         }
         checkpoint = trace.at(uint32(length - 2));
         return checkpoint._value;

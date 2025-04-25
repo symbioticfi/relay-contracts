@@ -40,36 +40,24 @@ library VaultManagerLogic {
     using PersistentSet for PersistentSet.AddressSet;
     using InputNormalizer for bytes[];
 
-    error NotVault();
-    error NotOperatorVault();
-    error VaultNotInitialized();
-    error VaultAlreadyRegistered();
-    error VaultEpochTooShort();
-    error InactiveOperatorSlash();
-    error InactiveVaultSlash();
-    error UnknownSlasherType();
-    error NonVetoSlasher();
-    error NoSlasher();
-    error TooOldTimestampSlash();
-    error NotSharedVault();
-    error NotOperatorSpecificVault();
-    error InvalidOperatorNetwork();
-    error InvalidSharedVault();
-    error InvalidVault();
-    error InvalidOperatorVault();
-    error OperatorNotAdded();
-    error VaultNotRegistered();
-    error OperatorVaultNotRegistered();
-    error VaultNotPaused();
-    error UnregisterNotAllowed();
-    error SharedVaultAlreadyIsActive();
-    error OperatorVaultAlreadyIsActive();
-    error SharedVaultNotActive();
-    error OperatorVaultNotActive();
-    error InvalidToken();
-    error TokenAlreadyIsActive();
-    error TokenNotActive();
-    error OperatorNotRegistered();
+    uint64 internal constant VaultManager_VERSION = 1;
+
+    error VaultManager_InactiveOperatorSlash();
+    error VaultManager_InactiveVaultSlash();
+    error VaultManager_UnknownSlasherType();
+    error VaultManager_NonVetoSlasher();
+    error VaultManager_NoSlasher();
+    error VaultManager_InvalidSharedVault();
+    error VaultManager_InvalidVault();
+    error VaultManager_InvalidOperatorVault();
+    error VaultManager_SharedVaultAlreadyIsActive();
+    error VaultManager_OperatorVaultAlreadyIsActive();
+    error VaultManager_TokenAlreadyIsActive();
+    error VaultManager_TokenNotActive();
+    error VaultManager_OperatorNotRegistered();
+    error VaultManager_SharedVaultNotActive();
+    error VaultManager_OperatorVaultNotActive();
+    error VaultManager_InvalidToken();
 
     /// @custom:storage-location erc7201:symbiotic.storage.VaultManager
     struct VaultManagerStorage {
@@ -115,9 +103,9 @@ library VaultManagerLogic {
      * @notice Initializes the VaultManager with required parameters
      */
     function initialize(
-        uint48 slashingWindow
+        IVaultManager.VaultManagerInitParams memory initParams
     ) public {
-        _getVaultManagerStorage()._slashingWindow = slashingWindow;
+        _getVaultManagerStorage()._slashingWindow = initParams.slashingWindow;
     }
 
     function getSlashingWindow() public view returns (uint48) {
@@ -639,10 +627,10 @@ library VaultManagerLogic {
         address token
     ) public {
         if (token == address(0)) {
-            revert InvalidToken();
+            revert VaultManager_InvalidToken();
         }
         if (!_getVaultManagerStorage()._tokens.add(Time.timestamp(), token)) {
-            revert TokenAlreadyIsActive();
+            revert VaultManager_TokenAlreadyIsActive();
         }
     }
 
@@ -650,7 +638,7 @@ library VaultManagerLogic {
         address token
     ) public {
         if (!_getVaultManagerStorage()._tokens.remove(Time.timestamp(), token)) {
-            revert TokenNotActive();
+            revert VaultManager_TokenNotActive();
         }
     }
 
@@ -661,16 +649,16 @@ library VaultManagerLogic {
     function registerSharedVault(address VAULT_FACTORY, address vault) public {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         if (!_validateVault(VAULT_FACTORY, vault)) {
-            revert InvalidVault();
+            revert VaultManager_InvalidVault();
         }
         if (!_validateSharedVault(vault)) {
-            revert InvalidSharedVault();
+            revert VaultManager_InvalidSharedVault();
         }
         if ($._allOperatorVaults.contains(vault)) {
-            revert OperatorVaultAlreadyIsActive();
+            revert VaultManager_OperatorVaultAlreadyIsActive();
         }
         if (!$._sharedVaults.add(Time.timestamp(), vault)) {
-            revert SharedVaultAlreadyIsActive();
+            revert VaultManager_SharedVaultAlreadyIsActive();
         }
     }
 
@@ -682,19 +670,19 @@ library VaultManagerLogic {
     function registerOperatorVault(address VAULT_FACTORY, address operator, address vault) public {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         if (!_validateVault(VAULT_FACTORY, vault)) {
-            revert InvalidVault();
+            revert VaultManager_InvalidVault();
         }
         if (!_validateOperatorVault(operator, vault)) {
-            revert InvalidOperatorVault();
+            revert VaultManager_InvalidOperatorVault();
         }
         if (!OperatorManagerLogic.isOperatorRegistered(operator)) {
-            revert OperatorNotRegistered();
+            revert VaultManager_OperatorNotRegistered();
         }
         if ($._sharedVaults.contains(vault)) {
-            revert SharedVaultAlreadyIsActive();
+            revert VaultManager_SharedVaultAlreadyIsActive();
         }
         if (!$._allOperatorVaults.add(Time.timestamp(), vault)) {
-            revert OperatorVaultAlreadyIsActive();
+            revert VaultManager_OperatorVaultAlreadyIsActive();
         }
         $._operatorVaults[operator].add(Time.timestamp(), vault);
     }
@@ -707,7 +695,7 @@ library VaultManagerLogic {
         address vault
     ) public {
         if (!_getVaultManagerStorage()._sharedVaults.remove(Time.timestamp(), vault)) {
-            revert SharedVaultNotActive();
+            revert VaultManager_SharedVaultNotActive();
         }
     }
 
@@ -719,7 +707,7 @@ library VaultManagerLogic {
     function unregisterOperatorVault(address operator, address vault) public {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         if (!$._operatorVaults[operator].remove(Time.timestamp(), vault)) {
-            revert OperatorVaultNotActive();
+            revert VaultManager_OperatorVaultNotActive();
         }
         $._allOperatorVaults.remove(Time.timestamp(), vault);
     }
@@ -747,19 +735,19 @@ library VaultManagerLogic {
         }
 
         if (!OperatorManagerLogic.isOperatorActiveAt(operator, timestamp, slashVaultHints.operatorActiveHint)) {
-            revert InactiveOperatorSlash();
+            revert VaultManager_InactiveOperatorSlash();
         }
 
         if (
             !isOperatorVaultActiveAt(operator, vault, timestamp, slashVaultHints.operatorVaultActiveHint)
                 && !isSharedVaultActiveAt(vault, timestamp, slashVaultHints.sharedVaultActiveHint)
         ) {
-            revert InactiveVaultSlash();
+            revert VaultManager_InactiveVaultSlash();
         }
 
         address slasher = IVault(vault).slasher();
         if (slasher == address(0)) {
-            revert NoSlasher();
+            revert VaultManager_NoSlasher();
         }
 
         uint64 slasherType = IEntity(slasher).TYPE();
@@ -784,7 +772,7 @@ library VaultManagerLogic {
                 success = false;
             }
         } else {
-            revert UnknownSlasherType();
+            revert VaultManager_UnknownSlasherType();
         }
     }
 
@@ -803,7 +791,7 @@ library VaultManagerLogic {
     ) public returns (bool success, uint256 slashedAmount) {
         address slasher = IVault(vault).slasher();
         if (slasher == address(0)) {
-            revert NoSlasher();
+            revert VaultManager_NoSlasher();
         }
 
         uint64 slasherType = IEntity(slasher).TYPE();
@@ -815,7 +803,7 @@ library VaultManagerLogic {
                 success = false;
             }
         } else {
-            revert NonVetoSlasher();
+            revert VaultManager_NonVetoSlasher();
         }
     }
 

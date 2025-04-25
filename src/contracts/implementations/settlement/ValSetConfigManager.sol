@@ -22,12 +22,19 @@ abstract contract ValSetConfigManager is PermissionManager {
         uint256 maxValidatorsCount;
     }
 
+    struct ValSetConfigManagerInitParams {
+        uint256 maxVotingPower;
+        uint256 minInclusionVotingPower;
+        uint256 maxValidatorsCount;
+    }
+
     struct ValSetConfigHints {
         bytes maxVotingPowerHint;
         bytes minInclusionVotingPowerHint;
         bytes maxValidatorsCountHint;
     }
 
+    /// @custom:storage-location erc7201:symbiotic.storage.ValSetConfigManager
     struct ValSetConfigManagerStorage {
         Checkpoints.Trace256 _maxVotingPower;
         Checkpoints.Trace256 _minInclusionVotingPower;
@@ -46,40 +53,43 @@ abstract contract ValSetConfigManager is PermissionManager {
     }
 
     function __ValSetConfigManager_init(
-        ValSetConfig memory valSetConfig
+        ValSetConfigManagerInitParams memory valSetConfigManagerInitParams
     ) internal virtual onlyInitializing {
         ValSetConfigManagerStorage storage $ = _getValSetConfigManagerStorage();
 
-        $._maxVotingPower.push(Time.timestamp(), valSetConfig.maxVotingPower);
-        $._minInclusionVotingPower.push(Time.timestamp(), valSetConfig.minInclusionVotingPower);
-        $._maxValidatorsCount.push(Time.timestamp(), valSetConfig.maxValidatorsCount);
+        $._maxVotingPower.push(Time.timestamp(), valSetConfigManagerInitParams.maxVotingPower);
+        $._minInclusionVotingPower.push(Time.timestamp(), valSetConfigManagerInitParams.minInclusionVotingPower);
+        $._maxValidatorsCount.push(Time.timestamp(), valSetConfigManagerInitParams.maxValidatorsCount);
     }
 
-    function getMaxVotingPowerAt(uint48 timestamp, bytes memory hint) public view returns (uint256) {
+    function getMaxVotingPowerAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint256) {
         return _getValSetConfigManagerStorage()._maxVotingPower.upperLookupRecent(timestamp, hint);
     }
 
-    function getMaxVotingPower() public view returns (uint256) {
+    function getMaxVotingPower() public view virtual returns (uint256) {
         return _getValSetConfigManagerStorage()._maxVotingPower.latest();
     }
 
-    function getMinInclusionVotingPowerAt(uint48 timestamp, bytes memory hint) public view returns (uint256) {
+    function getMinInclusionVotingPowerAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint256) {
         return _getValSetConfigManagerStorage()._minInclusionVotingPower.upperLookupRecent(timestamp, hint);
     }
 
-    function getMinInclusionVotingPower() public view returns (uint256) {
+    function getMinInclusionVotingPower() public view virtual returns (uint256) {
         return _getValSetConfigManagerStorage()._minInclusionVotingPower.latest();
     }
 
-    function getMaxValidatorsCountAt(uint48 timestamp, bytes memory hint) public view returns (uint256) {
+    function getMaxValidatorsCountAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint256) {
         return _getValSetConfigManagerStorage()._maxValidatorsCount.upperLookupRecent(timestamp, hint);
     }
 
-    function getMaxValidatorsCount() public view returns (uint256) {
+    function getMaxValidatorsCount() public view virtual returns (uint256) {
         return _getValSetConfigManagerStorage()._maxValidatorsCount.latest();
     }
 
-    function getValSetConfigAt(uint48 timestamp, bytes memory hints) public view returns (ValSetConfig memory) {
+    function getValSetConfigAt(
+        uint48 timestamp,
+        bytes memory hints
+    ) public view virtual returns (ValSetConfig memory) {
         ValSetConfigHints memory valSetConfigHints;
         if (hints.length > 0) {
             valSetConfigHints = abi.decode(hints, (ValSetConfigHints));
@@ -92,7 +102,7 @@ abstract contract ValSetConfigManager is PermissionManager {
         });
     }
 
-    function getValSetConfig() public view returns (ValSetConfig memory) {
+    function getValSetConfig() public view virtual returns (ValSetConfig memory) {
         return ValSetConfig({
             maxVotingPower: getMaxVotingPower(),
             minInclusionVotingPower: getMinInclusionVotingPower(),
@@ -102,19 +112,19 @@ abstract contract ValSetConfigManager is PermissionManager {
 
     function setMaxVotingPower(
         uint256 maxVotingPower
-    ) public checkPermission {
+    ) public virtual checkPermission {
         _getValSetConfigManagerStorage()._maxVotingPower.push(Time.timestamp(), maxVotingPower);
     }
 
     function setMinInclusionVotingPower(
         uint256 minInclusionVotingPower
-    ) public checkPermission {
+    ) public virtual checkPermission {
         _getValSetConfigManagerStorage()._minInclusionVotingPower.push(Time.timestamp(), minInclusionVotingPower);
     }
 
     function setMaxValidatorsCount(
         uint256 maxValidatorsCount
-    ) public checkPermission {
+    ) public virtual checkPermission {
         _getValSetConfigManagerStorage()._maxValidatorsCount.push(Time.timestamp(), maxValidatorsCount);
     }
 }

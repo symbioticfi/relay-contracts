@@ -1,16 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
+import {ISelfRegisterOperators} from "../ISelfRegisterOperators.sol";
+
 /**
  * @title IForcePauseSelfRegisterOperators
  * @notice Interface for force pausing operators and operator-vault pairs
  */
 interface IForcePauseSelfRegisterOperators {
-    error OperatorNotRegistered();
-    error OperatorNotForcePaused();
-    error OperatorForcePaused();
-    error OperatorVaultNotForcePaused();
-    error OperatorVaultForcePaused();
+    error ForcePauseSelfRegisterOperators_OperatorNotRegistered();
+    error ForcePauseSelfRegisterOperators_OperatorNotForcePaused();
+    error ForcePauseSelfRegisterOperators_OperatorForcePaused();
+    error ForcePauseSelfRegisterOperators_OperatorVaultNotForcePaused();
+    error ForcePauseSelfRegisterOperators_OperatorVaultForcePaused();
 
     /**
      * @notice Forces an operator to be unregistered

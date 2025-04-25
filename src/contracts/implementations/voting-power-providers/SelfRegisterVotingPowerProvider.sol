@@ -14,25 +14,21 @@ contract SelfRegisterVotingPowerProvider is SharedVaults, SelfRegisterOperators,
     constructor(
         address operatorRegistry,
         address operatorNetworkOptInService,
-        address vaultFactory,
-        address network,
-        uint96 subnetworkID,
-        uint48 slashingWindow,
-        address owner_
+        address vaultFactory
     ) VaultManager(operatorRegistry, operatorNetworkOptInService, vaultFactory) {
-        initialize(network, subnetworkID, slashingWindow, owner_);
+        _disableInitializers();
     }
 
     function initialize(
-        address network,
-        uint96 subnetworkID,
-        uint48 slashingWindow,
-        address owner_
-    ) internal initializer {
-        __NetworkManager_init(network, subnetworkID);
+        NetworkManagerInitParams memory networkManagerInitParams,
+        VaultManagerInitParams memory vaultManagerInitParams,
+        SelfRegisterOperatorsInitParams memory selfRegisterOperatorsInitParams,
+        OzOwnableInitParams memory ozOwnableInitParams
+    ) public virtual initializer {
+        __NetworkManager_init(networkManagerInitParams);
         __OperatorManager_init();
-        __VaultManager_init(slashingWindow);
-        __SelfRegisterOperators_init("SelfRegisterVotingPowerProvider", 0);
-        __OzOwnable_init(owner_);
+        __VaultManager_init(vaultManagerInitParams);
+        __SelfRegisterOperators_init(selfRegisterOperatorsInitParams);
+        __OzOwnable_init(ozOwnableInitParams);
     }
 }

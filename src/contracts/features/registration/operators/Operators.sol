@@ -14,6 +14,8 @@ import {IOperators} from "../../../../interfaces/features/registration/operators
 abstract contract Operators is VaultManager, PermissionManager, IOperators {
     uint64 public constant Operators_VERSION = 1;
 
+    function __Operators_init() internal virtual onlyInitializing {}
+
     function registerOperator(address operator, address vault) public virtual checkPermission {
         _registerOperator(operator);
         if (vault != address(0)) {

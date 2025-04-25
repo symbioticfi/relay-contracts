@@ -9,5 +9,9 @@ import {IAccessManaged} from "@openzeppelin/contracts/access/manager/IAccessMana
  * @title IOzAccessManaged
  */
 interface IOzAccessManaged {
+    struct OzAccessManagedInitParams {
+        address authority;
+    }
+
     function OzAccessManaged_VERSION() external view returns (uint64);
 }

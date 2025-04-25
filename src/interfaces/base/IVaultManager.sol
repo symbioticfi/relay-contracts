@@ -40,4 +40,8 @@ interface IVaultManager {
         bytes sharedVaultActiveHint;
         bytes slashHints;
     }
+
+    struct VaultManagerInitParams {
+        uint48 slashingWindow;
+    }
 }

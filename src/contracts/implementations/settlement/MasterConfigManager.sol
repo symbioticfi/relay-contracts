@@ -31,11 +31,18 @@ abstract contract MasterConfigManager is PermissionManager {
         CrossChainAddress[] replicas;
     }
 
+    struct MasterConfigManagerInitParams {
+        CrossChainAddress[] votingPowerProviders;
+        CrossChainAddress keysProvider;
+        CrossChainAddress[] replicas;
+    }
+
     struct CrossChainAddress {
         address addr;
         uint64 chainId;
     }
 
+    /// @custom:storage-location erc7201:symbiotic.storage.MasterConfigManager
     struct MasterConfigManagerStorage {
         PersistentSet.Bytes32Set _votingPowerProviders;
         Checkpoints.Trace256 _keysProvider;
@@ -54,24 +61,30 @@ abstract contract MasterConfigManager is PermissionManager {
     }
 
     function __MasterConfigManager_init(
-        MasterConfig memory masterConfig
+        MasterConfigManagerInitParams memory masterConfigManagerInitParams
     ) internal virtual onlyInitializing {
         MasterConfigManagerStorage storage $ = _getMasterConfigManagerStorage();
 
-        for (uint256 i; i < masterConfig.votingPowerProviders.length; ++i) {
+        for (uint256 i; i < masterConfigManagerInitParams.votingPowerProviders.length; ++i) {
             if (
                 !$._votingPowerProviders.add(
-                    Time.timestamp(), _serializeCrossChainAddress(masterConfig.votingPowerProviders[i])
+                    Time.timestamp(), _serializeCrossChainAddress(masterConfigManagerInitParams.votingPowerProviders[i])
                 )
             ) {
                 revert MasterConfigManager_AlreadyAdded();
             }
         }
 
-        $._keysProvider.push(Time.timestamp(), uint256(_serializeCrossChainAddress(masterConfig.keysProvider)));
+        $._keysProvider.push(
+            Time.timestamp(), uint256(_serializeCrossChainAddress(masterConfigManagerInitParams.keysProvider))
+        );
 
-        for (uint256 i; i < masterConfig.replicas.length; ++i) {
-            if (!$._replicas.add(Time.timestamp(), _serializeCrossChainAddress(masterConfig.replicas[i]))) {
+        for (uint256 i; i < masterConfigManagerInitParams.replicas.length; ++i) {
+            if (
+                !$._replicas.add(
+                    Time.timestamp(), _serializeCrossChainAddress(masterConfigManagerInitParams.replicas[i])
+                )
+            ) {
                 revert MasterConfigManager_AlreadyAdded();
             }
         }
@@ -81,7 +94,7 @@ abstract contract MasterConfigManager is PermissionManager {
         CrossChainAddress memory votingPowerProvider,
         uint48 timestamp,
         bytes memory hint
-    ) public view returns (bool) {
+    ) public view virtual returns (bool) {
         return _getMasterConfigManagerStorage()._votingPowerProviders.contains(
             timestamp, _serializeCrossChainAddress(votingPowerProvider), hint
         );
@@ -89,7 +102,7 @@ abstract contract MasterConfigManager is PermissionManager {
 
     function isVotingPowerProviderActive(
         CrossChainAddress memory votingPowerProvider
-    ) public view returns (bool) {
+    ) public view virtual returns (bool) {
         return _getMasterConfigManagerStorage()._votingPowerProviders.contains(
             _serializeCrossChainAddress(votingPowerProvider)
         );
@@ -98,7 +111,7 @@ abstract contract MasterConfigManager is PermissionManager {
     function getActiveVotingPowerProvidersAt(
         uint48 timestamp,
         bytes[] memory hints
-    ) public view returns (CrossChainAddress[] memory activeVotingPowerProviders) {
+    ) public view virtual returns (CrossChainAddress[] memory activeVotingPowerProviders) {
         bytes32[] memory activeVotingPowerProvidersRaw =
             _getMasterConfigManagerStorage()._votingPowerProviders.values(timestamp, hints);
         activeVotingPowerProviders = new CrossChainAddress[](activeVotingPowerProvidersRaw.length);
@@ -110,6 +123,7 @@ abstract contract MasterConfigManager is PermissionManager {
     function getActiveVotingPowerProviders()
         public
         view
+        virtual
         returns (CrossChainAddress[] memory activeVotingPowerProviders)
     {
         bytes32[] memory activeVotingPowerProvidersRaw = _getMasterConfigManagerStorage()._votingPowerProviders.values();
@@ -119,13 +133,16 @@ abstract contract MasterConfigManager is PermissionManager {
         }
     }
 
-    function getKeysProviderAt(uint48 timestamp, bytes memory hint) public view returns (CrossChainAddress memory) {
+    function getKeysProviderAt(
+        uint48 timestamp,
+        bytes memory hint
+    ) public view virtual returns (CrossChainAddress memory) {
         return _deserializeCrossChainAddress(
             bytes32(_getMasterConfigManagerStorage()._keysProvider.upperLookupRecent(timestamp, hint))
         );
     }
 
-    function getKeysProvider() public view returns (CrossChainAddress memory) {
+    function getKeysProvider() public view virtual returns (CrossChainAddress memory) {
         return _deserializeCrossChainAddress(bytes32(_getMasterConfigManagerStorage()._keysProvider.latest()));
     }
 
@@ -133,21 +150,21 @@ abstract contract MasterConfigManager is PermissionManager {
         CrossChainAddress memory replica,
         uint48 timestamp,
         bytes memory hint
-    ) public view returns (bool) {
+    ) public view virtual returns (bool) {
         return
             _getMasterConfigManagerStorage()._replicas.contains(timestamp, _serializeCrossChainAddress(replica), hint);
     }
 
     function isReplicaActive(
         CrossChainAddress memory replica
-    ) public view returns (bool) {
+    ) public view virtual returns (bool) {
         return _getMasterConfigManagerStorage()._replicas.contains(_serializeCrossChainAddress(replica));
     }
 
     function getActiveReplicasAt(
         uint48 timestamp,
         bytes[] memory hints
-    ) public view returns (CrossChainAddress[] memory activeReplicas) {
+    ) public view virtual returns (CrossChainAddress[] memory activeReplicas) {
         bytes32[] memory activeReplicasRaw = _getMasterConfigManagerStorage()._replicas.values(timestamp, hints);
         activeReplicas = new CrossChainAddress[](activeReplicasRaw.length);
         for (uint256 i; i < activeReplicasRaw.length; ++i) {
@@ -155,7 +172,7 @@ abstract contract MasterConfigManager is PermissionManager {
         }
     }
 
-    function getActiveReplicas() public view returns (CrossChainAddress[] memory activeReplicas) {
+    function getActiveReplicas() public view virtual returns (CrossChainAddress[] memory activeReplicas) {
         bytes32[] memory activeReplicasRaw = _getMasterConfigManagerStorage()._replicas.values();
         activeReplicas = new CrossChainAddress[](activeReplicasRaw.length);
         for (uint256 i; i < activeReplicasRaw.length; ++i) {
@@ -163,7 +180,10 @@ abstract contract MasterConfigManager is PermissionManager {
         }
     }
 
-    function getMasterConfigAt(uint48 timestamp, bytes memory hints) public view returns (MasterConfig memory) {
+    function getMasterConfigAt(
+        uint48 timestamp,
+        bytes memory hints
+    ) public view virtual returns (MasterConfig memory) {
         MasterConfigHints memory masterConfigHints;
         if (hints.length > 0) {
             masterConfigHints = abi.decode(hints, (MasterConfigHints));
@@ -176,7 +196,7 @@ abstract contract MasterConfigManager is PermissionManager {
         });
     }
 
-    function getMasterConfig() public view returns (MasterConfig memory) {
+    function getMasterConfig() public view virtual returns (MasterConfig memory) {
         return MasterConfig({
             votingPowerProviders: getActiveVotingPowerProviders(),
             keysProvider: getKeysProvider(),
@@ -186,7 +206,7 @@ abstract contract MasterConfigManager is PermissionManager {
 
     function addVotingPowerProvider(
         CrossChainAddress memory votingPowerProvider
-    ) public checkPermission {
+    ) public virtual checkPermission {
         if (
             !_getMasterConfigManagerStorage()._votingPowerProviders.add(
                 Time.timestamp(), _serializeCrossChainAddress(votingPowerProvider)
@@ -198,7 +218,7 @@ abstract contract MasterConfigManager is PermissionManager {
 
     function removeVotingPowerProvider(
         CrossChainAddress memory votingPowerProvider
-    ) public checkPermission {
+    ) public virtual checkPermission {
         if (
             !_getMasterConfigManagerStorage()._votingPowerProviders.remove(
                 Time.timestamp(), _serializeCrossChainAddress(votingPowerProvider)
@@ -210,7 +230,7 @@ abstract contract MasterConfigManager is PermissionManager {
 
     function setKeysProvider(
         CrossChainAddress memory keysProvider
-    ) public checkPermission {
+    ) public virtual checkPermission {
         _getMasterConfigManagerStorage()._keysProvider.push(
             Time.timestamp(), uint256(_serializeCrossChainAddress(keysProvider))
         );
@@ -218,7 +238,7 @@ abstract contract MasterConfigManager is PermissionManager {
 
     function addReplica(
         CrossChainAddress memory replica
-    ) public checkPermission {
+    ) public virtual checkPermission {
         if (!_getMasterConfigManagerStorage()._replicas.add(Time.timestamp(), _serializeCrossChainAddress(replica))) {
             revert MasterConfigManager_AlreadyAdded();
         }
@@ -226,7 +246,7 @@ abstract contract MasterConfigManager is PermissionManager {
 
     function removeReplica(
         CrossChainAddress memory replica
-    ) public checkPermission {
+    ) public virtual checkPermission {
         if (!_getMasterConfigManagerStorage()._replicas.remove(Time.timestamp(), _serializeCrossChainAddress(replica)))
         {
             revert MasterConfigManager_NotAdded();

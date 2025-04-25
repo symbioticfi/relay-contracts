@@ -23,7 +23,9 @@ abstract contract OperatorManager is NetworkManager, StaticDelegateCallable {
     using Checkpoints for Checkpoints.Trace208;
     using Arrays for address[];
 
-    uint64 public constant OperatorManager_VERSION = 1;
+    function OperatorManager_VERSION() public pure returns (uint64) {
+        return OperatorManagerLogic.OperatorManager_VERSION;
+    }
 
     address public immutable OPERATOR_REGISTRY; // Address of the operator registry
 
@@ -37,51 +39,54 @@ abstract contract OperatorManager is NetworkManager, StaticDelegateCallable {
     /**
      * @notice Initializes the OperatorManager with required parameters
      */
-    function __OperatorManager_init() internal virtual onlyInitializing {}
-
-    function _isOperatorRegistered(
-        address operator
-    ) internal view virtual returns (bool) {
-        return OperatorManagerLogic.isOperatorRegistered(operator);
+    function __OperatorManager_init() internal virtual onlyInitializing {
+        OperatorManagerLogic.initialize();
     }
 
-    function getAllOperatorsLength() public view returns (uint256) {
+    function getAllOperatorsLength() public view virtual returns (uint256) {
         return OperatorManagerLogic.getAllOperatorsLength();
     }
 
-    function getAllOperators() public view returns (address[] memory) {
+    function getAllOperators() public view virtual returns (address[] memory) {
         return OperatorManagerLogic.getAllOperators();
     }
 
     function isOperatorActive(
         address operator
-    ) public view returns (bool) {
+    ) public view virtual returns (bool) {
         return OperatorManagerLogic.isOperatorActive(operator);
     }
 
     function isOperatorRegistered(
         address operator
-    ) public view returns (bool) {
+    ) public view virtual returns (bool) {
         return OperatorManagerLogic.isOperatorRegistered(operator);
     }
 
-    function isOperatorActiveAt(address operator, uint48 timestamp, bytes memory hint) public view returns (bool) {
+    function isOperatorActiveAt(
+        address operator,
+        uint48 timestamp,
+        bytes memory hint
+    ) public view virtual returns (bool) {
         return OperatorManagerLogic.isOperatorActiveAt(operator, timestamp, hint);
     }
 
-    function getActiveOperatorsAt(uint48 timestamp, bytes[] memory hints) public view returns (address[] memory) {
+    function getActiveOperatorsAt(
+        uint48 timestamp,
+        bytes[] memory hints
+    ) public view virtual returns (address[] memory) {
         return OperatorManagerLogic.getActiveOperatorsAt(timestamp, hints);
     }
 
-    function getActiveOperators() public view returns (address[] memory) {
+    function getActiveOperators() public view virtual returns (address[] memory) {
         return OperatorManagerLogic.getActiveOperators();
     }
 
-    function getActiveOperatorsLengthAt(uint48 timestamp, bytes memory hint) public view returns (uint256) {
+    function getActiveOperatorsLengthAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint256) {
         return OperatorManagerLogic.getActiveOperatorsLengthAt(timestamp, hint);
     }
 
-    function getActiveOperatorsLength() public view returns (uint256) {
+    function getActiveOperatorsLength() public view virtual returns (uint256) {
         return OperatorManagerLogic.getActiveOperatorsLength();
     }
 

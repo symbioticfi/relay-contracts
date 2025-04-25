@@ -18,12 +18,12 @@ library OperatorManagerLogic {
     using PersistentSet for PersistentSet.AddressSet;
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    error NotOperator();
-    error OperatorNotOptedIn();
-    error OperatorAlreadyRegistered();
-    error OperatorNotRegistered();
-    error InvalidLength();
-    error UnregisterNotAllowed();
+    uint64 internal constant OperatorManager_VERSION = 1;
+
+    error OperatorManager_NotOperator();
+    error OperatorManager_OperatorNotOptedIn();
+    error OperatorManager_OperatorAlreadyRegistered();
+    error OperatorManager_OperatorNotRegistered();
 
     /// @custom:storage-location erc7201:symbiotic.storage.OperatorManager
     struct OperatorManagerStorage {
@@ -106,15 +106,15 @@ library OperatorManagerLogic {
         address operator
     ) public {
         if (!IRegistry(OPERATOR_REGISTRY).isEntity(operator)) {
-            revert NotOperator();
+            revert OperatorManager_NotOperator();
         }
 
         if (!IOptInService(OPERATOR_NETWORK_OPT_IN_SERVICE).isOptedIn(operator, NetworkManagerLogic.NETWORK())) {
-            revert OperatorNotOptedIn();
+            revert OperatorManager_OperatorNotOptedIn();
         }
 
         if (!_getOperatorManagerStorage()._operators.add(Time.timestamp(), operator)) {
-            revert OperatorAlreadyRegistered();
+            revert OperatorManager_OperatorAlreadyRegistered();
         }
     }
 
@@ -126,7 +126,7 @@ library OperatorManagerLogic {
         address operator
     ) public {
         if (!_getOperatorManagerStorage()._operators.remove(Time.timestamp(), operator)) {
-            revert OperatorNotRegistered();
+            revert OperatorManager_OperatorNotRegistered();
         }
     }
 }

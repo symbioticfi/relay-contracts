@@ -8,5 +8,9 @@ import {IPermissionManager} from "../../base/IPermissionManager.sol";
  * @notice Interface for a middleware extension that restricts access to a single owner address
  */
 interface IOzOwnable {
+    struct OzOwnableInitParams {
+        address owner;
+    }
+
     function OzOwnable_VERSION() external view returns (uint64);
 }

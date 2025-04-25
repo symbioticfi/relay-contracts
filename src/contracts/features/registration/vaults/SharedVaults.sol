@@ -13,12 +13,14 @@ import {ISharedVaults} from "../../../../interfaces/features/registration/vaults
 abstract contract SharedVaults is VaultManager, PermissionManager, ISharedVaults {
     uint64 public constant SharedVaults_VERSION = 1;
 
+    function __SharedVaults_init() internal virtual onlyInitializing {}
+
     /**
      * @inheritdoc ISharedVaults
      */
     function registerSharedVault(
         address sharedVault
-    ) public checkPermission {
+    ) public virtual checkPermission {
         _registerSharedVault(sharedVault);
     }
 
@@ -27,7 +29,7 @@ abstract contract SharedVaults is VaultManager, PermissionManager, ISharedVaults
      */
     function unregisterSharedVault(
         address sharedVault
-    ) public checkPermission {
+    ) public virtual checkPermission {
         _unregisterSharedVault(sharedVault);
     }
 }

@@ -9,34 +9,36 @@ contract KeyRegistry is KeyManager, OzAccessControl {
         _disableInitializers();
     }
 
-    function getOperatorsLengthAt(uint48 timestamp, bytes memory hint) public view returns (uint256) {
+    function getOperatorsLengthAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint256) {
         return _getKeysOperatorsLengthAt(timestamp, hint);
     }
 
-    function getOperatorsLength() public view returns (uint256) {
+    function getOperatorsLength() public view virtual returns (uint256) {
         return _getKeysOperatorsLength();
     }
 
-    function getOperatorsAt(uint48 timestamp, bytes[] memory hints) public view returns (address[] memory) {
+    function getOperatorsAt(uint48 timestamp, bytes[] memory hints) public view virtual returns (address[] memory) {
         return _getKeysOperatorsAt(timestamp, hints);
     }
 
-    function getOperators() public view returns (address[] memory) {
+    function getOperators() public view virtual returns (address[] memory) {
         return _getKeysOperators();
     }
 
-    function initialize(string memory name, string memory version, uint8[] memory requiredKeyTags) public initializer {
-        __KeyManager_init(name, version, requiredKeyTags);
+    function initialize(
+        KeyManagerInitParams memory keyManagerInitParams
+    ) public virtual initializer {
+        __KeyManager_init(keyManagerInitParams);
         __OzAccessControl_init();
     }
 
     function setRequiredKeyTags(
         uint8[] memory requiredKeyTags
-    ) public checkPermission {
+    ) public virtual checkPermission {
         _setRequiredKeyTags(requiredKeyTags);
     }
 
-    function registerKeys(address operator, KeyWithSignature[] memory keysWithSignatures) public {
+    function registerKeys(address operator, KeyWithSignature[] memory keysWithSignatures) public virtual {
         _registerKeys(operator, keysWithSignatures);
     }
 
@@ -46,7 +48,7 @@ contract KeyRegistry is KeyManager, OzAccessControl {
         bytes memory key,
         bytes memory signature,
         bytes memory extraData
-    ) public {
+    ) public virtual {
         _setKey(operator, tag, key, signature, extraData);
     }
 }

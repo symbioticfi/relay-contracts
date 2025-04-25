@@ -18,15 +18,10 @@ abstract contract OzAccessManaged is PermissionManager, AccessManagedUpgradeable
      */
     uint64 public constant OzAccessManaged_VERSION = 1;
 
-    /**
-     * @notice Initializes the contract with an authority address
-     * @param authority The address to set as the access manager authority
-     * @dev Can only be called during initialization
-     */
     function __OzAccessManaged_init(
-        address authority
-    ) internal onlyInitializing {
-        __AccessManaged_init(authority);
+        OzAccessManagedInitParams memory initParams
+    ) internal virtual onlyInitializing {
+        __AccessManaged_init(initParams.authority);
     }
 
     /**

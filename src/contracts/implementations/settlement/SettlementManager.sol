@@ -41,6 +41,7 @@ abstract contract SettlementManager is NetworkManager, EpochManager, EIP712Upgra
         bytes extraData;
     }
 
+    /// @custom:storage-location erc7201:symbiotic.storage.SettlementManager
     struct SettlementManagerStorage {
         Checkpoints.Trace208 _requiredKeyTag;
         Checkpoints.Trace208 _commitDuration;
@@ -68,6 +69,17 @@ abstract contract SettlementManager is NetworkManager, EpochManager, EIP712Upgra
         uint208 threshold;
     }
 
+    struct SettlementManagerInitParams {
+        NetworkManagerInitParams networkManagerInitParams;
+        EpochManagerInitParams epochManagerInitParams;
+        string name;
+        string version;
+        QuorumThreshold[] quorumThresholds;
+        uint48 commitDuration;
+        uint8 requiredKeyTag;
+        address sigVerifier;
+    }
+
     uint8 public constant VALIDATOR_SET_VERSION = 1;
 
     bytes32 private constant VALSET_HEADER_COMMIT_TYPEHASH =
@@ -85,34 +97,31 @@ abstract contract SettlementManager is NetworkManager, EpochManager, EIP712Upgra
     }
 
     function __SettlementManager_init(
-        address network,
-        uint96 subnetworkID,
-        uint48 epochDuration,
-        uint48 epochDurationTimestamp,
-        string memory name,
-        QuorumThreshold[] memory quorumThresholds,
-        uint48 commitDuration,
-        uint8 requiredKeyTag,
-        address sigVerifier
+        SettlementManagerInitParams memory settlementManagerInitParams
     ) internal virtual onlyInitializing {
-        __NetworkManager_init(network, subnetworkID);
-        __EpochManager_init(epochDuration, epochDurationTimestamp);
-        __EIP712_init(name, "1");
+        __NetworkManager_init(settlementManagerInitParams.networkManagerInitParams);
+        __EpochManager_init(settlementManagerInitParams.epochManagerInitParams);
+        __EIP712_init(settlementManagerInitParams.name, settlementManagerInitParams.version);
 
         SettlementManagerStorage storage $ = _getSettlementManagerStorage();
 
-        if (epochDuration <= commitDuration) {
+        if (
+            settlementManagerInitParams.epochManagerInitParams.epochDuration
+                <= settlementManagerInitParams.commitDuration
+        ) {
             revert SettlementManager_EpochDurationTooShort();
         }
-        for (uint256 i; i < quorumThresholds.length; ++i) {
-            $._quorumThreshold[quorumThresholds[i].keyTag].push(0, quorumThresholds[i].threshold);
+        for (uint256 i; i < settlementManagerInitParams.quorumThresholds.length; ++i) {
+            $._quorumThreshold[settlementManagerInitParams.quorumThresholds[i].keyTag].push(
+                Time.timestamp(), settlementManagerInitParams.quorumThresholds[i].threshold
+            );
         }
-        $._commitDuration.push(0, commitDuration);
-        $._requiredKeyTag.push(0, requiredKeyTag);
-        $._sigVerifier.push(0, uint160(sigVerifier));
+        $._commitDuration.push(Time.timestamp(), settlementManagerInitParams.commitDuration);
+        $._requiredKeyTag.push(Time.timestamp(), settlementManagerInitParams.requiredKeyTag);
+        $._sigVerifier.push(Time.timestamp(), uint160(settlementManagerInitParams.sigVerifier));
     }
 
-    function getCurrentValSetTimestamp() public view returns (uint256) {
+    function getCurrentValSetTimestamp() public view virtual returns (uint256) {
         ValSetPhase currentPhase = getCurrentPhase();
         if (currentPhase == ValSetPhase.IDLE || currentPhase == ValSetPhase.FAIL) {
             return getCurrentEpochStart();
@@ -120,51 +129,55 @@ abstract contract SettlementManager is NetworkManager, EpochManager, EIP712Upgra
         return getEpochStart(getCurrentEpoch() - 1, new bytes(0));
     }
 
-    function getQuorumThresholdAt(uint8 keyTag, uint48 epoch, bytes memory hint) public view returns (uint208) {
+    function getQuorumThresholdAt(
+        uint8 keyTag,
+        uint48 epoch,
+        bytes memory hint
+    ) public view virtual returns (uint208) {
         return _getSettlementManagerStorage()._quorumThreshold[keyTag].upperLookupRecent(epoch, hint);
     }
 
     function getQuorumThreshold(
         uint8 keyTag
-    ) public view returns (uint208) {
-        return _getCurrentValue(_getSettlementManagerStorage()._quorumThreshold[keyTag], getCurrentEpoch());
+    ) public view virtual returns (uint208) {
+        return _getCurrentValue(_getSettlementManagerStorage()._quorumThreshold[keyTag], Time.timestamp());
     }
 
-    function getCommitDurationAt(uint48 epoch, bytes memory hint) public view returns (uint48) {
+    function getCommitDurationAt(uint48 epoch, bytes memory hint) public view virtual returns (uint48) {
         return uint48(_getSettlementManagerStorage()._commitDuration.upperLookupRecent(epoch, hint));
     }
 
-    function getCommitDuration() public view returns (uint48) {
-        return uint48(_getCurrentValue(_getSettlementManagerStorage()._commitDuration, getCurrentEpoch()));
+    function getCommitDuration() public view virtual returns (uint48) {
+        return uint48(_getCurrentValue(_getSettlementManagerStorage()._commitDuration, Time.timestamp()));
     }
 
-    function getRequiredKeyTagAt(uint48 epoch, bytes memory hint) public view returns (uint8) {
+    function getRequiredKeyTagAt(uint48 epoch, bytes memory hint) public view virtual returns (uint8) {
         return uint8(_getSettlementManagerStorage()._requiredKeyTag.upperLookupRecent(epoch, hint));
     }
 
-    function getRequiredKeyTag() public view returns (uint8) {
-        return uint8(_getCurrentValue(_getSettlementManagerStorage()._requiredKeyTag, getCurrentEpoch()));
+    function getRequiredKeyTag() public view virtual returns (uint8) {
+        return uint8(_getCurrentValue(_getSettlementManagerStorage()._requiredKeyTag, Time.timestamp()));
     }
 
-    function getSigVerifierAt(uint48 epoch, bytes memory hint) public view returns (address) {
+    function getSigVerifierAt(uint48 epoch, bytes memory hint) public view virtual returns (address) {
         return address(uint160(_getSettlementManagerStorage()._sigVerifier.upperLookupRecent(epoch, hint)));
     }
 
-    function getSigVerifier() public view returns (address) {
-        return address(uint160(_getCurrentValue(_getSettlementManagerStorage()._sigVerifier, getCurrentEpoch())));
+    function getSigVerifier() public view virtual returns (address) {
+        return address(uint160(_getCurrentValue(_getSettlementManagerStorage()._sigVerifier, Time.timestamp())));
     }
 
     function isValSetHeaderSubmittedAt(
         uint48 epoch
-    ) public view returns (bool) {
+    ) public view virtual returns (bool) {
         return _getSettlementManagerStorage()._valSetHeader[epoch].version > 0;
     }
 
-    function isValSetHeaderSubmitted() public view returns (bool) {
+    function isValSetHeaderSubmitted() public view virtual returns (bool) {
         return isValSetHeaderSubmittedAt(getCurrentEpoch());
     }
 
-    function getCurrentPhase() public view returns (ValSetPhase) {
+    function getCurrentPhase() public view virtual returns (ValSetPhase) {
         uint48 currentEpoch = getCurrentEpoch();
         if (currentEpoch == 0 || !isValSetHeaderSubmittedAt(currentEpoch - 1)) {
             return isValSetHeaderSubmittedAt(currentEpoch) ? ValSetPhase.IDLE : ValSetPhase.FAIL;
@@ -181,7 +194,7 @@ abstract contract SettlementManager is NetworkManager, EpochManager, EIP712Upgra
 
     function getValSetHeaderAt(
         uint48 epoch
-    ) public view returns (ValSetHeader memory) {
+    ) public view virtual returns (ValSetHeader memory) {
         SettlementManagerStorage storage $ = _getSettlementManagerStorage();
 
         ValSetHeaderStorage storage headerStorage = $._valSetHeader[epoch];
@@ -202,7 +215,7 @@ abstract contract SettlementManager is NetworkManager, EpochManager, EIP712Upgra
         });
     }
 
-    function getValSetHeader() public view returns (ValSetHeader memory header) {
+    function getValSetHeader() public view virtual returns (ValSetHeader memory header) {
         ValSetPhase currentPhase = getCurrentPhase();
         if (currentPhase == ValSetPhase.FAIL) {
             return header;
@@ -213,11 +226,11 @@ abstract contract SettlementManager is NetworkManager, EpochManager, EIP712Upgra
 
     function getVersionFromValSetHeaderAt(
         uint48 epoch
-    ) public view returns (uint8) {
+    ) public view virtual returns (uint8) {
         return _getSettlementManagerStorage()._valSetHeader[epoch].version;
     }
 
-    function getVersionFromValSetHeader() public view returns (uint8) {
+    function getVersionFromValSetHeader() public view virtual returns (uint8) {
         ValSetPhase currentPhase = getCurrentPhase();
         if (currentPhase == ValSetPhase.FAIL) {
             return 0;
@@ -226,13 +239,16 @@ abstract contract SettlementManager is NetworkManager, EpochManager, EIP712Upgra
         return getVersionFromValSetHeaderAt(currentPhase == ValSetPhase.IDLE ? currentEpoch : currentEpoch - 1);
     }
 
-    function getActiveAggregatedKeyFromValSetHeaderAt(uint48 epoch, uint8 keyTag) public view returns (bytes memory) {
+    function getActiveAggregatedKeyFromValSetHeaderAt(
+        uint48 epoch,
+        uint8 keyTag
+    ) public view virtual returns (bytes memory) {
         return _getSettlementManagerStorage()._valSetHeader[epoch].activeAggregatedKeys.keyByTag[keyTag];
     }
 
     function getActiveAggregatedKeyFromValSetHeader(
         uint8 keyTag
-    ) public view returns (bytes memory) {
+    ) public view virtual returns (bytes memory) {
         ValSetPhase currentPhase = getCurrentPhase();
         if (currentPhase == ValSetPhase.FAIL) {
             return new bytes(0);
@@ -245,11 +261,11 @@ abstract contract SettlementManager is NetworkManager, EpochManager, EIP712Upgra
 
     function getTotalActiveVotingPowerFromValSetHeaderAt(
         uint48 epoch
-    ) public view returns (uint256) {
+    ) public view virtual returns (uint256) {
         return _getSettlementManagerStorage()._valSetHeader[epoch].totalActiveVotingPower;
     }
 
-    function getTotalActiveVotingPowerFromValSetHeader() public view returns (uint256) {
+    function getTotalActiveVotingPowerFromValSetHeader() public view virtual returns (uint256) {
         ValSetPhase currentPhase = getCurrentPhase();
         if (currentPhase == ValSetPhase.FAIL) {
             return 0;
@@ -262,11 +278,11 @@ abstract contract SettlementManager is NetworkManager, EpochManager, EIP712Upgra
 
     function getValidatorsSszMRootFromValSetHeaderAt(
         uint48 epoch
-    ) public view returns (bytes32) {
+    ) public view virtual returns (bytes32) {
         return _getSettlementManagerStorage()._valSetHeader[epoch].validatorsSszMRoot;
     }
 
-    function getValidatorsSszMRootFromValSetHeader() public view returns (bytes32) {
+    function getValidatorsSszMRootFromValSetHeader() public view virtual returns (bytes32) {
         ValSetPhase currentPhase = getCurrentPhase();
         if (currentPhase == ValSetPhase.FAIL) {
             return bytes32(0);
@@ -278,11 +294,11 @@ abstract contract SettlementManager is NetworkManager, EpochManager, EIP712Upgra
 
     function getExtraDataFromValSetHeaderAt(
         uint48 epoch
-    ) public view returns (bytes memory) {
+    ) public view virtual returns (bytes memory) {
         return _getSettlementManagerStorage()._valSetHeader[epoch].extraData;
     }
 
-    function getExtraDataFromValSetHeader() public view returns (bytes memory) {
+    function getExtraDataFromValSetHeader() public view virtual returns (bytes memory) {
         ValSetPhase currentPhase = getCurrentPhase();
         if (currentPhase == ValSetPhase.FAIL) {
             return new bytes(0);
@@ -296,44 +312,44 @@ abstract contract SettlementManager is NetworkManager, EpochManager, EIP712Upgra
         uint8 keyTag,
         uint208 quorumThreshold,
         bytes calldata proof
-    ) public view returns (bool) {
+    ) public view virtual returns (bool) {
         return ISigVerifier(getSigVerifier()).verifyQuorumSig(address(this), message, keyTag, quorumThreshold, proof);
     }
 
     function setEpochDuration(
         uint48 epochDuration
-    ) public override {
+    ) public virtual override {
         if (epochDuration <= _getSettlementManagerStorage()._commitDuration.latest()) {
             revert SettlementManager_EpochDurationTooShort();
         }
         super.setEpochDuration(epochDuration);
     }
 
-    function setQuorumThreshold(uint8 keyTag, uint208 quorumThreshold) public {
-        _getSettlementManagerStorage()._quorumThreshold[keyTag].push(_getNextEpoch(), quorumThreshold);
+    function setQuorumThreshold(uint8 keyTag, uint208 quorumThreshold) public virtual checkPermission {
+        _getSettlementManagerStorage()._quorumThreshold[keyTag].push(getNextEpochStart(), quorumThreshold);
     }
 
     function setCommitDuration(
         uint48 commitDuration
-    ) public {
-        _getSettlementManagerStorage()._commitDuration.push(_getNextEpoch(), commitDuration);
+    ) public virtual checkPermission {
+        _getSettlementManagerStorage()._commitDuration.push(getNextEpochStart(), commitDuration);
     }
 
     function setRequiredKeyTag(
         uint8 requiredKeyTag
-    ) public {
-        _getSettlementManagerStorage()._requiredKeyTag.push(_getNextEpoch(), requiredKeyTag);
+    ) public virtual checkPermission {
+        _getSettlementManagerStorage()._requiredKeyTag.push(getNextEpochStart(), requiredKeyTag);
     }
 
     function setSigVerifier(
         address sigVerifier
-    ) public {
-        _getSettlementManagerStorage()._sigVerifier.push(_getNextEpoch(), uint160(sigVerifier));
+    ) public virtual checkPermission {
+        _getSettlementManagerStorage()._sigVerifier.push(getNextEpochStart(), uint160(sigVerifier));
     }
 
     function setGenesis(
         ValSetHeader memory valSetHeader
-    ) public checkPermission {
+    ) public virtual checkPermission {
         if (getCurrentPhase() != ValSetPhase.FAIL) {
             revert SettlementManager_InvalidPhase();
         }
@@ -341,7 +357,7 @@ abstract contract SettlementManager is NetworkManager, EpochManager, EIP712Upgra
         _setValSetHeader(valSetHeader);
     }
 
-    function commitValSetHeader(ValSetHeader memory header, bytes calldata proof) public {
+    function commitValSetHeader(ValSetHeader memory header, bytes calldata proof) public virtual {
         if (getCurrentPhase() != ValSetPhase.COMMIT) {
             revert SettlementManager_InvalidPhase();
         }
@@ -373,7 +389,7 @@ abstract contract SettlementManager is NetworkManager, EpochManager, EIP712Upgra
 
     function _setValSetHeader(
         ValSetHeader memory header
-    ) internal {
+    ) internal virtual {
         if (header.version != VALIDATOR_SET_VERSION) {
             revert SettlementManager_InvalidVersion();
         }

@@ -7,20 +7,22 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 
 import {NetworkManagerLogic} from "./logic/NetworkManagerLogic.sol";
 
+import {INetworkManager} from "../../interfaces/base/INetworkManager.sol";
+
 /**
  * @title NetworkManager
  * @notice Config contract for managing the network address
  * @dev Uses a single storage slot to store the network address value
  */
-abstract contract NetworkManager is Initializable {
-    uint64 public constant NetworkManager_VERSION = 1;
+abstract contract NetworkManager is Initializable, INetworkManager {
+    function NetworkManager_VERSION() public pure returns (uint64) {
+        return NetworkManagerLogic.NetworkManager_VERSION;
+    }
 
-    /**
-     * @notice Initializes the NetworkManager contract
-     * @param network The address of the network
-     */
-    function __NetworkManager_init(address network, uint96 subnetworkID) internal virtual onlyInitializing {
-        NetworkManagerLogic.initialize(network, subnetworkID);
+    function __NetworkManager_init(
+        NetworkManagerInitParams memory initParams
+    ) internal virtual onlyInitializing {
+        NetworkManagerLogic.initialize(initParams);
     }
 
     /**

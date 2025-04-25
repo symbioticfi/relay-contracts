@@ -18,14 +18,10 @@ abstract contract OzOwnable is PermissionManager, OwnableUpgradeable, IOzOwnable
      */
     uint64 public constant OzOwnable_VERSION = 1;
 
-    /**
-     * @notice Initializes the contract with an owner address
-     * @param owner_ The address to set as the owner
-     */
     function __OzOwnable_init(
-        address owner_
-    ) internal onlyInitializing {
-        __Ownable_init(owner_);
+        OzOwnableInitParams memory initParams
+    ) internal virtual onlyInitializing {
+        __Ownable_init(initParams.owner);
     }
 
     /**

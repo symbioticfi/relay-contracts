@@ -33,20 +33,19 @@ abstract contract OzAccessControl is PermissionManager, AccessControlUpgradeable
     }
 
     /**
+     * @notice Initializes the contract
+     */
+    function __OzAccessControl_init() internal virtual onlyInitializing {
+        __AccessControl_init();
+    }
+
+    /**
      * @inheritdoc IOzAccessControl
      */
     function getRole(
         bytes4 selector
     ) public view virtual returns (bytes32) {
-        OzAccessControlStorage storage $ = _getOzAccessControlStorage();
-        return $._selectorRoles[selector];
-    }
-
-    /**
-     * @notice Initializes the contract
-     */
-    function __OzAccessControl_init() internal onlyInitializing {
-        __AccessControl_init();
+        return _getOzAccessControlStorage()._selectorRoles[selector];
     }
 
     /**
@@ -55,8 +54,7 @@ abstract contract OzAccessControl is PermissionManager, AccessControlUpgradeable
      * @param role The required role
      */
     function _setSelectorRole(bytes4 selector, bytes32 role) internal virtual {
-        OzAccessControlStorage storage $ = _getOzAccessControlStorage();
-        $._selectorRoles[selector] = role;
+        _getOzAccessControlStorage()._selectorRoles[selector] = role;
         emit SelectorRoleSet(selector, role);
     }
 
@@ -65,8 +63,5 @@ abstract contract OzAccessControl is PermissionManager, AccessControlUpgradeable
      */
     function _checkPermission() internal view virtual override {
         _checkRole(getRole(msg.sig));
-        if (!hasRole(getRole(msg.sig), msg.sender)) {
-            revert AccessControlUnauthorizedAccount(msg.sender, getRole(msg.sig));
-        }
     }
 }

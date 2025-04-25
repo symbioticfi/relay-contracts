@@ -8,31 +8,19 @@ import {MasterConfigManager} from "./MasterConfigManager.sol";
 import {OzOwnable} from "../../features/permissions/OzOwnable.sol";
 
 contract Master is SettlementManager, ValSetConfigManager, MasterConfigManager, OzOwnable {
+    constructor() {
+        _disableInitializers();
+    }
+
     function initialize(
-        ValSetConfig memory valSetConfig,
-        MasterConfig memory masterConfig,
-        address network,
-        uint96 subnetworkID,
-        uint48 epochDuration,
-        uint48 epochDurationTimestamp,
-        string memory name,
-        QuorumThreshold[] memory quorumThresholds,
-        uint48 commitDuration,
-        uint8 requiredKeyTag,
-        address sigVerifier
-    ) internal initializer {
-        __ValSetConfigManager_init(valSetConfig);
-        __MasterConfigManager_init(masterConfig);
-        __SettlementManager_init(
-            network,
-            subnetworkID,
-            epochDuration,
-            epochDurationTimestamp,
-            name,
-            quorumThresholds,
-            commitDuration,
-            requiredKeyTag,
-            sigVerifier
-        );
+        SettlementManagerInitParams memory settlementManagerInitParams,
+        ValSetConfigManagerInitParams memory valSetConfigManagerInitParams,
+        MasterConfigManagerInitParams memory masterConfigManagerInitParams,
+        OzOwnableInitParams memory ozOwnableInitParams
+    ) public virtual initializer {
+        __SettlementManager_init(settlementManagerInitParams);
+        __ValSetConfigManager_init(valSetConfigManagerInitParams);
+        __MasterConfigManager_init(masterConfigManagerInitParams);
+        __OzOwnable_init(ozOwnableInitParams);
     }
 }
