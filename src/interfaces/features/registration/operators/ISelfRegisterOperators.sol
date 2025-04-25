@@ -1,17 +1,23 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-interface IBaseSelfRegisterOperators {
-    error BaseSelfRegisterOperators_InvalidSignature();
-    error BaseSelfRegisterOperators_OperatorPowerBelowThreshold();
-    error BaseSelfRegisterOperators_OperatorPowerAboveThreshold();
-    error BaseSelfRegisterOperators_OperatorVaultPowerBelowThreshold();
-    error BaseSelfRegisterOperators_OperatorVaultPowerAboveThreshold();
+interface ISelfRegisterOperators {
+    error SelfRegisterOperators_InvalidSignature();
+    error SelfRegisterOperators_OperatorPowerBelowThreshold();
+    error SelfRegisterOperators_OperatorPowerAboveThreshold();
+    error SelfRegisterOperators_OperatorVaultPowerBelowThreshold();
+    error SelfRegisterOperators_OperatorVaultPowerAboveThreshold();
 
-    /// @custom:storage-location erc7201:symbiotic.storage.BaseSelfRegisterOperators
-    struct BaseSelfRegisterOperatorsStorage {
+    /// @custom:storage-location erc7201:symbiotic.storage.SelfRegisterOperators
+    struct SelfRegisterOperatorsStorage {
         uint256 minVotingPowerThreshold;
     }
+
+    struct SelfRegisterOperatorsInitParams {
+        uint256 minVotingPowerThreshold;
+    }
+
+    function SelfRegisterOperators_VERSION() external view returns (uint64);
 
     function getMinVotingPowerThreshold() external view returns (uint256);
 
@@ -22,6 +28,15 @@ interface IBaseSelfRegisterOperators {
         address vault,
         bytes memory extraData
     ) external view returns (bool);
+
+    function registerOperator(address vault, bytes memory extraData) external;
+
+    function registerOperatorWithSignature(
+        address operator,
+        address vault,
+        bytes memory signature,
+        bytes memory extraData
+    ) external;
 
     function unregisterOperator() external;
 

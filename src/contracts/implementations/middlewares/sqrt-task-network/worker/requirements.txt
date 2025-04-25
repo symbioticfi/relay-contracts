@@ -1,3 +1,0 @@
-web3==7.6.0
-eth-account==0.13.4
-click==8.1.7

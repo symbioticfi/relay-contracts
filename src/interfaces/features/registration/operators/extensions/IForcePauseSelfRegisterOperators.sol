@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {ISelfRegisterOperators} from "../../ISelfRegisterOperators.sol";
+import {ISelfRegisterOperators} from "../ISelfRegisterOperators.sol";
 
-interface IBaseForcePauseSelfRegisterOperators {
-    error BaseForcePauseSelfRegisterOperators_OperatorNotRegistered();
-    error BaseForcePauseSelfRegisterOperators_OperatorNotForcePaused();
-    error BaseForcePauseSelfRegisterOperators_OperatorForcePaused();
-    error BaseForcePauseSelfRegisterOperators_OperatorVaultNotForcePaused();
-    error BaseForcePauseSelfRegisterOperators_OperatorVaultForcePaused();
+interface IForcePauseSelfRegisterOperators {
+    error ForcePauseSelfRegisterOperators_OperatorNotRegistered();
+    error ForcePauseSelfRegisterOperators_OperatorNotForcePaused();
+    error ForcePauseSelfRegisterOperators_OperatorForcePaused();
+    error ForcePauseSelfRegisterOperators_OperatorVaultNotForcePaused();
+    error ForcePauseSelfRegisterOperators_OperatorVaultForcePaused();
 
-    /// @custom:storage-location erc7201:symbiotic.storage.BaseForcePauseSelfRegisterOperators
-    struct BaseForcePauseSelfRegisterOperatorsStorage {
+    /// @custom:storage-location erc7201:symbiotic.storage.ForcePauseSelfRegisterOperators
+    struct ForcePauseSelfRegisterOperatorsStorage {
         mapping(address => bool) _forcePaused;
         mapping(address => mapping(address => bool)) _forcePausedVault;
     }

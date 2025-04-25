@@ -3,7 +3,7 @@ pragma solidity ^0.8.25;
 
 import {SharedVaults} from "../../features/registration/vaults/SharedVaults.sol";
 import {ForcePauseSelfRegisterOperators} from
-    "../../features/registration/operators/self-register-operators/extensions/force-pause/ForcePauseSelfRegisterOperators.sol";
+    "../../features/registration/operators/extensions/ForcePauseSelfRegisterOperators.sol";
 import {Tokens} from "../../features/registration/tokens/Tokens.sol";
 
 import {OzOwnable} from "../../features/permissions/OzOwnable.sol";

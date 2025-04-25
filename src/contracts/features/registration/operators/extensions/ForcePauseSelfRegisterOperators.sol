@@ -1,29 +1,27 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {BaseSelfRegisterOperators} from "../../BaseSelfRegisterOperators.sol";
-import {IBaseForcePauseSelfRegisterOperators} from
-    "../../../../../../../interfaces/features/registration/operators/self-register-operators/extensions/force-pause/IBaseForcePauseSelfRegisterOperators.sol";
+import {SelfRegisterOperators} from "../SelfRegisterOperators.sol";
 
-abstract contract BaseForcePauseSelfRegisterOperators is
-    BaseSelfRegisterOperators,
-    IBaseForcePauseSelfRegisterOperators
-{
-    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.BaseForcePauseSelfRegisterOperators")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant BaseForcePauseSelfRegisterOperatorsStorageLocation =
+import {IForcePauseSelfRegisterOperators} from
+    "../../../../../interfaces/features/registration/operators/extensions/IForcePauseSelfRegisterOperators.sol";
+
+abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IForcePauseSelfRegisterOperators {
+    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.ForcePauseSelfRegisterOperators")) - 1)) & ~bytes32(uint256(0xff))
+    bytes32 private constant ForcePauseSelfRegisterOperatorsStorageLocation =
         0xf3871d05fd4da42686c3c56dfd4be98b1d278da4bf1fd61b1d6e7a6e37722600;
 
-    function _getForcePauseStorage() internal pure returns (BaseForcePauseSelfRegisterOperatorsStorage storage $) {
-        bytes32 location = BaseForcePauseSelfRegisterOperatorsStorageLocation;
+    function _getForcePauseStorage() internal pure returns (ForcePauseSelfRegisterOperatorsStorage storage $) {
+        bytes32 location = ForcePauseSelfRegisterOperatorsStorageLocation;
         assembly {
             $.slot := location
         }
     }
 
-    function __BaseForcePauseSelfRegisterOperators_init() internal virtual onlyInitializing {}
+    function __ForcePauseSelfRegisterOperators_init() internal virtual onlyInitializing {}
 
     /**
-     * @inheritdoc IBaseForcePauseSelfRegisterOperators
+     * @inheritdoc IForcePauseSelfRegisterOperators
      */
     function isOperatorForcePaused(
         address operator
@@ -32,32 +30,32 @@ abstract contract BaseForcePauseSelfRegisterOperators is
     }
 
     /**
-     * @inheritdoc IBaseForcePauseSelfRegisterOperators
+     * @inheritdoc IForcePauseSelfRegisterOperators
      */
     function isOperatorVaultForcePaused(address operator, address vault) public view virtual returns (bool) {
         return _getForcePauseStorage()._forcePausedVault[operator][vault];
     }
 
     /**
-     * @inheritdoc IBaseForcePauseSelfRegisterOperators
+     * @inheritdoc IForcePauseSelfRegisterOperators
      */
     function forceUnpauseOperator(
         address operator
     ) public virtual checkPermission {
         if (!isOperatorForcePaused(operator)) {
-            revert BaseForcePauseSelfRegisterOperators_OperatorNotForcePaused();
+            revert ForcePauseSelfRegisterOperators_OperatorNotForcePaused();
         }
         _getForcePauseStorage()._forcePaused[operator] = false;
     }
 
     /**
-     * @inheritdoc IBaseForcePauseSelfRegisterOperators
+     * @inheritdoc IForcePauseSelfRegisterOperators
      */
     function forcePauseOperator(
         address operator
     ) public virtual checkPermission {
         if (isOperatorForcePaused(operator)) {
-            revert BaseForcePauseSelfRegisterOperators_OperatorForcePaused();
+            revert ForcePauseSelfRegisterOperators_OperatorForcePaused();
         }
         _getForcePauseStorage()._forcePaused[operator] = true;
         if (isOperatorActive(operator)) {
@@ -66,21 +64,21 @@ abstract contract BaseForcePauseSelfRegisterOperators is
     }
 
     /**
-     * @inheritdoc IBaseForcePauseSelfRegisterOperators
+     * @inheritdoc IForcePauseSelfRegisterOperators
      */
     function forceUnpauseOperatorVault(address operator, address vault) public virtual checkPermission {
         if (!isOperatorVaultForcePaused(operator, vault)) {
-            revert BaseForcePauseSelfRegisterOperators_OperatorVaultNotForcePaused();
+            revert ForcePauseSelfRegisterOperators_OperatorVaultNotForcePaused();
         }
         _getForcePauseStorage()._forcePausedVault[operator][vault] = false;
     }
 
     /**
-     * @inheritdoc IBaseForcePauseSelfRegisterOperators
+     * @inheritdoc IForcePauseSelfRegisterOperators
      */
     function forcePauseOperatorVault(address operator, address vault) public virtual checkPermission {
         if (isOperatorVaultForcePaused(operator, vault)) {
-            revert BaseForcePauseSelfRegisterOperators_OperatorVaultForcePaused();
+            revert ForcePauseSelfRegisterOperators_OperatorVaultForcePaused();
         }
         _getForcePauseStorage()._forcePausedVault[operator][vault] = true;
         if (isOperatorVaultActive(operator, vault)) {
@@ -90,7 +88,7 @@ abstract contract BaseForcePauseSelfRegisterOperators is
 
     function _registerOperatorImpl(address operator, address vault, bytes memory extraData) internal virtual override {
         if (isOperatorForcePaused(operator)) {
-            revert BaseForcePauseSelfRegisterOperators_OperatorForcePaused();
+            revert ForcePauseSelfRegisterOperators_OperatorForcePaused();
         }
         super._registerOperatorImpl(operator, vault, extraData);
     }
@@ -101,7 +99,7 @@ abstract contract BaseForcePauseSelfRegisterOperators is
         bytes memory extraData
     ) internal virtual override {
         if (isOperatorVaultForcePaused(operator, vault)) {
-            revert BaseForcePauseSelfRegisterOperators_OperatorVaultForcePaused();
+            revert ForcePauseSelfRegisterOperators_OperatorVaultForcePaused();
         }
         super._registerOperatorVaultImpl(operator, vault, extraData);
     }
