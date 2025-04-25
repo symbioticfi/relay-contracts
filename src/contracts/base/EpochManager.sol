@@ -4,28 +4,17 @@ pragma solidity ^0.8.25;
 import {PermissionManager} from "./PermissionManager.sol";
 import {Checkpoints} from "../libraries/structs/Checkpoints.sol";
 
+import {IEpochManager} from "../../interfaces/base/IEpochManager.sol";
+
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
-abstract contract EpochManager is PermissionManager {
+abstract contract EpochManager is PermissionManager, IEpochManager {
     using Checkpoints for Checkpoints.Trace208;
 
+    /**
+     * @inheritdoc IEpochManager
+     */
     uint64 public constant EpochManager_VERSION = 1;
-
-    error EpochManager_InvalidEpochDuration();
-    error EpochManager_InvalidEpochDurationTimestamp();
-    error EpochManager_InvalidEpochDurationIndex();
-    error EpochManager_NoCheckpoint();
-
-    struct EpochManagerInitParams {
-        uint48 epochDuration;
-        uint48 epochDurationTimestamp;
-    }
-
-    /// @custom:storage-location erc7201:symbiotic.storage.EpochManager
-    struct EpochManagerStorage {
-        Checkpoints.Trace208 _epochDurationDataByTimestamp; // 14 empty bytes + 6 bytes for epochDurationIndex + 6 bytes for epochDuration
-        Checkpoints.Trace208 _epochDurationDataByIndex; // 14 empty bytes + 6 bytes for epochDurationStart + 6 bytes for epochDuration
-    }
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.EpochManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant EpochManagerStorageLocation =
@@ -45,37 +34,54 @@ abstract contract EpochManager is PermissionManager {
     }
 
     /**
-     * @notice Returns the current capture timestamp
-     * @return timestamp The current capture timestamp
+     * @inheritdoc IEpochManager
      */
     function getCaptureTimestamp() public view virtual returns (uint48) {
         return getCurrentEpochStart();
     }
 
+    /**
+     * @inheritdoc IEpochManager
+     */
     function getCurrentEpoch() public view virtual returns (uint48) {
         (uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex) =
             _getCurrentEpochDurationData();
         return epochDurationIndex + (Time.timestamp() - epochDurationTimestamp) / epochDuration;
     }
 
+    /**
+     * @inheritdoc IEpochManager
+     */
     function getCurrentEpochDuration() public view virtual returns (uint48 epochDuration) {
         (epochDuration,,) = _getCurrentEpochDurationData();
     }
 
+    /**
+     * @inheritdoc IEpochManager
+     */
     function getCurrentEpochStart() public view virtual returns (uint48) {
         (uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex) =
             _getCurrentEpochDurationData();
         return epochDurationTimestamp + (getCurrentEpoch() - epochDurationIndex) * epochDuration;
     }
 
+    /**
+     * @inheritdoc IEpochManager
+     */
     function getNextEpoch() public view virtual returns (uint48) {
         return getCurrentEpoch() + 1;
     }
 
+    /**
+     * @inheritdoc IEpochManager
+     */
     function getNextEpochStart() public view virtual returns (uint48) {
         return getCurrentEpochStart() + getCurrentEpochDuration();
     }
 
+    /**
+     * @inheritdoc IEpochManager
+     */
     function getEpochIndex(uint48 timestamp, bytes memory hint) public view virtual returns (uint48) {
         (uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex) =
             _getEpochDurationDataByTimestamp(timestamp, hint);
@@ -83,16 +89,25 @@ abstract contract EpochManager is PermissionManager {
         return epochDurationIndex + (timestamp - epochDurationTimestamp) / epochDuration;
     }
 
+    /**
+     * @inheritdoc IEpochManager
+     */
     function getEpochDuration(uint48 epoch, bytes memory hint) public view virtual returns (uint48 epochDuration) {
         (epochDuration,,) = _getEpochDurationDataByIndex(epoch, hint);
     }
 
+    /**
+     * @inheritdoc IEpochManager
+     */
     function getEpochStart(uint48 epoch, bytes memory hint) public view virtual returns (uint48) {
         (uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex) =
             _getEpochDurationDataByIndex(epoch, hint);
         return epochDurationTimestamp + (epoch - epochDurationIndex) * epochDuration;
     }
 
+    /**
+     * @inheritdoc IEpochManager
+     */
     function setEpochDuration(
         uint48 epochDuration
     ) public virtual checkPermission {

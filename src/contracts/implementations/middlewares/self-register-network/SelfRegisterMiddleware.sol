@@ -10,7 +10,17 @@ import {EqualStakeToVP} from "../../../features/stakeToVotingPower/EqualStakeToV
 
 import {VaultManager} from "../../../base/VaultManager.sol";
 
-contract SelfRegisterMiddleware is SharedVaults, SelfRegisterOperators, Tokens, OzOwnable, EqualStakeToVP {
+import {ISelfRegisterMiddleware} from
+    "../../../../interfaces/implementations/middlewares/self-register-network/ISelfRegisterMiddleware.sol";
+
+contract SelfRegisterMiddleware is
+    SharedVaults,
+    SelfRegisterOperators,
+    Tokens,
+    OzOwnable,
+    EqualStakeToVP,
+    ISelfRegisterMiddleware
+{
     constructor(
         address operatorRegistry,
         address operatorNetworkOptInService,
@@ -19,6 +29,9 @@ contract SelfRegisterMiddleware is SharedVaults, SelfRegisterOperators, Tokens, 
         _disableInitializers();
     }
 
+    /**
+     * @inheritdoc ISelfRegisterMiddleware
+     */
     function initialize(
         NetworkManagerInitParams memory networkManagerInitParams,
         VaultManagerInitParams memory vaultManagerInitParams,
@@ -28,7 +41,10 @@ contract SelfRegisterMiddleware is SharedVaults, SelfRegisterOperators, Tokens, 
         __NetworkManager_init(networkManagerInitParams);
         __OperatorManager_init();
         __VaultManager_init(vaultManagerInitParams);
+        __SharedVaults_init();
         __SelfRegisterOperators_init(selfRegisterOperatorsInitParams);
+        __Tokens_init();
         __OzOwnable_init(ozOwnableInitParams);
+        __EqualStakeToVP_init();
     }
 }

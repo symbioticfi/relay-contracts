@@ -3,12 +3,20 @@ pragma solidity ^0.8.25;
 
 import {StakeToVotingPowerManager} from "../../base/StakeToVotingPowerManager.sol";
 
-/**
- * @title EqualStakeToVP
- * @notice Implementation of a 1:1 stake to power conversion
- * @dev Simply returns the stake amount as the power amount without any modifications
- */
-abstract contract EqualStakeToVP is StakeToVotingPowerManager {
+import {IStakeToVotingPowerManager} from "../../../interfaces/base/IStakeToVotingPowerManager.sol";
+import {IEqualStakeToVP} from "../../../interfaces/features/stakeToVotingPower/IEqualStakeToVP.sol";
+
+abstract contract EqualStakeToVP is StakeToVotingPowerManager, IEqualStakeToVP {
+    /**
+     * @inheritdoc IEqualStakeToVP
+     */
+    uint64 public constant EqualStakeToVP_VERSION = 1;
+
+    function __EqualStakeToVP_init() internal virtual onlyInitializing {}
+
+    /**
+     * @inheritdoc IStakeToVotingPowerManager
+     */
     function stakeToVotingPowerAt(
         address, /* vault */
         uint256 stake,
@@ -18,6 +26,9 @@ abstract contract EqualStakeToVP is StakeToVotingPowerManager {
         return stake;
     }
 
+    /**
+     * @inheritdoc IStakeToVotingPowerManager
+     */
     function stakeToVotingPower(
         address, /* vault */
         uint256 stake,

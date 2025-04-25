@@ -10,17 +10,6 @@ library NetworkManagerLogic {
 
     uint64 internal constant NetworkManager_VERSION = 1;
 
-    struct NetworkManagerInitParams {
-        address network;
-        uint96 subnetworkID;
-    }
-
-    /// @custom:storage-location erc7201:symbiotic.storage.NetworkManager
-    struct NetworkManagerStorage {
-        address _network;
-        uint96 _subnetworkID;
-    }
-
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.NetworkManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant NetworkManagerLocation = 0x933223a21808ea6583da836861e2265bfa3c7e3b9070740cd75dc9ff6fb41700;
 
@@ -29,7 +18,7 @@ library NetworkManagerLogic {
      * @dev Uses assembly to load storage location from a constant slot
      * @return $ Config pointer to the VaultManagerConfig struct
      */
-    function _getNetworkManagerStorage() internal pure returns (NetworkManagerStorage storage $) {
+    function _getNetworkManagerStorage() internal pure returns (INetworkManager.NetworkManagerStorage storage $) {
         assembly {
             $.slot := NetworkManagerLocation
         }
@@ -38,7 +27,7 @@ library NetworkManagerLogic {
     function initialize(
         INetworkManager.NetworkManagerInitParams memory initParams
     ) public {
-        NetworkManagerStorage storage $ = _getNetworkManagerStorage();
+        INetworkManager.NetworkManagerStorage storage $ = _getNetworkManagerStorage();
         $._network = initParams.network;
         $._subnetworkID = initParams.subnetworkID;
     }

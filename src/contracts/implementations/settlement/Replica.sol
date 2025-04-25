@@ -5,11 +5,16 @@ import {SettlementManager} from "./SettlementManager.sol";
 
 import {OzOwnable} from "../../features/permissions/OzOwnable.sol";
 
-contract Replica is SettlementManager, OzOwnable {
+import {IReplica} from "../../../interfaces/implementations/settlement/IReplica.sol";
+
+contract Replica is SettlementManager, OzOwnable, IReplica {
     constructor() {
         _disableInitializers();
     }
 
+    /**
+     * @inheritdoc IReplica
+     */
     function initialize(
         SettlementManagerInitParams memory settlementManagerInitParams,
         OzOwnableInitParams memory ozOwnableInitParams

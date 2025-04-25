@@ -6,40 +6,20 @@ import {PermissionManager} from "../../base/PermissionManager.sol";
 import {PersistentSet} from "../../libraries/structs/PersistentSet.sol";
 import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
 
+import {IValSetConfigManager} from "../../../interfaces/implementations/settlement/IValSetConfigManager.sol";
+
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
-abstract contract ValSetConfigManager is PermissionManager {
+abstract contract ValSetConfigManager is PermissionManager, IValSetConfigManager {
     using EnumerableSet for EnumerableSet.Bytes32Set;
     using Checkpoints for Checkpoints.Trace256;
     using PersistentSet for PersistentSet.Bytes32Set;
 
+    /**
+     * @inheritdoc IValSetConfigManager
+     */
     uint64 public constant ValSetConfigManager_VERSION = 1;
-
-    struct ValSetConfig {
-        uint256 maxVotingPower;
-        uint256 minInclusionVotingPower;
-        uint256 maxValidatorsCount;
-    }
-
-    struct ValSetConfigManagerInitParams {
-        uint256 maxVotingPower;
-        uint256 minInclusionVotingPower;
-        uint256 maxValidatorsCount;
-    }
-
-    struct ValSetConfigHints {
-        bytes maxVotingPowerHint;
-        bytes minInclusionVotingPowerHint;
-        bytes maxValidatorsCountHint;
-    }
-
-    /// @custom:storage-location erc7201:symbiotic.storage.ValSetConfigManager
-    struct ValSetConfigManagerStorage {
-        Checkpoints.Trace256 _maxVotingPower;
-        Checkpoints.Trace256 _minInclusionVotingPower;
-        Checkpoints.Trace256 _maxValidatorsCount;
-    }
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.ValSetConfigManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant ValSetConfigManagerStorageLocation =
@@ -62,30 +42,51 @@ abstract contract ValSetConfigManager is PermissionManager {
         $._maxValidatorsCount.push(Time.timestamp(), valSetConfigManagerInitParams.maxValidatorsCount);
     }
 
+    /**
+     * @inheritdoc IValSetConfigManager
+     */
     function getMaxVotingPowerAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint256) {
         return _getValSetConfigManagerStorage()._maxVotingPower.upperLookupRecent(timestamp, hint);
     }
 
+    /**
+     * @inheritdoc IValSetConfigManager
+     */
     function getMaxVotingPower() public view virtual returns (uint256) {
         return _getValSetConfigManagerStorage()._maxVotingPower.latest();
     }
 
+    /**
+     * @inheritdoc IValSetConfigManager
+     */
     function getMinInclusionVotingPowerAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint256) {
         return _getValSetConfigManagerStorage()._minInclusionVotingPower.upperLookupRecent(timestamp, hint);
     }
 
+    /**
+     * @inheritdoc IValSetConfigManager
+     */
     function getMinInclusionVotingPower() public view virtual returns (uint256) {
         return _getValSetConfigManagerStorage()._minInclusionVotingPower.latest();
     }
 
+    /**
+     * @inheritdoc IValSetConfigManager
+     */
     function getMaxValidatorsCountAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint256) {
         return _getValSetConfigManagerStorage()._maxValidatorsCount.upperLookupRecent(timestamp, hint);
     }
 
+    /**
+     * @inheritdoc IValSetConfigManager
+     */
     function getMaxValidatorsCount() public view virtual returns (uint256) {
         return _getValSetConfigManagerStorage()._maxValidatorsCount.latest();
     }
 
+    /**
+     * @inheritdoc IValSetConfigManager
+     */
     function getValSetConfigAt(
         uint48 timestamp,
         bytes memory hints
@@ -102,6 +103,9 @@ abstract contract ValSetConfigManager is PermissionManager {
         });
     }
 
+    /**
+     * @inheritdoc IValSetConfigManager
+     */
     function getValSetConfig() public view virtual returns (ValSetConfig memory) {
         return ValSetConfig({
             maxVotingPower: getMaxVotingPower(),
@@ -110,18 +114,27 @@ abstract contract ValSetConfigManager is PermissionManager {
         });
     }
 
+    /**
+     * @inheritdoc IValSetConfigManager
+     */
     function setMaxVotingPower(
         uint256 maxVotingPower
     ) public virtual checkPermission {
         _getValSetConfigManagerStorage()._maxVotingPower.push(Time.timestamp(), maxVotingPower);
     }
 
+    /**
+     * @inheritdoc IValSetConfigManager
+     */
     function setMinInclusionVotingPower(
         uint256 minInclusionVotingPower
     ) public virtual checkPermission {
         _getValSetConfigManagerStorage()._minInclusionVotingPower.push(Time.timestamp(), minInclusionVotingPower);
     }
 
+    /**
+     * @inheritdoc IValSetConfigManager
+     */
     function setMaxValidatorsCount(
         uint256 maxValidatorsCount
     ) public virtual checkPermission {

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
@@ -17,9 +16,9 @@ import {SigBlsBn254} from "../libraries/sigs/SigBlsBn254.sol";
 import {SigEcdsaSecp256k1} from "../libraries/sigs/SigEcdsaSecp256k1.sol";
 import {SigEddsaCurve25519} from "../libraries/sigs/SigEddsaCurve25519.sol";
 
-import {IBaseKeyManager} from "../../interfaces/base/IBaseKeyManager.sol";
+import {IKeyManager} from "../../interfaces/base/IKeyManager.sol";
 
-abstract contract KeyManager is EIP712Upgradeable, IBaseKeyManager {
+abstract contract KeyManager is EIP712Upgradeable, IKeyManager {
     using KeyTag for uint8;
     using Checkpoints for Checkpoints.Trace208;
     using Checkpoints for Checkpoints.Trace256;
@@ -31,67 +30,16 @@ abstract contract KeyManager is EIP712Upgradeable, IBaseKeyManager {
     using InputNormalizer for bytes[][];
     using PersistentSet for PersistentSet.AddressSet;
 
+    /**
+     * @inheritdoc IKeyManager
+     */
     uint64 public constant KeyManager_VERSION = 1;
-
-    error KeyManager_InvalidKeyType();
-    error KeyManager_Duplicate();
-    error KeyManager_MissingRequiredKeyTag();
-    error KeyManager_InvalidBLSKeySignature();
-    error KeyManager_InvalidECDSAKeySignature();
-    error KeyManager_InvalidEdDSAKeySignature();
-    error KeyManager_AlreadyUsed();
-    error KeyManager_OnlyPredeterminedKeyTagsAllowed();
-
-    enum KeyType {
-        BLS_BN254,
-        ECDSA_SECP256K1,
-        EDDSA_CURVE25519
-    }
-
-    struct KeyWithSignature {
-        uint8 tag;
-        bytes key;
-        bytes signature;
-        bytes extraData;
-    }
-
-    struct OperatorRequiredKeysHints {
-        bytes requiredKeyTagsHint;
-        bytes[] requiredKeysHints;
-    }
-
-    struct RequiredKeysHints {
-        bytes[] operatorsHints;
-        bytes[] operatorRequiredKeysHints;
-    }
-
-    struct KeyManagerInitParams {
-        string name;
-        string version;
-        uint8[] requiredKeyTags;
-    }
-
-    /// @custom:storage-location erc7201:symbiotic.storage.KeyManager
-    struct KeyManagerStorage {
-        Checkpoints.Trace208 _requiredKeyTags;
-        mapping(address => mapping(uint8 => Checkpoints.Trace256)) _keys32;
-        mapping(address => mapping(uint8 => Checkpoints.Trace512)) _keys64;
-        mapping(bytes32 => address) _operatorByKeyHash;
-        mapping(KeyType => mapping(bytes32 => address)) _operatorByTypeAndKeyHash;
-        mapping(uint8 => mapping(bytes32 => address)) _operatorByTagAndKeyHash;
-        PersistentSet.AddressSet _operators;
-    }
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.KeyManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant KeyManagerLocation = 0x933223a21808ea6583da836861e2265bfa3c7e3b9070740cd75dc9ff6fb41700;
 
     bytes32 internal constant KEY_OWNERSHIP_TYPEHASH = keccak256("KeyOwnership(address operator,bytes key)");
 
-    /**
-     * @notice Internal helper to access the VaultManager storage struct
-     * @dev Uses assembly to load storage location from a constant slot
-     * @return $ Config pointer to the VaultManagerConfig struct
-     */
     function _getKeyManagerStorage() internal pure returns (KeyManagerStorage storage $) {
         assembly {
             $.slot := KeyManagerLocation
@@ -105,6 +53,9 @@ abstract contract KeyManager is EIP712Upgradeable, IBaseKeyManager {
         $._requiredKeyTags.push(Time.timestamp(), _serializeRequiredKeyTags(initParams.requiredKeyTags));
     }
 
+    /**
+     * @inheritdoc IKeyManager
+     */
     function getRequiredKeyTagsAt(
         uint48 timestamp,
         bytes memory hint
@@ -112,10 +63,16 @@ abstract contract KeyManager is EIP712Upgradeable, IBaseKeyManager {
         return _deserializeRequiredKeyTags(_getKeyManagerStorage()._requiredKeyTags.upperLookupRecent(timestamp, hint));
     }
 
+    /**
+     * @inheritdoc IKeyManager
+     */
     function getRequiredKeyTags() public view virtual returns (uint8[] memory requiredKeyTags) {
         return _deserializeRequiredKeyTags(_getKeyManagerStorage()._requiredKeyTags.latest());
     }
 
+    /**
+     * @inheritdoc IKeyManager
+     */
     function getKeyAt(
         address operator,
         uint8 tag,
@@ -135,6 +92,9 @@ abstract contract KeyManager is EIP712Upgradeable, IBaseKeyManager {
         revert KeyManager_InvalidKeyType();
     }
 
+    /**
+     * @inheritdoc IKeyManager
+     */
     function getKey(address operator, uint8 tag) public view virtual returns (bytes memory) {
         KeyType keyType = KeyType(tag.getType());
         if (keyType == KeyType.BLS_BN254) {
@@ -149,12 +109,18 @@ abstract contract KeyManager is EIP712Upgradeable, IBaseKeyManager {
         revert KeyManager_InvalidKeyType();
     }
 
+    /**
+     * @inheritdoc IKeyManager
+     */
     function getOperator(
         bytes memory key
     ) public view virtual returns (address) {
         return _getKeyManagerStorage()._operatorByKeyHash[keccak256(key)];
     }
 
+    /**
+     * @inheritdoc IKeyManager
+     */
     function getRequiredKeysAt(
         address operator,
         uint48 timestamp,
@@ -177,6 +143,9 @@ abstract contract KeyManager is EIP712Upgradeable, IBaseKeyManager {
         }
     }
 
+    /**
+     * @inheritdoc IKeyManager
+     */
     function getRequiredKeys(
         address operator
     ) public view virtual returns (Key[] memory requiredKeys) {
@@ -187,6 +156,9 @@ abstract contract KeyManager is EIP712Upgradeable, IBaseKeyManager {
         }
     }
 
+    /**
+     * @inheritdoc IKeyManager
+     */
     function getRequiredKeysAt(
         uint48 timestamp,
         bytes memory hints
@@ -207,6 +179,9 @@ abstract contract KeyManager is EIP712Upgradeable, IBaseKeyManager {
         }
     }
 
+    /**
+     * @inheritdoc IKeyManager
+     */
     function getRequiredKeys() public view virtual returns (OperatorWithKeys[] memory requiredKeys) {
         address[] memory operators = _getKeysOperators();
         requiredKeys = new OperatorWithKeys[](operators.length);

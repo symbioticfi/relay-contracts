@@ -12,6 +12,8 @@ import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
 import {PersistentSet} from "../../libraries/structs/PersistentSet.sol";
 import {NetworkManagerLogic} from "./NetworkManagerLogic.sol";
 
+import {IOperatorManager} from "../../../interfaces/base/IOperatorManager.sol";
+
 library OperatorManagerLogic {
     using Checkpoints for Checkpoints.Trace208;
     using Arrays for address[];
@@ -19,16 +21,6 @@ library OperatorManagerLogic {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     uint64 internal constant OperatorManager_VERSION = 1;
-
-    error OperatorManager_NotOperator();
-    error OperatorManager_OperatorNotOptedIn();
-    error OperatorManager_OperatorAlreadyRegistered();
-    error OperatorManager_OperatorNotRegistered();
-
-    /// @custom:storage-location erc7201:symbiotic.storage.OperatorManager
-    struct OperatorManagerStorage {
-        PersistentSet.AddressSet _operators;
-    }
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OperatorManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant OperatorManagerStorageLocation =
@@ -38,7 +30,7 @@ library OperatorManagerLogic {
      * @notice Gets the storage pointer for OperatorManager state
      * @return $ Storage pointer to OperatorManagerStorage struct
      */
-    function _getOperatorManagerStorage() internal pure returns (OperatorManagerStorage storage $) {
+    function _getOperatorManagerStorage() internal pure returns (IOperatorManager.OperatorManagerStorage storage $) {
         assembly {
             $.slot := OperatorManagerStorageLocation
         }
@@ -106,15 +98,15 @@ library OperatorManagerLogic {
         address operator
     ) public {
         if (!IRegistry(OPERATOR_REGISTRY).isEntity(operator)) {
-            revert OperatorManager_NotOperator();
+            revert IOperatorManager.OperatorManager_NotOperator();
         }
 
         if (!IOptInService(OPERATOR_NETWORK_OPT_IN_SERVICE).isOptedIn(operator, NetworkManagerLogic.NETWORK())) {
-            revert OperatorManager_OperatorNotOptedIn();
+            revert IOperatorManager.OperatorManager_OperatorNotOptedIn();
         }
 
         if (!_getOperatorManagerStorage()._operators.add(Time.timestamp(), operator)) {
-            revert OperatorManager_OperatorAlreadyRegistered();
+            revert IOperatorManager.OperatorManager_OperatorAlreadyRegistered();
         }
     }
 
@@ -126,7 +118,7 @@ library OperatorManagerLogic {
         address operator
     ) public {
         if (!_getOperatorManagerStorage()._operators.remove(Time.timestamp(), operator)) {
-            revert OperatorManager_OperatorNotRegistered();
+            revert IOperatorManager.OperatorManager_OperatorNotRegistered();
         }
     }
 }

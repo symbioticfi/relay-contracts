@@ -7,11 +7,16 @@ import {MasterConfigManager} from "./MasterConfigManager.sol";
 
 import {OzOwnable} from "../../features/permissions/OzOwnable.sol";
 
-contract Master is SettlementManager, ValSetConfigManager, MasterConfigManager, OzOwnable {
+import {IMaster} from "../../../interfaces/implementations/settlement/IMaster.sol";
+
+contract Master is SettlementManager, ValSetConfigManager, MasterConfigManager, OzOwnable, IMaster {
     constructor() {
         _disableInitializers();
     }
 
+    /**
+     * @inheritdoc IMaster
+     */
     function initialize(
         SettlementManagerInitParams memory settlementManagerInitParams,
         ValSetConfigManagerInitParams memory valSetConfigManagerInitParams,

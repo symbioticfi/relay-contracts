@@ -25,11 +25,6 @@ import {VaultManagerLogic} from "./logic/VaultManagerLogic.sol";
 
 import {IVaultManager} from "../../interfaces/base/IVaultManager.sol";
 
-/**
- * @title VaultManager
- * @notice Abstract contract for managing vaults and their relationships with operators
- * @dev Extends BaseManager and provides functionality for registering, pausing, and managing vaults
- */
 abstract contract VaultManager is OperatorManager, StakeToVotingPowerManager, IVaultManager {
     using EnumerableMap for EnumerableMap.AddressToUintMap;
     using EnumerableMap for EnumerableMap.AddressToAddressMap;
@@ -38,10 +33,16 @@ abstract contract VaultManager is OperatorManager, StakeToVotingPowerManager, IV
     using Subnetwork for bytes32;
     using Checkpoints for Checkpoints.Trace208;
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function VaultManager_VERSION() public pure returns (uint64) {
         return VaultManagerLogic.VaultManager_VERSION;
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     address public immutable VAULT_FACTORY;
 
     constructor(
@@ -52,74 +53,107 @@ abstract contract VaultManager is OperatorManager, StakeToVotingPowerManager, IV
         VAULT_FACTORY = vaultFactory;
     }
 
-    /**
-     * @notice Initializes the VaultManager with required parameters
-     */
     function __VaultManager_init(
         VaultManagerInitParams memory initParams
     ) internal virtual onlyInitializing {
         VaultManagerLogic.initialize(initParams);
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function getSlashingWindow() public view virtual returns (uint48) {
         return VaultManagerLogic.getSlashingWindow();
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function isTokenRegistered(
         address token
     ) public view virtual returns (bool) {
         return VaultManagerLogic.isTokenRegistered(token);
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function isTokenActive(
         address token
     ) public view virtual returns (bool) {
         return VaultManagerLogic.isTokenActive(token);
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function isTokenActiveAt(address token, uint48 timestamp, bytes memory hint) public view virtual returns (bool) {
         return VaultManagerLogic.isTokenActiveAt(token, timestamp, hint);
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function getAllTokensLength() public view virtual returns (uint256) {
         return VaultManagerLogic.getAllTokensLength();
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function getAllTokens() public view virtual returns (address[] memory) {
         return VaultManagerLogic.getAllTokens();
     }
 
-    function getActiveTokensAt(
-        uint48 timestamp,
-        bytes[] memory hints
-    ) public view virtual returns (address[] memory activeTokens) {
+    /**
+     * @inheritdoc IVaultManager
+     */
+    function getActiveTokensAt(uint48 timestamp, bytes[] memory hints) public view virtual returns (address[] memory) {
         return VaultManagerLogic.getActiveTokensAt(timestamp, hints);
     }
 
-    function getActiveTokens() public view virtual returns (address[] memory activeTokens) {
+    /**
+     * @inheritdoc IVaultManager
+     */
+    function getActiveTokens() public view virtual returns (address[] memory) {
         return VaultManagerLogic.getActiveTokens();
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function getActiveTokensLength() public view virtual returns (uint256) {
         return VaultManagerLogic.getActiveTokensLength();
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function getActiveTokensLengthAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint256) {
         return VaultManagerLogic.getActiveTokensLengthAt(timestamp, hint);
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function isSharedVaultRegistered(
         address vault
     ) public view virtual returns (bool) {
         return VaultManagerLogic.isSharedVaultRegistered(vault);
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function isSharedVaultActive(
         address vault
     ) public view virtual returns (bool) {
         return VaultManagerLogic.isSharedVaultActive(vault);
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function isSharedVaultActiveAt(
         address vault,
         uint48 timestamp,
@@ -129,44 +163,67 @@ abstract contract VaultManager is OperatorManager, StakeToVotingPowerManager, IV
     }
 
     /**
-     * @notice Gets the total number of shared vaults
-     * @return uint256 The count of shared vaults
+     * @inheritdoc IVaultManager
      */
     function getAllSharedVaultsLength() public view virtual returns (uint256) {
         return VaultManagerLogic.getAllSharedVaultsLength();
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function getAllSharedVaults() public view virtual returns (address[] memory) {
         return VaultManagerLogic.getAllSharedVaults();
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function getActiveSharedVaultsAt(
         uint48 timestamp,
         bytes[] memory hints
-    ) public view virtual returns (address[] memory activeSharedVaults) {
+    ) public view virtual returns (address[] memory) {
         return VaultManagerLogic.getActiveSharedVaultsAt(timestamp, hints);
     }
 
-    function getActiveSharedVaults() public view virtual returns (address[] memory activeSharedVaults) {
+    /**
+     * @inheritdoc IVaultManager
+     */
+    function getActiveSharedVaults() public view virtual returns (address[] memory) {
         return VaultManagerLogic.getActiveSharedVaults();
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function getActiveSharedVaultsLength() public view virtual returns (uint256) {
         return VaultManagerLogic.getActiveSharedVaultsLength();
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function getActiveSharedVaultsLengthAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint256) {
         return VaultManagerLogic.getActiveSharedVaultsLengthAt(timestamp, hint);
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function isOperatorVaultRegistered(address operator, address vault) public view virtual returns (bool) {
         return VaultManagerLogic.isOperatorVaultRegistered(operator, vault);
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function isOperatorVaultActive(address operator, address vault) public view virtual returns (bool) {
         return VaultManagerLogic.isOperatorVaultActive(operator, vault);
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function isOperatorVaultActiveAt(
         address operator,
         address vault,
@@ -176,38 +233,56 @@ abstract contract VaultManager is OperatorManager, StakeToVotingPowerManager, IV
         return VaultManagerLogic.isOperatorVaultActiveAt(operator, vault, timestamp, hint);
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function getAllOperatorVaultsLength(
         address operator
     ) public view virtual returns (uint256) {
         return VaultManagerLogic.getAllOperatorVaultsLength(operator);
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function getAllOperatorVaults(
         address operator
     ) public view virtual returns (address[] memory) {
         return VaultManagerLogic.getAllOperatorVaults(operator);
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function getActiveOperatorVaultsAt(
         address operator,
         uint48 timestamp,
         bytes[] memory hints
-    ) public view virtual returns (address[] memory activeOperatorVaults) {
+    ) public view virtual returns (address[] memory) {
         return VaultManagerLogic.getActiveOperatorVaultsAt(operator, timestamp, hints);
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function getActiveOperatorVaults(
         address operator
-    ) public view virtual returns (address[] memory activeOperatorVaults) {
+    ) public view virtual returns (address[] memory) {
         return VaultManagerLogic.getActiveOperatorVaults(operator);
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function getActiveOperatorVaultsLength(
         address operator
     ) public view virtual returns (uint256) {
         return VaultManagerLogic.getActiveOperatorVaultsLength(operator);
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function getActiveOperatorVaultsLengthAt(
         address operator,
         uint48 timestamp,
@@ -217,12 +292,7 @@ abstract contract VaultManager is OperatorManager, StakeToVotingPowerManager, IV
     }
 
     /**
-     * @notice Gets the votingPower amount for an operator in a vault at a specific timestamp
-     * @param timestamp The timestamp to check
-     * @param operator The operator address
-     * @param vault The vault address
-     * @return uint256 The votingPower amount at the timestamp
-     * @dev Doesn't consider active statuses.
+     * @inheritdoc IVaultManager
      */
     function getOperatorVotingPowerAt(
         address vault,
@@ -236,6 +306,9 @@ abstract contract VaultManager is OperatorManager, StakeToVotingPowerManager, IV
         );
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function getOperatorVotingPower(
         address vault,
         address operator,
@@ -245,80 +318,89 @@ abstract contract VaultManager is OperatorManager, StakeToVotingPowerManager, IV
     }
 
     /**
-     * @notice Gets the total votingPower amount for an operator across all vaults
-     * @param operator The operator address
-     * @return votingPower The total votingPower amount
+     * @inheritdoc IVaultManager
      */
     function getOperatorVotingPowerAt(
         address operator,
         bytes memory extraData,
         uint48 timestamp,
         bytes memory hints
-    ) public view virtual returns (uint256 votingPower) {
+    ) public view virtual returns (uint256) {
         return
             VaultManagerLogic.getOperatorVotingPowerAt(this.stakeToVotingPowerAt, operator, extraData, timestamp, hints);
     }
 
-    function getOperatorVotingPower(
-        address operator,
-        bytes memory extraData
-    ) public view virtual returns (uint256 votingPower) {
+    /**
+     * @inheritdoc IVaultManager
+     */
+    function getOperatorVotingPower(address operator, bytes memory extraData) public view virtual returns (uint256) {
         return VaultManagerLogic.getOperatorVotingPower(this.stakeToVotingPower, operator, extraData);
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function getOperatorVotingPowersAt(
         address operator,
         bytes memory extraData,
         uint48 timestamp,
         bytes memory hints
-    ) public view virtual returns (VaultVotingPower[] memory vaultVotingPowers) {
+    ) public view virtual returns (VaultVotingPower[] memory) {
         return VaultManagerLogic.getOperatorVotingPowersAt(
             this.stakeToVotingPowerAt, operator, extraData, timestamp, hints
         );
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function getOperatorVotingPowers(
         address operator,
         bytes memory extraData
-    ) public view virtual returns (VaultVotingPower[] memory vaultVotingPowers) {
+    ) public view virtual returns (VaultVotingPower[] memory) {
         return VaultManagerLogic.getOperatorVotingPowers(this.stakeToVotingPower, operator, extraData);
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function getTotalVotingPowerAt(
         bytes[] memory extraData,
         uint48 timestamp,
         bytes memory hints
-    ) public view virtual returns (uint256 votingPower) {
+    ) public view virtual returns (uint256) {
         return VaultManagerLogic.getTotalVotingPowerAt(this.stakeToVotingPowerAt, extraData, timestamp, hints);
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function getTotalVotingPower(
         bytes[] memory extraData
-    ) public view virtual returns (uint256 votingPower) {
+    ) public view virtual returns (uint256) {
         return VaultManagerLogic.getTotalVotingPower(this.stakeToVotingPower, extraData);
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function getVotingPowersAt(
         bytes[] memory extraData,
         uint48 timestamp,
         bytes memory hints
-    ) public view virtual returns (OperatorVotingPower[] memory operatorVotingPowers) {
+    ) public view virtual returns (OperatorVotingPower[] memory) {
         return VaultManagerLogic.getVotingPowersAt(this.stakeToVotingPowerAt, extraData, timestamp, hints);
     }
 
+    /**
+     * @inheritdoc IVaultManager
+     */
     function getVotingPowers(
         bytes[] memory extraData
-    ) public view virtual returns (OperatorVotingPower[] memory operatorVotingPowers) {
+    ) public view virtual returns (OperatorVotingPower[] memory) {
         return VaultManagerLogic.getVotingPowers(this.stakeToVotingPower, extraData);
     }
 
-    /**
-     * @notice Gets the stake amount for an operator in a vault at a specific timestamp
-     * @param timestamp The timestamp to check
-     * @param operator The operator address
-     * @param vault The vault address
-     * @return uint256 The stake amount at the timestamp
-     */
     function _getOperatorStakeAt(
         address vault,
         address operator,

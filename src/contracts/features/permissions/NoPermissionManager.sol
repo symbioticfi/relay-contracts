@@ -16,6 +16,8 @@ abstract contract NoPermissionManager is PermissionManager, INoPermissionManager
      */
     uint64 public constant NoPermissionManager_VERSION = 1;
 
+    function __NoPermissionManager_init() internal virtual onlyInitializing {}
+
     /**
      * @inheritdoc PermissionManager
      */
