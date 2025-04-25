@@ -64,20 +64,16 @@ contract KeyRegistry is KeyManager, OzAccessControl, IKeyRegistry {
     /**
      * @inheritdoc IKeyRegistry
      */
-    function registerKeys(address operator, KeyWithSignature[] memory keysWithSignatures) public virtual {
-        _registerKeys(operator, keysWithSignatures);
+    function registerKeys(
+        KeyWithSignature[] memory keysWithSignatures
+    ) public virtual {
+        _registerKeys(msg.sender, keysWithSignatures);
     }
 
     /**
      * @inheritdoc IKeyRegistry
      */
-    function updateKey(
-        address operator,
-        uint8 tag,
-        bytes memory key,
-        bytes memory signature,
-        bytes memory extraData
-    ) public virtual {
-        _setKey(operator, tag, key, signature, extraData);
+    function updateKey(uint8 tag, bytes memory key, bytes memory signature, bytes memory extraData) public virtual {
+        _setKey(msg.sender, tag, key, signature, extraData);
     }
 }

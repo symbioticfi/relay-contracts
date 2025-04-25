@@ -22,13 +22,9 @@ interface IKeyRegistry {
         uint8[] memory requiredKeyTags
     ) external;
 
-    function registerKeys(address operator, IKeyManager.KeyWithSignature[] memory keysWithSignatures) external;
-
-    function updateKey(
-        address operator,
-        uint8 tag,
-        bytes memory key,
-        bytes memory signature,
-        bytes memory extraData
+    function registerKeys(
+        IKeyManager.KeyWithSignature[] memory keysWithSignatures
     ) external;
+
+    function updateKey(uint8 tag, bytes memory key, bytes memory signature, bytes memory extraData) external;
 }

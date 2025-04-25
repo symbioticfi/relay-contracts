@@ -2,7 +2,8 @@
 pragma solidity ^0.8.25;
 
 import {SharedVaults} from "../../features/registration/vaults/SharedVaults.sol";
-import {SelfRegisterOperators} from "../../features/registration/operators/SelfRegisterOperators.sol";
+import {ForcePauseSelfRegisterOperators} from
+    "../../features/registration/operators/self-register-operators/extensions/force-pause/ForcePauseSelfRegisterOperators.sol";
 import {Tokens} from "../../features/registration/tokens/Tokens.sol";
 
 import {OzOwnable} from "../../features/permissions/OzOwnable.sol";
@@ -15,7 +16,7 @@ import {ISelfRegisterVotingPowerProvider} from
 
 contract SelfRegisterVotingPowerProvider is
     SharedVaults,
-    SelfRegisterOperators,
+    ForcePauseSelfRegisterOperators,
     Tokens,
     OzOwnable,
     EqualStakeToVP,
@@ -45,6 +46,7 @@ contract SelfRegisterVotingPowerProvider is
         __SharedVaults_init();
         __OzEIP712_init(ozEip712InitParams);
         __SelfRegisterOperators_init(selfRegisterOperatorsInitParams);
+        __ForcePauseSelfRegisterOperators_init();
         __Tokens_init();
         __OzOwnable_init(ozOwnableInitParams);
         __EqualStakeToVP_init();
