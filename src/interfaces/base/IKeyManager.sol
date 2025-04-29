@@ -9,7 +9,6 @@ import {PersistentSet} from "../../contracts/libraries/structs/PersistentSet.sol
 interface IKeyManager is IBaseKeyManager {
     error KeyManager_InvalidKeyType();
     error KeyManager_Duplicate();
-    error KeyManager_MissingRequiredKeyTag();
     error KeyManager_InvalidBLSKeySignature();
     error KeyManager_InvalidECDSAKeySignature();
     error KeyManager_InvalidEdDSAKeySignature();
@@ -24,19 +23,19 @@ interface IKeyManager is IBaseKeyManager {
 
     /// @custom:storage-location erc7201:symbiotic.storage.KeyManager
     struct KeyManagerStorage {
-        Checkpoints.Trace208 _requiredKeyTags;
         mapping(address => mapping(uint8 => Checkpoints.Trace256)) _keys32;
         mapping(address => mapping(uint8 => Checkpoints.Trace512)) _keys64;
         mapping(bytes32 => address) _operatorByKeyHash;
         mapping(KeyType => mapping(bytes32 => address)) _operatorByTypeAndKeyHash;
         mapping(uint8 => mapping(bytes32 => address)) _operatorByTagAndKeyHash;
         PersistentSet.AddressSet _operators;
+        mapping(address => Checkpoints.Trace208) _operatorKeyTags;
     }
 
     struct KeyManagerInitParams {
         string name;
         string version;
-        uint8[] requiredKeyTags;
+        uint8[] keyTags;
     }
 
     struct KeyWithSignature {
@@ -46,24 +45,17 @@ interface IKeyManager is IBaseKeyManager {
         bytes extraData;
     }
 
-    struct OperatorRequiredKeysHints {
-        bytes requiredKeyTagsHint;
-        bytes[] requiredKeysHints;
+    struct OperatorKeysHints {
+        bytes keyTagsHint;
+        bytes[] keyHints;
     }
 
-    struct RequiredKeysHints {
+    struct OperatorsKeysHints {
         bytes[] operatorsHints;
-        bytes[] operatorRequiredKeysHints;
+        bytes[] operatorKeysHints;
     }
 
     function KeyManager_VERSION() external view returns (uint64);
-
-    function getRequiredKeyTagsAt(
-        uint48 timestamp,
-        bytes memory hint
-    ) external view returns (uint8[] memory requiredKeyTags);
-
-    function getRequiredKeyTags() external view returns (uint8[] memory requiredKeyTags);
 
     function getKeyAt(
         address operator,
@@ -78,20 +70,22 @@ interface IKeyManager is IBaseKeyManager {
         bytes memory key
     ) external view returns (address operator);
 
-    function getRequiredKeysAt(
+    function getKeysAt(
         address operator,
         uint48 timestamp,
         bytes memory hints
-    ) external view returns (Key[] memory requiredKeys);
+    ) external view returns (Key[] memory keys);
 
-    function getRequiredKeys(
+    function getKeys(
         address operator
-    ) external view returns (Key[] memory requiredKeys);
+    ) external view returns (Key[] memory keys);
 
-    function getRequiredKeysAt(
+    function getKeysAt(
         uint48 timestamp,
         bytes memory hints
-    ) external view returns (OperatorWithKeys[] memory requiredKeys);
+    ) external view returns (OperatorWithKeys[] memory operatorsKeys);
 
-    function getRequiredKeys() external view returns (OperatorWithKeys[] memory requiredKeys);
+    function getKeys() external view returns (OperatorWithKeys[] memory operatorsKeys);
+
+    function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memory extraData) external;
 }

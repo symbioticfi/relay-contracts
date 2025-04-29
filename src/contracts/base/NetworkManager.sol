@@ -1,15 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {Subnetwork} from "@symbioticfi/core/src/contracts/libraries/Subnetwork.sol";
-
-import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-
 import {NetworkManagerLogic} from "./logic/NetworkManagerLogic.sol";
 
 import {INetworkManager} from "../../interfaces/base/INetworkManager.sol";
 
-abstract contract NetworkManager is Initializable, INetworkManager {
+import {Subnetwork} from "@symbioticfi/core/src/contracts/libraries/Subnetwork.sol";
+import {StaticDelegateCallable} from "@symbioticfi/core/src/contracts/common/StaticDelegateCallable.sol";
+
+import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+
+abstract contract NetworkManager is Initializable, StaticDelegateCallable, INetworkManager {
     /**
      * @inheritdoc INetworkManager
      */

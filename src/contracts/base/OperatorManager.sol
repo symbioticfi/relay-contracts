@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {StaticDelegateCallable} from "@symbioticfi/core/src/contracts/common/StaticDelegateCallable.sol";
-
 import {Arrays} from "@openzeppelin/contracts/utils/Arrays.sol";
+import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 import {NetworkManager} from "./NetworkManager.sol";
 
@@ -12,7 +11,7 @@ import {OperatorManagerLogic} from "./logic/OperatorManagerLogic.sol";
 
 import {IOperatorManager} from "../../interfaces/base/IOperatorManager.sol";
 
-abstract contract OperatorManager is NetworkManager, StaticDelegateCallable, IOperatorManager {
+abstract contract OperatorManager is NetworkManager, IOperatorManager {
     using Checkpoints for Checkpoints.Trace208;
     using Arrays for address[];
 

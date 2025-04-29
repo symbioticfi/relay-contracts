@@ -12,13 +12,6 @@ interface IBaseKeyManager {
         Key[] keys;
     }
 
-    function getRequiredKeyTagsAt(
-        uint48 timestamp,
-        bytes memory hint
-    ) external view returns (uint8[] memory requiredKeyTags);
-
-    function getRequiredKeyTags() external view returns (uint8[] memory requiredKeyTags);
-
     function getKeyAt(
         address operator,
         uint8 tag,
@@ -32,7 +25,7 @@ interface IBaseKeyManager {
         bytes memory key
     ) external view returns (address);
 
-    function getRequiredKeysAt(uint48 timestamp, bytes memory hint) external view returns (OperatorWithKeys[] memory);
+    function getKeysAt(uint48 timestamp, bytes memory hint) external view returns (OperatorWithKeys[] memory);
 
-    function getRequiredKeys() external view returns (OperatorWithKeys[] memory);
+    function getKeys() external view returns (OperatorWithKeys[] memory);
 }

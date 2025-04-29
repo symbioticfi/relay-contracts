@@ -9,24 +9,28 @@ interface IValSetConfigManager {
         Checkpoints.Trace256 _maxVotingPower;
         Checkpoints.Trace256 _minInclusionVotingPower;
         Checkpoints.Trace256 _maxValidatorsCount;
+        Checkpoints.Trace208 _requiredKeyTags;
     }
 
     struct ValSetConfigManagerInitParams {
         uint256 maxVotingPower;
         uint256 minInclusionVotingPower;
         uint256 maxValidatorsCount;
+        uint8[] requiredKeyTags;
     }
 
     struct ValSetConfig {
         uint256 maxVotingPower;
         uint256 minInclusionVotingPower;
         uint256 maxValidatorsCount;
+        uint8[] requiredKeyTags;
     }
 
     struct ValSetConfigHints {
         bytes maxVotingPowerHint;
         bytes minInclusionVotingPowerHint;
         bytes maxValidatorsCountHint;
+        bytes requiredKeyTagsHint;
     }
 
     function ValSetConfigManager_VERSION() external pure returns (uint64);
@@ -43,6 +47,10 @@ interface IValSetConfigManager {
 
     function getMaxValidatorsCount() external view returns (uint256);
 
+    function getRequiredKeyTagsAt(uint48 timestamp, bytes memory hint) external view returns (uint8[] memory);
+
+    function getRequiredKeyTags() external view returns (uint8[] memory);
+
     function getValSetConfigAt(uint48 timestamp, bytes memory hints) external view returns (ValSetConfig memory);
 
     function getValSetConfig() external view returns (ValSetConfig memory);
@@ -57,5 +65,9 @@ interface IValSetConfigManager {
 
     function setMaxValidatorsCount(
         uint256 maxValidatorsCount
+    ) external;
+
+    function setRequiredKeyTags(
+        uint8[] memory requiredKeyTags
     ) external;
 }

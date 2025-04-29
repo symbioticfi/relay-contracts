@@ -44,36 +44,10 @@ contract KeyRegistry is KeyManager, OzAccessControl, IKeyRegistry {
      * @inheritdoc IKeyRegistry
      */
     function initialize(
-        KeyManagerInitParams memory keyManagerInitParams,
         OzEIP712InitParams memory ozEip712InitParams
     ) public virtual initializer {
-        __KeyManager_init(keyManagerInitParams);
+        __KeyManager_init();
         __OzAccessControl_init();
         __OzEIP712_init(ozEip712InitParams);
-    }
-
-    /**
-     * @inheritdoc IKeyRegistry
-     */
-    function setRequiredKeyTags(
-        uint8[] memory requiredKeyTags
-    ) public virtual checkPermission {
-        _setRequiredKeyTags(requiredKeyTags);
-    }
-
-    /**
-     * @inheritdoc IKeyRegistry
-     */
-    function registerKeys(
-        KeyWithSignature[] memory keysWithSignatures
-    ) public virtual {
-        _registerKeys(msg.sender, keysWithSignatures);
-    }
-
-    /**
-     * @inheritdoc IKeyRegistry
-     */
-    function updateKey(uint8 tag, bytes memory key, bytes memory signature, bytes memory extraData) public virtual {
-        _setKey(msg.sender, tag, key, signature, extraData);
     }
 }

@@ -5,6 +5,7 @@ import {PermissionManager} from "../../base/PermissionManager.sol";
 
 import {PersistentSet} from "../../libraries/structs/PersistentSet.sol";
 import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
+import {KeyManagerLogic} from "../../base/logic/KeyManagerLogic.sol";
 
 import {IValSetConfigManager} from "../../../interfaces/implementations/settlement/IValSetConfigManager.sol";
 
@@ -13,6 +14,7 @@ import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet
 
 abstract contract ValSetConfigManager is PermissionManager, IValSetConfigManager {
     using EnumerableSet for EnumerableSet.Bytes32Set;
+    using Checkpoints for Checkpoints.Trace208;
     using Checkpoints for Checkpoints.Trace256;
     using PersistentSet for PersistentSet.Bytes32Set;
 
@@ -40,6 +42,9 @@ abstract contract ValSetConfigManager is PermissionManager, IValSetConfigManager
         $._maxVotingPower.push(Time.timestamp(), valSetConfigManagerInitParams.maxVotingPower);
         $._minInclusionVotingPower.push(Time.timestamp(), valSetConfigManagerInitParams.minInclusionVotingPower);
         $._maxValidatorsCount.push(Time.timestamp(), valSetConfigManagerInitParams.maxValidatorsCount);
+        $._requiredKeyTags.push(
+            Time.timestamp(), KeyManagerLogic.serializeKeyTags(valSetConfigManagerInitParams.requiredKeyTags)
+        );
     }
 
     /**
@@ -87,6 +92,25 @@ abstract contract ValSetConfigManager is PermissionManager, IValSetConfigManager
     /**
      * @inheritdoc IValSetConfigManager
      */
+    function getRequiredKeyTagsAt(
+        uint48 timestamp,
+        bytes memory hint
+    ) public view returns (uint8[] memory requiredKeyTags) {
+        return KeyManagerLogic.deserializeKeyTags(
+            _getValSetConfigManagerStorage()._requiredKeyTags.upperLookupRecent(timestamp, hint)
+        );
+    }
+
+    /**
+     * @inheritdoc IValSetConfigManager
+     */
+    function getRequiredKeyTags() public view returns (uint8[] memory requiredKeyTags) {
+        return KeyManagerLogic.deserializeKeyTags(_getValSetConfigManagerStorage()._requiredKeyTags.latest());
+    }
+
+    /**
+     * @inheritdoc IValSetConfigManager
+     */
     function getValSetConfigAt(
         uint48 timestamp,
         bytes memory hints
@@ -99,7 +123,8 @@ abstract contract ValSetConfigManager is PermissionManager, IValSetConfigManager
         return ValSetConfig({
             maxVotingPower: getMaxVotingPowerAt(timestamp, valSetConfigHints.maxVotingPowerHint),
             minInclusionVotingPower: getMinInclusionVotingPowerAt(timestamp, valSetConfigHints.minInclusionVotingPowerHint),
-            maxValidatorsCount: getMaxValidatorsCountAt(timestamp, valSetConfigHints.maxValidatorsCountHint)
+            maxValidatorsCount: getMaxValidatorsCountAt(timestamp, valSetConfigHints.maxValidatorsCountHint),
+            requiredKeyTags: getRequiredKeyTagsAt(timestamp, valSetConfigHints.requiredKeyTagsHint)
         });
     }
 
@@ -110,7 +135,8 @@ abstract contract ValSetConfigManager is PermissionManager, IValSetConfigManager
         return ValSetConfig({
             maxVotingPower: getMaxVotingPower(),
             minInclusionVotingPower: getMinInclusionVotingPower(),
-            maxValidatorsCount: getMaxValidatorsCount()
+            maxValidatorsCount: getMaxValidatorsCount(),
+            requiredKeyTags: getRequiredKeyTags()
         });
     }
 
@@ -139,5 +165,16 @@ abstract contract ValSetConfigManager is PermissionManager, IValSetConfigManager
         uint256 maxValidatorsCount
     ) public virtual checkPermission {
         _getValSetConfigManagerStorage()._maxValidatorsCount.push(Time.timestamp(), maxValidatorsCount);
+    }
+
+    /**
+     * @inheritdoc IValSetConfigManager
+     */
+    function setRequiredKeyTags(
+        uint8[] memory requiredKeyTags
+    ) public virtual checkPermission {
+        _getValSetConfigManagerStorage()._requiredKeyTags.push(
+            Time.timestamp(), KeyManagerLogic.serializeKeyTags(requiredKeyTags)
+        );
     }
 }

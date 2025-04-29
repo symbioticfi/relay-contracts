@@ -43,24 +43,6 @@ library KeyManagerLogic {
         }
     }
 
-    function initialize(
-        IKeyManager.KeyManagerInitParams memory initParams
-    ) public {
-        IKeyManager.KeyManagerStorage storage $ = _getKeyManagerStorage();
-        $._requiredKeyTags.push(Time.timestamp(), serializeRequiredKeyTags(initParams.requiredKeyTags));
-    }
-
-    function getRequiredKeyTagsAt(
-        uint48 timestamp,
-        bytes memory hint
-    ) public view returns (uint8[] memory requiredKeyTags) {
-        return deserializeRequiredKeyTags(_getKeyManagerStorage()._requiredKeyTags.upperLookupRecent(timestamp, hint));
-    }
-
-    function getRequiredKeyTags() public view returns (uint8[] memory requiredKeyTags) {
-        return deserializeRequiredKeyTags(_getKeyManagerStorage()._requiredKeyTags.latest());
-    }
-
     function getKeyAt(
         address operator,
         uint8 tag,
@@ -100,65 +82,71 @@ library KeyManagerLogic {
         return _getKeyManagerStorage()._operatorByKeyHash[keccak256(key)];
     }
 
-    function getRequiredKeysAt(
+    function getKeyTagsAt(address operator, uint48 timestamp, bytes memory hint) public view returns (uint8[] memory) {
+        return deserializeKeyTags(_getKeyManagerStorage()._operatorKeyTags[operator].upperLookupRecent(timestamp, hint));
+    }
+
+    function getKeyTags(
+        address operator
+    ) public view returns (uint8[] memory) {
+        return deserializeKeyTags(_getKeyManagerStorage()._operatorKeyTags[operator].latest());
+    }
+
+    function getKeysAt(
         address operator,
         uint48 timestamp,
         bytes memory hints
-    ) public view returns (IBaseKeyManager.Key[] memory requiredKeys) {
-        IKeyManager.OperatorRequiredKeysHints memory operatorRequiredKeysHints;
+    ) public view returns (IBaseKeyManager.Key[] memory keys) {
+        IKeyManager.OperatorKeysHints memory operatorKeysHints;
         if (hints.length > 0) {
-            operatorRequiredKeysHints = abi.decode(hints, (IKeyManager.OperatorRequiredKeysHints));
+            operatorKeysHints = abi.decode(hints, (IKeyManager.OperatorKeysHints));
         }
 
-        uint8[] memory requiredKeyTags = getRequiredKeyTagsAt(timestamp, operatorRequiredKeysHints.requiredKeyTagsHint);
-        requiredKeys = new IBaseKeyManager.Key[](requiredKeyTags.length);
-        operatorRequiredKeysHints.requiredKeysHints =
-            operatorRequiredKeysHints.requiredKeysHints.normalize(requiredKeyTags.length);
-        for (uint256 i; i < requiredKeyTags.length; ++i) {
-            requiredKeys[i] = IBaseKeyManager.Key({
-                tag: requiredKeyTags[i],
-                payload: getKeyAt(operator, requiredKeyTags[i], timestamp, operatorRequiredKeysHints.requiredKeysHints[i])
+        uint8[] memory keyTags = getKeyTagsAt(operator, timestamp, operatorKeysHints.keyTagsHint);
+        keys = new IBaseKeyManager.Key[](keyTags.length);
+        operatorKeysHints.keyHints = operatorKeysHints.keyHints.normalize(keyTags.length);
+        for (uint256 i; i < keyTags.length; ++i) {
+            keys[i] = IBaseKeyManager.Key({
+                tag: keyTags[i],
+                payload: getKeyAt(operator, keyTags[i], timestamp, operatorKeysHints.keyHints[i])
             });
         }
     }
 
-    function getRequiredKeys(
+    function getKeys(
         address operator
-    ) public view returns (IBaseKeyManager.Key[] memory requiredKeys) {
-        uint8[] memory requiredKeyTags = getRequiredKeyTags();
-        requiredKeys = new IBaseKeyManager.Key[](requiredKeyTags.length);
-        for (uint256 i; i < requiredKeyTags.length; ++i) {
-            requiredKeys[i] =
-                IBaseKeyManager.Key({tag: requiredKeyTags[i], payload: getKey(operator, requiredKeyTags[i])});
+    ) public view returns (IBaseKeyManager.Key[] memory keys) {
+        uint8[] memory keyTags = getKeyTags(operator);
+        keys = new IBaseKeyManager.Key[](keyTags.length);
+        for (uint256 i; i < keyTags.length; ++i) {
+            keys[i] = IBaseKeyManager.Key({tag: keyTags[i], payload: getKey(operator, keyTags[i])});
         }
     }
 
-    function getRequiredKeysAt(
+    function getKeysAt(
         uint48 timestamp,
         bytes memory hints
-    ) public view returns (IBaseKeyManager.OperatorWithKeys[] memory requiredKeys) {
-        IKeyManager.RequiredKeysHints memory requiredKeysHints;
+    ) public view returns (IBaseKeyManager.OperatorWithKeys[] memory operatorsKeys) {
+        IKeyManager.OperatorsKeysHints memory operatorsKeysHints;
         if (hints.length > 0) {
-            requiredKeysHints = abi.decode(hints, (IKeyManager.RequiredKeysHints));
+            operatorsKeysHints = abi.decode(hints, (IKeyManager.OperatorsKeysHints));
         }
 
-        address[] memory operators = getKeysOperatorsAt(timestamp, requiredKeysHints.operatorsHints);
-        requiredKeysHints.operatorRequiredKeysHints =
-            requiredKeysHints.operatorRequiredKeysHints.normalize(operators.length);
-        requiredKeys = new IBaseKeyManager.OperatorWithKeys[](operators.length);
+        address[] memory operators = getKeysOperatorsAt(timestamp, operatorsKeysHints.operatorsHints);
+        operatorsKeysHints.operatorKeysHints = operatorsKeysHints.operatorKeysHints.normalize(operators.length);
+        operatorsKeys = new IBaseKeyManager.OperatorWithKeys[](operators.length);
         for (uint256 i; i < operators.length; ++i) {
-            requiredKeys[i].operator = operators[i];
-            requiredKeys[i].keys =
-                getRequiredKeysAt(operators[i], timestamp, requiredKeysHints.operatorRequiredKeysHints[i]);
+            operatorsKeys[i].operator = operators[i];
+            operatorsKeys[i].keys = getKeysAt(operators[i], timestamp, operatorsKeysHints.operatorKeysHints[i]);
         }
     }
 
-    function getRequiredKeys() public view returns (IBaseKeyManager.OperatorWithKeys[] memory requiredKeys) {
+    function getKeys() public view returns (IBaseKeyManager.OperatorWithKeys[] memory operatorsKeys) {
         address[] memory operators = getKeysOperators();
-        requiredKeys = new IBaseKeyManager.OperatorWithKeys[](operators.length);
+        operatorsKeys = new IBaseKeyManager.OperatorWithKeys[](operators.length);
         for (uint256 i; i < operators.length; ++i) {
-            requiredKeys[i].operator = operators[i];
-            requiredKeys[i].keys = getRequiredKeys(operators[i]);
+            operatorsKeys[i].operator = operators[i];
+            operatorsKeys[i].keys = getKeys(operators[i]);
         }
     }
 
@@ -181,47 +169,6 @@ library KeyManagerLogic {
         return _getKeyManagerStorage()._operators.length();
     }
 
-    function setRequiredKeyTags(
-        uint8[] memory requiredKeyTags
-    ) public {
-        _getKeyManagerStorage()._requiredKeyTags.push(Time.timestamp(), serializeRequiredKeyTags(requiredKeyTags));
-    }
-
-    function registerKeys(
-        function (bytes32) external returns (bytes32) hashTypedDataV4,
-        address operator,
-        IKeyManager.KeyWithSignature[] memory keysWithSignatures
-    ) public {
-        uint128 inputtedTags;
-        uint8[] memory requiredKeyTags = getRequiredKeyTags();
-        for (uint256 i; i < keysWithSignatures.length; ++i) {
-            IKeyManager.KeyWithSignature memory keyWithSignature = keysWithSignatures[i];
-
-            if ((inputtedTags >> keyWithSignature.tag) & 1 == 1) {
-                revert IKeyManager.KeyManager_Duplicate();
-            }
-
-            setKey(
-                hashTypedDataV4,
-                operator,
-                keyWithSignature.tag,
-                keyWithSignature.key,
-                keyWithSignature.signature,
-                keyWithSignature.extraData
-            );
-
-            inputtedTags |= uint128(1 << keyWithSignature.tag);
-        }
-
-        for (uint256 i; i < requiredKeyTags.length; ++i) {
-            if ((inputtedTags >> requiredKeyTags[i]) & 1 == 0) {
-                revert IKeyManager.KeyManager_MissingRequiredKeyTag();
-            }
-        }
-
-        _getKeyManagerStorage()._operators.add(Time.timestamp(), operator);
-    }
-
     function setKey(
         function (bytes32) external returns (bytes32) hashTypedDataV4,
         address operator,
@@ -233,8 +180,7 @@ library KeyManagerLogic {
         IKeyManager.KeyManagerStorage storage $ = _getKeyManagerStorage();
 
         bytes32 keyHash = keccak256(key);
-        setKey(
-            operator,
+        verifyKey(
             tag,
             key,
             signature,
@@ -262,35 +208,51 @@ library KeyManagerLogic {
         $._operatorByKeyHash[keyHash] = operator;
         $._operatorByTypeAndKeyHash[type_][keyHash] = operator;
         $._operatorByTagAndKeyHash[tag][keyHash] = operator;
+
+        $._operatorKeyTags[operator].push(Time.timestamp(), $._operatorKeyTags[operator].latest() | uint208(1 << tag));
+        setKey(operator, tag, key);
     }
 
-    function setKey(
-        address operator,
+    function verifyKey(
         uint8 tag,
         bytes memory key,
         bytes memory signature,
         bytes memory extraData,
-        bytes memory keyOwnershipMessage
+        bytes memory message
     ) public {
         IKeyManager.KeyType type_ = IKeyManager.KeyType(tag.getType());
         if (type_ == IKeyManager.KeyType.BLS_BN254) {
-            if (!SigBlsBn254.verify(key, keyOwnershipMessage, signature, extraData)) {
+            if (!SigBlsBn254.verify(key, message, signature, extraData)) {
                 revert IKeyManager.KeyManager_InvalidBLSKeySignature();
             }
+            return;
+        }
+        if (type_ == IKeyManager.KeyType.ECDSA_SECP256K1) {
+            if (!SigEcdsaSecp256k1.verify(key, message, signature, extraData)) {
+                revert IKeyManager.KeyManager_InvalidECDSAKeySignature();
+            }
+            return;
+        }
+        if (type_ == IKeyManager.KeyType.EDDSA_CURVE25519) {
+            if (!SigEddsaCurve25519.verify(key, message, signature, extraData)) {
+                revert IKeyManager.KeyManager_InvalidEdDSAKeySignature();
+            }
+            return;
+        }
+        revert IKeyManager.KeyManager_InvalidKeyType();
+    }
+
+    function setKey(address operator, uint8 tag, bytes memory key) public {
+        IKeyManager.KeyType type_ = IKeyManager.KeyType(tag.getType());
+        if (type_ == IKeyManager.KeyType.BLS_BN254) {
             setKey32(operator, tag, KeyBlsBn254.fromBytes(key).serialize());
             return;
         }
         if (type_ == IKeyManager.KeyType.ECDSA_SECP256K1) {
-            if (!SigEcdsaSecp256k1.verify(key, keyOwnershipMessage, signature, extraData)) {
-                revert IKeyManager.KeyManager_InvalidECDSAKeySignature();
-            }
             setKey32(operator, tag, KeyEcdsaSecp256k1.fromBytes(key).serialize());
             return;
         }
         if (type_ == IKeyManager.KeyType.EDDSA_CURVE25519) {
-            if (!SigEddsaCurve25519.verify(key, keyOwnershipMessage, signature, extraData)) {
-                revert IKeyManager.KeyManager_InvalidEdDSAKeySignature();
-            }
             setKey32(operator, tag, KeyEddsaCurve25519.fromBytes(key).serialize());
             return;
         }
@@ -340,32 +302,32 @@ library KeyManagerLogic {
         return abi.encode(compressedKeys[0], compressedKeys[1]);
     }
 
-    function serializeRequiredKeyTags(
-        uint8[] memory requiredKeyTags
-    ) public pure returns (uint208 requiredKeyTagsData) {
-        for (uint256 i; i < requiredKeyTags.length; ++i) {
-            if (requiredKeyTags[i].getType() > uint8(type(IKeyManager.KeyType).max)) {
+    function serializeKeyTags(
+        uint8[] memory keyTags
+    ) public pure returns (uint208 keyTagsData) {
+        for (uint256 i; i < keyTags.length; ++i) {
+            if (keyTags[i].getType() > uint8(type(IKeyManager.KeyType).max)) {
                 revert IKeyManager.KeyManager_OnlyPredeterminedKeyTagsAllowed();
             }
-            if ((requiredKeyTagsData >> requiredKeyTags[i]) & 1 == 1) {
+            if ((keyTagsData >> keyTags[i]) & 1 == 1) {
                 revert IKeyManager.KeyManager_Duplicate();
             }
-            requiredKeyTagsData |= uint208(1 << requiredKeyTags[i]);
+            keyTagsData |= uint208(1 << keyTags[i]);
         }
     }
 
-    function deserializeRequiredKeyTags(
-        uint208 requiredKeyTagsData
-    ) public pure returns (uint8[] memory requiredKeyTags) {
+    function deserializeKeyTags(
+        uint208 keyTagsData
+    ) public pure returns (uint8[] memory keyTags) {
         uint8 length;
-        requiredKeyTags = new uint8[](KeyTag.TOTAL_KEY_TAGS);
+        keyTags = new uint8[](KeyTag.TOTAL_KEY_TAGS);
         for (uint8 i; i < KeyTag.TOTAL_KEY_TAGS; ++i) {
-            if ((requiredKeyTagsData >> i) & 1 == 1) {
-                requiredKeyTags[length++] = i;
+            if ((keyTagsData >> i) & 1 == 1) {
+                keyTags[length++] = i;
             }
         }
         assembly ("memory-safe") {
-            mstore(requiredKeyTags, length)
+            mstore(keyTags, length)
         }
     }
 }

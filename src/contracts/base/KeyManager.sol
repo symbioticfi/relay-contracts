@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
+import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
+import {MulticallUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
 
 import {Checkpoints} from "../libraries/structs/Checkpoints.sol";
 import {InputNormalizer} from "../libraries/utils/InputNormalizer.sol";
@@ -16,7 +18,7 @@ import {KeyEddsaCurve25519} from "../libraries/keys/KeyEddsaCurve25519.sol";
 
 import {IKeyManager} from "../../interfaces/base/IKeyManager.sol";
 
-abstract contract KeyManager is OzEIP712, IKeyManager {
+abstract contract KeyManager is MulticallUpgradeable, OzEIP712, IKeyManager {
     using KeyTag for uint8;
     using Checkpoints for Checkpoints.Trace208;
     using Checkpoints for Checkpoints.Trace256;
@@ -35,28 +37,7 @@ abstract contract KeyManager is OzEIP712, IKeyManager {
         return KeyManagerLogic.KeyManager_VERSION;
     }
 
-    function __KeyManager_init(
-        KeyManagerInitParams memory initParams
-    ) internal virtual onlyInitializing {
-        KeyManagerLogic.initialize(initParams);
-    }
-
-    /**
-     * @inheritdoc IKeyManager
-     */
-    function getRequiredKeyTagsAt(
-        uint48 timestamp,
-        bytes memory hint
-    ) public view virtual returns (uint8[] memory requiredKeyTags) {
-        return KeyManagerLogic.getRequiredKeyTagsAt(timestamp, hint);
-    }
-
-    /**
-     * @inheritdoc IKeyManager
-     */
-    function getRequiredKeyTags() public view virtual returns (uint8[] memory requiredKeyTags) {
-        return KeyManagerLogic.getRequiredKeyTags();
-    }
+    function __KeyManager_init() internal virtual onlyInitializing {}
 
     /**
      * @inheritdoc IKeyManager
@@ -89,48 +70,45 @@ abstract contract KeyManager is OzEIP712, IKeyManager {
     /**
      * @inheritdoc IKeyManager
      */
-    function getRequiredKeysAt(
+    function getKeysAt(
         address operator,
         uint48 timestamp,
         bytes memory hints
-    ) public view virtual returns (Key[] memory requiredKeys) {
-        return KeyManagerLogic.getRequiredKeysAt(operator, timestamp, hints);
+    ) public view virtual returns (Key[] memory) {
+        return KeyManagerLogic.getKeysAt(operator, timestamp, hints);
     }
 
     /**
      * @inheritdoc IKeyManager
      */
-    function getRequiredKeys(
+    function getKeys(
         address operator
-    ) public view virtual returns (Key[] memory requiredKeys) {
-        return KeyManagerLogic.getRequiredKeys(operator);
+    ) public view virtual returns (Key[] memory) {
+        return KeyManagerLogic.getKeys(operator);
     }
 
     /**
      * @inheritdoc IKeyManager
      */
-    function getRequiredKeysAt(
-        uint48 timestamp,
-        bytes memory hints
-    ) public view virtual returns (OperatorWithKeys[] memory requiredKeys) {
-        return KeyManagerLogic.getRequiredKeysAt(timestamp, hints);
+    function getKeysAt(uint48 timestamp, bytes memory hints) public view virtual returns (OperatorWithKeys[] memory) {
+        return KeyManagerLogic.getKeysAt(timestamp, hints);
     }
 
     /**
      * @inheritdoc IKeyManager
      */
-    function getRequiredKeys() public view virtual returns (OperatorWithKeys[] memory requiredKeys) {
-        return KeyManagerLogic.getRequiredKeys();
+    function getKeys() public view virtual returns (OperatorWithKeys[] memory) {
+        return KeyManagerLogic.getKeys();
     }
 
     function _getKeysOperatorsAt(
         uint48 timestamp,
         bytes[] memory hints
-    ) internal view virtual returns (address[] memory operators) {
+    ) internal view virtual returns (address[] memory) {
         return KeyManagerLogic.getKeysOperatorsAt(timestamp, hints);
     }
 
-    function _getKeysOperators() internal view virtual returns (address[] memory operators) {
+    function _getKeysOperators() internal view virtual returns (address[] memory) {
         return KeyManagerLogic.getKeysOperators();
     }
 
@@ -142,14 +120,11 @@ abstract contract KeyManager is OzEIP712, IKeyManager {
         return KeyManagerLogic.getKeysOperatorsLength();
     }
 
-    function _setRequiredKeyTags(
-        uint8[] memory requiredKeyTags
-    ) internal virtual {
-        KeyManagerLogic.setRequiredKeyTags(requiredKeyTags);
-    }
-
-    function _registerKeys(address operator, KeyWithSignature[] memory keysWithSignatures) internal virtual {
-        return KeyManagerLogic.registerKeys(this.hashTypedDataV4, operator, keysWithSignatures);
+    /**
+     * @inheritdoc IKeyManager
+     */
+    function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memory extraData) public virtual {
+        _setKey(msg.sender, tag, key, signature, extraData);
     }
 
     function _setKey(
@@ -162,15 +137,18 @@ abstract contract KeyManager is OzEIP712, IKeyManager {
         return KeyManagerLogic.setKey(this.hashTypedDataV4, operator, tag, key, signature, extraData);
     }
 
-    function _setKey(
-        address operator,
+    function _verifyKey(
         uint8 tag,
         bytes memory key,
         bytes memory signature,
         bytes memory extraData,
         bytes memory keyOwnershipMessage
     ) internal virtual {
-        return KeyManagerLogic.setKey(operator, tag, key, signature, extraData, keyOwnershipMessage);
+        return KeyManagerLogic.verifyKey(tag, key, signature, extraData, keyOwnershipMessage);
+    }
+
+    function _setKey(address operator, uint8 tag, bytes memory key) internal virtual {
+        return KeyManagerLogic.setKey(operator, tag, key);
     }
 
     function _setKey32(address operator, uint8 tag, bytes memory key) internal {
@@ -207,15 +185,15 @@ abstract contract KeyManager is OzEIP712, IKeyManager {
         return KeyManagerLogic.getKey64(operator, tag);
     }
 
-    function _serializeRequiredKeyTags(
-        uint8[] memory requiredKeyTags
-    ) internal pure returns (uint208 requiredKeyTagsData) {
-        return KeyManagerLogic.serializeRequiredKeyTags(requiredKeyTags);
+    function _serializeKeyTags(
+        uint8[] memory keyTags
+    ) internal pure returns (uint208) {
+        return KeyManagerLogic.serializeKeyTags(keyTags);
     }
 
-    function _deserializeRequiredKeyTags(
-        uint208 requiredKeyTagsData
-    ) internal pure returns (uint8[] memory requiredKeyTags) {
-        return KeyManagerLogic.deserializeRequiredKeyTags(requiredKeyTagsData);
+    function _deserializeKeyTags(
+        uint208 keyTagsData
+    ) internal pure returns (uint8[] memory) {
+        return KeyManagerLogic.deserializeKeyTags(keyTagsData);
     }
 }
