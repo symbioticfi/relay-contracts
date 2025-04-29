@@ -3,11 +3,11 @@ pragma solidity ^0.8.25;
 
 import {SettlementManager} from "./SettlementManager.sol";
 
-import {OzOwnable} from "../../features/permissions/OzOwnable.sol";
+import {OzAccessControl} from "../../features/permissions/OzAccessControl.sol";
 
 import {IReplica} from "../../../interfaces/implementations/settlement/IReplica.sol";
 
-contract Replica is SettlementManager, OzOwnable, IReplica {
+contract Replica is SettlementManager, OzAccessControl, IReplica {
     constructor() {
         _disableInitializers();
     }
@@ -17,9 +17,11 @@ contract Replica is SettlementManager, OzOwnable, IReplica {
      */
     function initialize(
         SettlementManagerInitParams memory settlementManagerInitParams,
-        OzOwnableInitParams memory ozOwnableInitParams
+        address defaultAdmin
     ) public virtual initializer {
         __SettlementManager_init(settlementManagerInitParams);
-        __OzOwnable_init(ozOwnableInitParams);
+        __OzAccessControl_init();
+
+        _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
     }
 }

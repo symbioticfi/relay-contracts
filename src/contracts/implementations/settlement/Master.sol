@@ -5,11 +5,11 @@ import {SettlementManager} from "./SettlementManager.sol";
 import {ValSetConfigManager} from "./ValSetConfigManager.sol";
 import {MasterConfigManager} from "./MasterConfigManager.sol";
 
-import {OzOwnable} from "../../features/permissions/OzOwnable.sol";
+import {OzAccessControl} from "../../features/permissions/OzAccessControl.sol";
 
 import {IMaster} from "../../../interfaces/implementations/settlement/IMaster.sol";
 
-contract Master is SettlementManager, ValSetConfigManager, MasterConfigManager, OzOwnable, IMaster {
+contract Master is SettlementManager, ValSetConfigManager, MasterConfigManager, OzAccessControl, IMaster {
     constructor() {
         _disableInitializers();
     }
@@ -21,11 +21,13 @@ contract Master is SettlementManager, ValSetConfigManager, MasterConfigManager, 
         SettlementManagerInitParams memory settlementManagerInitParams,
         ValSetConfigManagerInitParams memory valSetConfigManagerInitParams,
         MasterConfigManagerInitParams memory masterConfigManagerInitParams,
-        OzOwnableInitParams memory ozOwnableInitParams
+        address defaultAdmin
     ) public virtual initializer {
         __SettlementManager_init(settlementManagerInitParams);
         __ValSetConfigManager_init(valSetConfigManagerInitParams);
         __MasterConfigManager_init(masterConfigManagerInitParams);
-        __OzOwnable_init(ozOwnableInitParams);
+        __OzAccessControl_init();
+
+        _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
     }
 }

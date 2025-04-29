@@ -12,7 +12,6 @@ interface ISelfRegisterVotingPowerProvider {
         INetworkManager.NetworkManagerInitParams memory networkManagerInitParams,
         IVaultManager.VaultManagerInitParams memory vaultManagerInitParams,
         IOzEIP712.OzEIP712InitParams memory ozEip712InitParams,
-        ISelfRegisterOperators.SelfRegisterOperatorsInitParams memory selfRegisterOperatorsInitParams,
         IOzOwnable.OzOwnableInitParams memory ozOwnableInitParams
     ) external;
 }

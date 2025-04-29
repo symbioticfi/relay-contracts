@@ -2,12 +2,10 @@
 pragma solidity ^0.8.25;
 
 import {KeyManager} from "../../base/KeyManager.sol";
-import {OzAccessControl} from "../../features/permissions/OzAccessControl.sol";
 
 import {IKeyRegistry} from "../../../interfaces/implementations/key-registries/IKeyRegistry.sol";
-import {IOzEIP712} from "../../../interfaces/base/common/IOzEIP712.sol";
 
-contract KeyRegistry is KeyManager, OzAccessControl, IKeyRegistry {
+contract KeyRegistry is KeyManager, IKeyRegistry {
     constructor() {
         _disableInitializers();
     }
@@ -47,7 +45,6 @@ contract KeyRegistry is KeyManager, OzAccessControl, IKeyRegistry {
         OzEIP712InitParams memory ozEip712InitParams
     ) public virtual initializer {
         __KeyManager_init();
-        __OzAccessControl_init();
         __OzEIP712_init(ozEip712InitParams);
     }
 }

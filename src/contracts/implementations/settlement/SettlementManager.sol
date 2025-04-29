@@ -14,8 +14,15 @@ import {IEpochManager} from "../../../interfaces/base/IEpochManager.sol";
 import {OzEIP712} from "../../base/common/OzEIP712.sol";
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
+import {MulticallUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
 
-abstract contract SettlementManager is NetworkManager, EpochManager, OzEIP712, ISettlementManager {
+abstract contract SettlementManager is
+    NetworkManager,
+    EpochManager,
+    OzEIP712,
+    MulticallUpgradeable,
+    ISettlementManager
+{
     using Checkpoints for Checkpoints.Trace208;
 
     /**

@@ -32,12 +32,6 @@ interface IKeyManager is IBaseKeyManager {
         mapping(address => Checkpoints.Trace208) _operatorKeyTags;
     }
 
-    struct KeyManagerInitParams {
-        string name;
-        string version;
-        uint8[] keyTags;
-    }
-
     struct KeyWithSignature {
         uint8 tag;
         bytes key;
