@@ -40,43 +40,43 @@ interface IMasterConfigManager {
 
     function MasterConfigManager_VERSION() external pure returns (uint64);
 
-    function isVotingPowerProviderActiveAt(
-        CrossChainAddress memory votingPowerProvider,
-        uint48 timestamp,
-        bytes memory hint
-    ) external view returns (bool);
+    // function isVotingPowerProviderActiveAt(
+    //     CrossChainAddress memory votingPowerProvider,
+    //     uint48 timestamp,
+    //     bytes memory hint
+    // ) external view returns (bool);
 
-    function isVotingPowerProviderActive(
-        CrossChainAddress memory votingPowerProvider
-    ) external view returns (bool);
+    // function isVotingPowerProviderActive(
+    //     CrossChainAddress memory votingPowerProvider
+    // ) external view returns (bool);
 
-    function getActiveVotingPowerProvidersAt(
-        uint48 timestamp,
-        bytes[] memory hints
-    ) external view returns (CrossChainAddress[] memory);
+    // function getActiveVotingPowerProvidersAt(
+    //     uint48 timestamp,
+    //     bytes[] memory hints
+    // ) external view returns (CrossChainAddress[] memory);
 
-    function getActiveVotingPowerProviders() external view returns (CrossChainAddress[] memory);
+    // function getActiveVotingPowerProviders() external view returns (CrossChainAddress[] memory);
 
-    function getKeysProviderAt(uint48 timestamp, bytes memory hint) external view returns (CrossChainAddress memory);
+    // function getKeysProviderAt(uint48 timestamp, bytes memory hint) external view returns (CrossChainAddress memory);
 
-    function getKeysProvider() external view returns (CrossChainAddress memory);
+    // function getKeysProvider() external view returns (CrossChainAddress memory);
 
-    function isReplicaActiveAt(
-        CrossChainAddress memory replica,
-        uint48 timestamp,
-        bytes memory hint
-    ) external view returns (bool);
+    // function isReplicaActiveAt(
+    //     CrossChainAddress memory replica,
+    //     uint48 timestamp,
+    //     bytes memory hint
+    // ) external view returns (bool);
 
-    function isReplicaActive(
-        CrossChainAddress memory replica
-    ) external view returns (bool);
+    // function isReplicaActive(
+    //     CrossChainAddress memory replica
+    // ) external view returns (bool);
 
-    function getActiveReplicasAt(
-        uint48 timestamp,
-        bytes[] memory hints
-    ) external view returns (CrossChainAddress[] memory);
+    // function getActiveReplicasAt(
+    //     uint48 timestamp,
+    //     bytes[] memory hints
+    // ) external view returns (CrossChainAddress[] memory);
 
-    function getActiveReplicas() external view returns (CrossChainAddress[] memory);
+    // function getActiveReplicas() external view returns (CrossChainAddress[] memory);
 
     function getMasterConfigAt(uint48 timestamp, bytes memory hints) external view returns (MasterConfig memory);
 

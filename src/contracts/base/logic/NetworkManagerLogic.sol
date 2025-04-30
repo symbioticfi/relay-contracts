@@ -26,7 +26,7 @@ library NetworkManagerLogic {
 
     function initialize(
         INetworkManager.NetworkManagerInitParams memory initParams
-    ) public {
+    ) internal {
         INetworkManager.NetworkManagerStorage storage $ = _getNetworkManagerStorage();
         $._network = initParams.network;
         $._subnetworkID = initParams.subnetworkID;
@@ -36,15 +36,15 @@ library NetworkManagerLogic {
      * @notice Returns the address of the network
      * @return network The address of the network
      */
-    function NETWORK() public view returns (address) {
+    function NETWORK() internal view returns (address) {
         return _getNetworkManagerStorage()._network;
     }
 
-    function SUBNETWORK_IDENTIFIER() public view returns (uint96) {
+    function SUBNETWORK_IDENTIFIER() internal view returns (uint96) {
         return _getNetworkManagerStorage()._subnetworkID;
     }
 
-    function SUBNETWORK() public view returns (bytes32) {
+    function SUBNETWORK() internal view returns (bytes32) {
         return NETWORK().subnetwork(SUBNETWORK_IDENTIFIER());
     }
 }

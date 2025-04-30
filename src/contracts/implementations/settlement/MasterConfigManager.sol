@@ -35,64 +35,48 @@ abstract contract MasterConfigManager is PermissionManager, IMasterConfigManager
     function __MasterConfigManager_init(
         MasterConfigManagerInitParams memory masterConfigManagerInitParams
     ) internal virtual onlyInitializing {
-        MasterConfigManagerStorage storage $ = _getMasterConfigManagerStorage();
-
         for (uint256 i; i < masterConfigManagerInitParams.votingPowerProviders.length; ++i) {
-            if (
-                !$._votingPowerProviders.add(
-                    Time.timestamp(), _serializeCrossChainAddress(masterConfigManagerInitParams.votingPowerProviders[i])
-                )
-            ) {
-                revert MasterConfigManager_AlreadyAdded();
-            }
+            _addVotingPowerProvider(masterConfigManagerInitParams.votingPowerProviders[i]);
         }
 
-        $._keysProvider.push(
-            Time.timestamp(), uint256(_serializeCrossChainAddress(masterConfigManagerInitParams.keysProvider))
-        );
+        _setKeysProvider(masterConfigManagerInitParams.keysProvider);
 
         for (uint256 i; i < masterConfigManagerInitParams.replicas.length; ++i) {
-            if (
-                !$._replicas.add(
-                    Time.timestamp(), _serializeCrossChainAddress(masterConfigManagerInitParams.replicas[i])
-                )
-            ) {
-                revert MasterConfigManager_AlreadyAdded();
-            }
+            _addReplica(masterConfigManagerInitParams.replicas[i]);
         }
     }
 
-    /**
-     * @inheritdoc IMasterConfigManager
-     */
-    function isVotingPowerProviderActiveAt(
-        CrossChainAddress memory votingPowerProvider,
-        uint48 timestamp,
-        bytes memory hint
-    ) public view virtual returns (bool) {
-        return _getMasterConfigManagerStorage()._votingPowerProviders.contains(
-            timestamp, _serializeCrossChainAddress(votingPowerProvider), hint
-        );
-    }
+    // /**
+    //  * @inheritdoc IMasterConfigManager
+    //  */
+    // function isVotingPowerProviderActiveAt(
+    //     CrossChainAddress memory votingPowerProvider,
+    //     uint48 timestamp,
+    //     bytes memory hint
+    // ) public view virtual returns (bool) {
+    //     return _getMasterConfigManagerStorage()._votingPowerProviders.contains(
+    //         timestamp, _serializeCrossChainAddress(votingPowerProvider), hint
+    //     );
+    // }
 
-    /**
-     * @inheritdoc IMasterConfigManager
-     */
-    function isVotingPowerProviderActive(
-        CrossChainAddress memory votingPowerProvider
-    ) public view virtual returns (bool) {
-        return _getMasterConfigManagerStorage()._votingPowerProviders.contains(
-            _serializeCrossChainAddress(votingPowerProvider)
-        );
-    }
+    // /**
+    //  * @inheritdoc IMasterConfigManager
+    //  */
+    // function isVotingPowerProviderActive(
+    //     CrossChainAddress memory votingPowerProvider
+    // ) public view virtual returns (bool) {
+    //     return _getMasterConfigManagerStorage()._votingPowerProviders.contains(
+    //         _serializeCrossChainAddress(votingPowerProvider)
+    //     );
+    // }
 
-    /**
-     * @inheritdoc IMasterConfigManager
-     */
+    // /**
+    //  * @inheritdoc IMasterConfigManager
+    //  */
     function getActiveVotingPowerProvidersAt(
         uint48 timestamp,
         bytes[] memory hints
-    ) public view virtual returns (CrossChainAddress[] memory activeVotingPowerProviders) {
+    ) internal view virtual returns (CrossChainAddress[] memory activeVotingPowerProviders) {
         bytes32[] memory activeVotingPowerProvidersRaw =
             _getMasterConfigManagerStorage()._votingPowerProviders.values(timestamp, hints);
         activeVotingPowerProviders = new CrossChainAddress[](activeVotingPowerProvidersRaw.length);
@@ -101,11 +85,11 @@ abstract contract MasterConfigManager is PermissionManager, IMasterConfigManager
         }
     }
 
-    /**
-     * @inheritdoc IMasterConfigManager
-     */
+    // /**
+    //  * @inheritdoc IMasterConfigManager
+    //  */
     function getActiveVotingPowerProviders()
-        public
+        internal
         view
         virtual
         returns (CrossChainAddress[] memory activeVotingPowerProviders)
@@ -117,53 +101,53 @@ abstract contract MasterConfigManager is PermissionManager, IMasterConfigManager
         }
     }
 
-    /**
-     * @inheritdoc IMasterConfigManager
-     */
+    // /**
+    //  * @inheritdoc IMasterConfigManager
+    //  */
     function getKeysProviderAt(
         uint48 timestamp,
         bytes memory hint
-    ) public view virtual returns (CrossChainAddress memory) {
+    ) internal view virtual returns (CrossChainAddress memory) {
         return _deserializeCrossChainAddress(
             bytes32(_getMasterConfigManagerStorage()._keysProvider.upperLookupRecent(timestamp, hint))
         );
     }
 
-    /**
-     * @inheritdoc IMasterConfigManager
-     */
-    function getKeysProvider() public view virtual returns (CrossChainAddress memory) {
+    // /**
+    //  * @inheritdoc IMasterConfigManager
+    //  */
+    function getKeysProvider() internal view virtual returns (CrossChainAddress memory) {
         return _deserializeCrossChainAddress(bytes32(_getMasterConfigManagerStorage()._keysProvider.latest()));
     }
 
-    /**
-     * @inheritdoc IMasterConfigManager
-     */
-    function isReplicaActiveAt(
-        CrossChainAddress memory replica,
-        uint48 timestamp,
-        bytes memory hint
-    ) public view virtual returns (bool) {
-        return
-            _getMasterConfigManagerStorage()._replicas.contains(timestamp, _serializeCrossChainAddress(replica), hint);
-    }
+    // /**
+    //  * @inheritdoc IMasterConfigManager
+    //  */
+    // function isReplicaActiveAt(
+    //     CrossChainAddress memory replica,
+    //     uint48 timestamp,
+    //     bytes memory hint
+    // ) public view virtual returns (bool) {
+    //     return
+    //         _getMasterConfigManagerStorage()._replicas.contains(timestamp, _serializeCrossChainAddress(replica), hint);
+    // }
 
-    /**
-     * @inheritdoc IMasterConfigManager
-     */
-    function isReplicaActive(
-        CrossChainAddress memory replica
-    ) public view virtual returns (bool) {
-        return _getMasterConfigManagerStorage()._replicas.contains(_serializeCrossChainAddress(replica));
-    }
+    // /**
+    //  * @inheritdoc IMasterConfigManager
+    //  */
+    // function isReplicaActive(
+    //     CrossChainAddress memory replica
+    // ) public view virtual returns (bool) {
+    //     return _getMasterConfigManagerStorage()._replicas.contains(_serializeCrossChainAddress(replica));
+    // }
 
-    /**
-     * @inheritdoc IMasterConfigManager
-     */
+    // /**
+    //  * @inheritdoc IMasterConfigManager
+    //  */
     function getActiveReplicasAt(
         uint48 timestamp,
         bytes[] memory hints
-    ) public view virtual returns (CrossChainAddress[] memory activeReplicas) {
+    ) internal view virtual returns (CrossChainAddress[] memory activeReplicas) {
         bytes32[] memory activeReplicasRaw = _getMasterConfigManagerStorage()._replicas.values(timestamp, hints);
         activeReplicas = new CrossChainAddress[](activeReplicasRaw.length);
         for (uint256 i; i < activeReplicasRaw.length; ++i) {
@@ -171,10 +155,10 @@ abstract contract MasterConfigManager is PermissionManager, IMasterConfigManager
         }
     }
 
-    /**
-     * @inheritdoc IMasterConfigManager
-     */
-    function getActiveReplicas() public view virtual returns (CrossChainAddress[] memory activeReplicas) {
+    // /**
+    //  * @inheritdoc IMasterConfigManager
+    //  */
+    function getActiveReplicas() internal view virtual returns (CrossChainAddress[] memory activeReplicas) {
         bytes32[] memory activeReplicasRaw = _getMasterConfigManagerStorage()._replicas.values();
         activeReplicas = new CrossChainAddress[](activeReplicasRaw.length);
         for (uint256 i; i < activeReplicasRaw.length; ++i) {
@@ -218,6 +202,48 @@ abstract contract MasterConfigManager is PermissionManager, IMasterConfigManager
     function addVotingPowerProvider(
         CrossChainAddress memory votingPowerProvider
     ) public virtual checkPermission {
+        _addVotingPowerProvider(votingPowerProvider);
+    }
+
+    /**
+     * @inheritdoc IMasterConfigManager
+     */
+    function removeVotingPowerProvider(
+        CrossChainAddress memory votingPowerProvider
+    ) public virtual checkPermission {
+        _removeVotingPowerProvider(votingPowerProvider);
+    }
+
+    /**
+     * @inheritdoc IMasterConfigManager
+     */
+    function setKeysProvider(
+        CrossChainAddress memory keysProvider
+    ) public virtual checkPermission {
+        _setKeysProvider(keysProvider);
+    }
+
+    /**
+     * @inheritdoc IMasterConfigManager
+     */
+    function addReplica(
+        CrossChainAddress memory replica
+    ) public virtual checkPermission {
+        _addReplica(replica);
+    }
+
+    /**
+     * @inheritdoc IMasterConfigManager
+     */
+    function removeReplica(
+        CrossChainAddress memory replica
+    ) public virtual checkPermission {
+        _removeReplica(replica);
+    }
+
+    function _addVotingPowerProvider(
+        CrossChainAddress memory votingPowerProvider
+    ) internal virtual {
         if (
             !_getMasterConfigManagerStorage()._votingPowerProviders.add(
                 Time.timestamp(), _serializeCrossChainAddress(votingPowerProvider)
@@ -227,12 +253,9 @@ abstract contract MasterConfigManager is PermissionManager, IMasterConfigManager
         }
     }
 
-    /**
-     * @inheritdoc IMasterConfigManager
-     */
-    function removeVotingPowerProvider(
+    function _removeVotingPowerProvider(
         CrossChainAddress memory votingPowerProvider
-    ) public virtual checkPermission {
+    ) internal virtual {
         if (
             !_getMasterConfigManagerStorage()._votingPowerProviders.remove(
                 Time.timestamp(), _serializeCrossChainAddress(votingPowerProvider)
@@ -242,34 +265,25 @@ abstract contract MasterConfigManager is PermissionManager, IMasterConfigManager
         }
     }
 
-    /**
-     * @inheritdoc IMasterConfigManager
-     */
-    function setKeysProvider(
+    function _setKeysProvider(
         CrossChainAddress memory keysProvider
-    ) public virtual checkPermission {
+    ) internal virtual {
         _getMasterConfigManagerStorage()._keysProvider.push(
             Time.timestamp(), uint256(_serializeCrossChainAddress(keysProvider))
         );
     }
 
-    /**
-     * @inheritdoc IMasterConfigManager
-     */
-    function addReplica(
+    function _addReplica(
         CrossChainAddress memory replica
-    ) public virtual checkPermission {
+    ) internal virtual {
         if (!_getMasterConfigManagerStorage()._replicas.add(Time.timestamp(), _serializeCrossChainAddress(replica))) {
             revert MasterConfigManager_AlreadyAdded();
         }
     }
 
-    /**
-     * @inheritdoc IMasterConfigManager
-     */
-    function removeReplica(
+    function _removeReplica(
         CrossChainAddress memory replica
-    ) public virtual checkPermission {
+    ) internal virtual {
         if (!_getMasterConfigManagerStorage()._replicas.remove(Time.timestamp(), _serializeCrossChainAddress(replica)))
         {
             revert MasterConfigManager_NotAdded();

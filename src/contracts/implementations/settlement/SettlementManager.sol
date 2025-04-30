@@ -361,7 +361,7 @@ abstract contract SettlementManager is
      * @inheritdoc ISettlementManager
      */
     function setQuorumThreshold(uint8 keyTag, uint208 quorumThreshold) public virtual checkPermission {
-        _getSettlementManagerStorage()._quorumThreshold[keyTag].push(getNextEpochStart(), quorumThreshold);
+        _setQuorumThreshold(keyTag, quorumThreshold);
     }
 
     /**
@@ -370,7 +370,7 @@ abstract contract SettlementManager is
     function setCommitDuration(
         uint48 commitDuration
     ) public virtual checkPermission {
-        _getSettlementManagerStorage()._commitDuration.push(getNextEpochStart(), commitDuration);
+        _setCommitDuration(commitDuration);
     }
 
     /**
@@ -379,7 +379,7 @@ abstract contract SettlementManager is
     function setRequiredKeyTag(
         uint8 requiredKeyTag
     ) public virtual checkPermission {
-        _getSettlementManagerStorage()._requiredKeyTag.push(getNextEpochStart(), requiredKeyTag);
+        _setRequiredKeyTag(requiredKeyTag);
     }
 
     /**
@@ -388,7 +388,7 @@ abstract contract SettlementManager is
     function setSigVerifier(
         address sigVerifier
     ) public virtual checkPermission {
-        _getSettlementManagerStorage()._sigVerifier.push(getNextEpochStart(), uint160(sigVerifier));
+        _setSigVerifier(sigVerifier);
     }
 
     /**
@@ -397,6 +397,41 @@ abstract contract SettlementManager is
     function setGenesis(
         ValSetHeader memory valSetHeader
     ) public virtual checkPermission {
+        _setGenesis(valSetHeader);
+    }
+
+    /**
+     * @inheritdoc ISettlementManager
+     */
+    function commitValSetHeader(ValSetHeader memory header, bytes calldata proof) public virtual {
+        _commitValSetHeader(header, proof);
+    }
+
+    function _setQuorumThreshold(uint8 keyTag, uint208 quorumThreshold) internal virtual {
+        _getSettlementManagerStorage()._quorumThreshold[keyTag].push(getNextEpochStart(), quorumThreshold);
+    }
+
+    function _setCommitDuration(
+        uint48 commitDuration
+    ) internal virtual {
+        _getSettlementManagerStorage()._commitDuration.push(getNextEpochStart(), commitDuration);
+    }
+
+    function _setRequiredKeyTag(
+        uint8 requiredKeyTag
+    ) internal virtual {
+        _getSettlementManagerStorage()._requiredKeyTag.push(getNextEpochStart(), requiredKeyTag);
+    }
+
+    function _setSigVerifier(
+        address sigVerifier
+    ) internal virtual {
+        _getSettlementManagerStorage()._sigVerifier.push(getNextEpochStart(), uint160(sigVerifier));
+    }
+
+    function _setGenesis(
+        ValSetHeader memory valSetHeader
+    ) internal virtual {
         if (getCurrentPhase() != ValSetPhase.FAIL) {
             revert SettlementManager_InvalidPhase();
         }
@@ -404,10 +439,7 @@ abstract contract SettlementManager is
         _setValSetHeader(valSetHeader);
     }
 
-    /**
-     * @inheritdoc ISettlementManager
-     */
-    function commitValSetHeader(ValSetHeader memory header, bytes calldata proof) public virtual {
+    function _commitValSetHeader(ValSetHeader memory header, bytes calldata proof) internal virtual {
         if (getCurrentPhase() != ValSetPhase.COMMIT) {
             revert SettlementManager_InvalidPhase();
         }
@@ -415,7 +447,7 @@ abstract contract SettlementManager is
         if (
             !verifyQuorumSig(
                 abi.encode(
-                    _hashTypedDataV4(
+                    hashTypedDataV4Multichain(
                         keccak256(
                             abi.encode(
                                 VALSET_HEADER_COMMIT_TYPEHASH,
@@ -458,16 +490,16 @@ abstract contract SettlementManager is
         }
 
         headerStorage.version = header.version;
-        uint128 activeAggregatedKeysInputtedTags;
         for (uint256 i; i < header.activeAggregatedKeys.length; ++i) {
-            if ((activeAggregatedKeysInputtedTags >> header.activeAggregatedKeys[i].tag) & 1 == 1) {
+            if (header.activeAggregatedKeys[i].payload.length == 0) {
+                revert SettlementManager_InvalidKey();
+            }
+            if (headerStorage.activeAggregatedKeys.keyByTag[header.activeAggregatedKeys[i].tag].length > 0) {
                 revert SettlementManager_Duplicate();
             }
             headerStorage.activeAggregatedKeys.keyTags.push(header.activeAggregatedKeys[i].tag);
             headerStorage.activeAggregatedKeys.keyByTag[header.activeAggregatedKeys[i].tag] =
                 header.activeAggregatedKeys[i].payload;
-
-            activeAggregatedKeysInputtedTags |= uint128(1 << header.activeAggregatedKeys[i].tag);
         }
         headerStorage.totalActiveVotingPower = header.totalActiveVotingPower;
         headerStorage.validatorsSszMRoot = header.validatorsSszMRoot;

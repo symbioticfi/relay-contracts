@@ -14,6 +14,7 @@ interface ISettlementManager {
     error SettlementManager_Duplicate();
     error SettlementManager_VerificationFailed();
     error SettlementManager_EpochDurationTooShort();
+    error SettlementManager_InvalidKey();
 
     enum ValSetPhase {
         IDLE,

@@ -37,74 +37,73 @@ abstract contract ValSetConfigManager is PermissionManager, IValSetConfigManager
     function __ValSetConfigManager_init(
         ValSetConfigManagerInitParams memory valSetConfigManagerInitParams
     ) internal virtual onlyInitializing {
-        ValSetConfigManagerStorage storage $ = _getValSetConfigManagerStorage();
-
-        $._maxVotingPower.push(Time.timestamp(), valSetConfigManagerInitParams.maxVotingPower);
-        $._minInclusionVotingPower.push(Time.timestamp(), valSetConfigManagerInitParams.minInclusionVotingPower);
-        $._maxValidatorsCount.push(Time.timestamp(), valSetConfigManagerInitParams.maxValidatorsCount);
-        $._requiredKeyTags.push(
-            Time.timestamp(), KeyManagerLogic.serializeKeyTags(valSetConfigManagerInitParams.requiredKeyTags)
-        );
+        _setMaxVotingPower(valSetConfigManagerInitParams.maxVotingPower);
+        _setMinInclusionVotingPower(valSetConfigManagerInitParams.minInclusionVotingPower);
+        _setMaxValidatorsCount(valSetConfigManagerInitParams.maxValidatorsCount);
+        _setRequiredKeyTags(valSetConfigManagerInitParams.requiredKeyTags);
     }
 
-    /**
-     * @inheritdoc IValSetConfigManager
-     */
-    function getMaxVotingPowerAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint256) {
+    // /**
+    //  * @inheritdoc IValSetConfigManager
+    //  */
+    function getMaxVotingPowerAt(uint48 timestamp, bytes memory hint) internal view virtual returns (uint256) {
         return _getValSetConfigManagerStorage()._maxVotingPower.upperLookupRecent(timestamp, hint);
     }
 
-    /**
-     * @inheritdoc IValSetConfigManager
-     */
-    function getMaxVotingPower() public view virtual returns (uint256) {
+    // /**
+    //  * @inheritdoc IValSetConfigManager
+    //  */
+    function getMaxVotingPower() internal view virtual returns (uint256) {
         return _getValSetConfigManagerStorage()._maxVotingPower.latest();
     }
 
-    /**
-     * @inheritdoc IValSetConfigManager
-     */
-    function getMinInclusionVotingPowerAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint256) {
+    // /**
+    //  * @inheritdoc IValSetConfigManager
+    //  */
+    function getMinInclusionVotingPowerAt(
+        uint48 timestamp,
+        bytes memory hint
+    ) internal view virtual returns (uint256) {
         return _getValSetConfigManagerStorage()._minInclusionVotingPower.upperLookupRecent(timestamp, hint);
     }
 
-    /**
-     * @inheritdoc IValSetConfigManager
-     */
-    function getMinInclusionVotingPower() public view virtual returns (uint256) {
+    // /**
+    //  * @inheritdoc IValSetConfigManager
+    //  */
+    function getMinInclusionVotingPower() internal view virtual returns (uint256) {
         return _getValSetConfigManagerStorage()._minInclusionVotingPower.latest();
     }
 
-    /**
-     * @inheritdoc IValSetConfigManager
-     */
-    function getMaxValidatorsCountAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint256) {
+    // /**
+    //  * @inheritdoc IValSetConfigManager
+    //  */
+    function getMaxValidatorsCountAt(uint48 timestamp, bytes memory hint) internal view virtual returns (uint256) {
         return _getValSetConfigManagerStorage()._maxValidatorsCount.upperLookupRecent(timestamp, hint);
     }
 
-    /**
-     * @inheritdoc IValSetConfigManager
-     */
-    function getMaxValidatorsCount() public view virtual returns (uint256) {
+    // /**
+    //  * @inheritdoc IValSetConfigManager
+    //  */
+    function getMaxValidatorsCount() internal view virtual returns (uint256) {
         return _getValSetConfigManagerStorage()._maxValidatorsCount.latest();
     }
 
-    /**
-     * @inheritdoc IValSetConfigManager
-     */
+    // /**
+    //  * @inheritdoc IValSetConfigManager
+    //  */
     function getRequiredKeyTagsAt(
         uint48 timestamp,
         bytes memory hint
-    ) public view returns (uint8[] memory requiredKeyTags) {
+    ) internal view returns (uint8[] memory requiredKeyTags) {
         return KeyManagerLogic.deserializeKeyTags(
             _getValSetConfigManagerStorage()._requiredKeyTags.upperLookupRecent(timestamp, hint)
         );
     }
 
-    /**
-     * @inheritdoc IValSetConfigManager
-     */
-    function getRequiredKeyTags() public view returns (uint8[] memory requiredKeyTags) {
+    // /**
+    //  * @inheritdoc IValSetConfigManager
+    //  */
+    function getRequiredKeyTags() internal view returns (uint8[] memory requiredKeyTags) {
         return KeyManagerLogic.deserializeKeyTags(_getValSetConfigManagerStorage()._requiredKeyTags.latest());
     }
 
@@ -146,7 +145,7 @@ abstract contract ValSetConfigManager is PermissionManager, IValSetConfigManager
     function setMaxVotingPower(
         uint256 maxVotingPower
     ) public virtual checkPermission {
-        _getValSetConfigManagerStorage()._maxVotingPower.push(Time.timestamp(), maxVotingPower);
+        _setMaxVotingPower(maxVotingPower);
     }
 
     /**
@@ -155,7 +154,7 @@ abstract contract ValSetConfigManager is PermissionManager, IValSetConfigManager
     function setMinInclusionVotingPower(
         uint256 minInclusionVotingPower
     ) public virtual checkPermission {
-        _getValSetConfigManagerStorage()._minInclusionVotingPower.push(Time.timestamp(), minInclusionVotingPower);
+        _setMinInclusionVotingPower(minInclusionVotingPower);
     }
 
     /**
@@ -164,7 +163,7 @@ abstract contract ValSetConfigManager is PermissionManager, IValSetConfigManager
     function setMaxValidatorsCount(
         uint256 maxValidatorsCount
     ) public virtual checkPermission {
-        _getValSetConfigManagerStorage()._maxValidatorsCount.push(Time.timestamp(), maxValidatorsCount);
+        _setMaxValidatorsCount(maxValidatorsCount);
     }
 
     /**
@@ -173,6 +172,30 @@ abstract contract ValSetConfigManager is PermissionManager, IValSetConfigManager
     function setRequiredKeyTags(
         uint8[] memory requiredKeyTags
     ) public virtual checkPermission {
+        _setRequiredKeyTags(requiredKeyTags);
+    }
+
+    function _setMaxVotingPower(
+        uint256 maxVotingPower
+    ) internal virtual {
+        _getValSetConfigManagerStorage()._maxVotingPower.push(Time.timestamp(), maxVotingPower);
+    }
+
+    function _setMinInclusionVotingPower(
+        uint256 minInclusionVotingPower
+    ) internal virtual {
+        _getValSetConfigManagerStorage()._minInclusionVotingPower.push(Time.timestamp(), minInclusionVotingPower);
+    }
+
+    function _setMaxValidatorsCount(
+        uint256 maxValidatorsCount
+    ) internal virtual {
+        _getValSetConfigManagerStorage()._maxValidatorsCount.push(Time.timestamp(), maxValidatorsCount);
+    }
+
+    function _setRequiredKeyTags(
+        uint8[] memory requiredKeyTags
+    ) internal virtual {
         _getValSetConfigManagerStorage()._requiredKeyTags.push(
             Time.timestamp(), KeyManagerLogic.serializeKeyTags(requiredKeyTags)
         );

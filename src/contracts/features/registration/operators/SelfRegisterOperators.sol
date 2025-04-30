@@ -150,7 +150,7 @@ abstract contract SelfRegisterOperators is
     }
 
     function _verifyEIP712(address operator, bytes32 structHash, bytes memory signature) internal view {
-        if (!SignatureChecker.isValidSignatureNow(operator, _hashTypedDataV4(structHash), signature)) {
+        if (!SignatureChecker.isValidSignatureNow(operator, hashTypedDataV4(structHash), signature)) {
             revert SelfRegisterOperators_InvalidSignature();
         }
     }

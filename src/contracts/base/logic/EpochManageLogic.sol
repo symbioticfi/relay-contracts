@@ -75,7 +75,7 @@ library EpochManagerLogic {
     function setEpochDuration(
         uint48 epochDuration
     ) public {
-        setEpochDuration(epochDuration, getCurrentEpochStart() + getCurrentEpochDuration(), getCurrentEpoch() + 1);
+        setEpochDuration(epochDuration, getNextEpochStart(), getNextEpoch());
     }
 
     function getEpochDurationDataByTimestamp(
@@ -125,13 +125,13 @@ library EpochManagerLogic {
         uint48 epochDuration,
         uint48 epochDurationTimestamp,
         uint48 epochDurationIndex
-    ) public pure returns (uint208) {
+    ) internal pure returns (uint208) {
         return (uint208(epochDurationIndex) << 96) | (uint208(epochDurationTimestamp) << 48) | epochDuration;
     }
 
     function deserializeEpochDurationData(
         uint208 epochDurationData
-    ) public pure returns (uint48, uint48, uint48) {
+    ) internal pure returns (uint48, uint48, uint48) {
         return (uint48(epochDurationData), uint48(epochDurationData >> 48), uint48(epochDurationData >> 96));
     }
 
