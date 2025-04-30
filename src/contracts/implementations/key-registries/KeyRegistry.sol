@@ -7,7 +7,7 @@ import {IKeyRegistry} from "../../../interfaces/implementations/key-registries/I
 
 contract KeyRegistry is KeyManager, IKeyRegistry {
     constructor() {
-        _disableInitializers();
+        // _disableInitializers();
     }
 
     /**

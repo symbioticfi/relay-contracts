@@ -27,7 +27,7 @@ contract SelfRegisterVotingPowerProvider is
         address operatorNetworkOptInService,
         address vaultFactory
     ) VaultManager(operatorRegistry, operatorNetworkOptInService, vaultFactory) {
-        _disableInitializers();
+        // _disableInitializers();
     }
 
     /**

@@ -9,7 +9,7 @@ import {IReplica} from "../../../interfaces/implementations/settlement/IReplica.
 
 contract Replica is SettlementManager, OzAccessControl, IReplica {
     constructor() {
-        _disableInitializers();
+        // _disableInitializers();
     }
 
     /**

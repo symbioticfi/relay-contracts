@@ -11,7 +11,7 @@ import {IMaster} from "../../../interfaces/implementations/settlement/IMaster.so
 
 contract Master is SettlementManager, ValSetConfigManager, MasterConfigManager, OzAccessControl, IMaster {
     constructor() {
-        _disableInitializers();
+        // _disableInitializers();
     }
 
     /**
