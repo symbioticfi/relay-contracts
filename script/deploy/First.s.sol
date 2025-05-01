@@ -27,7 +27,7 @@ import {KeyBlsBn254, BN254} from "../../src/contracts/libraries/keys/KeyBlsBn254
 import {SigVerifierMock} from "../../test/mocks/SigVerifierMock.sol";
 import {BN254G2} from "../../test/libraries/BN254G2.sol";
 
-import "@symbioticfi/core/script/integration/SymbioticCoreInit.sol";
+import "../../script/integration/SymbioticCoreInit.sol";
 
 import {InitScript} from "./Init.s.sol";
 
