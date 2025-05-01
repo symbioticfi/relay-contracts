@@ -1,0 +1,27 @@
+
+build-docker:
+	docker build -t symbiotic-tests .
+
+up:
+	docker run -d --rm \
+		-p 8545:8545 \
+		-p 8546:8546 \
+		--env-file .env \
+		--name symbiotic-tests \
+		symbiotic-tests yarn deploy
+
+down:
+	docker stop symbiotic-tests
+
+build-abi:
+	docker run --rm \
+		-v $(shell pwd)/out:/app/out \
+		symbiotic-tests forge build --extra-output abi
+
+
+abigen:
+	go run github.com/ethereum/go-ethereum/cmd/abigen@latest \
+		--abi Storage.abi \
+		--pkg main \
+		--type Storage \
+		--out Storage.go
