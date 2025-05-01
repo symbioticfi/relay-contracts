@@ -18,8 +18,6 @@ interface IOperatorManager {
 
     function OPERATOR_REGISTRY() external view returns (address);
 
-    function OPERATOR_NETWORK_OPT_IN_SERVICE() external view returns (address);
-
     function getAllOperatorsLength() external view returns (uint256);
 
     function getAllOperators() external view returns (address[] memory);

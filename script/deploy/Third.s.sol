@@ -84,7 +84,7 @@ contract ThirdScript is SymbioticCoreInit {
 
         string memory obj = "data";
         string memory finalJson;
-        (FirstScript.InitParams memory initParams, InitScript.InitVars memory vars) = InitScript.loadInitParams();
+        (FirstScript.InitParams memory initParams, InitScript.InitVars memory vars) = loadInitParams();
         SecondScript.FirstParams memory firstParams;
         FirstScript.Addresses memory addresses;
         (firstParams, vars, addresses) = loadFirstParams(vars);
@@ -152,7 +152,7 @@ contract ThirdScript is SymbioticCoreInit {
                 vars.network
             );
         }
-        vm.serializeAddress(obj, "master", address(addresses.master));
+        finalJson = vm.serializeAddress(obj, "master", address(addresses.master));
 
         vm.stopBroadcast();
 

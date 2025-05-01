@@ -31,10 +31,12 @@ import "@symbioticfi/core/script/integration/SymbioticCoreInit.sol";
 
 import {InitScript} from "./Init.s.sol";
 import {FirstScript} from "./First.s.sol";
+import {SecondScript} from "./Second.s.sol";
+import {ThirdScript} from "./Third.s.sol";
 
-// forge script script/deploy/Second.s.sol:SecondScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_SECONDARY
+// forge script script/deploy/Fifth.s.sol:FifthScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_MASTER
 
-contract SecondScript is SymbioticCoreInit {
+contract FifthScript is SymbioticCoreInit {
     using KeyTag for uint8;
     using KeyBlsBn254 for BN254.G1Point;
     using BN254 for BN254.G1Point;
@@ -49,16 +51,9 @@ contract SecondScript is SymbioticCoreInit {
 
     uint96 public constant IDENTIFIER = 0;
 
-    struct ChainSetup {
-        uint256 chainId;
-        SymbioticCoreConstants.Core core;
-        address[] tokens;
-        address[] vaults;
-    }
-
-    struct FirstParams {
-        uint256 init_timestamp;
-        address master_voting_power_provider;
+    struct ThirdParams {
+        address key_registry;
+        address master;
     }
 
     function run(
@@ -88,78 +83,60 @@ contract SecondScript is SymbioticCoreInit {
 
         SymbioticInit.run(seed);
 
-        string memory obj = "data";
-        string memory finalJson;
         (FirstScript.InitParams memory initParams, InitScript.InitVars memory vars) = loadInitParams();
-        FirstParams memory firstParams;
+        SecondScript.FirstParams memory firstParams;
         FirstScript.Addresses memory addresses;
         (firstParams, vars, addresses) = loadFirstParams(vars);
+        ThirdScript.SecondParams memory secondParams;
+        (secondParams, addresses) = loadSecondParams(addresses);
+        ThirdParams memory thirdParams;
+        (thirdParams, addresses) = loadThirdParams(addresses);
 
-        vm.startBroadcast(vars.PRIVATE_KEY_WALLET.privateKey);
+        symbioticCore = initParams.master_chain.core;
+        vars.tokens = initParams.master_chain.tokens;
 
-        addresses.secondaryVotingPowerProvider = new SelfRegisterVotingPowerProvider(
-            address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory)
-        );
-        {
-            addresses.secondaryVotingPowerProvider.initialize(
-                INetworkManager.NetworkManagerInitParams({network: vars.network, subnetworkID: IDENTIFIER}),
-                IVaultManager.VaultManagerInitParams({slashingWindow: 6 * 60 * 60}),
-                IOzEIP712.OzEIP712InitParams({name: "SelfRegisterVotingPowerProvider", version: "1"}),
-                IOzOwnable.OzOwnableInitParams({owner: vars.network})
-            );
+        for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
+            vm.startBroadcast(vars.operators[i].privateKey);
+
+            addresses.masterVotingPowerProvider.registerOperator(address(0));
+
+            {
+                bytes memory key1Bytes = KeyEcdsaSecp256k1.wrap(vars.operators[i].addr).toBytes();
+                bytes32 messageHash1 = addresses.keyRegistry.hashTypedDataV4(
+                    keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, vars.operators[i].addr, keccak256(key1Bytes)))
+                );
+                (uint8 v, bytes32 r, bytes32 s) = vm.sign(vars.operators[i].privateKey, messageHash1);
+                bytes memory signature1 = abi.encodePacked(r, s, v);
+                addresses.keyRegistry.setKey(
+                    uint8(IKeyManager.KeyType.ECDSA_SECP256K1).keyTag(0), key1Bytes, signature1, new bytes(0)
+                );
+            }
+
+            {
+                BN254.G1Point memory keyG1 = BN254.generatorG1().scalar_mul(vars.operators[i].privateKey);
+                BN254.G2Point memory keyG2 = getG2Key(vars.operators[i].privateKey);
+                bytes memory key0Bytes = KeyBlsBn254.wrap(keyG1).toBytes();
+                bytes32 messageHash0 = addresses.keyRegistry.hashTypedDataV4(
+                    keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, vars.operators[i].addr, keccak256(key0Bytes)))
+                );
+                BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash0);
+                BN254.G1Point memory sigG1 = messageG1.scalar_mul(vars.operators[i].privateKey);
+                addresses.keyRegistry.setKey(
+                    uint8(IKeyManager.KeyType.BLS_BN254).keyTag(15), key0Bytes, abi.encode(sigG1), abi.encode(keyG2)
+                );
+            }
+
             vm.stopBroadcast();
-            _networkSetMiddleware_SymbioticCore(vars.network, address(addresses.secondaryVotingPowerProvider));
         }
-        vm.serializeAddress(obj, "secondary_voting_power_provider", address(addresses.secondaryVotingPowerProvider));
+    }
 
-        {
-            vm.startBroadcast(vars.PRIVATE_KEY_WALLET.privateKey);
-
-            for (uint256 i; i < vars.tokens.length; ++i) {
-                addresses.secondaryVotingPowerProvider.registerToken(vars.tokens[i]);
-            }
-            for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_VAULTS; ++i) {
-                addresses.secondaryVotingPowerProvider.registerSharedVault(vars.secondaryVaults[i]);
-            }
-        }
-
-        addresses.replica = new Replica();
-        {
-            ISettlementManager.QuorumThreshold[] memory quorumThresholds = new ISettlementManager.QuorumThreshold[](1);
-            quorumThresholds[0] = ISettlementManager.QuorumThreshold({
-                keyTag: uint8(IKeyManager.KeyType.BLS_BN254).keyTag(15),
-                threshold: 0.66 * 1e18
-            });
-            uint8[] memory requiredKeyTags = new uint8[](2);
-            requiredKeyTags[0] = uint8(IKeyManager.KeyType.BLS_BN254).keyTag(15);
-            requiredKeyTags[1] = uint8(IKeyManager.KeyType.ECDSA_SECP256K1).keyTag(0);
-            addresses.replica.initialize(
-                ISettlementManager.SettlementManagerInitParams({
-                    networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
-                        network: vars.network,
-                        subnetworkID: IDENTIFIER
-                    }),
-                    epochManagerInitParams: IEpochManager.EpochManagerInitParams({
-                        epochDuration: 3 * 60 * 60,
-                        epochDurationTimestamp: vars.ZERO_TIMESTAMP
-                    }),
-                    ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
-                    quorumThresholds: quorumThresholds,
-                    commitDuration: 45 * 60,
-                    requiredKeyTag: uint8(IKeyManager.KeyType.BLS_BN254).keyTag(15),
-                    sigVerifier: address(new SigVerifierMock())
-                }),
-                vars.network
-            );
-        }
-        finalJson = vm.serializeAddress(obj, "replica", address(addresses.replica));
-
-        vm.stopBroadcast();
-
-        console2.log("Sepolia - VotingPowerProvider: ", address(addresses.secondaryVotingPowerProvider));
-        console2.log("Sepolia - Replica: ", address(addresses.replica));
-
-        vm.writeJson(finalJson, "script/deploy/data/second_params.json");
+    function getG2Key(
+        uint256 privateKey
+    ) public view returns (BN254.G2Point memory) {
+        BN254.G2Point memory G2 = BN254.generatorG2();
+        (uint256 x1, uint256 x2, uint256 y1, uint256 y2) =
+            BN254G2.ECTwistMul(privateKey, G2.X[1], G2.X[0], G2.Y[1], G2.Y[0]);
+        return BN254.G2Point([x2, x1], [y2, y1]);
     }
 
     function loadInitParams()
@@ -206,7 +183,7 @@ contract SecondScript is SymbioticCoreInit {
     )
         public
         returns (
-            FirstParams memory firstParams,
+            SecondScript.FirstParams memory firstParams,
             InitScript.InitVars memory vars,
             FirstScript.Addresses memory addresses
         )
@@ -216,7 +193,7 @@ contract SecondScript is SymbioticCoreInit {
             string memory path = string.concat(root, "/script/deploy/data/first_params.json");
             string memory json = vm.readFile(path);
             bytes memory data = vm.parseJson(json);
-            firstParams = abi.decode(data, (FirstParams));
+            firstParams = abi.decode(data, (SecondScript.FirstParams));
         }
 
         vars_.ZERO_TIMESTAMP = uint48(firstParams.init_timestamp);
@@ -224,5 +201,40 @@ contract SecondScript is SymbioticCoreInit {
         addresses.masterVotingPowerProvider = SelfRegisterVotingPowerProvider(firstParams.master_voting_power_provider);
 
         return (firstParams, vars_, addresses);
+    }
+
+    function loadSecondParams(
+        FirstScript.Addresses memory addresses_
+    ) public returns (ThirdScript.SecondParams memory secondParams, FirstScript.Addresses memory addresses) {
+        {
+            string memory root = vm.projectRoot();
+            string memory path = string.concat(root, "/script/deploy/data/second_params.json");
+            string memory json = vm.readFile(path);
+            bytes memory data = vm.parseJson(json);
+            secondParams = abi.decode(data, (ThirdScript.SecondParams));
+        }
+
+        addresses_.secondaryVotingPowerProvider =
+            SelfRegisterVotingPowerProvider(secondParams.secondary_voting_power_provider);
+        addresses_.replica = Replica(secondParams.replica);
+
+        return (secondParams, addresses_);
+    }
+
+    function loadThirdParams(
+        FirstScript.Addresses memory addresses_
+    ) public returns (ThirdParams memory thirdParams, FirstScript.Addresses memory addresses) {
+        {
+            string memory root = vm.projectRoot();
+            string memory path = string.concat(root, "/script/deploy/data/third_params.json");
+            string memory json = vm.readFile(path);
+            bytes memory data = vm.parseJson(json);
+            thirdParams = abi.decode(data, (ThirdParams));
+        }
+
+        addresses_.master = Master(thirdParams.master);
+        addresses_.keyRegistry = KeyRegistry(thirdParams.key_registry);
+
+        return (thirdParams, addresses_);
     }
 }

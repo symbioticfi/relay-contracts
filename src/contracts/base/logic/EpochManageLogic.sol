@@ -14,7 +14,7 @@ library EpochManagerLogic {
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.EpochManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant EpochManagerStorageLocation =
-        0xcee92923a0c63eca6fc0402d78c9efde9f9f3dc73e6f9e14501bf734ed77f100;
+        0xab930e9b836b4d72502da14061937ab080936446173403910135ea983863d400;
 
     function _getEpochManagerStorage() internal pure returns (IEpochManager.EpochManagerStorage storage $) {
         bytes32 location = EpochManagerStorageLocation;
@@ -26,7 +26,7 @@ library EpochManagerLogic {
     function initialize(
         IEpochManager.EpochManagerInitParams memory initParams
     ) public {
-        setEpochDuration(initParams.epochDuration, initParams.epochDurationTimestamp, 0);
+        setEpochDurationInternal(initParams.epochDuration, initParams.epochDurationTimestamp, 0);
     }
 
     function getCaptureTimestamp() public view returns (uint48) {
@@ -103,14 +103,22 @@ library EpochManagerLogic {
     }
 
     function setEpochDuration(uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex) public {
+        if (epochDurationIndex < getCurrentEpoch()) {
+            revert IEpochManager.EpochManager_InvalidEpochDurationIndex();
+        }
+        setEpochDurationInternal(epochDuration, epochDurationTimestamp, epochDurationIndex);
+    }
+
+    function setEpochDurationInternal(
+        uint48 epochDuration,
+        uint48 epochDurationTimestamp,
+        uint48 epochDurationIndex
+    ) internal {
         if (epochDuration == 0) {
             revert IEpochManager.EpochManager_InvalidEpochDuration();
         }
         if (epochDurationTimestamp < Time.timestamp()) {
             revert IEpochManager.EpochManager_InvalidEpochDurationTimestamp();
-        }
-        if (epochDurationIndex < getCurrentEpoch()) {
-            revert IEpochManager.EpochManager_InvalidEpochDurationIndex();
         }
         _getEpochManagerStorage()._epochDurationDataByTimestamp.push(
             epochDurationTimestamp,

@@ -40,7 +40,7 @@ abstract contract SettlementManager is
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.SettlementManagerManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant SettlementManagerStorageLocation =
-        0xcee92923a0c63eca6fc0402d78c9efde9f9f3dc73e6f9e14501bf734ed77f100;
+        0x696945070a29c8b9c8effe4aeb461fa71d29f3854ab751c939157f3af408a700;
 
     function _getSettlementManagerStorage() internal pure returns (SettlementManagerStorage storage $) {
         bytes32 location = SettlementManagerStorageLocation;

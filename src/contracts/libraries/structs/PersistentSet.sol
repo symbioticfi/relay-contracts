@@ -25,7 +25,7 @@ library PersistentSet {
     function _add(Set storage set, uint48 key, bytes32 value) private returns (bool) {
         bool added = set._elements.add(value);
         if (added) {
-            (uint256 row, uint256 column) = _getRowAndColumn(set._elements.length());
+            (uint256 row, uint256 column) = _getRowAndColumn(set._elements.length() - 1);
             if (column == 0) {
                 Checkpoints.Trace256 storage statusBitMap = set._statuses.push();
                 statusBitMap.push(key, 1);

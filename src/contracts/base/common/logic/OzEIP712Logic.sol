@@ -11,8 +11,8 @@ library OzEIP712Logic {
 
     bytes32 private constant MULTICHAIN_TYPE_HASH = keccak256("EIP712Domain(string name,string version)");
 
-    /// @custom:storage-location erc7201:openzeppelin.storage.EIP712
-    struct EIP712Storage {
+    /// @custom:storage-location erc7201:openzeppelin.storage.OzEIP712
+    struct OzEIP712Storage {
         /// @custom:oz-renamed-from _HASHED_NAME
         bytes32 _hashedName;
         /// @custom:oz-renamed-from _HASHED_VERSION
@@ -21,12 +21,13 @@ library OzEIP712Logic {
         string _version;
     }
 
-    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.EIP712")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant EIP712StorageLocation = 0xa16a46d94261c7517cc8ff89f61c0ce93598e3c849801011dee649a6a557d100;
+    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OzEIP712")) - 1)) & ~bytes32(uint256(0xff))
+    bytes32 private constant OzEIP712StorageLocation =
+        0x3d2c0ff50cfdbe7dfc45916875eb036a27b4a0034db93b35219dc0d930df1e00;
 
-    function _getEIP712Storage() private pure returns (EIP712Storage storage $) {
+    function _getOzEIP712Storage() private pure returns (OzEIP712Storage storage $) {
         assembly {
-            $.slot := EIP712StorageLocation
+            $.slot := OzEIP712StorageLocation
         }
     }
 
@@ -45,7 +46,7 @@ library OzEIP712Logic {
     function initialize(
         IOzEIP712.OzEIP712InitParams memory initParams
     ) public {
-        EIP712Storage storage $ = _getEIP712Storage();
+        OzEIP712Storage storage $ = _getOzEIP712Storage();
         $._name = initParams.name;
         $._version = initParams.version;
 
@@ -102,7 +103,7 @@ library OzEIP712Logic {
             uint256[] memory extensions
         )
     {
-        EIP712Storage storage $ = _getEIP712Storage();
+        OzEIP712Storage storage $ = _getOzEIP712Storage();
         // If the hashed name and version in storage are non-zero, the contract hasn't been properly initialized
         // and the EIP712 domain is not reliable, as it will be missing name and version.
         require($._hashedName == 0 && $._hashedVersion == 0, "EIP712: Uninitialized");
@@ -125,7 +126,7 @@ library OzEIP712Logic {
      * are a concern.
      */
     function _EIP712Name() internal view returns (string memory) {
-        EIP712Storage storage $ = _getEIP712Storage();
+        OzEIP712Storage storage $ = _getOzEIP712Storage();
         return $._name;
     }
 
@@ -136,7 +137,7 @@ library OzEIP712Logic {
      * are a concern.
      */
     function _EIP712Version() internal view returns (string memory) {
-        EIP712Storage storage $ = _getEIP712Storage();
+        OzEIP712Storage storage $ = _getOzEIP712Storage();
         return $._version;
     }
 
@@ -146,7 +147,7 @@ library OzEIP712Logic {
      * NOTE: In previous versions this function was . In this version you should override `_EIP712Name` instead.
      */
     function _EIP712NameHash() public view returns (bytes32) {
-        EIP712Storage storage $ = _getEIP712Storage();
+        OzEIP712Storage storage $ = _getOzEIP712Storage();
         string memory name = _EIP712Name();
         if (bytes(name).length > 0) {
             return keccak256(bytes(name));
@@ -168,7 +169,7 @@ library OzEIP712Logic {
      * NOTE: In previous versions this function was . In this version you should override `_EIP712Version` instead.
      */
     function _EIP712VersionHash() public view returns (bytes32) {
-        EIP712Storage storage $ = _getEIP712Storage();
+        OzEIP712Storage storage $ = _getOzEIP712Storage();
         string memory version = _EIP712Version();
         if (bytes(version).length > 0) {
             return keccak256(bytes(version));

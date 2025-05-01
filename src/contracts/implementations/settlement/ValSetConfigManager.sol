@@ -25,7 +25,7 @@ abstract contract ValSetConfigManager is PermissionManager, IValSetConfigManager
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.ValSetConfigManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant ValSetConfigManagerStorageLocation =
-        0xcee92923a0c63eca6fc0402d78c9efde9f9f3dc73e6f9e14501bf734ed77f100;
+        0x2be14a33b071030ab99526637d9f2b2ad585c7927239b34bb97f4a55a4085300;
 
     function _getValSetConfigManagerStorage() internal pure returns (ValSetConfigManagerStorage storage $) {
         bytes32 location = ValSetConfigManagerStorageLocation;

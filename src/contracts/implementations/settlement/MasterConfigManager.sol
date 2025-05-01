@@ -23,7 +23,7 @@ abstract contract MasterConfigManager is PermissionManager, IMasterConfigManager
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.MasterConfigManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant MasterConfigManagerStorageLocation =
-        0xcee92923a0c63eca6fc0402d78c9efde9f9f3dc73e6f9e14501bf734ed77f100;
+        0x9873e25410bff4429fbc0a7b25e9af86ce0e61fa160ab8bd5f9c6688c41af900;
 
     function _getMasterConfigManagerStorage() internal pure returns (MasterConfigManagerStorage storage $) {
         bytes32 location = MasterConfigManagerStorageLocation;

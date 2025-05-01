@@ -11,7 +11,7 @@ library NetworkManagerLogic {
     uint64 internal constant NetworkManager_VERSION = 1;
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.NetworkManager")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant NetworkManagerLocation = 0x933223a21808ea6583da836861e2265bfa3c7e3b9070740cd75dc9ff6fb41700;
+    bytes32 private constant NetworkManagerLocation = 0x779150488f5e984d1f840ba606e388ada6c73b44f261274c3595c61a30023e00;
 
     /**
      * @notice Internal helper to access the VaultManager storage struct

@@ -27,14 +27,10 @@ abstract contract OperatorManager is NetworkManager, IOperatorManager {
      */
     address public immutable OPERATOR_REGISTRY;
 
-    /**
-     * @inheritdoc IOperatorManager
-     */
-    address public immutable OPERATOR_NETWORK_OPT_IN_SERVICE;
-
-    constructor(address operatorRegistry, address operatorNetworkOptInService) {
+    constructor(
+        address operatorRegistry
+    ) {
         OPERATOR_REGISTRY = operatorRegistry;
-        OPERATOR_NETWORK_OPT_IN_SERVICE = operatorNetworkOptInService;
     }
 
     function __OperatorManager_init() internal virtual onlyInitializing {
@@ -118,7 +114,7 @@ abstract contract OperatorManager is NetworkManager, IOperatorManager {
     function _registerOperator(
         address operator
     ) internal virtual {
-        OperatorManagerLogic.registerOperator(OPERATOR_REGISTRY, OPERATOR_NETWORK_OPT_IN_SERVICE, operator);
+        OperatorManagerLogic.registerOperator(OPERATOR_REGISTRY, operator);
     }
 
     function _unregisterOperator(

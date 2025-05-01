@@ -2,25 +2,25 @@
   "master_chain": {
     "chainId": 111,
     "core": {
-      "delegatorFactory": "0x851356ae760d987E095750cCeb3bC6014560891C",
-      "networkMetadataService": "0x4826533B4897376654Bb4d4AD88B7faFD0C98528",
-      "networkMiddlewareService": "0x99bbA657f2BbC93c02D617f8bA121cB8Fc104Acf",
-      "networkRegistry": "0x95401dc811bb5740090279Ba06cfA8fcF6113778",
-      "operatorMetadataService": "0x70e0bA845a1A0F2DA3359C97E0285013525FFC49",
-      "operatorNetworkOptInService": "0x8f86403A4DE0BB5791fa46B8e795C547942fE4Cf",
-      "operatorRegistry": "0x998abeb3E57409262aE5b751f60747921B33613E",
-      "operatorVaultOptInService": "0x0E801D84Fa97b50751Dbf25036d067dCf18858bF",
-      "slasherFactory": "0xf5059a5D33d5853360D16C683c16e67980206f36",
-      "vaultConfigurator": "0xFD471836031dc5108809D173A067e8486B9047A3",
-      "vaultFactory": "0x1613beB3B2C4f22Ee086B2b38C1476A3cE7f78E8"
+      "delegatorFactory": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+      "networkMetadataService": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
+      "networkMiddlewareService": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
+      "networkRegistry": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      "operatorMetadataService": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+      "operatorNetworkOptInService": "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
+      "operatorRegistry": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+      "operatorVaultOptInService": "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
+      "slasherFactory": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+      "vaultConfigurator": "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
+      "vaultFactory": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
     },
     "tokens": [
-      "0xcbEAF3BDe82155F56486Fb5a1072cb8baAf547cc"
+      "0x4A679253410272dd5232B3Ff7cF5dbB88f295319"
     ],
     "vaults": [
-      "0xc8EF8BA3Cf9F90FD75328321f31340828c54f97d",
-      "0xF05933F07Fe9Ba3B9170fd6995484826Af0B822a",
-      "0xc03D35CF04Df1673827f346100fCd87e66D43732"
+      "0xe58772a3720c810b9498bd3F4Dd42E2d7707A291",
+      "0x783410CFA728B6d72B9E3aDA70ff063239D96C07",
+      "0x60A95B45DdB762c85bb165717de6ccbD049629f3"
     ]
   },
   "networkPrivateKey": 77814517325470205911140941194401928579557062014761831930645393041380819009408,
@@ -32,25 +32,25 @@
   "secondary_chain": {
     "chainId": 222,
     "core": {
-      "delegatorFactory": "0x851356ae760d987E095750cCeb3bC6014560891C",
-      "networkMetadataService": "0x4826533B4897376654Bb4d4AD88B7faFD0C98528",
-      "networkMiddlewareService": "0x99bbA657f2BbC93c02D617f8bA121cB8Fc104Acf",
-      "networkRegistry": "0x95401dc811bb5740090279Ba06cfA8fcF6113778",
-      "operatorMetadataService": "0x70e0bA845a1A0F2DA3359C97E0285013525FFC49",
-      "operatorNetworkOptInService": "0x8f86403A4DE0BB5791fa46B8e795C547942fE4Cf",
-      "operatorRegistry": "0x998abeb3E57409262aE5b751f60747921B33613E",
-      "operatorVaultOptInService": "0x0E801D84Fa97b50751Dbf25036d067dCf18858bF",
-      "slasherFactory": "0xf5059a5D33d5853360D16C683c16e67980206f36",
-      "vaultConfigurator": "0xFD471836031dc5108809D173A067e8486B9047A3",
-      "vaultFactory": "0x1613beB3B2C4f22Ee086B2b38C1476A3cE7f78E8"
+      "delegatorFactory": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+      "networkMetadataService": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
+      "networkMiddlewareService": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
+      "networkRegistry": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      "operatorMetadataService": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+      "operatorNetworkOptInService": "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
+      "operatorRegistry": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+      "operatorVaultOptInService": "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
+      "slasherFactory": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+      "vaultConfigurator": "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
+      "vaultFactory": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
     },
     "tokens": [
-      "0xcbEAF3BDe82155F56486Fb5a1072cb8baAf547cc"
+      "0x4A679253410272dd5232B3Ff7cF5dbB88f295319"
     ],
     "vaults": [
-      "0xD3a53d147758D43303B01b1854553aF0A701E799",
-      "0xF6315EE52413590c40637640497eBfF9Ad06BaFf",
-      "0x3ed21DE1E9764Ab5A22d0a6A3E18D19Fea656e19"
+      "0x88eD057DDBaC5dE723d149044c01849ccFc5eE4A",
+      "0x32f81f56934E82495614093118a58dB541F1940A",
+      "0x1Fd537b62b1A967405fF1bd3a3baf5b3742dc68D"
     ]
   },
   "stakerPrivateKeys": [

@@ -109,9 +109,7 @@ contract FirstScript is SymbioticCoreInit {
         vm.startBroadcast(vars.PRIVATE_KEY_WALLET.privateKey);
 
         addresses.masterVotingPowerProvider = new SelfRegisterVotingPowerProvider(
-            address(symbioticCore.operatorRegistry),
-            address(symbioticCore.operatorNetworkOptInService),
-            address(symbioticCore.vaultFactory)
+            address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory)
         );
         {
             addresses.masterVotingPowerProvider.initialize(

@@ -45,11 +45,7 @@ abstract contract VaultManager is OperatorManager, StakeToVotingPowerManager, IV
      */
     address public immutable VAULT_FACTORY;
 
-    constructor(
-        address operatorRegistry,
-        address operatorNetworkOptInService,
-        address vaultFactory
-    ) OperatorManager(operatorRegistry, operatorNetworkOptInService) {
+    constructor(address operatorRegistry, address vaultFactory) OperatorManager(operatorRegistry) {
         VAULT_FACTORY = vaultFactory;
     }
 

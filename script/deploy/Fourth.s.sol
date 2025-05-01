@@ -34,7 +34,7 @@ import {FirstScript} from "./First.s.sol";
 import {SecondScript} from "./Second.s.sol";
 import {ThirdScript} from "./Third.s.sol";
 
-// forge script script/deploy/Fourth.s.sol:FourthScript 25235 --sig "run(uint256)"
+// forge script script/deploy/Fourth.s.sol:FourthScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_SECONDARY
 
 contract FourthScript is SymbioticCoreInit {
     using KeyTag for uint8;
@@ -52,7 +52,7 @@ contract FourthScript is SymbioticCoreInit {
     uint96 public constant IDENTIFIER = 0;
 
     struct ThirdParams {
-        uint256 key_registry;
+        address key_registry;
         address master;
     }
 
@@ -83,18 +83,15 @@ contract FourthScript is SymbioticCoreInit {
 
         SymbioticInit.run(seed);
 
-        string memory obj = "data";
-        string memory finalJson;
-        (FirstScript.InitParams memory initParams, InitScript.InitVars memory vars) = InitScript.loadInitParams();
+        (FirstScript.InitParams memory initParams, InitScript.InitVars memory vars) = loadInitParams();
         SecondScript.FirstParams memory firstParams;
         FirstScript.Addresses memory addresses;
         (firstParams, vars, addresses) = loadFirstParams(vars);
         ThirdScript.SecondParams memory secondParams;
         (secondParams, addresses) = loadSecondParams(addresses);
-        ThirdScript.SecondParams memory thirdParams;
+        ThirdParams memory thirdParams;
         (thirdParams, addresses) = loadThirdParams(addresses);
 
-        vm.createSelectFork(vm.rpcUrl("secondary_chain"));
         symbioticCore = initParams.secondary_chain.core;
         vars.tokens = initParams.secondary_chain.tokens;
 
@@ -102,44 +99,6 @@ contract FourthScript is SymbioticCoreInit {
             vm.startBroadcast(vars.operators[i].privateKey);
 
             addresses.secondaryVotingPowerProvider.registerOperator(address(0));
-
-            vm.stopBroadcast();
-        }
-
-        vm.createSelectFork(vm.rpcUrl("master_chain"));
-        symbioticCore = initParams.master_chain.core;
-        vars.tokens = initParams.master_chain.tokens;
-
-        for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
-            vm.startBroadcast(vars.operators[i].privateKey);
-
-            addresses.masterVotingPowerProvider.registerOperator(address(0));
-
-            {
-                bytes memory key1Bytes = KeyEcdsaSecp256k1.wrap(vars.operators[i].addr).toBytes();
-                bytes32 messageHash1 = addresses.keyRegistry.hashTypedDataV4(
-                    keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, vars.operators[i].addr, keccak256(key1Bytes)))
-                );
-                (uint8 v, bytes32 r, bytes32 s) = vm.sign(vars.operators[i].privateKey, messageHash1);
-                bytes memory signature1 = abi.encodePacked(r, s, v);
-                addresses.keyRegistry.setKey(
-                    uint8(IKeyManager.KeyType.ECDSA_SECP256K1).keyTag(0), key1Bytes, signature1, new bytes(0)
-                );
-            }
-
-            {
-                BN254.G1Point memory keyG1 = BN254.generatorG1().scalar_mul(vars.operators[i].privateKey);
-                BN254.G2Point memory keyG2 = getG2Key(vars.operators[i].privateKey);
-                bytes memory key0Bytes = KeyBlsBn254.wrap(keyG1).toBytes();
-                bytes32 messageHash0 = addresses.keyRegistry.hashTypedDataV4(
-                    keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, vars.operators[i].addr, keccak256(key0Bytes)))
-                );
-                BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash0);
-                BN254.G1Point memory sigG1 = messageG1.scalar_mul(vars.operators[i].privateKey);
-                addresses.keyRegistry.setKey(
-                    uint8(IKeyManager.KeyType.BLS_BN254).keyTag(15), key0Bytes, abi.encode(sigG1), abi.encode(keyG2)
-                );
-            }
 
             vm.stopBroadcast();
         }
@@ -244,7 +203,7 @@ contract FourthScript is SymbioticCoreInit {
             string memory path = string.concat(root, "/script/deploy/data/third_params.json");
             string memory json = vm.readFile(path);
             bytes memory data = vm.parseJson(json);
-            thirdParams = abi.decode(data, (ThirdScript.SecondParams));
+            thirdParams = abi.decode(data, (ThirdParams));
         }
 
         addresses_.master = Master(thirdParams.master);

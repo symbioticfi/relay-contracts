@@ -26,19 +26,12 @@ library OperatorManagerLogic {
     bytes32 private constant OperatorManagerStorageLocation =
         0x3b2b549db680c436ebf9aa3c8eeee850852f16da5cdb5137dbc0299ebb219e00;
 
-    /**
-     * @notice Gets the storage pointer for OperatorManager state
-     * @return $ Storage pointer to OperatorManagerStorage struct
-     */
     function _getOperatorManagerStorage() internal pure returns (IOperatorManager.OperatorManagerStorage storage $) {
         assembly {
             $.slot := OperatorManagerStorageLocation
         }
     }
 
-    /**
-     * @notice Initializes the OperatorManager with required parameters
-     */
     function initialize() public {}
 
     function isOperatorRegistered(
@@ -47,10 +40,6 @@ library OperatorManagerLogic {
         return _getOperatorManagerStorage()._operators.contains(operator);
     }
 
-    /**
-     * @notice Returns the total number of registered operators, including both active and inactive
-     * @return The number of registered operators
-     */
     function getAllOperatorsLength() public view returns (uint256) {
         return _getOperatorManagerStorage()._operators.allValues().length();
     }
@@ -88,21 +77,9 @@ library OperatorManagerLogic {
         return _getOperatorManagerStorage()._operators.length(timestamp, hint);
     }
 
-    /**
-     * @notice Registers a new operator
-     * @param operator The address of the operator to register
-     */
-    function registerOperator(
-        address OPERATOR_REGISTRY,
-        address OPERATOR_NETWORK_OPT_IN_SERVICE,
-        address operator
-    ) public {
+    function registerOperator(address OPERATOR_REGISTRY, address operator) public {
         if (!IRegistry(OPERATOR_REGISTRY).isEntity(operator)) {
             revert IOperatorManager.OperatorManager_NotOperator();
-        }
-
-        if (!IOptInService(OPERATOR_NETWORK_OPT_IN_SERVICE).isOptedIn(operator, NetworkManagerLogic.NETWORK())) {
-            revert IOperatorManager.OperatorManager_OperatorNotOptedIn();
         }
 
         if (!_getOperatorManagerStorage()._operators.add(Time.timestamp(), operator)) {
@@ -110,10 +87,6 @@ library OperatorManagerLogic {
         }
     }
 
-    /**
-     * @notice Unregisters an operator
-     * @param operator The address of the operator to unregister
-     */
     function unregisterOperator(
         address operator
     ) public {
