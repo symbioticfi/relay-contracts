@@ -137,7 +137,7 @@ contract InitScript is SymbioticCoreInit {
                     _normalizeForToken_Symbiotic(SYMBIOTIC_CORE_TOKENS_TO_SET_TIMES_1e18, vars.tokens[j])
                 );
             }
-            _deal_Symbiotic(vars.stakers[i].addr, 1 ether);
+            _deal_Symbiotic(vars.stakers[i].addr, 10 ether);
         }
 
         {
@@ -147,7 +147,7 @@ contract InitScript is SymbioticCoreInit {
         }
 
         for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
-            _deal_Symbiotic(vars.operators[i].addr, 1 ether);
+            _deal_Symbiotic(vars.operators[i].addr, 10 ether);
             _operatorRegister_SymbioticCore(vars.operators[i].addr);
         }
 
@@ -215,11 +215,11 @@ contract InitScript is SymbioticCoreInit {
                     _normalizeForToken_Symbiotic(SYMBIOTIC_CORE_TOKENS_TO_SET_TIMES_1e18, vars.tokens[j])
                 );
             }
-            _deal_Symbiotic(vars.stakers[i].addr, 1 ether);
+            _deal_Symbiotic(vars.stakers[i].addr, 10 ether);
         }
 
         for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
-            _deal_Symbiotic(vars.operators[i].addr, 1 ether);
+            _deal_Symbiotic(vars.operators[i].addr, 10 ether);
             _operatorRegister_SymbioticCore(vars.operators[i].addr);
         }
 

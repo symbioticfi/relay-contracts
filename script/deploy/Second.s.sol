@@ -84,7 +84,7 @@ contract SecondScript is SymbioticCoreInit {
 
         SYMBIOTIC_CORE_USE_EXISTING_DEPLOYMENT = true;
 
-        SYMBIOTIC_CORE_DELEGATOR_TYPES = [0, 2];
+        SYMBIOTIC_CORE_DELEGATOR_TYPES = [0];
 
         SymbioticInit.run(seed);
 

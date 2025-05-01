@@ -47,6 +47,7 @@ contract FirstScript is SymbioticCoreInit {
     uint256 public constant SYMBIOTIC_CORE_NUMBER_OF_STAKERS = 1;
 
     uint96 public constant IDENTIFIER = 0;
+    uint48 public constant DEPLOYMENT_BUFFER = 10 * 60;
 
     struct Addresses {
         SelfRegisterVotingPowerProvider masterVotingPowerProvider;
@@ -94,7 +95,7 @@ contract FirstScript is SymbioticCoreInit {
 
         SYMBIOTIC_CORE_USE_EXISTING_DEPLOYMENT = true;
 
-        SYMBIOTIC_CORE_DELEGATOR_TYPES = [0, 2];
+        SYMBIOTIC_CORE_DELEGATOR_TYPES = [0];
 
         SymbioticInit.run(seed);
 
@@ -103,7 +104,7 @@ contract FirstScript is SymbioticCoreInit {
         (InitParams memory initParams, InitScript.InitVars memory vars) = loadInitParams();
         Addresses memory addresses;
 
-        vars.ZERO_TIMESTAMP = uint48(vm.getBlockTimestamp()) + 60 * 60;
+        vars.ZERO_TIMESTAMP = uint48(vm.getBlockTimestamp()) + DEPLOYMENT_BUFFER;
         vm.serializeUint(obj, "init_timestamp", vars.ZERO_TIMESTAMP);
 
         vm.startBroadcast(vars.PRIVATE_KEY_WALLET.privateKey);
