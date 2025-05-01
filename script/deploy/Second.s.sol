@@ -49,6 +49,9 @@ contract SecondScript is SymbioticCoreInit {
 
     uint96 public constant IDENTIFIER = 0;
 
+    uint48 public constant EPOCH_DURATION = 5 * 60;
+    uint48 public constant COMMIT_DURATION = 2 * 60;
+
     struct ChainSetup {
         uint256 chainId;
         SymbioticCoreConstants.Core core;
@@ -140,12 +143,12 @@ contract SecondScript is SymbioticCoreInit {
                         subnetworkID: IDENTIFIER
                     }),
                     epochManagerInitParams: IEpochManager.EpochManagerInitParams({
-                        epochDuration: 3 * 60 * 60,
+                        epochDuration: EPOCH_DURATION,
                         epochDurationTimestamp: vars.ZERO_TIMESTAMP
                     }),
                     ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
                     quorumThresholds: quorumThresholds,
-                    commitDuration: 45 * 60,
+                    commitDuration: COMMIT_DURATION,
                     requiredKeyTag: uint8(IKeyManager.KeyType.BLS_BN254).keyTag(15),
                     sigVerifier: address(new SigVerifierMock())
                 }),

@@ -33,6 +33,7 @@ import {InitScript} from "./Init.s.sol";
 import {FirstScript} from "./First.s.sol";
 import {SecondScript} from "./Second.s.sol";
 import {ThirdScript} from "./Third.s.sol";
+import {FourthScript} from "./Fourth.s.sol";
 
 // forge script script/deploy/Fifth.s.sol:FifthScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_MASTER
 
@@ -50,11 +51,6 @@ contract FifthScript is SymbioticCoreInit {
     uint256 public constant SYMBIOTIC_CORE_NUMBER_OF_STAKERS = 1;
 
     uint96 public constant IDENTIFIER = 0;
-
-    struct ThirdParams {
-        address key_registry;
-        address master;
-    }
 
     function run(
         uint256 seed
@@ -89,7 +85,7 @@ contract FifthScript is SymbioticCoreInit {
         (firstParams, vars, addresses) = loadFirstParams(vars);
         ThirdScript.SecondParams memory secondParams;
         (secondParams, addresses) = loadSecondParams(addresses);
-        ThirdParams memory thirdParams;
+        FourthScript.ThirdParams memory thirdParams;
         (thirdParams, addresses) = loadThirdParams(addresses);
 
         symbioticCore = initParams.master_chain.core;
@@ -223,13 +219,13 @@ contract FifthScript is SymbioticCoreInit {
 
     function loadThirdParams(
         FirstScript.Addresses memory addresses_
-    ) public returns (ThirdParams memory thirdParams, FirstScript.Addresses memory addresses) {
+    ) public returns (FourthScript.ThirdParams memory thirdParams, FirstScript.Addresses memory addresses) {
         {
             string memory root = vm.projectRoot();
             string memory path = string.concat(root, "/script/deploy/data/third_params.json");
             string memory json = vm.readFile(path);
             bytes memory data = vm.parseJson(json);
-            thirdParams = abi.decode(data, (ThirdParams));
+            thirdParams = abi.decode(data, (FourthScript.ThirdParams));
         }
 
         addresses_.master = Master(thirdParams.master);

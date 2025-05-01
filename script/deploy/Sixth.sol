@@ -19,6 +19,7 @@ import {IOzEIP712} from "../../src/interfaces/base/common/IOzEIP712.sol";
 import {IKeyManager} from "../../src/interfaces/base/IKeyManager.sol";
 import {IOzAccessControl} from "../../src/interfaces/features/permissions/IOzAccessControl.sol";
 import {IVaultManager} from "../../src/interfaces/base/IVaultManager.sol";
+import {IBaseKeyManager} from "../../src/interfaces/base/IBaseKeyManager.sol";
 
 import {KeyTag} from "../../src/contracts/libraries/utils/KeyTag.sol";
 import {KeyEcdsaSecp256k1} from "../../src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol";
@@ -32,10 +33,12 @@ import "../../script/integration/SymbioticCoreInit.sol";
 import {InitScript} from "./Init.s.sol";
 import {FirstScript} from "./First.s.sol";
 import {SecondScript} from "./Second.s.sol";
+import {ThirdScript} from "./Third.s.sol";
+import {FourthScript} from "./Fourth.s.sol";
 
-// forge script script/deploy/Third.s.sol:ThirdScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_MASTER
+// forge script script/deploy/Sixth.s.sol:SixthScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_MASTER
 
-contract ThirdScript is SymbioticCoreInit {
+contract SixthScript is SymbioticCoreInit {
     using KeyTag for uint8;
     using KeyBlsBn254 for BN254.G1Point;
     using BN254 for BN254.G1Point;
@@ -50,13 +53,38 @@ contract ThirdScript is SymbioticCoreInit {
 
     uint96 public constant IDENTIFIER = 0;
 
-    uint48 public constant EPOCH_DURATION = 5 * 60;
-    uint48 public constant COMMIT_DURATION = 2 * 60;
+    struct Key {
+	uint8 tag;
+	bytes payload;
+}
 
-    struct SecondParams {
-        address replica;
-        address secondary_voting_power_provider;
-    }
+struct Vault {
+  uint64 chainId;
+	address vault;
+	uint256 votingPower;
+}
+
+struct Validator {
+	address operator;
+	uint256 votingPower; // = min(maxVotingPower, sum(vaults))
+	bool isActive; // is >= minInclusionPower && in maxValidatorsCount subset (desc, sorted by power)
+	Key[] keys;
+	Vault[] vaults;
+	// sum of all vaults' power may not equal to validator's power due to maxVotingPower
+}
+
+struct ValidatorSet {
+	Validator[] validators;
+}
+
+/* 
+before SSZ merkleization and any other accumulator generation:
+ - validator keys must be sorted by tag, asc (tag must be unique within validator)
+ - validator vaults must be sorted by address, asc (address must be unique within validator)
+ - validators must be sorted by address, asc (address must be unique within network)
+ 
+this is needed to make SSZ root generation deterministic
+*/
 
     function run(
         uint256 seed
@@ -85,88 +113,72 @@ contract ThirdScript is SymbioticCoreInit {
 
         SymbioticInit.run(seed);
 
-        string memory obj = "data";
-        string memory finalJson;
         (FirstScript.InitParams memory initParams, InitScript.InitVars memory vars) = loadInitParams();
         SecondScript.FirstParams memory firstParams;
         FirstScript.Addresses memory addresses;
         (firstParams, vars, addresses) = loadFirstParams(vars);
-        SecondParams memory secondParams;
+        ThirdScript.SecondParams memory secondParams;
         (secondParams, addresses) = loadSecondParams(addresses);
+        FourthScript.ThirdParams memory thirdParams;
+        (thirdParams, addresses) = loadThirdParams(addresses);
+
+        symbioticCore = initParams.master_chain.core;
+        vars.tokens = initParams.master_chain.tokens;
 
         vm.startBroadcast(vars.PRIVATE_KEY_WALLET.privateKey);
 
-        addresses.keyRegistry = new KeyRegistry();
-        addresses.keyRegistry.initialize(IOzEIP712.OzEIP712InitParams({name: "KeyRegistry", version: "1"}));
-        vm.serializeAddress(obj, "key_registry", address(addresses.keyRegistry));
 
-        addresses.master = new Master();
+        IBaseKeyManager.OperatorWithKeys[] memory operatorsWithKeys = addresses.keyRegistry.getKeys();
+        IVaultManager.OperatorVotingPower[] memory operatorsVotingPowers = addresses.masterVotingPowerProvider.getVotingPowers(new bytes[](0));
+
+        IBaseKeyManager.Key[] memory activeAggregatedKeys = new IBaseKeyManager.Key[](1);
         {
-            ISettlementManager.QuorumThreshold[] memory quorumThresholds = new ISettlementManager.QuorumThreshold[](1);
-            quorumThresholds[0] = ISettlementManager.QuorumThreshold({
-                keyTag: uint8(IKeyManager.KeyType.BLS_BN254).keyTag(15),
-                threshold: 0.66 * 1e18
-            });
-            uint8[] memory requiredKeyTags = new uint8[](2);
-            requiredKeyTags[0] = uint8(IKeyManager.KeyType.BLS_BN254).keyTag(15);
-            requiredKeyTags[1] = uint8(IKeyManager.KeyType.ECDSA_SECP256K1).keyTag(0);
-            IMasterConfigManager.CrossChainAddress[] memory votingPowerProviders =
-                new IMasterConfigManager.CrossChainAddress[](1);
-            // IMasterConfigManager.CrossChainAddress[] memory votingPowerProviders =
-            //     new IMasterConfigManager.CrossChainAddress[](2);
-            votingPowerProviders[0] = IMasterConfigManager.CrossChainAddress({
-                addr: address(addresses.masterVotingPowerProvider),
-                chainId: uint64(initParams.master_chain.chainId)
-            });
-            // votingPowerProviders[1] = IMasterConfigManager.CrossChainAddress({
-            //     addr: address(addresses.secondaryVotingPowerProvider),
-            //     chainId: uint64(initParams.secondary_chain.chainId)
-            // });
-            IMasterConfigManager.CrossChainAddress memory keysProvider =
-                IMasterConfigManager.CrossChainAddress({addr: vars.network, chainId: 1});
-                IMasterConfigManager.CrossChainAddress[] memory replicas = new IMasterConfigManager.CrossChainAddress[](0);
-            // IMasterConfigManager.CrossChainAddress[] memory replicas = new IMasterConfigManager.CrossChainAddress[](1);
-            // replicas[0] =
-            //     IMasterConfigManager.CrossChainAddress({addr: address(addresses.replica), chainId: 11_155_111});
-            addresses.master.initialize(
-                ISettlementManager.SettlementManagerInitParams({
-                    networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
-                        network: vars.network,
-                        subnetworkID: IDENTIFIER
-                    }),
-                    epochManagerInitParams: IEpochManager.EpochManagerInitParams({
-                        epochDuration: EPOCH_DURATION,
-                        epochDurationTimestamp: vars.ZERO_TIMESTAMP
-                    }),
-                    ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
-                    quorumThresholds: quorumThresholds,
-                    commitDuration: COMMIT_DURATION,
-                    requiredKeyTag: uint8(IKeyManager.KeyType.BLS_BN254).keyTag(15),
-                    sigVerifier: address(new SigVerifierMock())
-                }),
-                IValSetConfigManager.ValSetConfigManagerInitParams({
-                    maxVotingPower: 1e16,
-                    minInclusionVotingPower: 1e4,
-                    maxValidatorsCount: 5,
-                    requiredKeyTags: requiredKeyTags
-                }),
-                IMasterConfigManager.MasterConfigManagerInitParams({
-                    votingPowerProviders: votingPowerProviders,
-                    keysProvider: keysProvider,
-                    replicas: replicas
-                }),
-                vars.network
-            );
+            BN254.G1Point memory aggregatedKeyRaw = BN254.G1Point(0, 0);
+            for (uint256 i; i < operatorsWithKeys.length; ++i) {
+                for (uint256 j; j < operatorsWithKeys[i].keys.length; ++j) {
+                    if (operatorsWithKeys[i].keys[j].tag == uint8(IKeyManager.KeyType.BLS_BN254).keyTag(15)) {
+                        BN254.G1Point memory key = KeyBlsBn254.fromBytes(operatorsWithKeys[i].keys[j].payload).unwrap();
+                        aggregatedKeyRaw = aggregatedKeyRaw.plus(key);
+                    }
+                }
+            }
+            bytes memory aggregatedKey = KeyBlsBn254.wrap(aggregatedKeyRaw).toBytes();
+
+            activeAggregatedKeys[0] =
+                IBaseKeyManager.Key({tag: uint8(IKeyManager.KeyType.BLS_BN254).keyTag(15), payload: aggregatedKey});
         }
-        finalJson = vm.serializeAddress(obj, "master", address(addresses.master));
+
+        uint256 totalActiveVotingPower;
+        {
+            for (uint256 i; i < operatorsVotingPowers.length; ++i) {
+                for (uint256 j; j < operatorsVotingPowers[i].vaults.length; ++j) {
+                    totalActiveVotingPower += operatorsVotingPowers[i].vaults[j].votingPower;
+                }
+            }
+        }
+
+
+
+        addresses.master.setGenesis(
+            ISettlementManager.ValSetHeader({
+                version: addresses.master.VALIDATOR_SET_VERSION(),
+                activeAggregatedKeys: activeAggregatedKeys,
+                totalActiveVotingPower: totalActiveVotingPower,
+                validatorsSszMRoot: bytes32(0),
+                extraData: new bytes(0)
+            })
+        );
 
         vm.stopBroadcast();
+    }
 
-        console2.log("Holesky - VotingPowerProvider: ", address(addresses.masterVotingPowerProvider));
-        console2.log("Holesky - Master: ", address(addresses.master));
-        console2.log("Holesky - KeyRegistry: ", address(addresses.keyRegistry));
-
-        vm.writeJson(finalJson, "script/deploy/data/third_params.json");
+    function getG2Key(
+        uint256 privateKey
+    ) public view returns (BN254.G2Point memory) {
+        BN254.G2Point memory G2 = BN254.generatorG2();
+        (uint256 x1, uint256 x2, uint256 y1, uint256 y2) =
+            BN254G2.ECTwistMul(privateKey, G2.X[1], G2.X[0], G2.Y[1], G2.Y[0]);
+        return BN254.G2Point([x2, x1], [y2, y1]);
     }
 
     function loadInitParams()
@@ -235,13 +247,13 @@ contract ThirdScript is SymbioticCoreInit {
 
     function loadSecondParams(
         FirstScript.Addresses memory addresses_
-    ) public returns (SecondParams memory secondParams, FirstScript.Addresses memory addresses) {
+    ) public returns (ThirdScript.SecondParams memory secondParams, FirstScript.Addresses memory addresses) {
         {
             string memory root = vm.projectRoot();
             string memory path = string.concat(root, "/script/deploy/data/second_params.json");
             string memory json = vm.readFile(path);
             bytes memory data = vm.parseJson(json);
-            secondParams = abi.decode(data, (SecondParams));
+            secondParams = abi.decode(data, (ThirdScript.SecondParams));
         }
 
         addresses_.secondaryVotingPowerProvider =
@@ -249,5 +261,22 @@ contract ThirdScript is SymbioticCoreInit {
         addresses_.replica = Replica(secondParams.replica);
 
         return (secondParams, addresses_);
+    }
+
+    function loadThirdParams(
+        FirstScript.Addresses memory addresses_
+    ) public returns (FourthScript.ThirdParams memory thirdParams, FirstScript.Addresses memory addresses) {
+        {
+            string memory root = vm.projectRoot();
+            string memory path = string.concat(root, "/script/deploy/data/third_params.json");
+            string memory json = vm.readFile(path);
+            bytes memory data = vm.parseJson(json);
+            thirdParams = abi.decode(data, (FourthScript.ThirdParams));
+        }
+
+        addresses_.master = Master(thirdParams.master);
+        addresses_.keyRegistry = KeyRegistry(thirdParams.key_registry);
+
+        return (thirdParams, addresses_);
     }
 }
