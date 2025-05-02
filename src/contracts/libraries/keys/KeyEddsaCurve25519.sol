@@ -54,7 +54,7 @@ library KeyEddsaCurve25519 {
     ) internal view returns (KEY_EDDSA_CURVE25519 memory key) {
         key = KEY_EDDSA_CURVE25519(abi.decode(keyBytes, (bytes32)));
         bytes memory keyBytesDerived = key.unwrap().wrap().toBytes();
-        if (!string(keyBytesDerived).equal(string(keyBytes))) {
+        if (keccak256(keyBytesDerived) != keccak256(keyBytes)) {
             revert InvalidBytes();
         }
     }

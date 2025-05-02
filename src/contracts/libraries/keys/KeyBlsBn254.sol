@@ -79,7 +79,7 @@ library KeyBlsBn254 {
     ) internal view returns (KEY_BLS_BN254 memory key) {
         key = KEY_BLS_BN254(abi.decode(keyBytes, (BN254.G1Point)));
         bytes memory keyBytesDerived = key.unwrap().wrap().toBytes();
-        if (!string(keyBytesDerived).equal(string(keyBytes))) {
+        if (keccak256(keyBytesDerived) != keccak256(keyBytes)) {
             revert InvalidBytes();
         }
     }

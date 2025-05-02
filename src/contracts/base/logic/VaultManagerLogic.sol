@@ -83,7 +83,7 @@ library VaultManagerLogic {
     }
 
     function isTokenActiveAt(address token, uint48 timestamp, bytes memory hint) public view returns (bool) {
-        return _getVaultManagerStorage()._tokens.contains(timestamp, token, hint);
+        return _getVaultManagerStorage()._tokens.containsAt(timestamp, token, hint);
     }
 
     function getAllTokensLength() public view returns (uint256) {
@@ -98,19 +98,19 @@ library VaultManagerLogic {
         uint48 timestamp,
         bytes[] memory hints
     ) public view returns (address[] memory activeTokens) {
-        return _getVaultManagerStorage()._tokens.values(timestamp, hints);
+        return _getVaultManagerStorage()._tokens.valuesAt(timestamp, hints);
     }
 
     function getActiveTokens() public view returns (address[] memory activeTokens) {
         return _getVaultManagerStorage()._tokens.values();
     }
 
-    function getActiveTokensLength() public view returns (uint256) {
-        return _getVaultManagerStorage()._tokens.length();
+    function getActiveTokensLengthAt(uint48 timestamp, bytes memory hint) public view returns (uint256) {
+        return _getVaultManagerStorage()._tokens.lengthAt(timestamp, hint);
     }
 
-    function getActiveTokensLengthAt(uint48 timestamp, bytes memory hint) public view returns (uint256) {
-        return _getVaultManagerStorage()._tokens.length(timestamp, hint);
+    function getActiveTokensLength() public view returns (uint256) {
+        return _getVaultManagerStorage()._tokens.length();
     }
 
     function isSharedVaultRegistered(
@@ -119,14 +119,14 @@ library VaultManagerLogic {
         return _getVaultManagerStorage()._sharedVaults.contains(vault);
     }
 
+    function isSharedVaultActiveAt(address vault, uint48 timestamp, bytes memory hint) public view returns (bool) {
+        return _getVaultManagerStorage()._sharedVaults.containsAt(timestamp, vault, hint);
+    }
+
     function isSharedVaultActive(
         address vault
     ) public view returns (bool) {
         return _getVaultManagerStorage()._sharedVaults.contains(vault);
-    }
-
-    function isSharedVaultActiveAt(address vault, uint48 timestamp, bytes memory hint) public view returns (bool) {
-        return _getVaultManagerStorage()._sharedVaults.contains(timestamp, vault, hint);
     }
 
     /**
@@ -145,26 +145,22 @@ library VaultManagerLogic {
         uint48 timestamp,
         bytes[] memory hints
     ) public view returns (address[] memory activeSharedVaults) {
-        return _getVaultManagerStorage()._sharedVaults.values(timestamp, hints);
+        return _getVaultManagerStorage()._sharedVaults.valuesAt(timestamp, hints);
     }
 
     function getActiveSharedVaults() public view returns (address[] memory activeSharedVaults) {
         return _getVaultManagerStorage()._sharedVaults.values();
     }
 
+    function getActiveSharedVaultsLengthAt(uint48 timestamp, bytes memory hint) public view returns (uint256) {
+        return _getVaultManagerStorage()._sharedVaults.lengthAt(timestamp, hint);
+    }
+
     function getActiveSharedVaultsLength() public view returns (uint256) {
         return _getVaultManagerStorage()._sharedVaults.length();
     }
 
-    function getActiveSharedVaultsLengthAt(uint48 timestamp, bytes memory hint) public view returns (uint256) {
-        return _getVaultManagerStorage()._sharedVaults.length(timestamp, hint);
-    }
-
     function isOperatorVaultRegistered(address operator, address vault) public view returns (bool) {
-        return _getVaultManagerStorage()._operatorVaults[operator].contains(vault);
-    }
-
-    function isOperatorVaultActive(address operator, address vault) public view returns (bool) {
         return _getVaultManagerStorage()._operatorVaults[operator].contains(vault);
     }
 
@@ -174,7 +170,11 @@ library VaultManagerLogic {
         uint48 timestamp,
         bytes memory hint
     ) public view returns (bool) {
-        return _getVaultManagerStorage()._operatorVaults[operator].contains(timestamp, vault, hint);
+        return _getVaultManagerStorage()._operatorVaults[operator].containsAt(timestamp, vault, hint);
+    }
+
+    function isOperatorVaultActive(address operator, address vault) public view returns (bool) {
+        return _getVaultManagerStorage()._operatorVaults[operator].contains(vault);
     }
 
     function getAllOperatorVaultsLength(
@@ -194,7 +194,7 @@ library VaultManagerLogic {
         uint48 timestamp,
         bytes[] memory hints
     ) public view returns (address[] memory activeOperatorVaults) {
-        return _getVaultManagerStorage()._operatorVaults[operator].values(timestamp, hints);
+        return _getVaultManagerStorage()._operatorVaults[operator].valuesAt(timestamp, hints);
     }
 
     function getActiveOperatorVaults(
@@ -203,18 +203,18 @@ library VaultManagerLogic {
         return _getVaultManagerStorage()._operatorVaults[operator].values();
     }
 
-    function getActiveOperatorVaultsLength(
-        address operator
-    ) public view returns (uint256) {
-        return _getVaultManagerStorage()._operatorVaults[operator].length();
-    }
-
     function getActiveOperatorVaultsLengthAt(
         address operator,
         uint48 timestamp,
         bytes memory hint
     ) public view returns (uint256) {
-        return _getVaultManagerStorage()._operatorVaults[operator].length(timestamp, hint);
+        return _getVaultManagerStorage()._operatorVaults[operator].lengthAt(timestamp, hint);
+    }
+
+    function getActiveOperatorVaultsLength(
+        address operator
+    ) public view returns (uint256) {
+        return _getVaultManagerStorage()._operatorVaults[operator].length();
     }
 
     /**
