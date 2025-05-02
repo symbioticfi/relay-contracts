@@ -7,7 +7,7 @@ library KeyEcdsaSecp256k1 {
     using KeyEcdsaSecp256k1 for KEY_ECDSA_SECP256K1;
     using KeyEcdsaSecp256k1 for address;
     using Strings for string;
-    
+
     error InvalidBytes();
 
     struct KEY_ECDSA_SECP256K1 {
@@ -17,6 +17,9 @@ library KeyEcdsaSecp256k1 {
     function wrap(
         address keyRaw
     ) internal view returns (KEY_ECDSA_SECP256K1 memory key) {
+        if (keyRaw == address(0)) {
+            return zeroKey();
+        }
         key = KEY_ECDSA_SECP256K1(keyRaw);
     }
 
@@ -58,10 +61,7 @@ library KeyEcdsaSecp256k1 {
         key = KEY_ECDSA_SECP256K1(address(0));
     }
 
-    function equal(
-        KEY_ECDSA_SECP256K1 memory key1,
-        KEY_ECDSA_SECP256K1 memory key2
-    ) internal view returns (bool) {
+    function equal(KEY_ECDSA_SECP256K1 memory key1, KEY_ECDSA_SECP256K1 memory key2) internal view returns (bool) {
         return key1.value == key2.value;
     }
 }

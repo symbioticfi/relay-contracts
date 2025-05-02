@@ -77,12 +77,12 @@
 //         Validator[] validators;
 //     }
 
-//     /* 
+//     /*
 //     before SSZ merkleization and any other accumulator generation:
 //     - validator keys must be sorted by tag, asc (tag must be unique within validator)
 //     - validator vaults must be sorted by address, asc (address must be unique within validator)
 //     - validators must be sorted by address, asc (address must be unique within network)
-    
+
 //     this is needed to make SSZ root generation deterministic
 //     */
 

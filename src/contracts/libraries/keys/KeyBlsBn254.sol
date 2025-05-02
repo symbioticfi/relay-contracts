@@ -21,7 +21,7 @@ library KeyBlsBn254 {
         BN254.G1Point memory keyRaw
     ) internal view returns (KEY_BLS_BN254 memory key) {
         if (keyRaw.X == 0 && keyRaw.Y == 0) {
-            return KEY_BLS_BN254(keyRaw);
+            return zeroKey();
         }
         if (keyRaw.X >= BN254.FP_MODULUS || keyRaw.Y >= BN254.FP_MODULUS) {
             revert InvalidKey();
@@ -88,10 +88,7 @@ library KeyBlsBn254 {
         key = KEY_BLS_BN254(BN254.G1Point({X: 0, Y: 0}));
     }
 
-    function equal(
-        KEY_BLS_BN254 memory key1,
-        KEY_BLS_BN254 memory key2
-    ) internal view returns (bool) {
+    function equal(KEY_BLS_BN254 memory key1, KEY_BLS_BN254 memory key2) internal view returns (bool) {
         return key1.value.X == key2.value.X && key1.value.Y == key2.value.Y;
     }
 }

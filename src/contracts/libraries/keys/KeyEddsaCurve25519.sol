@@ -3,6 +3,8 @@ pragma solidity ^0.8.25;
 
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
+import {p, d, pMINUS_1} from "@crypto-lib/fields/SCL_wei25519.sol";
+
 library KeyEddsaCurve25519 {
     using KeyEddsaCurve25519 for KEY_EDDSA_CURVE25519;
     using KeyEddsaCurve25519 for bytes32;
@@ -17,6 +19,9 @@ library KeyEddsaCurve25519 {
     function wrap(
         bytes32 keyRaw
     ) internal view returns (KEY_EDDSA_CURVE25519 memory key) {
+        if (keyRaw == bytes32(0)) {
+            return zeroKey();
+        }
         key = KEY_EDDSA_CURVE25519(keyRaw);
     }
 
@@ -58,10 +63,7 @@ library KeyEddsaCurve25519 {
         key = KEY_EDDSA_CURVE25519(bytes32(0));
     }
 
-    function equal(
-        KEY_EDDSA_CURVE25519 memory key1,
-        KEY_EDDSA_CURVE25519 memory key2
-    ) internal view returns (bool) {
+    function equal(KEY_EDDSA_CURVE25519 memory key1, KEY_EDDSA_CURVE25519 memory key2) internal view returns (bool) {
         return key1.value == key2.value;
     }
 }
