@@ -32,6 +32,9 @@ import "../../script/integration/SymbioticCoreInit.sol";
 import {InitScript} from "./Init.s.sol";
 import {FirstScript} from "./First.s.sol";
 
+import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
+import {INetworkRestakeDelegator} from "@symbioticfi/core/src/interfaces/delegator/INetworkRestakeDelegator.sol";
+
 // forge script script/deploy/Second.s.sol:SecondScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_SECONDARY
 
 contract SecondScript is SymbioticCoreInit {
@@ -122,7 +125,17 @@ contract SecondScript is SymbioticCoreInit {
                 addresses.secondaryVotingPowerProvider.registerToken(vars.tokens[i]);
             }
             for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_VAULTS; ++i) {
+                IBaseDelegator(vars.secondaryVaults[i]).setMaxNetworkLimit(IDENTIFIER, type(uint256).max);
                 addresses.secondaryVotingPowerProvider.registerSharedVault(vars.secondaryVaults[i]);
+
+                INetworkRestakeDelegator(vars.secondaryVaults[i]).setNetworkLimit(
+                    addresses.secondaryVotingPowerProvider.SUBNETWORK(), type(uint256).max
+                );
+                for (uint256 j; j < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++j) {
+                    INetworkRestakeDelegator(vars.secondaryVaults[i]).setOperatorNetworkShares(
+                        addresses.secondaryVotingPowerProvider.SUBNETWORK(), vars.operators[j].addr, 1e18
+                    );
+                }
             }
         }
 
