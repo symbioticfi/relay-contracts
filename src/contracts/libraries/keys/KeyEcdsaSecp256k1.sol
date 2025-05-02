@@ -1,9 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+
 library KeyEcdsaSecp256k1 {
     using KeyEcdsaSecp256k1 for KEY_ECDSA_SECP256K1;
     using KeyEcdsaSecp256k1 for address;
+    using Strings for string;
+    
+    error InvalidBytes();
 
     struct KEY_ECDSA_SECP256K1 {
         address value;
@@ -44,8 +49,19 @@ library KeyEcdsaSecp256k1 {
     ) internal view returns (KEY_ECDSA_SECP256K1 memory key) {
         key = KEY_ECDSA_SECP256K1(abi.decode(keyBytes, (address)));
         bytes memory keyBytesDerived = key.unwrap().wrap().toBytes();
-        if (keyBytesDerived.length != keyBytes.length || keccak256(keyBytesDerived) != keccak256(keyBytes)) {
-            revert("Invalid bytes");
+        if (!string(keyBytesDerived).equal(string(keyBytes))) {
+            revert InvalidBytes();
         }
+    }
+
+    function zeroKey() internal view returns (KEY_ECDSA_SECP256K1 memory key) {
+        key = KEY_ECDSA_SECP256K1(address(0));
+    }
+
+    function equal(
+        KEY_ECDSA_SECP256K1 memory key1,
+        KEY_ECDSA_SECP256K1 memory key2
+    ) internal view returns (bool) {
+        return key1.value == key2.value;
     }
 }

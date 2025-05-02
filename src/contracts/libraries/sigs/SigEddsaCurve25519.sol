@@ -8,11 +8,16 @@ library SigEddsaCurve25519 {
     using KeyEddsaCurve25519 for KeyEddsaCurve25519.KEY_EDDSA_CURVE25519;
 
     function verify(
-        bytes memory key,
+        bytes memory keyBytes,
         bytes memory message,
         bytes memory signature,
         bytes memory /* extraData */
     ) internal returns (bool) {
-        return EdDSA.verify(message, signature, KeyEddsaCurve25519.fromBytes(key).unwrap());
+        KeyEddsaCurve25519.KEY_EDDSA_CURVE25519 memory key = KeyEddsaCurve25519.fromBytes(keyBytes);
+        if (key.equal(KeyEddsaCurve25519.zeroKey())) {
+            return false;
+        }
+
+        return EdDSA.verify(message, signature, key.unwrap());
     }
 }
