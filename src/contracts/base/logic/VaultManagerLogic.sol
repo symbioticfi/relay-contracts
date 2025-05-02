@@ -321,8 +321,8 @@ library VaultManagerLogic {
         for (uint256 i; i < sharedVaults.length; ++i) {
             votingPower += getOperatorVotingPowerAt(
                 stakeToVotingPowerAt,
-                sharedVaults[i],
                 operator,
+                sharedVaults[i],
                 operatorVotingPowersExtraData.sharedVaultsExtraData[i],
                 timestamp,
                 operatorVotingPowersHints.sharedVaultsVotingPowerHints[i]
@@ -337,8 +337,8 @@ library VaultManagerLogic {
         for (uint256 i; i < operatorVaults.length; ++i) {
             votingPower += getOperatorVotingPowerAt(
                 stakeToVotingPowerAt,
-                operatorVaults[i],
                 operator,
+                operatorVaults[i],
                 operatorVotingPowersExtraData.operatorVaultsExtraData[i],
                 timestamp,
                 operatorVotingPowersHints.operatorVaultsVotingPowerHints[i]
@@ -406,8 +406,8 @@ library VaultManagerLogic {
         for (uint256 i; i < sharedVaults.length; ++i) {
             uint256 votingPower_ = getOperatorVotingPowerAt(
                 stakeToVotingPowerAt,
-                sharedVaults[i],
                 operator,
+                sharedVaults[i],
                 operatorVotingPowersExtraData.sharedVaultsExtraData[i],
                 timestamp,
                 operatorVotingPowersHints.sharedVaultsVotingPowerHints[i]
@@ -424,8 +424,8 @@ library VaultManagerLogic {
         for (uint256 i; i < operatorVaults.length; ++i) {
             uint256 votingPower_ = getOperatorVotingPowerAt(
                 stakeToVotingPowerAt,
-                operatorVaults[i],
                 operator,
+                operatorVaults[i],
                 operatorVotingPowersExtraData.operatorVaultsExtraData[i],
                 timestamp,
                 operatorVotingPowersHints.operatorVaultsVotingPowerHints[i]
