@@ -33,7 +33,8 @@
     "anvil:dump": "concurrently \"yarn anvil:dump1\"",
     "anvil:bump1": "source .env && node script/deploy/load-anvil-state.js --stateFile script/deploy/data/anvil1.txt --rpcEnv ETH_RPC_URL_MASTER",
     "anvil:bump2": "source .env && node script/deploy/load-anvil-state.js --stateFile script/deploy/data/anvil2.txt --rpcEnv ETH_RPC_URL_SECONDARY",
-    "anvil:bump": "concurrently \"yarn anvil:bump1\""
+    "anvil:bump": "concurrently \"yarn anvil:bump1\"",
+    "deploy:snapshot": "concurrently \"yarn deploy:anvil\" \"yarn sleep && yarn anvil:bump\""
   },
   "dependencies": {
     "@noble/curves": "^1.3.0",
