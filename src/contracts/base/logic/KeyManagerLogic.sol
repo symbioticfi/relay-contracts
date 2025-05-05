@@ -218,7 +218,7 @@ library KeyManagerLogic {
         $._operatorByKeyHash[keyHash] = operator;
         $._operatorByTypeAndKeyHash[type_][keyHash] = operator;
         $._operatorByTagAndKeyHash[tag][keyHash] = operator;
-        
+
         $._operators.add(Time.timestamp(), operator);
         $._operatorKeyTags[operator].push(Time.timestamp(), $._operatorKeyTags[operator].latest() | uint208(1 << tag));
         setKey(operator, tag, key);
