@@ -6,8 +6,8 @@
   "scripts": {
     "testgen": "node test/helpers/ed25519TestGenerator.js",
     "sleep": "node -e \"setTimeout(()=>{}, Number(3)*1000)\"",
-    "deploy:anvil1": "anvil --port 8545 --timestamp 1746024269 --mnemonic \"test test test test test test test test test test test junk\" --auto-impersonate --chain-id 111 --block-time 0.1 --slots-in-an-epoch 4",
-    "deploy:anvil2": "anvil --port 8546 --timestamp 1746024269 --mnemonic \"test test test test test test test test test test test junk\" --auto-impersonate --chain-id 222 --block-time 0.1 --slots-in-an-epoch 4",
+    "deploy:anvil1": "anvil --port 8545 --timestamp 1746024269 --mnemonic \"test test test test test test test test test test test junk\" --auto-impersonate --no-request-size-limit --chain-id 111 --block-time 0.1 --slots-in-an-epoch 4",
+    "deploy:anvil2": "anvil --port 8546 --timestamp 1746024269 --mnemonic \"test test test test test test test test test test test junk\" --auto-impersonate --no-request-size-limit --chain-id 222 --block-time 0.1 --slots-in-an-epoch 4",
     "deploy:init": "forge script script/deploy/Init.s.sol:InitScript 25235 --sig \"run(uint256)\" --multi --broadcast --legacy --slow --skip-simulation --gas-estimate-multiplier 200 -vv",
     "deploy:first": "source .env && forge script script/deploy/First.s.sol:FirstScript 25235 --sig \"run(uint256)\" --rpc-url $ETH_RPC_URL_MASTER --broadcast --legacy --slow --skip-simulation --gas-estimate-multiplier 200 -vv",
     "deploy:second": "source .env && forge script script/deploy/Second.s.sol:SecondScript 25235 --sig \"run(uint256)\" --rpc-url $ETH_RPC_URL_SECONDARY --broadcast --legacy --slow --skip-simulation --gas-estimate-multiplier 200 -vv",
@@ -27,10 +27,17 @@
     "deploy:genesis2": "",
     "deploy:genesis": "concurrently \"yarn deploy:genesis1\"",
     "deploy:scripts": "npm-run-all -s deploy:init deploy:first deploy:third deploy:fourth_fifth deploy:anvil_wait deploy:generate_genesis deploy:genesis",
-    "deploy": "concurrently \"yarn deploy:anvil\" \"yarn sleep && yarn deploy:scripts\""
+    "deploy": "concurrently \"yarn deploy:anvil\" \"yarn sleep && yarn deploy:scripts\"",
+    "anvil:dump1": "source .env && cast rpc anvil_dumpState --rpc-url $ETH_RPC_URL_MASTER > script/deploy/data/anvil1.txt",
+    "anvil:dump2": "source .env && cast rpc anvil_dumpState --rpc-url $ETH_RPC_URL_SECONDARY > script/deploy/data/anvil2.txt",
+    "anvil:dump": "concurrently \"yarn anvil:dump1\"",
+    "anvil:bump1": "source .env && node script/deploy/load-anvil-state.js --stateFile script/deploy/data/anvil1.txt --rpcEnv ETH_RPC_URL_MASTER",
+    "anvil:bump2": "source .env && node script/deploy/load-anvil-state.js --stateFile script/deploy/data/anvil2.txt --rpcEnv ETH_RPC_URL_SECONDARY",
+    "anvil:bump": "concurrently \"yarn anvil:bump1\""
   },
   "dependencies": {
     "@noble/curves": "^1.3.0",
+    "dotenv": "^16.5.0",
     "ethereum-cryptography": "^2.1.3",
     "ethers": "^6.11.1"
   },
