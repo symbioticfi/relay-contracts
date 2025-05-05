@@ -17,7 +17,7 @@ library SigBlsBn254 {
         bytes memory message,
         bytes memory signature,
         bytes memory extraData
-    ) internal returns (bool) {
+    ) internal view returns (bool) {
         KeyBlsBn254.KEY_BLS_BN254 memory key = KeyBlsBn254.fromBytes(keyBytes);
         if (key.equal(KeyBlsBn254.zeroKey())) {
             return false;

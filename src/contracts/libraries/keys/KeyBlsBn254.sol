@@ -61,11 +61,10 @@ library KeyBlsBn254 {
         }
         uint256 X = uint256(compressedKey) >> 1;
         (, uint256 derivedY) = BN254.findYFromX(X);
-        key = KEY_BLS_BN254(
-            (uint256(compressedKey) & 1) == 1
-                ? BN254.negate(BN254.G1Point({X: X, Y: derivedY}))
-                : BN254.G1Point({X: X, Y: derivedY})
-        );
+        key.value = BN254.G1Point({X: X, Y: derivedY});
+        if ((uint256(compressedKey) & 1) == 1) {
+            key.value = BN254.negate(key.value);
+        }
     }
 
     function toBytes(
@@ -77,7 +76,7 @@ library KeyBlsBn254 {
     function fromBytes(
         bytes memory keyBytes
     ) internal view returns (KEY_BLS_BN254 memory key) {
-        key = KEY_BLS_BN254(abi.decode(keyBytes, (BN254.G1Point)));
+        key = abi.decode(keyBytes, (KEY_BLS_BN254));
         bytes memory keyBytesDerived = key.unwrap().wrap().toBytes();
         if (keccak256(keyBytesDerived) != keccak256(keyBytes)) {
             revert InvalidBytes();

@@ -14,7 +14,7 @@ library SigEcdsaSecp256k1 {
         bytes memory message,
         bytes memory signature,
         bytes memory /* extraData */
-    ) internal returns (bool) {
+    ) internal view returns (bool) {
         KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1 memory key = KeyEcdsaSecp256k1.fromBytes(keyBytes);
         if (key.equal(KeyEcdsaSecp256k1.zeroKey())) {
             return false;
