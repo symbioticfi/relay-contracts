@@ -73,17 +73,7 @@ library VaultManagerLogic {
     function isTokenRegistered(
         address token
     ) public view returns (bool) {
-        return _getVaultManagerStorage()._tokens.contains(token);
-    }
-
-    function isTokenActive(
-        address token
-    ) public view returns (bool) {
-        return _getVaultManagerStorage()._tokens.contains(token);
-    }
-
-    function isTokenActiveAt(address token, uint48 timestamp, bytes memory hint) public view returns (bool) {
-        return _getVaultManagerStorage()._tokens.containsAt(timestamp, token, hint);
+        return _getVaultManagerStorage()._tokens.allValues().contains(token);
     }
 
     function getAllTokensLength() public view returns (uint256) {
@@ -92,6 +82,16 @@ library VaultManagerLogic {
 
     function getAllTokens() public view returns (address[] memory) {
         return _getVaultManagerStorage()._tokens.allValues().values();
+    }
+
+    function isTokenActiveAt(address token, uint48 timestamp, bytes memory hint) public view returns (bool) {
+        return _getVaultManagerStorage()._tokens.containsAt(timestamp, token, hint);
+    }
+
+    function isTokenActive(
+        address token
+    ) public view returns (bool) {
+        return _getVaultManagerStorage()._tokens.contains(token);
     }
 
     function getActiveTokensAt(
@@ -467,7 +467,7 @@ library VaultManagerLogic {
             }
         }
         operatorVotingPowersExtraData.operatorVaultsExtraData =
-            operatorVotingPowersExtraData.operatorVaultsExtraData.normalize(sharedVaults.length);
+            operatorVotingPowersExtraData.operatorVaultsExtraData.normalize(operatorVaults.length);
         for (uint256 i; i < operatorVaults.length; ++i) {
             uint256 votingPower_ = getOperatorVotingPower(
                 stakeToVotingPower,

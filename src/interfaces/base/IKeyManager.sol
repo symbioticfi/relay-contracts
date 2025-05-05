@@ -9,9 +9,7 @@ import {PersistentSet} from "../../contracts/libraries/structs/PersistentSet.sol
 interface IKeyManager is IBaseKeyManager {
     error KeyManager_InvalidKeyType();
     error KeyManager_Duplicate();
-    error KeyManager_InvalidBLSKeySignature();
-    error KeyManager_InvalidECDSAKeySignature();
-    error KeyManager_InvalidEdDSAKeySignature();
+    error KeyManager_InvalidKeySignature();
     error KeyManager_AlreadyUsed();
     error KeyManager_OnlyPredeterminedKeyTagsAllowed();
 

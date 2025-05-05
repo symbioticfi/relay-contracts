@@ -33,11 +33,11 @@ abstract contract SelfRegisterOperators is
         keccak256("RegisterOperator(address operator,address vault,uint256 nonce)");
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.SelfRegisterOperators")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant BaseSelfResgisterOperators_STORAGE_LOCATION =
+    bytes32 private constant BaseSelfRegisterOperators_STORAGE_LOCATION =
         0x7c1bcd600c3fcfbc53470fac03a90d5cf6aa7b77c3f1ed10e6c6bd4d192eaf00;
 
     function _getSelfRegisterOperatorsStorage() internal pure returns (SelfRegisterOperatorsStorage storage $) {
-        bytes32 location = BaseSelfResgisterOperators_STORAGE_LOCATION;
+        bytes32 location = BaseSelfRegisterOperators_STORAGE_LOCATION;
         assembly {
             $.slot := location
         }

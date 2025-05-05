@@ -270,15 +270,6 @@ abstract contract VaultManager is OperatorManager, StakeToVotingPowerManager, IV
     /**
      * @inheritdoc IVaultManager
      */
-    function getActiveOperatorVaultsLength(
-        address operator
-    ) public view virtual returns (uint256) {
-        return VaultManagerLogic.getActiveOperatorVaultsLength(operator);
-    }
-
-    /**
-     * @inheritdoc IVaultManager
-     */
     function getActiveOperatorVaultsLengthAt(
         address operator,
         uint48 timestamp,
@@ -290,15 +281,24 @@ abstract contract VaultManager is OperatorManager, StakeToVotingPowerManager, IV
     /**
      * @inheritdoc IVaultManager
      */
+    function getActiveOperatorVaultsLength(
+        address operator
+    ) public view virtual returns (uint256) {
+        return VaultManagerLogic.getActiveOperatorVaultsLength(operator);
+    }
+
+    /**
+     * @inheritdoc IVaultManager
+     */
     function getOperatorVotingPowerAt(
-        address vault,
         address operator,
+        address vault,
         bytes memory extraData,
         uint48 timestamp,
         bytes memory hints
     ) public view virtual returns (uint256) {
         return VaultManagerLogic.getOperatorVotingPowerAt(
-            this.stakeToVotingPowerAt, vault, operator, extraData, timestamp, hints
+            this.stakeToVotingPowerAt, operator, vault, extraData, timestamp, hints
         );
     }
 
@@ -306,11 +306,11 @@ abstract contract VaultManager is OperatorManager, StakeToVotingPowerManager, IV
      * @inheritdoc IVaultManager
      */
     function getOperatorVotingPower(
-        address vault,
         address operator,
+        address vault,
         bytes memory extraData
     ) public view virtual returns (uint256) {
-        return VaultManagerLogic.getOperatorVotingPower(this.stakeToVotingPower, vault, operator, extraData);
+        return VaultManagerLogic.getOperatorVotingPower(this.stakeToVotingPower, operator, vault, extraData);
     }
 
     /**

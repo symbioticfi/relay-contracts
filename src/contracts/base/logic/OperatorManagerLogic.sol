@@ -2,21 +2,17 @@
 pragma solidity ^0.8.25;
 
 import {IRegistry} from "@symbioticfi/core/src/interfaces/common/IRegistry.sol";
-import {IOptInService} from "@symbioticfi/core/src/interfaces/service/IOptInService.sol";
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
-import {Arrays} from "@openzeppelin/contracts/utils/Arrays.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
 import {PersistentSet} from "../../libraries/structs/PersistentSet.sol";
-import {NetworkManagerLogic} from "./NetworkManagerLogic.sol";
 
 import {IOperatorManager} from "../../../interfaces/base/IOperatorManager.sol";
 
 library OperatorManagerLogic {
     using Checkpoints for Checkpoints.Trace208;
-    using Arrays for address[];
     using PersistentSet for PersistentSet.AddressSet;
     using EnumerableSet for EnumerableSet.AddressSet;
 
@@ -37,7 +33,7 @@ library OperatorManagerLogic {
     function isOperatorRegistered(
         address operator
     ) public view returns (bool) {
-        return _getOperatorManagerStorage()._operators.contains(operator);
+        return _getOperatorManagerStorage()._operators.allValues().contains(operator);
     }
 
     function getAllOperatorsLength() public view returns (uint256) {

@@ -13,11 +13,6 @@ library NetworkManagerLogic {
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.NetworkManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant NetworkManagerLocation = 0x779150488f5e984d1f840ba606e388ada6c73b44f261274c3595c61a30023e00;
 
-    /**
-     * @notice Internal helper to access the VaultManager storage struct
-     * @dev Uses assembly to load storage location from a constant slot
-     * @return $ Config pointer to the VaultManagerConfig struct
-     */
     function _getNetworkManagerStorage() internal pure returns (INetworkManager.NetworkManagerStorage storage $) {
         assembly {
             $.slot := NetworkManagerLocation
@@ -32,10 +27,6 @@ library NetworkManagerLogic {
         $._subnetworkID = initParams.subnetworkID;
     }
 
-    /**
-     * @notice Returns the address of the network
-     * @return network The address of the network
-     */
     function NETWORK() internal view returns (address) {
         return _getNetworkManagerStorage()._network;
     }
