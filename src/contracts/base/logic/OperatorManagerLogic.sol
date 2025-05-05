@@ -48,33 +48,33 @@ library OperatorManagerLogic {
         return _getOperatorManagerStorage()._operators.allValues().values();
     }
 
+    function isOperatorActiveAt(address operator, uint48 timestamp, bytes memory hint) public view returns (bool) {
+        return _getOperatorManagerStorage()._operators.containsAt(timestamp, operator, hint);
+    }
+
     function isOperatorActive(
         address operator
     ) public view returns (bool) {
         return _getOperatorManagerStorage()._operators.contains(operator);
     }
 
-    function isOperatorActiveAt(address operator, uint48 timestamp, bytes memory hint) public view returns (bool) {
-        return _getOperatorManagerStorage()._operators.contains(timestamp, operator, hint);
-    }
-
     function getActiveOperatorsAt(
         uint48 timestamp,
         bytes[] memory hints
     ) public view returns (address[] memory activeOperators) {
-        return _getOperatorManagerStorage()._operators.values(timestamp, hints);
+        return _getOperatorManagerStorage()._operators.valuesAt(timestamp, hints);
     }
 
     function getActiveOperators() public view returns (address[] memory activeOperators) {
         return _getOperatorManagerStorage()._operators.values();
     }
 
-    function getActiveOperatorsLength() public view returns (uint256) {
-        return _getOperatorManagerStorage()._operators.length();
+    function getActiveOperatorsLengthAt(uint48 timestamp, bytes memory hint) public view returns (uint256) {
+        return _getOperatorManagerStorage()._operators.lengthAt(timestamp, hint);
     }
 
-    function getActiveOperatorsLengthAt(uint48 timestamp, bytes memory hint) public view returns (uint256) {
-        return _getOperatorManagerStorage()._operators.length(timestamp, hint);
+    function getActiveOperatorsLength() public view returns (uint256) {
+        return _getOperatorManagerStorage()._operators.length();
     }
 
     function registerOperator(address OPERATOR_REGISTRY, address operator) public {

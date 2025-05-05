@@ -10,12 +10,17 @@ library SigEcdsaSecp256k1 {
     using KeyEcdsaSecp256k1 for KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1;
 
     function verify(
-        bytes memory key,
+        bytes memory keyBytes,
         bytes memory message,
         bytes memory signature,
         bytes memory /* extraData */
     ) internal returns (bool) {
+        KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1 memory key = KeyEcdsaSecp256k1.fromBytes(keyBytes);
+        if (key.equal(KeyEcdsaSecp256k1.zeroKey())) {
+            return false;
+        }
+
         address signer = ECDSA.recover(abi.decode(message, (bytes32)), signature);
-        return signer != address(0) && signer == KeyEcdsaSecp256k1.fromBytes(key).unwrap();
+        return signer != address(0) && signer == key.unwrap();
     }
 }

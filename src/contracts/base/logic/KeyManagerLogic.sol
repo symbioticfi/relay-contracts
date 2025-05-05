@@ -154,7 +154,7 @@ library KeyManagerLogic {
         uint48 timestamp,
         bytes[] memory hints
     ) public view returns (address[] memory operators) {
-        return _getKeyManagerStorage()._operators.values(timestamp, hints);
+        return _getKeyManagerStorage()._operators.valuesAt(timestamp, hints);
     }
 
     function getKeysOperators() public view returns (address[] memory operators) {
@@ -162,7 +162,7 @@ library KeyManagerLogic {
     }
 
     function getKeysOperatorsLengthAt(uint48 timestamp, bytes memory hint) public view returns (uint256) {
-        return _getKeyManagerStorage()._operators.length(timestamp, hint);
+        return _getKeyManagerStorage()._operators.lengthAt(timestamp, hint);
     }
 
     function getKeysOperatorsLength() public view returns (uint256) {

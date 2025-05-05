@@ -78,7 +78,7 @@ abstract contract MasterConfigManager is PermissionManager, IMasterConfigManager
         bytes[] memory hints
     ) internal view virtual returns (CrossChainAddress[] memory activeVotingPowerProviders) {
         bytes32[] memory activeVotingPowerProvidersRaw =
-            _getMasterConfigManagerStorage()._votingPowerProviders.values(timestamp, hints);
+            _getMasterConfigManagerStorage()._votingPowerProviders.valuesAt(timestamp, hints);
         activeVotingPowerProviders = new CrossChainAddress[](activeVotingPowerProvidersRaw.length);
         for (uint256 i; i < activeVotingPowerProvidersRaw.length; ++i) {
             activeVotingPowerProviders[i] = _deserializeCrossChainAddress(activeVotingPowerProvidersRaw[i]);
@@ -148,7 +148,7 @@ abstract contract MasterConfigManager is PermissionManager, IMasterConfigManager
         uint48 timestamp,
         bytes[] memory hints
     ) internal view virtual returns (CrossChainAddress[] memory activeReplicas) {
-        bytes32[] memory activeReplicasRaw = _getMasterConfigManagerStorage()._replicas.values(timestamp, hints);
+        bytes32[] memory activeReplicasRaw = _getMasterConfigManagerStorage()._replicas.valuesAt(timestamp, hints);
         activeReplicas = new CrossChainAddress[](activeReplicasRaw.length);
         for (uint256 i; i < activeReplicasRaw.length; ++i) {
             activeReplicas[i] = _deserializeCrossChainAddress(activeReplicasRaw[i]);

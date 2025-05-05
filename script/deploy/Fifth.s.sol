@@ -94,6 +94,18 @@ contract FifthScript is SymbioticCoreInit {
         for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
             vm.startBroadcast(vars.operators[i].privateKey);
 
+            if (
+                !symbioticCore.operatorNetworkOptInService.isOptedIn(
+                    vars.operators[i].addr, vars.PRIVATE_KEY_WALLET.addr
+                )
+            ) {
+                symbioticCore.operatorNetworkOptInService.optIn(vars.PRIVATE_KEY_WALLET.addr);
+            }
+
+            for (uint256 j; j < SYMBIOTIC_CORE_NUMBER_OF_VAULTS; ++j) {
+                symbioticCore.operatorVaultOptInService.optIn(vars.masterVaults[j]);
+            }
+
             addresses.masterVotingPowerProvider.registerOperator(address(0));
 
             {

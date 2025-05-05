@@ -53,39 +53,6 @@ contract SixthScript is SymbioticCoreInit {
 
     uint96 public constant IDENTIFIER = 0;
 
-    struct Key {
-	uint8 tag;
-	bytes payload;
-}
-
-struct Vault {
-  uint64 chainId;
-	address vault;
-	uint256 votingPower;
-}
-
-struct Validator {
-	address operator;
-	uint256 votingPower; // = min(maxVotingPower, sum(vaults))
-	bool isActive; // is >= minInclusionPower && in maxValidatorsCount subset (desc, sorted by power)
-	Key[] keys;
-	Vault[] vaults;
-	// sum of all vaults' power may not equal to validator's power due to maxVotingPower
-}
-
-struct ValidatorSet {
-	Validator[] validators;
-}
-
-/* 
-before SSZ merkleization and any other accumulator generation:
- - validator keys must be sorted by tag, asc (tag must be unique within validator)
- - validator vaults must be sorted by address, asc (address must be unique within validator)
- - validators must be sorted by address, asc (address must be unique within network)
- 
-this is needed to make SSZ root generation deterministic
-*/
-
     function run(
         uint256 seed
     ) public override {
@@ -127,47 +94,46 @@ this is needed to make SSZ root generation deterministic
 
         vm.startBroadcast(vars.PRIVATE_KEY_WALLET.privateKey);
 
+        // IBaseKeyManager.OperatorWithKeys[] memory operatorsWithKeys = addresses.keyRegistry.getKeys();
+        IVaultManager.OperatorVotingPower[] memory operatorsVotingPowers = addresses
+            .masterVotingPowerProvider
+            .getVotingPowersAt(new bytes[](0), addresses.master.getCaptureTimestamp(), new bytes(0));
 
-        IBaseKeyManager.OperatorWithKeys[] memory operatorsWithKeys = addresses.keyRegistry.getKeys();
-        IVaultManager.OperatorVotingPower[] memory operatorsVotingPowers = addresses.masterVotingPowerProvider.getVotingPowers(new bytes[](0));
+        // IBaseKeyManager.Key[] memory activeAggregatedKeys = new IBaseKeyManager.Key[](1);
+        // {
+        //     BN254.G1Point memory aggregatedKeyRaw = BN254.G1Point(0, 0);
+        //     for (uint256 i; i < operatorsWithKeys.length; ++i) {
+        //         for (uint256 j; j < operatorsWithKeys[i].keys.length; ++j) {
+        //             if (operatorsWithKeys[i].keys[j].tag == uint8(IKeyManager.KeyType.BLS_BN254).keyTag(15)) {
+        //                 BN254.G1Point memory key = KeyBlsBn254.fromBytes(operatorsWithKeys[i].keys[j].payload).unwrap();
+        //                 aggregatedKeyRaw = aggregatedKeyRaw.plus(key);
+        //             }
+        //         }
+        //     }
+        //     bytes memory aggregatedKey = KeyBlsBn254.wrap(aggregatedKeyRaw).toBytes();
 
-        IBaseKeyManager.Key[] memory activeAggregatedKeys = new IBaseKeyManager.Key[](1);
-        {
-            BN254.G1Point memory aggregatedKeyRaw = BN254.G1Point(0, 0);
-            for (uint256 i; i < operatorsWithKeys.length; ++i) {
-                for (uint256 j; j < operatorsWithKeys[i].keys.length; ++j) {
-                    if (operatorsWithKeys[i].keys[j].tag == uint8(IKeyManager.KeyType.BLS_BN254).keyTag(15)) {
-                        BN254.G1Point memory key = KeyBlsBn254.fromBytes(operatorsWithKeys[i].keys[j].payload).unwrap();
-                        aggregatedKeyRaw = aggregatedKeyRaw.plus(key);
-                    }
-                }
-            }
-            bytes memory aggregatedKey = KeyBlsBn254.wrap(aggregatedKeyRaw).toBytes();
+        //     activeAggregatedKeys[0] =
+        //         IBaseKeyManager.Key({tag: uint8(IKeyManager.KeyType.BLS_BN254).keyTag(15), payload: aggregatedKey});
+        // }
 
-            activeAggregatedKeys[0] =
-                IBaseKeyManager.Key({tag: uint8(IKeyManager.KeyType.BLS_BN254).keyTag(15), payload: aggregatedKey});
-        }
+        // uint256 totalActiveVotingPower;
+        // {
+        //     for (uint256 i; i < operatorsVotingPowers.length; ++i) {
+        //         for (uint256 j; j < operatorsVotingPowers[i].vaults.length; ++j) {
+        //             totalActiveVotingPower += operatorsVotingPowers[i].vaults[j].votingPower;
+        //         }
+        //     }
+        // }
 
-        uint256 totalActiveVotingPower;
-        {
-            for (uint256 i; i < operatorsVotingPowers.length; ++i) {
-                for (uint256 j; j < operatorsVotingPowers[i].vaults.length; ++j) {
-                    totalActiveVotingPower += operatorsVotingPowers[i].vaults[j].votingPower;
-                }
-            }
-        }
-
-
-
-        addresses.master.setGenesis(
-            ISettlementManager.ValSetHeader({
-                version: addresses.master.VALIDATOR_SET_VERSION(),
-                activeAggregatedKeys: activeAggregatedKeys,
-                totalActiveVotingPower: totalActiveVotingPower,
-                validatorsSszMRoot: bytes32(0),
-                extraData: new bytes(0)
-            })
-        );
+        // addresses.master.setGenesis(
+        //     ISettlementManager.ValSetHeader({
+        //         version: addresses.master.VALIDATOR_SET_VERSION(),
+        //         activeAggregatedKeys: activeAggregatedKeys,
+        //         totalActiveVotingPower: totalActiveVotingPower,
+        //         validatorsSszMRoot: bytes32(0),
+        //         extraData: new bytes(0)
+        //     })
+        // );
 
         vm.stopBroadcast();
     }
