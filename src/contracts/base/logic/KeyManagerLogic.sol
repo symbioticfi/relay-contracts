@@ -171,6 +171,16 @@ library KeyManagerLogic {
 
     function setKey(
         function (bytes32) external returns (bytes32) hashTypedDataV4,
+        uint8 tag,
+        bytes memory key,
+        bytes memory signature,
+        bytes memory extraData
+    ) public {
+        setKey(hashTypedDataV4, msg.sender, tag, key, signature, extraData);
+    }
+
+    function setKey(
+        function (bytes32) external returns (bytes32) hashTypedDataV4,
         address operator,
         uint8 tag,
         bytes memory key,

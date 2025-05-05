@@ -81,23 +81,20 @@ contract SixthScript is SymbioticCoreInit {
         SymbioticInit.run(seed);
 
         (FirstScript.InitParams memory initParams, InitScript.InitVars memory vars) = loadInitParams();
-        SecondScript.FirstParams memory firstParams;
         FirstScript.Addresses memory addresses;
-        (firstParams, vars, addresses) = loadFirstParams(vars);
-        ThirdScript.SecondParams memory secondParams;
-        (secondParams, addresses) = loadSecondParams(addresses);
-        FourthScript.ThirdParams memory thirdParams;
-        (thirdParams, addresses) = loadThirdParams(addresses);
+        (, vars, addresses) = loadFirstParams(vars);
+        (, addresses) = loadSecondParams(addresses);
+        (, addresses) = loadThirdParams(addresses);
 
         symbioticCore = initParams.master_chain.core;
         vars.tokens = initParams.master_chain.tokens;
 
         vm.startBroadcast(vars.PRIVATE_KEY_WALLET.privateKey);
 
-        // IBaseKeyManager.OperatorWithKeys[] memory operatorsWithKeys = addresses.keyRegistry.getKeys();
-        IVaultManager.OperatorVotingPower[] memory operatorsVotingPowers = addresses
-            .masterVotingPowerProvider
-            .getVotingPowersAt(new bytes[](0), addresses.master.getCaptureTimestamp(), new bytes(0));
+        // addresses.keyRegistry.getKeys();
+        // IVaultManager.OperatorVotingPower[] memory operatorsVotingPowers = addresses
+        //     .masterVotingPowerProvider
+        //     .getVotingPowersAt(new bytes[](0), addresses.master.getCaptureTimestamp(), new bytes(0));
 
         // IBaseKeyManager.Key[] memory activeAggregatedKeys = new IBaseKeyManager.Key[](1);
         // {

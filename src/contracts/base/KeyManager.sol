@@ -124,7 +124,7 @@ abstract contract KeyManager is MulticallUpgradeable, OzEIP712, IKeyManager {
      * @inheritdoc IKeyManager
      */
     function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memory extraData) public virtual {
-        _setKey(msg.sender, tag, key, signature, extraData);
+        KeyManagerLogic.setKey(this.hashTypedDataV4, tag, key, signature, extraData);
     }
 
     function _setKey(
@@ -134,7 +134,7 @@ abstract contract KeyManager is MulticallUpgradeable, OzEIP712, IKeyManager {
         bytes memory signature,
         bytes memory extraData
     ) internal virtual {
-        return KeyManagerLogic.setKey(this.hashTypedDataV4, operator, tag, key, signature, extraData);
+        KeyManagerLogic.setKey(this.hashTypedDataV4, operator, tag, key, signature, extraData);
     }
 
     function _verifyKey(
