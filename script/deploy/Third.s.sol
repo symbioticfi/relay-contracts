@@ -50,8 +50,8 @@ contract ThirdScript is SymbioticCoreInit {
 
     uint96 public constant IDENTIFIER = 0;
 
-    uint48 public constant EPOCH_DURATION = 5 * 60;
-    uint48 public constant COMMIT_DURATION = 2 * 60;
+    uint48 public EPOCH_DURATION = 10 * 60;
+    uint48 public COMMIT_DURATION = 4 * 60;
 
     struct SecondParams {
         address replica;

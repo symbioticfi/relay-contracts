@@ -53,6 +53,19 @@ contract SixthScript is SymbioticCoreInit {
 
     uint96 public constant IDENTIFIER = 0;
 
+    struct KeyStruct {
+        bytes payload;
+        uint8 tag;
+    }
+
+    struct ValSetHeaderStruct {
+        KeyStruct[] activeAggregatedKeys;
+        bytes extraData;
+        uint256 totalActiveVotingPower;
+        bytes32 validatorsSszMRoot;
+        uint8 version;
+    }
+
     function run(
         uint256 seed
     ) public override {
@@ -81,60 +94,21 @@ contract SixthScript is SymbioticCoreInit {
         SymbioticInit.run(seed);
 
         (FirstScript.InitParams memory initParams, InitScript.InitVars memory vars) = loadInitParams();
+        SecondScript.FirstParams memory firstParams;
         FirstScript.Addresses memory addresses;
-        (, vars, addresses) = loadFirstParams(vars);
-        (, addresses) = loadSecondParams(addresses);
-        (, addresses) = loadThirdParams(addresses);
+        (firstParams, vars, addresses) = loadFirstParams(vars);
+        ThirdScript.SecondParams memory secondParams;
+        (secondParams, addresses) = loadSecondParams(addresses);
+        FourthScript.ThirdParams memory thirdParams;
+        (thirdParams, addresses) = loadThirdParams(addresses);
 
         symbioticCore = initParams.master_chain.core;
         vars.tokens = initParams.master_chain.tokens;
 
         vm.startBroadcast(vars.PRIVATE_KEY_WALLET.privateKey);
 
-        addresses.master.getMasterConfig();
-        address(addresses.keyRegistry).call(
-            abi.encodeWithSignature("getKeysAt(uint48,bytes)", addresses.master.getCaptureTimestamp(), new bytes(0))
-        );
-        // addresses.keyRegistry.getKeysAt(addresses.master.getCaptureTimestamp(), new bytes(0));
-        // IVaultManager.OperatorVotingPower[] memory operatorsVotingPowers = addresses
-        //     .masterVotingPowerProvider
-        //     .getVotingPowersAt(new bytes[](0), addresses.master.getCaptureTimestamp(), new bytes(0));
-
-        // IBaseKeyManager.Key[] memory activeAggregatedKeys = new IBaseKeyManager.Key[](1);
-        // {
-        //     BN254.G1Point memory aggregatedKeyRaw = BN254.G1Point(0, 0);
-        //     for (uint256 i; i < operatorsWithKeys.length; ++i) {
-        //         for (uint256 j; j < operatorsWithKeys[i].keys.length; ++j) {
-        //             if (operatorsWithKeys[i].keys[j].tag == uint8(IKeyManager.KeyType.BLS_BN254).keyTag(15)) {
-        //                 BN254.G1Point memory key = KeyBlsBn254.fromBytes(operatorsWithKeys[i].keys[j].payload).unwrap();
-        //                 aggregatedKeyRaw = aggregatedKeyRaw.plus(key);
-        //             }
-        //         }
-        //     }
-        //     bytes memory aggregatedKey = KeyBlsBn254.wrap(aggregatedKeyRaw).toBytes();
-
-        //     activeAggregatedKeys[0] =
-        //         IBaseKeyManager.Key({tag: uint8(IKeyManager.KeyType.BLS_BN254).keyTag(15), payload: aggregatedKey});
-        // }
-
-        // uint256 totalActiveVotingPower;
-        // {
-        //     for (uint256 i; i < operatorsVotingPowers.length; ++i) {
-        //         for (uint256 j; j < operatorsVotingPowers[i].vaults.length; ++j) {
-        //             totalActiveVotingPower += operatorsVotingPowers[i].vaults[j].votingPower;
-        //         }
-        //     }
-        // }
-
-        // addresses.master.setGenesis(
-        //     ISettlementManager.ValSetHeader({
-        //         version: addresses.master.VALIDATOR_SET_VERSION(),
-        //         activeAggregatedKeys: activeAggregatedKeys,
-        //         totalActiveVotingPower: totalActiveVotingPower,
-        //         validatorsSszMRoot: bytes32(0),
-        //         extraData: new bytes(0)
-        //     })
-        // );
+        ISettlementManager.ValSetHeader memory valSetHeader = loadGenesis();
+        addresses.master.setGenesis(valSetHeader);
 
         vm.stopBroadcast();
     }
@@ -245,5 +219,33 @@ contract SixthScript is SymbioticCoreInit {
         addresses_.keyRegistry = KeyRegistry(thirdParams.key_registry);
 
         return (thirdParams, addresses_);
+    }
+
+    function loadGenesis() public returns (ISettlementManager.ValSetHeader memory valSetHeader) {
+        ValSetHeaderStruct memory valSetHeaderStruct;
+        {
+            string memory root = vm.projectRoot();
+            string memory path = string.concat(root, "/script/deploy/data/gensis_header.json");
+            string memory json = vm.readFile(path);
+            bytes memory data = vm.parseJson(json);
+            valSetHeaderStruct = abi.decode(data, (ValSetHeaderStruct));
+        }
+
+        IBaseKeyManager.Key[] memory activeAggregatedKeys =
+            new IBaseKeyManager.Key[](valSetHeaderStruct.activeAggregatedKeys.length);
+        for (uint256 i; i < valSetHeaderStruct.activeAggregatedKeys.length; ++i) {
+            activeAggregatedKeys[i] = IBaseKeyManager.Key({
+                payload: valSetHeaderStruct.activeAggregatedKeys[i].payload,
+                tag: valSetHeaderStruct.activeAggregatedKeys[i].tag
+            });
+        }
+
+        return ISettlementManager.ValSetHeader({
+            version: valSetHeaderStruct.version,
+            activeAggregatedKeys: activeAggregatedKeys,
+            totalActiveVotingPower: valSetHeaderStruct.totalActiveVotingPower,
+            validatorsSszMRoot: valSetHeaderStruct.validatorsSszMRoot,
+            extraData: valSetHeaderStruct.extraData
+        });
     }
 }
