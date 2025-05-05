@@ -122,8 +122,10 @@ contract ThirdScript is SymbioticCoreInit {
             //     addr: address(addresses.secondaryVotingPowerProvider),
             //     chainId: uint64(initParams.secondary_chain.chainId)
             // });
-            IMasterConfigManager.CrossChainAddress memory keysProvider =
-                IMasterConfigManager.CrossChainAddress({addr: address(addresses.keyRegistry), chainId: uint64(initParams.master_chain.chainId)});
+            IMasterConfigManager.CrossChainAddress memory keysProvider = IMasterConfigManager.CrossChainAddress({
+                addr: address(addresses.keyRegistry),
+                chainId: uint64(initParams.master_chain.chainId)
+            });
             IMasterConfigManager.CrossChainAddress[] memory replicas = new IMasterConfigManager.CrossChainAddress[](0);
             // IMasterConfigManager.CrossChainAddress[] memory replicas = new IMasterConfigManager.CrossChainAddress[](1);
             // replicas[0] =

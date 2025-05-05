@@ -90,9 +90,11 @@ contract SixthScript is SymbioticCoreInit {
         vars.tokens = initParams.master_chain.tokens;
 
         vm.startBroadcast(vars.PRIVATE_KEY_WALLET.privateKey);
-        
+
         addresses.master.getMasterConfig();
-        address(addresses.keyRegistry).call(abi.encodeWithSignature("getKeysAt(uint48,bytes)", addresses.master.getCaptureTimestamp(), new bytes(0)));
+        address(addresses.keyRegistry).call(
+            abi.encodeWithSignature("getKeysAt(uint48,bytes)", addresses.master.getCaptureTimestamp(), new bytes(0))
+        );
         // addresses.keyRegistry.getKeysAt(addresses.master.getCaptureTimestamp(), new bytes(0));
         // IVaultManager.OperatorVotingPower[] memory operatorsVotingPowers = addresses
         //     .masterVotingPowerProvider

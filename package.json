@@ -22,7 +22,7 @@
     "deploy:anvil2_wait": "source .env && cast rpc evm_increaseTime 36000 --rpc-url $ETH_RPC_URL_SECONDARY",
     "deploy:anvil": "concurrently \"yarn deploy:anvil1\" \"yarn deploy:anvil2\"",
     "deploy:anvil_wait": "concurrently \"yarn deploy:anvil1_wait\" \"yarn deploy:anvil2_wait\"",
-    "deploy:generate_genesis": "source .env && chmod +x script/deploy/generate_genesis && script/deploy/generate_genesis --master-address $MASTER_CONTRACT --private-key 87191036493798670866484781455694320176667203290824056510541300741498740913410 --rpc-url $ETH_RPC_URL_MASTER -o script/deploy/data/gensis_header.json",
+    "deploy:generate_genesis": "source .env && chmod +x script/deploy/generate_genesis && script/deploy/generate_genesis --master-address $MASTER_CONTRACT --rpc-url $ETH_RPC_URL_MASTER -o script/deploy/data/gensis_header.json",
     "deploy:genesis1": "source .env && forge script script/deploy/Sixth.s.sol:SixthScript 25235 --sig \"run(uint256)\" --rpc-url $ETH_RPC_URL_MASTER --broadcast --legacy --slow --skip-simulation --gas-estimate-multiplier 200 -vv",
     "deploy:genesis2": "",
     "deploy:genesis": "concurrently \"yarn deploy:genesis1\"",
