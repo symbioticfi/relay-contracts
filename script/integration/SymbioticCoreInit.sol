@@ -525,7 +525,7 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
         Vm.Wallet memory wallet = vm.createWallet(vm.envUint("PRIVATE_KEY"));
         return _getVault_SymbioticCore(
             VaultParams({
-                owner: operators.length == 0 ? wallet.addr : _randomPick_Symbiotic(operators),
+                owner: wallet.addr,
                 collateral: collateral,
                 burner: 0x000000000000000000000000000000000000dEaD,
                 epochDuration: epochDuration,

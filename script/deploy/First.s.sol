@@ -33,6 +33,7 @@ import {InitScript} from "./Init.s.sol";
 
 import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
 import {INetworkRestakeDelegator} from "@symbioticfi/core/src/interfaces/delegator/INetworkRestakeDelegator.sol";
+import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
 
 // forge script script/deploy/First.s.sol:FirstScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_MASTER
 
@@ -135,14 +136,16 @@ contract FirstScript is SymbioticCoreInit {
                 addresses.masterVotingPowerProvider.registerToken(vars.tokens[i]);
             }
             for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_VAULTS; ++i) {
-                IBaseDelegator(vars.masterVaults[i]).setMaxNetworkLimit(IDENTIFIER, type(uint256).max);
+                IBaseDelegator(IVault(vars.masterVaults[i]).delegator()).setMaxNetworkLimit(
+                    IDENTIFIER, type(uint256).max
+                );
                 addresses.masterVotingPowerProvider.registerSharedVault(vars.masterVaults[i]);
 
-                INetworkRestakeDelegator(vars.masterVaults[i]).setNetworkLimit(
+                INetworkRestakeDelegator(IVault(vars.masterVaults[i]).delegator()).setNetworkLimit(
                     addresses.masterVotingPowerProvider.SUBNETWORK(), type(uint256).max
                 );
                 for (uint256 j; j < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++j) {
-                    INetworkRestakeDelegator(vars.masterVaults[i]).setOperatorNetworkShares(
+                    INetworkRestakeDelegator(IVault(vars.masterVaults[i]).delegator()).setOperatorNetworkShares(
                         addresses.masterVotingPowerProvider.SUBNETWORK(), vars.operators[j].addr, 1e18
                     );
                 }
