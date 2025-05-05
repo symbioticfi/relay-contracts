@@ -30,6 +30,7 @@
     "deploy:scripts_short": "npm-run-all -s deploy:init deploy:first deploy:third deploy:fourth_fifth",
     "deploy:scripts": "npm-run-all -s deploy:init deploy:first deploy:third deploy:fourth_fifth deploy:wait_generate_genesis",
     "deploy": "concurrently \"yarn deploy:anvil\" \"yarn sleep && yarn deploy:scripts\"",
+    "deploy:short": "concurrently \"yarn deploy:anvil\" \"yarn sleep && yarn deploy:scripts_short\"",
     "anvil:dump1": "source .env && cast rpc anvil_dumpState --rpc-url $ETH_RPC_URL_MASTER > script/deploy/data/anvil1.txt",
     "anvil:dump2": "source .env && cast rpc anvil_dumpState --rpc-url $ETH_RPC_URL_SECONDARY > script/deploy/data/anvil2.txt",
     "anvil:dump": "concurrently \"yarn anvil:dump1\"",
