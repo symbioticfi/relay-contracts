@@ -40,6 +40,6 @@ import {FourthScript} from "./Fourth.s.sol";
 
 contract SixthhScript is Script {
     function run() public {
-        address(0x162A433068F51e18b7d13932F27e66a3f99E6890).call(abi.encodeWithSignature("getKeys()"));
+        address(0x162A433068F51e18b7d13932F27e66a3f99E6890).call(abi.encodeWithSignature("getKeysAt()"));
     }
 }
