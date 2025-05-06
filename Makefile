@@ -8,7 +8,7 @@ up:
 		-p 8546:8546 \
 		--env-file .env \
 		--name symbiotic-tests \
-		symbiotic-tests yarn deploy
+		symbiotic-tests yarn deploy:snapshot
 
 down:
 	docker stop symbiotic-tests
