@@ -5,7 +5,7 @@ import {EpochManager} from "../../base/EpochManager.sol";
 import {NetworkManager} from "../../base/NetworkManager.sol";
 
 import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
-import {EpochManagerLogic} from "../../base/logic/EpochManageLogic.sol";
+import {EpochManagerLogic} from "../../base/logic/EpochManagerLogic.sol";
 
 import {ISigVerifier} from "../../../interfaces/other/ISigVerifier.sol";
 import {IBaseKeyManager} from "../../../interfaces/base/IBaseKeyManager.sol";

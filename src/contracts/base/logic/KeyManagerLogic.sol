@@ -190,13 +190,17 @@ library KeyManagerLogic {
         IKeyManager.KeyManagerStorage storage $ = _getKeyManagerStorage();
 
         bytes32 keyHash = keccak256(key);
-        verifyKey(
-            tag,
-            key,
-            signature,
-            extraData,
-            abi.encode(hashTypedDataV4(keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, operator, keyHash))))
-        );
+        if (
+            !verifyKey(
+                tag,
+                key,
+                signature,
+                extraData,
+                abi.encode(hashTypedDataV4(keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, operator, keyHash))))
+            )
+        ) {
+            revert IKeyManager.KeyManager_InvalidKeySignature();
+        }
 
         // Disallow usage between different operators
         // Disallow usage of the same key on the same type on different tags
@@ -222,35 +226,6 @@ library KeyManagerLogic {
         $._operators.add(Time.timestamp(), operator);
         $._operatorKeyTags[operator].push(Time.timestamp(), $._operatorKeyTags[operator].latest() | uint208(1 << tag));
         setKey(operator, tag, key);
-    }
-
-    function verifyKey(
-        uint8 tag,
-        bytes memory key,
-        bytes memory signature,
-        bytes memory extraData,
-        bytes memory message
-    ) public {
-        IKeyManager.KeyType type_ = IKeyManager.KeyType(tag.getType());
-        if (type_ == IKeyManager.KeyType.BLS_BN254) {
-            if (!SigBlsBn254.verify(key, message, signature, extraData)) {
-                revert IKeyManager.KeyManager_InvalidBLSKeySignature();
-            }
-            return;
-        }
-        if (type_ == IKeyManager.KeyType.ECDSA_SECP256K1) {
-            if (!SigEcdsaSecp256k1.verify(key, message, signature, extraData)) {
-                revert IKeyManager.KeyManager_InvalidECDSAKeySignature();
-            }
-            return;
-        }
-        if (type_ == IKeyManager.KeyType.EDDSA_CURVE25519) {
-            if (!SigEddsaCurve25519.verify(key, message, signature, extraData)) {
-                revert IKeyManager.KeyManager_InvalidEdDSAKeySignature();
-            }
-            return;
-        }
-        revert IKeyManager.KeyManager_InvalidKeyType();
     }
 
     function setKey(address operator, uint8 tag, bytes memory key) public {
@@ -280,6 +255,26 @@ library KeyManagerLogic {
         _getKeyManagerStorage()._keys64[operator][tag].push(
             Time.timestamp(), [uint256(compressedKey1), uint256(compressedKey2)]
         );
+    }
+
+    function verifyKey(
+        uint8 tag,
+        bytes memory key,
+        bytes memory signature,
+        bytes memory extraData,
+        bytes memory message
+    ) public view returns (bool) {
+        IKeyManager.KeyType type_ = IKeyManager.KeyType(tag.getType());
+        if (type_ == IKeyManager.KeyType.BLS_BN254) {
+            return SigBlsBn254.verify(key, message, signature, extraData);
+        }
+        if (type_ == IKeyManager.KeyType.ECDSA_SECP256K1) {
+            return SigEcdsaSecp256k1.verify(key, message, signature, extraData);
+        }
+        if (type_ == IKeyManager.KeyType.EDDSA_CURVE25519) {
+            return SigEddsaCurve25519.verify(key, message, signature, extraData);
+        }
+        return false;
     }
 
     function getKey32At(

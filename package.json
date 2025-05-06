@@ -26,15 +26,19 @@
     "deploy:genesis1": "forge script script/deploy/Sixth.s.sol:SixthScript 25235 --sig \"run(uint256)\" --rpc-url $ETH_RPC_URL_MASTER --broadcast --legacy --slow --skip-simulation --gas-estimate-multiplier 200 -vv",
     "deploy:genesis2": "",
     "deploy:genesis": "concurrently \"yarn deploy:genesis1\"",
-    "deploy:scripts": "npm-run-all -s deploy:init deploy:first deploy:third deploy:fourth_fifth deploy:anvil_wait deploy:generate_genesis deploy:genesis",
+    "deploy:wait_generate_genesis": "npm-run-all -s deploy:anvil_wait deploy:generate_genesis deploy:genesis",
+    "deploy:scripts_short": "npm-run-all -s deploy:init deploy:first deploy:third deploy:fourth_fifth",
+    "deploy:scripts": "npm-run-all -s deploy:init deploy:first deploy:third deploy:fourth_fifth deploy:wait_generate_genesis",
     "deploy": "concurrently \"yarn deploy:anvil\" \"yarn sleep && yarn deploy:scripts\"",
+    "deploy:short": "concurrently \"yarn deploy:anvil\" \"yarn sleep && yarn deploy:scripts_short\"",
     "anvil:dump1": "cast rpc anvil_dumpState --rpc-url $ETH_RPC_URL_MASTER > script/deploy/data/anvil1.txt",
     "anvil:dump2": "cast rpc anvil_dumpState --rpc-url $ETH_RPC_URL_SECONDARY > script/deploy/data/anvil2.txt",
     "anvil:dump": "concurrently \"yarn anvil:dump1\"",
     "anvil:bump1": "node script/deploy/load-anvil-state.js --stateFile script/deploy/data/anvil1.txt --rpcEnv ETH_RPC_URL_MASTER",
     "anvil:bump2": "node script/deploy/load-anvil-state.js --stateFile script/deploy/data/anvil2.txt --rpcEnv ETH_RPC_URL_SECONDARY",
     "anvil:bump": "concurrently \"yarn anvil:bump1\"",
-    "deploy:snapshot": "concurrently \"yarn deploy:anvil\" \"yarn sleep && yarn anvil:bump\""
+    "anvil:snapshot_scripts": "npm-run-all -s anvil:bump deploy:wait_generate_genesis",
+    "deploy:snapshot": "concurrently \"yarn deploy:anvil\" \"yarn sleep && yarn anvil:snapshot_scripts\""
   },
   "dependencies": {
     "@noble/curves": "^1.3.0",

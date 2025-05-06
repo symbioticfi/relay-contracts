@@ -180,16 +180,16 @@ interface IVaultManager {
     ) external view returns (uint256);
 
     function getOperatorVotingPowerAt(
-        address vault,
         address operator,
+        address vault,
         bytes memory extraData,
         uint48 timestamp,
         bytes memory hints
     ) external view returns (uint256);
 
     function getOperatorVotingPower(
-        address vault,
         address operator,
+        address vault,
         bytes memory extraData
     ) external view returns (uint256);
 

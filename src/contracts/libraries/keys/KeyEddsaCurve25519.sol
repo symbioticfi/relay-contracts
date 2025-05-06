@@ -3,7 +3,10 @@ pragma solidity ^0.8.25;
 
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
+import {SCL_sha512} from "@crypto-lib/hash/SCL_sha512.sol";
+import {SqrtMod} from "../utils/SCL_sqrtMod_5mod8.sol";
 import {p, d, pMINUS_1} from "@crypto-lib/fields/SCL_wei25519.sol";
+import {ModInv} from "@crypto-lib/modular/SCL_modular.sol";
 
 library KeyEddsaCurve25519 {
     using KeyEddsaCurve25519 for KEY_EDDSA_CURVE25519;
@@ -11,6 +14,7 @@ library KeyEddsaCurve25519 {
     using Strings for string;
 
     error InvalidBytes();
+    error InvalidKey();
 
     struct KEY_EDDSA_CURVE25519 {
         bytes32 value;
@@ -22,7 +26,15 @@ library KeyEddsaCurve25519 {
         if (keyRaw == bytes32(0)) {
             return zeroKey();
         }
+
         key = KEY_EDDSA_CURVE25519(keyRaw);
+
+        (uint256 x, uint256 y) = key.decompress();
+        uint256 y2 = mulmod(y, y, p);
+        uint256 x2 = mulmod(x, x, p);
+        if (addmod(y2, p - x2, p) != addmod(1, mulmod(d, mulmod(x2, y2, p), p), p)) {
+            revert InvalidKey();
+        }
     }
 
     function unwrap(
@@ -52,7 +64,7 @@ library KeyEddsaCurve25519 {
     function fromBytes(
         bytes memory keyBytes
     ) internal view returns (KEY_EDDSA_CURVE25519 memory key) {
-        key = KEY_EDDSA_CURVE25519(abi.decode(keyBytes, (bytes32)));
+        key = abi.decode(keyBytes, (KEY_EDDSA_CURVE25519));
         bytes memory keyBytesDerived = key.unwrap().wrap().toBytes();
         if (keccak256(keyBytesDerived) != keccak256(keyBytes)) {
             revert InvalidBytes();
@@ -65,5 +77,17 @@ library KeyEddsaCurve25519 {
 
     function equal(KEY_EDDSA_CURVE25519 memory key1, KEY_EDDSA_CURVE25519 memory key2) internal view returns (bool) {
         return key1.value == key2.value;
+    }
+
+    function decompress(
+        KEY_EDDSA_CURVE25519 memory key
+    ) internal view returns (uint256 x, uint256 y) {
+        uint256 kPubC = SCL_sha512.Swap256(uint256(key.value));
+        y = kPubC & 0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
+        uint256 y2 = mulmod(y, y, p);
+        x = SqrtMod(mulmod(addmod(y2, pMINUS_1, p), ModInv(addmod(mulmod(d, y2, p), 1, p), p), p));
+        if ((x & 1) != kPubC >> 255) {
+            x = p - x;
+        }
     }
 }

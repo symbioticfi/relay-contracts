@@ -3,7 +3,7 @@ pragma solidity ^0.8.25;
 
 import {PermissionManager} from "./PermissionManager.sol";
 import {Checkpoints} from "../libraries/structs/Checkpoints.sol";
-import {EpochManagerLogic} from "./logic/EpochManageLogic.sol";
+import {EpochManagerLogic} from "./logic/EpochManagerLogic.sol";
 
 import {IEpochManager} from "../../interfaces/base/IEpochManager.sol";
 
