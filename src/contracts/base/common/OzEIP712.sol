@@ -12,7 +12,9 @@ abstract contract OzEIP712 is Initializable, IOzEIP712 {
     /**
      * @inheritdoc IOzEIP712
      */
-    uint64 public constant OzEIP712_VERSION = 1;
+    function OzEIP712_VERSION() public view virtual returns (uint64) {
+        return OzEIP712Logic.OzEIP712_VERSION;
+    }
 
     function __OzEIP712_init(
         OzEIP712InitParams memory initParams

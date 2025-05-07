@@ -13,18 +13,12 @@ interface IKeyManager is IBaseKeyManager {
     error KeyManager_AlreadyUsed();
     error KeyManager_OnlyPredeterminedKeyTagsAllowed();
 
-    enum KeyType {
-        BLS_BN254,
-        ECDSA_SECP256K1,
-        EDDSA_CURVE25519
-    }
-
     /// @custom:storage-location erc7201:symbiotic.storage.KeyManager
     struct KeyManagerStorage {
         mapping(address => mapping(uint8 => Checkpoints.Trace256)) _keys32;
         mapping(address => mapping(uint8 => Checkpoints.Trace512)) _keys64;
         mapping(bytes32 => address) _operatorByKeyHash;
-        mapping(KeyType => mapping(bytes32 => address)) _operatorByTypeAndKeyHash;
+        mapping(uint8 => mapping(bytes32 => address)) _operatorByTypeAndKeyHash;
         mapping(uint8 => mapping(bytes32 => address)) _operatorByTagAndKeyHash;
         PersistentSet.AddressSet _operators;
         mapping(address => Checkpoints.Trace208) _operatorKeyTags;
@@ -48,6 +42,14 @@ interface IKeyManager is IBaseKeyManager {
     }
 
     function KeyManager_VERSION() external view returns (uint64);
+
+    function KEY_TYPE_BLS_BN254() external view returns (uint8);
+
+    function KEY_TYPE_ECDSA_SECP256K1() external view returns (uint8);
+
+    function KEY_TYPE_EDDSA_CURVE25519() external view returns (uint8);
+
+    function TOTAL_KEY_TYPES() external view returns (uint8);
 
     function getKeyAt(
         address operator,

@@ -23,6 +23,7 @@ import {IVaultManager} from "../../src/interfaces/base/IVaultManager.sol";
 import {KeyTag} from "../../src/contracts/libraries/utils/KeyTag.sol";
 import {KeyEcdsaSecp256k1} from "../../src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol";
 import {KeyBlsBn254, BN254} from "../../src/contracts/libraries/keys/KeyBlsBn254.sol";
+import {KeyManagerLogic} from "../../src/contracts/base/logic/KeyManagerLogic.sol";
 
 import {SigVerifierMock} from "../../test/mocks/SigVerifierMock.sol";
 import {BN254G2} from "../../test/libraries/BN254G2.sol";
@@ -104,12 +105,12 @@ contract ThirdScript is SymbioticCoreInit {
         {
             ISettlementManager.QuorumThreshold[] memory quorumThresholds = new ISettlementManager.QuorumThreshold[](1);
             quorumThresholds[0] = ISettlementManager.QuorumThreshold({
-                keyTag: uint8(IKeyManager.KeyType.BLS_BN254).keyTag(15),
+                keyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
                 threshold: 0.66 * 1e18
             });
             uint8[] memory requiredKeyTags = new uint8[](2);
-            requiredKeyTags[0] = uint8(IKeyManager.KeyType.BLS_BN254).keyTag(15);
-            requiredKeyTags[1] = uint8(IKeyManager.KeyType.ECDSA_SECP256K1).keyTag(0);
+            requiredKeyTags[0] = KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15);
+            requiredKeyTags[1] = KeyManagerLogic.KEY_TYPE_ECDSA_SECP256K1.keyTag(0);
             IMasterConfigManager.CrossChainAddress[] memory votingPowerProviders =
                 new IMasterConfigManager.CrossChainAddress[](1);
             // IMasterConfigManager.CrossChainAddress[] memory votingPowerProviders =
@@ -143,7 +144,7 @@ contract ThirdScript is SymbioticCoreInit {
                     ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
                     quorumThresholds: quorumThresholds,
                     commitDuration: COMMIT_DURATION,
-                    requiredKeyTag: uint8(IKeyManager.KeyType.BLS_BN254).keyTag(15),
+                    requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
                     sigVerifier: address(new SigVerifierMock())
                 }),
                 IValSetConfigManager.ValSetConfigManagerInitParams({

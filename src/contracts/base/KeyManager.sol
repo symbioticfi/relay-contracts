@@ -37,7 +37,35 @@ abstract contract KeyManager is MulticallUpgradeable, OzEIP712, IKeyManager {
         return KeyManagerLogic.KeyManager_VERSION;
     }
 
+    /**
+     * @inheritdoc IKeyManager
+     */
+    function KEY_TYPE_BLS_BN254() public pure returns (uint8) {
+        return KeyManagerLogic.KEY_TYPE_BLS_BN254;
+    }
+
+    /**
+     * @inheritdoc IKeyManager
+     */
+    function KEY_TYPE_ECDSA_SECP256K1() public pure returns (uint8) {
+        return KeyManagerLogic.KEY_TYPE_ECDSA_SECP256K1;
+    }
+
+    /**
+     * @inheritdoc IKeyManager
+     */
+    function KEY_TYPE_EDDSA_CURVE25519() public pure returns (uint8) {
+        return KeyManagerLogic.KEY_TYPE_EDDSA_CURVE25519;
+    }
+
     function __KeyManager_init() internal virtual onlyInitializing {}
+
+    /**
+     * @inheritdoc IKeyManager
+     */
+    function TOTAL_KEY_TYPES() public pure virtual returns (uint8) {
+        return KeyManagerLogic.TOTAL_KEY_TYPES();
+    }
 
     /**
      * @inheritdoc IKeyManager

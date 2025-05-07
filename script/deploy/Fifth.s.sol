@@ -23,6 +23,7 @@ import {IVaultManager} from "../../src/interfaces/base/IVaultManager.sol";
 import {KeyTag} from "../../src/contracts/libraries/utils/KeyTag.sol";
 import {KeyEcdsaSecp256k1} from "../../src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol";
 import {KeyBlsBn254, BN254} from "../../src/contracts/libraries/keys/KeyBlsBn254.sol";
+import {KeyManagerLogic} from "../../src/contracts/base/logic/KeyManagerLogic.sol";
 
 import {SigVerifierMock} from "../../test/mocks/SigVerifierMock.sol";
 import {BN254G2} from "../../test/libraries/BN254G2.sol";
@@ -116,7 +117,7 @@ contract FifthScript is SymbioticCoreInit {
                 (uint8 v, bytes32 r, bytes32 s) = vm.sign(vars.operators[i].privateKey, messageHash1);
                 bytes memory signature1 = abi.encodePacked(r, s, v);
                 addresses.keyRegistry.setKey(
-                    uint8(IKeyManager.KeyType.ECDSA_SECP256K1).keyTag(0), key1Bytes, signature1, new bytes(0)
+                    KeyManagerLogic.KEY_TYPE_ECDSA_SECP256K1.keyTag(0), key1Bytes, signature1, new bytes(0)
                 );
             }
 
@@ -130,7 +131,7 @@ contract FifthScript is SymbioticCoreInit {
                 BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash0);
                 BN254.G1Point memory sigG1 = messageG1.scalar_mul(vars.operators[i].privateKey);
                 addresses.keyRegistry.setKey(
-                    uint8(IKeyManager.KeyType.BLS_BN254).keyTag(15), key0Bytes, abi.encode(sigG1), abi.encode(keyG2)
+                    KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15), key0Bytes, abi.encode(sigG1), abi.encode(keyG2)
                 );
             }
 
