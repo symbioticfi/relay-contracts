@@ -6,6 +6,8 @@ import {IOzEIP712} from "../../../../interfaces/base/common/IOzEIP712.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
 library OzEIP712Logic {
+    uint64 internal constant OzEIP712_VERSION = 1;
+
     bytes32 private constant TYPE_HASH =
         keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
 

@@ -30,7 +30,11 @@ library KeyManagerLogic {
     using InputNormalizer for bytes[][];
     using PersistentSet for PersistentSet.AddressSet;
 
-    uint64 public constant KeyManager_VERSION = 1;
+    uint64 internal constant KeyManager_VERSION = 1;
+
+    uint8 internal constant KEY_TYPE_BLS_BN254 = 0;
+    uint8 internal constant KEY_TYPE_ECDSA_SECP256K1 = 1;
+    uint8 internal constant KEY_TYPE_EDDSA_CURVE25519 = 2;
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.KeyManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant KeyManagerLocation = 0x6521690ca2d70b23823c69a92a4a0089d4c270c9c885205eafdf0ae297a8bf00;
@@ -43,34 +47,38 @@ library KeyManagerLogic {
         }
     }
 
+    function TOTAL_KEY_TYPES() public pure returns (uint8) {
+        return 3;
+    }
+
     function getKeyAt(
         address operator,
         uint8 tag,
         uint48 timestamp,
         bytes memory hint
     ) public view returns (bytes memory) {
-        IKeyManager.KeyType keyType = IKeyManager.KeyType(tag.getType());
-        if (keyType == IKeyManager.KeyType.BLS_BN254) {
+        uint8 keyType = tag.getType();
+        if (keyType == KEY_TYPE_BLS_BN254) {
             return KeyBlsBn254.deserialize(getKey32At(operator, tag, timestamp, hint)).toBytes();
         }
-        if (keyType == IKeyManager.KeyType.ECDSA_SECP256K1) {
+        if (keyType == KEY_TYPE_ECDSA_SECP256K1) {
             return KeyEcdsaSecp256k1.deserialize(getKey32At(operator, tag, timestamp, hint)).toBytes();
         }
-        if (keyType == IKeyManager.KeyType.EDDSA_CURVE25519) {
+        if (keyType == KEY_TYPE_EDDSA_CURVE25519) {
             return KeyEddsaCurve25519.deserialize(getKey32At(operator, tag, timestamp, hint)).toBytes();
         }
         revert IKeyManager.KeyManager_InvalidKeyType();
     }
 
     function getKey(address operator, uint8 tag) public view returns (bytes memory) {
-        IKeyManager.KeyType keyType = IKeyManager.KeyType(tag.getType());
-        if (keyType == IKeyManager.KeyType.BLS_BN254) {
+        uint8 keyType = tag.getType();
+        if (keyType == KEY_TYPE_BLS_BN254) {
             return KeyBlsBn254.deserialize(getKey32(operator, tag)).toBytes();
         }
-        if (keyType == IKeyManager.KeyType.ECDSA_SECP256K1) {
+        if (keyType == KEY_TYPE_ECDSA_SECP256K1) {
             return KeyEcdsaSecp256k1.deserialize(getKey32(operator, tag)).toBytes();
         }
-        if (keyType == IKeyManager.KeyType.EDDSA_CURVE25519) {
+        if (keyType == KEY_TYPE_EDDSA_CURVE25519) {
             return KeyEddsaCurve25519.deserialize(getKey32(operator, tag)).toBytes();
         }
         revert IKeyManager.KeyManager_InvalidKeyType();
@@ -205,7 +213,7 @@ library KeyManagerLogic {
         // Disallow usage between different operators
         // Disallow usage of the same key on the same type on different tags
         // Allow usage of the old key on the same type and tag
-        IKeyManager.KeyType type_ = IKeyManager.KeyType(tag.getType());
+        uint8 type_ = tag.getType();
         address operatorByCompressedKey = $._operatorByKeyHash[keyHash];
         if (operatorByCompressedKey != address(0)) {
             if (operatorByCompressedKey != operator) {
@@ -229,16 +237,16 @@ library KeyManagerLogic {
     }
 
     function setKey(address operator, uint8 tag, bytes memory key) public {
-        IKeyManager.KeyType type_ = IKeyManager.KeyType(tag.getType());
-        if (type_ == IKeyManager.KeyType.BLS_BN254) {
+        uint8 type_ = tag.getType();
+        if (type_ == KEY_TYPE_BLS_BN254) {
             setKey32(operator, tag, KeyBlsBn254.fromBytes(key).serialize());
             return;
         }
-        if (type_ == IKeyManager.KeyType.ECDSA_SECP256K1) {
+        if (type_ == KEY_TYPE_ECDSA_SECP256K1) {
             setKey32(operator, tag, KeyEcdsaSecp256k1.fromBytes(key).serialize());
             return;
         }
-        if (type_ == IKeyManager.KeyType.EDDSA_CURVE25519) {
+        if (type_ == KEY_TYPE_EDDSA_CURVE25519) {
             setKey32(operator, tag, KeyEddsaCurve25519.fromBytes(key).serialize());
             return;
         }
@@ -264,14 +272,14 @@ library KeyManagerLogic {
         bytes memory extraData,
         bytes memory message
     ) public view returns (bool) {
-        IKeyManager.KeyType type_ = IKeyManager.KeyType(tag.getType());
-        if (type_ == IKeyManager.KeyType.BLS_BN254) {
+        uint8 type_ = tag.getType();
+        if (type_ == KEY_TYPE_BLS_BN254) {
             return SigBlsBn254.verify(key, message, signature, extraData);
         }
-        if (type_ == IKeyManager.KeyType.ECDSA_SECP256K1) {
+        if (type_ == KEY_TYPE_ECDSA_SECP256K1) {
             return SigEcdsaSecp256k1.verify(key, message, signature, extraData);
         }
-        if (type_ == IKeyManager.KeyType.EDDSA_CURVE25519) {
+        if (type_ == KEY_TYPE_EDDSA_CURVE25519) {
             return SigEddsaCurve25519.verify(key, message, signature, extraData);
         }
         return false;
@@ -312,7 +320,7 @@ library KeyManagerLogic {
         uint8[] memory keyTags
     ) public pure returns (uint208 keyTagsData) {
         for (uint256 i; i < keyTags.length; ++i) {
-            if (keyTags[i].getType() > uint8(type(IKeyManager.KeyType).max)) {
+            if (keyTags[i].getType() >= TOTAL_KEY_TYPES()) {
                 revert IKeyManager.KeyManager_OnlyPredeterminedKeyTagsAllowed();
             }
             if ((keyTagsData >> keyTags[i]) & 1 == 1) {
