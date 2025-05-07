@@ -52,23 +52,16 @@ contract ValSetVerifierTest is Test {
             proof: operatorRootProof
         });
 
-        assertTrue(
-            valSetVerifierMock.verifyValidatorRootLocal(
-                validatorRootProofStruct, 0, 0x86a3631cc2338c25a99fd5c8550a6ef90ffef8ad3ce08160355bf404c5041331
-            )
-        );
+        bytes32 validatorSetRoot = 0x86a3631cc2338c25a99fd5c8550a6ef90ffef8ad3ce08160355bf404c5041331;
+
+        assertTrue(valSetVerifierMock.verifyValidatorRootLocal(validatorRootProofStruct, validatorSetRoot));
 
         assertTrue(
             valSetVerifierMock.verifyValidatorOperatorLocal(operatorRootProofStruct, validatorRootProofStruct.leaf)
         );
 
         assertTrue(
-            valSetVerifierMock.verifyOperator(
-                validatorRootProofStruct,
-                0,
-                0x86a3631cc2338c25a99fd5c8550a6ef90ffef8ad3ce08160355bf404c5041331,
-                operatorRootProofStruct
-            )
+            valSetVerifierMock.verifyOperator(validatorRootProofStruct, validatorSetRoot, operatorRootProofStruct)
         );
     }
 }

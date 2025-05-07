@@ -6,21 +6,17 @@ import {ValSetVerifier} from "../../src/contracts/libraries/utils/ValSetVerifier
 contract ValSetVerifierMock {
     function verifyOperator(
         ValSetVerifier.SszProof calldata validatorRootProof,
-        uint256 validatorRootLocalIndex,
         bytes32 validatorSetRoot,
         ValSetVerifier.SszProof calldata operatorRootProof
     ) public view returns (bool) {
-        return ValSetVerifier.verifyOperator(
-            validatorRootProof, validatorRootLocalIndex, validatorSetRoot, operatorRootProof
-        );
+        return ValSetVerifier.verifyOperator(validatorRootProof, validatorSetRoot, operatorRootProof);
     }
 
     function verifyValidatorRootLocal(
         ValSetVerifier.SszProof calldata validatorRootProof,
-        uint256 validatorRootLocalIndex,
         bytes32 validatorSetRoot
     ) public view returns (bool) {
-        return ValSetVerifier.verifyValidatorRootLocal(validatorRootProof, validatorRootLocalIndex, validatorSetRoot);
+        return ValSetVerifier.verifyValidatorRootLocal(validatorRootProof, validatorSetRoot);
     }
 
     function verifyValidatorOperatorLocal(
