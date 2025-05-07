@@ -75,66 +75,62 @@ library ValSetVerifier {
     /// @dev The precompile address for SHA-256
     uint256 internal constant SHA256_PRECOMPILE = 0x02;
 
-    uint256 internal constant VALIDATORS_LIST_LOCAL_INDEX =
-        1 << VALIDATOR_SET_TREE_HEIGHT + VALIDATOR_SET_VALIDATORS_BASE_INDEX; // to element in ValidatorSet
+    uint256 internal constant VALIDATORS_LIST_LOCAL_INDEX = VALIDATOR_SET_VALIDATORS_BASE_INDEX; // to element in ValidatorSet
 
-    uint256 internal constant VALIDATOR_ROOT_LOCAL_INDEX_MIN =
+    uint256 internal constant VALIDATOR_ROOT_MIN_LOCAL_INDEX =
         VALIDATORS_LIST_LOCAL_INDEX << (1 + VALIDATORS_LIST_TREE_HEIGHT); // to first element (inclusive), "1" is for the length (for a List)
 
-    uint256 internal constant VALIDATOR_ROOT_LOCAL_INDEX_MAX =
-        VALIDATOR_ROOT_LOCAL_INDEX_MIN + VALIDATORS_LIST_MAX_LENGTH; // to last element (exclusive)
+    uint256 internal constant VALIDATOR_ROOT_MAX_LOCAL_INDEX =
+        VALIDATOR_ROOT_MIN_LOCAL_INDEX + VALIDATORS_LIST_MAX_LENGTH; // to last element (exclusive)
 
     uint256 internal constant VALIDATOR_ROOT_PROOF_EXPECTED_HEIGHT =
         VALIDATOR_SET_TREE_HEIGHT + 1 + VALIDATORS_LIST_TREE_HEIGHT; // (to element in ValidatorSet) + (length) + (to element in validators)
 
-    uint256 internal constant VALIDATOR_OPERATOR_LOCAL_INDEX =
-        1 << VALIDATOR_TREE_HEIGHT + VALIDATOR_OPERATOR_BASE_INDEX; // to element in Validator
+    uint256 internal constant VALIDATOR_OPERATOR_LOCAL_INDEX = VALIDATOR_OPERATOR_BASE_INDEX; // to element in Validator
 
     uint256 internal constant VALIDATOR_OPERATOR_PROOF_EXPECTED_HEIGHT = VALIDATOR_TREE_HEIGHT; // (to element in Validator)
 
-    uint256 internal constant VALIDATOR_VOTING_POWER_LOCAL_INDEX =
-        1 << VALIDATOR_TREE_HEIGHT + VALIDATOR_VOTING_POWER_BASE_INDEX; // to element in Validator
+    uint256 internal constant VALIDATOR_VOTING_POWER_LOCAL_INDEX = VALIDATOR_VOTING_POWER_BASE_INDEX; // to element in Validator
 
     uint256 internal constant VALIDATOR_VOTING_POWER_PROOF_EXPECTED_HEIGHT = VALIDATOR_TREE_HEIGHT; // (to element in Validator)
 
-    uint256 internal constant VALIDATOR_IS_ACTIVE_LOCAL_INDEX =
-        1 << VALIDATOR_TREE_HEIGHT + VALIDATOR_IS_ACTIVE_BASE_INDEX; // to element in Validator
+    uint256 internal constant VALIDATOR_IS_ACTIVE_LOCAL_INDEX = VALIDATOR_IS_ACTIVE_BASE_INDEX; // to element in Validator
 
     uint256 internal constant VALIDATOR_IS_ACTIVE_PROOF_EXPECTED_HEIGHT = VALIDATOR_TREE_HEIGHT; // (to element in Validator)
 
-    uint256 internal constant KEYS_LIST_LOCAL_INDEX = 1 << VALIDATOR_TREE_HEIGHT + VALIDATOR_KEYS_BASE_INDEX; // to element in Validator
+    uint256 internal constant KEYS_LIST_LOCAL_INDEX = VALIDATOR_KEYS_BASE_INDEX; // to element in Validator
 
-    uint256 internal constant KEY_ROOT_LOCAL_INDEX_MIN = KEYS_LIST_LOCAL_INDEX << (1 + KEY_LIST_TREE_HEIGHT); // to first element (inclusive), "1" is for the length (for a List)
+    uint256 internal constant KEY_ROOT_MIN_LOCAL_INDEX = KEYS_LIST_LOCAL_INDEX << (1 + KEY_LIST_TREE_HEIGHT); // to first element (inclusive), "1" is for the length (for a List)
 
-    uint256 internal constant KEY_ROOT_LOCAL_INDEX_MAX = KEY_ROOT_LOCAL_INDEX_MIN + KEY_LIST_MAX_LENGTH; // to last element (exclusive)
+    uint256 internal constant KEY_ROOT_MAX_LOCAL_INDEX = KEY_ROOT_MIN_LOCAL_INDEX + KEY_LIST_MAX_LENGTH; // to last element (exclusive)
 
     uint256 internal constant KEY_ROOT_PROOF_EXPECTED_HEIGHT = VALIDATOR_TREE_HEIGHT + 1 + KEY_LIST_TREE_HEIGHT; // (to element in Validator) + (length) + (to element in keys)
 
-    uint256 internal constant VAULTS_LIST_LOCAL_INDEX = 1 << VALIDATOR_SET_TREE_HEIGHT + VALIDATOR_VAULTS_BASE_INDEX; // to element in Validator
+    uint256 internal constant VAULTS_LIST_LOCAL_INDEX = VALIDATOR_VAULTS_BASE_INDEX; // to element in Validator
 
-    uint256 internal constant VAULT_ROOT_LOCAL_INDEX_MIN = VAULTS_LIST_LOCAL_INDEX << (1 + VAULT_LIST_TREE_HEIGHT); // to first element (inclusive), "1" is for the length (for a List)
+    uint256 internal constant VAULT_ROOT_MIN_LOCAL_INDEX = VAULTS_LIST_LOCAL_INDEX << (1 + VAULT_LIST_TREE_HEIGHT); // to first element (inclusive), "1" is for the length (for a List)
 
-    uint256 internal constant VAULT_ROOT_LOCAL_INDEX_MAX = VAULT_ROOT_LOCAL_INDEX_MIN + VAULT_LIST_MAX_LENGTH; // to last element (exclusive)
+    uint256 internal constant VAULT_ROOT_MAX_LOCAL_INDEX = VAULT_ROOT_MIN_LOCAL_INDEX + VAULT_LIST_MAX_LENGTH; // to last element (exclusive)
 
     uint256 internal constant VAULT_ROOT_PROOF_EXPECTED_HEIGHT = VALIDATOR_TREE_HEIGHT + 1 + VAULT_LIST_TREE_HEIGHT; // (to element in Validator) + (length) + (to element in vaults)
 
-    uint256 internal constant KEY_TAG_LOCAL_INDEX = 1 << KEY_TREE_HEIGHT + KEY_TAG_BASE_INDEX; // to element in Key
+    uint256 internal constant KEY_TAG_LOCAL_INDEX = KEY_TAG_BASE_INDEX; // to element in Key
 
     uint256 internal constant KEY_TAG_PROOF_EXPECTED_HEIGHT = KEY_TREE_HEIGHT; // (to element in Key)
 
-    uint256 internal constant KEY_PAYLOAD_HASH_LOCAL_INDEX = 1 << KEY_TREE_HEIGHT + KEY_PAYLOAD_HASH_BASE_INDEX; // to element in Key
+    uint256 internal constant KEY_PAYLOAD_HASH_LOCAL_INDEX = KEY_PAYLOAD_HASH_BASE_INDEX; // to element in Key
 
     uint256 internal constant KEY_PAYLOAD_HASH_PROOF_EXPECTED_HEIGHT = KEY_TREE_HEIGHT; // (to element in Key)
 
-    uint256 internal constant VAULT_CHAIN_ID_LOCAL_INDEX = 1 << VAULT_TREE_HEIGHT + VAULT_CHAIN_ID_BASE_INDEX; // to element in Vault
+    uint256 internal constant VAULT_CHAIN_ID_LOCAL_INDEX = VAULT_CHAIN_ID_BASE_INDEX; // to element in Vault
 
     uint256 internal constant VAULT_CHAIN_ID_PROOF_EXPECTED_HEIGHT = VAULT_TREE_HEIGHT; // (to element in Vault)
 
-    uint256 internal constant VAULT_VAULT_LOCAL_INDEX = 1 << VAULT_TREE_HEIGHT + VAULT_VAULT_BASE_INDEX; // to element in Vault
+    uint256 internal constant VAULT_VAULT_LOCAL_INDEX = VAULT_VAULT_BASE_INDEX; // to element in Vault
 
     uint256 internal constant VAULT_VAULT_PROOF_EXPECTED_HEIGHT = VAULT_TREE_HEIGHT; // (to element in Vault)
 
-    uint256 internal constant VAULT_VOTING_POWER_LOCAL_INDEX = 1 << VAULT_TREE_HEIGHT + VAULT_VOTING_POWER_BASE_INDEX; // to element in Vault
+    uint256 internal constant VAULT_VOTING_POWER_LOCAL_INDEX = VAULT_VOTING_POWER_BASE_INDEX; // to element in Vault
 
     uint256 internal constant VAULT_VOTING_POWER_PROOF_EXPECTED_HEIGHT = VAULT_TREE_HEIGHT; // (to element in Vault)
 
@@ -236,8 +232,8 @@ library ValSetVerifier {
         bytes32 validatorSetRoot
     ) internal view returns (bool) {
         if (
-            validatorRootLocalIndex < VALIDATOR_ROOT_LOCAL_INDEX_MIN
-                || validatorRootLocalIndex >= VALIDATOR_ROOT_LOCAL_INDEX_MAX
+            validatorRootLocalIndex < VALIDATOR_ROOT_MIN_LOCAL_INDEX
+                || validatorRootLocalIndex >= VALIDATOR_ROOT_MAX_LOCAL_INDEX
         ) {
             return false;
         }
@@ -295,7 +291,7 @@ library ValSetVerifier {
         uint256 keyRootLocalIndex,
         bytes32 validatorSetRoot
     ) internal view returns (bool) {
-        if (keyRootLocalIndex < KEY_ROOT_LOCAL_INDEX_MIN || keyRootLocalIndex >= KEY_ROOT_LOCAL_INDEX_MAX) {
+        if (keyRootLocalIndex < KEY_ROOT_MIN_LOCAL_INDEX || keyRootLocalIndex >= KEY_ROOT_MAX_LOCAL_INDEX) {
             return false;
         }
 
@@ -309,7 +305,7 @@ library ValSetVerifier {
         uint256 vaultRootLocalIndex,
         bytes32 validatorSetRoot
     ) internal view returns (bool) {
-        if (vaultRootLocalIndex < VAULT_ROOT_LOCAL_INDEX_MIN || vaultRootLocalIndex >= VAULT_ROOT_LOCAL_INDEX_MAX) {
+        if (vaultRootLocalIndex < VAULT_ROOT_MIN_LOCAL_INDEX || vaultRootLocalIndex >= VAULT_ROOT_MAX_LOCAL_INDEX) {
             return false;
         }
 
