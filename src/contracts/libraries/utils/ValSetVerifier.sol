@@ -176,15 +176,15 @@ library ValSetVerifier {
         if (!isValid) {
             return false;
         }
-        isValid = verifyVaultChainIdLocal(vaultChainIdProof, validatorRootProof.leaf);
+        isValid = verifyVaultChainIdLocal(vaultChainIdProof, vaultRootProof.leaf);
         if (!isValid) {
             return false;
         }
-        isValid = verifyVaultVaultLocal(vaultVaultProof, validatorRootProof.leaf);
+        isValid = verifyVaultVaultLocal(vaultVaultProof, vaultRootProof.leaf);
         if (!isValid) {
             return false;
         }
-        return verifyVaultVotingPowerLocal(vaultVotingPowerProof, validatorRootProof.leaf);
+        return verifyVaultVotingPowerLocal(vaultVotingPowerProof, vaultRootProof.leaf);
     }
 
     function verifyOperator(
@@ -197,7 +197,7 @@ library ValSetVerifier {
         if (!isValid) {
             return false;
         }
-        return verifyValidatorOperatorLocal(operatorProof, validatorSetRoot);
+        return verifyValidatorOperatorLocal(operatorProof, validatorRootProof.leaf);
     }
 
     function verifyVotingPower(
@@ -210,7 +210,7 @@ library ValSetVerifier {
         if (!isValid) {
             return false;
         }
-        return verifyValidatorVotingPowerLocal(votingPowerProof, validatorSetRoot);
+        return verifyValidatorVotingPowerLocal(votingPowerProof, validatorRootProof.leaf);
     }
 
     function verifyIsActive(
@@ -223,7 +223,7 @@ library ValSetVerifier {
         if (!isValid) {
             return false;
         }
-        return verifyValidatorIsActiveLocal(isActiveProof, validatorSetRoot);
+        return verifyValidatorIsActiveLocal(isActiveProof, validatorRootProof.leaf);
     }
 
     function verifyValidatorRootLocal(
@@ -249,12 +249,12 @@ library ValSetVerifier {
 
     function verifyValidatorOperatorLocal(
         SszProof calldata validatorOperatorProof,
-        bytes32 validatorSetRoot
+        bytes32 validatorRoot
     ) internal view returns (bool) {
         return processInclusionProofSha256(
             validatorOperatorProof.proof,
             validatorOperatorProof.leaf,
-            validatorSetRoot,
+            validatorRoot,
             VALIDATOR_OPERATOR_LOCAL_INDEX,
             VALIDATOR_OPERATOR_PROOF_EXPECTED_HEIGHT
         );
@@ -262,12 +262,12 @@ library ValSetVerifier {
 
     function verifyValidatorVotingPowerLocal(
         SszProof calldata validatorVotingPowerProof,
-        bytes32 validatorSetRoot
+        bytes32 validatorRoot
     ) internal view returns (bool) {
         return processInclusionProofSha256(
             validatorVotingPowerProof.proof,
             validatorVotingPowerProof.leaf,
-            validatorSetRoot,
+            validatorRoot,
             VALIDATOR_VOTING_POWER_LOCAL_INDEX,
             VALIDATOR_VOTING_POWER_PROOF_EXPECTED_HEIGHT
         );
@@ -275,12 +275,12 @@ library ValSetVerifier {
 
     function verifyValidatorIsActiveLocal(
         SszProof calldata validatorIsActiveProof,
-        bytes32 validatorSetRoot
+        bytes32 validatorRoot
     ) internal view returns (bool) {
         return processInclusionProofSha256(
             validatorIsActiveProof.proof,
             validatorIsActiveProof.leaf,
-            validatorSetRoot,
+            validatorRoot,
             VALIDATOR_IS_ACTIVE_LOCAL_INDEX,
             VALIDATOR_IS_ACTIVE_PROOF_EXPECTED_HEIGHT
         );
@@ -289,21 +289,21 @@ library ValSetVerifier {
     function verifyValidatorKeyRootLocal(
         SszProof calldata keyRootProof,
         uint256 keyRootLocalIndex,
-        bytes32 validatorSetRoot
+        bytes32 validatorRoot
     ) internal view returns (bool) {
         if (keyRootLocalIndex < KEY_ROOT_MIN_LOCAL_INDEX || keyRootLocalIndex >= KEY_ROOT_MAX_LOCAL_INDEX) {
             return false;
         }
 
         return processInclusionProofSha256(
-            keyRootProof.proof, keyRootProof.leaf, validatorSetRoot, keyRootLocalIndex, KEY_ROOT_PROOF_EXPECTED_HEIGHT
+            keyRootProof.proof, keyRootProof.leaf, validatorRoot, keyRootLocalIndex, KEY_ROOT_PROOF_EXPECTED_HEIGHT
         );
     }
 
     function verifyValidatorVaultRootLocal(
         SszProof calldata vaultRootProof,
         uint256 vaultRootLocalIndex,
-        bytes32 validatorSetRoot
+        bytes32 validatorRoot
     ) internal view returns (bool) {
         if (vaultRootLocalIndex < VAULT_ROOT_MIN_LOCAL_INDEX || vaultRootLocalIndex >= VAULT_ROOT_MAX_LOCAL_INDEX) {
             return false;
@@ -312,26 +312,26 @@ library ValSetVerifier {
         return processInclusionProofSha256(
             vaultRootProof.proof,
             vaultRootProof.leaf,
-            validatorSetRoot,
+            validatorRoot,
             vaultRootLocalIndex,
             VAULT_ROOT_PROOF_EXPECTED_HEIGHT
         );
     }
 
-    function verifyKeyTagLocal(SszProof calldata keyTagProof, bytes32 validatorSetRoot) internal view returns (bool) {
+    function verifyKeyTagLocal(SszProof calldata keyTagProof, bytes32 keyRoot) internal view returns (bool) {
         return processInclusionProofSha256(
-            keyTagProof.proof, keyTagProof.leaf, validatorSetRoot, KEY_TAG_LOCAL_INDEX, KEY_ROOT_PROOF_EXPECTED_HEIGHT
+            keyTagProof.proof, keyTagProof.leaf, keyRoot, KEY_TAG_LOCAL_INDEX, KEY_ROOT_PROOF_EXPECTED_HEIGHT
         );
     }
 
     function verifyKeyPayloadHash(
         SszProof calldata keyPayloadHashProof,
-        bytes32 validatorSetRoot
+        bytes32 keyRoot
     ) internal view returns (bool) {
         return processInclusionProofSha256(
             keyPayloadHashProof.proof,
             keyPayloadHashProof.leaf,
-            validatorSetRoot,
+            keyRoot,
             KEY_PAYLOAD_HASH_LOCAL_INDEX,
             KEY_PAYLOAD_HASH_PROOF_EXPECTED_HEIGHT
         );
@@ -339,25 +339,22 @@ library ValSetVerifier {
 
     function verifyVaultChainIdLocal(
         SszProof calldata vaultChainIdProof,
-        bytes32 validatorSetRoot
+        bytes32 vaultRoot
     ) internal view returns (bool) {
         return processInclusionProofSha256(
             vaultChainIdProof.proof,
             vaultChainIdProof.leaf,
-            validatorSetRoot,
+            vaultRoot,
             VAULT_CHAIN_ID_LOCAL_INDEX,
             VAULT_CHAIN_ID_PROOF_EXPECTED_HEIGHT
         );
     }
 
-    function verifyVaultVaultLocal(
-        SszProof calldata vaultVaultProof,
-        bytes32 validatorSetRoot
-    ) internal view returns (bool) {
+    function verifyVaultVaultLocal(SszProof calldata vaultVaultProof, bytes32 vaultRoot) internal view returns (bool) {
         return processInclusionProofSha256(
             vaultVaultProof.proof,
             vaultVaultProof.leaf,
-            validatorSetRoot,
+            vaultRoot,
             VAULT_VAULT_LOCAL_INDEX,
             VAULT_VAULT_PROOF_EXPECTED_HEIGHT
         );
@@ -365,12 +362,12 @@ library ValSetVerifier {
 
     function verifyVaultVotingPowerLocal(
         SszProof calldata vaultVotingPowerProof,
-        bytes32 validatorSetRoot
+        bytes32 vaultRoot
     ) internal view returns (bool) {
         return processInclusionProofSha256(
             vaultVotingPowerProof.proof,
             vaultVotingPowerProof.leaf,
-            validatorSetRoot,
+            vaultRoot,
             VAULT_VOTING_POWER_LOCAL_INDEX,
             VAULT_VOTING_POWER_PROOF_EXPECTED_HEIGHT
         );

@@ -1,0 +1,154 @@
+// SPDX-License-Identifier: BUSL-1.1
+pragma solidity ^0.8.25;
+
+import {Script, console2} from "forge-std/Script.sol";
+
+import {ISettlementManager} from "../../src/interfaces/implementations/settlement/ISettlementManager.sol";
+import {IOzOwnable} from "../../src/interfaces/features/permissions/IOzOwnable.sol";
+import {INetworkManager} from "../../src/interfaces/base/INetworkManager.sol";
+import {IEpochManager} from "../../src/interfaces/base/IEpochManager.sol";
+import {IOzEIP712} from "../../src/interfaces/base/common/IOzEIP712.sol";
+import {IVaultManager} from "../../src/interfaces/base/IVaultManager.sol";
+
+import {KeyTag} from "../../src/contracts/libraries/utils/KeyTag.sol";
+import {KeyManagerLogic} from "../../src/contracts/base/logic/KeyManagerLogic.sol";
+
+import {SigVerifierMock} from "../../test/mocks/SigVerifierMock.sol";
+
+import "./InitSetup.s.sol";
+
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+
+// forge script script/test/SecondarySetup.s.sol:SecondarySetupScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_SECONDARY
+
+contract SecondarySetupScript is InitSetupScript {
+    using KeyTag for uint8;
+
+    bytes32 internal constant KEY_OWNERSHIP_TYPEHASH = keccak256("KeyOwnership(address operator,bytes key)");
+
+    struct SecondarySetupParams {
+        Replica replica;
+        SelfRegisterVotingPowerProvider votingPowerProvider;
+    }
+
+    function run(
+        uint256 seed
+    ) public virtual override {
+        SYMBIOTIC_CORE_PROJECT_ROOT = "lib/core/";
+        SymbioticInit.run(seed);
+
+        string memory obj = "data";
+        string memory finalJson;
+        (InitSetupParams memory initSetupParams, Vars memory vars) = loadInitSetupParamsAndVars();
+        symbioticCore = initSetupParams.secondaryChain.core;
+        SecondarySetupParams memory secondarySetupParams;
+
+        vm.startBroadcast(vars.deployer.privateKey);
+        secondarySetupParams.votingPowerProvider = new SelfRegisterVotingPowerProvider(
+            address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory)
+        );
+        secondarySetupParams.votingPowerProvider.initialize(
+            INetworkManager.NetworkManagerInitParams({
+                network: vars.network.addr,
+                subnetworkID: initSetupParams.subnetworkID
+            }),
+            IVaultManager.VaultManagerInitParams({slashingWindow: initSetupParams.slashingWindow}),
+            IOzEIP712.OzEIP712InitParams({name: "SelfRegisterVotingPowerProvider", version: "1"}),
+            IOzOwnable.OzOwnableInitParams({owner: vars.network.addr})
+        );
+        vm.stopBroadcast();
+        vm.serializeAddress(obj, "votingPowerProvider", address(secondarySetupParams.votingPowerProvider));
+
+        _networkSetMiddleware_SymbioticCore(vars.network.addr, address(secondarySetupParams.votingPowerProvider));
+
+        for (uint256 i; i < initSetupParams.secondaryChain.tokens.length; ++i) {
+            vm.startBroadcast(vars.network.privateKey);
+            secondarySetupParams.votingPowerProvider.registerToken(initSetupParams.secondaryChain.tokens[i]);
+            vm.stopBroadcast();
+        }
+        for (uint256 i; i < initSetupParams.secondaryChain.vaults.length; ++i) {
+            _setMaxNetworkLimit_SymbioticCore(
+                vars.network.addr,
+                initSetupParams.secondaryChain.vaults[i],
+                initSetupParams.subnetworkID,
+                type(uint256).max
+            );
+            _setNetworkLimit_SymbioticCore(
+                vars.deployer.addr,
+                initSetupParams.secondaryChain.vaults[i],
+                secondarySetupParams.votingPowerProvider.SUBNETWORK(),
+                type(uint256).max
+            );
+            for (uint256 j; j < vars.operators.length; ++j) {
+                _setOperatorNetworkShares_SymbioticCore(
+                    vars.deployer.addr,
+                    initSetupParams.secondaryChain.vaults[i],
+                    secondarySetupParams.votingPowerProvider.SUBNETWORK(),
+                    vars.operators[j].addr,
+                    1e18
+                );
+            }
+            vm.startBroadcast(vars.network.privateKey);
+            secondarySetupParams.votingPowerProvider.registerSharedVault(initSetupParams.secondaryChain.vaults[i]);
+            vm.stopBroadcast();
+        }
+
+        for (uint256 i; i < vars.operators.length; ++i) {
+            _operatorOptInWeak_SymbioticCore(vars.operators[i].addr, vars.network.addr);
+
+            for (uint256 j; j < initSetupParams.secondaryChain.vaults.length; ++j) {
+                _operatorOptInWeak_SymbioticCore(vars.operators[i].addr, initSetupParams.secondaryChain.vaults[j]);
+            }
+
+            vm.startBroadcast(vars.operators[i].privateKey);
+            secondarySetupParams.votingPowerProvider.registerOperator(address(0));
+            vm.stopBroadcast();
+        }
+
+        vm.startBroadcast(vars.network.privateKey);
+        secondarySetupParams.replica = new Replica();
+        ISettlementManager.QuorumThreshold[] memory quorumThresholds = new ISettlementManager.QuorumThreshold[](1);
+        quorumThresholds[0] = ISettlementManager.QuorumThreshold({
+            keyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
+            threshold: uint208(Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil))
+        });
+        uint8[] memory requiredKeyTags = new uint8[](2);
+        requiredKeyTags[0] = KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15);
+        requiredKeyTags[1] = KeyManagerLogic.KEY_TYPE_ECDSA_SECP256K1.keyTag(0);
+        secondarySetupParams.replica.initialize(
+            ISettlementManager.SettlementManagerInitParams({
+                networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
+                    network: vars.network.addr,
+                    subnetworkID: initSetupParams.subnetworkID
+                }),
+                epochManagerInitParams: IEpochManager.EpochManagerInitParams({
+                    epochDuration: initSetupParams.epochDuration,
+                    epochDurationTimestamp: initSetupParams.zeroTimestamp
+                }),
+                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
+                quorumThresholds: quorumThresholds,
+                commitDuration: initSetupParams.commitDuration,
+                requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
+                sigVerifier: address(new SigVerifierMock())
+            }),
+            vars.deployer.addr
+        );
+        vm.stopBroadcast();
+        finalJson = vm.serializeAddress(obj, "replica", address(secondarySetupParams.replica));
+
+        console2.log("Secondary - VotingPowerProvider: ", address(secondarySetupParams.votingPowerProvider));
+        console2.log("Secondary - Replica: ", address(secondarySetupParams.replica));
+
+        vm.writeJson(finalJson, "script/test/data/secondary_setup_params.json");
+    }
+
+    function loadSecondarySetupParams() public returns (SecondarySetupParams memory secondarySetupParams) {
+        {
+            string memory root = vm.projectRoot();
+            string memory path = string.concat(root, "/script/test/data/secondary_setup_params.json");
+            string memory json = vm.readFile(path);
+            bytes memory data = vm.parseJson(json);
+            secondarySetupParams = abi.decode(data, (SecondarySetupParams));
+        }
+    }
+}

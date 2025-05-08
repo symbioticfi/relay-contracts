@@ -1,0 +1,64 @@
+{
+  "commitDuration": 120,
+  "epochDuration": 300,
+  "masterChain": {
+    "chainId": 111,
+    "core": {
+      "delegatorFactory": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+      "networkMetadataService": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
+      "networkMiddlewareService": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
+      "networkRegistry": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      "operatorMetadataService": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+      "operatorNetworkOptInService": "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
+      "operatorRegistry": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+      "operatorVaultOptInService": "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
+      "slasherFactory": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+      "vaultConfigurator": "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
+      "vaultFactory": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+    },
+    "tokens": [
+      "0x4A679253410272dd5232B3Ff7cF5dbB88f295319"
+    ],
+    "vaults": [
+      "0x720921233698ccA7f7Ae05BD01c94F53A0E6C797",
+      "0xA590138578A2861Dc53a108DEAE226256542c92D",
+      "0x70100539535DeD4D661D0F8FDA2d86b5C333dE6F"
+    ]
+  },
+  "networkPrivateKey": 77814517325470205911140941194401928579557062014761831930645393041380819009408,
+  "operatorPrivateKeys": [
+    87191036493798670866484781455694320176667203290824056510541300741498740913410,
+    11008377096554045051122023680185802911050337017631086444859313200352654461863,
+    26972876870930381973856869753776124637336739336929668162870464864826929175089
+  ],
+  "secondaryChain": {
+    "chainId": 222,
+    "core": {
+      "delegatorFactory": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+      "networkMetadataService": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
+      "networkMiddlewareService": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
+      "networkRegistry": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      "operatorMetadataService": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+      "operatorNetworkOptInService": "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
+      "operatorRegistry": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+      "operatorVaultOptInService": "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
+      "slasherFactory": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+      "vaultConfigurator": "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
+      "vaultFactory": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+    },
+    "tokens": [
+      "0x4A679253410272dd5232B3Ff7cF5dbB88f295319"
+    ],
+    "vaults": [
+      "0x15826a8c284a49939eEF98C9a325daEd9b300a26",
+      "0xaa79F0143775B54509b7970B2C382D7Ec7390950",
+      "0x125ffdEe11C81e9A9f859f47E0Dc1eddC8fA2d38"
+    ]
+  },
+  "slashingWindow": 1200,
+  "stakerPrivateKeys": [
+    3435247162038210587610369479936427564209354959133959739970868048138458127204
+  ],
+  "subnetworkID": 0,
+  "zeroTimestamp": 1746024872
+}
