@@ -24,7 +24,7 @@ async function main() {
   const { stateFile, rpcEnv } = parseCli()
   if (!stateFile || !rpcEnv) {
     console.error(`Usage:
-    node load-anvil-state.js --stateFile script/deploy/data/anvil1.txt --rpcEnv ETH_RPC_URL_MASTER`)
+    node load-anvil-state.js --stateFile script/deploy/data/anvil_master.txt --rpcEnv ETH_RPC_URL_MASTER`)
     process.exit(1)
   }
 
@@ -35,10 +35,8 @@ async function main() {
   }
 
   try {
-    // 1.  stateFile itself stores the real snapshot path
     const snapshotPath = (await fs.readFile(stateFile, 'utf8')).trim()
 
-    // 2.  RPC call
     const res = await fetch(rpcUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -46,7 +44,7 @@ async function main() {
         jsonrpc: '2.0',
         id: 1,
         method: 'anvil_loadState',
-        params: [snapshotPath.replace(/^"|"$/g, '')], // strip quotes if present
+        params: [snapshotPath.replace(/^"|"$/g, '')],
       }),
     }).then((r) => r.json())
 
