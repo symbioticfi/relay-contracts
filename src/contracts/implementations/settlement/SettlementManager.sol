@@ -7,7 +7,7 @@ import {NetworkManager} from "../../base/NetworkManager.sol";
 import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
 import {EpochManagerLogic} from "../../base/logic/EpochManagerLogic.sol";
 
-import {ISigVerifier} from "../../../interfaces/other/ISigVerifier.sol";
+import {ISigVerifier} from "../../../interfaces/base/ISigVerifier.sol";
 import {IBaseKeyManager} from "../../../interfaces/base/IBaseKeyManager.sol";
 import {ISettlementManager} from "../../../interfaces/implementations/settlement/ISettlementManager.sol";
 import {IEpochManager} from "../../../interfaces/base/IEpochManager.sol";
