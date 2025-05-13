@@ -226,12 +226,10 @@ contract MasterSetupScript is SecondarySetupScript {
     }
 
     function loadMasterSetupParams() public returns (MasterSetupParams memory masterSetupParams) {
-        {
-            string memory root = vm.projectRoot();
-            string memory path = string.concat(root, "/script/test/data/master_setup_params.json");
-            string memory json = vm.readFile(path);
-            bytes memory data = vm.parseJson(json);
-            masterSetupParams = abi.decode(data, (MasterSetupParams));
-        }
+        string memory root = vm.projectRoot();
+        string memory path = string.concat(root, "/script/test/data/master_setup_params.json");
+        string memory json = vm.readFile(path);
+        bytes memory data = vm.parseJson(json);
+        masterSetupParams = abi.decode(data, (MasterSetupParams));
     }
 }

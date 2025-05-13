@@ -47,6 +47,7 @@ contract InitSetupScript is SymbioticCoreInit {
         uint256[] stakerPrivateKeys;
         uint96 subnetworkID;
         uint48 zeroTimestamp;
+        bool random;
     }
 
     function run(
@@ -78,6 +79,7 @@ contract InitSetupScript is SymbioticCoreInit {
         string memory finalJson;
         Vars memory vars;
         InitSetupParams memory initSetupParams;
+        initSetupParams.random = vm.envBool("RANDOM");
         vars.deployer = vm.createWallet(vm.envUint("PRIVATE_KEY"));
 
         vars.network = vars.deployer;
@@ -143,14 +145,20 @@ contract InitSetupScript is SymbioticCoreInit {
         for (uint256 i; i < initSetupParams.masterChain.vaults.length; ++i) {
             initSetupParams.masterChain.vaults[i] = _getVaultRandom_SymbioticCore(
                 _vmWalletsToAddresses_Symbiotic(vars.operators),
-                _randomPick_Symbiotic(initSetupParams.masterChain.tokens)
+                initSetupParams.random
+                    ? _randomPick_Symbiotic(initSetupParams.masterChain.tokens)
+                    : initSetupParams.masterChain.tokens[0]
             );
             console2.log("Vault -", initSetupParams.masterChain.vaults[i]);
         }
 
         for (uint256 i; i < vars.stakers.length; ++i) {
             for (uint256 j; j < initSetupParams.masterChain.vaults.length; ++j) {
-                _stakerDepositRandom_SymbioticCore(vars.stakers[i].addr, initSetupParams.masterChain.vaults[j]);
+                initSetupParams.random
+                    ? _stakerDepositRandom_SymbioticCore(vars.stakers[i].addr, initSetupParams.masterChain.vaults[j])
+                    : _stakerDeposit_SymbioticCore(
+                        vars.stakers[i].addr, initSetupParams.masterChain.vaults[j], i * 100_000 + j * 1000
+                    );
             }
         }
 
@@ -218,14 +226,20 @@ contract InitSetupScript is SymbioticCoreInit {
         for (uint256 i; i < initSetupParams.secondaryChain.vaults.length; ++i) {
             initSetupParams.secondaryChain.vaults[i] = _getVaultRandom_SymbioticCore(
                 _vmWalletsToAddresses_Symbiotic(vars.operators),
-                _randomPick_Symbiotic(initSetupParams.secondaryChain.tokens)
+                initSetupParams.random
+                    ? _randomPick_Symbiotic(initSetupParams.secondaryChain.tokens)
+                    : initSetupParams.secondaryChain.tokens[0]
             );
             console2.log("Vault -", initSetupParams.secondaryChain.vaults[i]);
         }
 
         for (uint256 i; i < vars.stakers.length; ++i) {
             for (uint256 j; j < initSetupParams.secondaryChain.vaults.length; ++j) {
-                _stakerDepositRandom_SymbioticCore(vars.stakers[i].addr, initSetupParams.secondaryChain.vaults[j]);
+                initSetupParams.random
+                    ? _stakerDepositRandom_SymbioticCore(vars.stakers[i].addr, initSetupParams.secondaryChain.vaults[j])
+                    : _stakerDeposit_SymbioticCore(
+                        vars.stakers[i].addr, initSetupParams.secondaryChain.vaults[j], i * 100_000 + j * 1000
+                    );
             }
         }
 

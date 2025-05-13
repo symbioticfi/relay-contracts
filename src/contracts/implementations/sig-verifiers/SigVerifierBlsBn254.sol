@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 import {Verifier} from "./zk/HashVerifier.sol";
@@ -45,6 +45,11 @@ contract SigVerifier is ISigVerifier {
                 commitments := add(proof.offset, 448)
                 commitmentPok := add(proof.offset, 512)
                 input := add(proof.offset, 576)
+            }
+
+            bytes memory extraData = ISettlementManager(settlementManager).getExtraDataFromValSetHeader();
+            if (input[8] != abi.decode(extraData, (uint256))) {
+                return false;
             }
 
             try verifier.verifyProof(_proof, commitments, commitmentPok, input) {}

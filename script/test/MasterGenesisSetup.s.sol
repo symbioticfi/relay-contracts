@@ -15,7 +15,7 @@ contract MasterGenesisSetupScript is MasterSetupScript {
 
     struct ValSetHeaderStruct {
         KeyStruct[] activeAggregatedKeys;
-        bytes extraData;
+        bytes32 extraData;
         uint256 totalActiveVotingPower;
         bytes32 validatorsSszMRoot;
         uint8 version;
@@ -60,7 +60,7 @@ contract MasterGenesisSetupScript is MasterSetupScript {
             activeAggregatedKeys: activeAggregatedKeys,
             totalActiveVotingPower: valSetHeaderStruct.totalActiveVotingPower,
             validatorsSszMRoot: valSetHeaderStruct.validatorsSszMRoot,
-            extraData: valSetHeaderStruct.extraData
+            extraData: abi.encode(valSetHeaderStruct.extraData)
         });
     }
 }
