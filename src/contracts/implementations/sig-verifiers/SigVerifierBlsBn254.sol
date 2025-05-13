@@ -20,7 +20,7 @@ contract SigVerifier is ISigVerifier {
 
     Verifier public verifier;
 
-    uint256 public constant QUORUM_THRESHOLD_BASE = 1e18; // 100%
+    uint256 public constant QUORUM_THRESHOLD_BASE = 1e18;
 
     constructor(
         address _verifier
@@ -33,30 +33,18 @@ contract SigVerifier is ISigVerifier {
         bytes memory message,
         uint8 keyTag,
         uint208 quorumThreshold,
-        bytes calldata proof // size | 64 bytes are signature | 128 bytes pubkeyG2 |
+        bytes calldata proof // 64 bytes are signature | 128 bytes pubkeyG2 |
     ) public view returns (bool) {
         uint256[10] calldata input;
         {
             uint256[8] calldata _proof;
             uint256[2] calldata commitments;
             uint256[2] calldata commitmentPok;
-
-            // Extract proof components from the calldata
-            // Assuming proof[192 + len:] contains the ZK proof components in the expected format
-
-            // Parse the proof components from the calldata
             assembly {
-                // Load each element of the proof array
-                _proof := add(proof.offset, 224)
-
-                // Load commitments (2 values)
-                commitments := add(proof.offset, 480)
-
-                // Load commitment proof of knowledge (2 values)
-                commitmentPok := add(proof.offset, 544)
-
-                // Load input values (10 values)
-                input := add(proof.offset, 608)
+                _proof := add(proof.offset, 192)
+                commitments := add(proof.offset, 448)
+                commitmentPok := add(proof.offset, 512)
+                input := add(proof.offset, 576)
             }
 
             try verifier.verifyProof(_proof, commitments, commitmentPok, input) {}
@@ -77,8 +65,8 @@ contract SigVerifier is ISigVerifier {
         bytes memory aggPublicKeyG1Bytes =
             ISettlementManager(settlementManager).getActiveAggregatedKeyFromValSetHeader(keyTag);
         BN254.G1Point memory nonSignersPublicKeyG1Raw = BN254.G1Point(
-            input[0] + input[1] * 2 ** 64 + input[2] * 2 ** 128 + input[3] * 2 ** 192,
-            input[4] + input[5] * 2 ** 64 + input[6] * 2 ** 128 + input[7] * 2 ** 192
+            input[0] + input[1] << 64 + input[2] << 128 + input[3] << 192,
+            input[4] + input[5] << 64 + input[6] << 128 + input[7] << 192
         );
         bytes calldata signature = proof[0:64];
         bytes calldata aggPublicKeyG2 = proof[64:192];
