@@ -115,6 +115,7 @@ contract InitSetupScript is SymbioticCoreInit {
         vm.startBroadcast(vars.deployer.privateKey);
 
         initSetupParams.masterChain.tokens = new address[](1);
+        // console2.log("Token nonce", vm.getNonce(vars.deployer.addr));
         initSetupParams.masterChain.tokens[0] = address(new Token("Test"));
 
         vm.stopBroadcast();

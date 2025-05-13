@@ -21,7 +21,9 @@ contract MasterGenesisSetup is MasterSetup {
 
     function setUp() public virtual override {
         MasterSetup.setUp();
+    }
 
+    function setGenesis() public {
         vm.startPrank(vars.deployer.addr);
         ISettlementManager.ValSetHeader memory valSetHeader = loadGenesis();
         masterSetupParams.master.setGenesis(valSetHeader);
