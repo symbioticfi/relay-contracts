@@ -15,7 +15,7 @@ interface IOzEIP712 is IERC5267 {
         bytes32 structHash
     ) external view returns (bytes32);
 
-    function hashTypedDataV4Multichain(
+    function hashTypedDataV4CrossChain(
         bytes32 structHash
     ) external view returns (bytes32);
 }

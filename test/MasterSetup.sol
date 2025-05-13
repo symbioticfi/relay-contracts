@@ -22,7 +22,8 @@ import {IEpochManager} from "../src/interfaces/base/IEpochManager.sol";
 import {IOzEIP712} from "../src/interfaces/base/common/IOzEIP712.sol";
 import {IVaultManager} from "../src/interfaces/base/IVaultManager.sol";
 
-import {SigVerifierMock} from "./mocks/SigVerifierMock.sol";
+import {Verifier} from "../src/contracts/implementations/sig-verifiers/zk/HashVerifier.sol";
+import {SigVerifier} from "../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254.sol";
 
 import "./InitSetup.sol";
 
@@ -204,7 +205,7 @@ contract MasterSetup is InitSetup {
                     quorumThresholds: quorumThresholds,
                     commitDuration: initSetupParams.commitDuration,
                     requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
-                    sigVerifier: address(new SigVerifierMock())
+                    sigVerifier: address(new SigVerifier(address(new Verifier())))
                 }),
                 IValSetConfigManager.ValSetConfigManagerInitParams({
                     maxVotingPower: 1e16,

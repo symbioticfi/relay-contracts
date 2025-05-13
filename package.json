@@ -21,7 +21,7 @@
     "deploy:anvil_master_wait": "source .env && cast rpc evm_increaseTime $DEPLOYMENT_BUFFER --rpc-url $ETH_RPC_URL_MASTER",
     "deploy:anvil_secondary_wait": "source .env && cast rpc evm_increaseTime $DEPLOYMENT_BUFFER --rpc-url $ETH_RPC_URL_SECONDARY",
     "deploy:anvil_wait": "concurrently \"yarn deploy:anvil_master_wait\" \"yarn deploy:anvil_secondary_wait\"",
-    "deploy:genesis": "npm-run-all -s deploy:anvil_wait deploy:genesisSetup",
+    "deploy:genesis": "npm-run-all -s deploy:anvil_wait deploy:generate_genesis deploy:genesisSetup",
     "deploy": "concurrently \"yarn deploy:anvil\" \"yarn sleep && yarn deploy:setup && yarn deploy:genesis\"",
     "anvil:dump_master": "source .env && cast rpc anvil_dumpState --rpc-url $ETH_RPC_URL_MASTER > script/test/data/anvil_master.txt",
     "anvil:dump_secondary": "source .env && cast rpc anvil_dumpState --rpc-url $ETH_RPC_URL_SECONDARY > script/test/data/anvil_secondary.txt",

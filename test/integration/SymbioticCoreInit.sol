@@ -257,8 +257,6 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
                 0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f
             );
             symbioticCore.vaultConfigurator = ISymbioticVaultConfigurator(0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f);
-
-            console2.log(address(symbioticCore.vaultConfigurator));
         }
     }
 

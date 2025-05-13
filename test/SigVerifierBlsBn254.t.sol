@@ -16,12 +16,23 @@ import {MasterGenesisSetup} from "./MasterGenesisSetup.sol";
 
 import {console2} from "forge-std/console2.sol";
 
+import {Verifier} from "../src/contracts/implementations/sig-verifiers/zk/HashVerifier.sol";
+import {SigVerifier} from "../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254.sol";
+
+import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+
 contract SigVerifierBlsBn254Test is MasterGenesisSetup {
     using KeyTag for uint8;
     using KeyBlsBn254 for BN254.G1Point;
     using BN254 for BN254.G1Point;
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
     using KeyEcdsaSecp256k1 for KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1;
+
+    struct ZkProof {
+        uint256[] input;
+        bytes proof;
+    }
 
     function setUp() public override {
         super.setUp();
@@ -64,22 +75,35 @@ contract SigVerifierBlsBn254Test is MasterGenesisSetup {
             }
         }
 
+        ZkProof memory zkProof = loadZkProof();
+
+        bytes memory proof_ = Bytes.slice(zkProof.proof, 0, 256);
+        bytes memory commitments = Bytes.slice(zkProof.proof, 260, 324);
+        bytes memory commitmentPok = Bytes.slice(zkProof.proof, 324, 388);
+
+        bytes memory fullProof = abi.encodePacked(
+            abi.encode(aggSigG1), abi.encode(aggKeyG2), proof_, commitments, commitmentPok, zkProof.input
+        );
+
+        address zkVerifier = address(new Verifier());
+        SigVerifier sigVerifier = new SigVerifier(zkVerifier);
+
         assertTrue(
-            SigBlsBn254.verify(
-                KeyBlsBn254.wrap(aggKeyG1).toBytes(),
+            sigVerifier.verifyQuorumSig(
+                address(masterSetupParams.master),
                 abi.encode(messageHash),
-                abi.encode(aggSigG1),
-                abi.encode(aggKeyG2)
+                KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
+                uint208(Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil)),
+                fullProof
             )
         );
     }
 
-    // function getG2Key(
-    //     uint256 privateKey
-    // ) internal view returns (BN254.G2Point memory) {
-    //     BN254.G2Point memory G2 = BN254.generatorG2();
-    //     (uint256 x1, uint256 x2, uint256 y1, uint256 y2) =
-    //         BN254G2.ECTwistMul(privateKey, G2.X[1], G2.X[0], G2.Y[1], G2.Y[0]);
-    //     return BN254.G2Point([x2, x1], [y2, y1]);
-    // }
+    function loadZkProof() internal returns (ZkProof memory) {
+        string memory root = vm.projectRoot();
+        string memory path = string.concat(root, "/test/data/zk_proof.json");
+        string memory json = vm.readFile(path);
+        bytes memory data = vm.parseJson(json);
+        return abi.decode(data, (ZkProof));
+    }
 }
