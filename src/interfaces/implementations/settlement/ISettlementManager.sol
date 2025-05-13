@@ -72,6 +72,8 @@ interface ISettlementManager {
 
     function VALIDATOR_SET_VERSION() external pure returns (uint8);
 
+    function QUORUM_THRESHOLD_BASE() external pure returns (uint256);
+
     function getCurrentValSetTimestamp() external view returns (uint48);
 
     function getQuorumThresholdAt(uint8 keyTag, uint48 timestamp, bytes memory hint) external view returns (uint208);
