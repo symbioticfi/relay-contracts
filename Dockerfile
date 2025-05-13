@@ -15,11 +15,9 @@ RUN yarn install
 # Copy source code
 COPY . .
 
-# Build contracts
-RUN forge build
+RUN rm script/test/utils/generate_genesis && \
+    ln -s generate_genesis_linux_amd64 generate_genesis && \
+    forge build && \
+    yarn config set script-shell /bin/bash
 
-# Set default shell to bash for commands like 'source'
 SHELL ["/bin/bash", "-c"]
-
-# Command that will be executed when the container starts
-CMD ["yarn", "deploy"]
