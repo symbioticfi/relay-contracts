@@ -16,7 +16,7 @@ RUN yarn install
 COPY . .
 
 RUN rm script/test/utils/generate_genesis && \
-    ln -s generate_genesis_linux_amd64 generate_genesis && \
+    ln -s script/test/utils/generate_genesis_linux_amd64 script/test/utils/generate_genesis && \
     forge build && \
     yarn config set script-shell /bin/bash
 
