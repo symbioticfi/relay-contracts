@@ -8,7 +8,7 @@ import {SymbioticCoreConstants} from "./SymbioticCoreConstants.sol";
 import {SafeERC20, IERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
-import {Test} from "forge-std/Test.sol";
+import {Test, console2} from "forge-std/Test.sol";
 
 contract SymbioticCoreBindings is Test {
     using SafeERC20 for IERC20;
@@ -26,6 +26,20 @@ contract SymbioticCoreBindings is Test {
         bytes memory slasherParams
     ) internal virtual returns (address vault, address delegator, address slasher) {
         vm.startPrank(who);
+        console2.logBytes(
+            abi.encode(
+                ISymbioticVaultConfigurator.InitParams({
+                    version: version,
+                    owner: owner,
+                    vaultParams: vaultParams,
+                    delegatorIndex: delegatorIndex,
+                    delegatorParams: delegatorParams,
+                    withSlasher: withSlasher,
+                    slasherIndex: slasherIndex,
+                    slasherParams: slasherParams
+                })
+            )
+        );
         (vault, delegator, slasher) = symbioticCore.vaultConfigurator.create(
             ISymbioticVaultConfigurator.InitParams({
                 version: version,

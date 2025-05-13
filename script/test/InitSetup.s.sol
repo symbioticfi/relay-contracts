@@ -42,12 +42,12 @@ contract InitSetupScript is SymbioticCoreInit {
         ChainSetup masterChain;
         uint256 networkPrivateKey;
         uint256[] operatorPrivateKeys;
+        bool random;
         ChainSetup secondaryChain;
         uint48 slashingWindow;
         uint256[] stakerPrivateKeys;
         uint96 subnetworkID;
         uint48 zeroTimestamp;
-        bool random;
     }
 
     function run(
@@ -110,7 +110,7 @@ contract InitSetupScript is SymbioticCoreInit {
         vm.createSelectFork(vm.rpcUrl("master_chain"));
         _initCore_SymbioticCore(false);
 
-        uint48 zeroTimestamp = uint48(vm.getBlockTimestamp() + vm.envUint("DEPLOYMENT_BUFFER"));
+        console2.logBytes(abi.encode(symbioticCore));
 
         vm.startBroadcast(vars.deployer.privateKey);
 
@@ -118,6 +118,8 @@ contract InitSetupScript is SymbioticCoreInit {
         initSetupParams.masterChain.tokens[0] = address(new Token("Test"));
 
         vm.stopBroadcast();
+
+        uint48 zeroTimestamp = uint48(vm.getBlockTimestamp() + vm.envUint("DEPLOYMENT_BUFFER"));
 
         for (uint256 i; i < vars.stakers.length; ++i) {
             for (uint256 j; j < initSetupParams.masterChain.tokens.length; ++j) {
@@ -150,7 +152,7 @@ contract InitSetupScript is SymbioticCoreInit {
                 )
                 : _getVault_SymbioticCore(
                     VaultParams({
-                        owner: address(this),
+                        owner: vars.deployer.addr,
                         collateral: initSetupParams.masterChain.tokens[0],
                         burner: 0x000000000000000000000000000000000000dEaD,
                         epochDuration: uint48(SYMBIOTIC_CORE_MIN_EPOCH_DURATION * (i + 1)),
@@ -250,7 +252,7 @@ contract InitSetupScript is SymbioticCoreInit {
                 )
                 : _getVault_SymbioticCore(
                     VaultParams({
-                        owner: address(this),
+                        owner: vars.deployer.addr,
                         collateral: initSetupParams.secondaryChain.tokens[0],
                         burner: 0x000000000000000000000000000000000000dEaD,
                         epochDuration: uint48(SYMBIOTIC_CORE_MIN_EPOCH_DURATION * (i + 1)),
@@ -313,7 +315,8 @@ contract InitSetupScript is SymbioticCoreInit {
         vm.serializeUint(obj, "commitDuration", vm.envUint("COMMIT_DURATION"));
         vm.serializeUint(obj, "zeroTimestamp", zeroTimestamp);
         vm.serializeUint(obj, "subnetworkID", IDENTIFIER);
-        finalJson = vm.serializeUint(obj, "slashingWindow", vm.envUint("SLASHING_WINDOW"));
+        vm.serializeUint(obj, "slashingWindow", vm.envUint("SLASHING_WINDOW"));
+        finalJson = vm.serializeBool(obj, "random", initSetupParams.random);
 
         vm.writeJson(finalJson, "script/test/data/init_setup_params.json");
     }

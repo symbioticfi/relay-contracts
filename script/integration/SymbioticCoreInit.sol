@@ -14,6 +14,8 @@ import {IERC5267} from "@openzeppelin/contracts/interfaces/IERC5267.sol";
 import {SafeERC20, IERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
 
+import {console2} from "forge-std/console2.sol";
+
 contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
     using SafeERC20 for IERC20;
     using Math for uint256;
@@ -150,6 +152,8 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
             );
             symbioticCore.vaultFactory.whitelist(vaultImpl);
 
+            console2.log(address(vaultImpl));
+
             address vaultTokenizedImpl = deployCode(
                 string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/VaultTokenized.sol/VaultTokenized.json"),
                 abi.encode(
@@ -175,6 +179,8 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
             );
             symbioticCore.delegatorFactory.whitelist(networkRestakeDelegatorImpl);
 
+            console2.log(address(networkRestakeDelegatorImpl));
+
             address fullRestakeDelegatorImpl = deployCode(
                 string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/FullRestakeDelegator.sol/FullRestakeDelegator.json"),
                 abi.encode(
@@ -187,6 +193,8 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
                 )
             );
             symbioticCore.delegatorFactory.whitelist(fullRestakeDelegatorImpl);
+
+            console2.log(address(fullRestakeDelegatorImpl));
 
             address operatorSpecificDelegatorImpl = deployCode(
                 string.concat(
@@ -204,6 +212,8 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
             );
             symbioticCore.delegatorFactory.whitelist(operatorSpecificDelegatorImpl);
 
+            console2.log(address(operatorSpecificDelegatorImpl));
+
             address slasherImpl = deployCode(
                 string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/Slasher.sol/Slasher.json"),
                 abi.encode(
@@ -214,6 +224,8 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
                 )
             );
             symbioticCore.slasherFactory.whitelist(slasherImpl);
+
+            console2.log(address(slasherImpl));
 
             address vetoSlasherImpl = deployCode(
                 string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/VetoSlasher.sol/VetoSlasher.json"),
@@ -227,6 +239,8 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
             );
             symbioticCore.slasherFactory.whitelist(vetoSlasherImpl);
 
+            console2.log(address(vetoSlasherImpl));
+
             symbioticCore.vaultConfigurator = ISymbioticVaultConfigurator(
                 deployCode(
                     string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/VaultConfigurator.sol/VaultConfigurator.json"),
@@ -237,6 +251,8 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
                     )
                 )
             );
+
+            console2.log(address(symbioticCore.vaultConfigurator));
 
             vm.stopBroadcast();
         }

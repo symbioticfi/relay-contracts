@@ -26,6 +26,20 @@ contract SymbioticCoreBindings is Test {
         bytes memory slasherParams
     ) internal virtual returns (address vault, address delegator, address slasher) {
         vm.startBroadcast(who);
+        console2.logBytes(
+            abi.encode(
+                ISymbioticVaultConfigurator.InitParams({
+                    version: version,
+                    owner: owner,
+                    vaultParams: vaultParams,
+                    delegatorIndex: delegatorIndex,
+                    delegatorParams: delegatorParams,
+                    withSlasher: withSlasher,
+                    slasherIndex: slasherIndex,
+                    slasherParams: slasherParams
+                })
+            )
+        );
         (vault, delegator, slasher) = symbioticCore.vaultConfigurator.create(
             ISymbioticVaultConfigurator.InitParams({
                 version: version,

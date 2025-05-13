@@ -36,13 +36,10 @@ contract SigVerifierBlsBn254Test is MasterSetup {
         uint8 version;
     }
 
-    uint256 masterChainId;
-    uint256 secondaryChainId;
-
     function setUp() public override {
         MasterSetup.setUp();
 
-        for (uint256 i; i < initSetupParams.masterChain.vaults.length; ++i) {   
+        for (uint256 i; i < initSetupParams.masterChain.vaults.length; ++i) {
             console2.log(initSetupParams.masterChain.vaults[i]);
         }
     }

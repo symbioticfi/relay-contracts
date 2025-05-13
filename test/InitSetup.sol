@@ -121,7 +121,7 @@ contract InitSetup is SymbioticCoreInit {
         initSetupParams.masterChain.core = symbioticCore;
         vm.stopPrank();
 
-        uint48 zeroTimestamp = uint48(vm.getBlockTimestamp() + DEPLOYMENT_BUFFER);
+        console2.logBytes(abi.encode(symbioticCore));
 
         vm.startPrank(vars.deployer.addr);
 
@@ -129,6 +129,8 @@ contract InitSetup is SymbioticCoreInit {
         initSetupParams.masterChain.tokens[0] = address(new Token("Test"));
 
         vm.stopPrank();
+
+        uint48 zeroTimestamp = uint48(vm.getBlockTimestamp() + DEPLOYMENT_BUFFER);
 
         for (uint256 i; i < vars.stakers.length; ++i) {
             for (uint256 j; j < initSetupParams.masterChain.tokens.length; ++j) {
