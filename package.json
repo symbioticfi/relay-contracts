@@ -14,7 +14,7 @@
     "deploy:secondarySetup": "forge script script/test/SecondarySetup.s.sol:SecondarySetupScript 25235 --sig \"run(uint256)\" --rpc-url $ETH_RPC_URL_SECONDARY --broadcast --legacy --slow --gas-estimate-multiplier 200 -vv",
     "deploy:masterSetup": "forge script script/test/MasterSetup.s.sol:MasterSetupScript 25235 --sig \"run(uint256)\" --rpc-url $ETH_RPC_URL_MASTER --broadcast --legacy --slow --gas-estimate-multiplier 200 -vv",
     "deploy:setup": "npm-run-all -s deploy:initSetup deploy:masterSetup",
-    "deploy:generate_genesis": "yarn sleep && chmod +x script/test/utils/generate_genesis_linux_amd64 && script/test/utils/generate_genesis_linux_amd64 --master-address $MASTER_CONTRACT --rpc-url $ETH_RPC_URL_MASTER -o script/test/data/genesis_header.json",
+    "deploy:generate_genesis": "yarn sleep && chmod +x script/test/utils/generate_genesis_darwin_arm64 && script/test/utils/generate_genesis_darwin_arm64 --master-address $MASTER_CONTRACT --rpc-url $ETH_RPC_URL_MASTER -o script/test/data/genesis_header.json",
     "deploy:masterGenesisSetup": "forge script script/test/MasterGenesisSetup.s.sol:MasterGenesisSetupScript 25235 --sig \"run(uint256)\" --rpc-url $ETH_RPC_URL_MASTER --broadcast --legacy --slow --gas-estimate-multiplier 200 -vv",
     "deploy:secondaryGenesisSetup": "",
     "deploy:genesisSetup": "concurrently \"yarn deploy:masterGenesisSetup\"",

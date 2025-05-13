@@ -71,22 +71,23 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
         if (useExisting) {
             _initCore_SymbioticCore();
         } else {
+            (, address msgSender,) = vm.readCallers();
             symbioticCore.vaultFactory = ISymbioticVaultFactory(
                 deployCode(
                     string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/VaultFactory.sol/VaultFactory.json"),
-                    abi.encode(address(this))
+                    abi.encode(msgSender)
                 )
             );
             symbioticCore.delegatorFactory = ISymbioticDelegatorFactory(
                 deployCode(
                     string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/DelegatorFactory.sol/DelegatorFactory.json"),
-                    abi.encode(address(this))
+                    abi.encode(msgSender)
                 )
             );
             symbioticCore.slasherFactory = ISymbioticSlasherFactory(
                 deployCode(
                     string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/SlasherFactory.sol/SlasherFactory.json"),
-                    abi.encode(address(this))
+                    abi.encode(msgSender)
                 )
             );
             symbioticCore.networkRegistry = ISymbioticNetworkRegistry(
