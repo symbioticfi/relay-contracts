@@ -17,6 +17,9 @@ import {BN254G2} from "../../test/libraries/BN254G2.sol";
 
 import "./SecondarySetup.s.sol";
 
+import {SigVerifier} from "../../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254.sol";
+import {Verifier} from "../../src/contracts/implementations/sig-verifiers/zk/HashVerifier.sol";
+
 // forge script script/test/MasterSetup.s.sol:MasterSetupScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_MASTER
 
 contract MasterSetupScript is SecondarySetupScript {
@@ -193,7 +196,7 @@ contract MasterSetupScript is SecondarySetupScript {
                     quorumThresholds: quorumThresholds,
                     commitDuration: initSetupParams.commitDuration,
                     requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
-                    sigVerifier: address(new SigVerifierMock())
+                    sigVerifier: address(new SigVerifier(address(new Verifier())))
                 }),
                 IValSetConfigManager.ValSetConfigManagerInitParams({
                     maxVotingPower: 1e16,
