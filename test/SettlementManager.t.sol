@@ -94,12 +94,24 @@ contract SettlementManagerTest is MasterGenesisSetup {
         ZkProof memory zkProof = loadZkProof();
 
         bytes memory proof_ = Bytes.slice(zkProof.proof, 0, 256);
+        console2.log("proof_");
+        console2.logBytes(proof_);
         bytes memory commitments = Bytes.slice(zkProof.proof, 260, 324);
+        console2.log("commitments");
+        console2.logBytes(commitments);
         bytes memory commitmentPok = Bytes.slice(zkProof.proof, 324, 388);
+        console2.log("commitmentPok");
+        console2.logBytes(commitmentPok);
 
+        console2.log("aggSigG1");
+        console2.logBytes(abi.encode(aggSigG1));
+        console2.log("aggKeyG2");
+        console2.logBytes(abi.encode(aggKeyG2));
         bytes memory fullProof = abi.encodePacked(
             abi.encode(aggSigG1), abi.encode(aggKeyG2), proof_, commitments, commitmentPok, zkProof.input
         );
+        console2.log("fullProof");
+        console2.logBytes(fullProof);
 
         masterSetupParams.master.commitValSetHeader(valSetHeader, fullProof);
     }
