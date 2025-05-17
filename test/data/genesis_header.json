@@ -7,6 +7,6 @@
     }
   ],
   "validatorsSszMRoot": "0xd9354a3cf52fba5126422c86d35db53d566d46f9208faa86c7b9155d7dcf3926",
-  "extraData": "0x2695ed079545bb906f5868716071ab237e36d04fdc1aa07b06bd98c81185067d",
-  "totalActiveVotingPower": 30000000000000
+  "extraData": "0x05aa572d3bd0e69f07da6f67a3de6bd6225b9c1ce96ca74a22044c3da4e50be5",
+  "totalActiveVotingPower": 900
 }

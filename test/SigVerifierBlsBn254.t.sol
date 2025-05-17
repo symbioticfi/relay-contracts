@@ -43,7 +43,7 @@ contract SigVerifierBlsBn254Test is MasterGenesisSetup {
     }
 
     function test_verifyQuorumSig() public {
-        bytes32 messageHash = bytes32(uint256(111));
+        bytes32 messageHash = bytes32(uint256(101));
 
         BN254.G1Point memory aggKeyG1;
         BN254.G2Point memory aggKeyG2;
@@ -81,9 +81,11 @@ contract SigVerifierBlsBn254Test is MasterGenesisSetup {
         bytes memory commitments = Bytes.slice(zkProof.proof, 260, 324);
         bytes memory commitmentPok = Bytes.slice(zkProof.proof, 324, 388);
 
-        bytes memory fullProof = abi.encodePacked(
-            abi.encode(aggSigG1), abi.encode(aggKeyG2), proof_, commitments, commitmentPok, zkProof.input
-        );
+        uint256 nonSignersVotingPower = 500;
+        bytes memory fullProof = abi.encodePacked(proof_, commitments, commitmentPok, nonSignersVotingPower);
+
+        console2.log("fullProof");
+        console2.logBytes(fullProof);
 
         address zkVerifier = address(new Verifier());
         SigVerifier sigVerifier = new SigVerifier(zkVerifier);
