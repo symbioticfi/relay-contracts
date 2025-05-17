@@ -1,28 +1,17 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: BUSL-1.1
+pragma solidity ^0.8.25;
 
-import {KeyTag} from "../src/contracts/libraries/utils/KeyTag.sol";
-import {KeyEcdsaSecp256k1} from "../src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol";
-import {KeyBlsBn254, BN254} from "../src/contracts/libraries/keys/KeyBlsBn254.sol";
-import {SigBlsBn254} from "../src/contracts/libraries/sigs/SigBlsBn254.sol";
-import {KeyManagerLogic} from "../src/contracts/base/logic/KeyManagerLogic.sol";
+import {IBaseKeyManager} from "../../src/interfaces/base/IBaseKeyManager.sol";
 
-import {BN254G2} from "./libraries/BN254G2.sol";
-
-import {ISettlementManager} from "../src/interfaces/implementations/settlement/ISettlementManager.sol";
-import {IBaseKeyManager} from "../src/interfaces/base/IBaseKeyManager.sol";
-
-import {MasterGenesisSetup} from "./MasterGenesisSetup.sol";
-
-import {console2} from "forge-std/console2.sol";
-
-import {Verifier} from "../src/contracts/implementations/sig-verifiers/zk/HashVerifier.sol";
-import {SigVerifier} from "../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254.sol";
+import "./MasterGenesisSetup.s.sol";
 
 import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-contract SettlementManagerTest is MasterGenesisSetup {
+// forge script script/test/MasterCommit.s.sol:MasterCommitScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_MASTER
+
+contract MasterCommitScript is MasterGenesisSetupScript {
+
     using KeyTag for uint8;
     using KeyBlsBn254 for BN254.G1Point;
     using BN254 for BN254.G1Point;
@@ -37,16 +26,14 @@ contract SettlementManagerTest is MasterGenesisSetup {
         bytes proof;
     }
 
-    function setUp() public override {
-        super.setUp();
+    function run(
+        uint256 seed
+    ) public virtual override {
+        SYMBIOTIC_CORE_PROJECT_ROOT = "lib/core/";
+        SymbioticInit.run(seed);
 
-        vm.warp(initSetupParams.zeroTimestamp);
-
-        setGenesis();
-    }
-
-    function test_commitValSetHeader() public {
-        vm.warp(masterSetupParams.master.getNextEpochStart());
+        (, Vars memory vars) = loadInitSetupParamsAndVars();
+        MasterSetupParams memory masterSetupParams = loadMasterSetupParams();
 
         ISettlementManager.ValSetHeader memory valSetHeader = loadGenesis();
 
@@ -114,10 +101,10 @@ contract SettlementManagerTest is MasterGenesisSetup {
         console2.logBytes(fullProof);
 
         console2.log("commitValSetHeader");
-        console2.logBytes(abi.encodeWithSelector(ISettlementManager.commitValSetHeader.selector, valSetHeader, fullProof));
-        (bool success, bytes memory returnData) = address(masterSetupParams.master).call(abi.encodeWithSelector(ISettlementManager.commitValSetHeader.selector, valSetHeader, fullProof));
-        require(success, "commitValSetHeader failed");
 
+        vm.startBroadcast(vars.deployer.privateKey);
+        masterSetupParams.master.commitValSetHeader(valSetHeader, fullProof);
+        vm.stopBroadcast();
     }
 
     function loadZkProof() internal returns (ZkProof memory) {
