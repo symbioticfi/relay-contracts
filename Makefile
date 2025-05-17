@@ -27,3 +27,5 @@ abigen:
 		--pkg main \
 		--type Storage \
 		--out Storage.go
+
+#forge test --match-test test_commitValSetHeader -vvv
