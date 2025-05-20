@@ -57,7 +57,8 @@ contract SigVerifier is ISigVerifier {
 
             bytes memory extraData = ISettlementManager(settlementManager).getExtraDataFromValSetHeader();
             BN254.G1Point memory messageG1 = BN254.hashToG1(abi.decode(message, (bytes32)));
-            uint256 inputHash = uint256(keccak256(abi.encodePacked(extraData, nonSignersVotingPower, messageG1.X, messageG1.Y)));
+            uint256 inputHash =
+                uint256(keccak256(abi.encodePacked(extraData, nonSignersVotingPower, messageG1.X, messageG1.Y)));
             inputHash &= 0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
 
             try verifier.verifyProof(zkProof, commitments, commitmentPok, [uint256(inputHash)]) {}
