@@ -1,28 +1,17 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: BUSL-1.1
+pragma solidity ^0.8.25;
 
-import {KeyTag} from "../src/contracts/libraries/utils/KeyTag.sol";
-import {KeyEcdsaSecp256k1} from "../src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol";
-import {KeyBlsBn254, BN254} from "../src/contracts/libraries/keys/KeyBlsBn254.sol";
-import {SigBlsBn254} from "../src/contracts/libraries/sigs/SigBlsBn254.sol";
-import {KeyManagerLogic} from "../src/contracts/base/logic/KeyManagerLogic.sol";
+import {IBaseKeyManager} from "../../src/interfaces/base/IBaseKeyManager.sol";
 
-import {BN254G2} from "./libraries/BN254G2.sol";
-
-import {ISettlementManager} from "../src/interfaces/implementations/settlement/ISettlementManager.sol";
-import {IBaseKeyManager} from "../src/interfaces/base/IBaseKeyManager.sol";
-
-import {MasterGenesisSetup} from "./MasterGenesisSetup.sol";
-
-import {console2} from "forge-std/console2.sol";
-
-import {Verifier} from "../src/contracts/implementations/sig-verifiers/zk/HashVerifier.sol";
-import {SigVerifier} from "../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254.sol";
+import "./MasterGenesisSetup.s.sol";
 
 import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-contract SettlementManagerTest is MasterGenesisSetup {
+// forge script script/test/MasterCommit.s.sol:MasterCommitScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_MASTER
+
+contract MasterCommitScript is MasterGenesisSetupScript {
+
     using KeyTag for uint8;
     using KeyBlsBn254 for BN254.G1Point;
     using BN254 for BN254.G1Point;
@@ -37,32 +26,16 @@ contract SettlementManagerTest is MasterGenesisSetup {
         bytes proof;
     }
 
-    function setUp() public override {
-        super.setUp();
+    function run(
+        uint256 seed
+    ) public virtual override {
+        SYMBIOTIC_CORE_PROJECT_ROOT = "lib/core/";
+        SymbioticInit.run(seed);
 
-        vm.warp(initSetupParams.zeroTimestamp);
-
-        setGenesis();
-    }
-
-    function test_commitValSetHeader() public {
-        vm.warp(masterSetupParams.master.getNextEpochStart());
+        (, Vars memory vars) = loadInitSetupParamsAndVars();
+        MasterSetupParams memory masterSetupParams = loadMasterSetupParams();
 
         ISettlementManager.ValSetHeader memory valSetHeader = loadGenesis();
-
-        console2.log("version");
-        console2.log(valSetHeader.version);
-        console2.log("extraData");
-        console2.logBytes(valSetHeader.extraData);
-        console2.log("validatorsSszMRoot");
-        console2.logBytes32(valSetHeader.validatorsSszMRoot);
-        console2.log("totalActiveVotingPower");
-        console2.log(valSetHeader.totalActiveVotingPower);
-        console2.log("activeAggregatedKeys");
-        for (uint256 i = 0; i < valSetHeader.activeAggregatedKeys.length; i++) {
-            console2.log(valSetHeader.activeAggregatedKeys[i].tag);
-            console2.logBytes(valSetHeader.activeAggregatedKeys[i].payload);
-        }
 
         bytes32 messageHash = masterSetupParams.master.hashTypedDataV4CrossChain(
             keccak256(
@@ -74,18 +47,6 @@ contract SettlementManagerTest is MasterGenesisSetup {
                 )
             )
         );
-
-        console2.log("VALSET_HEADER_COMMIT_TYPEHASH");
-        console2.logBytes32(VALSET_HEADER_COMMIT_TYPEHASH);
-        console2.log("SUBNETWORK");
-        console2.logBytes32(masterSetupParams.master.SUBNETWORK());
-        console2.log("getCurrentEpoch");
-        console2.log(masterSetupParams.master.getCurrentEpoch());
-        console2.log("keccak256(abi.encode(valSetHeader))");
-        console2.logBytes32(keccak256(abi.encode(valSetHeader)));
-
-        console2.log("messageHash");
-        console2.logBytes32(messageHash);
 
         BN254.G1Point memory aggKeyG1;
         BN254.G2Point memory aggKeyG2;
@@ -133,7 +94,6 @@ contract SettlementManagerTest is MasterGenesisSetup {
         console2.logBytes(abi.encode(aggSigG1));
         console2.log("aggKeyG2");
         console2.logBytes(abi.encode(aggKeyG2));
-
         bytes memory fullProof = abi.encodePacked(
             abi.encode(aggSigG1), abi.encode(aggKeyG2), proof_, commitments, commitmentPok, zkProof.input
         );
@@ -141,10 +101,10 @@ contract SettlementManagerTest is MasterGenesisSetup {
         console2.logBytes(fullProof);
 
         console2.log("commitValSetHeader");
-        console2.logBytes(abi.encodeWithSelector(ISettlementManager.commitValSetHeader.selector, valSetHeader, fullProof));
-        (bool success, bytes memory returnData) = address(masterSetupParams.master).call(abi.encodeWithSelector(ISettlementManager.commitValSetHeader.selector, valSetHeader, fullProof));
-        require(success, "commitValSetHeader failed");
 
+        vm.startBroadcast(vars.deployer.privateKey);
+        masterSetupParams.master.commitValSetHeader(valSetHeader, fullProof);
+        vm.stopBroadcast();
     }
 
     function loadZkProof() internal returns (ZkProof memory) {

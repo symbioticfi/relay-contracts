@@ -34,7 +34,8 @@
     "freeze:anvil_master": "source .env && cast rpc evm_setIntervalMining 999999999999 --rpc-url $ETH_RPC_URL_MASTER",
     "freeze:anvil_secondary": "source .env && cast rpc evm_setIntervalMining 999999999999 --rpc-url $ETH_RPC_URL_SECONDARY",
     "freeze": "concurrently \"yarn freeze:anvil_master\" \"yarn freeze:anvil_secondary\"",
-    "test_anvil": "concurrently \"yarn deploy:snapshot\"  \"yarn sleep && yarn sleep_long && yarn freeze && forge test -vvvv\""
+    "test_anvil": "concurrently \"yarn deploy:snapshot\"  \"yarn sleep && yarn sleep_long && yarn freeze && forge test -vvvv\"",
+    "anvil_commit": "source .env && forge script script/test/MasterCommit.s.sol:MasterCommitScript 25235 --sig \"run(uint256)\" --rpc-url $ETH_RPC_URL_MASTER --broadcast --legacy --slow --gas-estimate-multiplier 200 -vvvvv"
   },
   "dependencies": {
     "@noble/curves": "^1.3.0",
