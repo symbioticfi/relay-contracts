@@ -36,6 +36,7 @@ contract SigVerifier is ISigVerifier {
      */
     function verifyQuorumSig(
         address settlementManager,
+        uint48 epoch,
         bytes memory message,
         uint8, /* keyTag */
         uint208 quorumThreshold,
@@ -46,16 +47,14 @@ contract SigVerifier is ISigVerifier {
             uint256[8] calldata zkProof;
             uint256[2] calldata commitments;
             uint256[2] calldata commitmentPok;
-            uint256[1] calldata input;
             assembly {
                 zkProof := add(proof.offset, 0)
                 commitments := add(proof.offset, 256)
                 commitmentPok := add(proof.offset, 320)
-                input := add(proof.offset, 384)
+                nonSignersVotingPower := calldataload(add(proof.offset, 384))
             }
-            nonSignersVotingPower = input[0];
 
-            bytes memory extraData = ISettlementManager(settlementManager).getExtraDataFromValSetHeader();
+            bytes memory extraData = ISettlementManager(settlementManager).getExtraDataFromValSetHeaderAt(epoch);
             BN254.G1Point memory messageG1 = BN254.hashToG1(abi.decode(message, (bytes32)));
             uint256 inputHash =
                 uint256(keccak256(abi.encodePacked(extraData, nonSignersVotingPower, messageG1.X, messageG1.Y)));
@@ -68,7 +67,7 @@ contract SigVerifier is ISigVerifier {
         }
 
         uint256 totalActiveVotingPower =
-            ISettlementManager(settlementManager).getTotalActiveVotingPowerFromValSetHeader();
+            ISettlementManager(settlementManager).getTotalActiveVotingPowerFromValSetHeaderAt(epoch);
         return totalActiveVotingPower - nonSignersVotingPower
             >= Math.mulDiv(quorumThreshold, totalActiveVotingPower, QUORUM_THRESHOLD_BASE, Math.Rounding.Ceil);
     }

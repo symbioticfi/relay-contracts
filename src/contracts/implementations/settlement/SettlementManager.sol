@@ -88,6 +88,18 @@ abstract contract SettlementManager is
     /**
      * @inheritdoc ISettlementManager
      */
+    function getCurrentValSetEpoch() public view virtual returns (uint48) {
+        ValSetPhase currentPhase = getCurrentPhase();
+        uint48 currentEpoch = getCurrentEpoch();
+        if (currentPhase == ValSetPhase.IDLE || currentPhase == ValSetPhase.FAIL) {
+            return currentEpoch;
+        }
+        return currentEpoch - 1;
+    }
+
+    /**
+     * @inheritdoc ISettlementManager
+     */
     function getQuorumThresholdAt(
         uint8 keyTag,
         uint48 epoch,
@@ -212,12 +224,7 @@ abstract contract SettlementManager is
      * @inheritdoc ISettlementManager
      */
     function getValSetHeader() public view virtual returns (ValSetHeader memory header) {
-        ValSetPhase currentPhase = getCurrentPhase();
-        if (currentPhase == ValSetPhase.FAIL) {
-            return header;
-        }
-        uint48 currentEpoch = getCurrentEpoch();
-        return getValSetHeaderAt(currentPhase == ValSetPhase.IDLE ? currentEpoch : currentEpoch - 1);
+        return getValSetHeaderAt(getCurrentValSetEpoch());
     }
 
     /**
@@ -233,12 +240,7 @@ abstract contract SettlementManager is
      * @inheritdoc ISettlementManager
      */
     function getVersionFromValSetHeader() public view virtual returns (uint8) {
-        ValSetPhase currentPhase = getCurrentPhase();
-        if (currentPhase == ValSetPhase.FAIL) {
-            return 0;
-        }
-        uint48 currentEpoch = getCurrentEpoch();
-        return getVersionFromValSetHeaderAt(currentPhase == ValSetPhase.IDLE ? currentEpoch : currentEpoch - 1);
+        return getVersionFromValSetHeaderAt(getCurrentValSetEpoch());
     }
 
     /**
@@ -257,14 +259,7 @@ abstract contract SettlementManager is
     function getActiveAggregatedKeyFromValSetHeader(
         uint8 keyTag
     ) public view virtual returns (bytes memory) {
-        ValSetPhase currentPhase = getCurrentPhase();
-        if (currentPhase == ValSetPhase.FAIL) {
-            return new bytes(0);
-        }
-        uint48 currentEpoch = getCurrentEpoch();
-        return getActiveAggregatedKeyFromValSetHeaderAt(
-            currentPhase == ValSetPhase.IDLE ? currentEpoch : currentEpoch - 1, keyTag
-        );
+        return getActiveAggregatedKeyFromValSetHeaderAt(getCurrentValSetEpoch(), keyTag);
     }
 
     /**
@@ -280,14 +275,7 @@ abstract contract SettlementManager is
      * @inheritdoc ISettlementManager
      */
     function getTotalActiveVotingPowerFromValSetHeader() public view virtual returns (uint256) {
-        ValSetPhase currentPhase = getCurrentPhase();
-        if (currentPhase == ValSetPhase.FAIL) {
-            return 0;
-        }
-        uint48 currentEpoch = getCurrentEpoch();
-        return getTotalActiveVotingPowerFromValSetHeaderAt(
-            currentPhase == ValSetPhase.IDLE ? currentEpoch : currentEpoch - 1
-        );
+        return getTotalActiveVotingPowerFromValSetHeaderAt(getCurrentValSetEpoch());
     }
 
     /**
@@ -303,13 +291,7 @@ abstract contract SettlementManager is
      * @inheritdoc ISettlementManager
      */
     function getValidatorsSszMRootFromValSetHeader() public view virtual returns (bytes32) {
-        ValSetPhase currentPhase = getCurrentPhase();
-        if (currentPhase == ValSetPhase.FAIL) {
-            return bytes32(0);
-        }
-        uint48 currentEpoch = getCurrentEpoch();
-        return
-            getValidatorsSszMRootFromValSetHeaderAt(currentPhase == ValSetPhase.IDLE ? currentEpoch : currentEpoch - 1);
+        return getValidatorsSszMRootFromValSetHeaderAt(getCurrentValSetEpoch());
     }
 
     /**
@@ -325,24 +307,22 @@ abstract contract SettlementManager is
      * @inheritdoc ISettlementManager
      */
     function getExtraDataFromValSetHeader() public view virtual returns (bytes memory) {
-        ValSetPhase currentPhase = getCurrentPhase();
-        if (currentPhase == ValSetPhase.FAIL) {
-            return new bytes(0);
-        }
-        uint48 currentEpoch = getCurrentEpoch();
-        return getExtraDataFromValSetHeaderAt(currentPhase == ValSetPhase.IDLE ? currentEpoch : currentEpoch - 1);
+        return getExtraDataFromValSetHeaderAt(getCurrentValSetEpoch());
     }
 
     /**
      * @inheritdoc ISettlementManager
      */
     function verifyQuorumSig(
+        uint48 epoch,
         bytes memory message,
         uint8 keyTag,
         uint208 quorumThreshold,
         bytes calldata proof
     ) public view virtual returns (bool) {
-        return ISigVerifier(getSigVerifier()).verifyQuorumSig(address(this), message, keyTag, quorumThreshold, proof);
+        return ISigVerifier(getSigVerifier()).verifyQuorumSig(
+            address(this), epoch, message, keyTag, quorumThreshold, proof
+        );
     }
 
     /**
@@ -446,6 +426,7 @@ abstract contract SettlementManager is
         uint8 requiredKeyTag = getRequiredKeyTag();
         if (
             !verifyQuorumSig(
+                getCurrentValSetEpoch(),
                 abi.encode(
                     hashTypedDataV4CrossChain(
                         keccak256(

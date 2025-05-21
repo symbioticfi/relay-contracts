@@ -78,11 +78,15 @@ contract SigVerifierBlsBn254Test is MasterGenesisSetup {
 
         ZkProof memory zkProof = loadZkProof();
 
-        bytes memory proof_ = Bytes.slice(zkProof.proof, 0, 256);
-        bytes memory commitments = Bytes.slice(zkProof.proof, 260, 324);
-        bytes memory commitmentPok = Bytes.slice(zkProof.proof, 324, 388);
+        bytes memory fullProof;
 
-        bytes memory fullProof = abi.encodePacked(proof_, commitments, commitmentPok, nonSignersVotingPower);
+        {
+            bytes memory proof_ = Bytes.slice(zkProof.proof, 0, 256);
+            bytes memory commitments = Bytes.slice(zkProof.proof, 260, 324);
+            bytes memory commitmentPok = Bytes.slice(zkProof.proof, 324, 388);
+
+            fullProof = abi.encodePacked(proof_, commitments, commitmentPok, nonSignersVotingPower);
+        }
 
         console2.log("fullProof");
         console2.logBytes(fullProof);
@@ -93,6 +97,7 @@ contract SigVerifierBlsBn254Test is MasterGenesisSetup {
         assertTrue(
             sigVerifier.verifyQuorumSig(
                 address(masterSetupParams.master),
+                masterSetupParams.master.getCurrentValSetEpoch(),
                 abi.encode(messageHash),
                 KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
                 uint208(Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil)),

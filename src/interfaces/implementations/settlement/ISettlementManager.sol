@@ -74,6 +74,8 @@ interface ISettlementManager {
 
     function getCurrentValSetTimestamp() external view returns (uint48);
 
+    function getCurrentValSetEpoch() external view returns (uint48);
+
     function getQuorumThresholdAt(uint8 keyTag, uint48 timestamp, bytes memory hint) external view returns (uint208);
 
     function getQuorumThreshold(
@@ -140,6 +142,7 @@ interface ISettlementManager {
     function getExtraDataFromValSetHeader() external view returns (bytes memory);
 
     function verifyQuorumSig(
+        uint48 epoch,
         bytes memory message,
         uint8 keyTag,
         uint208 quorumThreshold,

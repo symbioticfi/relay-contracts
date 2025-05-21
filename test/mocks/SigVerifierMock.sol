@@ -9,6 +9,7 @@ contract SigVerifierMock is ISigVerifier {
      */
     function verifyQuorumSig(
         address, /* settlementManager */
+        uint48, /* epoch */
         bytes memory, /* message */
         uint8, /* keyTag */
         uint208, /* quorumThreshold */
