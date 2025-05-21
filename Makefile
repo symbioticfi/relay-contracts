@@ -19,7 +19,7 @@ build-abi:
 		symbiotic-tests forge build --extra-output abi
 
 eth-call-getCurrentPhase:
-	cast call 0x5081a39b8A5f0E35a8D959395a630b68B74Dd30f "getCurrentPhase()" --rpc-url http://127.0.0.1:8545
+	cast call 0x04C89607413713Ec9775E14b954286519d836FEf "getCurrentPhase()" --rpc-url http://127.0.0.1:8545
 
 abigen:
 	go run github.com/ethereum/go-ethereum/cmd/abigen@latest \
