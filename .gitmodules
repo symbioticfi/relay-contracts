@@ -13,3 +13,6 @@
 [submodule "lib/crypto-lib"]
 	path = lib/crypto-lib
 	url = https://github.com/get-smooth/crypto-lib
+[submodule "lib/rewards"]
+	path = lib/rewards
+	url = https://github.com/symbioticfi/rewards

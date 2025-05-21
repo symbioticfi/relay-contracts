@@ -12,6 +12,10 @@ import {IOperatorSpecificDelegator} from "@symbioticfi/core/src/interfaces/deleg
 import {IOperatorNetworkSpecificDelegator} from
     "@symbioticfi/core/src/interfaces/delegator/IOperatorNetworkSpecificDelegator.sol";
 
+import {IStakerRewards} from "@symbioticfi/rewards/src/interfaces/stakerRewards/IStakerRewards.sol";
+import {IDefaultOperatorRewards} from
+    "@symbioticfi/rewards/src/interfaces/defaultOperatorRewards/IDefaultOperatorRewards.sol";
+
 import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
@@ -600,10 +604,6 @@ library VaultManagerLogic {
         }
     }
 
-    /**
-     * @notice Registers a new shared vault
-     * @param vault The vault address to register
-     */
     function registerSharedVault(address VAULT_FACTORY, address vault) public {
         IVaultManager.VaultManagerStorage storage $ = _getVaultManagerStorage();
         if (!_validateVault(VAULT_FACTORY, vault)) {
@@ -620,11 +620,6 @@ library VaultManagerLogic {
         }
     }
 
-    /**
-     * @notice Registers a new operator vault
-     * @param operator The operator address
-     * @param vault The vault address to register
-     */
     function registerOperatorVault(address VAULT_FACTORY, address operator, address vault) public {
         IVaultManager.VaultManagerStorage storage $ = _getVaultManagerStorage();
         if (!_validateVault(VAULT_FACTORY, vault)) {
@@ -645,10 +640,6 @@ library VaultManagerLogic {
         $._operatorVaults[operator].add(Time.timestamp(), vault);
     }
 
-    /**
-     * @notice Unregisters a shared vault
-     * @param vault The vault address to unregister
-     */
     function unregisterSharedVault(
         address vault
     ) public {
@@ -657,11 +648,6 @@ library VaultManagerLogic {
         }
     }
 
-    /**
-     * @notice Unregisters an operator vault
-     * @param operator The operator address
-     * @param vault The vault address to unregister
-     */
     function unregisterOperatorVault(address operator, address vault) public {
         IVaultManager.VaultManagerStorage storage $ = _getVaultManagerStorage();
         if (!$._operatorVaults[operator].remove(Time.timestamp(), vault)) {
@@ -670,16 +656,6 @@ library VaultManagerLogic {
         $._allOperatorVaults.remove(Time.timestamp(), vault);
     }
 
-    /**
-     * @notice Slashes a vault based on provided conditions
-     * @param timestamp The timestamp when the slash occurs
-     * @param vault The vault address
-     * @param operator The operator to slash
-     * @param amount The amount to slash
-     * @param hints Additional data for the slasher
-     * @return success True if the slash was executed successfully, false otherwise
-     * @return response index for veto slashing or amount for instant slashing
-     */
     function slashVault(
         uint48 timestamp,
         address vault,
@@ -734,14 +710,6 @@ library VaultManagerLogic {
         }
     }
 
-    /**
-     * @notice Executes a veto-based slash for a vault
-     * @param vault The vault address
-     * @param slashIndex The index of the slash to execute
-     * @param hints Additional data for the veto slasher
-     * @return success True if the slash was executed successfully, false otherwise
-     * @return slashedAmount The amount that was slashed
-     */
     function executeSlash(
         address vault,
         uint256 slashIndex,
@@ -765,10 +733,14 @@ library VaultManagerLogic {
         }
     }
 
-    /**
-     * @notice Validates if a vault is properly initialized and registered
-     * @param vault The vault address to validate
-     */
+    function distributeStakerRewards(address stakerRewards, address token, uint256 amount, bytes memory data) public {
+        IStakerRewards(stakerRewards).distributeRewards(NetworkManagerLogic.NETWORK(), token, amount, data);
+    }
+
+    function distributeOperatorRewards(address operatorRewards, address token, uint256 amount, bytes32 root) public {
+        IDefaultOperatorRewards(operatorRewards).distributeRewards(NetworkManagerLogic.NETWORK(), token, amount, root);
+    }
+
     function _validateVault(address VAULT_FACTORY, address vault) public view returns (bool) {
         if (!IRegistry(VAULT_FACTORY).isEntity(vault)) {
             return false;

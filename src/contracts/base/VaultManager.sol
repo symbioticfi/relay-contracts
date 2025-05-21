@@ -495,4 +495,22 @@ abstract contract VaultManager is OperatorManager, StakeToVotingPowerManager, IV
     ) internal virtual returns (bool success, uint256 slashedAmount) {
         return VaultManagerLogic.executeSlash(vault, slashIndex, hints);
     }
+
+    function _distributeStakerRewards(
+        address stakerRewards,
+        address token,
+        uint256 amount,
+        bytes memory data
+    ) internal virtual {
+        VaultManagerLogic.distributeStakerRewards(stakerRewards, token, amount, data);
+    }
+
+    function _distributeOperatorRewards(
+        address operatorRewards,
+        address token,
+        uint256 amount,
+        bytes32 root
+    ) internal virtual {
+        VaultManagerLogic.distributeOperatorRewards(operatorRewards, token, amount, root);
+    }
 }
