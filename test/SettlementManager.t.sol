@@ -134,17 +134,17 @@ contract SettlementManagerTest is MasterGenesisSetup {
         console2.log("aggKeyG2");
         console2.logBytes(abi.encode(aggKeyG2));
 
-        bytes memory fullProof = abi.encodePacked(
-            abi.encode(aggSigG1), abi.encode(aggKeyG2), proof_, commitments, commitmentPok, zkProof.input
-        );
+        uint256 nonSignersVotingPower = 0;
+
+        bytes memory fullProof = abi.encodePacked(proof_, commitments, commitmentPok, nonSignersVotingPower);
         console2.log("fullProof");
         console2.logBytes(fullProof);
 
         console2.log("commitValSetHeader");
-        console2.logBytes(abi.encodeWithSelector(ISettlementManager.commitValSetHeader.selector, valSetHeader, fullProof));
-        (bool success, bytes memory returnData) = address(masterSetupParams.master).call(abi.encodeWithSelector(ISettlementManager.commitValSetHeader.selector, valSetHeader, fullProof));
-        require(success, "commitValSetHeader failed");
-
+        console2.logBytes(
+            abi.encodeWithSelector(ISettlementManager.commitValSetHeader.selector, valSetHeader, fullProof)
+        );
+        masterSetupParams.master.commitValSetHeader(valSetHeader, fullProof);
     }
 
     function loadZkProof() internal returns (ZkProof memory) {

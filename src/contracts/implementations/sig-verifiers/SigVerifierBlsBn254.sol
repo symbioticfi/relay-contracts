@@ -61,7 +61,7 @@ contract SigVerifier is ISigVerifier {
                 uint256(keccak256(abi.encodePacked(extraData, nonSignersVotingPower, messageG1.X, messageG1.Y)));
             inputHash &= 0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
 
-            try verifier.verifyProof(zkProof, commitments, commitmentPok, [uint256(inputHash)]) {}
+            try verifier.verifyProof(zkProof, commitments, commitmentPok, [inputHash]) {}
             catch {
                 return false;
             }
