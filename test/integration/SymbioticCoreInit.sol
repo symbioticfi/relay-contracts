@@ -14,6 +14,8 @@ import {IERC5267} from "@openzeppelin/contracts/interfaces/IERC5267.sol";
 import {SafeERC20, IERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
 
+import {console2} from "forge-std/console2.sol";
+
 contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
     using SafeERC20 for IERC20;
     using Math for uint256;
@@ -71,92 +73,104 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
         if (useExisting) {
             _initCore_SymbioticCore();
         } else {
-            symbioticCore.vaultFactory = ISymbioticVaultFactory(
-                deployCode(
-                    string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/VaultFactory.sol/VaultFactory.json"),
-                    abi.encode(address(this))
-                )
+            (, address msgSender,) = vm.readCallers();
+            deployCodeTo(
+                string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/VaultFactory.sol/VaultFactory.json"),
+                abi.encode(msgSender),
+                0x5FbDB2315678afecb367f032d93F642f64180aa3
             );
-            symbioticCore.delegatorFactory = ISymbioticDelegatorFactory(
-                deployCode(
-                    string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/DelegatorFactory.sol/DelegatorFactory.json"),
-                    abi.encode(address(this))
-                )
+            symbioticCore.vaultFactory = ISymbioticVaultFactory(0x5FbDB2315678afecb367f032d93F642f64180aa3);
+            deployCodeTo(
+                string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/DelegatorFactory.sol/DelegatorFactory.json"),
+                abi.encode(msgSender),
+                0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
             );
-            symbioticCore.slasherFactory = ISymbioticSlasherFactory(
-                deployCode(
-                    string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/SlasherFactory.sol/SlasherFactory.json"),
-                    abi.encode(address(this))
-                )
+            symbioticCore.delegatorFactory = ISymbioticDelegatorFactory(0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512);
+            deployCodeTo(
+                string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/SlasherFactory.sol/SlasherFactory.json"),
+                abi.encode(msgSender),
+                0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0
             );
-            symbioticCore.networkRegistry = ISymbioticNetworkRegistry(
-                deployCode(string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/NetworkRegistry.sol/NetworkRegistry.json"))
+            symbioticCore.slasherFactory = ISymbioticSlasherFactory(0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0);
+            deployCodeTo(
+                string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/NetworkRegistry.sol/NetworkRegistry.json"),
+                0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9
             );
-            symbioticCore.operatorRegistry = ISymbioticOperatorRegistry(
-                deployCode(string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/OperatorRegistry.sol/OperatorRegistry.json"))
+            symbioticCore.networkRegistry = ISymbioticNetworkRegistry(0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9);
+            deployCodeTo(
+                string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/OperatorRegistry.sol/OperatorRegistry.json"),
+                0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
             );
-            symbioticCore.operatorMetadataService = ISymbioticMetadataService(
-                deployCode(
-                    string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/MetadataService.sol/MetadataService.json"),
-                    abi.encode(address(symbioticCore.operatorRegistry))
-                )
+            symbioticCore.operatorRegistry = ISymbioticOperatorRegistry(0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9);
+            deployCodeTo(
+                string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/MetadataService.sol/MetadataService.json"),
+                abi.encode(address(symbioticCore.operatorRegistry)),
+                0x5FC8d32690cc91D4c39d9d3abcBD16989F875707
             );
-            symbioticCore.networkMetadataService = ISymbioticMetadataService(
-                deployCode(
-                    string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/MetadataService.sol/MetadataService.json"),
-                    abi.encode(address(symbioticCore.networkRegistry))
-                )
+            symbioticCore.operatorMetadataService =
+                ISymbioticMetadataService(0x5FC8d32690cc91D4c39d9d3abcBD16989F875707);
+            deployCodeTo(
+                string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/MetadataService.sol/MetadataService.json"),
+                abi.encode(address(symbioticCore.networkRegistry)),
+                0x0165878A594ca255338adfa4d48449f69242Eb8F
             );
-            symbioticCore.networkMiddlewareService = ISymbioticNetworkMiddlewareService(
-                deployCode(
-                    string.concat(
-                        SYMBIOTIC_CORE_PROJECT_ROOT, "out/NetworkMiddlewareService.sol/NetworkMiddlewareService.json"
-                    ),
-                    abi.encode(address(symbioticCore.networkRegistry))
-                )
+            symbioticCore.networkMetadataService = ISymbioticMetadataService(0x0165878A594ca255338adfa4d48449f69242Eb8F);
+            deployCodeTo(
+                string.concat(
+                    SYMBIOTIC_CORE_PROJECT_ROOT, "out/NetworkMiddlewareService.sol/NetworkMiddlewareService.json"
+                ),
+                abi.encode(address(symbioticCore.networkRegistry)),
+                0xa513E6E4b8f2a923D98304ec87F64353C4D5C853
             );
-            symbioticCore.operatorVaultOptInService = ISymbioticOptInService(
-                deployCode(
-                    string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/OptInService.sol/OptInService.json"),
-                    abi.encode(
-                        address(symbioticCore.operatorRegistry),
-                        address(symbioticCore.vaultFactory),
-                        "OperatorVaultOptInService"
-                    )
-                )
+            symbioticCore.networkMiddlewareService =
+                ISymbioticNetworkMiddlewareService(0xa513E6E4b8f2a923D98304ec87F64353C4D5C853);
+            deployCodeTo(
+                string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/OptInService.sol/OptInService.json"),
+                abi.encode(
+                    address(symbioticCore.operatorRegistry),
+                    address(symbioticCore.vaultFactory),
+                    "OperatorVaultOptInService"
+                ),
+                0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6
             );
-            symbioticCore.operatorNetworkOptInService = ISymbioticOptInService(
-                deployCode(
-                    string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/OptInService.sol/OptInService.json"),
-                    abi.encode(
-                        address(symbioticCore.operatorRegistry),
-                        address(symbioticCore.networkRegistry),
-                        "OperatorNetworkOptInService"
-                    )
-                )
+            symbioticCore.operatorVaultOptInService = ISymbioticOptInService(0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6);
+            deployCodeTo(
+                string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/OptInService.sol/OptInService.json"),
+                abi.encode(
+                    address(symbioticCore.operatorRegistry),
+                    address(symbioticCore.networkRegistry),
+                    "OperatorNetworkOptInService"
+                ),
+                0x8A791620dd6260079BF849Dc5567aDC3F2FdC318
             );
+            symbioticCore.operatorNetworkOptInService =
+                ISymbioticOptInService(0x8A791620dd6260079BF849Dc5567aDC3F2FdC318);
 
-            address vaultImpl = deployCode(
+            deployCodeTo(
                 string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/Vault.sol/Vault.json"),
                 abi.encode(
                     address(symbioticCore.delegatorFactory),
                     address(symbioticCore.slasherFactory),
                     address(symbioticCore.vaultFactory)
-                )
+                ),
+                0x610178dA211FEF7D417bC0e6FeD39F05609AD788
             );
+            address vaultImpl = 0x610178dA211FEF7D417bC0e6FeD39F05609AD788;
             symbioticCore.vaultFactory.whitelist(vaultImpl);
 
-            address vaultTokenizedImpl = deployCode(
+            deployCodeTo(
                 string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/VaultTokenized.sol/VaultTokenized.json"),
                 abi.encode(
                     address(symbioticCore.delegatorFactory),
                     address(symbioticCore.slasherFactory),
                     address(symbioticCore.vaultFactory)
-                )
+                ),
+                0x9A676e781A523b5d0C0e43731313A708CB607508
             );
+            address vaultTokenizedImpl = 0x9A676e781A523b5d0C0e43731313A708CB607508;
             symbioticCore.vaultFactory.whitelist(vaultTokenizedImpl);
 
-            address networkRestakeDelegatorImpl = deployCode(
+            deployCodeTo(
                 string.concat(
                     SYMBIOTIC_CORE_PROJECT_ROOT, "out/NetworkRestakeDelegator.sol/NetworkRestakeDelegator.json"
                 ),
@@ -167,11 +181,13 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
                     address(symbioticCore.operatorNetworkOptInService),
                     address(symbioticCore.delegatorFactory),
                     symbioticCore.delegatorFactory.totalTypes()
-                )
+                ),
+                0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1
             );
+            address networkRestakeDelegatorImpl = 0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1;
             symbioticCore.delegatorFactory.whitelist(networkRestakeDelegatorImpl);
 
-            address fullRestakeDelegatorImpl = deployCode(
+            deployCodeTo(
                 string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/FullRestakeDelegator.sol/FullRestakeDelegator.json"),
                 abi.encode(
                     address(symbioticCore.networkRegistry),
@@ -180,11 +196,13 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
                     address(symbioticCore.operatorNetworkOptInService),
                     address(symbioticCore.delegatorFactory),
                     symbioticCore.delegatorFactory.totalTypes()
-                )
+                ),
+                0x68B1D87F95878fE05B998F19b66F4baba5De1aed
             );
+            address fullRestakeDelegatorImpl = 0x68B1D87F95878fE05B998F19b66F4baba5De1aed;
             symbioticCore.delegatorFactory.whitelist(fullRestakeDelegatorImpl);
 
-            address operatorSpecificDelegatorImpl = deployCode(
+            deployCodeTo(
                 string.concat(
                     SYMBIOTIC_CORE_PROJECT_ROOT, "out/OperatorSpecificDelegator.sol/OperatorSpecificDelegator.json"
                 ),
@@ -196,22 +214,26 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
                     address(symbioticCore.operatorNetworkOptInService),
                     address(symbioticCore.delegatorFactory),
                     symbioticCore.delegatorFactory.totalTypes()
-                )
+                ),
+                0xc6e7DF5E7b4f2A278906862b61205850344D4e7d
             );
+            address operatorSpecificDelegatorImpl = 0xc6e7DF5E7b4f2A278906862b61205850344D4e7d;
             symbioticCore.delegatorFactory.whitelist(operatorSpecificDelegatorImpl);
 
-            address slasherImpl = deployCode(
+            deployCodeTo(
                 string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/Slasher.sol/Slasher.json"),
                 abi.encode(
                     address(symbioticCore.vaultFactory),
                     address(symbioticCore.networkMiddlewareService),
                     address(symbioticCore.slasherFactory),
                     symbioticCore.slasherFactory.totalTypes()
-                )
+                ),
+                0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1
             );
+            address slasherImpl = 0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1;
             symbioticCore.slasherFactory.whitelist(slasherImpl);
 
-            address vetoSlasherImpl = deployCode(
+            deployCodeTo(
                 string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/VetoSlasher.sol/VetoSlasher.json"),
                 abi.encode(
                     address(symbioticCore.vaultFactory),
@@ -219,20 +241,22 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
                     address(symbioticCore.networkRegistry),
                     address(symbioticCore.slasherFactory),
                     symbioticCore.slasherFactory.totalTypes()
-                )
+                ),
+                0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f
             );
+            address vetoSlasherImpl = 0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f;
             symbioticCore.slasherFactory.whitelist(vetoSlasherImpl);
 
-            symbioticCore.vaultConfigurator = ISymbioticVaultConfigurator(
-                deployCode(
-                    string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/VaultConfigurator.sol/VaultConfigurator.json"),
-                    abi.encode(
-                        address(symbioticCore.vaultFactory),
-                        address(symbioticCore.delegatorFactory),
-                        address(symbioticCore.slasherFactory)
-                    )
-                )
+            deployCodeTo(
+                string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/VaultConfigurator.sol/VaultConfigurator.json"),
+                abi.encode(
+                    address(symbioticCore.vaultFactory),
+                    address(symbioticCore.delegatorFactory),
+                    address(symbioticCore.slasherFactory)
+                ),
+                0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f
             );
+            symbioticCore.vaultConfigurator = ISymbioticVaultConfigurator(0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f);
         }
     }
 

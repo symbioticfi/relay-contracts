@@ -35,11 +35,6 @@ abstract contract SettlementManager is
      */
     uint8 public constant VALIDATOR_SET_VERSION = 1;
 
-    /**
-     * @inheritdoc ISettlementManager
-     */
-    uint256 public constant QUORUM_THRESHOLD_BASE = 1e18;
-
     bytes32 private constant VALSET_HEADER_COMMIT_TYPEHASH =
         keccak256("ValSetHeaderCommit(bytes32 subnetwork,uint48 epoch,bytes32 headerHash)");
 
@@ -452,7 +447,7 @@ abstract contract SettlementManager is
         if (
             !verifyQuorumSig(
                 abi.encode(
-                    hashTypedDataV4Multichain(
+                    hashTypedDataV4CrossChain(
                         keccak256(
                             abi.encode(
                                 VALSET_HEADER_COMMIT_TYPEHASH,

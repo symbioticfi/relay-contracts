@@ -34,10 +34,10 @@ abstract contract OzEIP712 is Initializable, IOzEIP712 {
     /**
      * @inheritdoc IOzEIP712
      */
-    function hashTypedDataV4Multichain(
+    function hashTypedDataV4CrossChain(
         bytes32 structHash
     ) public view virtual returns (bytes32) {
-        return OzEIP712Logic.hashTypedDataV4Multichain(structHash);
+        return OzEIP712Logic.hashTypedDataV4CrossChain(structHash);
     }
 
     /**

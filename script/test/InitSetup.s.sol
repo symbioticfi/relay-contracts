@@ -42,12 +42,12 @@ contract InitSetupScript is SymbioticCoreInit {
         ChainSetup masterChain;
         uint256 networkPrivateKey;
         uint256[] operatorPrivateKeys;
+        bool random;
         ChainSetup secondaryChain;
         uint48 slashingWindow;
         uint256[] stakerPrivateKeys;
         uint96 subnetworkID;
         uint48 zeroTimestamp;
-        bool random;
     }
 
     function run(
@@ -110,14 +110,17 @@ contract InitSetupScript is SymbioticCoreInit {
         vm.createSelectFork(vm.rpcUrl("master_chain"));
         _initCore_SymbioticCore(false);
 
-        uint48 zeroTimestamp = uint48(vm.getBlockTimestamp() + vm.envUint("DEPLOYMENT_BUFFER"));
+        console2.logBytes(abi.encode(symbioticCore));
 
         vm.startBroadcast(vars.deployer.privateKey);
 
         initSetupParams.masterChain.tokens = new address[](1);
+        // console2.log("Token nonce", vm.getNonce(vars.deployer.addr));
         initSetupParams.masterChain.tokens[0] = address(new Token("Test"));
 
         vm.stopBroadcast();
+
+        uint48 zeroTimestamp = uint48(vm.getBlockTimestamp() + vm.envUint("DEPLOYMENT_BUFFER"));
 
         for (uint256 i; i < vars.stakers.length; ++i) {
             for (uint256 j; j < initSetupParams.masterChain.tokens.length; ++j) {
@@ -143,12 +146,27 @@ contract InitSetupScript is SymbioticCoreInit {
 
         initSetupParams.masterChain.vaults = new address[](SYMBIOTIC_CORE_NUMBER_OF_VAULTS);
         for (uint256 i; i < initSetupParams.masterChain.vaults.length; ++i) {
-            initSetupParams.masterChain.vaults[i] = _getVaultRandom_SymbioticCore(
-                _vmWalletsToAddresses_Symbiotic(vars.operators),
-                initSetupParams.random
-                    ? _randomPick_Symbiotic(initSetupParams.masterChain.tokens)
-                    : initSetupParams.masterChain.tokens[0]
-            );
+            initSetupParams.masterChain.vaults[i] = initSetupParams.random
+                ? _getVaultRandom_SymbioticCore(
+                    _vmWalletsToAddresses_Symbiotic(vars.operators),
+                    _randomPick_Symbiotic(initSetupParams.masterChain.tokens)
+                )
+                : _getVault_SymbioticCore(
+                    VaultParams({
+                        owner: vars.deployer.addr,
+                        collateral: initSetupParams.masterChain.tokens[0],
+                        burner: 0x000000000000000000000000000000000000dEaD,
+                        epochDuration: uint48(SYMBIOTIC_CORE_MIN_EPOCH_DURATION * (i + 1)),
+                        whitelistedDepositors: new address[](0),
+                        depositLimit: 0,
+                        delegatorIndex: 0,
+                        hook: address(0),
+                        network: address(0),
+                        withSlasher: true,
+                        slasherIndex: 0,
+                        vetoDuration: uint48(SYMBIOTIC_CORE_MIN_VETO_DURATION * (i + 1))
+                    })
+                );
             console2.log("Vault -", initSetupParams.masterChain.vaults[i]);
         }
 
@@ -157,7 +175,11 @@ contract InitSetupScript is SymbioticCoreInit {
                 initSetupParams.random
                     ? _stakerDepositRandom_SymbioticCore(vars.stakers[i].addr, initSetupParams.masterChain.vaults[j])
                     : _stakerDeposit_SymbioticCore(
-                        vars.stakers[i].addr, initSetupParams.masterChain.vaults[j], i * 100_000 + j * 1000
+                        vars.stakers[i].addr,
+                        initSetupParams.masterChain.vaults[j],
+                        _normalizeForToken_Symbiotic(
+                            SYMBIOTIC_CORE_MIN_TOKENS_TO_DEPOSIT_TIMES_1e18, initSetupParams.masterChain.tokens[0]
+                        ) * (i + 1) + j
                     );
             }
         }
@@ -224,12 +246,27 @@ contract InitSetupScript is SymbioticCoreInit {
 
         initSetupParams.secondaryChain.vaults = new address[](SYMBIOTIC_CORE_NUMBER_OF_VAULTS);
         for (uint256 i; i < initSetupParams.secondaryChain.vaults.length; ++i) {
-            initSetupParams.secondaryChain.vaults[i] = _getVaultRandom_SymbioticCore(
-                _vmWalletsToAddresses_Symbiotic(vars.operators),
-                initSetupParams.random
-                    ? _randomPick_Symbiotic(initSetupParams.secondaryChain.tokens)
-                    : initSetupParams.secondaryChain.tokens[0]
-            );
+            initSetupParams.secondaryChain.vaults[i] = initSetupParams.random
+                ? _getVaultRandom_SymbioticCore(
+                    _vmWalletsToAddresses_Symbiotic(vars.operators),
+                    _randomPick_Symbiotic(initSetupParams.secondaryChain.tokens)
+                )
+                : _getVault_SymbioticCore(
+                    VaultParams({
+                        owner: vars.deployer.addr,
+                        collateral: initSetupParams.secondaryChain.tokens[0],
+                        burner: 0x000000000000000000000000000000000000dEaD,
+                        epochDuration: uint48(SYMBIOTIC_CORE_MIN_EPOCH_DURATION * (i + 1)),
+                        whitelistedDepositors: new address[](0),
+                        depositLimit: 0,
+                        delegatorIndex: 0,
+                        hook: address(0),
+                        network: address(0),
+                        withSlasher: true,
+                        slasherIndex: 0,
+                        vetoDuration: uint48(SYMBIOTIC_CORE_MIN_VETO_DURATION * (i + 1))
+                    })
+                );
             console2.log("Vault -", initSetupParams.secondaryChain.vaults[i]);
         }
 
@@ -238,7 +275,11 @@ contract InitSetupScript is SymbioticCoreInit {
                 initSetupParams.random
                     ? _stakerDepositRandom_SymbioticCore(vars.stakers[i].addr, initSetupParams.secondaryChain.vaults[j])
                     : _stakerDeposit_SymbioticCore(
-                        vars.stakers[i].addr, initSetupParams.secondaryChain.vaults[j], i * 100_000 + j * 1000
+                        vars.stakers[i].addr,
+                        initSetupParams.secondaryChain.vaults[j],
+                        _normalizeForToken_Symbiotic(
+                            SYMBIOTIC_CORE_MIN_TOKENS_TO_DEPOSIT_TIMES_1e18, initSetupParams.masterChain.tokens[0]
+                        ) * (i + 1) + j
                     );
             }
         }
@@ -275,7 +316,8 @@ contract InitSetupScript is SymbioticCoreInit {
         vm.serializeUint(obj, "commitDuration", vm.envUint("COMMIT_DURATION"));
         vm.serializeUint(obj, "zeroTimestamp", zeroTimestamp);
         vm.serializeUint(obj, "subnetworkID", IDENTIFIER);
-        finalJson = vm.serializeUint(obj, "slashingWindow", vm.envUint("SLASHING_WINDOW"));
+        vm.serializeUint(obj, "slashingWindow", vm.envUint("SLASHING_WINDOW"));
+        finalJson = vm.serializeBool(obj, "random", initSetupParams.random);
 
         vm.writeJson(finalJson, "script/test/data/init_setup_params.json");
     }

@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "activeAggregatedKeys": [
+    {
+      "tag": 15,
+      "payload": "0x264621561abeb4dac9a497cb21f305b8f41b56389734832656d7c7adde2247081ffa73b25b82c16096babd6a15d259a24a8304cd96ee6c27e790ff27d8744a5b"
+    }
+  ],
+  "validatorsSszMRoot": "0xd9354a3cf52fba5126422c86d35db53d566d46f9208faa86c7b9155d7dcf3926",
+  "extraData": "0x13b09dd30c5d7a5fff8a225c0bdbf898aee3b308f0ea19d99008a60db4e2fcdb",
+  "totalActiveVotingPower": 30000000000000
+}

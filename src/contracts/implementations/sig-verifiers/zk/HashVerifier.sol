@@ -57,108 +57,72 @@ contract Verifier {
 
     // Groth16 alpha point in G1
     uint256 constant ALPHA_X =
-        17_807_818_793_885_580_958_593_535_700_823_034_447_371_940_557_441_346_218_090_961_718_676_297_091_186;
+        7_751_875_442_286_442_672_737_245_757_281_889_491_174_376_256_961_046_950_232_211_276_375_219_342_360;
     uint256 constant ALPHA_Y =
-        18_821_987_557_905_137_941_697_239_836_602_083_410_690_419_118_751_284_546_721_727_424_089_972_935_603;
+        20_311_744_349_520_080_667_635_724_162_374_657_227_573_121_273_812_549_740_651_817_380_046_797_382_913;
 
     // Groth16 beta point in G2 in powers of i
     uint256 constant BETA_NEG_X_0 =
-        4_978_591_493_700_746_265_598_104_681_475_578_884_542_678_496_625_987_467_919_029_328_822_636_339_158;
+        18_094_895_226_348_698_389_880_639_829_190_672_302_202_144_267_715_796_586_333_313_054_669_067_440_998;
     uint256 constant BETA_NEG_X_1 =
-        10_692_341_336_898_170_127_007_780_701_690_026_589_665_890_453_219_626_497_406_405_943_941_378_215_832;
+        7_763_064_768_055_109_141_597_477_779_373_254_593_404_702_881_793_502_919_808_674_989_201_132_752_285;
     uint256 constant BETA_NEG_Y_0 =
-        4_578_800_537_256_256_928_469_224_178_959_160_721_199_957_408_965_269_361_480_081_931_691_301_876_173;
+        21_873_535_346_798_701_084_995_566_520_339_504_881_711_125_409_478_801_312_578_148_922_479_409_563_882;
     uint256 constant BETA_NEG_Y_1 =
-        17_585_895_726_586_498_945_020_194_718_711_293_365_410_157_417_003_497_861_133_571_337_953_602_606_449;
+        9_363_758_542_816_417_312_604_004_767_546_393_081_914_835_857_475_345_082_819_322_747_935_570_953_064;
 
     // Groth16 gamma point in G2 in powers of i
     uint256 constant GAMMA_NEG_X_0 =
-        10_015_916_765_644_897_663_807_375_684_870_293_847_475_617_137_047_484_188_101_208_507_218_858_652_626;
+        15_759_402_527_422_676_895_009_109_808_479_143_265_487_193_471_733_943_052_773_132_480_085_037_493_878;
     uint256 constant GAMMA_NEG_X_1 =
-        7_041_855_741_746_779_168_399_546_753_613_616_886_207_865_930_396_495_692_864_839_232_597_870_357_027;
+        17_575_234_293_662_639_273_928_069_990_224_519_667_817_973_917_123_303_500_103_772_261_607_899_863_607;
     uint256 constant GAMMA_NEG_Y_0 =
-        682_116_719_259_138_618_987_502_500_666_563_051_478_959_335_992_648_950_764_764_349_981_003_147_023;
+        3_805_511_005_857_329_456_937_562_847_944_532_280_651_628_047_611_959_672_182_665_205_574_664_177_863;
     uint256 constant GAMMA_NEG_Y_1 =
-        7_914_167_538_435_134_026_025_178_688_178_024_229_000_102_880_617_775_691_737_987_141_399_391_846_521;
+        5_061_490_994_408_550_075_251_722_347_032_364_396_756_938_248_478_659_309_616_800_434_155_269_134_650;
 
     // Groth16 delta point in G2 in powers of i
     uint256 constant DELTA_NEG_X_0 =
-        4_152_299_617_810_541_907_971_537_859_793_277_662_378_770_257_002_134_218_634_475_799_568_739_331_914;
+        13_841_082_363_674_267_832_383_126_743_844_735_930_317_063_419_932_672_942_728_018_968_866_178_252_479;
     uint256 constant DELTA_NEG_X_1 =
-        5_615_928_904_200_148_085_949_704_677_021_341_761_439_333_030_922_052_760_268_603_992_188_599_240_977;
+        12_415_721_277_833_313_706_205_604_414_120_169_107_684_623_410_022_313_777_031_869_393_402_809_421_566;
     uint256 constant DELTA_NEG_Y_0 =
-        17_772_155_099_474_999_461_668_410_686_238_861_545_802_716_758_156_682_902_892_172_217_549_498_481_324;
+        8_021_932_861_318_296_272_640_845_917_968_737_610_479_810_127_925_736_384_007_560_370_005_505_593_210;
     uint256 constant DELTA_NEG_Y_1 =
-        12_159_967_441_866_596_986_446_913_213_554_476_580_157_266_953_683_285_466_142_942_248_291_817_363_954;
+        21_252_727_631_296_331_477_004_368_398_333_061_877_848_202_020_171_795_893_023_171_467_835_608_110_188;
     // Pedersen G point in G2 in powers of i
     uint256 constant PEDERSEN_G_X_0 =
-        12_143_785_870_614_686_092_024_478_888_131_441_767_516_979_334_010_945_817_940_155_961_465_391_618_226;
+        2_487_501_137_618_550_027_830_978_474_530_033_490_157_439_791_108_303_149_607_243_344_414_132_019_721;
     uint256 constant PEDERSEN_G_X_1 =
-        7_684_085_877_301_573_297_012_102_768_780_818_544_302_086_586_690_181_832_061_756_305_550_601_499_704;
+        736_644_925_954_581_780_268_713_996_666_239_837_215_223_627_819_993_064_958_873_769_953_394_474_376;
     uint256 constant PEDERSEN_G_Y_0 =
-        2_072_556_917_944_205_623_080_681_546_026_999_435_034_347_881_595_992_069_298_780_119_662_364_378_197;
+        3_577_971_147_767_531_392_281_634_126_506_166_252_839_554_974_252_048_605_494_492_886_508_582_108_649;
     uint256 constant PEDERSEN_G_Y_1 =
-        14_791_539_729_210_144_899_432_799_380_098_326_459_064_711_007_756_070_796_290_300_670_618_480_384_098;
+        3_141_263_363_950_372_925_000_914_169_123_115_675_019_667_910_160_240_265_633_381_008_583_102_409_968;
 
     // Pedersen GSigmaNeg point in G2 in powers of i
     uint256 constant PEDERSEN_GSIGMANEG_X_0 =
-        18_877_510_920_596_687_575_621_495_096_227_876_247_278_175_948_192_807_823_361_236_723_224_206_984_037;
+        10_039_479_774_490_419_877_502_186_577_684_714_633_740_097_082_062_898_215_056_035_486_492_518_732_354;
     uint256 constant PEDERSEN_GSIGMANEG_X_1 =
-        20_694_227_913_657_747_045_766_334_954_230_534_578_317_227_004_965_039_773_087_966_154_213_363_769_320;
+        19_116_837_597_578_160_441_627_876_464_505_460_175_517_287_905_609_872_461_107_017_000_569_409_210_735;
     uint256 constant PEDERSEN_GSIGMANEG_Y_0 =
-        8_505_551_383_843_359_013_010_440_786_370_743_270_257_326_513_417_408_082_738_232_611_815_824_875_674;
+        5_571_739_507_968_600_469_698_311_981_925_391_629_043_314_761_243_510_159_442_148_035_522_630_090_624;
     uint256 constant PEDERSEN_GSIGMANEG_Y_1 =
-        6_722_144_149_549_808_300_946_188_080_594_107_790_340_987_608_916_479_541_448_655_819_922_336_386_765;
+        11_703_427_242_236_895_418_316_674_689_867_236_702_539_911_777_008_007_453_781_107_453_225_658_137_715;
 
     // Constant and public input points
     uint256 constant CONSTANT_X =
-        3_424_265_276_834_889_024_536_341_303_572_275_196_300_177_471_849_036_836_541_427_156_186_461_062_306;
+        20_684_103_761_632_022_714_041_108_320_192_603_757_749_212_189_931_166_243_365_541_637_284_745_256_926;
     uint256 constant CONSTANT_Y =
-        20_533_249_738_802_746_585_058_998_851_768_529_213_877_137_264_672_109_638_129_499_615_167_944_036_546;
+        21_870_376_227_778_236_236_484_312_485_569_253_088_576_758_499_424_959_211_852_894_439_716_647_155_807;
     uint256 constant PUB_0_X =
-        2_329_015_891_087_711_530_599_430_607_804_624_336_397_276_331_654_755_874_315_445_984_551_868_909_514;
+        4_586_764_967_358_830_752_004_270_061_896_992_023_240_831_328_747_466_743_602_589_246_693_040_219_592;
     uint256 constant PUB_0_Y =
-        2_882_827_438_397_363_584_114_339_377_158_624_634_969_292_746_646_529_275_454_694_740_008_993_696_247;
+        3_391_435_329_039_165_256_386_915_584_457_131_984_559_691_553_803_351_822_730_092_851_975_930_752_735;
     uint256 constant PUB_1_X =
-        20_386_613_627_828_155_341_841_100_500_800_423_593_911_755_677_682_218_221_067_085_073_962_439_242_055;
+        3_514_548_999_020_746_961_626_444_149_242_276_811_062_442_405_389_102_169_729_017_381_999_565_607_014;
     uint256 constant PUB_1_Y =
-        12_078_249_723_671_002_067_166_614_969_187_059_542_839_116_990_524_835_216_485_305_882_550_649_766_843;
-    uint256 constant PUB_2_X =
-        19_088_879_962_407_917_889_871_300_311_878_355_643_532_512_325_348_180_487_365_446_065_041_424_415_867;
-    uint256 constant PUB_2_Y =
-        20_190_566_384_178_513_433_233_065_492_188_278_919_164_200_882_281_371_479_439_273_723_376_499_767_091;
-    uint256 constant PUB_3_X =
-        9_193_438_849_217_796_344_068_059_457_428_018_841_969_656_447_429_764_037_676_852_560_470_609_714_582;
-    uint256 constant PUB_3_Y =
-        10_674_442_147_493_711_187_196_862_757_071_688_873_705_285_471_047_914_049_498_695_104_765_530_746_530;
-    uint256 constant PUB_4_X =
-        7_268_356_243_296_930_742_515_459_586_787_207_739_595_883_484_215_571_189_166_852_800_233_757_511_184;
-    uint256 constant PUB_4_Y =
-        21_483_500_685_221_201_744_724_559_403_694_268_609_325_862_864_775_838_015_335_635_396_989_546_466_037;
-    uint256 constant PUB_5_X =
-        6_542_328_223_699_243_831_554_838_353_603_142_741_575_216_444_464_666_800_967_382_890_555_304_536_409;
-    uint256 constant PUB_5_Y =
-        5_792_427_104_241_840_604_232_619_261_056_219_359_237_459_072_436_847_475_709_942_020_788_676_692_419;
-    uint256 constant PUB_6_X =
-        18_786_464_781_837_907_644_861_875_486_013_518_129_026_707_721_301_587_349_163_532_536_628_327_302_342;
-    uint256 constant PUB_6_Y =
-        11_021_348_577_095_470_341_925_758_636_144_548_045_876_233_593_079_947_072_902_675_900_320_823_863_642;
-    uint256 constant PUB_7_X =
-        11_873_263_151_372_471_928_127_941_767_238_482_125_188_907_104_817_320_314_025_922_235_492_102_981_649;
-    uint256 constant PUB_7_Y =
-        13_500_363_027_232_593_675_557_983_486_931_458_345_686_903_327_993_153_621_554_688_580_168_939_638_558;
-    uint256 constant PUB_8_X =
-        5_677_625_421_168_046_716_135_168_701_584_275_273_413_248_490_180_624_609_451_241_488_934_288_266_703;
-    uint256 constant PUB_8_Y =
-        3_497_570_020_529_271_505_696_466_280_936_941_874_903_835_319_147_663_894_493_397_534_870_478_070_114;
-    uint256 constant PUB_9_X =
-        14_741_158_642_717_219_443_386_722_323_360_536_888_921_244_331_265_240_219_524_979_548_456_318_955_254;
-    uint256 constant PUB_9_Y =
-        9_473_726_852_353_614_252_773_860_576_222_954_786_477_219_712_726_590_021_185_339_097_672_082_832_801;
-    uint256 constant PUB_10_X =
-        13_124_527_328_077_438_398_576_753_101_103_193_360_642_973_638_554_404_800_106_484_430_843_013_718_601;
-    uint256 constant PUB_10_Y =
-        755_216_768_557_353_554_584_750_126_349_062_835_026_643_477_200_686_318_749_201_585_723_525_780_242;
+        18_052_393_062_963_928_244_965_399_017_672_545_432_506_440_632_418_392_514_613_745_341_420_526_669_279;
 
     /// Negation in Fp.
     /// @notice Returns a number x such that a + x = 0 in Fp.
@@ -453,7 +417,7 @@ contract Verifier {
     /// @return x The X coordinate of the resulting G1 point.
     /// @return y The Y coordinate of the resulting G1 point.
     function publicInputMSM(
-        uint256[10] calldata input,
+        uint256[1] calldata input,
         uint256[1] memory publicCommitments,
         uint256[2] memory commitments
     ) internal view returns (uint256 x, uint256 y) {
@@ -484,69 +448,6 @@ contract Verifier {
             success := and(success, staticcall(gas(), PRECOMPILE_ADD, f, 0x80, f, 0x40))
             mstore(g, PUB_1_X)
             mstore(add(g, 0x20), PUB_1_Y)
-            s := calldataload(add(input, 32))
-            mstore(add(g, 0x40), s)
-            success := and(success, lt(s, R))
-            success := and(success, staticcall(gas(), PRECOMPILE_MUL, g, 0x60, g, 0x40))
-            success := and(success, staticcall(gas(), PRECOMPILE_ADD, f, 0x80, f, 0x40))
-            mstore(g, PUB_2_X)
-            mstore(add(g, 0x20), PUB_2_Y)
-            s := calldataload(add(input, 64))
-            mstore(add(g, 0x40), s)
-            success := and(success, lt(s, R))
-            success := and(success, staticcall(gas(), PRECOMPILE_MUL, g, 0x60, g, 0x40))
-            success := and(success, staticcall(gas(), PRECOMPILE_ADD, f, 0x80, f, 0x40))
-            mstore(g, PUB_3_X)
-            mstore(add(g, 0x20), PUB_3_Y)
-            s := calldataload(add(input, 96))
-            mstore(add(g, 0x40), s)
-            success := and(success, lt(s, R))
-            success := and(success, staticcall(gas(), PRECOMPILE_MUL, g, 0x60, g, 0x40))
-            success := and(success, staticcall(gas(), PRECOMPILE_ADD, f, 0x80, f, 0x40))
-            mstore(g, PUB_4_X)
-            mstore(add(g, 0x20), PUB_4_Y)
-            s := calldataload(add(input, 128))
-            mstore(add(g, 0x40), s)
-            success := and(success, lt(s, R))
-            success := and(success, staticcall(gas(), PRECOMPILE_MUL, g, 0x60, g, 0x40))
-            success := and(success, staticcall(gas(), PRECOMPILE_ADD, f, 0x80, f, 0x40))
-            mstore(g, PUB_5_X)
-            mstore(add(g, 0x20), PUB_5_Y)
-            s := calldataload(add(input, 160))
-            mstore(add(g, 0x40), s)
-            success := and(success, lt(s, R))
-            success := and(success, staticcall(gas(), PRECOMPILE_MUL, g, 0x60, g, 0x40))
-            success := and(success, staticcall(gas(), PRECOMPILE_ADD, f, 0x80, f, 0x40))
-            mstore(g, PUB_6_X)
-            mstore(add(g, 0x20), PUB_6_Y)
-            s := calldataload(add(input, 192))
-            mstore(add(g, 0x40), s)
-            success := and(success, lt(s, R))
-            success := and(success, staticcall(gas(), PRECOMPILE_MUL, g, 0x60, g, 0x40))
-            success := and(success, staticcall(gas(), PRECOMPILE_ADD, f, 0x80, f, 0x40))
-            mstore(g, PUB_7_X)
-            mstore(add(g, 0x20), PUB_7_Y)
-            s := calldataload(add(input, 224))
-            mstore(add(g, 0x40), s)
-            success := and(success, lt(s, R))
-            success := and(success, staticcall(gas(), PRECOMPILE_MUL, g, 0x60, g, 0x40))
-            success := and(success, staticcall(gas(), PRECOMPILE_ADD, f, 0x80, f, 0x40))
-            mstore(g, PUB_8_X)
-            mstore(add(g, 0x20), PUB_8_Y)
-            s := calldataload(add(input, 256))
-            mstore(add(g, 0x40), s)
-            success := and(success, lt(s, R))
-            success := and(success, staticcall(gas(), PRECOMPILE_MUL, g, 0x60, g, 0x40))
-            success := and(success, staticcall(gas(), PRECOMPILE_ADD, f, 0x80, f, 0x40))
-            mstore(g, PUB_9_X)
-            mstore(add(g, 0x20), PUB_9_Y)
-            s := calldataload(add(input, 288))
-            mstore(add(g, 0x40), s)
-            success := and(success, lt(s, R))
-            success := and(success, staticcall(gas(), PRECOMPILE_MUL, g, 0x60, g, 0x40))
-            success := and(success, staticcall(gas(), PRECOMPILE_ADD, f, 0x80, f, 0x40))
-            mstore(g, PUB_10_X)
-            mstore(add(g, 0x20), PUB_10_Y)
             s := mload(publicCommitments)
             mstore(add(g, 0x40), s)
             success := and(success, lt(s, R))
@@ -605,7 +506,7 @@ contract Verifier {
         uint256[4] calldata compressedProof,
         uint256[1] calldata compressedCommitments,
         uint256 compressedCommitmentPok,
-        uint256[10] calldata input
+        uint256[1] calldata input
     ) public view {
         uint256[1] memory publicCommitments;
         uint256[2] memory commitments;
@@ -615,11 +516,6 @@ contract Verifier {
             (uint256 Px, uint256 Py) = decompress_g1(compressedCommitmentPok);
 
             uint256[] memory publicAndCommitmentCommitted;
-            publicAndCommitmentCommitted = new uint256[](8);
-            assembly ("memory-safe") {
-                let publicAndCommitmentCommittedOffset := add(publicAndCommitmentCommitted, 0x20)
-                calldatacopy(add(publicAndCommitmentCommittedOffset, 0), add(input, 0), 256)
-            }
 
             publicCommitments[0] =
                 uint256(sha256(abi.encodePacked(commitments[0], commitments[1], publicAndCommitmentCommitted))) % R;
@@ -717,16 +613,11 @@ contract Verifier {
         uint256[8] calldata proof,
         uint256[2] calldata commitments,
         uint256[2] calldata commitmentPok,
-        uint256[10] calldata input
+        uint256[1] calldata input
     ) public view {
         // HashToField
         uint256[1] memory publicCommitments;
         uint256[] memory publicAndCommitmentCommitted;
-        publicAndCommitmentCommitted = new uint256[](8);
-        assembly ("memory-safe") {
-            let publicAndCommitmentCommittedOffset := add(publicAndCommitmentCommitted, 0x20)
-            calldatacopy(add(publicAndCommitmentCommittedOffset, 0), add(input, 0), 256)
-        }
 
         publicCommitments[0] =
             uint256(sha256(abi.encodePacked(commitments[0], commitments[1], publicAndCommitmentCommitted))) % R;

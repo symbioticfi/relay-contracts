@@ -1,13 +1,29 @@
-# Compiler files
+# Ignore node_modules and dependencies
+node_modules
+*.log
+yarn-error.log
+
+# Ignore build outputs
+dist
+out
+
+# Ignore environment files
+.env
+.env.*
+
+# Ignore version control files
+.git
+.gitignore
+
+# Ignore editor and OS-specific files
+*.swp
+*.DS_Store
+Thumbs.db
+
+# Ignore IDE-specific files
+.idea/
+.vscode/
+
 cache/
 out/
-broadcast/
-
-
-# Docs
-docs/
-
-# Dotenv file
-.env
-
-node_modules/
+/broadcast/

@@ -81,7 +81,7 @@ library OzEIP712Logic {
         );
     }
 
-    function hashTypedDataV4Multichain(
+    function hashTypedDataV4CrossChain(
         bytes32 structHash
     ) public view returns (bytes32) {
         return MessageHashUtils.toTypedDataHash(

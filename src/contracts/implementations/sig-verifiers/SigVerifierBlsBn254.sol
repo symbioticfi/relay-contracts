@@ -11,6 +11,8 @@ import {ISettlementManager} from "../../../interfaces/implementations/settlement
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
+import {console2} from "forge-std/console2.sol";
+
 contract SigVerifier is ISigVerifier {
     using KeyBlsBn254 for bytes;
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
@@ -28,31 +30,38 @@ contract SigVerifier is ISigVerifier {
         verifier = Verifier(_verifier);
     }
 
+    /**
+     * @inheritdoc ISigVerifier
+     * @dev proof is 64 bytes zkProof | 64 bytes commitments | 64 bytes commitmentPok | 32 nonSignersVotingPower
+     */
     function verifyQuorumSig(
         address settlementManager,
         bytes memory message,
-        uint8 keyTag,
+        uint8, /* keyTag */
         uint208 quorumThreshold,
-        bytes calldata proof // 64 bytes are signature | 128 bytes pubkeyG2 |
+        bytes calldata proof
     ) public view returns (bool) {
-        uint256[10] calldata input;
+        uint256 nonSignersVotingPower;
         {
-            uint256[8] calldata _proof;
+            uint256[8] calldata zkProof;
             uint256[2] calldata commitments;
             uint256[2] calldata commitmentPok;
+            uint256[1] calldata input;
             assembly {
-                _proof := add(proof.offset, 192)
-                commitments := add(proof.offset, 448)
-                commitmentPok := add(proof.offset, 512)
-                input := add(proof.offset, 576)
+                zkProof := add(proof.offset, 0)
+                commitments := add(proof.offset, 256)
+                commitmentPok := add(proof.offset, 320)
+                input := add(proof.offset, 384)
             }
+            nonSignersVotingPower = input[0];
 
             bytes memory extraData = ISettlementManager(settlementManager).getExtraDataFromValSetHeader();
-            if (input[8] != abi.decode(extraData, (uint256))) {
-                return false;
-            }
+            BN254.G1Point memory messageG1 = BN254.hashToG1(abi.decode(message, (bytes32)));
+            uint256 inputHash =
+                uint256(keccak256(abi.encodePacked(extraData, nonSignersVotingPower, messageG1.X, messageG1.Y)));
+            inputHash &= 0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
 
-            try verifier.verifyProof(_proof, commitments, commitmentPok, input) {}
+            try verifier.verifyProof(zkProof, commitments, commitmentPok, [inputHash]) {}
             catch {
                 return false;
             }
@@ -60,26 +69,7 @@ contract SigVerifier is ISigVerifier {
 
         uint256 totalActiveVotingPower =
             ISettlementManager(settlementManager).getTotalActiveVotingPowerFromValSetHeader();
-        if (
-            totalActiveVotingPower - input[9]
-                < Math.mulDiv(quorumThreshold, totalActiveVotingPower, QUORUM_THRESHOLD_BASE, Math.Rounding.Ceil)
-        ) {
-            return false;
-        }
-
-        bytes memory aggPublicKeyG1Bytes =
-            ISettlementManager(settlementManager).getActiveAggregatedKeyFromValSetHeader(keyTag);
-        BN254.G1Point memory nonSignersPublicKeyG1Raw = BN254.G1Point(
-            input[0] + input[1] << 64 + input[2] << 128 + input[3] << 192,
-            input[4] + input[5] << 64 + input[6] << 128 + input[7] << 192
-        );
-        bytes calldata signature = proof[0:64];
-        bytes calldata aggPublicKeyG2 = proof[64:192];
-        return SigBlsBn254.verify(
-            aggPublicKeyG1Bytes.fromBytes().unwrap().plus(nonSignersPublicKeyG1Raw.negate()).wrap().toBytes(),
-            message,
-            signature,
-            aggPublicKeyG2
-        );
+        return totalActiveVotingPower - nonSignersVotingPower
+            >= Math.mulDiv(quorumThreshold, totalActiveVotingPower, QUORUM_THRESHOLD_BASE, Math.Rounding.Ceil);
     }
 }

@@ -17,6 +17,9 @@ import {BN254G2} from "../../test/libraries/BN254G2.sol";
 
 import "./SecondarySetup.s.sol";
 
+import {SigVerifier} from "../../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254.sol";
+import {Verifier} from "../../src/contracts/implementations/sig-verifiers/zk/HashVerifier.sol";
+
 // forge script script/test/MasterSetup.s.sol:MasterSetupScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_MASTER
 
 contract MasterSetupScript is SecondarySetupScript {
@@ -42,10 +45,11 @@ contract MasterSetupScript is SecondarySetupScript {
         string memory finalJson;
         (InitSetupParams memory initSetupParams, Vars memory vars) = loadInitSetupParamsAndVars();
         symbioticCore = initSetupParams.masterChain.core;
-        SecondarySetupParams memory secondarySetupParams = loadSecondarySetupParams();
+        // SecondarySetupParams memory secondarySetupParams = loadSecondarySetupParams();
         MasterSetupParams memory masterSetupParams;
 
         vm.startBroadcast(vars.deployer.privateKey);
+        // console2.log("SelfRegisterVotingPowerProvider nonce", vm.getNonce(vars.deployer.addr));
         masterSetupParams.votingPowerProvider = new SelfRegisterVotingPowerProvider(
             address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory)
         );
@@ -96,6 +100,7 @@ contract MasterSetupScript is SecondarySetupScript {
         }
 
         vm.startBroadcast(vars.deployer.privateKey);
+        // console2.log("KeyRegistry nonce", vm.getNonce(vars.deployer.addr));
         masterSetupParams.keyRegistry = new KeyRegistry();
         masterSetupParams.keyRegistry.initialize(IOzEIP712.OzEIP712InitParams({name: "KeyRegistry", version: "1"}));
         vm.stopBroadcast();
@@ -144,6 +149,7 @@ contract MasterSetupScript is SecondarySetupScript {
         }
 
         vm.startBroadcast(vars.deployer.privateKey);
+        // console2.log("Master nonce", vm.getNonce(vars.deployer.addr));
         masterSetupParams.master = new Master();
         {
             ISettlementManager.QuorumThreshold[] memory quorumThresholds = new ISettlementManager.QuorumThreshold[](1);
@@ -190,7 +196,7 @@ contract MasterSetupScript is SecondarySetupScript {
                     quorumThresholds: quorumThresholds,
                     commitDuration: initSetupParams.commitDuration,
                     requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
-                    sigVerifier: address(new SigVerifierMock())
+                    sigVerifier: address(new SigVerifier(address(new Verifier())))
                 }),
                 IValSetConfigManager.ValSetConfigManagerInitParams({
                     maxVotingPower: 1e16,

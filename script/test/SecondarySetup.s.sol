@@ -19,6 +19,9 @@ import "./InitSetup.s.sol";
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
+import {SigVerifier} from "../../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254.sol";
+import {Verifier} from "../../src/contracts/implementations/sig-verifiers/zk/HashVerifier.sol";
+
 // forge script script/test/SecondarySetup.s.sol:SecondarySetupScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_SECONDARY
 
 contract SecondarySetupScript is InitSetupScript {
@@ -129,7 +132,7 @@ contract SecondarySetupScript is InitSetupScript {
                 quorumThresholds: quorumThresholds,
                 commitDuration: initSetupParams.commitDuration,
                 requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
-                sigVerifier: address(new SigVerifierMock())
+                sigVerifier: address(new SigVerifier(address(new Verifier())))
             }),
             vars.deployer.addr
         );
