@@ -49,7 +49,7 @@ contract MasterSetupScript is SecondarySetupScript {
         MasterSetupParams memory masterSetupParams;
 
         vm.startBroadcast(vars.deployer.privateKey);
-        // console2.log("SelfRegisterVotingPowerProvider nonce", vm.getNonce(vars.deployer.addr));
+        console2.log("SelfRegisterVotingPowerProvider nonce", vm.getNonce(vars.deployer.addr));
         masterSetupParams.votingPowerProvider = new SelfRegisterVotingPowerProvider(
             address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory)
         );
@@ -100,7 +100,7 @@ contract MasterSetupScript is SecondarySetupScript {
         }
 
         vm.startBroadcast(vars.deployer.privateKey);
-        // console2.log("KeyRegistry nonce", vm.getNonce(vars.deployer.addr));
+        console2.log("KeyRegistry nonce", vm.getNonce(vars.deployer.addr));
         masterSetupParams.keyRegistry = new KeyRegistry();
         masterSetupParams.keyRegistry.initialize(IOzEIP712.OzEIP712InitParams({name: "KeyRegistry", version: "1"}));
         vm.stopBroadcast();
@@ -149,7 +149,7 @@ contract MasterSetupScript is SecondarySetupScript {
         }
 
         vm.startBroadcast(vars.deployer.privateKey);
-        // console2.log("Master nonce", vm.getNonce(vars.deployer.addr));
+        console2.log("Master nonce", vm.getNonce(vars.deployer.addr));
         masterSetupParams.master = new Master();
         {
             ISettlement.QuorumThreshold[] memory quorumThresholds = new ISettlement.QuorumThreshold[](1);

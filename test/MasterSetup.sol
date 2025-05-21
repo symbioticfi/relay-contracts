@@ -60,7 +60,7 @@ contract MasterSetup is InitSetup {
 
     function loadMasterSetupParams() public {
         vm.startPrank(vars.deployer.addr);
-        vm.setNonce(vars.deployer.addr, 41);
+        vm.setNonce(vars.deployer.addr, 44);
         masterSetupParams.votingPowerProvider = new SelfRegisterVotingPowerProvider(
             address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory)
         );
@@ -110,7 +110,7 @@ contract MasterSetup is InitSetup {
         }
 
         vm.startPrank(vars.deployer.addr);
-        vm.setNonce(vars.deployer.addr, 63);
+        vm.setNonce(vars.deployer.addr, 66);
         masterSetupParams.keyRegistry = new KeyRegistry();
         masterSetupParams.keyRegistry.initialize(IOzEIP712.OzEIP712InitParams({name: "KeyRegistry", version: "1"}));
         vm.stopPrank();
@@ -158,7 +158,7 @@ contract MasterSetup is InitSetup {
         }
 
         vm.startPrank(vars.deployer.addr);
-        vm.setNonce(vars.deployer.addr, 65);
+        vm.setNonce(vars.deployer.addr, 68);
         masterSetupParams.master = new Master();
         {
             ISettlement.QuorumThreshold[] memory quorumThresholds = new ISettlement.QuorumThreshold[](1);

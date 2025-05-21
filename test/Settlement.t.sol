@@ -117,15 +117,16 @@ contract SettlementTest is MasterGenesisSetup {
             }
         }
 
-        ZkProof memory zkProof = loadZkProof();
+        bytes memory zkProof =
+            hex"19fabce3cef97ac9c1320c9bf28de56cb0a481295832a256fd1dd0de438f29280f35ba4c2aeab9e51ef78551982927e22d13278c16130347ec90d6a166e47b50209e1c598839cf90dc44f91747f39f0fac00638ecf2fcd5d65d0825af4b626c610c59d2f37b1ce8f3c3e0745044600a9c944980aefd388801acc98692c37546d025022e109c7ae89ad772d29d50b4b7478c20997f16326b8791e0e9b2229335a25f497a667bd061f7557911e4155b7701e90c34c1055e422905fb35795b61adf2e230472f8a37b6e2f7ba4f8f760c402dd1dc7cac68041170ad237216d61ad5b2edf856d681b54dc204349eb4502485a8eaafde39affdbb09e6f329c75f3fc51000000012afeada940627f33301164c866efc163380e8d5d147be3763b3af3a94437709127d3577652990dc3dffd80b01184ac7755c6f9d8d4338ff4924febcfc4d9f49d0aaca03af9fa7a597cbaee4d70034d9abc2564e42e8fae4e4068c7a2580136eb2957c31bf50366ef10550485d9c6994b1ebc2d44886e4f31fc693659df95de6a";
 
-        bytes memory proof_ = Bytes.slice(zkProof.proof, 0, 256);
+        bytes memory proof_ = Bytes.slice(zkProof, 0, 256);
         console2.log("proof_");
         console2.logBytes(proof_);
-        bytes memory commitments = Bytes.slice(zkProof.proof, 260, 324);
+        bytes memory commitments = Bytes.slice(zkProof, 260, 324);
         console2.log("commitments");
         console2.logBytes(commitments);
-        bytes memory commitmentPok = Bytes.slice(zkProof.proof, 324, 388);
+        bytes memory commitmentPok = Bytes.slice(zkProof, 324, 388);
         console2.log("commitmentPok");
         console2.logBytes(commitmentPok);
 
@@ -143,13 +144,5 @@ contract SettlementTest is MasterGenesisSetup {
         console2.log("commitValSetHeader");
         console2.logBytes(abi.encodeWithSelector(ISettlement.commitValSetHeader.selector, valSetHeader, fullProof));
         masterSetupParams.master.commitValSetHeader(valSetHeader, fullProof);
-    }
-
-    function loadZkProof() internal returns (ZkProof memory) {
-        string memory root = vm.projectRoot();
-        string memory path = string.concat(root, "/test/data/zk_proof.json");
-        string memory json = vm.readFile(path);
-        bytes memory data = vm.parseJson(json);
-        return abi.decode(data, (ZkProof));
     }
 }

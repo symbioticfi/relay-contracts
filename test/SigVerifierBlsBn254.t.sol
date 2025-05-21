@@ -19,6 +19,8 @@ import {console2} from "forge-std/console2.sol";
 import {Verifier} from "../src/contracts/implementations/sig-verifiers/zk/HashVerifier.sol";
 import {SigVerifier} from "../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254.sol";
 
+import {ISigVerifier} from "../src/interfaces/base/ISigVerifier.sol";
+
 import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
@@ -43,7 +45,7 @@ contract SigVerifierBlsBn254Test is MasterGenesisSetup {
     }
 
     function test_verifyQuorumSig() public {
-        bytes32 messageHash = 0xf6fd88868836d3f28687942f43ceeb5cce58eb4bc81dc44a044c69cbfd26965a;
+        bytes32 messageHash = 0xacaf3289d7b601cbd114fb36c4d29c85bbfd5e133f14cb355c3fd8d99367964f;
         uint256 nonSignersVotingPower = 0;
 
         BN254.G1Point memory aggKeyG1;
@@ -76,20 +78,18 @@ contract SigVerifierBlsBn254Test is MasterGenesisSetup {
             }
         }
 
-        ZkProof memory zkProof = loadZkProof();
+        bytes memory zkProof =
+            hex"0acc30133e99cf5c4d59fbb160c9ebc5aecc600ffe45e69f8d5347202c2a3b2f0e1451dff30967e16a66d5a54021a3ef80e863624db714fe80a685440bfffca6235952fe9997a7cebbabd5757a0205e39a5a6aa5dc191f51c40e27674a8492aa2b939ce02777edafec4cc1c584ce418344e2cd8699128791f3d220213e51fe120b5159f000be4a81827f6a97920ca73e12693a62efc15d925cefab290429bdcb20049e807ffdb5d573b5bd7c1e20c6d564faa1ab48174794c111427d39e31d272be621c63169982a162700a1eb5afe2a0ae0e617db2ee7fbf72c0ce7ec203e30080ca5752c772248e5bf162de3e48fb6a56a2c326d9d19f4f116d5bbb1e47347000000011acafc2c5dd497dcada25c68d296edcbf1097240d76a0303d073f020de1568430011b1700a3e5448c12f4d73c627d47e13a697698dca76662454c06f79490c770a88e7869ab9bbef4a9931eb14d6679c0205afb3478abbc7ca67e28be93b2c4a03198b0ce7d323eaa51c8aba32340e12896afb3dd62dd0c0125e5418e6bd995d";
 
         bytes memory fullProof;
 
         {
-            bytes memory proof_ = Bytes.slice(zkProof.proof, 0, 256);
-            bytes memory commitments = Bytes.slice(zkProof.proof, 260, 324);
-            bytes memory commitmentPok = Bytes.slice(zkProof.proof, 324, 388);
+            bytes memory proof_ = Bytes.slice(zkProof, 0, 256);
+            bytes memory commitments = Bytes.slice(zkProof, 260, 324);
+            bytes memory commitmentPok = Bytes.slice(zkProof, 324, 388);
 
             fullProof = abi.encodePacked(proof_, commitments, commitmentPok, nonSignersVotingPower);
         }
-
-        console2.log("fullProof");
-        console2.logBytes(fullProof);
 
         address zkVerifier = address(new Verifier());
         SigVerifier sigVerifier = new SigVerifier(zkVerifier);
@@ -104,13 +104,5 @@ contract SigVerifierBlsBn254Test is MasterGenesisSetup {
                 fullProof
             )
         );
-    }
-
-    function loadZkProof() internal returns (ZkProof memory) {
-        string memory root = vm.projectRoot();
-        string memory path = string.concat(root, "/test/data/zk_proof.json");
-        string memory json = vm.readFile(path);
-        bytes memory data = vm.parseJson(json);
-        return abi.decode(data, (ZkProof));
     }
 }
