@@ -50,6 +50,20 @@ contract SettlementManagerTest is MasterGenesisSetup {
 
         ISettlementManager.ValSetHeader memory valSetHeader = loadGenesis();
 
+        console2.log("version");
+        console2.log(valSetHeader.version);
+        console2.log("extraData");
+        console2.logBytes(valSetHeader.extraData);
+        console2.log("validatorsSszMRoot");
+        console2.logBytes32(valSetHeader.validatorsSszMRoot);
+        console2.log("totalActiveVotingPower");
+        console2.log(valSetHeader.totalActiveVotingPower);
+        console2.log("activeAggregatedKeys");
+        for (uint256 i = 0; i < valSetHeader.activeAggregatedKeys.length; i++) {
+            console2.log(valSetHeader.activeAggregatedKeys[i].tag);
+            console2.logBytes(valSetHeader.activeAggregatedKeys[i].payload);
+        }
+
         bytes32 messageHash = masterSetupParams.master.hashTypedDataV4CrossChain(
             keccak256(
                 abi.encode(
@@ -60,6 +74,18 @@ contract SettlementManagerTest is MasterGenesisSetup {
                 )
             )
         );
+
+        console2.log("VALSET_HEADER_COMMIT_TYPEHASH");
+        console2.logBytes32(VALSET_HEADER_COMMIT_TYPEHASH);
+        console2.log("SUBNETWORK");
+        console2.logBytes32(masterSetupParams.master.SUBNETWORK());
+        console2.log("getCurrentEpoch");
+        console2.log(masterSetupParams.master.getCurrentEpoch());
+        console2.log("keccak256(abi.encode(valSetHeader))");
+        console2.logBytes32(keccak256(abi.encode(valSetHeader)));
+
+        console2.log("messageHash");
+        console2.logBytes32(messageHash);
 
         BN254.G1Point memory aggKeyG1;
         BN254.G2Point memory aggKeyG2;
@@ -107,17 +133,18 @@ contract SettlementManagerTest is MasterGenesisSetup {
         console2.logBytes(abi.encode(aggSigG1));
         console2.log("aggKeyG2");
         console2.logBytes(abi.encode(aggKeyG2));
-        bytes memory fullProof = abi.encodePacked(
-            abi.encode(aggSigG1), abi.encode(aggKeyG2), proof_, commitments, commitmentPok, zkProof.input
-        );
+
+        uint256 nonSignersVotingPower = 0;
+
+        bytes memory fullProof = abi.encodePacked(proof_, commitments, commitmentPok, nonSignersVotingPower);
         console2.log("fullProof");
         console2.logBytes(fullProof);
 
         console2.log("commitValSetHeader");
-        console2.logBytes(abi.encodeWithSelector(ISettlementManager.commitValSetHeader.selector, valSetHeader, fullProof));
-        (bool success, bytes memory returnData) = address(masterSetupParams.master).call(abi.encodeWithSelector(ISettlementManager.commitValSetHeader.selector, valSetHeader, fullProof));
-        require(success, "commitValSetHeader failed");
-
+        console2.logBytes(
+            abi.encodeWithSelector(ISettlementManager.commitValSetHeader.selector, valSetHeader, fullProof)
+        );
+        masterSetupParams.master.commitValSetHeader(valSetHeader, fullProof);
     }
 
     function loadZkProof() internal returns (ZkProof memory) {
