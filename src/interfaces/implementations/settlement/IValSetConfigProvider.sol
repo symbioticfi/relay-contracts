@@ -35,21 +35,21 @@ interface IValSetConfigProvider {
 
     function ValSetConfigProvider_VERSION() external pure returns (uint64);
 
-    // function getMaxVotingPowerAt(uint48 timestamp, bytes memory hint) external view returns (uint256);
+    function getMaxVotingPowerAt(uint48 timestamp, bytes memory hint) external view returns (uint256);
 
-    // function getMaxVotingPower() external view returns (uint256);
+    function getMaxVotingPower() external view returns (uint256);
 
-    // function getMinInclusionVotingPowerAt(uint48 timestamp, bytes memory hint) external view returns (uint256);
+    function getMinInclusionVotingPowerAt(uint48 timestamp, bytes memory hint) external view returns (uint256);
 
-    // function getMinInclusionVotingPower() external view returns (uint256);
+    function getMinInclusionVotingPower() external view returns (uint256);
 
-    // function getMaxValidatorsCountAt(uint48 timestamp, bytes memory hint) external view returns (uint256);
+    function getMaxValidatorsCountAt(uint48 timestamp, bytes memory hint) external view returns (uint256);
 
-    // function getMaxValidatorsCount() external view returns (uint256);
+    function getMaxValidatorsCount() external view returns (uint256);
 
-    // function getRequiredKeyTagsAt(uint48 timestamp, bytes memory hint) external view returns (uint8[] memory);
+    function getRequiredKeyTagsAt(uint48 timestamp, bytes memory hint) external view returns (uint8[] memory);
 
-    // function getRequiredKeyTags() external view returns (uint8[] memory);
+    function getRequiredKeyTags() external view returns (uint8[] memory);
 
     function getValSetConfigAt(uint48 timestamp, bytes memory hints) external view returns (ValSetConfig memory);
 

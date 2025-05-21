@@ -4,6 +4,8 @@ pragma solidity ^0.8.25;
 import {SharedVaults} from "../../features/registration/vaults/SharedVaults.sol";
 import {ForcePauseSelfRegisterOperators} from
     "../../features/registration/operators/extensions/ForcePauseSelfRegisterOperators.sol";
+import {WhitelistSelfRegisterOperators} from
+    "../../features/registration/operators/extensions/WhitelistSelfRegisterOperators.sol";
 import {Tokens} from "../../features/registration/tokens/Tokens.sol";
 
 import {OzOwnable} from "../../features/permissions/OzOwnable.sol";
@@ -17,6 +19,7 @@ import {ISelfRegisterVotingPowerProvider} from
 contract SelfRegisterVotingPowerProvider is
     SharedVaults,
     ForcePauseSelfRegisterOperators,
+    WhitelistSelfRegisterOperators,
     Tokens,
     OzOwnable,
     EqualStakeToVP,
@@ -45,5 +48,19 @@ contract SelfRegisterVotingPowerProvider is
         __Tokens_init();
         __OzOwnable_init(ozOwnableInitParams);
         __EqualStakeToVP_init();
+    }
+
+    function _registerOperatorImpl(
+        address operator,
+        address vault
+    ) internal virtual override(ForcePauseSelfRegisterOperators, WhitelistSelfRegisterOperators) {
+        super._registerOperatorImpl(operator, vault);
+    }
+
+    function _registerOperatorVaultImpl(
+        address operator,
+        address vault
+    ) internal virtual override(ForcePauseSelfRegisterOperators, WhitelistSelfRegisterOperators) {
+        super._registerOperatorVaultImpl(operator, vault);
     }
 }
