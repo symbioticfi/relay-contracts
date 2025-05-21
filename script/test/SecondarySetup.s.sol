@@ -3,7 +3,7 @@ pragma solidity ^0.8.25;
 
 import {Script, console2} from "forge-std/Script.sol";
 
-import {ISettlementManager} from "../../src/interfaces/implementations/settlement/ISettlementManager.sol";
+import {ISettlement} from "../../src/interfaces/implementations/settlement/ISettlement.sol";
 import {IOzOwnable} from "../../src/interfaces/features/permissions/IOzOwnable.sol";
 import {INetworkManager} from "../../src/interfaces/base/INetworkManager.sol";
 import {IEpochManager} from "../../src/interfaces/base/IEpochManager.sol";
@@ -110,8 +110,8 @@ contract SecondarySetupScript is InitSetupScript {
 
         vm.startBroadcast(vars.network.privateKey);
         secondarySetupParams.replica = new Replica();
-        ISettlementManager.QuorumThreshold[] memory quorumThresholds = new ISettlementManager.QuorumThreshold[](1);
-        quorumThresholds[0] = ISettlementManager.QuorumThreshold({
+        ISettlement.QuorumThreshold[] memory quorumThresholds = new ISettlement.QuorumThreshold[](1);
+        quorumThresholds[0] = ISettlement.QuorumThreshold({
             keyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
             threshold: uint208(Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil))
         });
@@ -119,7 +119,7 @@ contract SecondarySetupScript is InitSetupScript {
         requiredKeyTags[0] = KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15);
         requiredKeyTags[1] = KeyManagerLogic.KEY_TYPE_ECDSA_SECP256K1.keyTag(0);
         secondarySetupParams.replica.initialize(
-            ISettlementManager.SettlementManagerInitParams({
+            ISettlement.SettlementInitParams({
                 networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
                     network: vars.network.addr,
                     subnetworkID: initSetupParams.subnetworkID

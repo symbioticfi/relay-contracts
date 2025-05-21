@@ -9,7 +9,7 @@ import {KeyManagerLogic} from "../src/contracts/base/logic/KeyManagerLogic.sol";
 
 import {BN254G2} from "./libraries/BN254G2.sol";
 
-import {ISettlementManager} from "../src/interfaces/implementations/settlement/ISettlementManager.sol";
+import {ISettlement} from "../src/interfaces/implementations/settlement/ISettlement.sol";
 import {IBaseKeyManager} from "../src/interfaces/base/IBaseKeyManager.sol";
 
 import {MasterGenesisSetup} from "./MasterGenesisSetup.sol";

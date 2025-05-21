@@ -34,7 +34,7 @@ contract MasterCommitScript is MasterGenesisSetupScript {
         (, Vars memory vars) = loadInitSetupParamsAndVars();
         MasterSetupParams memory masterSetupParams = loadMasterSetupParams();
 
-        ISettlementManager.ValSetHeader memory valSetHeader = loadGenesis();
+        ISettlement.ValSetHeader memory valSetHeader = loadGenesis();
 
         bytes32 messageHash = masterSetupParams.master.hashTypedDataV4CrossChain(
             keccak256(

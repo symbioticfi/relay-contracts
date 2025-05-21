@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {ISettlementManager} from "../../../interfaces/implementations/settlement/ISettlementManager.sol";
-import {IValSetConfigManager} from "../../../interfaces/implementations/settlement/IValSetConfigManager.sol";
-import {IMasterConfigManager} from "../../../interfaces/implementations/settlement/IMasterConfigManager.sol";
+import {ISettlement} from "../../../interfaces/implementations/settlement/ISettlement.sol";
+import {IValSetConfigProvider} from "../../../interfaces/implementations/settlement/IValSetConfigProvider.sol";
+import {IMasterConfigProvider} from "../../../interfaces/implementations/settlement/IMasterConfigProvider.sol";
 import {IOzAccessControl} from "src/interfaces/features/permissions/IOzAccessControl.sol";
 
 interface IMaster {
     function initialize(
-        ISettlementManager.SettlementManagerInitParams memory settlementManagerInitParams,
-        IValSetConfigManager.ValSetConfigManagerInitParams memory valSetConfigManagerInitParams,
-        IMasterConfigManager.MasterConfigManagerInitParams memory masterConfigManagerInitParams,
+        ISettlement.SettlementInitParams memory settlementInitParams,
+        IValSetConfigProvider.ValSetConfigProviderInitParams memory valSetConfigProviderInitParams,
+        IMasterConfigProvider.MasterConfigProviderInitParams memory masterConfigProviderInitParams,
         address defaultAdmin
     ) external;
 }

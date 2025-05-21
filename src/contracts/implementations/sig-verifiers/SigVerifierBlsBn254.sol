@@ -7,7 +7,7 @@ import {BN254} from "../../libraries/utils/BN254.sol";
 import {KeyBlsBn254} from "../../libraries/keys/KeyBlsBn254.sol";
 
 import {ISigVerifier} from "../../../interfaces/base/ISigVerifier.sol";
-import {ISettlementManager} from "../../../interfaces/implementations/settlement/ISettlementManager.sol";
+import {ISettlement} from "../../../interfaces/implementations/settlement/ISettlement.sol";
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
@@ -35,7 +35,7 @@ contract SigVerifier is ISigVerifier {
      * @dev proof is 64 bytes zkProof | 64 bytes commitments | 64 bytes commitmentPok | 32 nonSignersVotingPower
      */
     function verifyQuorumSig(
-        address settlementManager,
+        address settlement,
         uint48 epoch,
         bytes memory message,
         uint8, /* keyTag */
@@ -54,7 +54,7 @@ contract SigVerifier is ISigVerifier {
                 nonSignersVotingPower := calldataload(add(proof.offset, 384))
             }
 
-            bytes memory extraData = ISettlementManager(settlementManager).getExtraDataFromValSetHeaderAt(epoch);
+            bytes memory extraData = ISettlement(settlement).getExtraDataFromValSetHeaderAt(epoch);
             BN254.G1Point memory messageG1 = BN254.hashToG1(abi.decode(message, (bytes32)));
             uint256 inputHash =
                 uint256(keccak256(abi.encodePacked(extraData, nonSignersVotingPower, messageG1.X, messageG1.Y)));
@@ -66,8 +66,7 @@ contract SigVerifier is ISigVerifier {
             }
         }
 
-        uint256 totalActiveVotingPower =
-            ISettlementManager(settlementManager).getTotalActiveVotingPowerFromValSetHeaderAt(epoch);
+        uint256 totalActiveVotingPower = ISettlement(settlement).getTotalActiveVotingPowerFromValSetHeaderAt(epoch);
         return totalActiveVotingPower - nonSignersVotingPower
             >= Math.mulDiv(quorumThreshold, totalActiveVotingPower, QUORUM_THRESHOLD_BASE, Math.Rounding.Ceil);
     }

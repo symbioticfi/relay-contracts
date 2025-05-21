@@ -31,12 +31,12 @@ contract MasterGenesisSetupScript is MasterSetupScript {
         MasterSetupParams memory masterSetupParams = loadMasterSetupParams();
 
         vm.startBroadcast(vars.deployer.privateKey);
-        ISettlementManager.ValSetHeader memory valSetHeader = loadGenesis();
+        ISettlement.ValSetHeader memory valSetHeader = loadGenesis();
         masterSetupParams.master.setGenesis(valSetHeader);
         vm.stopBroadcast();
     }
 
-    function loadGenesis() public returns (ISettlementManager.ValSetHeader memory valSetHeader) {
+    function loadGenesis() public returns (ISettlement.ValSetHeader memory valSetHeader) {
         ValSetHeaderStruct memory valSetHeaderStruct;
         {
             string memory root = vm.projectRoot();
@@ -55,7 +55,7 @@ contract MasterGenesisSetupScript is MasterSetupScript {
             });
         }
 
-        return ISettlementManager.ValSetHeader({
+        return ISettlement.ValSetHeader({
             version: valSetHeaderStruct.version,
             activeAggregatedKeys: activeAggregatedKeys,
             totalActiveVotingPower: valSetHeaderStruct.totalActiveVotingPower,

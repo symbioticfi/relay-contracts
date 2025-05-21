@@ -8,7 +8,7 @@ contract SigVerifierMock is ISigVerifier {
      * @inheritdoc ISigVerifier
      */
     function verifyQuorumSig(
-        address, /* settlementManager */
+        address, /* settlement */
         uint48, /* epoch */
         bytes memory, /* message */
         uint8, /* keyTag */

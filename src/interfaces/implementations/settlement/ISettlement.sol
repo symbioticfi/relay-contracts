@@ -8,13 +8,13 @@ import {IOzEIP712} from "../../base/common/IOzEIP712.sol";
 
 import {Checkpoints} from "../../../contracts/libraries/structs/Checkpoints.sol";
 
-interface ISettlementManager {
-    error SettlementManager_InvalidPhase();
-    error SettlementManager_InvalidVersion();
-    error SettlementManager_Duplicate();
-    error SettlementManager_VerificationFailed();
-    error SettlementManager_EpochDurationTooShort();
-    error SettlementManager_InvalidKey();
+interface ISettlement {
+    error Settlement_InvalidPhase();
+    error Settlement_InvalidVersion();
+    error Settlement_Duplicate();
+    error Settlement_VerificationFailed();
+    error Settlement_EpochDurationTooShort();
+    error Settlement_InvalidKey();
 
     enum ValSetPhase {
         IDLE,
@@ -22,8 +22,8 @@ interface ISettlementManager {
         FAIL
     }
 
-    /// @custom:storage-location erc7201:symbiotic.storage.SettlementManager
-    struct SettlementManagerStorage {
+    /// @custom:storage-location erc7201:symbiotic.storage.Settlement
+    struct SettlementStorage {
         Checkpoints.Trace208 _requiredKeyTag;
         Checkpoints.Trace208 _commitDuration;
         mapping(uint8 => Checkpoints.Trace208) _quorumThreshold;
@@ -45,7 +45,7 @@ interface ISettlementManager {
         mapping(uint8 => bytes) keyByTag;
     }
 
-    struct SettlementManagerInitParams {
+    struct SettlementInitParams {
         INetworkManager.NetworkManagerInitParams networkManagerInitParams;
         IEpochManager.EpochManagerInitParams epochManagerInitParams;
         IOzEIP712.OzEIP712InitParams ozEip712InitParams;
@@ -68,7 +68,7 @@ interface ISettlementManager {
         bytes extraData;
     }
 
-    function SettlementManager_VERSION() external pure returns (uint64);
+    function Settlement_VERSION() external pure returns (uint64);
 
     function VALIDATOR_SET_VERSION() external pure returns (uint8);
 

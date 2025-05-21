@@ -25,12 +25,12 @@ contract MasterGenesisSetup is MasterSetup {
 
     function setGenesis() public {
         vm.startPrank(vars.deployer.addr);
-        ISettlementManager.ValSetHeader memory valSetHeader = loadGenesis();
+        ISettlement.ValSetHeader memory valSetHeader = loadGenesis();
         masterSetupParams.master.setGenesis(valSetHeader);
         vm.stopPrank();
     }
 
-    function loadGenesis() public returns (ISettlementManager.ValSetHeader memory valSetHeader) {
+    function loadGenesis() public returns (ISettlement.ValSetHeader memory valSetHeader) {
         ValSetHeaderStruct memory valSetHeaderStruct;
         {
             string memory root = vm.projectRoot();
@@ -49,7 +49,7 @@ contract MasterGenesisSetup is MasterSetup {
             });
         }
 
-        return ISettlementManager.ValSetHeader({
+        return ISettlement.ValSetHeader({
             version: valSetHeaderStruct.version,
             activeAggregatedKeys: activeAggregatedKeys,
             totalActiveVotingPower: valSetHeaderStruct.totalActiveVotingPower,

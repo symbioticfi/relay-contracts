@@ -3,9 +3,9 @@ pragma solidity ^0.8.25;
 
 import {Script, console2} from "forge-std/Script.sol";
 
-import {ISettlementManager} from "../../src/interfaces/implementations/settlement/ISettlementManager.sol";
-import {IValSetConfigManager} from "../../src/interfaces/implementations/settlement/IValSetConfigManager.sol";
-import {IMasterConfigManager} from "../../src/interfaces/implementations/settlement/IMasterConfigManager.sol";
+import {ISettlement} from "../../src/interfaces/implementations/settlement/ISettlement.sol";
+import {IValSetConfigProvider} from "../../src/interfaces/implementations/settlement/IValSetConfigProvider.sol";
+import {IMasterConfigProvider} from "../../src/interfaces/implementations/settlement/IMasterConfigProvider.sol";
 import {IEpochManager} from "../../src/interfaces/base/IEpochManager.sol";
 
 import {KeyTag} from "../../src/contracts/libraries/utils/KeyTag.sol";
@@ -152,38 +152,38 @@ contract MasterSetupScript is SecondarySetupScript {
         // console2.log("Master nonce", vm.getNonce(vars.deployer.addr));
         masterSetupParams.master = new Master();
         {
-            ISettlementManager.QuorumThreshold[] memory quorumThresholds = new ISettlementManager.QuorumThreshold[](1);
-            quorumThresholds[0] = ISettlementManager.QuorumThreshold({
+            ISettlement.QuorumThreshold[] memory quorumThresholds = new ISettlement.QuorumThreshold[](1);
+            quorumThresholds[0] = ISettlement.QuorumThreshold({
                 keyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
                 threshold: uint208(Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil))
             });
             uint8[] memory requiredKeyTags = new uint8[](2);
             requiredKeyTags[0] = KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15);
             requiredKeyTags[1] = KeyManagerLogic.KEY_TYPE_ECDSA_SECP256K1.keyTag(0);
-            IMasterConfigManager.CrossChainAddress[] memory votingPowerProviders =
-                new IMasterConfigManager.CrossChainAddress[](1);
-            // IMasterConfigManager.CrossChainAddress[] memory votingPowerProviders =
-            //     new IMasterConfigManager.CrossChainAddress[](2);
-            votingPowerProviders[0] = IMasterConfigManager.CrossChainAddress({
+            IMasterConfigProvider.CrossChainAddress[] memory votingPowerProviders =
+                new IMasterConfigProvider.CrossChainAddress[](1);
+            // IMasterConfigProvider.CrossChainAddress[] memory votingPowerProviders =
+            //     new IMasterConfigProvider.CrossChainAddress[](2);
+            votingPowerProviders[0] = IMasterConfigProvider.CrossChainAddress({
                 addr: address(masterSetupParams.votingPowerProvider),
                 chainId: uint64(initSetupParams.masterChain.chainId)
             });
-            // votingPowerProviders[1] = IMasterConfigManager.CrossChainAddress({
+            // votingPowerProviders[1] = IMasterConfigProvider.CrossChainAddress({
             //     addr: address(secondarySetupParams.votingPowerProvider),
             //     chainId: uint64(initSetupParams.secondaryChain.chainId)
             // });
-            IMasterConfigManager.CrossChainAddress memory keysProvider = IMasterConfigManager.CrossChainAddress({
+            IMasterConfigProvider.CrossChainAddress memory keysProvider = IMasterConfigProvider.CrossChainAddress({
                 addr: address(masterSetupParams.keyRegistry),
                 chainId: uint64(initSetupParams.masterChain.chainId)
             });
-            IMasterConfigManager.CrossChainAddress[] memory replicas = new IMasterConfigManager.CrossChainAddress[](0);
-            // IMasterConfigManager.CrossChainAddress[] memory replicas = new IMasterConfigManager.CrossChainAddress[](1);
-            // replicas[0] = IMasterConfigManager.CrossChainAddress({
+            IMasterConfigProvider.CrossChainAddress[] memory replicas = new IMasterConfigProvider.CrossChainAddress[](0);
+            // IMasterConfigProvider.CrossChainAddress[] memory replicas = new IMasterConfigProvider.CrossChainAddress[](1);
+            // replicas[0] = IMasterConfigProvider.CrossChainAddress({
             //     addr: address(secondarySetupParams.replica),
             //     chainId: uint64(initSetupParams.secondaryChain.chainId)
             // });
             masterSetupParams.master.initialize(
-                ISettlementManager.SettlementManagerInitParams({
+                ISettlement.SettlementInitParams({
                     networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
                         network: vars.network.addr,
                         subnetworkID: initSetupParams.subnetworkID
@@ -198,13 +198,13 @@ contract MasterSetupScript is SecondarySetupScript {
                     requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
                     sigVerifier: address(new SigVerifier(address(new Verifier())))
                 }),
-                IValSetConfigManager.ValSetConfigManagerInitParams({
+                IValSetConfigProvider.ValSetConfigProviderInitParams({
                     maxVotingPower: 1e16,
                     minInclusionVotingPower: 1e4,
                     maxValidatorsCount: 5,
                     requiredKeyTags: requiredKeyTags
                 }),
-                IMasterConfigManager.MasterConfigManagerInitParams({
+                IMasterConfigProvider.MasterConfigProviderInitParams({
                     votingPowerProviders: votingPowerProviders,
                     keysProvider: keysProvider,
                     replicas: replicas

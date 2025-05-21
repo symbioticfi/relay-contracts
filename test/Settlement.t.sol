@@ -9,7 +9,7 @@ import {KeyManagerLogic} from "../src/contracts/base/logic/KeyManagerLogic.sol";
 
 import {BN254G2} from "./libraries/BN254G2.sol";
 
-import {ISettlementManager} from "../src/interfaces/implementations/settlement/ISettlementManager.sol";
+import {ISettlement} from "../src/interfaces/implementations/settlement/ISettlement.sol";
 import {IBaseKeyManager} from "../src/interfaces/base/IBaseKeyManager.sol";
 
 import {MasterGenesisSetup} from "./MasterGenesisSetup.sol";
@@ -22,7 +22,7 @@ import {SigVerifier} from "../src/contracts/implementations/sig-verifiers/SigVer
 import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-contract SettlementManagerTest is MasterGenesisSetup {
+contract SettlementTest is MasterGenesisSetup {
     using KeyTag for uint8;
     using KeyBlsBn254 for BN254.G1Point;
     using BN254 for BN254.G1Point;
@@ -48,7 +48,7 @@ contract SettlementManagerTest is MasterGenesisSetup {
     function test_commitValSetHeader() public {
         vm.warp(masterSetupParams.master.getNextEpochStart());
 
-        ISettlementManager.ValSetHeader memory valSetHeader = loadGenesis();
+        ISettlement.ValSetHeader memory valSetHeader = loadGenesis();
 
         console2.log("version");
         console2.log(valSetHeader.version);
@@ -141,9 +141,7 @@ contract SettlementManagerTest is MasterGenesisSetup {
         console2.logBytes(fullProof);
 
         console2.log("commitValSetHeader");
-        console2.logBytes(
-            abi.encodeWithSelector(ISettlementManager.commitValSetHeader.selector, valSetHeader, fullProof)
-        );
+        console2.logBytes(abi.encodeWithSelector(ISettlement.commitValSetHeader.selector, valSetHeader, fullProof));
         masterSetupParams.master.commitValSetHeader(valSetHeader, fullProof);
     }
 

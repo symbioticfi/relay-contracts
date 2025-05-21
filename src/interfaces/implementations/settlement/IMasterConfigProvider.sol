@@ -4,18 +4,18 @@ pragma solidity ^0.8.0;
 import {PersistentSet} from "../../../contracts/libraries/structs/PersistentSet.sol";
 import {Checkpoints} from "../../../contracts/libraries/structs/Checkpoints.sol";
 
-interface IMasterConfigManager {
-    error MasterConfigManager_AlreadyAdded();
-    error MasterConfigManager_NotAdded();
+interface IMasterConfigProvider {
+    error MasterConfigProvider_AlreadyAdded();
+    error MasterConfigProvider_NotAdded();
 
-    /// @custom:storage-location erc7201:symbiotic.storage.MasterConfigManager
-    struct MasterConfigManagerStorage {
+    /// @custom:storage-location erc7201:symbiotic.storage.MasterConfigProvider
+    struct MasterConfigProviderStorage {
         PersistentSet.Bytes32Set _votingPowerProviders;
         Checkpoints.Trace256 _keysProvider;
         PersistentSet.Bytes32Set _replicas;
     }
 
-    struct MasterConfigManagerInitParams {
+    struct MasterConfigProviderInitParams {
         CrossChainAddress[] votingPowerProviders;
         CrossChainAddress keysProvider;
         CrossChainAddress[] replicas;
@@ -38,7 +38,7 @@ interface IMasterConfigManager {
         bytes[] replicasHints;
     }
 
-    function MasterConfigManager_VERSION() external pure returns (uint64);
+    function MasterConfigProvider_VERSION() external pure returns (uint64);
 
     // function isVotingPowerProviderActiveAt(
     //     CrossChainAddress memory votingPowerProvider,

@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {SettlementManager} from "./SettlementManager.sol";
+import {Settlement} from "./Settlement.sol";
 
 import {OzAccessControl} from "../../features/permissions/OzAccessControl.sol";
 
 import {IReplica} from "../../../interfaces/implementations/settlement/IReplica.sol";
 
-contract Replica is SettlementManager, OzAccessControl, IReplica {
+contract Replica is Settlement, OzAccessControl, IReplica {
     constructor() {
         // _disableInitializers();
     }
@@ -16,10 +16,10 @@ contract Replica is SettlementManager, OzAccessControl, IReplica {
      * @inheritdoc IReplica
      */
     function initialize(
-        SettlementManagerInitParams memory settlementManagerInitParams,
+        SettlementInitParams memory settlementInitParams,
         address defaultAdmin
     ) public virtual initializer {
-        __SettlementManager_init(settlementManagerInitParams);
+        __Settlement_init(settlementInitParams);
         __OzAccessControl_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);

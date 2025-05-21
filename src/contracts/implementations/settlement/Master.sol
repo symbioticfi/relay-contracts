@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {SettlementManager} from "./SettlementManager.sol";
-import {ValSetConfigManager} from "./ValSetConfigManager.sol";
-import {MasterConfigManager} from "./MasterConfigManager.sol";
+import {Settlement} from "./Settlement.sol";
+import {ValSetConfigProvider} from "./ValSetConfigProvider.sol";
+import {MasterConfigProvider} from "./MasterConfigProvider.sol";
 
 import {OzAccessControl} from "../../features/permissions/OzAccessControl.sol";
 
 import {IMaster} from "../../../interfaces/implementations/settlement/IMaster.sol";
 
-contract Master is SettlementManager, ValSetConfigManager, MasterConfigManager, OzAccessControl, IMaster {
+contract Master is Settlement, ValSetConfigProvider, MasterConfigProvider, OzAccessControl, IMaster {
     constructor() {
         // _disableInitializers();
     }
@@ -18,14 +18,14 @@ contract Master is SettlementManager, ValSetConfigManager, MasterConfigManager, 
      * @inheritdoc IMaster
      */
     function initialize(
-        SettlementManagerInitParams memory settlementManagerInitParams,
-        ValSetConfigManagerInitParams memory valSetConfigManagerInitParams,
-        MasterConfigManagerInitParams memory masterConfigManagerInitParams,
+        SettlementInitParams memory settlementInitParams,
+        ValSetConfigProviderInitParams memory valSetConfigProviderInitParams,
+        MasterConfigProviderInitParams memory masterConfigProviderInitParams,
         address defaultAdmin
     ) public virtual initializer {
-        __SettlementManager_init(settlementManagerInitParams);
-        __ValSetConfigManager_init(valSetConfigManagerInitParams);
-        __MasterConfigManager_init(masterConfigManagerInitParams);
+        __Settlement_init(settlementInitParams);
+        __ValSetConfigProvider_init(valSetConfigProviderInitParams);
+        __MasterConfigProvider_init(masterConfigProviderInitParams);
         __OzAccessControl_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
