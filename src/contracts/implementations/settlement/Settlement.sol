@@ -41,10 +41,8 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     /**
      * @inheritdoc ISettlement
      */
-    function getCurrentValSetTimestamp(
-        bytes memory hint
-    ) public view virtual returns (uint48) {
-        return SettlementLogic.getCurrentValSetTimestamp(hint);
+    function getCurrentValSetTimestamp() public view virtual returns (uint48) {
+        return SettlementLogic.getCurrentValSetTimestamp();
     }
 
     /**
@@ -299,9 +297,10 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
         bytes memory message,
         uint8 keyTag,
         uint256 quorumThreshold,
-        bytes calldata proof
+        bytes calldata proof,
+        bytes memory hint
     ) public view virtual returns (bool) {
-        return SettlementLogic.verifyQuorumSig(epoch, message, keyTag, quorumThreshold, proof);
+        return SettlementLogic.verifyQuorumSig(epoch, message, keyTag, quorumThreshold, proof, hint);
     }
 
     /**
@@ -354,8 +353,9 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     function commitValSetHeader(
         ValSetHeader calldata header,
         ExtraData[] calldata extraData,
-        bytes calldata proof
+        bytes calldata proof,
+        bytes memory hint
     ) public virtual {
-        SettlementLogic.commitValSetHeader(header, extraData, proof);
+        SettlementLogic.commitValSetHeader(header, extraData, proof, hint);
     }
 }

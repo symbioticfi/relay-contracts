@@ -8,9 +8,9 @@ interface ISigVerifierBlsBn254 is ISigVerifier {
     error SigVerifierBlsBn254_InvalidMaxValidators();
     error SigVerifierBlsBn254_InvalidTotalActiveValidators();
 
-    function TOTAL_ACTIVE_VALIDATORS_KEY() external view returns (bytes32);
+    function TOTAL_ACTIVE_VALIDATORS() external view returns (string memory);
 
-    function KEY_TAG_EXTRA_DATA_KEY_PREFIX() external view returns (string memory);
+    function VALIDATOR_SET_HASH_MIMC() external view returns (string memory);
 
     function verifiers(
         uint256 index

@@ -103,7 +103,7 @@ contract MasterCommitScript is MasterGenesisSetupScript {
         console2.log("commitValSetHeader");
 
         vm.startBroadcast(vars.deployer.privateKey);
-        masterSetupParams.master.commitValSetHeader(valSetHeader, extraData, fullProof);
+        masterSetupParams.master.commitValSetHeader(valSetHeader, extraData, fullProof, new bytes(0));
         vm.stopBroadcast();
     }
 

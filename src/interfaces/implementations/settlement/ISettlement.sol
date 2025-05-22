@@ -70,9 +70,7 @@ interface ISettlement {
 
     function VALIDATOR_SET_VERSION() external pure returns (uint8);
 
-    function getCurrentValSetTimestamp(
-        bytes memory hint
-    ) external view returns (uint48);
+    function getCurrentValSetTimestamp() external view returns (uint48);
 
     function getCurrentValSetEpoch() external view returns (uint48);
 
@@ -163,7 +161,8 @@ interface ISettlement {
         bytes memory message,
         uint8 keyTag,
         uint256 quorumThreshold,
-        bytes calldata proof
+        bytes calldata proof,
+        bytes memory hint
     ) external view returns (bool);
 
     function setCommitDuration(
@@ -181,6 +180,7 @@ interface ISettlement {
     function commitValSetHeader(
         ValSetHeader calldata header,
         ExtraData[] calldata extraData,
-        bytes calldata proof
+        bytes calldata proof,
+        bytes memory hint
     ) external;
 }

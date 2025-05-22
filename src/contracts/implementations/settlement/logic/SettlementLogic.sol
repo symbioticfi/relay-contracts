@@ -53,9 +53,7 @@ library SettlementLogic {
         $._verificationType.push(Time.timestamp(), settlementInitParams.verificationType);
     }
 
-    function getCurrentValSetTimestamp(
-        bytes memory hint
-    ) public view returns (uint48) {
+    function getCurrentValSetTimestamp() public view returns (uint48) {
         uint48 currentEpoch = EpochManagerLogic.getCurrentEpoch();
         uint48 currentEpochStart = EpochManagerLogic.getCurrentEpochStart();
         if (currentEpoch == 0) {
@@ -66,7 +64,8 @@ library SettlementLogic {
             isValSetHeaderCommittedAt(currentEpoch - 1)
                 && Time.timestamp() < EpochManagerLogic.getCurrentEpochStart() + commitDuration
         ) {
-            return EpochManagerLogic.getEpochStart(currentEpoch - 1, hint);
+            // is supposed to be called from off-chain only, so hint is not needed
+            return EpochManagerLogic.getEpochStart(currentEpoch - 1, new bytes(0));
         }
         if (isValSetHeaderCommittedAt(currentEpoch)) {
             return currentEpochStart;
@@ -270,9 +269,10 @@ library SettlementLogic {
         bytes memory message,
         uint8 keyTag,
         uint256 quorumThreshold,
-        bytes calldata proof
+        bytes calldata proof,
+        bytes memory hint
     ) public view returns (bool) {
-        return ISigVerifier(getSigVerifier()).verifyQuorumSig(
+        return ISigVerifier(getSigVerifierAt(getEpochStartFromValSetHeaderAt(epoch), hint)).verifyQuorumSig(
             address(this), epoch, message, keyTag, quorumThreshold, proof
         );
     }
@@ -318,7 +318,8 @@ library SettlementLogic {
     function commitValSetHeader(
         ISettlement.ValSetHeader calldata header,
         ISettlement.ExtraData[] calldata extraData,
-        bytes calldata proof
+        bytes calldata proof,
+        bytes memory hint
     ) public {
         ISettlement.ValSetPhase currentPhase = getCurrentPhase();
         if (currentPhase != ISettlement.ValSetPhase.COMMIT && currentPhase != ISettlement.ValSetPhase.PROLONG) {
@@ -345,7 +346,8 @@ library SettlementLogic {
                 ),
                 getRequiredKeyTagFromValSetHeaderAt(valSetEpoch),
                 getQuorumThresholdFromValSetHeaderAt(valSetEpoch),
-                proof
+                proof,
+                hint
             )
         ) {
             revert ISettlement.Settlement_VerificationFailed();

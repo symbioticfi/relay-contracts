@@ -5,6 +5,7 @@ import {Verifier} from "./zk/HashVerifier.sol";
 import {SigBlsBn254} from "../../libraries/sigs/SigBlsBn254.sol";
 import {BN254} from "../../libraries/utils/BN254.sol";
 import {KeyBlsBn254} from "../../libraries/keys/KeyBlsBn254.sol";
+import {ExtraDataStorageHelper} from "./libraries/ExtraDataStorageHelper.sol";
 
 import {ISigVerifier} from "../../../interfaces/base/ISigVerifier.sol";
 import {ISettlement} from "../../../interfaces/implementations/settlement/ISettlement.sol";
@@ -19,17 +20,17 @@ contract SigVerifierBlsBn254 is ISigVerifierBlsBn254 {
     using KeyBlsBn254 for BN254.G1Point;
     using SigBlsBn254 for bytes;
     using BN254 for BN254.G1Point;
+    using ExtraDataStorageHelper for uint128;
 
     /**
      * @inheritdoc ISigVerifierBlsBn254
      */
-    bytes32 public constant TOTAL_ACTIVE_VALIDATORS_KEY =
-        keccak256(abi.encode("symbiotic.SigVerifierBlsBn254.totalActiveValidators"));
+    string public constant TOTAL_ACTIVE_VALIDATORS = "totalActiveValidators";
 
     /**
      * @inheritdoc ISigVerifierBlsBn254
      */
-    string public constant KEY_TAG_EXTRA_DATA_KEY_PREFIX = "symbiotic.SigVerifierBlsBn254.keyTag.extraData.";
+    string public constant VALIDATOR_SET_HASH_MIMC = "validatorSetHashMimc";
 
     /**
      * @inheritdoc ISigVerifierBlsBn254
@@ -88,11 +89,11 @@ contract SigVerifierBlsBn254 is ISigVerifierBlsBn254 {
             commitmentPok := add(proof.offset, 320)
         }
 
+        uint128 verificationType = ISettlement(settlement).getVerificationTypeFromValSetHeaderAt(epoch);
         uint256 inputHash;
         {
-            bytes32 validatorSetHash = ISettlement(settlement).getExtraDataAt(
-                epoch, keccak256(abi.encode(string.concat(KEY_TAG_EXTRA_DATA_KEY_PREFIX, Strings.toString(keyTag))))
-            );
+            bytes32 validatorSetHash =
+                ISettlement(settlement).getExtraDataAt(epoch, verificationType.getKey(keyTag, VALIDATOR_SET_HASH_MIMC));
             BN254.G1Point memory messageG1 = BN254.hashToG1(abi.decode(message, (bytes32)));
 
             inputHash =
@@ -101,7 +102,7 @@ contract SigVerifierBlsBn254 is ISigVerifierBlsBn254 {
         }
 
         uint256 totalActiveValidators =
-            uint256(ISettlement(settlement).getExtraDataAt(epoch, TOTAL_ACTIVE_VALIDATORS_KEY));
+            uint256(ISettlement(settlement).getExtraDataAt(epoch, verificationType.getKey(TOTAL_ACTIVE_VALIDATORS)));
         try Verifier(_getVerifier(totalActiveValidators)).verifyProof(zkProof, commitments, commitmentPok, [inputHash])
         {
             return true;
