@@ -410,6 +410,12 @@ abstract contract VaultManager is OperatorManager, StakeToVotingPowerManager, IV
         return VaultManagerLogic.getOperatorStake(vault, operator);
     }
 
+    function _setSlashingWindow(
+        uint48 slashingWindow
+    ) internal virtual {
+        VaultManagerLogic.setSlashingWindow(slashingWindow);
+    }
+
     function _registerToken(
         address token
     ) internal virtual {

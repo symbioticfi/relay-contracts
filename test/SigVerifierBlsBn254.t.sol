@@ -31,6 +31,7 @@ contract SigVerifierBlsBn254Test is MasterGenesisSetup {
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
     using KeyEcdsaSecp256k1 for KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1;
     using Math for uint256;
+
     struct ZkProof {
         uint256[] input;
         bytes proof;

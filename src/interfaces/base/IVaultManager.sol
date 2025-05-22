@@ -20,6 +20,7 @@ interface IVaultManager {
     error VaultManager_SharedVaultNotActive();
     error VaultManager_OperatorVaultNotActive();
     error VaultManager_InvalidToken();
+    error VaultManager_SlashingWindowTooLarge();
 
     enum SlasherType {
         INSTANT, // Instant slasher type

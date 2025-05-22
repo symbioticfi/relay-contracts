@@ -267,10 +267,6 @@ library VaultManagerLogic {
         if (!isTokenActiveAt(IVault(vault).collateral(), timestamp, operatorVaultVotingPowerHints.isTokenActiveHint)) {
             return 0;
         }
-        if (!_validateVaultEpochDuration(vault)) {
-            // TODO: slashing window at
-            return 0;
-        }
         return stakeToVotingPowerAt(
             vault,
             getOperatorStakeAt(vault, operator, timestamp, operatorVaultVotingPowerHints.stakeHints),
@@ -286,10 +282,6 @@ library VaultManagerLogic {
         bytes memory extraData
     ) public view returns (uint256) {
         if (!isTokenActive(IVault(vault).collateral())) {
-            return 0;
-        }
-        if (!_validateVaultEpochDuration(vault)) {
-            // TODO
             return 0;
         }
         return stakeToVotingPower(operator, getOperatorStake(vault, operator), extraData);
@@ -583,6 +575,15 @@ library VaultManagerLogic {
         assembly ("memory-safe") {
             mstore(operatorVotingPowers, length)
         }
+    }
+
+    function setSlashingWindow(
+        uint48 slashingWindow
+    ) public {
+        if (slashingWindow >= getSlashingWindow()) {
+            revert IVaultManager.VaultManager_SlashingWindowTooLarge();
+        }
+        _getVaultManagerStorage()._slashingWindow = slashingWindow;
     }
 
     function registerToken(
