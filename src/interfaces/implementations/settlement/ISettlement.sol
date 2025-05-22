@@ -15,6 +15,9 @@ interface ISettlement {
     error Settlement_VerificationFailed();
     error Settlement_EpochDurationTooShort();
     error Settlement_InvalidKey();
+    error Settlement_ValSetHeaderAlreadySubmitted();
+    error Settlement_InvalidEpoch();
+    error Settlement_InvalidEpochStart();
 
     enum ValSetPhase {
         IDLE,
@@ -26,46 +29,36 @@ interface ISettlement {
     struct SettlementStorage {
         Checkpoints.Trace208 _requiredKeyTag;
         Checkpoints.Trace208 _commitDuration;
-        mapping(uint8 => Checkpoints.Trace208) _quorumThreshold;
         Checkpoints.Trace208 _sigVerifier;
-        mapping(uint48 epoch => ValSetHeaderStorage) _valSetHeader;
-    }
-
-    struct ValSetHeaderStorage {
-        uint8 version;
-        uint8 valSetKeyTag;
-        ActiveAggregatedKeysStorage activeAggregatedKeys;
-        uint256 totalActiveVotingPower;
-        bytes32 validatorsSszMRoot;
-        bytes extraData;
-    }
-
-    struct ActiveAggregatedKeysStorage {
-        uint8[] keyTags;
-        mapping(uint8 => bytes) keyByTag;
+        Checkpoints.Trace208 _verificationType;
+        mapping(uint48 epoch => ValSetHeader) _valSetHeader;
+        mapping(uint48 epoch => mapping(bytes32 key => bytes32 value)) _extraData;
     }
 
     struct SettlementInitParams {
         INetworkManager.NetworkManagerInitParams networkManagerInitParams;
         IEpochManager.EpochManagerInitParams epochManagerInitParams;
         IOzEIP712.OzEIP712InitParams ozEip712InitParams;
-        QuorumThreshold[] quorumThresholds;
         uint48 commitDuration;
         uint8 requiredKeyTag;
         address sigVerifier;
-    }
-
-    struct QuorumThreshold {
-        uint8 keyTag;
-        uint208 threshold;
+        uint128 verificationType;
     }
 
     struct ValSetHeader {
         uint8 version;
-        IBaseKeyManager.Key[] activeAggregatedKeys;
-        uint256 totalActiveVotingPower;
+        uint8 requiredKeyTag;
+        uint48 epoch;
+        uint48 epochStart;
+        uint128 verificationType;
+        uint256 quorumThreshold;
         bytes32 validatorsSszMRoot;
-        bytes extraData;
+        bytes32 previousHeaderHash;
+    }
+
+    struct ExtraData {
+        bytes32 key;
+        bytes32 value;
     }
 
     function Settlement_VERSION() external pure returns (uint64);
@@ -75,12 +68,6 @@ interface ISettlement {
     function getCurrentValSetTimestamp() external view returns (uint48);
 
     function getCurrentValSetEpoch() external view returns (uint48);
-
-    function getQuorumThresholdAt(uint8 keyTag, uint48 timestamp, bytes memory hint) external view returns (uint208);
-
-    function getQuorumThreshold(
-        uint8 keyTag
-    ) external view returns (uint208);
 
     function getCommitDurationAt(uint48 timestamp, bytes memory hint) external view returns (uint48);
 
@@ -93,6 +80,10 @@ interface ISettlement {
     function getSigVerifierAt(uint48 timestamp, bytes memory hint) external view returns (address);
 
     function getSigVerifier() external view returns (address);
+
+    function getVerificationTypeAt(uint48 timestamp, bytes memory hint) external view returns (uint128);
+
+    function getVerificationType() external view returns (uint128);
 
     function isValSetHeaderSubmittedAt(
         uint48 epoch
@@ -114,20 +105,29 @@ interface ISettlement {
 
     function getVersionFromValSetHeader() external view returns (uint8);
 
-    function getActiveAggregatedKeyFromValSetHeaderAt(
-        uint48 epoch,
-        uint8 keyTag
-    ) external view returns (bytes memory);
+    function getRequiredKeyTagFromValSetHeaderAt(
+        uint48 epoch
+    ) external view returns (uint8);
 
-    function getActiveAggregatedKeyFromValSetHeader(
-        uint8 keyTag
-    ) external view returns (bytes memory);
+    function getRequiredKeyTagFromValSetHeader() external view returns (uint8);
 
-    function getTotalActiveVotingPowerFromValSetHeaderAt(
+    function getEpochStartFromValSetHeaderAt(
+        uint48 epoch
+    ) external view returns (uint48);
+
+    function getEpochStartFromValSetHeader() external view returns (uint48);
+
+    function getVerificationTypeFromValSetHeaderAt(
+        uint48 epoch
+    ) external view returns (uint128);
+
+    function getVerificationTypeFromValSetHeader() external view returns (uint128);
+
+    function getQuorumThresholdFromValSetHeaderAt(
         uint48 epoch
     ) external view returns (uint256);
 
-    function getTotalActiveVotingPowerFromValSetHeader() external view returns (uint256);
+    function getQuorumThresholdFromValSetHeader() external view returns (uint256);
 
     function getValidatorsSszMRootFromValSetHeaderAt(
         uint48 epoch
@@ -135,21 +135,25 @@ interface ISettlement {
 
     function getValidatorsSszMRootFromValSetHeader() external view returns (bytes32);
 
-    function getExtraDataFromValSetHeaderAt(
+    function getPreviousHeaderHashFromValSetHeaderAt(
         uint48 epoch
-    ) external view returns (bytes memory);
+    ) external view returns (bytes32);
 
-    function getExtraDataFromValSetHeader() external view returns (bytes memory);
+    function getPreviousHeaderHashFromValSetHeader() external view returns (bytes32);
+
+    function getExtraDataAt(uint48 epoch, bytes32 key) external view returns (bytes32);
+
+    function getExtraData(
+        bytes32 key
+    ) external view returns (bytes32);
 
     function verifyQuorumSig(
         uint48 epoch,
         bytes memory message,
         uint8 keyTag,
-        uint208 quorumThreshold,
+        uint256 quorumThreshold,
         bytes calldata proof
     ) external view returns (bool);
-
-    function setQuorumThreshold(uint8 keyTag, uint208 threshold) external;
 
     function setCommitDuration(
         uint48 commitDuration
@@ -159,13 +163,13 @@ interface ISettlement {
         uint8 requiredKeyTag
     ) external;
 
-    function setSigVerifier(
-        address sigVerifier
-    ) external;
+    function setSigVerifier(address sigVerifier, uint128 verificationType) external;
 
-    function setGenesis(
-        ValSetHeader memory valSetHeader
-    ) external;
+    function setGenesis(ValSetHeader calldata valSetHeader, ExtraData[] calldata extraData) external;
 
-    function commitValSetHeader(ValSetHeader memory header, bytes calldata proof) external;
+    function commitValSetHeader(
+        ValSetHeader calldata header,
+        ExtraData[] calldata extraData,
+        bytes calldata proof
+    ) external;
 }

@@ -17,7 +17,7 @@ import {MasterGenesisSetup} from "./MasterGenesisSetup.sol";
 import {console2} from "forge-std/console2.sol";
 
 import {Verifier} from "../src/contracts/implementations/sig-verifiers/zk/HashVerifier.sol";
-import {SigVerifier} from "../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254.sol";
+import {SigVerifierBlsBn254} from "../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254.sol";
 
 import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
@@ -30,7 +30,7 @@ contract SettlementTest is MasterGenesisSetup {
     using KeyEcdsaSecp256k1 for KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1;
 
     bytes32 private constant VALSET_HEADER_COMMIT_TYPEHASH =
-        keccak256("ValSetHeaderCommit(bytes32 subnetwork,uint48 epoch,bytes32 headerHash)");
+        keccak256("ValSetHeaderCommit(bytes32 subnetwork,uint48 epoch,bytes32 headerHash,bytes32 extraDataHash)");
 
     struct ZkProof {
         uint256[] input;
@@ -48,21 +48,11 @@ contract SettlementTest is MasterGenesisSetup {
     function test_commitValSetHeader() public {
         vm.warp(masterSetupParams.master.getNextEpochStart());
 
-        ISettlement.ValSetHeader memory valSetHeader = loadGenesis();
+        (ISettlement.ValSetHeader memory valSetHeader, ISettlement.ExtraData[] memory extraData) = loadGenesis();
 
-        console2.log("version");
-        console2.log(valSetHeader.version);
-        console2.log("extraData");
-        console2.logBytes(valSetHeader.extraData);
-        console2.log("validatorsSszMRoot");
-        console2.logBytes32(valSetHeader.validatorsSszMRoot);
-        console2.log("totalActiveVotingPower");
-        console2.log(valSetHeader.totalActiveVotingPower);
-        console2.log("activeAggregatedKeys");
-        for (uint256 i = 0; i < valSetHeader.activeAggregatedKeys.length; i++) {
-            console2.log(valSetHeader.activeAggregatedKeys[i].tag);
-            console2.logBytes(valSetHeader.activeAggregatedKeys[i].payload);
-        }
+        valSetHeader.epoch = 1;
+        valSetHeader.epochStart = masterSetupParams.master.getCurrentEpochStart();
+        valSetHeader.previousHeaderHash = keccak256(abi.encode(masterSetupParams.master.getValSetHeaderAt(0)));
 
         bytes32 messageHash = masterSetupParams.master.hashTypedDataV4CrossChain(
             keccak256(
@@ -70,19 +60,11 @@ contract SettlementTest is MasterGenesisSetup {
                     VALSET_HEADER_COMMIT_TYPEHASH,
                     masterSetupParams.master.SUBNETWORK(),
                     masterSetupParams.master.getCurrentEpoch(),
-                    keccak256(abi.encode(valSetHeader))
+                    keccak256(abi.encode(valSetHeader)),
+                    keccak256(abi.encode(extraData))
                 )
             )
         );
-
-        console2.log("VALSET_HEADER_COMMIT_TYPEHASH");
-        console2.logBytes32(VALSET_HEADER_COMMIT_TYPEHASH);
-        console2.log("SUBNETWORK");
-        console2.logBytes32(masterSetupParams.master.SUBNETWORK());
-        console2.log("getCurrentEpoch");
-        console2.log(masterSetupParams.master.getCurrentEpoch());
-        console2.log("keccak256(abi.encode(valSetHeader))");
-        console2.logBytes32(keccak256(abi.encode(valSetHeader)));
 
         console2.log("messageHash");
         console2.logBytes32(messageHash);
@@ -118,31 +100,16 @@ contract SettlementTest is MasterGenesisSetup {
         }
 
         bytes memory zkProof =
-            hex"19fabce3cef97ac9c1320c9bf28de56cb0a481295832a256fd1dd0de438f29280f35ba4c2aeab9e51ef78551982927e22d13278c16130347ec90d6a166e47b50209e1c598839cf90dc44f91747f39f0fac00638ecf2fcd5d65d0825af4b626c610c59d2f37b1ce8f3c3e0745044600a9c944980aefd388801acc98692c37546d025022e109c7ae89ad772d29d50b4b7478c20997f16326b8791e0e9b2229335a25f497a667bd061f7557911e4155b7701e90c34c1055e422905fb35795b61adf2e230472f8a37b6e2f7ba4f8f760c402dd1dc7cac68041170ad237216d61ad5b2edf856d681b54dc204349eb4502485a8eaafde39affdbb09e6f329c75f3fc51000000012afeada940627f33301164c866efc163380e8d5d147be3763b3af3a94437709127d3577652990dc3dffd80b01184ac7755c6f9d8d4338ff4924febcfc4d9f49d0aaca03af9fa7a597cbaee4d70034d9abc2564e42e8fae4e4068c7a2580136eb2957c31bf50366ef10550485d9c6994b1ebc2d44886e4f31fc693659df95de6a";
+            hex"1bbfff6bd2dab940e651197642237ce9b2c5d3c4ec761c1498c636c57bb95bc70f49530a1198c69455cd2610373c49520fa928ec515be0fa60fc54ac2bd85de2213a9cc1dbc30d714b201e430181009865153b9890fef27bfaefbeeba0ec1f681bceebfa810aeb7340150fa1add34f4a95e10bfff22738c6a2893f3f868b7e9d10700bc426b575300ec36536e940d317113630f335f48c2fb5e9bec2141b4f4618cd4bc1c884af0573e7bcdab39ff9867f01a1d4514c26caba520186ae70a84017e330c31720ed1d205fef008c4d04e37b00866eac3070740c71d6074f0b0f8f03bb5a30835dc8bf3d4a89200255dc5f6b9c0330dddb54765ba271d8868247ee000000012cfd0371e370f57f6c816e941bb100f74b14e3821976ed3df69235f29df30ead059287c9ab778cbe120f4caafcbb7debaad03b860265043362f45bd22904a3c8076235b408d60d192e44b8f8d7295a0ea94202c3185431ddef1ad6c66325ece40c1742dd5278cddfd2500e3873e800f12250358b96939d11256375e3082030d3";
 
         bytes memory proof_ = Bytes.slice(zkProof, 0, 256);
-        console2.log("proof_");
-        console2.logBytes(proof_);
         bytes memory commitments = Bytes.slice(zkProof, 260, 324);
-        console2.log("commitments");
-        console2.logBytes(commitments);
         bytes memory commitmentPok = Bytes.slice(zkProof, 324, 388);
-        console2.log("commitmentPok");
-        console2.logBytes(commitmentPok);
 
-        console2.log("aggSigG1");
-        console2.logBytes(abi.encode(aggSigG1));
-        console2.log("aggKeyG2");
-        console2.logBytes(abi.encode(aggKeyG2));
+        uint256 signersVotingPower = 30_000_000_000_000;
 
-        uint256 nonSignersVotingPower = 0;
+        bytes memory fullProof = abi.encodePacked(proof_, commitments, commitmentPok, signersVotingPower);
 
-        bytes memory fullProof = abi.encodePacked(proof_, commitments, commitmentPok, nonSignersVotingPower);
-        console2.log("fullProof");
-        console2.logBytes(fullProof);
-
-        console2.log("commitValSetHeader");
-        console2.logBytes(abi.encodeWithSelector(ISettlement.commitValSetHeader.selector, valSetHeader, fullProof));
-        masterSetupParams.master.commitValSetHeader(valSetHeader, fullProof);
+        masterSetupParams.master.commitValSetHeader(valSetHeader, extraData, fullProof);
     }
 }

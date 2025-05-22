@@ -6,16 +6,24 @@ import {IBaseKeyManager} from "../src/interfaces/base/IBaseKeyManager.sol";
 import "./MasterSetup.sol";
 
 contract MasterGenesisSetup is MasterSetup {
-    struct KeyStruct {
-        bytes payload;
-        uint8 tag;
+    struct Genesis {
+        ExtraDataStruct[] extraData;
+        ValSetHeaderStruct header;
+    }
+
+    struct ExtraDataStruct {
+        bytes32 key;
+        bytes32 value;
     }
 
     struct ValSetHeaderStruct {
-        KeyStruct[] activeAggregatedKeys;
-        bytes32 extraData;
-        uint256 totalActiveVotingPower;
+        uint48 epoch;
+        uint48 epochStart;
+        bytes32 previousHeaderHash;
+        uint256 quorumThreshold;
+        uint8 requiredKeyTag;
         bytes32 validatorsSszMRoot;
+        uint128 verificationType;
         uint8 version;
     }
 
@@ -25,36 +33,38 @@ contract MasterGenesisSetup is MasterSetup {
 
     function setGenesis() public {
         vm.startPrank(vars.deployer.addr);
-        ISettlement.ValSetHeader memory valSetHeader = loadGenesis();
-        masterSetupParams.master.setGenesis(valSetHeader);
+        (ISettlement.ValSetHeader memory valSetHeader, ISettlement.ExtraData[] memory extraData) = loadGenesis();
+        masterSetupParams.master.setGenesis(valSetHeader, extraData);
         vm.stopPrank();
     }
 
-    function loadGenesis() public returns (ISettlement.ValSetHeader memory valSetHeader) {
-        ValSetHeaderStruct memory valSetHeaderStruct;
+    function loadGenesis()
+        public
+        returns (ISettlement.ValSetHeader memory valSetHeader, ISettlement.ExtraData[] memory extraData)
+    {
+        Genesis memory genesis;
         {
             string memory root = vm.projectRoot();
             string memory path = string.concat(root, "/test/data/genesis_header.json");
             string memory json = vm.readFile(path);
             bytes memory data = vm.parseJson(json);
-            valSetHeaderStruct = abi.decode(data, (ValSetHeaderStruct));
+            genesis = abi.decode(data, (Genesis));
         }
 
-        IBaseKeyManager.Key[] memory activeAggregatedKeys =
-            new IBaseKeyManager.Key[](valSetHeaderStruct.activeAggregatedKeys.length);
-        for (uint256 i; i < valSetHeaderStruct.activeAggregatedKeys.length; ++i) {
-            activeAggregatedKeys[i] = IBaseKeyManager.Key({
-                payload: valSetHeaderStruct.activeAggregatedKeys[i].payload,
-                tag: valSetHeaderStruct.activeAggregatedKeys[i].tag
-            });
-        }
-
-        return ISettlement.ValSetHeader({
-            version: valSetHeaderStruct.version,
-            activeAggregatedKeys: activeAggregatedKeys,
-            totalActiveVotingPower: valSetHeaderStruct.totalActiveVotingPower,
-            validatorsSszMRoot: valSetHeaderStruct.validatorsSszMRoot,
-            extraData: abi.encode(valSetHeaderStruct.extraData)
+        valSetHeader = ISettlement.ValSetHeader({
+            version: genesis.header.version,
+            requiredKeyTag: genesis.header.requiredKeyTag,
+            epoch: genesis.header.epoch,
+            epochStart: genesis.header.epochStart,
+            verificationType: genesis.header.verificationType,
+            quorumThreshold: genesis.header.quorumThreshold,
+            validatorsSszMRoot: genesis.header.validatorsSszMRoot,
+            previousHeaderHash: genesis.header.previousHeaderHash
         });
+
+        extraData = new ISettlement.ExtraData[](genesis.extraData.length);
+        for (uint256 i; i < genesis.extraData.length; ++i) {
+            extraData[i] = ISettlement.ExtraData({key: genesis.extraData[i].key, value: genesis.extraData[i].value});
+        }
     }
 }

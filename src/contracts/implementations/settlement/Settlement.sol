@@ -55,26 +55,6 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     /**
      * @inheritdoc ISettlement
      */
-    function getQuorumThresholdAt(
-        uint8 keyTag,
-        uint48 epoch,
-        bytes memory hint
-    ) public view virtual returns (uint208) {
-        return SettlementLogic.getQuorumThresholdAt(keyTag, epoch, hint);
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
-    function getQuorumThreshold(
-        uint8 keyTag
-    ) public view virtual returns (uint208) {
-        return SettlementLogic.getQuorumThreshold(keyTag);
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
     function getCommitDurationAt(uint48 epoch, bytes memory hint) public view virtual returns (uint48) {
         return SettlementLogic.getCommitDurationAt(epoch, hint);
     }
@@ -112,6 +92,20 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
      */
     function getSigVerifier() public view virtual returns (address) {
         return SettlementLogic.getSigVerifier();
+    }
+
+    /**
+     * @inheritdoc ISettlement
+     */
+    function getVerificationType() public view virtual returns (uint128) {
+        return SettlementLogic.getVerificationType();
+    }
+
+    /**
+     * @inheritdoc ISettlement
+     */
+    function getVerificationTypeAt(uint48 epoch, bytes memory hint) public view virtual returns (uint128) {
+        return SettlementLogic.getVerificationTypeAt(epoch, hint);
     }
 
     /**
@@ -172,36 +166,65 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     /**
      * @inheritdoc ISettlement
      */
-    function getActiveAggregatedKeyFromValSetHeaderAt(
-        uint48 epoch,
-        uint8 keyTag
-    ) public view virtual returns (bytes memory) {
-        return SettlementLogic.getActiveAggregatedKeyFromValSetHeaderAt(epoch, keyTag);
+    function getRequiredKeyTagFromValSetHeaderAt(
+        uint48 epoch
+    ) public view virtual returns (uint8) {
+        return SettlementLogic.getRequiredKeyTagFromValSetHeaderAt(epoch);
     }
 
     /**
      * @inheritdoc ISettlement
      */
-    function getActiveAggregatedKeyFromValSetHeader(
-        uint8 keyTag
-    ) public view virtual returns (bytes memory) {
-        return SettlementLogic.getActiveAggregatedKeyFromValSetHeader(keyTag);
+    function getRequiredKeyTagFromValSetHeader() public view virtual returns (uint8) {
+        return SettlementLogic.getRequiredKeyTagFromValSetHeader();
     }
 
     /**
      * @inheritdoc ISettlement
      */
-    function getTotalActiveVotingPowerFromValSetHeaderAt(
+    function getEpochStartFromValSetHeaderAt(
+        uint48 epoch
+    ) public view virtual returns (uint48) {
+        return SettlementLogic.getEpochStartFromValSetHeaderAt(epoch);
+    }
+
+    /**
+     * @inheritdoc ISettlement
+     */
+    function getEpochStartFromValSetHeader() public view virtual returns (uint48) {
+        return SettlementLogic.getEpochStartFromValSetHeader();
+    }
+
+    /**
+     * @inheritdoc ISettlement
+     */
+    function getVerificationTypeFromValSetHeaderAt(
+        uint48 epoch
+    ) public view virtual returns (uint128) {
+        return SettlementLogic.getVerificationTypeFromValSetHeaderAt(epoch);
+    }
+
+    /**
+     * @inheritdoc ISettlement
+     */
+    function getVerificationTypeFromValSetHeader() public view virtual returns (uint128) {
+        return SettlementLogic.getVerificationTypeFromValSetHeader();
+    }
+
+    /**
+     * @inheritdoc ISettlement
+     */
+    function getQuorumThresholdFromValSetHeaderAt(
         uint48 epoch
     ) public view virtual returns (uint256) {
-        return SettlementLogic.getTotalActiveVotingPowerFromValSetHeaderAt(epoch);
+        return SettlementLogic.getQuorumThresholdFromValSetHeaderAt(epoch);
     }
 
     /**
      * @inheritdoc ISettlement
      */
-    function getTotalActiveVotingPowerFromValSetHeader() public view virtual returns (uint256) {
-        return SettlementLogic.getTotalActiveVotingPowerFromValSetHeader();
+    function getQuorumThresholdFromValSetHeader() public view virtual returns (uint256) {
+        return SettlementLogic.getQuorumThresholdFromValSetHeader();
     }
 
     /**
@@ -223,17 +246,33 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     /**
      * @inheritdoc ISettlement
      */
-    function getExtraDataFromValSetHeaderAt(
+    function getPreviousHeaderHashFromValSetHeaderAt(
         uint48 epoch
-    ) public view virtual returns (bytes memory) {
-        return SettlementLogic.getExtraDataFromValSetHeaderAt(epoch);
+    ) public view virtual returns (bytes32) {
+        return SettlementLogic.getPreviousHeaderHashFromValSetHeaderAt(epoch);
     }
 
     /**
      * @inheritdoc ISettlement
      */
-    function getExtraDataFromValSetHeader() public view virtual returns (bytes memory) {
-        return SettlementLogic.getExtraDataFromValSetHeader();
+    function getPreviousHeaderHashFromValSetHeader() public view virtual returns (bytes32) {
+        return SettlementLogic.getPreviousHeaderHashFromValSetHeader();
+    }
+
+    /**
+     * @inheritdoc ISettlement
+     */
+    function getExtraDataAt(uint48 epoch, bytes32 key) public view virtual returns (bytes32) {
+        return SettlementLogic.getExtraDataAt(epoch, key);
+    }
+
+    /**
+     * @inheritdoc ISettlement
+     */
+    function getExtraData(
+        bytes32 key
+    ) public view virtual returns (bytes32) {
+        return SettlementLogic.getExtraData(key);
     }
 
     /**
@@ -243,7 +282,7 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
         uint48 epoch,
         bytes memory message,
         uint8 keyTag,
-        uint208 quorumThreshold,
+        uint256 quorumThreshold,
         bytes calldata proof
     ) public view virtual returns (bool) {
         return SettlementLogic.verifyQuorumSig(epoch, message, keyTag, quorumThreshold, proof);
@@ -256,13 +295,6 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
         uint48 epochDuration
     ) public virtual override {
         return SettlementLogic.setEpochDuration(epochDuration);
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
-    function setQuorumThreshold(uint8 keyTag, uint208 quorumThreshold) public virtual checkPermission {
-        SettlementLogic.setQuorumThreshold(keyTag, quorumThreshold);
     }
 
     /**
@@ -286,25 +318,28 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     /**
      * @inheritdoc ISettlement
      */
-    function setSigVerifier(
-        address sigVerifier
-    ) public virtual checkPermission {
-        SettlementLogic.setSigVerifier(sigVerifier);
+    function setSigVerifier(address sigVerifier, uint128 verificationType) public virtual checkPermission {
+        SettlementLogic.setSigVerifier(sigVerifier, verificationType);
     }
 
     /**
      * @inheritdoc ISettlement
      */
     function setGenesis(
-        ValSetHeader memory valSetHeader
+        ValSetHeader calldata valSetHeader,
+        ExtraData[] calldata extraData
     ) public virtual checkPermission {
-        SettlementLogic.setGenesis(valSetHeader);
+        SettlementLogic.setGenesis(valSetHeader, extraData);
     }
 
     /**
      * @inheritdoc ISettlement
      */
-    function commitValSetHeader(ValSetHeader memory header, bytes calldata proof) public virtual {
-        SettlementLogic.commitValSetHeader(header, proof);
+    function commitValSetHeader(
+        ValSetHeader calldata header,
+        ExtraData[] calldata extraData,
+        bytes calldata proof
+    ) public virtual {
+        SettlementLogic.commitValSetHeader(header, extraData, proof);
     }
 }

@@ -12,7 +12,7 @@ contract SigVerifierMock is ISigVerifier {
         uint48, /* epoch */
         bytes memory, /* message */
         uint8, /* keyTag */
-        uint208, /* quorumThreshold */
+        uint256, /* quorumThreshold */
         bytes calldata /* proof */
     ) external view returns (bool) {
         return true;

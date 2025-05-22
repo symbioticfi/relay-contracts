@@ -23,7 +23,7 @@ import {IOzEIP712} from "../src/interfaces/base/common/IOzEIP712.sol";
 import {IVaultManager} from "../src/interfaces/base/IVaultManager.sol";
 
 import {Verifier} from "../src/contracts/implementations/sig-verifiers/zk/HashVerifier.sol";
-import {SigVerifier} from "../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254.sol";
+import {SigVerifierBlsBn254} from "../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254.sol";
 
 import "./InitSetup.sol";
 
@@ -161,11 +161,6 @@ contract MasterSetup is InitSetup {
         vm.setNonce(vars.deployer.addr, 68);
         masterSetupParams.master = new Master();
         {
-            ISettlement.QuorumThreshold[] memory quorumThresholds = new ISettlement.QuorumThreshold[](1);
-            quorumThresholds[0] = ISettlement.QuorumThreshold({
-                keyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
-                threshold: uint208(Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil))
-            });
             uint8[] memory requiredKeyTags = new uint8[](2);
             requiredKeyTags[0] = KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15);
             requiredKeyTags[1] = KeyManagerLogic.KEY_TYPE_ECDSA_SECP256K1.keyTag(0);
@@ -191,6 +186,11 @@ contract MasterSetup is InitSetup {
             //     addr: address(secondarySetupParams.replica),
             //     chainId: uint64(initSetupParams.secondaryChain.chainId)
             // });
+            address zkVerifier = address(new Verifier());
+            address[] memory verifiers = new address[](1);
+            verifiers[0] = zkVerifier;
+            uint256[] memory maxValidators = new uint256[](1);
+            maxValidators[0] = 10;
             masterSetupParams.master.initialize(
                 ISettlement.SettlementInitParams({
                     networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
@@ -202,10 +202,10 @@ contract MasterSetup is InitSetup {
                         epochDurationTimestamp: initSetupParams.zeroTimestamp
                     }),
                     ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
-                    quorumThresholds: quorumThresholds,
                     commitDuration: initSetupParams.commitDuration,
                     requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
-                    sigVerifier: address(new SigVerifier(address(new Verifier())))
+                    sigVerifier: address(new SigVerifierBlsBn254(verifiers, maxValidators)),
+                    verificationType: 0
                 }),
                 IValSetConfigProvider.ValSetConfigProviderInitParams({
                     maxVotingPower: 1e16,

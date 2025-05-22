@@ -34,7 +34,7 @@ contract MasterCommitScript is MasterGenesisSetupScript {
         (, Vars memory vars) = loadInitSetupParamsAndVars();
         MasterSetupParams memory masterSetupParams = loadMasterSetupParams();
 
-        ISettlement.ValSetHeader memory valSetHeader = loadGenesis();
+        (ISettlement.ValSetHeader memory valSetHeader, ISettlement.ExtraData[] memory extraData) = loadGenesis();
 
         bytes32 messageHash = masterSetupParams.master.hashTypedDataV4CrossChain(
             keccak256(
@@ -42,7 +42,8 @@ contract MasterCommitScript is MasterGenesisSetupScript {
                     VALSET_HEADER_COMMIT_TYPEHASH,
                     masterSetupParams.master.SUBNETWORK(),
                     masterSetupParams.master.getCurrentEpoch(),
-                    keccak256(abi.encode(valSetHeader))
+                    keccak256(abi.encode(valSetHeader)),
+                    keccak256(abi.encode(extraData))
                 )
             )
         );
@@ -102,7 +103,7 @@ contract MasterCommitScript is MasterGenesisSetupScript {
         console2.log("commitValSetHeader");
 
         vm.startBroadcast(vars.deployer.privateKey);
-        masterSetupParams.master.commitValSetHeader(valSetHeader, fullProof);
+        masterSetupParams.master.commitValSetHeader(valSetHeader, extraData, fullProof);
         vm.stopBroadcast();
     }
 

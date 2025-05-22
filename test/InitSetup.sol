@@ -14,6 +14,8 @@ import {SelfRegisterVotingPowerProvider} from
     "../src/contracts/implementations/voting-power-providers/SelfRegisterVotingPowerProvider.sol";
 
 contract InitSetup is SymbioticCoreInit {
+    using Math for uint256;
+
     uint256 public constant SYMBIOTIC_CORE_NUMBER_OF_VAULTS = 3;
     uint256 public constant SYMBIOTIC_CORE_NUMBER_OF_OPERATORS = 3;
     uint256 public constant SYMBIOTIC_CORE_NUMBER_OF_STAKERS = 1;
@@ -189,6 +191,13 @@ contract InitSetup is SymbioticCoreInit {
         initSetupParams.slashingWindow = SLASHING_WINDOW;
         initSetupParams.subnetworkID = IDENTIFIER;
         initSetupParams.zeroTimestamp = zeroTimestamp;
+        // console2.log("initSetupParams", initSetupParams.zeroTimestamp);
+
+        // console2.log(uint256(2).mulDiv(1e18, 3, Math.Rounding.Ceil));
+        // console2.log(uint256(666666666666666667).mulDiv(30000000000000, 1e18) + 1);
+
+        // console2.logBytes32(keccak256(abi.encode("symbiotic.SigVerifierBlsBn254.totalActiveValidators")));
+        // console2.logBytes32(keccak256(abi.encode("symbiotic.SigVerifierBlsBn254.keyTag.extraData.15")));
     }
 
     // function loadInitSetupParamsAndVars() public {

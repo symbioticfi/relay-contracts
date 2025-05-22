@@ -21,7 +21,7 @@ library SettlementLogic {
     uint8 public constant VALIDATOR_SET_VERSION = 1;
 
     bytes32 private constant VALSET_HEADER_COMMIT_TYPEHASH =
-        keccak256("ValSetHeaderCommit(bytes32 subnetwork,uint48 epoch,bytes32 headerHash)");
+        keccak256("ValSetHeaderCommit(bytes32 subnetwork,uint48 epoch,bytes32 headerHash,bytes32 extraDataHash)");
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.Settlement")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant SettlementStorageLocation =
@@ -46,14 +46,10 @@ library SettlementLogic {
         if (settlementInitParams.epochManagerInitParams.epochDuration <= settlementInitParams.commitDuration) {
             revert ISettlement.Settlement_EpochDurationTooShort();
         }
-        for (uint256 i; i < settlementInitParams.quorumThresholds.length; ++i) {
-            $._quorumThreshold[settlementInitParams.quorumThresholds[i].keyTag].push(
-                Time.timestamp(), settlementInitParams.quorumThresholds[i].threshold
-            );
-        }
         $._commitDuration.push(Time.timestamp(), settlementInitParams.commitDuration);
         $._requiredKeyTag.push(Time.timestamp(), settlementInitParams.requiredKeyTag);
         $._sigVerifier.push(Time.timestamp(), uint160(settlementInitParams.sigVerifier));
+        $._verificationType.push(Time.timestamp(), settlementInitParams.verificationType);
     }
 
     function getCurrentValSetTimestamp() public view returns (uint48) {
@@ -71,16 +67,6 @@ library SettlementLogic {
             return currentEpoch;
         }
         return currentEpoch - 1;
-    }
-
-    function getQuorumThresholdAt(uint8 keyTag, uint48 epoch, bytes memory hint) public view returns (uint208) {
-        return _getSettlementStorage()._quorumThreshold[keyTag].upperLookupRecent(epoch, hint);
-    }
-
-    function getQuorumThreshold(
-        uint8 keyTag
-    ) public view returns (uint208) {
-        return EpochManagerLogic.getCurrentValue(_getSettlementStorage()._quorumThreshold[keyTag], Time.timestamp());
     }
 
     function getCommitDurationAt(uint48 epoch, bytes memory hint) public view returns (uint48) {
@@ -106,6 +92,14 @@ library SettlementLogic {
     function getSigVerifier() public view returns (address) {
         return
             address(uint160(EpochManagerLogic.getCurrentValue(_getSettlementStorage()._sigVerifier, Time.timestamp())));
+    }
+
+    function getVerificationTypeAt(uint48 epoch, bytes memory hint) public view returns (uint128) {
+        return uint128(_getSettlementStorage()._verificationType.upperLookupRecent(epoch, hint));
+    }
+
+    function getVerificationType() public view returns (uint128) {
+        return uint128(EpochManagerLogic.getCurrentValue(_getSettlementStorage()._verificationType, Time.timestamp()));
     }
 
     function isValSetHeaderSubmittedAt(
@@ -136,25 +130,7 @@ library SettlementLogic {
     function getValSetHeaderAt(
         uint48 epoch
     ) public view returns (ISettlement.ValSetHeader memory) {
-        ISettlement.SettlementStorage storage $ = _getSettlementStorage();
-
-        ISettlement.ValSetHeaderStorage storage headerStorage = $._valSetHeader[epoch];
-
-        IBaseKeyManager.Key[] memory activeAggregatedKeys =
-            new IBaseKeyManager.Key[](headerStorage.activeAggregatedKeys.keyTags.length);
-        for (uint256 i; i < headerStorage.activeAggregatedKeys.keyTags.length; ++i) {
-            activeAggregatedKeys[i] = IBaseKeyManager.Key({
-                tag: headerStorage.activeAggregatedKeys.keyTags[i],
-                payload: headerStorage.activeAggregatedKeys.keyByTag[headerStorage.activeAggregatedKeys.keyTags[i]]
-            });
-        }
-        return ISettlement.ValSetHeader({
-            version: headerStorage.version,
-            activeAggregatedKeys: activeAggregatedKeys,
-            totalActiveVotingPower: headerStorage.totalActiveVotingPower,
-            validatorsSszMRoot: headerStorage.validatorsSszMRoot,
-            extraData: headerStorage.extraData
-        });
+        return _getSettlementStorage()._valSetHeader[epoch];
     }
 
     function getValSetHeader() public view returns (ISettlement.ValSetHeader memory header) {
@@ -171,24 +147,44 @@ library SettlementLogic {
         return getVersionFromValSetHeaderAt(getCurrentValSetEpoch());
     }
 
-    function getActiveAggregatedKeyFromValSetHeaderAt(uint48 epoch, uint8 keyTag) public view returns (bytes memory) {
-        return _getSettlementStorage()._valSetHeader[epoch].activeAggregatedKeys.keyByTag[keyTag];
+    function getRequiredKeyTagFromValSetHeaderAt(
+        uint48 epoch
+    ) public view returns (uint8) {
+        return _getSettlementStorage()._valSetHeader[epoch].requiredKeyTag;
     }
 
-    function getActiveAggregatedKeyFromValSetHeader(
-        uint8 keyTag
-    ) public view returns (bytes memory) {
-        return getActiveAggregatedKeyFromValSetHeaderAt(getCurrentValSetEpoch(), keyTag);
+    function getRequiredKeyTagFromValSetHeader() public view returns (uint8) {
+        return getRequiredKeyTagFromValSetHeaderAt(getCurrentValSetEpoch());
     }
 
-    function getTotalActiveVotingPowerFromValSetHeaderAt(
+    function getEpochStartFromValSetHeaderAt(
+        uint48 epoch
+    ) public view returns (uint48) {
+        return _getSettlementStorage()._valSetHeader[epoch].epochStart;
+    }
+
+    function getEpochStartFromValSetHeader() public view returns (uint48) {
+        return getEpochStartFromValSetHeaderAt(getCurrentValSetEpoch());
+    }
+
+    function getVerificationTypeFromValSetHeaderAt(
+        uint48 epoch
+    ) public view returns (uint128) {
+        return _getSettlementStorage()._valSetHeader[epoch].verificationType;
+    }
+
+    function getVerificationTypeFromValSetHeader() public view returns (uint128) {
+        return getVerificationTypeFromValSetHeaderAt(getCurrentValSetEpoch());
+    }
+
+    function getQuorumThresholdFromValSetHeaderAt(
         uint48 epoch
     ) public view returns (uint256) {
-        return _getSettlementStorage()._valSetHeader[epoch].totalActiveVotingPower;
+        return _getSettlementStorage()._valSetHeader[epoch].quorumThreshold;
     }
 
-    function getTotalActiveVotingPowerFromValSetHeader() public view returns (uint256) {
-        return getTotalActiveVotingPowerFromValSetHeaderAt(getCurrentValSetEpoch());
+    function getQuorumThresholdFromValSetHeader() public view returns (uint256) {
+        return getQuorumThresholdFromValSetHeaderAt(getCurrentValSetEpoch());
     }
 
     function getValidatorsSszMRootFromValSetHeaderAt(
@@ -201,21 +197,31 @@ library SettlementLogic {
         return getValidatorsSszMRootFromValSetHeaderAt(getCurrentValSetEpoch());
     }
 
-    function getExtraDataFromValSetHeaderAt(
+    function getPreviousHeaderHashFromValSetHeaderAt(
         uint48 epoch
-    ) public view returns (bytes memory) {
-        return _getSettlementStorage()._valSetHeader[epoch].extraData;
+    ) public view returns (bytes32) {
+        return _getSettlementStorage()._valSetHeader[epoch].previousHeaderHash;
     }
 
-    function getExtraDataFromValSetHeader() public view returns (bytes memory) {
-        return getExtraDataFromValSetHeaderAt(getCurrentValSetEpoch());
+    function getPreviousHeaderHashFromValSetHeader() public view returns (bytes32) {
+        return getPreviousHeaderHashFromValSetHeaderAt(getCurrentValSetEpoch());
+    }
+
+    function getExtraDataAt(uint48 epoch, bytes32 key) public view returns (bytes32) {
+        return _getSettlementStorage()._extraData[epoch][key];
+    }
+
+    function getExtraData(
+        bytes32 key
+    ) public view returns (bytes32) {
+        return getExtraDataAt(getCurrentValSetEpoch(), key);
     }
 
     function verifyQuorumSig(
         uint48 epoch,
         bytes memory message,
         uint8 keyTag,
-        uint208 quorumThreshold,
+        uint256 quorumThreshold,
         bytes calldata proof
     ) public view returns (bool) {
         return ISigVerifier(getSigVerifier()).verifyQuorumSig(
@@ -232,10 +238,6 @@ library SettlementLogic {
         EpochManagerLogic.setEpochDuration(epochDuration);
     }
 
-    function setQuorumThreshold(uint8 keyTag, uint208 quorumThreshold) public {
-        _getSettlementStorage()._quorumThreshold[keyTag].push(EpochManagerLogic.getNextEpochStart(), quorumThreshold);
-    }
-
     function setCommitDuration(
         uint48 commitDuration
     ) public {
@@ -248,30 +250,35 @@ library SettlementLogic {
         _getSettlementStorage()._requiredKeyTag.push(EpochManagerLogic.getNextEpochStart(), requiredKeyTag);
     }
 
-    function setSigVerifier(
-        address sigVerifier
-    ) public {
-        _getSettlementStorage()._sigVerifier.push(EpochManagerLogic.getNextEpochStart(), uint160(sigVerifier));
+    function setSigVerifier(address sigVerifier, uint128 verificationType) public {
+        uint48 nextEpochStart = EpochManagerLogic.getNextEpochStart();
+        _getSettlementStorage()._sigVerifier.push(nextEpochStart, uint160(sigVerifier));
+        _getSettlementStorage()._verificationType.push(nextEpochStart, verificationType);
     }
 
     function setGenesis(
-        ISettlement.ValSetHeader memory valSetHeader
+        ISettlement.ValSetHeader calldata valSetHeader,
+        ISettlement.ExtraData[] calldata extraData
     ) public {
         if (getCurrentPhase() != ISettlement.ValSetPhase.FAIL) {
             revert ISettlement.Settlement_InvalidPhase();
         }
 
-        setValSetHeader(valSetHeader);
+        setValSetHeader(valSetHeader, extraData);
     }
 
-    function commitValSetHeader(ISettlement.ValSetHeader memory header, bytes calldata proof) public {
+    function commitValSetHeader(
+        ISettlement.ValSetHeader calldata header,
+        ISettlement.ExtraData[] calldata extraData,
+        bytes calldata proof
+    ) public {
         if (getCurrentPhase() != ISettlement.ValSetPhase.COMMIT) {
             revert ISettlement.Settlement_InvalidPhase();
         }
-        uint8 requiredKeyTag = getRequiredKeyTag();
+        uint48 valSetEpoch = getCurrentValSetEpoch();
         if (
             !verifyQuorumSig(
-                getCurrentValSetEpoch(),
+                valSetEpoch,
                 abi.encode(
                     OzEIP712Logic.hashTypedDataV4CrossChain(
                         keccak256(
@@ -279,57 +286,61 @@ library SettlementLogic {
                                 VALSET_HEADER_COMMIT_TYPEHASH,
                                 NetworkManagerLogic.SUBNETWORK(),
                                 EpochManagerLogic.getCurrentEpoch(),
-                                keccak256(abi.encode(header))
+                                keccak256(abi.encode(header)),
+                                keccak256(abi.encode(extraData))
                             )
                         )
                     )
                 ),
-                requiredKeyTag,
-                getQuorumThreshold(requiredKeyTag),
+                getRequiredKeyTagFromValSetHeaderAt(valSetEpoch),
+                getQuorumThresholdFromValSetHeaderAt(valSetEpoch),
                 proof
             )
         ) {
             revert ISettlement.Settlement_VerificationFailed();
         }
 
-        setValSetHeader(header);
+        setValSetHeader(header, extraData);
     }
 
     function setValSetHeader(
-        ISettlement.ValSetHeader memory header
+        ISettlement.ValSetHeader calldata header,
+        ISettlement.ExtraData[] calldata extraData
     ) public {
         if (header.version != VALIDATOR_SET_VERSION) {
             revert ISettlement.Settlement_InvalidVersion();
         }
 
+        if (header.epoch != EpochManagerLogic.getCurrentEpoch()) {
+            revert ISettlement.Settlement_InvalidEpoch();
+        }
+
+        if (header.epochStart != EpochManagerLogic.getCurrentEpochStart()) {
+            revert ISettlement.Settlement_InvalidEpochStart();
+        }
+
         ISettlement.SettlementStorage storage $ = _getSettlementStorage();
         uint48 currentEpoch = EpochManagerLogic.getCurrentEpoch();
 
-        ISettlement.ValSetHeaderStorage storage headerStorage = $._valSetHeader[currentEpoch];
-
         if (isValSetHeaderSubmittedAt(currentEpoch)) {
-            ISettlement.ActiveAggregatedKeysStorage storage activeAggregatedKeysStorage =
-                headerStorage.activeAggregatedKeys;
-            for (uint256 i; i < activeAggregatedKeysStorage.keyTags.length; ++i) {
-                delete activeAggregatedKeysStorage.keyByTag[activeAggregatedKeysStorage.keyTags[i]];
-            }
-            delete $._valSetHeader[currentEpoch];
+            revert ISettlement.Settlement_ValSetHeaderAlreadySubmitted();
         }
+
+        ISettlement.ValSetHeader storage headerStorage = $._valSetHeader[currentEpoch];
 
         headerStorage.version = header.version;
-        for (uint256 i; i < header.activeAggregatedKeys.length; ++i) {
-            if (header.activeAggregatedKeys[i].payload.length == 0) {
-                revert ISettlement.Settlement_InvalidKey();
-            }
-            if (headerStorage.activeAggregatedKeys.keyByTag[header.activeAggregatedKeys[i].tag].length > 0) {
-                revert ISettlement.Settlement_Duplicate();
-            }
-            headerStorage.activeAggregatedKeys.keyTags.push(header.activeAggregatedKeys[i].tag);
-            headerStorage.activeAggregatedKeys.keyByTag[header.activeAggregatedKeys[i].tag] =
-                header.activeAggregatedKeys[i].payload;
-        }
-        headerStorage.totalActiveVotingPower = header.totalActiveVotingPower;
+        headerStorage.requiredKeyTag = header.requiredKeyTag;
+        headerStorage.epoch = header.epoch;
+        headerStorage.epochStart = header.epochStart;
+        headerStorage.verificationType = header.verificationType;
+        headerStorage.quorumThreshold = header.quorumThreshold;
         headerStorage.validatorsSszMRoot = header.validatorsSszMRoot;
-        headerStorage.extraData = header.extraData;
+        headerStorage.previousHeaderHash = header.previousHeaderHash;
+
+        mapping(bytes32 key => bytes32 value) storage extraDataStorage = $._extraData[currentEpoch];
+        uint256 extraDataLength = extraData.length;
+        for (uint256 i; i < extraDataLength; ++i) {
+            extraDataStorage[extraData[i].key] = extraData[i].value;
+        }
     }
 }
