@@ -3,10 +3,10 @@ pragma solidity ^0.8.0;
 
 import {ISigVerifier} from "../../../interfaces/base/ISigVerifier.sol";
 
-interface ISigVerifierBlsBn254 is ISigVerifier {
-    error SigVerifierBlsBn254_InvalidLength();
-    error SigVerifierBlsBn254_InvalidMaxValidators();
-    error SigVerifierBlsBn254_InvalidTotalActiveValidators();
+interface ISigVerifierBlsBn254ZK is ISigVerifier {
+    error SigVerifierBlsBn254ZK_InvalidLength();
+    error SigVerifierBlsBn254ZK_InvalidMaxValidators();
+    error SigVerifierBlsBn254ZK_InvalidTotalActiveValidators();
 
     function TOTAL_ACTIVE_VALIDATORS() external view returns (string memory);
 

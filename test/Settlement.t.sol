@@ -17,7 +17,7 @@ import {MasterGenesisSetup} from "./MasterGenesisSetup.sol";
 import {console2} from "forge-std/console2.sol";
 
 import {Verifier} from "../src/contracts/implementations/sig-verifiers/zk/HashVerifier.sol";
-import {SigVerifierBlsBn254} from "../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254.sol";
+import {SigVerifierBlsBn254ZK} from "../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254ZK.sol";
 
 import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";

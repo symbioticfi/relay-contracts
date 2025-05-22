@@ -1,0 +1,28 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import {BN254} from "../../../contracts/libraries/utils/BN254.sol";
+
+import {ISigVerifier} from "../../../interfaces/base/ISigVerifier.sol";
+
+interface ISigVerifierBlsBn254Simple is ISigVerifier {
+    error SigVerifierBlsBn254Simple_InvalidValidatorSetHash();
+
+    struct ValidatorData {
+        BN254.G1Point publicKey;
+        uint256 votingPower;
+    }
+
+    struct ProofData {
+        bytes signature;
+        bytes aggPublicKeyG2;
+        ValidatorData[] validatorsData;
+        bool[] isNonSigners;
+    }
+
+    function VALIDATOR_SET_HASH_KECCAK256() external view returns (string memory);
+
+    function TOTAL_VOTING_POWER() external view returns (string memory);
+
+    function AGGREGATED_PUBLIC_KEY_G1() external view returns (string memory);
+}

@@ -9,12 +9,12 @@ import {ExtraDataStorageHelper} from "./libraries/ExtraDataStorageHelper.sol";
 
 import {ISigVerifier} from "../../../interfaces/base/ISigVerifier.sol";
 import {ISettlement} from "../../../interfaces/implementations/settlement/ISettlement.sol";
-import {ISigVerifierBlsBn254} from "../../../interfaces/implementations/sig-verifiers/ISigVerifierBlsBn254.sol";
+import {ISigVerifierBlsBn254ZK} from "../../../interfaces/implementations/sig-verifiers/ISigVerifierBlsBn254ZK.sol";
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
-contract SigVerifierBlsBn254 is ISigVerifierBlsBn254 {
+contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
     using KeyBlsBn254 for bytes;
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
     using KeyBlsBn254 for BN254.G1Point;
@@ -23,36 +23,36 @@ contract SigVerifierBlsBn254 is ISigVerifierBlsBn254 {
     using ExtraDataStorageHelper for uint128;
 
     /**
-     * @inheritdoc ISigVerifierBlsBn254
+     * @inheritdoc ISigVerifierBlsBn254ZK
      */
     string public constant TOTAL_ACTIVE_VALIDATORS = "totalActiveValidators";
 
     /**
-     * @inheritdoc ISigVerifierBlsBn254
+     * @inheritdoc ISigVerifierBlsBn254ZK
      */
     string public constant VALIDATOR_SET_HASH_MIMC = "validatorSetHashMimc";
 
     /**
-     * @inheritdoc ISigVerifierBlsBn254
+     * @inheritdoc ISigVerifierBlsBn254ZK
      */
     address[] public verifiers;
 
     /**
-     * @inheritdoc ISigVerifierBlsBn254
+     * @inheritdoc ISigVerifierBlsBn254ZK
      */
     uint256[] public maxValidators;
 
     constructor(address[] memory verifiers_, uint256[] memory maxValidators_) {
         uint256 length = verifiers.length;
         if (length != maxValidators.length) {
-            revert SigVerifierBlsBn254_InvalidLength();
+            revert SigVerifierBlsBn254ZK_InvalidLength();
         }
         for (uint256 i; i < length; ++i) {
             if (maxValidators[i] == 0) {
-                revert SigVerifierBlsBn254_InvalidMaxValidators();
+                revert SigVerifierBlsBn254ZK_InvalidMaxValidators();
             }
             if (i != 0 && maxValidators[i - 1] >= maxValidators[i]) {
-                revert SigVerifierBlsBn254_InvalidMaxValidators();
+                revert SigVerifierBlsBn254ZK_InvalidMaxValidators();
             }
         }
 
@@ -119,6 +119,6 @@ contract SigVerifierBlsBn254 is ISigVerifierBlsBn254 {
                 return verifiers[i];
             }
         }
-        revert SigVerifierBlsBn254_InvalidTotalActiveValidators();
+        revert SigVerifierBlsBn254ZK_InvalidTotalActiveValidators();
     }
 }

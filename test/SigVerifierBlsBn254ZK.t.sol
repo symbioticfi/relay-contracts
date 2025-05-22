@@ -17,14 +17,14 @@ import {MasterGenesisSetup} from "./MasterGenesisSetup.sol";
 import {console2} from "forge-std/console2.sol";
 
 import {Verifier} from "../src/contracts/implementations/sig-verifiers/zk/HashVerifier.sol";
-import {SigVerifierBlsBn254} from "../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254.sol";
+import {SigVerifierBlsBn254ZK} from "../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254ZK.sol";
 
 import {ISigVerifier} from "../src/interfaces/base/ISigVerifier.sol";
 
 import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-contract SigVerifierBlsBn254Test is MasterGenesisSetup {
+contract SigVerifierBlsBn254ZKTest is MasterGenesisSetup {
     using KeyTag for uint8;
     using KeyBlsBn254 for BN254.G1Point;
     using BN254 for BN254.G1Point;
@@ -93,14 +93,14 @@ contract SigVerifierBlsBn254Test is MasterGenesisSetup {
             fullProof = abi.encodePacked(proof_, commitments, commitmentPok, signersVotingPower);
         }
 
-        SigVerifierBlsBn254 sigVerifier;
+        SigVerifierBlsBn254ZK sigVerifier;
         {
             address zkVerifier = address(new Verifier());
             address[] memory verifiers = new address[](1);
             verifiers[0] = zkVerifier;
             uint256[] memory maxValidators = new uint256[](1);
             maxValidators[0] = 10;
-            sigVerifier = new SigVerifierBlsBn254(verifiers, maxValidators);
+            sigVerifier = new SigVerifierBlsBn254ZK(verifiers, maxValidators);
         }
 
         assertTrue(
