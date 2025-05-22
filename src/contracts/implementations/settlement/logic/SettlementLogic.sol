@@ -47,26 +47,55 @@ library SettlementLogic {
             revert ISettlement.Settlement_EpochDurationTooShort();
         }
         $._commitDuration.push(Time.timestamp(), settlementInitParams.commitDuration);
+        $._prolongDuration = settlementInitParams.prolongDuration;
         $._requiredKeyTag.push(Time.timestamp(), settlementInitParams.requiredKeyTag);
         $._sigVerifier.push(Time.timestamp(), uint160(settlementInitParams.sigVerifier));
         $._verificationType.push(Time.timestamp(), settlementInitParams.verificationType);
     }
 
-    function getCurrentValSetTimestamp() public view returns (uint48) {
-        ISettlement.ValSetPhase currentPhase = getCurrentPhase();
-        if (currentPhase == ISettlement.ValSetPhase.IDLE || currentPhase == ISettlement.ValSetPhase.FAIL) {
-            return EpochManagerLogic.getCurrentEpochStart();
+    function getCurrentValSetTimestamp(
+        bytes memory hint
+    ) public view returns (uint48) {
+        uint48 currentEpoch = EpochManagerLogic.getCurrentEpoch();
+        uint48 currentEpochStart = EpochManagerLogic.getCurrentEpochStart();
+        if (currentEpoch == 0) {
+            return currentEpochStart;
         }
-        return EpochManagerLogic.getEpochStart(EpochManagerLogic.getCurrentEpoch() - 1, new bytes(0));
+        uint48 commitDuration = getCommitDuration();
+        if (
+            isValSetHeaderCommittedAt(currentEpoch - 1)
+                && Time.timestamp() < EpochManagerLogic.getCurrentEpochStart() + commitDuration
+        ) {
+            return EpochManagerLogic.getEpochStart(currentEpoch - 1, hint);
+        }
+        if (isValSetHeaderCommittedAt(currentEpoch)) {
+            return currentEpochStart;
+        }
+        if (Time.timestamp() < getLastCommittedHeaderCaptureTimestamp() + commitDuration + getProlongDuration()) {
+            return getLastCommittedHeaderCaptureTimestamp();
+        }
+        return currentEpochStart;
     }
 
     function getCurrentValSetEpoch() public view returns (uint48) {
-        ISettlement.ValSetPhase currentPhase = getCurrentPhase();
         uint48 currentEpoch = EpochManagerLogic.getCurrentEpoch();
-        if (currentPhase == ISettlement.ValSetPhase.IDLE || currentPhase == ISettlement.ValSetPhase.FAIL) {
+        if (currentEpoch == 0) {
             return currentEpoch;
         }
-        return currentEpoch - 1;
+        uint48 commitDuration = getCommitDuration();
+        if (
+            isValSetHeaderCommittedAt(currentEpoch - 1)
+                && Time.timestamp() < EpochManagerLogic.getCurrentEpochStart() + commitDuration
+        ) {
+            return currentEpoch - 1;
+        }
+        if (isValSetHeaderCommittedAt(currentEpoch)) {
+            return currentEpoch;
+        }
+        if (Time.timestamp() < getLastCommittedHeaderCaptureTimestamp() + commitDuration + getProlongDuration()) {
+            return getLastCommittedHeaderEpoch();
+        }
+        return currentEpoch;
     }
 
     function getCommitDurationAt(uint48 epoch, bytes memory hint) public view returns (uint48) {
@@ -75,6 +104,10 @@ library SettlementLogic {
 
     function getCommitDuration() public view returns (uint48) {
         return uint48(EpochManagerLogic.getCurrentValue(_getSettlementStorage()._commitDuration, Time.timestamp()));
+    }
+
+    function getProlongDuration() public view returns (uint48) {
+        return _getSettlementStorage()._prolongDuration;
     }
 
     function getRequiredKeyTagAt(uint48 epoch, bytes memory hint) public view returns (uint8) {
@@ -102,27 +135,42 @@ library SettlementLogic {
         return uint128(EpochManagerLogic.getCurrentValue(_getSettlementStorage()._verificationType, Time.timestamp()));
     }
 
-    function isValSetHeaderSubmittedAt(
+    function getLastCommittedHeaderEpoch() public view returns (uint48) {
+        return _getSettlementStorage()._lastCommittedHeaderEpoch;
+    }
+
+    function getLastCommittedHeaderCaptureTimestamp() public view returns (uint48) {
+        return _getSettlementStorage()._lastCommittedHeaderCaptureTimestamp;
+    }
+
+    function isValSetHeaderCommittedAt(
         uint48 epoch
     ) public view returns (bool) {
         return _getSettlementStorage()._valSetHeader[epoch].version > 0;
     }
 
-    function isValSetHeaderSubmitted() public view returns (bool) {
-        return isValSetHeaderSubmittedAt(EpochManagerLogic.getCurrentEpoch());
+    function isValSetHeaderCommitted() public view returns (bool) {
+        return isValSetHeaderCommittedAt(EpochManagerLogic.getCurrentEpoch());
     }
 
     function getCurrentPhase() public view returns (ISettlement.ValSetPhase) {
         uint48 currentEpoch = EpochManagerLogic.getCurrentEpoch();
-        if (currentEpoch == 0 || !isValSetHeaderSubmittedAt(currentEpoch - 1)) {
-            return isValSetHeaderSubmittedAt(currentEpoch) ? ISettlement.ValSetPhase.IDLE : ISettlement.ValSetPhase.FAIL;
+        bool isCurrentValSetHeaderCommitted = isValSetHeaderCommittedAt(currentEpoch);
+        if (currentEpoch == 0) {
+            return isCurrentValSetHeaderCommitted ? ISettlement.ValSetPhase.IDLE : ISettlement.ValSetPhase.FAIL;
         }
-        uint48 commitPhaseDeadline = EpochManagerLogic.getCurrentEpochStart() + getCommitDuration();
-        if (Time.timestamp() < commitPhaseDeadline) {
+        uint48 commitDuration = getCommitDuration();
+        if (
+            isValSetHeaderCommittedAt(currentEpoch - 1)
+                && Time.timestamp() < EpochManagerLogic.getCurrentEpochStart() + commitDuration
+        ) {
             return ISettlement.ValSetPhase.COMMIT;
         }
-        if (isValSetHeaderSubmittedAt(currentEpoch)) {
+        if (isCurrentValSetHeaderCommitted) {
             return ISettlement.ValSetPhase.IDLE;
+        }
+        if (Time.timestamp() < getLastCommittedHeaderCaptureTimestamp() + commitDuration + getProlongDuration()) {
+            return ISettlement.ValSetPhase.PROLONG;
         }
         return ISettlement.ValSetPhase.FAIL;
     }
@@ -272,10 +320,13 @@ library SettlementLogic {
         ISettlement.ExtraData[] calldata extraData,
         bytes calldata proof
     ) public {
-        if (getCurrentPhase() != ISettlement.ValSetPhase.COMMIT) {
+        ISettlement.ValSetPhase currentPhase = getCurrentPhase();
+        if (currentPhase != ISettlement.ValSetPhase.COMMIT && currentPhase != ISettlement.ValSetPhase.PROLONG) {
             revert ISettlement.Settlement_InvalidPhase();
         }
-        uint48 valSetEpoch = getCurrentValSetEpoch();
+        uint48 valSetEpoch = currentPhase == ISettlement.ValSetPhase.COMMIT
+            ? EpochManagerLogic.getCurrentEpoch() - 1
+            : getLastCommittedHeaderEpoch();
         if (
             !verifyQuorumSig(
                 valSetEpoch,
@@ -322,7 +373,7 @@ library SettlementLogic {
         ISettlement.SettlementStorage storage $ = _getSettlementStorage();
         uint48 currentEpoch = EpochManagerLogic.getCurrentEpoch();
 
-        if (isValSetHeaderSubmittedAt(currentEpoch)) {
+        if (isValSetHeaderCommittedAt(currentEpoch)) {
             revert ISettlement.Settlement_ValSetHeaderAlreadySubmitted();
         }
 
@@ -342,5 +393,8 @@ library SettlementLogic {
         for (uint256 i; i < extraDataLength; ++i) {
             extraDataStorage[extraData[i].key] = extraData[i].value;
         }
+
+        $._lastCommittedHeaderEpoch = currentEpoch;
+        $._lastCommittedHeaderCaptureTimestamp = EpochManagerLogic.getCaptureTimestamp();
     }
 }

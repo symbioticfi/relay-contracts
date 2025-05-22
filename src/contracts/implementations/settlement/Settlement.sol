@@ -41,8 +41,10 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     /**
      * @inheritdoc ISettlement
      */
-    function getCurrentValSetTimestamp() public view virtual returns (uint48) {
-        return SettlementLogic.getCurrentValSetTimestamp();
+    function getCurrentValSetTimestamp(
+        bytes memory hint
+    ) public view virtual returns (uint48) {
+        return SettlementLogic.getCurrentValSetTimestamp(hint);
     }
 
     /**
@@ -64,6 +66,13 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
      */
     function getCommitDuration() public view virtual returns (uint48) {
         return SettlementLogic.getCommitDuration();
+    }
+
+    /**
+     * @inheritdoc ISettlement
+     */
+    function getProlongDuration() public view virtual returns (uint48) {
+        return SettlementLogic.getProlongDuration();
     }
 
     /**
@@ -111,17 +120,24 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     /**
      * @inheritdoc ISettlement
      */
-    function isValSetHeaderSubmittedAt(
-        uint48 epoch
-    ) public view virtual returns (bool) {
-        return SettlementLogic.isValSetHeaderSubmittedAt(epoch);
+    function getLastCommittedHeaderCaptureTimestamp() public view virtual returns (uint48) {
+        return SettlementLogic.getLastCommittedHeaderCaptureTimestamp();
     }
 
     /**
      * @inheritdoc ISettlement
      */
-    function isValSetHeaderSubmitted() public view virtual returns (bool) {
-        return SettlementLogic.isValSetHeaderSubmitted();
+    function isValSetHeaderCommittedAt(
+        uint48 epoch
+    ) public view virtual returns (bool) {
+        return SettlementLogic.isValSetHeaderCommittedAt(epoch);
+    }
+
+    /**
+     * @inheritdoc ISettlement
+     */
+    function isValSetHeaderCommitted() public view virtual returns (bool) {
+        return SettlementLogic.isValSetHeaderCommitted();
     }
 
     /**

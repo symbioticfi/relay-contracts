@@ -25,6 +25,7 @@ contract InitSetup is SymbioticCoreInit {
     uint48 public constant DEPLOYMENT_BUFFER = 600;
     uint48 public constant EPOCH_DURATION = 300;
     uint48 public constant COMMIT_DURATION = 120;
+    uint48 public constant PROLONG_DURATION = 350;
     uint48 public constant SLASHING_WINDOW = 1200;
 
     struct Vars {
@@ -47,6 +48,7 @@ contract InitSetup is SymbioticCoreInit {
         ChainSetup masterChain;
         uint256 networkPrivateKey;
         uint256[] operatorPrivateKeys;
+        uint48 prolongDuration;
         ChainSetup secondaryChain;
         uint48 slashingWindow;
         uint256[] stakerPrivateKeys;
@@ -188,6 +190,7 @@ contract InitSetup is SymbioticCoreInit {
 
         initSetupParams.epochDuration = EPOCH_DURATION;
         initSetupParams.commitDuration = COMMIT_DURATION;
+        initSetupParams.prolongDuration = PROLONG_DURATION;
         initSetupParams.slashingWindow = SLASHING_WINDOW;
         initSetupParams.subnetworkID = IDENTIFIER;
         initSetupParams.zeroTimestamp = zeroTimestamp;

@@ -42,6 +42,7 @@ contract InitSetupScript is SymbioticCoreInit {
         ChainSetup masterChain;
         uint256 networkPrivateKey;
         uint256[] operatorPrivateKeys;
+        uint48 prolongDuration;
         bool random;
         ChainSetup secondaryChain;
         uint48 slashingWindow;
@@ -314,6 +315,7 @@ contract InitSetupScript is SymbioticCoreInit {
 
         vm.serializeUint(obj, "epochDuration", vm.envUint("EPOCH_DURATION"));
         vm.serializeUint(obj, "commitDuration", vm.envUint("COMMIT_DURATION"));
+        vm.serializeUint(obj, "prolongDuration", vm.envUint("PROLONG_DURATION"));
         vm.serializeUint(obj, "zeroTimestamp", zeroTimestamp);
         vm.serializeUint(obj, "subnetworkID", IDENTIFIER);
         vm.serializeUint(obj, "slashingWindow", vm.envUint("SLASHING_WINDOW"));

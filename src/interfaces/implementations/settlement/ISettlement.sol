@@ -22,11 +22,15 @@ interface ISettlement {
     enum ValSetPhase {
         IDLE,
         COMMIT,
+        PROLONG,
         FAIL
     }
 
     /// @custom:storage-location erc7201:symbiotic.storage.Settlement
     struct SettlementStorage {
+        uint48 _prolongDuration;
+        uint48 _lastCommittedHeaderEpoch;
+        uint48 _lastCommittedHeaderCaptureTimestamp;
         Checkpoints.Trace208 _requiredKeyTag;
         Checkpoints.Trace208 _commitDuration;
         Checkpoints.Trace208 _sigVerifier;
@@ -40,6 +44,7 @@ interface ISettlement {
         IEpochManager.EpochManagerInitParams epochManagerInitParams;
         IOzEIP712.OzEIP712InitParams ozEip712InitParams;
         uint48 commitDuration;
+        uint48 prolongDuration;
         uint8 requiredKeyTag;
         address sigVerifier;
         uint128 verificationType;
@@ -65,13 +70,17 @@ interface ISettlement {
 
     function VALIDATOR_SET_VERSION() external pure returns (uint8);
 
-    function getCurrentValSetTimestamp() external view returns (uint48);
+    function getCurrentValSetTimestamp(
+        bytes memory hint
+    ) external view returns (uint48);
 
     function getCurrentValSetEpoch() external view returns (uint48);
 
     function getCommitDurationAt(uint48 timestamp, bytes memory hint) external view returns (uint48);
 
     function getCommitDuration() external view returns (uint48);
+
+    function getProlongDuration() external view returns (uint48);
 
     function getRequiredKeyTagAt(uint48 timestamp, bytes memory hint) external view returns (uint8);
 
@@ -85,11 +94,13 @@ interface ISettlement {
 
     function getVerificationType() external view returns (uint128);
 
-    function isValSetHeaderSubmittedAt(
+    function getLastCommittedHeaderCaptureTimestamp() external view returns (uint48);
+
+    function isValSetHeaderCommittedAt(
         uint48 epoch
     ) external view returns (bool);
 
-    function isValSetHeaderSubmitted() external view returns (bool);
+    function isValSetHeaderCommitted() external view returns (bool);
 
     function getCurrentPhase() external view returns (ValSetPhase);
 

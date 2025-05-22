@@ -131,6 +131,7 @@ contract SecondarySetupScript is InitSetupScript {
                 }),
                 ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
                 commitDuration: initSetupParams.commitDuration,
+                prolongDuration: initSetupParams.prolongDuration,
                 requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
                 sigVerifier: address(new SigVerifierBlsBn254(verifiers, maxValidators)),
                 verificationType: 0
