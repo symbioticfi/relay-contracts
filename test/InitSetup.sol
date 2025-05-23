@@ -105,6 +105,10 @@ contract InitSetup is SymbioticCoreInit {
             26_972_876_870_930_381_973_856_869_753_776_124_637_336_739_336_929_668_162_870_464_864_826_929_175_089
         );
 
+        // for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
+        //     initSetupParams.operatorPrivateKeys.push(uint256(100_000 * (i + 1)));
+        // }
+
         initSetupParams.stakerPrivateKeys.push(
             3_435_247_162_038_210_587_610_369_479_936_427_564_209_354_959_133_959_739_970_868_048_138_458_127_204
         );

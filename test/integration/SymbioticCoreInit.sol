@@ -257,6 +257,183 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
                 0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f
             );
             symbioticCore.vaultConfigurator = ISymbioticVaultConfigurator(0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f);
+
+            // symbioticCore.vaultFactory = ISymbioticVaultFactory(
+            //     deployCode(
+            //         string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/VaultFactory.sol/VaultFactory.json"),
+            //         abi.encode(msgSender)
+            //     )
+            // );
+            // symbioticCore.delegatorFactory = ISymbioticDelegatorFactory(
+            //     deployCode(
+            //         string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/DelegatorFactory.sol/DelegatorFactory.json"),
+            //         abi.encode(msgSender)
+            //     )
+            // );
+            // symbioticCore.slasherFactory = ISymbioticSlasherFactory(
+            //     deployCode(
+            //         string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/SlasherFactory.sol/SlasherFactory.json"),
+            //         abi.encode(msgSender)
+            //     )
+            // );
+            // symbioticCore.networkRegistry = ISymbioticNetworkRegistry(
+            //     deployCode(string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/NetworkRegistry.sol/NetworkRegistry.json"))
+            // );
+            // symbioticCore.operatorRegistry = ISymbioticOperatorRegistry(
+            //     deployCode(string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/OperatorRegistry.sol/OperatorRegistry.json"))
+            // );
+            // symbioticCore.operatorMetadataService = ISymbioticMetadataService(
+            //     deployCode(
+            //         string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/MetadataService.sol/MetadataService.json"),
+            //         abi.encode(address(symbioticCore.operatorRegistry))
+            //     )
+            // );
+            // symbioticCore.networkMetadataService = ISymbioticMetadataService(
+            //     deployCode(
+            //         string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/MetadataService.sol/MetadataService.json"),
+            //         abi.encode(address(symbioticCore.networkRegistry))
+            //     )
+            // );
+            // symbioticCore.networkMiddlewareService = ISymbioticNetworkMiddlewareService(
+            //     deployCode(
+            //         string.concat(
+            //             SYMBIOTIC_CORE_PROJECT_ROOT, "out/NetworkMiddlewareService.sol/NetworkMiddlewareService.json"
+            //         ),
+            //         abi.encode(address(symbioticCore.networkRegistry))
+            //     )
+            // );
+            // symbioticCore.operatorVaultOptInService = ISymbioticOptInService(
+            //     deployCode(
+            //         string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/OptInService.sol/OptInService.json"),
+            //         abi.encode(
+            //             address(symbioticCore.operatorRegistry),
+            //             address(symbioticCore.vaultFactory),
+            //             "OperatorVaultOptInService"
+            //         )
+            //     )
+            // );
+            // symbioticCore.operatorNetworkOptInService = ISymbioticOptInService(
+            //     deployCode(
+            //         string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/OptInService.sol/OptInService.json"),
+            //         abi.encode(
+            //             address(symbioticCore.operatorRegistry),
+            //             address(symbioticCore.networkRegistry),
+            //             "OperatorNetworkOptInService"
+            //         )
+            //     )
+            // );
+
+            // address vaultImpl = deployCode(
+            //     string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/Vault.sol/Vault.json"),
+            //     abi.encode(
+            //         address(symbioticCore.delegatorFactory),
+            //         address(symbioticCore.slasherFactory),
+            //         address(symbioticCore.vaultFactory)
+            //     )
+            // );
+            // symbioticCore.vaultFactory.whitelist(vaultImpl);
+
+            // console2.log(address(vaultImpl));
+
+            // address vaultTokenizedImpl = deployCode(
+            //     string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/VaultTokenized.sol/VaultTokenized.json"),
+            //     abi.encode(
+            //         address(symbioticCore.delegatorFactory),
+            //         address(symbioticCore.slasherFactory),
+            //         address(symbioticCore.vaultFactory)
+            //     )
+            // );
+            // symbioticCore.vaultFactory.whitelist(vaultTokenizedImpl);
+
+            // address networkRestakeDelegatorImpl = deployCode(
+            //     string.concat(
+            //         SYMBIOTIC_CORE_PROJECT_ROOT, "out/NetworkRestakeDelegator.sol/NetworkRestakeDelegator.json"
+            //     ),
+            //     abi.encode(
+            //         address(symbioticCore.networkRegistry),
+            //         address(symbioticCore.vaultFactory),
+            //         address(symbioticCore.operatorVaultOptInService),
+            //         address(symbioticCore.operatorNetworkOptInService),
+            //         address(symbioticCore.delegatorFactory),
+            //         symbioticCore.delegatorFactory.totalTypes()
+            //     )
+            // );
+            // symbioticCore.delegatorFactory.whitelist(networkRestakeDelegatorImpl);
+
+            // console2.log(address(networkRestakeDelegatorImpl));
+
+            // address fullRestakeDelegatorImpl = deployCode(
+            //     string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/FullRestakeDelegator.sol/FullRestakeDelegator.json"),
+            //     abi.encode(
+            //         address(symbioticCore.networkRegistry),
+            //         address(symbioticCore.vaultFactory),
+            //         address(symbioticCore.operatorVaultOptInService),
+            //         address(symbioticCore.operatorNetworkOptInService),
+            //         address(symbioticCore.delegatorFactory),
+            //         symbioticCore.delegatorFactory.totalTypes()
+            //     )
+            // );
+            // symbioticCore.delegatorFactory.whitelist(fullRestakeDelegatorImpl);
+
+            // console2.log(address(fullRestakeDelegatorImpl));
+
+            // address operatorSpecificDelegatorImpl = deployCode(
+            //     string.concat(
+            //         SYMBIOTIC_CORE_PROJECT_ROOT, "out/OperatorSpecificDelegator.sol/OperatorSpecificDelegator.json"
+            //     ),
+            //     abi.encode(
+            //         address(symbioticCore.operatorRegistry),
+            //         address(symbioticCore.networkRegistry),
+            //         address(symbioticCore.vaultFactory),
+            //         address(symbioticCore.operatorVaultOptInService),
+            //         address(symbioticCore.operatorNetworkOptInService),
+            //         address(symbioticCore.delegatorFactory),
+            //         symbioticCore.delegatorFactory.totalTypes()
+            //     )
+            // );
+            // symbioticCore.delegatorFactory.whitelist(operatorSpecificDelegatorImpl);
+
+            // console2.log(address(operatorSpecificDelegatorImpl));
+
+            // address slasherImpl = deployCode(
+            //     string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/Slasher.sol/Slasher.json"),
+            //     abi.encode(
+            //         address(symbioticCore.vaultFactory),
+            //         address(symbioticCore.networkMiddlewareService),
+            //         address(symbioticCore.slasherFactory),
+            //         symbioticCore.slasherFactory.totalTypes()
+            //     )
+            // );
+            // symbioticCore.slasherFactory.whitelist(slasherImpl);
+
+            // console2.log(address(slasherImpl));
+
+            // address vetoSlasherImpl = deployCode(
+            //     string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/VetoSlasher.sol/VetoSlasher.json"),
+            //     abi.encode(
+            //         address(symbioticCore.vaultFactory),
+            //         address(symbioticCore.networkMiddlewareService),
+            //         address(symbioticCore.networkRegistry),
+            //         address(symbioticCore.slasherFactory),
+            //         symbioticCore.slasherFactory.totalTypes()
+            //     )
+            // );
+            // symbioticCore.slasherFactory.whitelist(vetoSlasherImpl);
+
+            // console2.log(address(vetoSlasherImpl));
+
+            // symbioticCore.vaultConfigurator = ISymbioticVaultConfigurator(
+            //     deployCode(
+            //         string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/VaultConfigurator.sol/VaultConfigurator.json"),
+            //         abi.encode(
+            //             address(symbioticCore.vaultFactory),
+            //             address(symbioticCore.delegatorFactory),
+            //             address(symbioticCore.slasherFactory)
+            //         )
+            //     )
+            // );
+
+            // console2.log(address(symbioticCore.vaultConfigurator));
         }
     }
 

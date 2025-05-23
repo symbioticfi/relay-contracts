@@ -72,8 +72,6 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
 
     function test_verifyQuorumSig() public {
         bytes32 messageHash = 0x204e0c470c62e2f8426b236c004b581084dd3aaa935ed3afe24dc37e0d040823;
-        uint256 totalVotingPower = 30_000_000_000_000;
-        uint256 signersVotingPower = 30_000_000_000_000;
 
         BN254.G1Point memory aggKeyG1;
         BN254.G2Point memory aggKeyG2;
@@ -128,7 +126,9 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
                 masterSetupParams.master.getCurrentValSetEpoch(),
                 abi.encode(messageHash),
                 KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
-                Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
+                Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(
+                    masterSetupParams.votingPowerProvider.getTotalVotingPower(new bytes[](0)), 1e18
+                ) + 1,
                 fullProof,
                 new bytes(0)
             )
@@ -312,7 +312,9 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
             epoch: 0,
             epochStart: 1_731_325_031,
             verificationType: 1,
-            quorumThreshold: 20_000_000_000_001,
+            quorumThreshold: uint256(2).mulDiv(1e18, 3, Math.Rounding.Ceil).mulDiv(
+                masterSetupParams.votingPowerProvider.getTotalVotingPower(new bytes[](0)), 1e18
+            ) + 1,
             validatorsSszMRoot: 0xd9354a3cf52fba5126422c86d35db53d566d46f9208faa86c7b9155d7dcf3926,
             previousHeaderHash: 0x0000000000000000000000000000000000000000000000000000000000000000
         });
@@ -329,7 +331,8 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
             });
         }
         {
-            bytes32 totalVotingPower = bytes32(uint256(30_000_000_000_000));
+            bytes32 totalVotingPower =
+                bytes32(uint256(masterSetupParams.votingPowerProvider.getTotalVotingPower(new bytes[](0))));
             extraData[1] = ISettlement.ExtraData({
                 key: uint128(1).getKey(sigVerifier.TOTAL_VOTING_POWER()),
                 value: totalVotingPower
@@ -358,8 +361,12 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
         validatorsData = new ISigVerifierBlsBn254Simple.ValidatorData[](vars.operators.length);
         for (uint256 i; i < vars.operators.length; ++i) {
             BN254.G1Point memory keyG1 = BN254.generatorG1().scalar_mul(vars.operators[i].privateKey);
-            validatorsData[i] =
-                ISigVerifierBlsBn254Simple.ValidatorData({publicKey: keyG1, votingPower: 10_000_000_000_000});
+            validatorsData[i] = ISigVerifierBlsBn254Simple.ValidatorData({
+                publicKey: keyG1,
+                votingPower: masterSetupParams.votingPowerProvider.getOperatorVotingPower(
+                    vars.operators[i].addr, new bytes(0)
+                )
+            });
         }
     }
 }
