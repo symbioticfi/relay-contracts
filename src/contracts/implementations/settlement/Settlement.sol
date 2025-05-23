@@ -55,8 +55,15 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     /**
      * @inheritdoc ISettlement
      */
-    function getCommitDurationAt(uint48 epoch, bytes memory hint) public view virtual returns (uint48) {
-        return SettlementLogic.getCommitDurationAt(epoch, hint);
+    function getProlongDuration() public view virtual returns (uint48) {
+        return SettlementLogic.getProlongDuration();
+    }
+
+    /**
+     * @inheritdoc ISettlement
+     */
+    function getCommitDurationAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint48) {
+        return SettlementLogic.getCommitDurationAt(timestamp, hint);
     }
 
     /**
@@ -69,17 +76,8 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     /**
      * @inheritdoc ISettlement
      */
-    function getProlongDuration() public view virtual returns (uint48) {
-        return SettlementLogic.getProlongDuration();
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
-    function getRequiredKeyTagAt(
-        uint48 epoch
-    ) public view virtual returns (uint8) {
-        return SettlementLogic.getRequiredKeyTagAt(epoch);
+    function getRequiredKeyTagAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint8) {
+        return SettlementLogic.getRequiredKeyTagAt(timestamp, hint);
     }
 
     /**
@@ -92,8 +90,8 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     /**
      * @inheritdoc ISettlement
      */
-    function getSigVerifierAt(uint48 epoch, bytes memory hint) public view virtual returns (address) {
-        return SettlementLogic.getSigVerifierAt(epoch, hint);
+    function getSigVerifierAt(uint48 timestamp, bytes memory hint) public view virtual returns (address) {
+        return SettlementLogic.getSigVerifierAt(timestamp, hint);
     }
 
     /**
@@ -106,17 +104,15 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     /**
      * @inheritdoc ISettlement
      */
-    function getVerificationType() public view virtual returns (uint32) {
-        return SettlementLogic.getVerificationType();
+    function getVerificationTypeAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint32) {
+        return SettlementLogic.getVerificationTypeAt(timestamp, hint);
     }
 
     /**
      * @inheritdoc ISettlement
      */
-    function getVerificationTypeAt(
-        uint48 epoch
-    ) public view virtual returns (uint32) {
-        return SettlementLogic.getVerificationTypeAt(epoch);
+    function getVerificationType() public view virtual returns (uint32) {
+        return SettlementLogic.getVerificationType();
     }
 
     /**

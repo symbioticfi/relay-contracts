@@ -7,7 +7,6 @@ import {IBaseKeyManager} from "../../base/IBaseKeyManager.sol";
 import {IOzEIP712} from "../../base/common/IOzEIP712.sol";
 
 import {Checkpoints} from "../../../contracts/libraries/structs/Checkpoints.sol";
-import {Updatable} from "../../../contracts/libraries/structs/Updatable.sol";
 
 interface ISettlement {
     error Settlement_InvalidPhase();
@@ -32,10 +31,10 @@ interface ISettlement {
         uint48 _prolongDuration;
         uint48 _lastCommittedHeaderEpoch;
         uint48 _lastCommittedHeaderCaptureTimestamp;
-        Updatable.Uint104Value _requiredKeyTag;
+        Checkpoints.Trace208 _requiredKeyTag;
         Checkpoints.Trace208 _commitDuration;
         Checkpoints.Trace208 _sigVerifier;
-        Updatable.Uint104Value _verificationType;
+        Checkpoints.Trace208 _verificationType;
         mapping(uint48 epoch => ValSetHeader) _valSetHeader;
         mapping(uint48 epoch => mapping(bytes32 key => bytes32 value)) _extraData;
     }
@@ -75,15 +74,13 @@ interface ISettlement {
 
     function getCurrentValSetEpoch() external view returns (uint48);
 
+    function getProlongDuration() external view returns (uint48);
+
     function getCommitDurationAt(uint48 timestamp, bytes memory hint) external view returns (uint48);
 
     function getCommitDuration() external view returns (uint48);
 
-    function getProlongDuration() external view returns (uint48);
-
-    function getRequiredKeyTagAt(
-        uint48 timestamp
-    ) external view returns (uint8);
+    function getRequiredKeyTagAt(uint48 timestamp, bytes memory hint) external view returns (uint8);
 
     function getRequiredKeyTag() external view returns (uint8);
 
@@ -91,9 +88,7 @@ interface ISettlement {
 
     function getSigVerifier() external view returns (address);
 
-    function getVerificationTypeAt(
-        uint48 timestamp
-    ) external view returns (uint32);
+    function getVerificationTypeAt(uint48 timestamp, bytes memory hint) external view returns (uint32);
 
     function getVerificationType() external view returns (uint32);
 
