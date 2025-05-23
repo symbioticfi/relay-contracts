@@ -7,6 +7,7 @@ import {IBaseKeyManager} from "../../base/IBaseKeyManager.sol";
 import {IOzEIP712} from "../../base/common/IOzEIP712.sol";
 
 import {Checkpoints} from "../../../contracts/libraries/structs/Checkpoints.sol";
+import {Updatable} from "../../../contracts/libraries/structs/Updatable.sol";
 
 interface ISettlement {
     error Settlement_InvalidPhase();
@@ -31,10 +32,10 @@ interface ISettlement {
         uint48 _prolongDuration;
         uint48 _lastCommittedHeaderEpoch;
         uint48 _lastCommittedHeaderCaptureTimestamp;
-        Checkpoints.Trace208 _requiredKeyTag;
+        Updatable.Uint104Value _requiredKeyTag;
         Checkpoints.Trace208 _commitDuration;
         Checkpoints.Trace208 _sigVerifier;
-        Checkpoints.Trace208 _verificationType;
+        Updatable.Uint104Value _verificationType;
         mapping(uint48 epoch => ValSetHeader) _valSetHeader;
         mapping(uint48 epoch => mapping(bytes32 key => bytes32 value)) _extraData;
     }
@@ -47,7 +48,7 @@ interface ISettlement {
         uint48 prolongDuration;
         uint8 requiredKeyTag;
         address sigVerifier;
-        uint128 verificationType;
+        uint32 verificationType;
     }
 
     struct ValSetHeader {
@@ -55,7 +56,7 @@ interface ISettlement {
         uint8 requiredKeyTag;
         uint48 epoch;
         uint48 epochStart;
-        uint128 verificationType;
+        uint32 verificationType;
         uint256 quorumThreshold;
         bytes32 validatorsSszMRoot;
         bytes32 previousHeaderHash;
@@ -80,7 +81,9 @@ interface ISettlement {
 
     function getProlongDuration() external view returns (uint48);
 
-    function getRequiredKeyTagAt(uint48 timestamp, bytes memory hint) external view returns (uint8);
+    function getRequiredKeyTagAt(
+        uint48 timestamp
+    ) external view returns (uint8);
 
     function getRequiredKeyTag() external view returns (uint8);
 
@@ -88,9 +91,11 @@ interface ISettlement {
 
     function getSigVerifier() external view returns (address);
 
-    function getVerificationTypeAt(uint48 timestamp, bytes memory hint) external view returns (uint128);
+    function getVerificationTypeAt(
+        uint48 timestamp
+    ) external view returns (uint32);
 
-    function getVerificationType() external view returns (uint128);
+    function getVerificationType() external view returns (uint32);
 
     function getLastCommittedHeaderCaptureTimestamp() external view returns (uint48);
 
@@ -128,9 +133,9 @@ interface ISettlement {
 
     function getVerificationTypeFromValSetHeaderAt(
         uint48 epoch
-    ) external view returns (uint128);
+    ) external view returns (uint32);
 
-    function getVerificationTypeFromValSetHeader() external view returns (uint128);
+    function getVerificationTypeFromValSetHeader() external view returns (uint32);
 
     function getQuorumThresholdFromValSetHeaderAt(
         uint48 epoch
@@ -173,7 +178,7 @@ interface ISettlement {
         uint8 requiredKeyTag
     ) external;
 
-    function setSigVerifier(address sigVerifier, uint128 verificationType) external;
+    function setSigVerifier(address sigVerifier, uint32 verificationType) external;
 
     function setGenesis(ValSetHeader calldata valSetHeader, ExtraData[] calldata extraData) external;
 

@@ -20,7 +20,7 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
     using KeyBlsBn254 for BN254.G1Point;
     using SigBlsBn254 for bytes;
     using BN254 for BN254.G1Point;
-    using ExtraDataStorageHelper for uint128;
+    using ExtraDataStorageHelper for uint32;
 
     /**
      * @inheritdoc ISigVerifierBlsBn254ZK
@@ -89,7 +89,7 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
             commitmentPok := add(proof.offset, 320)
         }
 
-        uint128 verificationType = ISettlement(settlement).getVerificationTypeFromValSetHeaderAt(epoch);
+        uint32 verificationType = ISettlement(settlement).getVerificationTypeFromValSetHeaderAt(epoch);
         uint256 inputHash;
         {
             bytes32 validatorSetHash =

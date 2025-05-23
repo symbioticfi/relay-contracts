@@ -44,7 +44,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
     using KeyEcdsaSecp256k1 for KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1;
     using Math for uint256;
-    using ExtraDataStorageHelper for uint128;
+    using ExtraDataStorageHelper for uint32;
 
     struct ZkProof {
         uint256[] input;
@@ -317,7 +317,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
             ISigVerifierBlsBn254Simple.ValidatorData[] memory validatorsData = getValidatorsData();
             bytes32 validatorSetHash = keccak256(abi.encode(validatorsData));
             extraData[0] = ISettlement.ExtraData({
-                key: uint128(1).getKey(15, sigVerifier.VALIDATOR_SET_HASH_KECCAK256()),
+                key: uint32(1).getKey(15, sigVerifier.VALIDATOR_SET_HASH_KECCAK256()),
                 value: validatorSetHash
             });
         }
@@ -325,7 +325,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
             bytes32 totalVotingPower =
                 bytes32(uint256(masterSetupParams.votingPowerProvider.getTotalVotingPower(new bytes[](0))));
             extraData[1] = ISettlement.ExtraData({
-                key: uint128(1).getKey(sigVerifier.TOTAL_VOTING_POWER()),
+                key: uint32(1).getKey(sigVerifier.TOTAL_VOTING_POWER()),
                 value: totalVotingPower
             });
         }
@@ -338,7 +338,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
             bytes32 aggPublicKeyG1 = abi.decode(aggPublicKeyG1Raw.wrap().serialize(), (bytes32));
 
             extraData[2] = ISettlement.ExtraData({
-                key: uint128(1).getKey(15, sigVerifier.AGGREGATED_PUBLIC_KEY_G1()),
+                key: uint32(1).getKey(15, sigVerifier.AGGREGATED_PUBLIC_KEY_G1()),
                 value: aggPublicKeyG1
             });
         }

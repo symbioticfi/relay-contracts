@@ -76,8 +76,10 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     /**
      * @inheritdoc ISettlement
      */
-    function getRequiredKeyTagAt(uint48 epoch, bytes memory hint) public view virtual returns (uint8) {
-        return SettlementLogic.getRequiredKeyTagAt(epoch, hint);
+    function getRequiredKeyTagAt(
+        uint48 epoch
+    ) public view virtual returns (uint8) {
+        return SettlementLogic.getRequiredKeyTagAt(epoch);
     }
 
     /**
@@ -104,15 +106,17 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     /**
      * @inheritdoc ISettlement
      */
-    function getVerificationType() public view virtual returns (uint128) {
+    function getVerificationType() public view virtual returns (uint32) {
         return SettlementLogic.getVerificationType();
     }
 
     /**
      * @inheritdoc ISettlement
      */
-    function getVerificationTypeAt(uint48 epoch, bytes memory hint) public view virtual returns (uint128) {
-        return SettlementLogic.getVerificationTypeAt(epoch, hint);
+    function getVerificationTypeAt(
+        uint48 epoch
+    ) public view virtual returns (uint32) {
+        return SettlementLogic.getVerificationTypeAt(epoch);
     }
 
     /**
@@ -214,14 +218,14 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
      */
     function getVerificationTypeFromValSetHeaderAt(
         uint48 epoch
-    ) public view virtual returns (uint128) {
+    ) public view virtual returns (uint32) {
         return SettlementLogic.getVerificationTypeFromValSetHeaderAt(epoch);
     }
 
     /**
      * @inheritdoc ISettlement
      */
-    function getVerificationTypeFromValSetHeader() public view virtual returns (uint128) {
+    function getVerificationTypeFromValSetHeader() public view virtual returns (uint32) {
         return SettlementLogic.getVerificationTypeFromValSetHeader();
     }
 
@@ -333,7 +337,7 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     /**
      * @inheritdoc ISettlement
      */
-    function setSigVerifier(address sigVerifier, uint128 verificationType) public virtual checkPermission {
+    function setSigVerifier(address sigVerifier, uint32 verificationType) public virtual checkPermission {
         SettlementLogic.setSigVerifier(sigVerifier, verificationType);
     }
 

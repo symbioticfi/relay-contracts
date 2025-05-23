@@ -25,7 +25,7 @@ contract MasterGenesisSetupScript is MasterSetupScript {
         uint256 quorumThreshold;
         uint8 requiredKeyTag;
         bytes32 validatorsSszMRoot;
-        uint128 verificationType;
+        uint32 verificationType;
         uint8 version;
     }
 

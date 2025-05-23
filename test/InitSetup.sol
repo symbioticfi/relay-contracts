@@ -18,7 +18,7 @@ import {ExtraDataStorageHelper} from
 
 contract InitSetup is SymbioticCoreInit {
     using Math for uint256;
-    using ExtraDataStorageHelper for uint128;
+    using ExtraDataStorageHelper for uint32;
 
     uint256 public constant SYMBIOTIC_CORE_NUMBER_OF_VAULTS = 3;
     uint256 public constant SYMBIOTIC_CORE_NUMBER_OF_OPERATORS = 3;
@@ -207,8 +207,8 @@ contract InitSetup is SymbioticCoreInit {
         console2.log(uint256(2).mulDiv(1e18, 3, Math.Rounding.Ceil));
         console2.log(uint256(666_666_666_666_666_667).mulDiv(30_000_000_000_000, 1e18) + 1);
 
-        console2.logBytes32(uint128(0).getKey("totalActiveValidators"));
-        console2.logBytes32(uint128(0).getKey(15, "validatorSetHashMimc"));
+        console2.logBytes32(uint32(0).getKey("totalActiveValidators"));
+        console2.logBytes32(uint32(0).getKey(15, "validatorSetHashMimc"));
     }
 
     // function loadInitSetupParamsAndVars() public {

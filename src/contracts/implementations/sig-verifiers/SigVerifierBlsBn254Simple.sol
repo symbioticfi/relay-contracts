@@ -22,7 +22,7 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
     using KeyBlsBn254 for BN254.G1Point;
     using SigBlsBn254 for bytes;
     using BN254 for BN254.G1Point;
-    using ExtraDataStorageHelper for uint128;
+    using ExtraDataStorageHelper for uint32;
 
     /**
      * @inheritdoc ISigVerifierBlsBn254Simple
@@ -50,7 +50,7 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
         uint256 quorumThreshold,
         bytes calldata proof
     ) public view returns (bool) {
-        uint128 verificationType = ISettlement(settlement).getVerificationTypeFromValSetHeaderAt(epoch);
+        uint32 verificationType = ISettlement(settlement).getVerificationTypeFromValSetHeaderAt(epoch);
 
         BN254.G1Point memory nonSignersPublicKeyG1;
         {
