@@ -91,7 +91,7 @@ contract InitSetupScript is SymbioticCoreInit {
         uint256[] memory operatorPrivateKeys = new uint256[](SYMBIOTIC_CORE_NUMBER_OF_OPERATORS);
         vars.operators = new Vm.Wallet[](operatorPrivateKeys.length);
         for (uint256 i; i < operatorPrivateKeys.length; ++i) {
-            vars.operators[i] = _getAccount_Symbiotic();
+            vars.operators[i] = initSetupParams.random ? _getAccount_Symbiotic() : vm.createWallet(1e18 + i);
             vm.rememberKey(vars.operators[i].privateKey);
             console2.log("Operator -", vars.operators[i].addr, vars.operators[i].privateKey);
             operatorPrivateKeys[i] = vars.operators[i].privateKey;
@@ -101,7 +101,7 @@ contract InitSetupScript is SymbioticCoreInit {
         uint256[] memory stakerPrivateKeys = new uint256[](SYMBIOTIC_CORE_NUMBER_OF_STAKERS);
         vars.stakers = new Vm.Wallet[](stakerPrivateKeys.length);
         for (uint256 i; i < stakerPrivateKeys.length; ++i) {
-            vars.stakers[i] = _getAccount_Symbiotic();
+            vars.stakers[i] = initSetupParams.random ? _getAccount_Symbiotic() : vm.createWallet(2e18 + i);
             vm.rememberKey(vars.stakers[i].privateKey);
             console2.log("Staker -", vars.stakers[i].addr, vars.stakers[i].privateKey);
             stakerPrivateKeys[i] = vars.stakers[i].privateKey;

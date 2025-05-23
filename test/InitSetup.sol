@@ -95,19 +95,19 @@ contract InitSetup is SymbioticCoreInit {
     function loadInitSetupParamsAndVars() public {
         initSetupParams.networkPrivateKey = 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80;
 
-        initSetupParams.operatorPrivateKeys.push(
-            87_191_036_493_798_670_866_484_781_455_694_320_176_667_203_290_824_056_510_541_300_741_498_740_913_410
-        );
-        initSetupParams.operatorPrivateKeys.push(
-            11_008_377_096_554_045_051_122_023_680_185_802_911_050_337_017_631_086_444_859_313_200_352_654_461_863
-        );
-        initSetupParams.operatorPrivateKeys.push(
-            26_972_876_870_930_381_973_856_869_753_776_124_637_336_739_336_929_668_162_870_464_864_826_929_175_089
-        );
+        // initSetupParams.operatorPrivateKeys.push(
+        //     87_191_036_493_798_670_866_484_781_455_694_320_176_667_203_290_824_056_510_541_300_741_498_740_913_410
+        // );
+        // initSetupParams.operatorPrivateKeys.push(
+        //     11_008_377_096_554_045_051_122_023_680_185_802_911_050_337_017_631_086_444_859_313_200_352_654_461_863
+        // );
+        // initSetupParams.operatorPrivateKeys.push(
+        //     26_972_876_870_930_381_973_856_869_753_776_124_637_336_739_336_929_668_162_870_464_864_826_929_175_089
+        // );
 
-        // for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
-        //     initSetupParams.operatorPrivateKeys.push(uint256(100_000 * (i + 1)));
-        // }
+        for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
+            initSetupParams.operatorPrivateKeys.push(uint256(100_000 * (i + 1)));
+        }
 
         initSetupParams.stakerPrivateKeys.push(
             3_435_247_162_038_210_587_610_369_479_936_427_564_209_354_959_133_959_739_970_868_048_138_458_127_204
@@ -134,7 +134,7 @@ contract InitSetup is SymbioticCoreInit {
         vm.stopPrank();
 
         // to align for deployments
-        vm.setNonce(vars.deployer.addr, 25);
+        // vm.setNonce(vars.deployer.addr, 25);
 
         vm.startPrank(vars.deployer.addr);
         initSetupParams.masterChain.tokens = new address[](1);

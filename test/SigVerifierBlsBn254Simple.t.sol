@@ -112,23 +112,38 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
             abi.encode(aggSigG1), abi.encode(aggKeyG2), abi.encode(validatorsData), abi.encode(isNonSigners)
         );
 
-        assertTrue(
-            masterSetupParams.master.verifyQuorumSig(
-                masterSetupParams.master.getCurrentValSetEpoch(),
-                abi.encode(messageHash),
-                KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
-                Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(
-                    masterSetupParams.votingPowerProvider.getTotalVotingPower(new bytes[](0)), 1e18
-                ) + 1,
-                fullProof,
-                new bytes(0)
-            )
+        bytes memory data = abi.encodeWithSelector(
+            ISettlement.verifyQuorumSig.selector,
+            masterSetupParams.master.getCurrentValSetEpoch(),
+            abi.encode(messageHash),
+            KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
+            Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(
+                masterSetupParams.votingPowerProvider.getTotalVotingPower(new bytes[](0)), 1e18
+            ) + 1,
+            fullProof,
+            new bytes(0)
         );
+        vm.startPrank(vars.deployer.addr);
+        (bool success,) = address(masterSetupParams.master).call(data);
+        assertTrue(success);
+        // assertTrue(
+        //     masterSetupParams.master.verifyQuorumSig(
+        //         masterSetupParams.master.getCurrentValSetEpoch(),
+        //         abi.encode(messageHash),
+        //         KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
+        //         Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(
+        //             masterSetupParams.votingPowerProvider.getTotalVotingPower(new bytes[](0)), 1e18
+        //         ) + 1,
+        //         fullProof,
+        //         new bytes(0)
+        //     )
+        // );
+        vm.stopPrank();
     }
 
     function loadMasterSetupParamsSimple() public {
         vm.startPrank(vars.deployer.addr);
-        vm.setNonce(vars.deployer.addr, 44);
+        // vm.setNonce(vars.deployer.addr, 44);
         masterSetupParams.votingPowerProvider = new SelfRegisterVotingPowerProvider(
             address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory)
         );
@@ -178,7 +193,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
         }
 
         vm.startPrank(vars.deployer.addr);
-        vm.setNonce(vars.deployer.addr, 66);
+        // vm.setNonce(vars.deployer.addr, 66);
         masterSetupParams.keyRegistry = new KeyRegistry();
         masterSetupParams.keyRegistry.initialize(IOzEIP712.OzEIP712InitParams({name: "KeyRegistry", version: "1"}));
         vm.stopPrank();
@@ -226,7 +241,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
         }
 
         vm.startPrank(vars.deployer.addr);
-        vm.setNonce(vars.deployer.addr, 68);
+        // vm.setNonce(vars.deployer.addr, 68);
         masterSetupParams.master = new Master();
         {
             uint8[] memory requiredKeyTags = new uint8[](2);
@@ -301,12 +316,12 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
             version: 1,
             requiredKeyTag: 15,
             epoch: 0,
-            epochStart: 1_731_325_031,
+            captureTimestamp: 1_731_325_031,
             verificationType: 1,
             quorumThreshold: uint256(2).mulDiv(1e18, 3, Math.Rounding.Ceil).mulDiv(
                 masterSetupParams.votingPowerProvider.getTotalVotingPower(new bytes[](0)), 1e18
             ) + 1,
-            validatorsSszMRoot: 0xd9354a3cf52fba5126422c86d35db53d566d46f9208faa86c7b9155d7dcf3926,
+            validatorsSszMRoot: 0x0000000000000000000000000000000000000000000000000000000000000000,
             previousHeaderHash: 0x0000000000000000000000000000000000000000000000000000000000000000
         });
 

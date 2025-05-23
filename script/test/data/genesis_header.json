@@ -1,12 +1,22 @@
 {
-  "version": 1,
-  "activeAggregatedKeys": [
+  "extraData": [
     {
-      "tag": 15,
-      "payload": "0x264621561abeb4dac9a497cb21f305b8f41b56389734832656d7c7adde2247081ffa73b25b82c16096babd6a15d259a24a8304cd96ee6c27e790ff27d8744a5b"
+      "key": "0x6ea0bff153d3248c53b2836577d4c139e47e1704005133ec136e47ac7aa314b9",
+      "value": "0x0000000000000000000000000000000000000000000000000000000000000003"
+    },
+    {
+      "key": "0x85e577ea9eaba1924380167d6170460046295e4a0548788560d1dd7e436e8f19",
+      "value": "0x13b09dd30c5d7a5fff8a225c0bdbf898aee3b308f0ea19d99008a60db4e2fcdb"
     }
   ],
-  "validatorsSszMRoot": "0xd9354a3cf52fba5126422c86d35db53d566d46f9208faa86c7b9155d7dcf3926",
-  "extraData": "0x13b09dd30c5d7a5fff8a225c0bdbf898aee3b308f0ea19d99008a60db4e2fcdb",
-  "totalActiveVotingPower": 30000000000000
+  "header": {
+    "version": 1,
+    "requiredKeyTag": 15,
+    "epoch": 0,
+    "captureTimestamp": 1731325031,
+    "verificationType": 0,
+    "quorumThreshold": 20000000000001,
+    "validatorsSszMRoot": "0xd9354a3cf52fba5126422c86d35db53d566d46f9208faa86c7b9155d7dcf3926",
+    "previousHeaderHash": "0x0000000000000000000000000000000000000000000000000000000000000000"
+  }
 }

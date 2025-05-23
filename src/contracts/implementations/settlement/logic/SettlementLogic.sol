@@ -212,14 +212,14 @@ library SettlementLogic {
         return getRequiredKeyTagFromValSetHeaderAt(getCurrentValSetEpoch());
     }
 
-    function getEpochStartFromValSetHeaderAt(
+    function getCaptureTimestampFromValSetHeaderAt(
         uint48 epoch
     ) public view returns (uint48) {
-        return _getSettlementStorage()._valSetHeader[epoch].epochStart;
+        return _getSettlementStorage()._valSetHeader[epoch].captureTimestamp;
     }
 
-    function getEpochStartFromValSetHeader() public view returns (uint48) {
-        return getEpochStartFromValSetHeaderAt(getCurrentValSetEpoch());
+    function getCaptureTimestampFromValSetHeader() public view returns (uint48) {
+        return getCaptureTimestampFromValSetHeaderAt(getCurrentValSetEpoch());
     }
 
     function getVerificationTypeFromValSetHeaderAt(
@@ -280,7 +280,7 @@ library SettlementLogic {
         bytes calldata proof,
         bytes memory hint
     ) public view returns (bool) {
-        return ISigVerifier(getSigVerifierAt(getEpochStartFromValSetHeaderAt(epoch), hint)).verifyQuorumSig(
+        return ISigVerifier(getSigVerifierAt(getCaptureTimestampFromValSetHeaderAt(epoch), hint)).verifyQuorumSig(
             address(this), epoch, message, keyTag, quorumThreshold, proof
         );
     }
@@ -378,7 +378,7 @@ library SettlementLogic {
             revert ISettlement.Settlement_InvalidEpoch();
         }
 
-        if (header.epochStart != EpochManagerLogic.getCurrentEpochStart()) {
+        if (header.captureTimestamp != EpochManagerLogic.getCurrentEpochStart()) {
             revert ISettlement.Settlement_InvalidEpochStart();
         }
 
@@ -394,7 +394,7 @@ library SettlementLogic {
         headerStorage.version = header.version;
         headerStorage.requiredKeyTag = header.requiredKeyTag;
         headerStorage.epoch = header.epoch;
-        headerStorage.epochStart = header.epochStart;
+        headerStorage.captureTimestamp = header.captureTimestamp;
         headerStorage.verificationType = header.verificationType;
         headerStorage.quorumThreshold = header.quorumThreshold;
         headerStorage.validatorsSszMRoot = header.validatorsSszMRoot;

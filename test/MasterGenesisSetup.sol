@@ -18,7 +18,7 @@ contract MasterGenesisSetup is MasterSetup {
 
     struct ValSetHeaderStruct {
         uint48 epoch;
-        uint48 epochStart;
+        uint48 captureTimestamp;
         bytes32 previousHeaderHash;
         uint256 quorumThreshold;
         uint8 requiredKeyTag;
@@ -55,7 +55,7 @@ contract MasterGenesisSetup is MasterSetup {
             version: genesis.header.version,
             requiredKeyTag: genesis.header.requiredKeyTag,
             epoch: genesis.header.epoch,
-            epochStart: genesis.header.epochStart,
+            captureTimestamp: genesis.header.captureTimestamp,
             verificationType: genesis.header.verificationType,
             quorumThreshold: genesis.header.quorumThreshold,
             validatorsSszMRoot: genesis.header.validatorsSszMRoot,

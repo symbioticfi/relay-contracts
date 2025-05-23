@@ -51,7 +51,7 @@ contract SettlementTest is MasterGenesisSetup {
         (ISettlement.ValSetHeader memory valSetHeader, ISettlement.ExtraData[] memory extraData) = loadGenesis();
 
         valSetHeader.epoch = 1;
-        valSetHeader.epochStart = masterSetupParams.master.getCurrentEpochStart();
+        valSetHeader.captureTimestamp = masterSetupParams.master.getCurrentEpochStart();
         valSetHeader.previousHeaderHash = keccak256(abi.encode(masterSetupParams.master.getValSetHeaderAt(0)));
 
         bytes32 messageHash = masterSetupParams.master.hashTypedDataV4CrossChain(

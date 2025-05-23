@@ -13,7 +13,7 @@
     "version": 1,
     "requiredKeyTag": 15,
     "epoch": 0,
-    "epochStart": 1731325031,
+    "captureTimestamp": 1731325031,
     "verificationType": 0,
     "quorumThreshold": 20000000000001,
     "validatorsSszMRoot": "0xd9354a3cf52fba5126422c86d35db53d566d46f9208faa86c7b9155d7dcf3926",

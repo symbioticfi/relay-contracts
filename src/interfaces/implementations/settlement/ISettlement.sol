@@ -55,7 +55,7 @@ interface ISettlement {
         uint8 version;
         uint8 requiredKeyTag;
         uint48 epoch;
-        uint48 epochStart;
+        uint48 captureTimestamp;
         uint32 verificationType;
         uint256 quorumThreshold;
         bytes32 validatorsSszMRoot;
@@ -125,11 +125,11 @@ interface ISettlement {
 
     function getRequiredKeyTagFromValSetHeader() external view returns (uint8);
 
-    function getEpochStartFromValSetHeaderAt(
+    function getCaptureTimestampFromValSetHeaderAt(
         uint48 epoch
     ) external view returns (uint48);
 
-    function getEpochStartFromValSetHeader() external view returns (uint48);
+    function getCaptureTimestampFromValSetHeader() external view returns (uint48);
 
     function getVerificationTypeFromValSetHeaderAt(
         uint48 epoch

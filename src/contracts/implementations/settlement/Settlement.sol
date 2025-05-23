@@ -200,17 +200,17 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     /**
      * @inheritdoc ISettlement
      */
-    function getEpochStartFromValSetHeaderAt(
+    function getCaptureTimestampFromValSetHeaderAt(
         uint48 epoch
     ) public view virtual returns (uint48) {
-        return SettlementLogic.getEpochStartFromValSetHeaderAt(epoch);
+        return SettlementLogic.getCaptureTimestampFromValSetHeaderAt(epoch);
     }
 
     /**
      * @inheritdoc ISettlement
      */
-    function getEpochStartFromValSetHeader() public view virtual returns (uint48) {
-        return SettlementLogic.getEpochStartFromValSetHeader();
+    function getCaptureTimestampFromValSetHeader() public view virtual returns (uint48) {
+        return SettlementLogic.getCaptureTimestampFromValSetHeader();
     }
 
     /**
