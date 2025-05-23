@@ -108,18 +108,9 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
         for (uint256 i; i < validatorsData.length; ++i) {
             isNonSigners[i] = false;
         }
-        bytes memory fullProof = abi.encode(
-            ISigVerifierBlsBn254Simple.ProofData({
-                signature: abi.encode(aggSigG1),
-                aggPublicKeyG2: abi.encode(aggKeyG2),
-                validatorsData: validatorsData,
-                isNonSigners: isNonSigners
-            })
+        bytes memory fullProof = abi.encodePacked(
+            abi.encode(aggSigG1), abi.encode(aggKeyG2), abi.encode(validatorsData), abi.encode(isNonSigners)
         );
-
-        console2.logBytes(abi.encode(isNonSigners));
-
-        console2.logBytes(fullProof);
 
         assertTrue(
             masterSetupParams.master.verifyQuorumSig(

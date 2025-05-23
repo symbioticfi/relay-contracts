@@ -52,13 +52,15 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
     ) public view returns (bool) {
         uint128 verificationType = ISettlement(settlement).getVerificationTypeFromValSetHeaderAt(epoch);
 
-        ProofData memory proofData = abi.decode(proof, (ProofData));
-
-        uint256 length = proofData.validatorsData.length;
         BN254.G1Point memory nonSignersPublicKeyG1;
         {
+            uint256 length;
+            assembly {
+                length := calldataload(add(proof.offset, 224))
+            }
+            ValidatorData[] memory validatorsData = abi.decode(proof[192:256 + length * 96], (ValidatorData[]));
             if (
-                keccak256(abi.encode(proofData.validatorsData))
+                keccak256(abi.encode(validatorsData))
                     != ISettlement(settlement).getExtraDataAt(
                         epoch, verificationType.getKey(keyTag, VALIDATOR_SET_HASH_KECCAK256)
                     )
@@ -66,11 +68,12 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
                 revert SigVerifierBlsBn254Simple_InvalidValidatorSetHash();
             }
 
+            bool[] memory isNonSigners = abi.decode(proof[256 + length * 96:], (bool[]));
             uint256 nonSignersVotingPower;
             for (uint256 i; i < length; ++i) {
-                if (proofData.isNonSigners[i]) {
-                    nonSignersPublicKeyG1 = nonSignersPublicKeyG1.plus(proofData.validatorsData[i].publicKey);
-                    nonSignersVotingPower += proofData.validatorsData[i].votingPower;
+                if (isNonSigners[i]) {
+                    nonSignersPublicKeyG1 = nonSignersPublicKeyG1.plus(validatorsData[i].publicKey);
+                    nonSignersVotingPower += validatorsData[i].votingPower;
                 }
             }
 
@@ -88,6 +91,8 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
         );
         bytes memory signersPublicKeyG1Bytes =
             aggPublicKeyG1Serialized.deserialize().unwrap().plus(nonSignersPublicKeyG1.negate()).wrap().toBytes();
-        return SigBlsBn254.verify(signersPublicKeyG1Bytes, message, proofData.signature, proofData.aggPublicKeyG2);
+        bytes calldata signature = proof[0:64];
+        bytes calldata aggPublicKeyG2 = proof[64:192];
+        return SigBlsBn254.verify(signersPublicKeyG1Bytes, message, signature, aggPublicKeyG2);
     }
 }
