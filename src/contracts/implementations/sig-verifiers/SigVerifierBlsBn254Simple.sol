@@ -25,6 +25,11 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
     using ExtraDataStorageHelper for uint32;
 
     /**
+     * @inheritdoc ISigVerifier
+     */
+    uint32 public constant VERIFICATION_TYPE = 1;
+
+    /**
      * @inheritdoc ISigVerifierBlsBn254Simple
      */
     string public constant VALIDATOR_SET_HASH_KECCAK256 = "validatorSetHashKeccak256";
@@ -50,24 +55,22 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
         uint256 quorumThreshold,
         bytes calldata proof
     ) public view returns (bool) {
-        uint32 verificationType = ISettlement(settlement).getVerificationTypeFromValSetHeaderAt(epoch);
-
         BN254.G1Point memory nonSignersPublicKeyG1;
         {
             uint256 length;
             assembly {
                 length := calldataload(add(proof.offset, 224))
             }
-            ValidatorData[] memory validatorsData = abi.decode(proof[192:256 + length * 96], (ValidatorData[]));
             if (
-                keccak256(abi.encode(validatorsData))
+                keccak256(proof[192:256 + length * 96])
                     != ISettlement(settlement).getExtraDataAt(
-                        epoch, verificationType.getKey(keyTag, VALIDATOR_SET_HASH_KECCAK256)
+                        epoch, VERIFICATION_TYPE.getKey(keyTag, VALIDATOR_SET_HASH_KECCAK256)
                     )
             ) {
                 revert SigVerifierBlsBn254Simple_InvalidValidatorSetHash();
             }
 
+            ValidatorData[] memory validatorsData = abi.decode(proof[192:256 + length * 96], (ValidatorData[]));
             bool[] memory isNonSigners = abi.decode(proof[256 + length * 96:], (bool[]));
             uint256 nonSignersVotingPower;
             for (uint256 i; i < length; ++i) {
@@ -79,7 +82,7 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
 
             if (
                 quorumThreshold
-                    > uint256(ISettlement(settlement).getExtraDataAt(epoch, verificationType.getKey(TOTAL_VOTING_POWER)))
+                    > uint256(ISettlement(settlement).getExtraDataAt(epoch, VERIFICATION_TYPE.getKey(TOTAL_VOTING_POWER)))
                         - nonSignersVotingPower
             ) {
                 return false;
@@ -87,7 +90,7 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
         }
 
         bytes memory aggPublicKeyG1Serialized = abi.encode(
-            ISettlement(settlement).getExtraDataAt(epoch, verificationType.getKey(keyTag, AGGREGATED_PUBLIC_KEY_G1))
+            ISettlement(settlement).getExtraDataAt(epoch, VERIFICATION_TYPE.getKey(keyTag, AGGREGATED_PUBLIC_KEY_G1))
         );
         bytes memory signersPublicKeyG1Bytes =
             aggPublicKeyG1Serialized.deserialize().unwrap().plus(nonSignersPublicKeyG1.negate()).wrap().toBytes();

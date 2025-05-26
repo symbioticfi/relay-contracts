@@ -23,6 +23,11 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
     using ExtraDataStorageHelper for uint32;
 
     /**
+     * @inheritdoc ISigVerifier
+     */
+    uint32 public constant VERIFICATION_TYPE = 0;
+
+    /**
      * @inheritdoc ISigVerifierBlsBn254ZK
      */
     string public constant TOTAL_ACTIVE_VALIDATORS = "totalActiveValidators";
@@ -89,11 +94,10 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
             commitmentPok := add(proof.offset, 320)
         }
 
-        uint32 verificationType = ISettlement(settlement).getVerificationTypeFromValSetHeaderAt(epoch);
         uint256 inputHash;
         {
             bytes32 validatorSetHash =
-                ISettlement(settlement).getExtraDataAt(epoch, verificationType.getKey(keyTag, VALIDATOR_SET_HASH_MIMC));
+                ISettlement(settlement).getExtraDataAt(epoch, VERIFICATION_TYPE.getKey(keyTag, VALIDATOR_SET_HASH_MIMC));
             BN254.G1Point memory messageG1 = BN254.hashToG1(abi.decode(message, (bytes32)));
 
             inputHash =
@@ -102,7 +106,7 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
         }
 
         uint256 totalActiveValidators =
-            uint256(ISettlement(settlement).getExtraDataAt(epoch, verificationType.getKey(TOTAL_ACTIVE_VALIDATORS)));
+            uint256(ISettlement(settlement).getExtraDataAt(epoch, VERIFICATION_TYPE.getKey(TOTAL_ACTIVE_VALIDATORS)));
         try Verifier(_getVerifier(totalActiveValidators)).verifyProof(zkProof, commitments, commitmentPok, [inputHash])
         {
             return true;

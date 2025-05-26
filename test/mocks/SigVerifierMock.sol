@@ -7,6 +7,11 @@ contract SigVerifierMock is ISigVerifier {
     /**
      * @inheritdoc ISigVerifier
      */
+    uint32 public constant VERIFICATION_TYPE = type(uint32).max;
+
+    /**
+     * @inheritdoc ISigVerifier
+     */
     function verifyQuorumSig(
         address, /* settlement */
         uint48, /* epoch */
