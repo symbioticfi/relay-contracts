@@ -17,8 +17,8 @@ contract MasterGenesisSetup is MasterSetup {
     }
 
     struct ValSetHeaderStruct {
-        uint48 epoch;
         uint48 captureTimestamp;
+        uint48 epoch;
         bytes32 previousHeaderHash;
         uint256 quorumThreshold;
         uint8 requiredKeyTag;
