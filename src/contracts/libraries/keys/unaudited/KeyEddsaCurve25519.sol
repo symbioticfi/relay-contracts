@@ -13,8 +13,8 @@ library KeyEddsaCurve25519 {
     using KeyEddsaCurve25519 for bytes32;
     using Strings for string;
 
-    error InvalidBytes();
-    error InvalidKey();
+    error KeyEddsaCurve25519_InvalidBytes();
+    error KeyEddsaCurve25519_InvalidKey();
 
     struct KEY_EDDSA_CURVE25519 {
         bytes32 value;
@@ -33,7 +33,7 @@ library KeyEddsaCurve25519 {
         uint256 y2 = mulmod(y, y, p);
         uint256 x2 = mulmod(x, x, p);
         if (addmod(y2, p - x2, p) != addmod(1, mulmod(d, mulmod(x2, y2, p), p), p)) {
-            revert InvalidKey();
+            revert KeyEddsaCurve25519_InvalidKey();
         }
     }
 
@@ -67,7 +67,7 @@ library KeyEddsaCurve25519 {
         key = abi.decode(keyBytes, (KEY_EDDSA_CURVE25519));
         bytes memory keyBytesDerived = key.unwrap().wrap().toBytes();
         if (keccak256(keyBytesDerived) != keccak256(keyBytes)) {
-            revert InvalidBytes();
+            revert KeyEddsaCurve25519_InvalidBytes();
         }
     }
 

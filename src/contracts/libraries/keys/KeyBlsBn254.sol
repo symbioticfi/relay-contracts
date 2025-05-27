@@ -10,8 +10,8 @@ library KeyBlsBn254 {
     using KeyBlsBn254 for BN254.G1Point;
     using Strings for string;
 
-    error InvalidKey();
-    error InvalidBytes();
+    error KeyBlsBn254_InvalidKey();
+    error KeyBlsBn254_InvalidBytes();
 
     struct KEY_BLS_BN254 {
         BN254.G1Point value;
@@ -24,14 +24,14 @@ library KeyBlsBn254 {
             return zeroKey();
         }
         if (keyRaw.X >= BN254.FP_MODULUS || keyRaw.Y >= BN254.FP_MODULUS) {
-            revert InvalidKey();
+            revert KeyBlsBn254_InvalidKey();
         }
         (uint256 beta, uint256 derivedY) = BN254.findYFromX(keyRaw.X);
         if (mulmod(derivedY, derivedY, BN254.FP_MODULUS) != beta) {
-            revert InvalidKey();
+            revert KeyBlsBn254_InvalidKey();
         }
         if (keyRaw.Y != derivedY && keyRaw.Y != BN254.FP_MODULUS - derivedY) {
-            revert InvalidKey();
+            revert KeyBlsBn254_InvalidKey();
         }
         key = KEY_BLS_BN254(keyRaw);
     }
@@ -79,7 +79,7 @@ library KeyBlsBn254 {
         key = abi.decode(keyBytes, (KEY_BLS_BN254));
         bytes memory keyBytesDerived = key.unwrap().wrap().toBytes();
         if (keccak256(keyBytesDerived) != keccak256(keyBytes)) {
-            revert InvalidBytes();
+            revert KeyBlsBn254_InvalidBytes();
         }
     }
 

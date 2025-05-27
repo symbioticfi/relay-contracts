@@ -8,7 +8,7 @@ library KeyEcdsaSecp256k1 {
     using KeyEcdsaSecp256k1 for address;
     using Strings for string;
 
-    error InvalidBytes();
+    error KeyEcdsaSecp256k1_InvalidBytes();
 
     struct KEY_ECDSA_SECP256K1 {
         address value;
@@ -53,7 +53,7 @@ library KeyEcdsaSecp256k1 {
         key = abi.decode(keyBytes, (KEY_ECDSA_SECP256K1));
         bytes memory keyBytesDerived = key.unwrap().wrap().toBytes();
         if (keccak256(keyBytesDerived) != keccak256(keyBytes)) {
-            revert InvalidBytes();
+            revert KeyEcdsaSecp256k1_InvalidBytes();
         }
     }
 
