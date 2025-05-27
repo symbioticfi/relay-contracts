@@ -18,7 +18,9 @@ import {BN254G2} from "../../test/libraries/BN254G2.sol";
 import "./SecondarySetup.s.sol";
 
 import {SigVerifierBlsBn254ZK} from "../../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254ZK.sol";
-import {Verifier} from "../../src/contracts/implementations/sig-verifiers/zk/HashVerifier.sol";
+import {Verifier as Verifier_10} from "../../src/contracts/implementations/sig-verifiers/zk/Verifier_10.sol";
+import {Verifier as Verifier_100} from "../../src/contracts/implementations/sig-verifiers/zk/Verifier_100.sol";
+import {Verifier as Verifier_1000} from "../../src/contracts/implementations/sig-verifiers/zk/Verifier_1000.sol";
 
 // forge script script/test/MasterSetup.s.sol:MasterSetupScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_MASTER
 
@@ -150,7 +152,7 @@ contract MasterSetupScript is SecondarySetupScript {
 
         vm.startBroadcast(vars.deployer.privateKey);
         console2.log("Master nonce", vm.getNonce(vars.deployer.addr));
-        masterSetupParams.master = new Master();
+        masterSetupParams.master = new Master{salt: bytes32("master")}();
         {
             uint8[] memory requiredKeyTags = new uint8[](2);
             requiredKeyTags[0] = KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15);
@@ -177,11 +179,14 @@ contract MasterSetupScript is SecondarySetupScript {
             //     addr: address(secondarySetupParams.replica),
             //     chainId: uint64(initSetupParams.secondaryChain.chainId)
             // });
-            address zkVerifier = address(new Verifier());
-            address[] memory verifiers = new address[](1);
-            verifiers[0] = zkVerifier;
-            uint256[] memory maxValidators = new uint256[](1);
+            address[] memory verifiers = new address[](3);
+            verifiers[0] = address(new Verifier_10());
+            verifiers[1] = address(new Verifier_100());
+            verifiers[2] = address(new Verifier_1000());
+            uint256[] memory maxValidators = new uint256[](verifiers.length);
             maxValidators[0] = 10;
+            maxValidators[1] = 100;
+            maxValidators[2] = 1000;
             masterSetupParams.master.initialize(
                 ISettlement.SettlementInitParams({
                     networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
@@ -196,19 +201,19 @@ contract MasterSetupScript is SecondarySetupScript {
                     commitDuration: initSetupParams.commitDuration,
                     prolongDuration: initSetupParams.prolongDuration,
                     requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
-                    sigVerifier: address(new SigVerifierBlsBn254ZK(verifiers, maxValidators)),
-                    verificationType: 0
+                    sigVerifier: address(new SigVerifierBlsBn254ZK(verifiers, maxValidators))
                 }),
                 IValSetConfigProvider.ValSetConfigProviderInitParams({
-                    maxVotingPower: 1e16,
-                    minInclusionVotingPower: 1e4,
-                    maxValidatorsCount: 5,
+                    maxVotingPower: 1e36,
+                    minInclusionVotingPower: 0,
+                    maxValidatorsCount: 99_999_999,
                     requiredKeyTags: requiredKeyTags
                 }),
                 IMasterConfigProvider.MasterConfigProviderInitParams({
                     votingPowerProviders: votingPowerProviders,
                     keysProvider: keysProvider,
-                    replicas: replicas
+                    replicas: replicas,
+                    verificationType: 0
                 }),
                 vars.deployer.addr
             );

@@ -50,7 +50,6 @@ library SettlementLogic {
         $._commitDuration.push(Time.timestamp(), settlementInitParams.commitDuration);
         $._requiredKeyTag.push(Time.timestamp(), settlementInitParams.requiredKeyTag);
         $._sigVerifier.push(Time.timestamp(), uint160(settlementInitParams.sigVerifier));
-        $._verificationType.push(Time.timestamp(), settlementInitParams.verificationType);
     }
 
     function getCurrentValSetTimestamp() public view returns (uint48) {
@@ -110,7 +109,6 @@ library SettlementLogic {
     }
 
     function getRequiredKeyTagAt(uint48 timestamp, bytes memory hint) public view returns (uint8) {
-        // Returns unreliable data for timestamps less than the start of the current epoch
         return uint8(_getSettlementStorage()._requiredKeyTag.upperLookupRecent(timestamp, hint));
     }
 
@@ -125,15 +123,6 @@ library SettlementLogic {
     function getSigVerifier() public view returns (address) {
         return
             address(uint160(EpochManagerLogic.getCurrentValue(_getSettlementStorage()._sigVerifier, Time.timestamp())));
-    }
-
-    function getVerificationTypeAt(uint48 timestamp, bytes memory hint) public view returns (uint32) {
-        // Returns unreliable data for timestamps less than the start of the current epoch
-        return uint32(_getSettlementStorage()._verificationType.upperLookupRecent(timestamp, hint));
-    }
-
-    function getVerificationType() public view returns (uint32) {
-        return uint32(EpochManagerLogic.getCurrentValue(_getSettlementStorage()._verificationType, Time.timestamp()));
     }
 
     function getLastCommittedHeaderEpoch() public view returns (uint48) {
@@ -216,16 +205,6 @@ library SettlementLogic {
         return getCaptureTimestampFromValSetHeaderAt(getCurrentValSetEpoch());
     }
 
-    function getVerificationTypeFromValSetHeaderAt(
-        uint48 epoch
-    ) public view returns (uint32) {
-        return _getSettlementStorage()._valSetHeader[epoch].verificationType;
-    }
-
-    function getVerificationTypeFromValSetHeader() public view returns (uint32) {
-        return getVerificationTypeFromValSetHeaderAt(getCurrentValSetEpoch());
-    }
-
     function getQuorumThresholdFromValSetHeaderAt(
         uint48 epoch
     ) public view returns (uint256) {
@@ -300,10 +279,11 @@ library SettlementLogic {
         _getSettlementStorage()._requiredKeyTag.push(EpochManagerLogic.getNextEpochStart(), requiredKeyTag);
     }
 
-    function setSigVerifier(address sigVerifier, uint32 verificationType) public {
+    function setSigVerifier(
+        address sigVerifier
+    ) public {
         uint48 nextEpochStart = EpochManagerLogic.getNextEpochStart();
         _getSettlementStorage()._sigVerifier.push(nextEpochStart, uint160(sigVerifier));
-        _getSettlementStorage()._verificationType.push(nextEpochStart, verificationType);
     }
 
     function setGenesis(
@@ -370,9 +350,9 @@ library SettlementLogic {
             revert ISettlement.Settlement_InvalidEpoch();
         }
 
-        if (header.captureTimestamp != EpochManagerLogic.getCurrentEpochStart()) {
-            revert ISettlement.Settlement_InvalidEpochStart();
-        }
+        // if (header.captureTimestamp != EpochManagerLogic.getCurrentEpochStart()) {
+        //     revert ISettlement.Settlement_InvalidCaptureTimestamp();
+        // }
 
         ISettlement.SettlementStorage storage $ = _getSettlementStorage();
         uint48 currentEpoch = EpochManagerLogic.getCurrentEpoch();
@@ -387,7 +367,6 @@ library SettlementLogic {
         headerStorage.requiredKeyTag = header.requiredKeyTag;
         headerStorage.epoch = header.epoch;
         headerStorage.captureTimestamp = header.captureTimestamp;
-        headerStorage.verificationType = header.verificationType;
         headerStorage.quorumThreshold = header.quorumThreshold;
         headerStorage.validatorsSszMRoot = header.validatorsSszMRoot;
         headerStorage.previousHeaderHash = header.previousHeaderHash;

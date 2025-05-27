@@ -12,6 +12,7 @@ import {IMasterConfigProvider} from "../../../../interfaces/implementations/sett
 library MasterConfigProviderLogic {
     using EnumerableSet for EnumerableSet.Bytes32Set;
     using Checkpoints for Checkpoints.Trace256;
+    using Checkpoints for Checkpoints.Trace208;
     using PersistentSet for PersistentSet.Bytes32Set;
 
     uint64 public constant MasterConfigProvider_VERSION = 1;
@@ -43,6 +44,8 @@ library MasterConfigProviderLogic {
         for (uint256 i; i < masterConfigProviderInitParams.replicas.length; ++i) {
             addReplica(masterConfigProviderInitParams.replicas[i]);
         }
+
+        setVerificationType(masterConfigProviderInitParams.verificationType);
     }
 
     function isVotingPowerProviderActiveAt(
@@ -139,6 +142,14 @@ library MasterConfigProviderLogic {
         }
     }
 
+    function getVerificationTypeAt(uint48 timestamp, bytes memory hint) public view returns (uint32) {
+        return uint32(_getMasterConfigProviderStorage()._verificationType.upperLookupRecent(timestamp, hint));
+    }
+
+    function getVerificationType() public view returns (uint32) {
+        return uint32(_getMasterConfigProviderStorage()._verificationType.latest());
+    }
+
     function getMasterConfigAt(
         uint48 timestamp,
         bytes memory hints
@@ -151,7 +162,8 @@ library MasterConfigProviderLogic {
         return IMasterConfigProvider.MasterConfig({
             votingPowerProviders: getActiveVotingPowerProvidersAt(timestamp, masterConfigHints.votingPowerProvidersHints),
             keysProvider: getKeysProviderAt(timestamp, masterConfigHints.keysProviderHint),
-            replicas: getActiveReplicasAt(timestamp, masterConfigHints.replicasHints)
+            replicas: getActiveReplicasAt(timestamp, masterConfigHints.replicasHints),
+            verificationType: getVerificationTypeAt(timestamp, masterConfigHints.verificationTypeHint)
         });
     }
 
@@ -159,7 +171,8 @@ library MasterConfigProviderLogic {
         return IMasterConfigProvider.MasterConfig({
             votingPowerProviders: getActiveVotingPowerProviders(),
             keysProvider: getKeysProvider(),
-            replicas: getActiveReplicas()
+            replicas: getActiveReplicas(),
+            verificationType: getVerificationType()
         });
     }
 
@@ -210,6 +223,12 @@ library MasterConfigProviderLogic {
         {
             revert IMasterConfigProvider.MasterConfigProvider_NotAdded();
         }
+    }
+
+    function setVerificationType(
+        uint32 verificationType
+    ) public {
+        _getMasterConfigProviderStorage()._verificationType.push(Time.timestamp(), verificationType);
     }
 
     function deserializeCrossChainAddress(

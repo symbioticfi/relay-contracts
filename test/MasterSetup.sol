@@ -22,7 +22,9 @@ import {IEpochManager} from "../src/interfaces/base/IEpochManager.sol";
 import {IOzEIP712} from "../src/interfaces/base/common/IOzEIP712.sol";
 import {IVaultManager} from "../src/interfaces/base/IVaultManager.sol";
 
-import {Verifier} from "../src/contracts/implementations/sig-verifiers/zk/HashVerifier.sol";
+import {Verifier as Verifier_10} from "../src/contracts/implementations/sig-verifiers/zk/Verifier_10.sol";
+import {Verifier as Verifier_100} from "../src/contracts/implementations/sig-verifiers/zk/Verifier_100.sol";
+import {Verifier as Verifier_1000} from "../src/contracts/implementations/sig-verifiers/zk/Verifier_1000.sol";
 import {SigVerifierBlsBn254ZK} from "../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254ZK.sol";
 
 import "./InitSetup.sol";
@@ -60,7 +62,7 @@ contract MasterSetup is InitSetup {
 
     function loadMasterSetupParams() public {
         vm.startPrank(vars.deployer.addr);
-        vm.setNonce(vars.deployer.addr, 44);
+        // vm.setNonce(vars.deployer.addr, 44);
         masterSetupParams.votingPowerProvider = new SelfRegisterVotingPowerProvider(
             address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory)
         );
@@ -110,7 +112,7 @@ contract MasterSetup is InitSetup {
         }
 
         vm.startPrank(vars.deployer.addr);
-        vm.setNonce(vars.deployer.addr, 66);
+        // vm.setNonce(vars.deployer.addr, 66);
         masterSetupParams.keyRegistry = new KeyRegistry();
         masterSetupParams.keyRegistry.initialize(IOzEIP712.OzEIP712InitParams({name: "KeyRegistry", version: "1"}));
         vm.stopPrank();
@@ -158,8 +160,8 @@ contract MasterSetup is InitSetup {
         }
 
         vm.startPrank(vars.deployer.addr);
-        vm.setNonce(vars.deployer.addr, 68);
-        masterSetupParams.master = new Master();
+        // vm.setNonce(vars.deployer.addr, 68);
+        masterSetupParams.master = new Master{salt: bytes32("master")}();
         {
             uint8[] memory requiredKeyTags = new uint8[](2);
             requiredKeyTags[0] = KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15);
@@ -186,11 +188,14 @@ contract MasterSetup is InitSetup {
             //     addr: address(secondarySetupParams.replica),
             //     chainId: uint64(initSetupParams.secondaryChain.chainId)
             // });
-            address zkVerifier = address(new Verifier());
-            address[] memory verifiers = new address[](1);
-            verifiers[0] = zkVerifier;
-            uint256[] memory maxValidators = new uint256[](1);
+            address[] memory verifiers = new address[](3);
+            verifiers[0] = address(new Verifier_10());
+            verifiers[1] = address(new Verifier_100());
+            verifiers[2] = address(new Verifier_1000());
+            uint256[] memory maxValidators = new uint256[](verifiers.length);
             maxValidators[0] = 10;
+            maxValidators[1] = 100;
+            maxValidators[2] = 1000;
             masterSetupParams.master.initialize(
                 ISettlement.SettlementInitParams({
                     networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
@@ -205,19 +210,19 @@ contract MasterSetup is InitSetup {
                     commitDuration: initSetupParams.commitDuration,
                     prolongDuration: initSetupParams.prolongDuration,
                     requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
-                    sigVerifier: address(new SigVerifierBlsBn254ZK(verifiers, maxValidators)),
-                    verificationType: 0
+                    sigVerifier: address(new SigVerifierBlsBn254ZK(verifiers, maxValidators))
                 }),
                 IValSetConfigProvider.ValSetConfigProviderInitParams({
-                    maxVotingPower: 1e16,
-                    minInclusionVotingPower: 1e4,
-                    maxValidatorsCount: 5,
+                    maxVotingPower: 1e36,
+                    minInclusionVotingPower: 0,
+                    maxValidatorsCount: 99_999_999,
                     requiredKeyTags: requiredKeyTags
                 }),
                 IMasterConfigProvider.MasterConfigProviderInitParams({
                     votingPowerProviders: votingPowerProviders,
                     keysProvider: keysProvider,
-                    replicas: replicas
+                    replicas: replicas,
+                    verificationType: 0
                 }),
                 vars.deployer.addr
             );

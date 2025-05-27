@@ -114,6 +114,20 @@ abstract contract MasterConfigProvider is PermissionManager, IMasterConfigProvid
     /**
      * @inheritdoc IMasterConfigProvider
      */
+    function getVerificationTypeAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint32) {
+        return MasterConfigProviderLogic.getVerificationTypeAt(timestamp, hint);
+    }
+
+    /**
+     * @inheritdoc IMasterConfigProvider
+     */
+    function getVerificationType() public view virtual returns (uint32) {
+        return MasterConfigProviderLogic.getVerificationType();
+    }
+
+    /**
+     * @inheritdoc IMasterConfigProvider
+     */
     function getMasterConfigAt(
         uint48 timestamp,
         bytes memory hints
@@ -171,5 +185,14 @@ abstract contract MasterConfigProvider is PermissionManager, IMasterConfigProvid
         CrossChainAddress memory replica
     ) public virtual checkPermission {
         MasterConfigProviderLogic.removeReplica(replica);
+    }
+
+    /**
+     * @inheritdoc IMasterConfigProvider
+     */
+    function setVerificationType(
+        uint32 verificationType
+    ) public virtual checkPermission {
+        MasterConfigProviderLogic.setVerificationType(verificationType);
     }
 }

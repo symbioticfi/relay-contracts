@@ -16,7 +16,6 @@ import {MasterGenesisSetup} from "./MasterGenesisSetup.sol";
 
 import {console2} from "forge-std/console2.sol";
 
-import {Verifier} from "../src/contracts/implementations/sig-verifiers/zk/HashVerifier.sol";
 import {SigVerifierBlsBn254ZK} from "../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254ZK.sol";
 
 import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
@@ -100,15 +99,18 @@ contract SettlementTest is MasterGenesisSetup {
         }
 
         bytes memory zkProof =
-            hex"2d65cbbbd71885c8e7f28860fa3343b48c8044d844b7b5e20ae8fe2797a48ea320cccb32c189e68867a9af837f1052ddb3751b385ebf3e8638801f6a92657c0801a7e2445adc43945fa94fbcb4d456c378f18ace765a837f7bb79fe222bc51272ba93456cdbba04de6e25194c432114c10cdb6f39d6eb579bbeb5b502b04985e1c87ce239bb869beb4128035efb77fff51c4268099ca480a6c8ff185e9cbf78625be2019010cd71f22e645d080c74bf7e8810c7ac986c7ffa1fab0f2a9bcf5480bbd70092c2f13796ba38a8b4d04ed9d98fe736ef0b2ffd0f8129c15f62411b61b7de037701f467e6b9887597d720db4aa434ebf84d1925c8b3b7d41f2a43fe50000000120b32cc1153b6526c516257bde3168889d93f0e499989908a8736500a9b4e4422d4538548d8ddd393d7e98a5ba21422de11c79537b2896931607a83cc37a5bf9215a74bdbc3b20661e3720a68d22ffb11780cd690e28e2098fa75b947bf4edc6263babd70230f34e8a5117bd1311623191f495597324baa8a90b2931b360225d";
+            hex"0c9d92bd8aac8588329e85aade26354a7b9206e170f0df0ee891c3927e5a58522adf6d35c9649dbf628cfe567bc31647d52cf5ae023c88984cecbf01fb477d492761b1f57ca217b83d1851f3e9276e3a758fe92b0f7022d9610ed51e1d7da1521458461ac568a806eb566e1f177baba0bee7c49bbb225347da8d236def25eb3829f4a51eecc66d28b5c973a943d752aa383cbab591b59406da361cbeac1dfcc22afdfa764b84685fabc31a3e5367ca30c2eaa3480ec44a9f847f952da34df4ca0ec698607fb631abd2939ea85d57c69e097b8cdba0734b21154479dc7c39d2a11d2dec162d71b5fad118e59a9dd6917335f251384a3cb16ed48af9f3dbed8266000000011199b925c505c27fe05e9f75e2a0965aea4b6cdb945a4a481c6bc06bd080da701cd2629a69c1946bcd2695c369de10999ce9ec4f0c51d1f8d265460b4f2646d923e00d2fa0a29d4760394d8da2af4f7545377705157c75b86a20044f792a50b30068fdfeaa3eb3be8444c454fdf3629d902034c84714a652394c35da7fa2fb6f";
 
         bytes memory proof_ = Bytes.slice(zkProof, 0, 256);
         bytes memory commitments = Bytes.slice(zkProof, 260, 324);
         bytes memory commitmentPok = Bytes.slice(zkProof, 324, 388);
 
-        uint256 signersVotingPower = 30_000_000_000_000;
+        uint256 signersVotingPower = masterSetupParams.votingPowerProvider.getTotalVotingPower(new bytes[](0));
 
         bytes memory fullProof = abi.encodePacked(proof_, commitments, commitmentPok, signersVotingPower);
+
+        console2.log("messageHash");
+        console2.logBytes32(messageHash);
 
         masterSetupParams.master.commitValSetHeader(valSetHeader, extraData, fullProof, new bytes(0));
     }

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {Verifier} from "./zk/HashVerifier.sol";
 import {SigBlsBn254} from "../../libraries/sigs/SigBlsBn254.sol";
 import {BN254} from "../../libraries/utils/BN254.sol";
 import {KeyBlsBn254} from "../../libraries/keys/KeyBlsBn254.sol";
@@ -10,9 +9,7 @@ import {ExtraDataStorageHelper} from "./libraries/ExtraDataStorageHelper.sol";
 import {ISigVerifier} from "../../../interfaces/base/ISigVerifier.sol";
 import {ISettlement} from "../../../interfaces/implementations/settlement/ISettlement.sol";
 import {ISigVerifierBlsBn254ZK} from "../../../interfaces/implementations/sig-verifiers/ISigVerifierBlsBn254ZK.sol";
-
-import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
-import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+import {IVerifier} from "../../../interfaces/implementations/sig-verifiers/zk/IVerifier.sol";
 
 contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
     using KeyBlsBn254 for bytes;
@@ -107,7 +104,7 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
 
         uint256 totalActiveValidators =
             uint256(ISettlement(settlement).getExtraDataAt(epoch, VERIFICATION_TYPE.getKey(TOTAL_ACTIVE_VALIDATORS)));
-        try Verifier(_getVerifier(totalActiveValidators)).verifyProof(zkProof, commitments, commitmentPok, [inputHash])
+        try IVerifier(_getVerifier(totalActiveValidators)).verifyProof(zkProof, commitments, commitmentPok, [inputHash])
         {
             return true;
         } catch {

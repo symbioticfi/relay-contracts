@@ -323,7 +323,7 @@ library KeyManagerLogic {
             if (keyTags[i].getType() >= TOTAL_KEY_TYPES()) {
                 revert IKeyManager.KeyManager_OnlyPredeterminedKeyTagsAllowed();
             }
-            if ((keyTagsData >> keyTags[i]) & 1 == 1) {
+            if (keyTagsData & (1 << keyTags[i]) > 0) {
                 revert IKeyManager.KeyManager_Duplicate();
             }
             keyTagsData |= uint208(1 << keyTags[i]);
@@ -336,7 +336,7 @@ library KeyManagerLogic {
         uint8 length;
         keyTags = new uint8[](KeyTag.TOTAL_KEY_TAGS);
         for (uint8 i; i < KeyTag.TOTAL_KEY_TAGS; ++i) {
-            if ((keyTagsData >> i) & 1 == 1) {
+            if (keyTagsData & (1 << i) > 0) {
                 keyTags[length++] = i;
             }
         }

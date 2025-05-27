@@ -104,20 +104,6 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     /**
      * @inheritdoc ISettlement
      */
-    function getVerificationTypeAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint32) {
-        return SettlementLogic.getVerificationTypeAt(timestamp, hint);
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
-    function getVerificationType() public view virtual returns (uint32) {
-        return SettlementLogic.getVerificationType();
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
     function getLastCommittedHeaderCaptureTimestamp() public view virtual returns (uint48) {
         return SettlementLogic.getLastCommittedHeaderCaptureTimestamp();
     }
@@ -207,22 +193,6 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
      */
     function getCaptureTimestampFromValSetHeader() public view virtual returns (uint48) {
         return SettlementLogic.getCaptureTimestampFromValSetHeader();
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
-    function getVerificationTypeFromValSetHeaderAt(
-        uint48 epoch
-    ) public view virtual returns (uint32) {
-        return SettlementLogic.getVerificationTypeFromValSetHeaderAt(epoch);
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
-    function getVerificationTypeFromValSetHeader() public view virtual returns (uint32) {
-        return SettlementLogic.getVerificationTypeFromValSetHeader();
     }
 
     /**
@@ -333,8 +303,10 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     /**
      * @inheritdoc ISettlement
      */
-    function setSigVerifier(address sigVerifier, uint32 verificationType) public virtual checkPermission {
-        SettlementLogic.setSigVerifier(sigVerifier, verificationType);
+    function setSigVerifier(
+        address sigVerifier
+    ) public virtual checkPermission {
+        SettlementLogic.setSigVerifier(sigVerifier);
     }
 
     /**

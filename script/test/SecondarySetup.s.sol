@@ -20,7 +20,9 @@ import "./InitSetup.s.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {SigVerifierBlsBn254ZK} from "../../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254ZK.sol";
-import {Verifier} from "../../src/contracts/implementations/sig-verifiers/zk/HashVerifier.sol";
+import {Verifier as Verifier_10} from "../../src/contracts/implementations/sig-verifiers/zk/Verifier_10.sol";
+import {Verifier as Verifier_100} from "../../src/contracts/implementations/sig-verifiers/zk/Verifier_100.sol";
+import {Verifier as Verifier_1000} from "../../src/contracts/implementations/sig-verifiers/zk/Verifier_1000.sol";
 
 // forge script script/test/SecondarySetup.s.sol:SecondarySetupScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_SECONDARY
 
@@ -114,11 +116,14 @@ contract SecondarySetupScript is InitSetupScript {
         requiredKeyTags[0] = KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15);
         requiredKeyTags[1] = KeyManagerLogic.KEY_TYPE_ECDSA_SECP256K1.keyTag(0);
 
-        address zkVerifier = address(new Verifier());
-        address[] memory verifiers = new address[](1);
-        verifiers[0] = zkVerifier;
-        uint256[] memory maxValidators = new uint256[](1);
+        address[] memory verifiers = new address[](3);
+        verifiers[0] = address(new Verifier_10());
+        verifiers[1] = address(new Verifier_100());
+        verifiers[2] = address(new Verifier_1000());
+        uint256[] memory maxValidators = new uint256[](verifiers.length);
         maxValidators[0] = 10;
+        maxValidators[1] = 100;
+        maxValidators[2] = 1000;
         secondarySetupParams.replica.initialize(
             ISettlement.SettlementInitParams({
                 networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
@@ -133,8 +138,7 @@ contract SecondarySetupScript is InitSetupScript {
                 commitDuration: initSetupParams.commitDuration,
                 prolongDuration: initSetupParams.prolongDuration,
                 requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
-                sigVerifier: address(new SigVerifierBlsBn254ZK(verifiers, maxValidators)),
-                verificationType: 0
+                sigVerifier: address(new SigVerifierBlsBn254ZK(verifiers, maxValidators))
             }),
             vars.deployer.addr
         );

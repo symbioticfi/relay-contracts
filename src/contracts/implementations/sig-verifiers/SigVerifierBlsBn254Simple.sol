@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {Verifier} from "./zk/HashVerifier.sol";
 import {SigBlsBn254} from "../../libraries/sigs/SigBlsBn254.sol";
 import {BN254} from "../../libraries/utils/BN254.sol";
 import {KeyBlsBn254} from "../../libraries/keys/KeyBlsBn254.sol";
@@ -12,9 +11,6 @@ import {ISigVerifier} from "../../../interfaces/base/ISigVerifier.sol";
 import {ISettlement} from "../../../interfaces/implementations/settlement/ISettlement.sol";
 import {ISigVerifierBlsBn254Simple} from
     "../../../interfaces/implementations/sig-verifiers/ISigVerifierBlsBn254Simple.sol";
-
-import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
-import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
     using KeyBlsBn254 for bytes;

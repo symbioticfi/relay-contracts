@@ -1,22 +1,21 @@
 {
+  "header": {
+    "version": 1,
+    "validatorsSszMRoot": "0xa1d1e9127339816cd3cc49c40d1b188a4c5056b0cff77137bcf992b070b935d9",
+    "epoch": 0,
+    "requiredKeyTag": 15,
+    "captureTimestamp": 1746024875,
+    "quorumThreshold": 20000000000001,
+    "previousHeaderHash": "0x0000000000000000000000000000000000000000000000000000000000000000"
+  },
   "extraData": [
     {
       "key": "0x6ea0bff153d3248c53b2836577d4c139e47e1704005133ec136e47ac7aa314b9",
-      "value": "0x0000000000000000000000000000000000000000000000000000000000000003"
+      "value": "0x000000000000000000000000000000000000000000000000000000000000000a"
     },
     {
       "key": "0x85e577ea9eaba1924380167d6170460046295e4a0548788560d1dd7e436e8f19",
-      "value": "0x13b09dd30c5d7a5fff8a225c0bdbf898aee3b308f0ea19d99008a60db4e2fcdb"
+      "value": "0x012ff96d21fe9c121155993138db5801fa2f5b0a74b1dcebff3570fcd677daa0"
     }
-  ],
-  "header": {
-    "version": 1,
-    "requiredKeyTag": 15,
-    "epoch": 0,
-    "captureTimestamp": 1731325031,
-    "verificationType": 0,
-    "quorumThreshold": 20000000000001,
-    "validatorsSszMRoot": "0xd9354a3cf52fba5126422c86d35db53d566d46f9208faa86c7b9155d7dcf3926",
-    "previousHeaderHash": "0x0000000000000000000000000000000000000000000000000000000000000000"
-  }
+  ]
 }

@@ -16,7 +16,9 @@ import {MasterGenesisSetup} from "./MasterGenesisSetup.sol";
 
 import {console2} from "forge-std/console2.sol";
 
-import {Verifier} from "../src/contracts/implementations/sig-verifiers/zk/HashVerifier.sol";
+import {Verifier as Verifier_10} from "../src/contracts/implementations/sig-verifiers/zk/Verifier_10.sol";
+import {Verifier as Verifier_100} from "../src/contracts/implementations/sig-verifiers/zk/Verifier_100.sol";
+import {Verifier as Verifier_1000} from "../src/contracts/implementations/sig-verifiers/zk/Verifier_1000.sol";
 import {SigVerifierBlsBn254ZK} from "../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254ZK.sol";
 
 import {ISigVerifier} from "../src/interfaces/base/ISigVerifier.sol";
@@ -41,47 +43,18 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetup {
         super.setUp();
 
         vm.warp(initSetupParams.zeroTimestamp);
+        vm.warp(vm.getBlockTimestamp() + 0 * masterSetupParams.master.getEpochDuration(0, new bytes(0)));
 
         setGenesis();
     }
 
     function test_verifyQuorumSig() public {
-        bytes32 messageHash = 0x204e0c470c62e2f8426b236c004b581084dd3aaa935ed3afe24dc37e0d040823;
-        uint256 totalVotingPower = 30_000_000_000_000;
-        uint256 signersVotingPower = 30_000_000_000_000;
-
-        BN254.G1Point memory aggKeyG1;
-        BN254.G2Point memory aggKeyG2;
-        BN254.G1Point memory aggSigG1;
-
-        for (uint256 i = 0; i < vars.operators.length; i++) {
-            BN254.G1Point memory keyG1 = BN254.generatorG1().scalar_mul(vars.operators[i].privateKey);
-
-            BN254.G2Point memory keyG2 = getG2Key(vars.operators[i].privateKey);
-            BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash);
-            BN254.G1Point memory sigG1 = messageG1.scalar_mul(vars.operators[i].privateKey);
-            aggSigG1 = aggSigG1.plus(sigG1);
-            aggKeyG1 = aggKeyG1.plus(keyG1);
-
-            if (aggKeyG2.X[0] == 0 && aggKeyG2.X[1] == 0 && aggKeyG2.Y[0] == 0 && aggKeyG2.Y[1] == 0) {
-                aggKeyG2 = keyG2;
-            } else {
-                (uint256 x1, uint256 x2, uint256 y1, uint256 y2) = BN254G2.ECTwistAdd(
-                    aggKeyG2.X[1],
-                    aggKeyG2.X[0],
-                    aggKeyG2.Y[1],
-                    aggKeyG2.Y[0],
-                    keyG2.X[1],
-                    keyG2.X[0],
-                    keyG2.Y[1],
-                    keyG2.Y[0]
-                );
-                aggKeyG2 = BN254.G2Point([x2, x1], [y2, y1]);
-            }
-        }
+        bytes32 messageHash = 0xcca0534ef01f2606de9b6c90df9f0a2e1a18fb5ce4d1f9cf1f94d35b398ebce4;
+        uint256 totalVotingPower = masterSetupParams.votingPowerProvider.getTotalVotingPower(new bytes[](0));
+        uint256 signersVotingPower = masterSetupParams.votingPowerProvider.getTotalVotingPower(new bytes[](0));
 
         bytes memory zkProof =
-            hex"1bbfff6bd2dab940e651197642237ce9b2c5d3c4ec761c1498c636c57bb95bc70f49530a1198c69455cd2610373c49520fa928ec515be0fa60fc54ac2bd85de2213a9cc1dbc30d714b201e430181009865153b9890fef27bfaefbeeba0ec1f681bceebfa810aeb7340150fa1add34f4a95e10bfff22738c6a2893f3f868b7e9d10700bc426b575300ec36536e940d317113630f335f48c2fb5e9bec2141b4f4618cd4bc1c884af0573e7bcdab39ff9867f01a1d4514c26caba520186ae70a84017e330c31720ed1d205fef008c4d04e37b00866eac3070740c71d6074f0b0f8f03bb5a30835dc8bf3d4a89200255dc5f6b9c0330dddb54765ba271d8868247ee000000012cfd0371e370f57f6c816e941bb100f74b14e3821976ed3df69235f29df30ead059287c9ab778cbe120f4caafcbb7debaad03b860265043362f45bd22904a3c8076235b408d60d192e44b8f8d7295a0ea94202c3185431ddef1ad6c66325ece40c1742dd5278cddfd2500e3873e800f12250358b96939d11256375e3082030d3";
+            hex"0c9d92bd8aac8588329e85aade26354a7b9206e170f0df0ee891c3927e5a58522adf6d35c9649dbf628cfe567bc31647d52cf5ae023c88984cecbf01fb477d492761b1f57ca217b83d1851f3e9276e3a758fe92b0f7022d9610ed51e1d7da1521458461ac568a806eb566e1f177baba0bee7c49bbb225347da8d236def25eb3829f4a51eecc66d28b5c973a943d752aa383cbab591b59406da361cbeac1dfcc22afdfa764b84685fabc31a3e5367ca30c2eaa3480ec44a9f847f952da34df4ca0ec698607fb631abd2939ea85d57c69e097b8cdba0734b21154479dc7c39d2a11d2dec162d71b5fad118e59a9dd6917335f251384a3cb16ed48af9f3dbed8266000000011199b925c505c27fe05e9f75e2a0965aea4b6cdb945a4a481c6bc06bd080da701cd2629a69c1946bcd2695c369de10999ce9ec4f0c51d1f8d265460b4f2646d923e00d2fa0a29d4760394d8da2af4f7545377705157c75b86a20044f792a50b30068fdfeaa3eb3be8444c454fdf3629d902034c84714a652394c35da7fa2fb6f";
 
         bytes memory fullProof;
 
@@ -95,23 +68,41 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetup {
 
         SigVerifierBlsBn254ZK sigVerifier;
         {
-            address zkVerifier = address(new Verifier());
-            address[] memory verifiers = new address[](1);
-            verifiers[0] = zkVerifier;
-            uint256[] memory maxValidators = new uint256[](1);
+            address[] memory verifiers = new address[](3);
+            verifiers[0] = address(new Verifier_10());
+            verifiers[1] = address(new Verifier_100());
+            verifiers[2] = address(new Verifier_1000());
+            uint256[] memory maxValidators = new uint256[](verifiers.length);
             maxValidators[0] = 10;
+            maxValidators[1] = 100;
+            maxValidators[2] = 1000;
             sigVerifier = new SigVerifierBlsBn254ZK(verifiers, maxValidators);
         }
 
-        assertTrue(
-            sigVerifier.verifyQuorumSig(
-                address(masterSetupParams.master),
-                masterSetupParams.master.getCurrentValSetEpoch(),
-                abi.encode(messageHash),
-                KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
-                Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
-                fullProof
-            )
+        bytes memory data = abi.encodeWithSelector(
+            ISettlement.verifyQuorumSig.selector,
+            masterSetupParams.master.getCurrentValSetEpoch(),
+            abi.encode(messageHash),
+            KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
+            Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
+            fullProof,
+            new bytes(0)
         );
+        vm.startPrank(vars.deployer.addr);
+        (bool success, bytes memory ret) = address(masterSetupParams.master).call(data);
+
+        assertTrue(success);
+        assertTrue(abi.decode(ret, (bool)));
+        // assertTrue(
+        //     sigVerifier.verifyQuorumSig(
+        //         address(masterSetupParams.master),
+        //         masterSetupParams.master.getCurrentValSetEpoch(),
+        //         abi.encode(messageHash),
+        //         KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
+        //         Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
+        //         fullProof
+        //     )
+        // );
+        vm.stopPrank();
     }
 }

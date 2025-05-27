@@ -13,12 +13,14 @@ interface IMasterConfigProvider {
         PersistentSet.Bytes32Set _votingPowerProviders;
         Checkpoints.Trace256 _keysProvider;
         PersistentSet.Bytes32Set _replicas;
+        Checkpoints.Trace208 _verificationType;
     }
 
     struct MasterConfigProviderInitParams {
         CrossChainAddress[] votingPowerProviders;
         CrossChainAddress keysProvider;
         CrossChainAddress[] replicas;
+        uint32 verificationType;
     }
 
     struct CrossChainAddress {
@@ -30,12 +32,14 @@ interface IMasterConfigProvider {
         CrossChainAddress[] votingPowerProviders;
         CrossChainAddress keysProvider;
         CrossChainAddress[] replicas;
+        uint32 verificationType;
     }
 
     struct MasterConfigHints {
         bytes[] votingPowerProvidersHints;
         bytes keysProviderHint;
         bytes[] replicasHints;
+        bytes verificationTypeHint;
     }
 
     function MasterConfigProvider_VERSION() external pure returns (uint64);
@@ -78,6 +82,10 @@ interface IMasterConfigProvider {
 
     function getActiveReplicas() external view returns (CrossChainAddress[] memory);
 
+    function getVerificationTypeAt(uint48 timestamp, bytes memory hint) external view returns (uint32);
+
+    function getVerificationType() external view returns (uint32);
+
     function getMasterConfigAt(uint48 timestamp, bytes memory hints) external view returns (MasterConfig memory);
 
     function getMasterConfig() external view returns (MasterConfig memory);
@@ -100,5 +108,9 @@ interface IMasterConfigProvider {
 
     function removeReplica(
         CrossChainAddress memory replica
+    ) external;
+
+    function setVerificationType(
+        uint32 verificationType
     ) external;
 }

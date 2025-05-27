@@ -23,7 +23,6 @@ contract MasterGenesisSetup is MasterSetup {
         uint256 quorumThreshold;
         uint8 requiredKeyTag;
         bytes32 validatorsSszMRoot;
-        uint32 verificationType;
         uint8 version;
     }
 
@@ -56,7 +55,6 @@ contract MasterGenesisSetup is MasterSetup {
             requiredKeyTag: genesis.header.requiredKeyTag,
             epoch: genesis.header.epoch,
             captureTimestamp: genesis.header.captureTimestamp,
-            verificationType: genesis.header.verificationType,
             quorumThreshold: genesis.header.quorumThreshold,
             validatorsSszMRoot: genesis.header.validatorsSszMRoot,
             previousHeaderHash: genesis.header.previousHeaderHash

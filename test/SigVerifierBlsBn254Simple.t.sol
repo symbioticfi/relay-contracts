@@ -28,7 +28,9 @@ import {MasterGenesisSetup} from "./MasterGenesisSetup.sol";
 
 import {console2} from "forge-std/console2.sol";
 
-import {Verifier} from "../src/contracts/implementations/sig-verifiers/zk/HashVerifier.sol";
+import {Verifier as Verifier_10} from "../src/contracts/implementations/sig-verifiers/zk/Verifier_10.sol";
+import {Verifier as Verifier_100} from "../src/contracts/implementations/sig-verifiers/zk/Verifier_100.sol";
+import {Verifier as Verifier_1000} from "../src/contracts/implementations/sig-verifiers/zk/Verifier_1000.sol";
 import {SigVerifierBlsBn254Simple} from "../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254Simple.sol";
 import "./InitSetup.sol";
 
@@ -242,7 +244,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
 
         vm.startPrank(vars.deployer.addr);
         // vm.setNonce(vars.deployer.addr, 68);
-        masterSetupParams.master = new Master();
+        masterSetupParams.master = new Master{salt: bytes32("master")}();
         {
             uint8[] memory requiredKeyTags = new uint8[](2);
             requiredKeyTags[0] = KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15);
@@ -269,11 +271,6 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
             //     addr: address(secondarySetupParams.replica),
             //     chainId: uint64(initSetupParams.secondaryChain.chainId)
             // });
-            address zkVerifier = address(new Verifier());
-            address[] memory verifiers = new address[](1);
-            verifiers[0] = zkVerifier;
-            uint256[] memory maxValidators = new uint256[](1);
-            maxValidators[0] = 10;
             masterSetupParams.master.initialize(
                 ISettlement.SettlementInitParams({
                     networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
@@ -288,19 +285,19 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
                     commitDuration: initSetupParams.commitDuration,
                     prolongDuration: initSetupParams.prolongDuration,
                     requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
-                    sigVerifier: address(new SigVerifierBlsBn254Simple()),
-                    verificationType: 1
+                    sigVerifier: address(new SigVerifierBlsBn254Simple())
                 }),
                 IValSetConfigProvider.ValSetConfigProviderInitParams({
-                    maxVotingPower: 1e16,
-                    minInclusionVotingPower: 1e4,
-                    maxValidatorsCount: 5,
+                    maxVotingPower: 1e36,
+                    minInclusionVotingPower: 0,
+                    maxValidatorsCount: 99_999_999,
                     requiredKeyTags: requiredKeyTags
                 }),
                 IMasterConfigProvider.MasterConfigProviderInitParams({
                     votingPowerProviders: votingPowerProviders,
                     keysProvider: keysProvider,
-                    replicas: replicas
+                    replicas: replicas,
+                    verificationType: 1
                 }),
                 vars.deployer.addr
             );
@@ -317,7 +314,6 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
             requiredKeyTag: 15,
             epoch: 0,
             captureTimestamp: 1_731_325_031,
-            verificationType: 1,
             quorumThreshold: uint256(2).mulDiv(1e18, 3, Math.Rounding.Ceil).mulDiv(
                 masterSetupParams.votingPowerProvider.getTotalVotingPower(new bytes[](0)), 1e18
             ) + 1,
