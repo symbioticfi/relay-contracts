@@ -4,6 +4,7 @@ pragma solidity ^0.8.25;
 import {PersistentSet} from "../../../libraries/structs/PersistentSet.sol";
 import {Checkpoints} from "../../../libraries/structs/Checkpoints.sol";
 import {KeyManagerLogic} from "../../../base/logic/KeyManagerLogic.sol";
+import {KeyTags} from "../../../libraries/utils/KeyTags.sol";
 
 import {IValSetConfigProvider} from "../../../../interfaces/implementations/settlement/IValSetConfigProvider.sol";
 
@@ -11,6 +12,8 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 library ValSetConfigProviderLogic {
+    using KeyTags for uint128;
+    using KeyTags for uint8[];
     using EnumerableSet for EnumerableSet.Bytes32Set;
     using Checkpoints for Checkpoints.Trace208;
     using Checkpoints for Checkpoints.Trace256;
@@ -70,13 +73,12 @@ library ValSetConfigProviderLogic {
         uint48 timestamp,
         bytes memory hint
     ) public view returns (uint8[] memory requiredKeyTags) {
-        return KeyManagerLogic.deserializeKeyTags(
-            _getValSetConfigProviderStorage()._requiredKeyTags.upperLookupRecent(timestamp, hint)
-        );
+        return
+            uint128(_getValSetConfigProviderStorage()._requiredKeyTags.upperLookupRecent(timestamp, hint)).deserialize();
     }
 
     function getRequiredKeyTags() public view returns (uint8[] memory requiredKeyTags) {
-        return KeyManagerLogic.deserializeKeyTags(_getValSetConfigProviderStorage()._requiredKeyTags.latest());
+        return uint128(_getValSetConfigProviderStorage()._requiredKeyTags.latest()).deserialize();
     }
 
     function getValSetConfigAt(
@@ -126,8 +128,6 @@ library ValSetConfigProviderLogic {
     function setRequiredKeyTags(
         uint8[] memory requiredKeyTags
     ) public {
-        _getValSetConfigProviderStorage()._requiredKeyTags.push(
-            Time.timestamp(), KeyManagerLogic.serializeKeyTags(requiredKeyTags)
-        );
+        _getValSetConfigProviderStorage()._requiredKeyTags.push(Time.timestamp(), requiredKeyTags.serialize());
     }
 }

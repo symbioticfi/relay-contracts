@@ -7,7 +7,7 @@ import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
 import {InputNormalizer} from "../../libraries/utils/InputNormalizer.sol";
 import {PersistentSet} from "../../libraries/structs/PersistentSet.sol";
 
-import {KeyTag} from "../../libraries/utils/KeyTag.sol";
+import {KeyTags} from "../../libraries/utils/KeyTags.sol";
 import {KeyBlsBn254} from "../../libraries/keys/KeyBlsBn254.sol";
 import {KeyEcdsaSecp256k1} from "../../libraries/keys/KeyEcdsaSecp256k1.sol";
 
@@ -18,7 +18,8 @@ import {IKeyManager} from "../../../interfaces/base/IKeyManager.sol";
 import {IBaseKeyManager} from "../../../interfaces/base/IBaseKeyManager.sol";
 
 library KeyManagerLogic {
-    using KeyTag for uint8;
+    using KeyTags for uint8;
+    using KeyTags for uint128;
     using Checkpoints for Checkpoints.Trace208;
     using Checkpoints for Checkpoints.Trace256;
     using Checkpoints for Checkpoints.Trace512;
@@ -45,7 +46,7 @@ library KeyManagerLogic {
     }
 
     function TOTAL_KEY_TYPES() public pure returns (uint8) {
-        return 3;
+        return 2;
     }
 
     function getKeyAt(
@@ -82,13 +83,14 @@ library KeyManagerLogic {
     }
 
     function getKeyTagsAt(address operator, uint48 timestamp, bytes memory hint) public view returns (uint8[] memory) {
-        return deserializeKeyTags(_getKeyManagerStorage()._operatorKeyTags[operator].upperLookupRecent(timestamp, hint));
+        return
+            uint128(_getKeyManagerStorage()._operatorKeyTags[operator].upperLookupRecent(timestamp, hint)).deserialize();
     }
 
     function getKeyTags(
         address operator
     ) public view returns (uint8[] memory) {
-        return deserializeKeyTags(_getKeyManagerStorage()._operatorKeyTags[operator].latest());
+        return uint128(_getKeyManagerStorage()._operatorKeyTags[operator].latest()).deserialize();
     }
 
     function getKeysAt(
@@ -181,7 +183,7 @@ library KeyManagerLogic {
     function setKey(
         function (bytes32) external returns (bytes32) hashTypedDataV4,
         address operator,
-        uint8 tag,
+        uint8 keyTag,
         bytes memory key,
         bytes memory signature,
         bytes memory extraData
@@ -191,7 +193,7 @@ library KeyManagerLogic {
         bytes32 keyHash = keccak256(key);
         if (
             !verifyKey(
-                tag,
+                keyTag,
                 key,
                 signature,
                 extraData,
@@ -204,7 +206,7 @@ library KeyManagerLogic {
         // Disallow usage between different operators
         // Disallow usage of the same key on the same type on different tags
         // Allow usage of the old key on the same type and tag
-        uint8 type_ = tag.getType();
+        uint8 type_ = keyTag.getType();
         address operatorByCompressedKey = $._operatorByKeyHash[keyHash];
         if (operatorByCompressedKey != address(0)) {
             if (operatorByCompressedKey != operator) {
@@ -212,7 +214,7 @@ library KeyManagerLogic {
             }
             if (
                 $._operatorByTypeAndKeyHash[type_][keyHash] != address(0)
-                    && $._operatorByTagAndKeyHash[tag][keyHash] == address(0)
+                    && $._operatorByTagAndKeyHash[keyTag][keyHash] == address(0)
             ) {
                 revert IKeyManager.KeyManager_AlreadyUsed();
             }
@@ -220,21 +222,21 @@ library KeyManagerLogic {
 
         $._operatorByKeyHash[keyHash] = operator;
         $._operatorByTypeAndKeyHash[type_][keyHash] = operator;
-        $._operatorByTagAndKeyHash[tag][keyHash] = operator;
+        $._operatorByTagAndKeyHash[keyTag][keyHash] = operator;
 
         $._operators.add(Time.timestamp(), operator);
-        $._operatorKeyTags[operator].push(Time.timestamp(), $._operatorKeyTags[operator].latest() | uint208(1 << tag));
-        setKey(operator, tag, key);
+        $._operatorKeyTags[operator].push(Time.timestamp(), uint128($._operatorKeyTags[operator].latest()).add(keyTag));
+        setKey(operator, keyTag, key);
     }
 
-    function setKey(address operator, uint8 tag, bytes memory key) public {
-        uint8 type_ = tag.getType();
+    function setKey(address operator, uint8 keyTag, bytes memory key) public {
+        uint8 type_ = keyTag.getType();
         if (type_ == KEY_TYPE_BLS_BN254) {
-            setKey32(operator, tag, KeyBlsBn254.fromBytes(key).serialize());
+            setKey32(operator, keyTag, KeyBlsBn254.fromBytes(key).serialize());
             return;
         }
         if (type_ == KEY_TYPE_ECDSA_SECP256K1) {
-            setKey32(operator, tag, KeyEcdsaSecp256k1.fromBytes(key).serialize());
+            setKey32(operator, keyTag, KeyEcdsaSecp256k1.fromBytes(key).serialize());
             return;
         }
         revert IKeyManager.KeyManager_InvalidKeyType();
@@ -298,34 +300,5 @@ library KeyManagerLogic {
     function getKey64(address operator, uint8 tag) public view returns (bytes memory) {
         uint256[2] memory compressedKeys = _getKeyManagerStorage()._keys64[operator][tag].latest();
         return abi.encode(compressedKeys[0], compressedKeys[1]);
-    }
-
-    function serializeKeyTags(
-        uint8[] memory keyTags
-    ) public pure returns (uint208 keyTagsData) {
-        for (uint256 i; i < keyTags.length; ++i) {
-            if (keyTags[i].getType() >= TOTAL_KEY_TYPES()) {
-                revert IKeyManager.KeyManager_OnlyPredeterminedKeyTagsAllowed();
-            }
-            if (keyTagsData & (1 << keyTags[i]) > 0) {
-                revert IKeyManager.KeyManager_Duplicate();
-            }
-            keyTagsData |= uint208(1 << keyTags[i]);
-        }
-    }
-
-    function deserializeKeyTags(
-        uint208 keyTagsData
-    ) public pure returns (uint8[] memory keyTags) {
-        uint8 length;
-        keyTags = new uint8[](KeyTag.TOTAL_KEY_TAGS);
-        for (uint8 i; i < KeyTag.TOTAL_KEY_TAGS; ++i) {
-            if (keyTagsData & (1 << i) > 0) {
-                keyTags[length++] = i;
-            }
-        }
-        assembly ("memory-safe") {
-            mstore(keyTags, length)
-        }
     }
 }

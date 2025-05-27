@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import {IValSetConfigProvider} from "../../../src/interfaces/implementations/settlement/IValSetConfigProvider.sol";
 import {IMasterConfigProvider} from "../../../src/interfaces/implementations/settlement/IMasterConfigProvider.sol";
 
-import {KeyTag} from "../../../src/contracts/libraries/utils/KeyTag.sol";
+import {KeyTags} from "../../../src/contracts/libraries/utils/KeyTags.sol";
 import {KeyEcdsaSecp256k1} from "../../../src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol";
 import {KeyBlsBn254, BN254} from "../../../src/contracts/libraries/keys/KeyBlsBn254.sol";
 import {SigBlsBn254} from "../../../src/contracts/libraries/sigs/SigBlsBn254.sol";
@@ -41,7 +41,7 @@ import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
-    using KeyTag for uint8;
+    using KeyTags for uint8;
     using KeyBlsBn254 for BN254.G1Point;
     using BN254 for BN254.G1Point;
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
@@ -119,7 +119,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
             ISettlement.verifyQuorumSig.selector,
             masterSetupParams.master.getCurrentValSetEpoch(),
             abi.encode(messageHash),
-            KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
+            KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15),
             Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(
                 masterSetupParams.votingPowerProvider.getTotalVotingPower(new bytes[](0)), 1e18
             ) + 1,
@@ -133,7 +133,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
         //     masterSetupParams.master.verifyQuorumSig(
         //         masterSetupParams.master.getCurrentValSetEpoch(),
         //         abi.encode(messageHash),
-        //         KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
+        //         KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15),
         //         Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(
         //             masterSetupParams.votingPowerProvider.getTotalVotingPower(new bytes[](0)), 1e18
         //         ) + 1,
@@ -221,7 +221,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
                 (uint8 v, bytes32 r, bytes32 s) = vm.sign(vars.operators[i].privateKey, messageHash1);
                 bytes memory signature1 = abi.encodePacked(r, s, v);
                 masterSetupParams.keyRegistry.setKey(
-                    KeyManagerLogic.KEY_TYPE_ECDSA_SECP256K1.keyTag(0), key1Bytes, signature1, new bytes(0)
+                    KeyManagerLogic.KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0), key1Bytes, signature1, new bytes(0)
                 );
                 vm.stopPrank();
             }
@@ -237,7 +237,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
                 BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash0);
                 BN254.G1Point memory sigG1 = messageG1.scalar_mul(vars.operators[i].privateKey);
                 masterSetupParams.keyRegistry.setKey(
-                    KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15), key0Bytes, abi.encode(sigG1), abi.encode(keyG2)
+                    KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15), key0Bytes, abi.encode(sigG1), abi.encode(keyG2)
                 );
                 vm.stopPrank();
             }
@@ -248,8 +248,8 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
         masterSetupParams.master = new Master{salt: bytes32("master")}();
         {
             uint8[] memory requiredKeyTags = new uint8[](2);
-            requiredKeyTags[0] = KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15);
-            requiredKeyTags[1] = KeyManagerLogic.KEY_TYPE_ECDSA_SECP256K1.keyTag(0);
+            requiredKeyTags[0] = KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15);
+            requiredKeyTags[1] = KeyManagerLogic.KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0);
             IMasterConfigProvider.CrossChainAddress[] memory votingPowerProviders =
                 new IMasterConfigProvider.CrossChainAddress[](1);
             // IMasterConfigProvider.CrossChainAddress[] memory votingPowerProviders =
@@ -285,7 +285,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
                     ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
                     commitDuration: initSetupParams.commitDuration,
                     prolongDuration: initSetupParams.prolongDuration,
-                    requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
+                    requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15),
                     sigVerifier: address(new SigVerifierBlsBn254Simple())
                 }),
                 IValSetConfigProvider.ValSetConfigProviderInitParams({

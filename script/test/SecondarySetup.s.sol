@@ -10,7 +10,7 @@ import {IEpochManager} from "../../src/interfaces/base/IEpochManager.sol";
 import {IOzEIP712} from "../../src/interfaces/base/common/IOzEIP712.sol";
 import {IVaultManager} from "../../src/interfaces/base/IVaultManager.sol";
 
-import {KeyTag} from "../../src/contracts/libraries/utils/KeyTag.sol";
+import {KeyTags} from "../../src/contracts/libraries/utils/KeyTags.sol";
 import {KeyManagerLogic} from "../../src/contracts/base/logic/KeyManagerLogic.sol";
 
 import {SigVerifierMock} from "../../test/mocks/SigVerifierMock.sol";
@@ -27,7 +27,7 @@ import {Verifier as Verifier_1000} from "../../src/contracts/implementations/sig
 // forge script script/test/SecondarySetup.s.sol:SecondarySetupScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_SECONDARY
 
 contract SecondarySetupScript is InitSetupScript {
-    using KeyTag for uint8;
+    using KeyTags for uint8;
 
     bytes32 internal constant KEY_OWNERSHIP_TYPEHASH = keccak256("KeyOwnership(address operator,bytes key)");
 
@@ -113,8 +113,8 @@ contract SecondarySetupScript is InitSetupScript {
         vm.startBroadcast(vars.network.privateKey);
         secondarySetupParams.replica = new Replica();
         uint8[] memory requiredKeyTags = new uint8[](2);
-        requiredKeyTags[0] = KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15);
-        requiredKeyTags[1] = KeyManagerLogic.KEY_TYPE_ECDSA_SECP256K1.keyTag(0);
+        requiredKeyTags[0] = KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15);
+        requiredKeyTags[1] = KeyManagerLogic.KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0);
 
         address[] memory verifiers = new address[](3);
         verifiers[0] = address(new Verifier_10());
@@ -137,7 +137,7 @@ contract SecondarySetupScript is InitSetupScript {
                 ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
                 commitDuration: initSetupParams.commitDuration,
                 prolongDuration: initSetupParams.prolongDuration,
-                requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.keyTag(15),
+                requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15),
                 sigVerifier: address(new SigVerifierBlsBn254ZK(verifiers, maxValidators))
             }),
             vars.deployer.addr

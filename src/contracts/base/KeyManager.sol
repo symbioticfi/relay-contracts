@@ -11,14 +11,14 @@ import {PersistentSet} from "../libraries/structs/PersistentSet.sol";
 import {KeyManagerLogic} from "./logic/KeyManagerLogic.sol";
 import {OzEIP712} from "./common/OzEIP712.sol";
 
-import {KeyTag} from "../libraries/utils/KeyTag.sol";
+import {KeyTags} from "../libraries/utils/KeyTags.sol";
 import {KeyBlsBn254} from "../libraries/keys/KeyBlsBn254.sol";
 import {KeyEcdsaSecp256k1} from "../libraries/keys/KeyEcdsaSecp256k1.sol";
 
 import {IKeyManager} from "../../interfaces/base/IKeyManager.sol";
 
 abstract contract KeyManager is MulticallUpgradeable, OzEIP712, IKeyManager {
-    using KeyTag for uint8;
+    using KeyTags for uint8;
     using Checkpoints for Checkpoints.Trace208;
     using Checkpoints for Checkpoints.Trace256;
     using Checkpoints for Checkpoints.Trace512;
@@ -202,17 +202,5 @@ abstract contract KeyManager is MulticallUpgradeable, OzEIP712, IKeyManager {
 
     function _getKey64(address operator, uint8 tag) internal view returns (bytes memory) {
         return KeyManagerLogic.getKey64(operator, tag);
-    }
-
-    function _serializeKeyTags(
-        uint8[] memory keyTags
-    ) internal pure returns (uint208) {
-        return KeyManagerLogic.serializeKeyTags(keyTags);
-    }
-
-    function _deserializeKeyTags(
-        uint208 keyTagsData
-    ) internal pure returns (uint8[] memory) {
-        return KeyManagerLogic.deserializeKeyTags(keyTagsData);
     }
 }
