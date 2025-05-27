@@ -10,10 +10,6 @@ import {OzAccessControl} from "../../features/permissions/OzAccessControl.sol";
 import {IMaster} from "../../../interfaces/implementations/settlement/IMaster.sol";
 
 contract Master is Settlement, ValSetConfigProvider, MasterConfigProvider, OzAccessControl, IMaster {
-    constructor() {
-        // _disableInitializers();
-    }
-
     /**
      * @inheritdoc IMaster
      */

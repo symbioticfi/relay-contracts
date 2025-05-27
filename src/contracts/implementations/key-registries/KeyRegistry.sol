@@ -6,10 +6,6 @@ import {KeyManager} from "../../base/KeyManager.sol";
 import {IKeyRegistry} from "../../../interfaces/implementations/key-registries/IKeyRegistry.sol";
 
 contract KeyRegistry is KeyManager, IKeyRegistry {
-    constructor() {
-        // _disableInitializers();
-    }
-
     /**
      * @inheritdoc IKeyRegistry
      */

@@ -8,10 +8,6 @@ import {OzAccessControl} from "../../features/permissions/OzAccessControl.sol";
 import {IReplica} from "../../../interfaces/implementations/settlement/IReplica.sol";
 
 contract Replica is Settlement, OzAccessControl, IReplica {
-    constructor() {
-        // _disableInitializers();
-    }
-
     /**
      * @inheritdoc IReplica
      */

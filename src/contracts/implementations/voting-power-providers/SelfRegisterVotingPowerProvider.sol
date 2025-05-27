@@ -25,9 +25,7 @@ contract SelfRegisterVotingPowerProvider is
     EqualStakeToVP,
     ISelfRegisterVotingPowerProvider
 {
-    constructor(address operatorRegistry, address vaultFactory) VaultManager(operatorRegistry, vaultFactory) {
-        // _disableInitializers();
-    }
+    constructor(address operatorRegistry, address vaultFactory) VaultManager(operatorRegistry, vaultFactory) {}
 
     /**
      * @inheritdoc ISelfRegisterVotingPowerProvider
