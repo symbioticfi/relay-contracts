@@ -10,79 +10,89 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 library PersistentSet {
     using EnumerableSet for EnumerableSet.Bytes32Set;
     using Checkpoints for Checkpoints.Trace256;
+    using Checkpoints for Checkpoints.Trace208;
     using Math for uint256;
     using InputNormalizer for bytes[];
 
     struct Set {
         EnumerableSet.Bytes32Set _elements;
         Checkpoints.Trace256[] _statuses;
-        Checkpoints.Trace256 _length;
+        Checkpoints.Trace208 _length;
     }
 
     function _add(Set storage set, uint48 key, bytes32 value) private returns (bool) {
-        bool added = set._elements.add(value);
-        if (added) {
-            (uint256 row, uint256 column) = _getRowAndColumn(set._elements.length() - 1);
-            if (column == 0) {
-                Checkpoints.Trace256 storage statusBitMap = set._statuses.push();
-                statusBitMap.push(key, 1);
+        unchecked {
+            bool added = set._elements.add(value);
+            if (added) {
+                (uint256 row, uint256 column) = _getRowAndColumn(set._elements.length() - 1);
+                if (column == 0) {
+                    Checkpoints.Trace256 storage statusBitMap = set._statuses.push();
+                    statusBitMap.push(key, 1);
+                } else {
+                    Checkpoints.Trace256 storage statusBitMap = set._statuses[row];
+                    statusBitMap.push(key, statusBitMap.latest() | (1 << column));
+                }
             } else {
-                Checkpoints.Trace256 storage statusBitMap = set._statuses[row];
-                statusBitMap.push(key, statusBitMap.latest() | (1 << column));
+                (uint256 row, uint256 column) = _getRowAndColumn(set._elements._inner._positions[value] - 1);
+                uint256 oldStatusBitMap = set._statuses[row].latest();
+                uint256 newStatusBitMap = oldStatusBitMap | (1 << column);
+                if (oldStatusBitMap == newStatusBitMap) {
+                    return false;
+                }
+                set._statuses[row].push(key, newStatusBitMap);
             }
-        } else {
-            (uint256 row, uint256 column) = _getRowAndColumn(set._elements._inner._positions[value] - 1);
+            set._length.push(key, _length(set) + 1);
+            return true;
+        }
+    }
+
+    function _remove(Set storage set, uint48 key, bytes32 value) private returns (bool) {
+        unchecked {
+            uint256 positionRaw = set._elements._inner._positions[value];
+            if (positionRaw == 0) {
+                return false;
+            }
+            (uint256 row, uint256 column) = _getRowAndColumn(positionRaw - 1);
             uint256 oldStatusBitMap = set._statuses[row].latest();
-            uint256 newStatusBitMap = oldStatusBitMap | (1 << column);
+            uint256 newStatusBitMap = oldStatusBitMap & ~(1 << column);
             if (oldStatusBitMap == newStatusBitMap) {
                 return false;
             }
             set._statuses[row].push(key, newStatusBitMap);
+            set._length.push(key, _length(set) - 1);
+            return true;
         }
-        set._length.push(key, set._length.latest() + 1);
-        return true;
-    }
-
-    function _remove(Set storage set, uint48 key, bytes32 value) private returns (bool) {
-        if (!set._elements.contains(value)) {
-            return false;
-        }
-        (uint256 row, uint256 column) = _getRowAndColumn(set._elements._inner._positions[value] - 1);
-        uint256 oldStatusBitMap = set._statuses[row].latest();
-        uint256 newStatusBitMap = oldStatusBitMap & ~(1 << column);
-        if (oldStatusBitMap == newStatusBitMap) {
-            return false;
-        }
-        set._statuses[row].push(key, newStatusBitMap);
-        set._length.push(key, set._length.latest() - 1);
-        return true;
     }
 
     function _containsAt(Set storage set, uint48 key, bytes32 value, bytes memory hint) private view returns (bool) {
-        uint256 positionRaw = set._elements._inner._positions[value];
-        if (positionRaw == 0) {
-            return false;
+        unchecked {
+            uint256 positionRaw = set._elements._inner._positions[value];
+            if (positionRaw == 0) {
+                return false;
+            }
+            (uint256 row, uint256 column) = _getRowAndColumn(positionRaw - 1);
+            return set._statuses[row].upperLookupRecent(key, hint) & (1 << column) > 0;
         }
-        (uint256 row, uint256 column) = _getRowAndColumn(positionRaw - 1);
-        return set._statuses[row].upperLookupRecent(key, hint) & (1 << column) > 0;
     }
 
     function _contains(Set storage set, bytes32 value) private view returns (bool) {
-        uint256 positionRaw = set._elements._inner._positions[value];
-        if (positionRaw == 0) {
-            return false;
+        unchecked {
+            uint256 positionRaw = set._elements._inner._positions[value];
+            if (positionRaw == 0) {
+                return false;
+            }
+            (uint256 row, uint256 column) = _getRowAndColumn(positionRaw - 1);
+            return set._statuses[row].latest() & (1 << column) > 0;
         }
-        (uint256 row, uint256 column) = _getRowAndColumn(positionRaw - 1);
-        return set._statuses[row].latest() & (1 << column) > 0;
     }
 
-    function _lengthAt(Set storage set, uint48 key, bytes memory hint) private view returns (uint256) {
+    function _lengthAt(Set storage set, uint48 key, bytes memory hint) private view returns (uint208) {
         return set._length.upperLookupRecent(key, hint);
     }
 
     function _length(
         Set storage set
-    ) private view returns (uint256) {
+    ) private view returns (uint208) {
         return set._length.latest();
     }
 
@@ -91,41 +101,45 @@ library PersistentSet {
         uint48 key,
         bytes[] memory hints
     ) private view returns (bytes32[] memory values_) {
-        uint256 totalLength = set._elements.length();
-        values_ = new bytes32[](totalLength);
-        uint256 rows = totalLength.ceilDiv(256);
-        hints = InputNormalizer.normalize(hints, rows);
-        uint256 setLength;
-        for (uint256 i; i < rows; ++i) {
-            uint256 statusBitMap = set._statuses[i].upperLookupRecent(key, hints[i]);
-            for (uint256 j; j < 256; ++j) {
-                if (statusBitMap & (1 << j) > 0) {
-                    values_[setLength++] = set._elements.at(i * 256 + j);
+        unchecked {
+            uint256 totalLength = set._elements.length();
+            values_ = new bytes32[](totalLength);
+            uint256 rows = (totalLength + 255) >> 8;
+            hints = InputNormalizer.normalize(hints, rows);
+            uint256 setLength;
+            for (uint256 i; i < rows; ++i) {
+                uint256 statusBitMap = set._statuses[i].upperLookupRecent(key, hints[i]);
+                for (uint256 j; j < 256; ++j) {
+                    if (statusBitMap & (1 << j) > 0) {
+                        values_[setLength++] = set._elements.at(i << 8 | j);
+                    }
                 }
             }
-        }
-        assembly ("memory-safe") {
-            mstore(values_, setLength)
+            assembly ("memory-safe") {
+                mstore(values_, setLength)
+            }
         }
     }
 
     function _values(
         Set storage set
     ) private view returns (bytes32[] memory values_) {
-        uint256 totalLength = set._elements.length();
-        values_ = new bytes32[](totalLength);
-        uint256 rows = totalLength.ceilDiv(256);
-        uint256 setLength;
-        for (uint256 i; i < rows; ++i) {
-            uint256 statusBitMap = set._statuses[i].latest();
-            for (uint256 j; j < 256; ++j) {
-                if (statusBitMap & (1 << j) > 0) {
-                    values_[setLength++] = set._elements.at(i * 256 + j);
+        unchecked {
+            uint256 totalLength = set._elements.length();
+            values_ = new bytes32[](totalLength);
+            uint256 rows = (totalLength + 255) >> 8;
+            uint256 setLength;
+            for (uint256 i; i < rows; ++i) {
+                uint256 statusBitMap = set._statuses[i].latest();
+                for (uint256 j; j < 256; ++j) {
+                    if (statusBitMap & (1 << j) > 0) {
+                        values_[setLength++] = set._elements.at(i << 8 | j);
+                    }
                 }
             }
-        }
-        assembly ("memory-safe") {
-            mstore(values_, setLength)
+            assembly ("memory-safe") {
+                mstore(values_, setLength)
+            }
         }
     }
 
@@ -138,7 +152,7 @@ library PersistentSet {
     function _getRowAndColumn(
         uint256 position
     ) private pure returns (uint256, uint256) {
-        return (position / 256, position % 256);
+        return (position >> 8, position & 0xff);
     }
 
     // Bytes32Set
@@ -168,13 +182,13 @@ library PersistentSet {
         return _contains(set._inner, value);
     }
 
-    function lengthAt(Bytes32Set storage set, uint48 key, bytes memory hint) internal view returns (uint256) {
+    function lengthAt(Bytes32Set storage set, uint48 key, bytes memory hint) internal view returns (uint208) {
         return _lengthAt(set._inner, key, hint);
     }
 
     function length(
         Bytes32Set storage set
-    ) internal view returns (uint256) {
+    ) internal view returns (uint208) {
         return _length(set._inner);
     }
 
@@ -234,13 +248,13 @@ library PersistentSet {
         return _contains(set._inner, bytes32(uint256(uint160(value))));
     }
 
-    function lengthAt(AddressSet storage set, uint48 key, bytes memory hint) internal view returns (uint256) {
+    function lengthAt(AddressSet storage set, uint48 key, bytes memory hint) internal view returns (uint208) {
         return _lengthAt(set._inner, key, hint);
     }
 
     function length(
         AddressSet storage set
-    ) internal view returns (uint256) {
+    ) internal view returns (uint208) {
         return _length(set._inner);
     }
 
