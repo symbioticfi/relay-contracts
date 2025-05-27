@@ -14,7 +14,6 @@ import {OzEIP712} from "./common/OzEIP712.sol";
 import {KeyTag} from "../libraries/utils/KeyTag.sol";
 import {KeyBlsBn254} from "../libraries/keys/KeyBlsBn254.sol";
 import {KeyEcdsaSecp256k1} from "../libraries/keys/KeyEcdsaSecp256k1.sol";
-import {KeyEddsaCurve25519} from "../libraries/keys/KeyEddsaCurve25519.sol";
 
 import {IKeyManager} from "../../interfaces/base/IKeyManager.sol";
 
@@ -25,7 +24,6 @@ abstract contract KeyManager is MulticallUpgradeable, OzEIP712, IKeyManager {
     using Checkpoints for Checkpoints.Trace512;
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
     using KeyEcdsaSecp256k1 for KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1;
-    using KeyEddsaCurve25519 for KeyEddsaCurve25519.KEY_EDDSA_CURVE25519;
     using InputNormalizer for bytes[];
     using InputNormalizer for bytes[][];
     using PersistentSet for PersistentSet.AddressSet;
@@ -49,13 +47,6 @@ abstract contract KeyManager is MulticallUpgradeable, OzEIP712, IKeyManager {
      */
     function KEY_TYPE_ECDSA_SECP256K1() public pure returns (uint8) {
         return KeyManagerLogic.KEY_TYPE_ECDSA_SECP256K1;
-    }
-
-    /**
-     * @inheritdoc IKeyManager
-     */
-    function KEY_TYPE_EDDSA_CURVE25519() public pure returns (uint8) {
-        return KeyManagerLogic.KEY_TYPE_EDDSA_CURVE25519;
     }
 
     function __KeyManager_init() internal virtual onlyInitializing {}

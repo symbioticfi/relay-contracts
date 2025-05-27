@@ -10,10 +10,9 @@ import {PersistentSet} from "../../libraries/structs/PersistentSet.sol";
 import {KeyTag} from "../../libraries/utils/KeyTag.sol";
 import {KeyBlsBn254} from "../../libraries/keys/KeyBlsBn254.sol";
 import {KeyEcdsaSecp256k1} from "../../libraries/keys/KeyEcdsaSecp256k1.sol";
-import {KeyEddsaCurve25519} from "../../libraries/keys/KeyEddsaCurve25519.sol";
+
 import {SigBlsBn254} from "../../libraries/sigs/SigBlsBn254.sol";
 import {SigEcdsaSecp256k1} from "../../libraries/sigs/SigEcdsaSecp256k1.sol";
-import {SigEddsaCurve25519} from "../../libraries/sigs/SigEddsaCurve25519.sol";
 
 import {IKeyManager} from "../../../interfaces/base/IKeyManager.sol";
 import {IBaseKeyManager} from "../../../interfaces/base/IBaseKeyManager.sol";
@@ -25,7 +24,6 @@ library KeyManagerLogic {
     using Checkpoints for Checkpoints.Trace512;
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
     using KeyEcdsaSecp256k1 for KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1;
-    using KeyEddsaCurve25519 for KeyEddsaCurve25519.KEY_EDDSA_CURVE25519;
     using InputNormalizer for bytes[];
     using InputNormalizer for bytes[][];
     using PersistentSet for PersistentSet.AddressSet;
@@ -34,7 +32,6 @@ library KeyManagerLogic {
 
     uint8 internal constant KEY_TYPE_BLS_BN254 = 0;
     uint8 internal constant KEY_TYPE_ECDSA_SECP256K1 = 1;
-    uint8 internal constant KEY_TYPE_EDDSA_CURVE25519 = 2;
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.KeyManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant KeyManagerLocation = 0x6521690ca2d70b23823c69a92a4a0089d4c270c9c885205eafdf0ae297a8bf00;
@@ -64,9 +61,6 @@ library KeyManagerLogic {
         if (keyType == KEY_TYPE_ECDSA_SECP256K1) {
             return KeyEcdsaSecp256k1.deserialize(getKey32At(operator, tag, timestamp, hint)).toBytes();
         }
-        if (keyType == KEY_TYPE_EDDSA_CURVE25519) {
-            return KeyEddsaCurve25519.deserialize(getKey32At(operator, tag, timestamp, hint)).toBytes();
-        }
         revert IKeyManager.KeyManager_InvalidKeyType();
     }
 
@@ -77,9 +71,6 @@ library KeyManagerLogic {
         }
         if (keyType == KEY_TYPE_ECDSA_SECP256K1) {
             return KeyEcdsaSecp256k1.deserialize(getKey32(operator, tag)).toBytes();
-        }
-        if (keyType == KEY_TYPE_EDDSA_CURVE25519) {
-            return KeyEddsaCurve25519.deserialize(getKey32(operator, tag)).toBytes();
         }
         revert IKeyManager.KeyManager_InvalidKeyType();
     }
@@ -246,10 +237,6 @@ library KeyManagerLogic {
             setKey32(operator, tag, KeyEcdsaSecp256k1.fromBytes(key).serialize());
             return;
         }
-        if (type_ == KEY_TYPE_EDDSA_CURVE25519) {
-            setKey32(operator, tag, KeyEddsaCurve25519.fromBytes(key).serialize());
-            return;
-        }
         revert IKeyManager.KeyManager_InvalidKeyType();
     }
 
@@ -278,9 +265,6 @@ library KeyManagerLogic {
         }
         if (type_ == KEY_TYPE_ECDSA_SECP256K1) {
             return SigEcdsaSecp256k1.verify(key, message, signature, extraData);
-        }
-        if (type_ == KEY_TYPE_EDDSA_CURVE25519) {
-            return SigEddsaCurve25519.verify(key, message, signature, extraData);
         }
         return false;
     }

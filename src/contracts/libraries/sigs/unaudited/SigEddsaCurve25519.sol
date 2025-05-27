@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {KeyEddsaCurve25519} from "../keys/KeyEddsaCurve25519.sol";
+import {KeyEddsaCurve25519} from "../../keys/unaudited/KeyEddsaCurve25519.sol";
 
 import {SCL_EIP6565} from "@crypto-lib/lib/libSCL_EIP6565.sol";
 

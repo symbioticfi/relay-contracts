@@ -13,7 +13,7 @@ import {KeyEcdsaSecp256k1} from "../src/contracts/libraries/keys/KeyEcdsaSecp256
 import {KeyBlsBn254, BN254} from "../src/contracts/libraries/keys/KeyBlsBn254.sol";
 import {KeyManagerLogic} from "../src/contracts/base/logic/KeyManagerLogic.sol";
 
-import {BN254G2} from "./libraries/BN254G2.sol";
+import {BN254G2} from "./helpers/BN254G2.sol";
 
 import {ISettlement} from "../src/interfaces/implementations/settlement/ISettlement.sol";
 import {IOzOwnable} from "../src/interfaces/features/permissions/IOzOwnable.sol";

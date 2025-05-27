@@ -13,7 +13,7 @@ import {KeyEcdsaSecp256k1} from "../../src/contracts/libraries/keys/KeyEcdsaSecp
 import {KeyBlsBn254, BN254} from "../../src/contracts/libraries/keys/KeyBlsBn254.sol";
 import {KeyManagerLogic} from "../../src/contracts/base/logic/KeyManagerLogic.sol";
 
-import {BN254G2} from "../../test/libraries/BN254G2.sol";
+import {BN254G2} from "../../test/helpers/BN254G2.sol";
 
 import "./SecondarySetup.s.sol";
 

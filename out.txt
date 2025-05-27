@@ -1,185 +1,21 @@
-Compiling 12 files with Solc 0.8.28
-Solc 0.8.28 finished in 7.31s
-Compiler run successful with warnings:
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> test/integration/SymbioticCoreBindings.sol:240:33:
-    |
-240 |     ) internal virtual returns (uint256 depositedAmount, uint256 mintedShares) {
-    |                                 ^^^^^^^^^^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> test/integration/SymbioticCoreBindings.sol:240:58:
-    |
-240 |     ) internal virtual returns (uint256 depositedAmount, uint256 mintedShares) {
-    |                                                          ^^^^^^^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> test/integration/SymbioticCoreBindings.sol:259:33:
-    |
-259 |     ) internal virtual returns (uint256 burnedShares, uint256 mintedShares) {
-    |                                 ^^^^^^^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> test/integration/SymbioticCoreBindings.sol:259:55:
-    |
-259 |     ) internal virtual returns (uint256 burnedShares, uint256 mintedShares) {
-    |                                                       ^^^^^^^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> test/integration/SymbioticCoreBindings.sol:278:33:
-    |
-278 |     ) internal virtual returns (uint256 withdrawnAssets, uint256 mintedShares) {
-    |                                 ^^^^^^^^^^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> test/integration/SymbioticCoreBindings.sol:278:58:
-    |
-278 |     ) internal virtual returns (uint256 withdrawnAssets, uint256 mintedShares) {
-    |                                                          ^^^^^^^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> test/integration/SymbioticCoreBindings.sol:297:33:
-    |
-297 |     ) internal virtual returns (uint256 amount) {
-    |                                 ^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> test/integration/SymbioticCoreBindings.sol:316:33:
-    |
-316 |     ) internal virtual returns (uint256 amount) {
-    |                                 ^^^^^^^^^^^^^^
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyBlsBn254.sol:39:5:
-   |
-39 |     function unwrap(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyBlsBn254.sol:70:5:
-   |
-70 |     function toBytes(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyBlsBn254.sol:86:5:
-   |
-86 |     function zeroKey() internal view returns (KEY_BLS_BN254 memory key) {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyBlsBn254.sol:90:5:
-   |
-90 |     function equal(KEY_BLS_BN254 memory key1, KEY_BLS_BN254 memory key2) internal view returns (bool) {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol:26:5:
-   |
-26 |     function unwrap(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol:32:5:
-   |
-32 |     function serialize(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol:38:5:
-   |
-38 |     function deserialize(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol:44:5:
-   |
-44 |     function toBytes(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol:60:5:
-   |
-60 |     function zeroKey() internal view returns (KEY_ECDSA_SECP256K1 memory key) {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol:64:5:
-   |
-64 |     function equal(KEY_ECDSA_SECP256K1 memory key1, KEY_ECDSA_SECP256K1 memory key2) internal view returns (bool) {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyEddsaCurve25519.sol:40:5:
-   |
-40 |     function unwrap(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyEddsaCurve25519.sol:46:5:
-   |
-46 |     function serialize(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyEddsaCurve25519.sol:52:5:
-   |
-52 |     function deserialize(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyEddsaCurve25519.sol:58:5:
-   |
-58 |     function toBytes(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyEddsaCurve25519.sol:74:5:
-   |
-74 |     function zeroKey() internal view returns (KEY_EDDSA_CURVE25519 memory key) {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyEddsaCurve25519.sol:78:5:
-   |
-78 |     function equal(KEY_EDDSA_CURVE25519 memory key1, KEY_EDDSA_CURVE25519 memory key2) internal view returns (bool) {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> test/integration/SymbioticCoreConstants.sol:442:5:
-    |
-442 |     function allTokens() internal view returns (string[] memory result) {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/MasterGenesisSetup.sol:40:5:
-   |
-40 |     function loadGenesis()
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-   --> test/SigVerifierBlsBn254Simple.t.sol:308:5:
-    |
-308 |     function loadGenesisSimple()
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
+No files changed, compilation skipped
 
 Ran 2 tests for test/ValSetVerifier.t.sol:ValSetVerifierTest
 [PASS] test_VerifyOperator() (gas: 46452)
 [PASS] test_VerifyVaultVotingPower() (gas: 39711)
-Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 921.38µs (263.38µs CPU time)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 939.54µs (291.96µs CPU time)
 
 Ran 1 test for test/SigVerifierBlsBn254ZK.t.sol:SigVerifierBlsBn254ZKTest
-[PASS] test_verifyQuorumSig() (gas: 8722350)
-Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 47.70ms (8.49ms CPU time)
+[PASS] test_verifyQuorumSig() (gas: 8688498)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 46.71ms (7.94ms CPU time)
 
 Ran 1 test for test/Settlement.t.sol:SettlementTest
-[PASS] test_commitValSetHeader() (gas: 4822176)
-Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 53.01ms (13.85ms CPU time)
+[PASS] test_commitValSetHeader() (gas: 4805250)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 51.31ms (13.10ms CPU time)
 
 Ran 1 test for test/SigVerifierBlsBn254Simple.t.sol:SigVerifierBlsBn254SimpleTest
-[PASS] test_verifyQuorumSig() (gas: 7422924)
-Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 57.89ms (12.95ms CPU time)
+[PASS] test_verifyQuorumSig() (gas: 7390608)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 56.49ms (12.07ms CPU time)
 
 ╭----------------------------------------------+-----------------+-------+--------+-------+---------╮
 | lib/core/test/mocks/Token.sol:Token Contract |                 |       |        |       |         |
@@ -244,7 +80,7 @@ Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 57.89ms (12.95ms CP
 +==========================================================================================================================+
 | Deployment Cost                                                       | Deployment Size |      |        |      |         |
 |-----------------------------------------------------------------------+-----------------+------+--------+------+---------|
-| 3937302                                                               | 19716           |      |        |      |         |
+| 3935702                                                               | 19708           |      |        |      |         |
 |-----------------------------------------------------------------------+-----------------+------+--------+------+---------|
 |                                                                       |                 |      |        |      |         |
 |-----------------------------------------------------------------------+-----------------+------+--------+------+---------|
@@ -258,13 +94,13 @@ Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 57.89ms (12.95ms CP
 +======================================================================================================================================+
 | Deployment Cost                                                                 | Deployment Size |       |        |       |         |
 |---------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
-| 1255931                                                                         | 6325            |       |        |       |         |
+| 1254728                                                                         | 6319            |       |        |       |         |
 |---------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
 |                                                                                 |                 |       |        |       |         |
 |---------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
 | Function Name                                                                   | Min             | Avg   | Median | Max   | # Calls |
 |---------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
-| getActiveOperators                                                              | 62738           | 62738 | 62738  | 62738 | 6       |
+| getActiveOperators                                                              | 61202           | 61202 | 61202  | 61202 | 6       |
 ╰---------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╯
 
 ╭---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------╮
@@ -272,15 +108,15 @@ Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 57.89ms (12.95ms CP
 +=====================================================================================================================================+
 | Deployment Cost                                                           | Deployment Size |         |         |         |         |
 |---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| 4205259                                                                   | 21054           |         |         |         |         |
+| 4204059                                                                   | 21048           |         |         |         |         |
 |---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 |                                                                           |                 |         |         |         |         |
 |---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | Function Name                                                             | Min             | Avg     | Median  | Max     | # Calls |
 |---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getOperatorVotingPower                                                    | 278665          | 278665  | 278665  | 278665  | 20      |
+| getOperatorVotingPower                                                    | 277126          | 277126  | 277126  | 277126  | 20      |
 |---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getTotalVotingPower                                                       | 1471669         | 1471669 | 1471669 | 1471669 | 6       |
+| getTotalVotingPower                                                       | 1454743         | 1454743 | 1454743 | 1454743 | 6       |
 |---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | registerToken                                                             | 275266          | 275266  | 275266  | 275266  | 3       |
 ╰---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------╯
@@ -426,15 +262,15 @@ Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 57.89ms (12.95ms CP
 |-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | SUBNETWORK                                                                                                                        | 2762            | 2762    | 2762    | 2762    | 99      |
 |-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getOperatorVotingPower                                                                                                            | 282708          | 282708  | 282708  | 282708  | 20      |
+| getOperatorVotingPower                                                                                                            | 281169          | 281169  | 281169  | 281169  | 20      |
 |-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getTotalVotingPower                                                                                                               | 1475637         | 1475637 | 1475637 | 1475637 | 6       |
+| getTotalVotingPower                                                                                                               | 1458711         | 1458711 | 1458711 | 1458711 | 6       |
 |-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | initialize                                                                                                                        | 180294          | 180294  | 180294  | 180294  | 3       |
 |-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | registerOperator                                                                                                                  | 115303          | 134744  | 115303  | 309718  | 30      |
 |-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| registerSharedVault                                                                                                               | 169024          | 233830  | 169024  | 363442  | 9       |
+| registerSharedVault                                                                                                               | 169023          | 233829  | 169023  | 363441  | 9       |
 |-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | registerToken                                                                                                                     | 302246          | 302246  | 302246  | 302246  | 3       |
 |-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
@@ -464,4 +300,4 @@ Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 57.89ms (12.95ms CP
 ╰---------------------------------------------------------------+-----------------+------+--------+------+---------╯
 
 
-Ran 4 test suites in 60.83ms (159.53ms CPU time): 5 tests passed, 0 failed, 0 skipped (5 total tests)
+Ran 4 test suites in 59.16ms (155.45ms CPU time): 5 tests passed, 0 failed, 0 skipped (5 total tests)

@@ -47,8 +47,6 @@ interface IKeyManager is IBaseKeyManager {
 
     function KEY_TYPE_ECDSA_SECP256K1() external view returns (uint8);
 
-    function KEY_TYPE_EDDSA_CURVE25519() external view returns (uint8);
-
     function TOTAL_KEY_TYPES() external view returns (uint8);
 
     function getKeyAt(

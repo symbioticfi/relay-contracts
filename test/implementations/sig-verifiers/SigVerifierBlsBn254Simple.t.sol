@@ -1,40 +1,41 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {IValSetConfigProvider} from "../src/interfaces/implementations/settlement/IValSetConfigProvider.sol";
-import {IMasterConfigProvider} from "../src/interfaces/implementations/settlement/IMasterConfigProvider.sol";
+import {IValSetConfigProvider} from "../../../src/interfaces/implementations/settlement/IValSetConfigProvider.sol";
+import {IMasterConfigProvider} from "../../../src/interfaces/implementations/settlement/IMasterConfigProvider.sol";
 
-import {KeyTag} from "../src/contracts/libraries/utils/KeyTag.sol";
-import {KeyEcdsaSecp256k1} from "../src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol";
-import {KeyBlsBn254, BN254} from "../src/contracts/libraries/keys/KeyBlsBn254.sol";
-import {SigBlsBn254} from "../src/contracts/libraries/sigs/SigBlsBn254.sol";
-import {KeyManagerLogic} from "../src/contracts/base/logic/KeyManagerLogic.sol";
+import {KeyTag} from "../../../src/contracts/libraries/utils/KeyTag.sol";
+import {KeyEcdsaSecp256k1} from "../../../src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol";
+import {KeyBlsBn254, BN254} from "../../../src/contracts/libraries/keys/KeyBlsBn254.sol";
+import {SigBlsBn254} from "../../../src/contracts/libraries/sigs/SigBlsBn254.sol";
+import {KeyManagerLogic} from "../../../src/contracts/base/logic/KeyManagerLogic.sol";
 import {ExtraDataStorageHelper} from
-    "../src/contracts/implementations/sig-verifiers/libraries/ExtraDataStorageHelper.sol";
+    "../../../src/contracts/implementations/sig-verifiers/libraries/ExtraDataStorageHelper.sol";
 
-import {BN254G2} from "./libraries/BN254G2.sol";
+import {BN254G2} from "../../helpers/BN254G2.sol";
 
-import {ISettlement} from "../src/interfaces/implementations/settlement/ISettlement.sol";
-import {IBaseKeyManager} from "../src/interfaces/base/IBaseKeyManager.sol";
-import {IOzOwnable} from "../src/interfaces/features/permissions/IOzOwnable.sol";
-import {INetworkManager} from "../src/interfaces/base/INetworkManager.sol";
-import {IEpochManager} from "../src/interfaces/base/IEpochManager.sol";
-import {IOzEIP712} from "../src/interfaces/base/common/IOzEIP712.sol";
-import {IVaultManager} from "../src/interfaces/base/IVaultManager.sol";
+import {ISettlement} from "../../../src/interfaces/implementations/settlement/ISettlement.sol";
+import {IBaseKeyManager} from "../../../src/interfaces/base/IBaseKeyManager.sol";
+import {IOzOwnable} from "../../../src/interfaces/features/permissions/IOzOwnable.sol";
+import {INetworkManager} from "../../../src/interfaces/base/INetworkManager.sol";
+import {IEpochManager} from "../../../src/interfaces/base/IEpochManager.sol";
+import {IOzEIP712} from "../../../src/interfaces/base/common/IOzEIP712.sol";
+import {IVaultManager} from "../../../src/interfaces/base/IVaultManager.sol";
 import {ISigVerifierBlsBn254Simple} from
-    "../src/interfaces/implementations/sig-verifiers/ISigVerifierBlsBn254Simple.sol";
+    "../../../src/interfaces/implementations/sig-verifiers/ISigVerifierBlsBn254Simple.sol";
 
-import {MasterGenesisSetup} from "./MasterGenesisSetup.sol";
+import {MasterGenesisSetup} from "../../MasterGenesisSetup.sol";
 
 import {console2} from "forge-std/console2.sol";
 
-import {Verifier as Verifier_10} from "../src/contracts/implementations/sig-verifiers/zk/Verifier_10.sol";
-import {Verifier as Verifier_100} from "../src/contracts/implementations/sig-verifiers/zk/Verifier_100.sol";
-import {Verifier as Verifier_1000} from "../src/contracts/implementations/sig-verifiers/zk/Verifier_1000.sol";
-import {SigVerifierBlsBn254Simple} from "../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254Simple.sol";
-import "./InitSetup.sol";
+import {Verifier as Verifier_10} from "../../../src/contracts/implementations/sig-verifiers/zk/Verifier_10.sol";
+import {Verifier as Verifier_100} from "../../../src/contracts/implementations/sig-verifiers/zk/Verifier_100.sol";
+import {Verifier as Verifier_1000} from "../../../src/contracts/implementations/sig-verifiers/zk/Verifier_1000.sol";
+import {SigVerifierBlsBn254Simple} from
+    "../../../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254Simple.sol";
+import "../../InitSetup.sol";
 
-import {ISigVerifier} from "../src/interfaces/base/ISigVerifier.sol";
+import {ISigVerifier} from "../../../src/interfaces/base/ISigVerifier.sol";
 
 import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
