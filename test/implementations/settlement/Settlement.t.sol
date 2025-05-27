@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.25;
 
 import {KeyTags} from "../../../src/contracts/libraries/utils/KeyTags.sol";
 import {KeyEcdsaSecp256k1} from "../../../src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol";
@@ -72,7 +72,7 @@ contract SettlementTest is MasterGenesisSetup {
         BN254.G2Point memory aggKeyG2;
         BN254.G1Point memory aggSigG1;
 
-        for (uint256 i = 0; i < vars.operators.length; i++) {
+        for (uint256 i; i < vars.operators.length; ++i) {
             BN254.G1Point memory keyG1 = BN254.generatorG1().scalar_mul(vars.operators[i].privateKey);
 
             BN254.G2Point memory keyG2 = getG2Key(vars.operators[i].privateKey);

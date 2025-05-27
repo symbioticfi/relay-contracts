@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.25;
 
 import {SigBlsBn254} from "../../libraries/sigs/SigBlsBn254.sol";
 import {BN254} from "../../libraries/utils/BN254.sol";

@@ -54,7 +54,7 @@ contract MasterCommitScript is MasterGenesisSetupScript {
         BN254.G2Point memory aggKeyG2;
         BN254.G1Point memory aggSigG1;
 
-        for (uint256 i = 0; i < vars.operators.length; i++) {
+        for (uint256 i; i < vars.operators.length; ++i) {
             BN254.G1Point memory keyG1 = BN254.generatorG1().scalar_mul(vars.operators[i].privateKey);
 
             BN254.G2Point memory keyG2 = getG2Key(vars.operators[i].privateKey);

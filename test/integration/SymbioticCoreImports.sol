@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.25;
 
 import {IRegistry as ISymbioticRegistry} from "@symbioticfi/core/src/interfaces/common/IRegistry.sol";
 import {IEntity as ISymbioticEntity} from "@symbioticfi/core/src/interfaces/common/IEntity.sol";
