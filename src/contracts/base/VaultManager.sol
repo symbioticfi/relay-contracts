@@ -428,54 +428,26 @@ abstract contract VaultManager is OperatorManager, StakeToVotingPowerManager, IV
         VaultManagerLogic.unregisterToken(token);
     }
 
-    /**
-     * @notice Registers a new shared vault
-     * @param vault The vault address to register
-     */
     function _registerSharedVault(
         address vault
     ) internal virtual {
         VaultManagerLogic.registerSharedVault(VAULT_FACTORY, vault);
     }
 
-    /**
-     * @notice Registers a new operator vault
-     * @param operator The operator address
-     * @param vault The vault address to register
-     */
     function _registerOperatorVault(address operator, address vault) internal virtual {
         VaultManagerLogic.registerOperatorVault(VAULT_FACTORY, operator, vault);
     }
 
-    /**
-     * @notice Unregisters a shared vault
-     * @param vault The vault address to unregister
-     */
     function _unregisterSharedVault(
         address vault
     ) internal virtual {
         VaultManagerLogic.unregisterSharedVault(vault);
     }
 
-    /**
-     * @notice Unregisters an operator vault
-     * @param operator The operator address
-     * @param vault The vault address to unregister
-     */
     function _unregisterOperatorVault(address operator, address vault) internal virtual {
         VaultManagerLogic.unregisterOperatorVault(operator, vault);
     }
 
-    /**
-     * @notice Slashes a vault based on provided conditions
-     * @param timestamp The timestamp when the slash occurs
-     * @param vault The vault address
-     * @param operator The operator to slash
-     * @param amount The amount to slash
-     * @param hints Additional data for the slasher
-     * @return success True if the slash was executed successfully, false otherwise
-     * @return response index for veto slashing or amount for instant slashing
-     */
     function _slashVault(
         uint48 timestamp,
         address vault,
@@ -486,14 +458,6 @@ abstract contract VaultManager is OperatorManager, StakeToVotingPowerManager, IV
         return VaultManagerLogic.slashVault(timestamp, vault, operator, amount, hints);
     }
 
-    /**
-     * @notice Executes a veto-based slash for a vault
-     * @param vault The vault address
-     * @param slashIndex The index of the slash to execute
-     * @param hints Additional data for the veto slasher
-     * @return success True if the slash was executed successfully, false otherwise
-     * @return slashedAmount The amount that was slashed
-     */
     function _executeSlash(
         address vault,
         uint256 slashIndex,

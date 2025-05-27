@@ -39,18 +39,6 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
     /**
      * @inheritdoc IForcePauseSelfRegisterOperators
      */
-    function forceUnpauseOperator(
-        address operator
-    ) public virtual checkPermission {
-        if (!isOperatorForcePaused(operator)) {
-            revert ForcePauseSelfRegisterOperators_OperatorNotForcePaused();
-        }
-        _getForcePauseStorage()._forcePaused[operator] = false;
-    }
-
-    /**
-     * @inheritdoc IForcePauseSelfRegisterOperators
-     */
     function forcePauseOperator(
         address operator
     ) public virtual checkPermission {
@@ -66,11 +54,13 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
     /**
      * @inheritdoc IForcePauseSelfRegisterOperators
      */
-    function forceUnpauseOperatorVault(address operator, address vault) public virtual checkPermission {
-        if (!isOperatorVaultForcePaused(operator, vault)) {
-            revert ForcePauseSelfRegisterOperators_OperatorVaultNotForcePaused();
+    function forceUnpauseOperator(
+        address operator
+    ) public virtual checkPermission {
+        if (!isOperatorForcePaused(operator)) {
+            revert ForcePauseSelfRegisterOperators_OperatorNotForcePaused();
         }
-        _getForcePauseStorage()._forcePausedVault[operator][vault] = false;
+        _getForcePauseStorage()._forcePaused[operator] = false;
     }
 
     /**
@@ -84,6 +74,16 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
         if (isOperatorVaultActive(operator, vault)) {
             _unregisterOperatorVault(operator, vault);
         }
+    }
+
+    /**
+     * @inheritdoc IForcePauseSelfRegisterOperators
+     */
+    function forceUnpauseOperatorVault(address operator, address vault) public virtual checkPermission {
+        if (!isOperatorVaultForcePaused(operator, vault)) {
+            revert ForcePauseSelfRegisterOperators_OperatorVaultNotForcePaused();
+        }
+        _getForcePauseStorage()._forcePausedVault[operator][vault] = false;
     }
 
     function _registerOperatorImpl(address operator, address vault) internal virtual override {

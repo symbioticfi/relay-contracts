@@ -72,16 +72,6 @@ abstract contract WhitelistSelfRegisterOperators is SelfRegisterOperators, IWhit
     /**
      * @inheritdoc IWhitelistSelfRegisterOperators
      */
-    function whitelistOperatorVault(address operator, address vault) public virtual checkPermission {
-        if (isOperatorVaultWhitelisted(operator, vault)) {
-            revert WhitelistSelfRegisterOperators_OperatorVaultAlreadyWhitelisted();
-        }
-        _getWhitelistStorage()._whitelistedVault[operator][vault] = true;
-    }
-
-    /**
-     * @inheritdoc IWhitelistSelfRegisterOperators
-     */
     function unwhitelistOperator(
         address operator
     ) public virtual checkPermission {
@@ -92,6 +82,16 @@ abstract contract WhitelistSelfRegisterOperators is SelfRegisterOperators, IWhit
         if (isWhitelistEnabled() && isOperatorActive(operator)) {
             _unregisterOperator(operator);
         }
+    }
+
+    /**
+     * @inheritdoc IWhitelistSelfRegisterOperators
+     */
+    function whitelistOperatorVault(address operator, address vault) public virtual checkPermission {
+        if (isOperatorVaultWhitelisted(operator, vault)) {
+            revert WhitelistSelfRegisterOperators_OperatorVaultAlreadyWhitelisted();
+        }
+        _getWhitelistStorage()._whitelistedVault[operator][vault] = true;
     }
 
     /**
