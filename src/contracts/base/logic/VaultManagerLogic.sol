@@ -29,11 +29,6 @@ import {OperatorManagerLogic} from "./OperatorManagerLogic.sol";
 
 import {IVaultManager} from "../../../interfaces/base/IVaultManager.sol";
 
-/**
- * @title VaultManager
- * @notice Abstract contract for managing vaults and their relationships with operators
- * @dev Extends BaseManager and provides functionality for registering, pausing, and managing vaults
- */
 library VaultManagerLogic {
     using EnumerableMap for EnumerableMap.AddressToUintMap;
     using EnumerableMap for EnumerableMap.AddressToAddressMap;
@@ -50,20 +45,12 @@ library VaultManagerLogic {
     bytes32 private constant VaultManagerStorageLocation =
         0x485f0695561726d087d0cb5cf546efed37ef61dfced21455f1ba7eb5e5b3db00;
 
-    /**
-     * @notice Internal helper to access the VaultManager storage struct
-     * @dev Uses assembly to load storage location from a constant slot
-     * @return $ Storage pointer to the VaultManagerStorage struct
-     */
     function _getVaultManagerStorage() internal pure returns (IVaultManager.VaultManagerStorage storage $) {
         assembly {
             $.slot := VaultManagerStorageLocation
         }
     }
 
-    /**
-     * @notice Initializes the VaultManager with required parameters
-     */
     function initialize(
         IVaultManager.VaultManagerInitParams memory initParams
     ) public {
@@ -128,7 +115,7 @@ library VaultManagerLogic {
     function isSharedVaultRegistered(
         address vault
     ) public view returns (bool) {
-        return _getVaultManagerStorage()._sharedVaults.contains(vault);
+        return _getVaultManagerStorage()._sharedVaults.allValues().contains(vault);
     }
 
     function isSharedVaultActiveAt(address vault, uint48 timestamp, bytes memory hint) public view returns (bool) {
@@ -173,7 +160,7 @@ library VaultManagerLogic {
     }
 
     function isOperatorVaultRegistered(address operator, address vault) public view returns (bool) {
-        return _getVaultManagerStorage()._operatorVaults[operator].contains(vault);
+        return _getVaultManagerStorage()._operatorVaults[operator].allValues().contains(vault);
     }
 
     function isOperatorVaultActiveAt(
@@ -265,7 +252,7 @@ library VaultManagerLogic {
         if (!isTokenActive(IVault(vault).collateral())) {
             return 0;
         }
-        return stakeToVotingPower(operator, getOperatorStake(vault, operator), extraData);
+        return stakeToVotingPower(vault, getOperatorStake(vault, operator), extraData);
     }
 
     function getOperatorVotingPowerAt(
