@@ -51,7 +51,8 @@ contract SettlementTest is MasterGenesisSetup {
 
         valSetHeader.epoch = 1;
         valSetHeader.captureTimestamp = masterSetupParams.master.getCurrentEpochStart();
-        valSetHeader.previousHeaderHash = keccak256(abi.encode(masterSetupParams.master.getValSetHeaderAt(0)));
+        // valSetHeader.previousHeaderHash = keccak256(abi.encode(masterSetupParams.master.getValSetHeaderAt(0)));
+        valSetHeader.previousHeaderHash = 0x9ff403105928d3f1b175251c01c8c0fb0bba20e781cdd12c845e7715c84549f2;
 
         bytes32 messageHash = masterSetupParams.master.hashTypedDataV4CrossChain(
             keccak256(
@@ -67,6 +68,7 @@ contract SettlementTest is MasterGenesisSetup {
 
         console2.log("messageHash");
         console2.logBytes32(messageHash);
+        console2.logBytes32(valSetHeader.previousHeaderHash);
 
         BN254.G1Point memory aggKeyG1;
         BN254.G2Point memory aggKeyG2;

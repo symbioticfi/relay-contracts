@@ -16,6 +16,8 @@ import {SelfRegisterVotingPowerProvider} from
 import {ExtraDataStorageHelper} from
     "../src/contracts/implementations/sig-verifiers/libraries/ExtraDataStorageHelper.sol";
 
+import {ISettlement} from "../src/interfaces/implementations/settlement/ISettlement.sol";
+
 contract InitSetup is SymbioticCoreInit {
     using Math for uint256;
     using ExtraDataStorageHelper for uint32;
@@ -58,6 +60,26 @@ contract InitSetup is SymbioticCoreInit {
         uint256[] stakerPrivateKeys;
         uint96 subnetworkID;
         uint48 zeroTimestamp;
+    }
+
+    struct ExtraDataStruct {
+        bytes32 key;
+        bytes32 value;
+    }
+
+    struct ValSetHeaderStruct {
+        uint48 captureTimestamp;
+        uint48 epoch;
+        bytes32 previousHeaderHash;
+        uint256 quorumThreshold;
+        uint8 requiredKeyTag;
+        bytes32 validatorsSszMRoot;
+        uint8 version;
+    }
+
+    struct Genesis {
+        ExtraDataStruct[] extraData;
+        ValSetHeaderStruct header;
     }
 
     InitSetupParams public initSetupParams;
@@ -141,7 +163,8 @@ contract InitSetup is SymbioticCoreInit {
         initSetupParams.masterChain.tokens[0] = address(new Token("Test"));
         vm.stopPrank();
 
-        uint48 zeroTimestamp = uint48(vm.getBlockTimestamp() + DEPLOYMENT_BUFFER);
+        // uint48 zeroTimestamp = uint48(vm.getBlockTimestamp() + DEPLOYMENT_BUFFER);
+        uint48 zeroTimestamp = 1_731_325_331 - EPOCH_DURATION;
 
         for (uint256 i; i < vars.stakers.length; ++i) {
             for (uint256 j; j < initSetupParams.masterChain.tokens.length; ++j) {
@@ -243,4 +266,33 @@ contract InitSetup is SymbioticCoreInit {
     //         vm.rememberKey(vars.stakers[i].privateKey);
     //     }
     // }
+
+    function loadGenesis()
+        public
+        returns (ISettlement.ValSetHeader memory valSetHeader, ISettlement.ExtraData[] memory extraData)
+    {
+        Genesis memory genesis;
+        {
+            string memory root = vm.projectRoot();
+            string memory path = string.concat(root, "/test/data/genesis_header.json");
+            string memory json = vm.readFile(path);
+            bytes memory data = vm.parseJson(json);
+            genesis = abi.decode(data, (Genesis));
+        }
+
+        valSetHeader = ISettlement.ValSetHeader({
+            version: genesis.header.version,
+            requiredKeyTag: genesis.header.requiredKeyTag,
+            epoch: genesis.header.epoch,
+            captureTimestamp: genesis.header.captureTimestamp,
+            quorumThreshold: genesis.header.quorumThreshold,
+            validatorsSszMRoot: genesis.header.validatorsSszMRoot,
+            previousHeaderHash: genesis.header.previousHeaderHash
+        });
+
+        extraData = new ISettlement.ExtraData[](genesis.extraData.length);
+        for (uint256 i; i < genesis.extraData.length; ++i) {
+            extraData[i] = ISettlement.ExtraData({key: genesis.extraData[i].key, value: genesis.extraData[i].value});
+        }
+    }
 }
