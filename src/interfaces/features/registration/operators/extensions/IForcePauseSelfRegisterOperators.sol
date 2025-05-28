@@ -16,6 +16,8 @@ interface IForcePauseSelfRegisterOperators {
         mapping(address => mapping(address => bool)) _forcePausedVault;
     }
 
+    function ForcePauseSelfRegisterOperators_VERSION() external view returns (uint64);
+
     function isOperatorForcePaused(
         address operator
     ) external view returns (bool);

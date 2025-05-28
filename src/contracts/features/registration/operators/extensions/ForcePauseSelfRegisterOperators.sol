@@ -7,6 +7,11 @@ import {IForcePauseSelfRegisterOperators} from
     "../../../../../interfaces/features/registration/operators/extensions/IForcePauseSelfRegisterOperators.sol";
 
 abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IForcePauseSelfRegisterOperators {
+    /**
+     * @inheritdoc IForcePauseSelfRegisterOperators
+     */
+    uint64 public constant ForcePauseSelfRegisterOperators_VERSION = 1;
+
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.ForcePauseSelfRegisterOperators")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant ForcePauseSelfRegisterOperatorsStorageLocation =
         0xf3871d05fd4da42686c3c56dfd4be98b1d278da4bf1fd61b1d6e7a6e37722600;

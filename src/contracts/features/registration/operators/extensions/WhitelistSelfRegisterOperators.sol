@@ -7,6 +7,11 @@ import {IWhitelistSelfRegisterOperators} from
     "../../../../../interfaces/features/registration/operators/extensions/IWhitelistSelfRegisterOperators.sol";
 
 abstract contract WhitelistSelfRegisterOperators is SelfRegisterOperators, IWhitelistSelfRegisterOperators {
+    /**
+     * @inheritdoc IWhitelistSelfRegisterOperators
+     */
+    uint64 public constant WhitelistSelfRegisterOperators_VERSION = 1;
+
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.WhitelistSelfRegisterOperators")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant WhitelistSelfRegisterOperatorsStorageLocation =
         0x25b93ff8b4a329091c8d52079f1be19dcd6e61195383d70f54f5235ddae87400;
