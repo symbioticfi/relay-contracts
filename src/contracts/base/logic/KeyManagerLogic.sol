@@ -162,11 +162,11 @@ library KeyManagerLogic {
         return _getKeyManagerStorage()._operators.values();
     }
 
-    function getKeysOperatorsLengthAt(uint48 timestamp, bytes memory hint) public view returns (uint256) {
+    function getKeysOperatorsLengthAt(uint48 timestamp, bytes memory hint) public view returns (uint208) {
         return _getKeyManagerStorage()._operators.lengthAt(timestamp, hint);
     }
 
-    function getKeysOperatorsLength() public view returns (uint256) {
+    function getKeysOperatorsLength() public view returns (uint208) {
         return _getKeyManagerStorage()._operators.length();
     }
 
@@ -268,7 +268,7 @@ library KeyManagerLogic {
         if (type_ == KEY_TYPE_ECDSA_SECP256K1) {
             return SigEcdsaSecp256k1.verify(key, message, signature, extraData);
         }
-        return false;
+        revert IKeyManager.KeyManager_InvalidKeyType();
     }
 
     function getKey32At(

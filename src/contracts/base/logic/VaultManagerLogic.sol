@@ -74,18 +74,18 @@ library VaultManagerLogic {
         return _getVaultManagerStorage()._slashingWindow;
     }
 
-    function isTokenRegistered(
-        address token
-    ) public view returns (bool) {
-        return _getVaultManagerStorage()._tokens.allValues().contains(token);
-    }
-
     function getAllTokensLength() public view returns (uint256) {
         return _getVaultManagerStorage()._tokens.allValues().length();
     }
 
     function getAllTokens() public view returns (address[] memory) {
         return _getVaultManagerStorage()._tokens.allValues().values();
+    }
+
+    function isTokenRegistered(
+        address token
+    ) public view returns (bool) {
+        return _getVaultManagerStorage()._tokens.allValues().contains(token);
     }
 
     function isTokenActiveAt(address token, uint48 timestamp, bytes memory hint) public view returns (bool) {
@@ -109,12 +109,20 @@ library VaultManagerLogic {
         return _getVaultManagerStorage()._tokens.values();
     }
 
-    function getActiveTokensLengthAt(uint48 timestamp, bytes memory hint) public view returns (uint256) {
+    function getActiveTokensLengthAt(uint48 timestamp, bytes memory hint) public view returns (uint208) {
         return _getVaultManagerStorage()._tokens.lengthAt(timestamp, hint);
     }
 
-    function getActiveTokensLength() public view returns (uint256) {
+    function getActiveTokensLength() public view returns (uint208) {
         return _getVaultManagerStorage()._tokens.length();
+    }
+
+    function getAllSharedVaultsLength() public view returns (uint256) {
+        return _getVaultManagerStorage()._sharedVaults.allValues().length();
+    }
+
+    function getAllSharedVaults() public view returns (address[] memory) {
+        return _getVaultManagerStorage()._sharedVaults.allValues().values();
     }
 
     function isSharedVaultRegistered(
@@ -133,18 +141,6 @@ library VaultManagerLogic {
         return _getVaultManagerStorage()._sharedVaults.contains(vault);
     }
 
-    /**
-     * @notice Gets the total number of shared vaults
-     * @return uint256 The count of shared vaults
-     */
-    function getAllSharedVaultsLength() public view returns (uint256) {
-        return _getVaultManagerStorage()._sharedVaults.allValues().length();
-    }
-
-    function getAllSharedVaults() public view returns (address[] memory) {
-        return _getVaultManagerStorage()._sharedVaults.allValues().values();
-    }
-
     function getActiveSharedVaultsAt(
         uint48 timestamp,
         bytes[] memory hints
@@ -156,12 +152,24 @@ library VaultManagerLogic {
         return _getVaultManagerStorage()._sharedVaults.values();
     }
 
-    function getActiveSharedVaultsLengthAt(uint48 timestamp, bytes memory hint) public view returns (uint256) {
+    function getActiveSharedVaultsLengthAt(uint48 timestamp, bytes memory hint) public view returns (uint208) {
         return _getVaultManagerStorage()._sharedVaults.lengthAt(timestamp, hint);
     }
 
-    function getActiveSharedVaultsLength() public view returns (uint256) {
+    function getActiveSharedVaultsLength() public view returns (uint208) {
         return _getVaultManagerStorage()._sharedVaults.length();
+    }
+
+    function getAllOperatorVaultsLength(
+        address operator
+    ) public view returns (uint256) {
+        return _getVaultManagerStorage()._operatorVaults[operator].allValues().length();
+    }
+
+    function getAllOperatorVaults(
+        address operator
+    ) public view returns (address[] memory) {
+        return _getVaultManagerStorage()._operatorVaults[operator].allValues().values();
     }
 
     function isOperatorVaultRegistered(address operator, address vault) public view returns (bool) {
@@ -179,18 +187,6 @@ library VaultManagerLogic {
 
     function isOperatorVaultActive(address operator, address vault) public view returns (bool) {
         return _getVaultManagerStorage()._operatorVaults[operator].contains(vault);
-    }
-
-    function getAllOperatorVaultsLength(
-        address operator
-    ) public view returns (uint256) {
-        return _getVaultManagerStorage()._operatorVaults[operator].allValues().length();
-    }
-
-    function getAllOperatorVaults(
-        address operator
-    ) public view returns (address[] memory) {
-        return _getVaultManagerStorage()._operatorVaults[operator].allValues().values();
     }
 
     function getActiveOperatorVaultsAt(
@@ -211,23 +207,16 @@ library VaultManagerLogic {
         address operator,
         uint48 timestamp,
         bytes memory hint
-    ) public view returns (uint256) {
+    ) public view returns (uint208) {
         return _getVaultManagerStorage()._operatorVaults[operator].lengthAt(timestamp, hint);
     }
 
     function getActiveOperatorVaultsLength(
         address operator
-    ) public view returns (uint256) {
+    ) public view returns (uint208) {
         return _getVaultManagerStorage()._operatorVaults[operator].length();
     }
 
-    /**
-     * @notice Gets the stake amount for an operator in a vault at a specific timestamp
-     * @param timestamp The timestamp to check
-     * @param operator The operator address
-     * @param vault The vault address
-     * @return uint256 The stake amount at the timestamp
-     */
     function getOperatorStakeAt(
         address vault,
         address operator,
@@ -243,14 +232,6 @@ library VaultManagerLogic {
         return IBaseDelegator(IVault(vault).delegator()).stake(NetworkManagerLogic.SUBNETWORK(), operator);
     }
 
-    /**
-     * @notice Gets the votingPower amount for an operator in a vault at a specific timestamp
-     * @param timestamp The timestamp to check
-     * @param operator The operator address
-     * @param vault The vault address
-     * @return uint256 The votingPower amount at the timestamp
-     * @dev Doesn't consider active statuses.
-     */
     function getOperatorVotingPowerAt(
         function (address, uint256, bytes memory, uint48) external view returns (uint256) stakeToVotingPowerAt,
         address operator,
@@ -287,11 +268,6 @@ library VaultManagerLogic {
         return stakeToVotingPower(operator, getOperatorStake(vault, operator), extraData);
     }
 
-    /**
-     * @notice Gets the total votingPower amount for an operator across all vaults
-     * @param operator The operator address
-     * @return votingPower The total votingPower amount
-     */
     function getOperatorVotingPowerAt(
         function (address, uint256, bytes memory, uint48) external view returns (uint256) stakeToVotingPowerAt,
         address operator,

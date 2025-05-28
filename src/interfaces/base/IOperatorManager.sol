@@ -36,7 +36,7 @@ interface IOperatorManager {
 
     function getActiveOperators() external view returns (address[] memory);
 
-    function getActiveOperatorsLengthAt(uint48 timestamp, bytes memory hint) external view returns (uint256);
+    function getActiveOperatorsLengthAt(uint48 timestamp, bytes memory hint) external view returns (uint208);
 
-    function getActiveOperatorsLength() external view returns (uint256);
+    function getActiveOperatorsLength() external view returns (uint208);
 }
