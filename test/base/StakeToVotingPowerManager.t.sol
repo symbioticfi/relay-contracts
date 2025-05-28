@@ -1,1 +1,69 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.25;
 
+import "forge-std/Test.sol";
+import {StakeToVotingPowerManager} from "../../src/contracts/base/StakeToVotingPowerManager.sol";
+
+contract TestStakeToVotingPowerManager is StakeToVotingPowerManager {
+    bool public initialized;
+
+    function initialize() external initializer {
+        initialized = true;
+    }
+
+    function stakeToVotingPowerAt(
+        address vault,
+        uint256 stake,
+        bytes memory extraData,
+        uint48 timestamp
+    ) public view override returns (uint256 power) {
+        return stake / 10;
+    }
+
+    function stakeToVotingPower(
+        address vault,
+        uint256 stake,
+        bytes memory extraData
+    ) public view override returns (uint256 power) {
+        return stake / 10;
+    }
+}
+
+contract StakeToVotingPowerManagerTest is Test {
+    TestStakeToVotingPowerManager private manager;
+
+    function setUp() public {
+        manager = new TestStakeToVotingPowerManager();
+        manager.initialize();
+    }
+
+    function testVersion() public {
+        assertEq(manager.StakeToVotingPowerManager_VERSION(), 1, "Version mismatch");
+    }
+
+    function testReInitializeReverts() public {
+        vm.expectRevert();
+        manager.initialize();
+    }
+
+    function testStakeToVotingPowerAt() public {
+        uint256 stake = 1000;
+        uint48 timestamp = uint48(block.timestamp);
+        // We'll pass in some dummy values for the other arguments.
+        uint256 power = manager.stakeToVotingPowerAt(address(0x1234), stake, bytes("extra"), timestamp);
+        assertEq(power, 100, "Expect stake/10");
+    }
+
+    function testStakeToVotingPower() public {
+        uint256 stake = 5000;
+        uint256 power = manager.stakeToVotingPower(address(0x4567), stake, bytes(""));
+        assertEq(power, 500, "Expect stake/10");
+    }
+
+    function testWithExtraData() public {
+        uint256 stake = 2000;
+        bytes memory myExtraData = abi.encode("some info", uint256(123));
+        uint256 power = manager.stakeToVotingPower(address(0xABC), stake, myExtraData);
+        assertEq(power, 200, "still stake/10 ignoring extra data");
+    }
+}
