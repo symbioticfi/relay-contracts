@@ -9,14 +9,13 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 library PersistentSet {
     using EnumerableSet for EnumerableSet.Bytes32Set;
-    using Checkpoints for Checkpoints.Trace256;
     using Checkpoints for Checkpoints.Trace208;
     using Math for uint256;
     using InputNormalizer for bytes[];
 
     struct Set {
         EnumerableSet.Bytes32Set _elements;
-        Checkpoints.Trace256[] _statuses;
+        Checkpoints.Trace208[] _statuses;
         Checkpoints.Trace208 _length;
     }
 
@@ -26,11 +25,11 @@ library PersistentSet {
             if (added) {
                 (uint256 row, uint256 column) = _getRowAndColumn(set._elements.length() - 1);
                 if (column == 0) {
-                    Checkpoints.Trace256 storage statusBitMap = set._statuses.push();
+                    Checkpoints.Trace208 storage statusBitMap = set._statuses.push();
                     statusBitMap.push(key, 1);
                 } else {
-                    Checkpoints.Trace256 storage statusBitMap = set._statuses[row];
-                    statusBitMap.push(key, statusBitMap.latest() | (1 << column));
+                    Checkpoints.Trace208 storage statusBitMap = set._statuses[row];
+                    statusBitMap.push(key, uint208(statusBitMap.latest() | (1 << column)));
                 }
             } else {
                 (uint256 row, uint256 column) = _getRowAndColumn(set._elements._inner._positions[value] - 1);
@@ -39,7 +38,7 @@ library PersistentSet {
                 if (oldStatusBitMap == newStatusBitMap) {
                     return false;
                 }
-                set._statuses[row].push(key, newStatusBitMap);
+                set._statuses[row].push(key, uint208(newStatusBitMap));
             }
             set._length.push(key, _length(set) + 1);
             return true;
@@ -58,7 +57,7 @@ library PersistentSet {
             if (oldStatusBitMap == newStatusBitMap) {
                 return false;
             }
-            set._statuses[row].push(key, newStatusBitMap);
+            set._statuses[row].push(key, uint208(newStatusBitMap));
             set._length.push(key, _length(set) - 1);
             return true;
         }
@@ -104,14 +103,14 @@ library PersistentSet {
         unchecked {
             uint256 totalLength = set._elements.length();
             values_ = new bytes32[](totalLength);
-            uint256 rows = (totalLength + 255) >> 8;
+            uint256 rows = (totalLength + 207) / 208;
             hints = InputNormalizer.normalize(hints, rows);
             uint256 setLength;
             for (uint256 i; i < rows; ++i) {
                 uint256 statusBitMap = set._statuses[i].upperLookupRecent(key, hints[i]);
-                for (uint256 j; j < 256; ++j) {
+                for (uint256 j; j < 208; ++j) {
                     if (statusBitMap & (1 << j) > 0) {
-                        values_[setLength++] = set._elements.at(i << 8 | j);
+                        values_[setLength++] = set._elements.at(i * 208 + j);
                     }
                 }
             }
@@ -127,13 +126,13 @@ library PersistentSet {
         unchecked {
             uint256 totalLength = set._elements.length();
             values_ = new bytes32[](totalLength);
-            uint256 rows = (totalLength + 255) >> 8;
+            uint256 rows = (totalLength + 207) / 208;
             uint256 setLength;
             for (uint256 i; i < rows; ++i) {
                 uint256 statusBitMap = set._statuses[i].latest();
-                for (uint256 j; j < 256; ++j) {
+                for (uint256 j; j < 208; ++j) {
                     if (statusBitMap & (1 << j) > 0) {
-                        values_[setLength++] = set._elements.at(i << 8 | j);
+                        values_[setLength++] = set._elements.at(i * 208 + j);
                     }
                 }
             }
@@ -152,7 +151,9 @@ library PersistentSet {
     function _getRowAndColumn(
         uint256 position
     ) private pure returns (uint256, uint256) {
-        return (position >> 8, position & 0xff);
+        unchecked {
+            return (position / 208, position % 208);
+        }
     }
 
     // Bytes32Set

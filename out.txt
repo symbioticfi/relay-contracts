@@ -1,0 +1,1622 @@
+No files changed, compilation skipped
+
+Ran 1 test for test/implementations/key-registries/KeyRegistry.t.sol:KeyRegistryTest
+[PASS] test_create() (gas: 143)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 537.54µs (42.00µs CPU time)
+
+Ran 5 tests for test/base/StakeToVotingPowerManager.t.sol:StakeToVotingPowerManagerTest
+[PASS] testReInitializeReverts() (gas: 31837)
+[PASS] testStakeToVotingPower() (gas: 9445)
+[PASS] testStakeToVotingPowerAt() (gas: 9622)
+[PASS] testVersion() (gas: 8684)
+[PASS] testWithExtraData() (gas: 9650)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 619.21µs (115.25µs CPU time)
+
+Ran 5 tests for test/features/permissions/OzOwnable.t.sol:OzOwnableTest
+[PASS] testProtectedAction_RevertsForNonOwner() (gas: 34472)
+[PASS] testProtectedAction_SucceedsForOwner() (gas: 34041)
+[PASS] testReinitializeReverts() (gas: 34150)
+[PASS] testTransferOwnership() (gas: 91050)
+[PASS] testVersion() (gas: 8700)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 706.17µs (148.17µs CPU time)
+
+Ran 5 tests for test/base/NetworkManager.t.sol:NetworkManagerTest
+[PASS] test_DefaultsBeforeInit() (gas: 24424)
+[PASS] test_InitializeAndCheckGetters() (gas: 103145)
+[PASS] test_Location() (gas: 3589)
+[PASS] test_ReinitializeReverts() (gas: 103369)
+[PASS] test_Version() (gas: 8626)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 836.29µs (347.38µs CPU time)
+
+Ran 3 tests for test/base/PermissionManager.t.sol:PermissionManagerTest
+[PASS] test_ProtectedAction_RevertIfNotOwner() (gas: 32491)
+[PASS] test_ProtectedAction_SucceedsForOwner() (gas: 28627)
+[PASS] test_Version() (gas: 8730)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 492.58µs (50.21µs CPU time)
+
+Ran 12 tests for test/libraries/utils/KeyTag.t.sol:KeyTagTest
+[PASS] test_AddMultiple() (gas: 5212)
+[PASS] test_ContainsAddRemove() (gas: 4111)
+[PASS] test_DeserializeBitmask() (gas: 19580)
+[PASS] test_GetKeyTagInvalidIdentifier() (gas: 4217)
+[PASS] test_GetKeyTagInvalidType() (gas: 4162)
+[PASS] test_GetKeyTagValid() (gas: 3272)
+[PASS] test_GetTag() (gas: 3289)
+[PASS] test_GetTagRevertWhenTooLarge() (gas: 4028)
+[PASS] test_GetType() (gas: 3228)
+[PASS] test_GetTypeRevertWhenTooLarge() (gas: 4063)
+[PASS] test_SerializeRevertOnDuplicate() (gas: 5971)
+[PASS] test_SerializeUniqueKeyTags() (gas: 7201)
+Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 1.29ms (462.96µs CPU time)
+
+Ran 3 tests for test/features/permissions/NoPermissionManager.t.sol:NoPermissionManagerTest
+[PASS] test_NoPermissionCheck() (gas: 29642)
+[PASS] test_NoPermissionManagerVersion() (gas: 8683)
+[PASS] test_PermissionManagerVersion() (gas: 8705)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 460.79µs (40.54µs CPU time)
+
+Ran 1 test for test/implementations/settlement/Replica.t.sol:ReplicaTest
+[PASS] test_create() (gas: 143)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 748.29µs (16.50µs CPU time)
+
+Ran 12 tests for test/implementations/settlement/ConfigProvider.t.sol:ConfigProviderTest
+[PASS] test_AddRemoveReplica() (gas: 482980)
+[PASS] test_AddRemoveVotingPowerProvider() (gas: 348239)
+[PASS] test_GetValSetConfig() (gas: 140222)
+[PASS] test_InitialConfig() (gas: 498448)
+[PASS] test_Location() (gas: 3707)
+[PASS] test_PermissionChecks() (gas: 308234)
+[PASS] test_SetKeysProvider() (gas: 119084)
+[PASS] test_SetVerificationType() (gas: 83927)
+[PASS] test_TimeBasedConfig() (gas: 139670)
+[PASS] test_TimeBasedQueries() (gas: 390566)
+[PASS] test_UpdateAllConfigs() (gas: 979335)
+[PASS] test_Version() (gas: 8874)
+Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 3.30ms (2.44ms CPU time)
+
+Ran 4 tests for test/features/permissions/OzAccessManaged.t.sol:OzAccessManagedTest
+[PASS] testCannotChangeAuthority() (gas: 32035)
+[PASS] testProtectedAction_RevertsForNonAdmin() (gas: 40786)
+[PASS] testProtectedAction_SucceedsForAdmin() (gas: 40320)
+[PASS] testVersion() (gas: 8684)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 523.54µs (73.08µs CPU time)
+
+Ran 6 tests for test/base/common/OzEIP712.t.sol:OzEIP712Test
+[PASS] test_HashTypedDataV4() (gas: 135956)
+[PASS] test_InitializeSetsDomain() (gas: 135140)
+[PASS] test_Location() (gas: 3433)
+[PASS] test_OzEIP712Version() (gas: 8380)
+[PASS] test_ReInitialize() (gas: 135392)
+[PASS] test_SignatureRecovery() (gas: 127093)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 808.13µs (374.38µs CPU time)
+
+Ran 12 tests for test/base/KeyManager.t.sol:KeyManagerTest
+[PASS] test_GetKeysAt_TimeCheckpoints() (gas: 1005528)
+[PASS] test_GetKeysOperators_MultipleOperators() (gas: 1287423)
+[PASS] test_GetOperator_UnknownKey() (gas: 15775)
+[PASS] test_KeyTypes() (gas: 17512)
+[PASS] test_Location() (gas: 3729)
+[PASS] test_SetBLSKey() (gas: 1005742)
+[PASS] test_SetECDSAKey() (gas: 638888)
+[PASS] test_SetECDSAKey_RevertOnInvalidSignature() (gas: 77034)
+[PASS] test_SetKey_AlreadyUsedKeyDifferentOperator() (gas: 538365)
+[PASS] test_SetKey_RevertOnInvalidKeyType() (gas: 50109)
+[PASS] test_SetKey_SameOperatorDifferentTags() (gas: 813905)
+[PASS] test_SetKey_SameOperatorSameTag_Overwrite() (gas: 653748)
+Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 5.43ms (6.82ms CPU time)
+
+Ran 17 tests for test/base/EpochManager.t.sol:EpochManagerTest
+[PASS] test_AdvanceTimeAndCheckEpoch() (gas: 225132)
+[PASS] test_DirectSetEpochDuration() (gas: 266982)
+[PASS] test_DirectSetEpochDuration_RevertOnInvalidIndex() (gas: 198348)
+[PASS] test_GetCurrentEpochDurationData() (gas: 173334)
+[PASS] test_GetCurrentValue_MultipleCheckpoints() (gas: 289323)
+[PASS] test_GetCurrentValue_NoCheckpoint() (gas: 13965)
+[PASS] test_GetCurrentValue_SingleCheckpoint() (gas: 114198)
+[PASS] test_GetEpochDurationAndStart() (gas: 323754)
+[PASS] test_GetEpochDurationDataByIndex() (gas: 162501)
+[PASS] test_GetEpochDurationDataByTimestamp() (gas: 163618)
+[PASS] test_GetEpochIndex() (gas: 161890)
+[PASS] test_Initialize_RevertOnPastTimestamp() (gas: 59205)
+[PASS] test_Initialize_RevertOnZeroEpochDuration() (gas: 57062)
+[PASS] test_Initialize_SetsEpochDuration() (gas: 245412)
+[PASS] test_SerializeDeserializeEpochDurationData() (gas: 14114)
+[PASS] test_SetEpochDuration_RevertIfIndexLessThanCurrent() (gas: 292357)
+[PASS] test_SetEpochDuration_RevertOnZeroDuration() (gas: 185895)
+Suite result: ok. 17 passed; 0 failed; 0 skipped; finished in 5.53ms (4.54ms CPU time)
+
+Ran 6 tests for test/libraries/utils/InputNormalizer.t.sol:InputNormalizerTest
+[PASS] test_normalizeDoubleDimEmpty() (gas: 6971)
+[PASS] test_normalizeDoubleDimExact() (gas: 8790)
+[PASS] test_normalizeDoubleDimMismatchRevert() (gas: 10039)
+[PASS] test_normalizeSingleDimEmpty() (gas: 7871)
+[PASS] test_normalizeSingleDimExact() (gas: 7476)
+[PASS] test_normalizeSingleDimMismatchRevert() (gas: 9196)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 539.58µs (123.42µs CPU time)
+
+Ran 3 tests for test/features/registration/vaults/SharedVaults.t.sol:SharedVaultsTest
+[PASS] test_RegisterSharedVault_OnlyOwnerCanCall() (gas: 480370)
+[PASS] test_RegisterUnregisterSharedVault_VaultManagerSide() (gas: 567757)
+[PASS] test_Version() (gas: 8791)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 6.16ms (290.42µs CPU time)
+
+Ran 3 tests for test/features/registration/tokens/Tokens.t.sol:TokensTest
+[PASS] test_RegisterToken_OnlyOwnerCanCall() (gas: 214199)
+[PASS] test_RegisterUnregisterToken_VaultManagerSide() (gas: 301436)
+[PASS] test_Version() (gas: 8853)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 5.72ms (162.67µs CPU time)
+
+Ran 1 test for test/implementations/settlement/Master.t.sol:MasterTest
+[PASS] test_create() (gas: 143)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 393.38µs (7.13µs CPU time)
+
+Ran 11 tests for test/base/OperatorManager.t.sol:OperatorManagerTest
+[PASS] testGetActiveOperatorsAt_withTime() (gas: 699629)
+[PASS] test_GetAllOperatorsLength() (gas: 237380)
+[PASS] test_IsOperatorActiveAt_withTime() (gas: 285836)
+[PASS] test_Location() (gas: 3707)
+[PASS] test_OperatorManagerVersion() (gas: 8682)
+[PASS] test_RegisterOperatorValid() (gas: 266295)
+[PASS] test_RegisterOperator_RevertIfAlreadyRegistered() (gas: 262707)
+[PASS] test_RegisterOperator_RevertIfNotEntity() (gas: 40644)
+[PASS] test_ReinitializeReverts() (gas: 32563)
+[PASS] test_UnregisterOperator() (gas: 421651)
+[PASS] test_UnregisterOperator_RevertIfNotRegistered() (gas: 39710)
+Suite result: ok. 11 passed; 0 failed; 0 skipped; finished in 8.11ms (1.08ms CPU time)
+
+Ran 7 tests for test/features/permissions/OzAccessControl.t.sol:OzAccessControlTest
+[PASS] testChangeRoleForProtectedFunction() (gas: 137146)
+[PASS] testGetRoleForFunctionSelector() (gas: 70682)
+[PASS] testProtectedFunction_RevertIfCallerDoesNotHaveRole() (gas: 37000)
+[PASS] testSetNoRoleForSelector() (gas: 92412)
+[PASS] testVersion() (gas: 8747)
+[PASS] test_Location() (gas: 3392)
+[PASS] test_ProtectedFunction_DefaultAdminCanCall() (gas: 31170)
+Suite result: ok. 7 passed; 0 failed; 0 skipped; finished in 602.88µs (160.46µs CPU time)
+
+Ran 10 tests for test/features/registration/operators/extensions/ForcePauseSelfRegisterOperators.t.sol:ForcePauseSelfRegisterOperatorsTest
+[PASS] test_BasicEnvironment() (gas: 13019)
+[PASS] test_ForcePauseOperator() (gas: 372003)
+[PASS] test_ForcePauseOperatorVault() (gas: 858625)
+[PASS] test_ForcePauseOperatorVault_AlreadyPaused() (gas: 88869)
+[PASS] test_ForcePauseOperator_AlreadyPaused() (gas: 84969)
+[PASS] test_ForceUnpauseOperator() (gas: 326052)
+[PASS] test_ForceUnpauseOperatorVault() (gas: 781178)
+[PASS] test_ForceUnpauseOperatorVault_NotPaused() (gas: 37074)
+[PASS] test_ForceUnpauseOperator_NotPaused() (gas: 34375)
+[PASS] test_Location() (gas: 3421)
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 12.03ms (890.08µs CPU time)
+
+Ran 4 tests for test/implementations/voting-power-providers/SelfRegisterVotingPowerProvider.t.sol:SelfRegisterVotingPowerProviderTest
+[PASS] testBasicChecks() (gas: 13116)
+[PASS] testFullScenario() (gas: 1102667)
+[PASS] testPermissionCheck_RevertForNonOwner() (gas: 34789)
+[PASS] testStakeToVotingPower() (gas: 16785)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 5.94ms (406.63µs CPU time)
+
+Ran 7 tests for test/libraries/structs/PersistentSet.t.sol:PersistentSetTest
+[PASS] testLargeAddressSetExceed256Elements() (gas: 16686417)
+[PASS] test_AddressSetAddRemoveAndContains() (gas: 313533)
+[PASS] test_AddressSetAllValues() (gas: 343547)
+[PASS] test_AddressSetLengthAndValuesAt() (gas: 377509)
+[PASS] test_Bytes32SetAddRemoveAndContains() (gas: 355788)
+[PASS] test_Bytes32SetAllValues() (gas: 343119)
+[PASS] test_Bytes32SetValuesAt() (gas: 394483)
+Suite result: ok. 7 passed; 0 failed; 0 skipped; finished in 11.30ms (11.64ms CPU time)
+
+Ran 3 tests for test/libraries/sigs/SigBlsBn254.t.sol:SigBlsBn254Test
+[PASS] test_BLSRegisterOperator() (gas: 938609)
+[PASS] test_BLSRegisterOperatorInvalid() (gas: 938708)
+[PASS] test_ZeroKey() (gas: 5517)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 10.91ms (10.16ms CPU time)
+
+Ran 1 test for test/features/stakeToVotingPower/EqualStakeToVP.t.sol:EqualStakeToVPTest
+[PASS] test_create() (gas: 143)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 410.83µs (7.21µs CPU time)
+
+Ran 2 tests for test/libraries/utils/ValSetVerifier.t.sol:ValSetVerifierTest
+[PASS] test_VerifyOperator() (gas: 46452)
+[PASS] test_VerifyVaultVotingPower() (gas: 39711)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 566.42µs (144.67µs CPU time)
+
+Ran 15 tests for test/features/registration/operators/extensions/WhitelistSelfRegisterOperators.t.sol:WhitelistSelfRegisterOperatorsTest
+[PASS] test_DisableWhitelistAndRegister() (gas: 261763)
+[PASS] test_DisableWhitelistAndRegisterOperatorVault() (gas: 712031)
+[PASS] test_Location() (gas: 3421)
+[PASS] test_RegisterOperatorVault_RevertIfNotWhitelisted() (gas: 298956)
+[PASS] test_RegisterOperator_RevertIfNotWhitelisted() (gas: 37078)
+[PASS] test_UnwhitelistOperatorVault_ActiveGetsUnregistered() (gas: 895965)
+[PASS] test_UnwhitelistOperatorVault_RevertIfNotWhitelisted() (gas: 37161)
+[PASS] test_UnwhitelistOperator_ActiveOperatorGetsUnregistered() (gas: 364483)
+[PASS] test_UnwhitelistOperator_RevertIfNotWhitelisted() (gas: 34423)
+[PASS] test_Version() (gas: 8808)
+[PASS] test_WhitelistEnabledByDefault() (gas: 10623)
+[PASS] test_WhitelistOperatorAndRegister() (gas: 294066)
+[PASS] test_WhitelistOperatorVaultAndRegister() (gas: 812198)
+[PASS] test_WhitelistOperatorVault_RevertIfAlreadyWhitelisted() (gas: 82788)
+[PASS] test_WhitelistOperator_RevertIfAlreadyWhitelisted() (gas: 79136)
+Suite result: ok. 15 passed; 0 failed; 0 skipped; finished in 9.63ms (1.30ms CPU time)
+
+Ran 10 tests for test/features/registration/operators/SelfRegisterOperators.t.sol:SelfRegisterOperatorsTest
+[PASS] test_IncreaseNonce() (gas: 68142)
+[PASS] test_RegisterOperator() (gas: 1925499)
+[PASS] test_RegisterOperatorVault() (gas: 1947969)
+[PASS] test_Version() (gas: 8757)
+[PASS] test_registerOperatorVaultWithSignature() (gas: 1922462)
+[PASS] test_registerOperatorWithSignature() (gas: 1893061)
+[PASS] test_registerOperatorWithSignature_RevertIfInvalidSig() (gas: 1245602)
+[PASS] test_unregisterOperatorVaultWithSignature() (gas: 2011143)
+[PASS] test_unregisterOperatorVaultWithSignature_RevertIfInvalidSig() (gas: 1458692)
+[PASS] test_unregisterOperatorWithSignature() (gas: 376236)
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 19.33ms (8.68ms CPU time)
+
+Ran 19 tests for test/base/VaultManager.t.sol:VaultManagerTest
+[PASS] test_CheckStakes() (gas: 49837752)
+[PASS] test_DistributeRewards() (gas: 185)
+[PASS] test_Location() (gas: 3685)
+[PASS] test_RegisterOperatorVault() (gas: 2470018)
+[PASS] test_RegisterOperatorVault_RevertIfOperatorNotRegistered() (gas: 1547616)
+[PASS] test_RegisterSharedVault() (gas: 898970)
+[PASS] test_RegisterSharedVault_RevertIfInvalidVault() (gas: 40883)
+[PASS] test_RegisterSharedVault_RevertIfTokenNotActive() (gas: 4927707)
+[PASS] test_RegisterToken() (gas: 808257)
+[PASS] test_RegisterToken_RevertOnZeroAddress() (gas: 35291)
+[PASS] test_SetSlashingWindow_RevertIfLarger() (gas: 35309)
+[PASS] test_SlashVault_InstantSlasher() (gas: 230)
+[PASS] test_SlashVault_RevertIfNoSlasher() (gas: 229)
+[PASS] test_SlashVault_VetoSlasherFlow() (gas: 211)
+[PASS] test_SlashingWindow() (gas: 56516)
+[PASS] test_UnregisterToken() (gas: 302405)
+[PASS] test_ValidateVault() (gas: 1409287)
+[PASS] test_ValidateVaultEpochDurationFailsIfLessThanSlashingWindow() (gas: 1383386)
+[PASS] test_Version() (gas: 8890)
+Suite result: ok. 19 passed; 0 failed; 0 skipped; finished in 41.37ms (39.44ms CPU time)
+
+Ran 12 tests for test/libraries/keys/KeyEcdsaSecp256k1.t.sol:KeyEcdsaSecp256k1Test
+[PASS] test_DeserializeRevertsIfNot20Bytes() (gas: 10144)
+[PASS] test_Equal() (gas: 23350)
+[PASS] test_EqualFalse() (gas: 23349)
+[PASS] test_FromBytesRevertsIfNot20Bytes() (gas: 10146)
+[PASS] test_FromBytesRevertsInvalidBytes() (gas: 13146)
+[PASS] test_FuzzSerializeDeserialize(address) (runs: 4099, μ: 3999, ~: 3999)
+[PASS] test_FuzzToBytesFromBytes(address) (runs: 4099, μ: 4410, ~: 4410)
+[PASS] test_FuzzWrapUnwrap(address) (runs: 4099, μ: 3513, ~: 3513)
+[PASS] test_SerializeDeserialize() (gas: 5123)
+[PASS] test_ToBytesFromBytes() (gas: 5676)
+[PASS] test_WrapUnwrap() (gas: 4682)
+[PASS] test_ZeroKey() (gas: 8738)
+Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 55.82ms (133.19ms CPU time)
+
+Ran 1 test for test/implementations/sig-verifiers/SigVerifierBlsBn254ZK.t.sol:SigVerifierBlsBn254ZKTest
+[PASS] test_verifyQuorumSig() (gas: 8531233)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 61.39ms (8.32ms CPU time)
+
+Ran 1 test for test/implementations/sig-verifiers/SigVerifierBlsBn254Simple.t.sol:SigVerifierBlsBn254SimpleTest
+[PASS] test_verifyQuorumSig() (gas: 7172362)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 64.69ms (15.34ms CPU time)
+
+Ran 1 test for test/implementations/settlement/Settlement.t.sol:SettlementTest
+[PASS] test_commitValSetHeader() (gas: 4713745)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 80.86ms (14.02ms CPU time)
+
+Ran 21 tests for test/libraries/keys/KeyBlsBn254.t.sol:KeyBlsBn254Test
+[PASS] test_DeserializeEmptyBytesIsIdentity() (gas: 4076)
+[PASS] test_DeserializeRevertsInvalidLength() (gas: 10221)
+[PASS] test_Equal() (gas: 21733)
+[PASS] test_EqualFalse() (gas: 26020)
+[PASS] test_FromBytesRevertsInvalidBytes() (gas: 17406)
+[PASS] test_FromBytesRevertsInvalidLength() (gas: 10245)
+[PASS] test_FuzzSerializeDeserialize(uint256) (runs: 4099, μ: 8358, ~: 13616)
+[PASS] test_FuzzSerializeDeserializeNonZeroNegate(uint256) (runs: 4099, μ: 8752, ~: 14540)
+[PASS] test_FuzzToBytesFromBytes(uint256) (runs: 4099, μ: 7846, ~: 12401)
+[PASS] test_FuzzWrapUnwrap(uint256) (runs: 4099, μ: 5820, ~: 8729)
+[PASS] test_OutOfBounds() (gas: 29263)
+[PASS] test_SerializeDeserializeIdentity() (gas: 4582)
+[PASS] test_SerializeDeserializeNonZero() (gas: 13450)
+[PASS] test_SerializeDeserializeNonZeroNegate() (gas: 14417)
+[PASS] test_SerializeRevertsInvalidKey() (gas: 14535)
+[PASS] test_ToBytesFromBytesIdentity() (gas: 5466)
+[PASS] test_ToBytesFromBytesNonZero() (gas: 12213)
+[PASS] test_WrapRevertsInvalidKey(uint256) (runs: 4099, μ: 14868, ~: 14956)
+[PASS] test_WrapUnwrapIdentity() (gas: 4022)
+[PASS] test_WrapUnwrapNonZero() (gas: 8520)
+[PASS] test_ZeroKey() (gas: 9392)
+Suite result: ok. 21 passed; 0 failed; 0 skipped; finished in 211.42ms (909.14ms CPU time)
+
+Ran 4 tests for test/libraries/sigs/SigEcdsaSecp256k1.t.sol:SigEcdsaSecp256k1Test
+[PASS] test_CorrectSignature() (gas: 12283)
+[PASS] test_FuzzVerification(uint256,bytes) (runs: 4099, μ: 16097, ~: 16073)
+[PASS] test_IncorrectSignature() (gas: 21378)
+[PASS] test_ZeroKey() (gas: 4799)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 716.23ms (716.06ms CPU time)
+
+╭----------------------------------------------+-----------------+-------+--------+-------+---------╮
+| lib/core/test/mocks/Token.sol:Token Contract |                 |       |        |       |         |
++===================================================================================================+
+| Deployment Cost                              | Deployment Size |       |        |       |         |
+|----------------------------------------------+-----------------+-------+--------+-------+---------|
+| 528555                                       | 3202            |       |        |       |         |
+|----------------------------------------------+-----------------+-------+--------+-------+---------|
+|                                              |                 |       |        |       |         |
+|----------------------------------------------+-----------------+-------+--------+-------+---------|
+| Function Name                                | Min             | Avg   | Median | Max   | # Calls |
+|----------------------------------------------+-----------------+-------+--------+-------+---------|
+| approve                                      | 46354           | 46362 | 46366  | 46366 | 234     |
+|----------------------------------------------+-----------------+-------+--------+-------+---------|
+| balanceOf                                    | 559             | 2013  | 2559   | 2559  | 858     |
+|----------------------------------------------+-----------------+-------+--------+-------+---------|
+| decimals                                     | 176             | 176   | 176    | 176   | 342     |
+|----------------------------------------------+-----------------+-------+--------+-------+---------|
+| totalSupply                                  | 2325            | 2325  | 2325   | 2325  | 390     |
+╰----------------------------------------------+-----------------+-------+--------+-------+---------╯
+
+╭--------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╮
+| src/contracts/base/common/logic/OzEIP712Logic.sol:OzEIP712Logic Contract |                 |       |        |       |         |
++===============================================================================================================================+
+| Deployment Cost                                                          | Deployment Size |       |        |       |         |
+|--------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| 427488                                                                   | 2187            |       |        |       |         |
+|--------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+|                                                                          |                 |       |        |       |         |
+|--------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| Function Name                                                            | Min             | Avg   | Median | Max   | # Calls |
+|--------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| eip712Domain                                                             | 10886           | 10886 | 10886  | 10886 | 1       |
+|--------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| hashTypedDataV4                                                          | 6552            | 6834  | 6552   | 10366 | 162     |
+|--------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| hashTypedDataV4CrossChain                                                | 6539            | 6539  | 6539   | 6539  | 3       |
+╰--------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╯
+
+╭---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╮
+| src/contracts/base/logic/EpochManagerLogic.sol:EpochManagerLogic Contract |                 |       |        |       |         |
++================================================================================================================================+
+| Deployment Cost                                                           | Deployment Size |       |        |       |         |
+|---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| 826084                                                                    | 4178            |       |        |       |         |
+|---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+|                                                                           |                 |       |        |       |         |
+|---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| Function Name                                                             | Min             | Avg   | Median | Max   | # Calls |
+|---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getCaptureTimestamp                                                       | 3653            | 4453  | 3653   | 7653  | 5       |
+|---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getCurrentEpoch                                                           | 1935            | 4244  | 5935   | 5935  | 26      |
+|---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getCurrentEpochDuration                                                   | 5589            | 5589  | 5589   | 5589  | 1       |
+|---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getCurrentEpochDurationData                                               | 2545            | 4069  | 4069   | 5594  | 2       |
+|---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getCurrentEpochStart                                                      | 3664            | 4806  | 3664   | 7664  | 7       |
+|---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getEpochDuration                                                          | 6111            | 6929  | 6111   | 8566  | 3       |
+|---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getEpochDurationDataByIndex                                               | 6107            | 6107  | 6107   | 6107  | 2       |
+|---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getEpochDurationDataByTimestamp                                           | 6160            | 6160  | 6160   | 6160  | 1       |
+|---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getEpochIndex                                                             | 6469            | 6469  | 6469   | 6469  | 1       |
+|---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getEpochStart                                                             | 6446            | 7673  | 7673   | 8901  | 2       |
+|---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getNextEpoch                                                              | 6103            | 6103  | 6103   | 6103  | 2       |
+|---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getNextEpochStart                                                         | 9142            | 10240 | 9142   | 13537 | 4       |
+|---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| setEpochDuration(uint48)                                                  | 13009           | 50573 | 69355  | 69355 | 3       |
+|---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| setEpochDuration(uint48,uint48,uint48)                                    | 6312            | 34505 | 34505  | 62698 | 2       |
+╰---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╯
+
+╭-----------------------------------------------------------------------+-----------------+-------+--------+-------+---------╮
+| src/contracts/base/logic/KeyManagerLogic.sol:KeyManagerLogic Contract |                 |       |        |       |         |
++============================================================================================================================+
+| Deployment Cost                                                       | Deployment Size |       |        |       |         |
+|-----------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| 3435859                                                               | 17212           |       |        |       |         |
+|-----------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+|                                                                       |                 |       |        |       |         |
+|-----------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| Function Name                                                         | Min             | Avg   | Median | Max   | # Calls |
+|-----------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| TOTAL_KEY_TYPES                                                       | 270             | 270   | 270    | 270   | 1       |
+|-----------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getKey                                                                | 643             | 8004  | 10515  | 12687 | 7       |
+|-----------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getKeyAt                                                              | 1168            | 7027  | 6484   | 13973 | 4       |
+|-----------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getKeyTags                                                            | 19797           | 19797 | 19797  | 19797 | 2       |
+|-----------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getKeyTagsAt                                                          | 21064           | 21725 | 21158  | 23519 | 4       |
+|-----------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getKeys()                                                             | 91920           | 91920 | 91920  | 91920 | 1       |
+|-----------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getKeys(address)                                                      | 30524           | 34073 | 30524  | 41173 | 3       |
+|-----------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getKeysAt(address,uint48,bytes)                                       | 35443           | 39978 | 39978  | 44513 | 2       |
+|-----------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getKeysAt(uint48,bytes)                                               | 98136           | 98136 | 98136  | 98136 | 1       |
+|-----------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getKeysOperators                                                      | 30415           | 30415 | 30415  | 30415 | 1       |
+|-----------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getKeysOperatorsAt                                                    | 32068           | 32068 | 32068  | 32068 | 1       |
+|-----------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getKeysOperatorsLength                                                | 4854            | 4854  | 4854   | 4854  | 1       |
+|-----------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getKeysOperatorsLengthAt                                              | 6271            | 6271  | 6271   | 6271  | 1       |
+|-----------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getOperator                                                           | 2988            | 2992  | 2988   | 3000  | 3       |
+╰-----------------------------------------------------------------------+-----------------+-------+--------+-------+---------╯
+
+╭---------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╮
+| src/contracts/base/logic/OperatorManagerLogic.sol:OperatorManagerLogic Contract |                 |       |        |       |         |
++======================================================================================================================================+
+| Deployment Cost                                                                 | Deployment Size |       |        |       |         |
+|---------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| 1126194                                                                         | 5677            |       |        |       |         |
+|---------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+|                                                                                 |                 |       |        |       |         |
+|---------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| Function Name                                                                   | Min             | Avg   | Median | Max   | # Calls |
+|---------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getActiveOperators                                                              | 25260           | 43301 | 51035  | 51035 | 12      |
+|---------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getActiveOperatorsAt                                                            | 31860           | 42257 | 42285  | 52598 | 4       |
+|---------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getActiveOperatorsLength                                                        | 4921            | 4921  | 4921   | 4921  | 3       |
+|---------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getActiveOperatorsLengthAt                                                      | 6245            | 6245  | 6245   | 6245  | 2       |
+|---------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getAllOperators                                                                 | 5192            | 5192  | 5192   | 5192  | 3       |
+|---------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getAllOperatorsLength                                                           | 2426            | 2426  | 2426   | 2426  | 2       |
+|---------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| initialize                                                                      | 129             | 129   | 129    | 129   | 79      |
+|---------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| isOperatorActive                                                                | 2825            | 9234  | 9727   | 9727  | 28      |
+|---------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| isOperatorActiveAt                                                              | 10574           | 10812 | 10931  | 10931 | 3       |
+|---------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| isOperatorRegistered                                                            | 821             | 2446  | 2821   | 2821  | 16      |
+|---------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| unregisterOperator                                                              | 2845            | 15922 | 14102  | 22102 | 7       |
+╰---------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╯
+
+╭---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------╮
+| src/contracts/base/logic/VaultManagerLogic.sol:VaultManagerLogic Contract |                 |         |         |         |         |
++=====================================================================================================================================+
+| Deployment Cost                                                           | Deployment Size |         |         |         |         |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| 4100719                                                                   | 20532           |         |         |         |         |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+|                                                                           |                 |         |         |         |         |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| Function Name                                                             | Min             | Avg     | Median  | Max     | # Calls |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| _validateVault                                                            | 32392           | 39224   | 39224   | 46057   | 2       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getActiveOperatorVaults                                                   | 25526           | 26812   | 26812   | 28098   | 2       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getActiveOperatorVaultsAt                                                 | 29762           | 29762   | 29762   | 29762   | 1       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getActiveOperatorVaultsLength                                             | 5152            | 5152    | 5152    | 5152    | 1       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getActiveOperatorVaultsLengthAt                                           | 6526            | 6526    | 6526    | 6526    | 2       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getActiveSharedVaults                                                     | 25321           | 26607   | 26607   | 27893   | 2       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getActiveSharedVaultsAt                                                   | 29641           | 29641   | 29641   | 29641   | 1       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getActiveSharedVaultsLength                                               | 4948            | 4948    | 4948    | 4948    | 1       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getActiveSharedVaultsLengthAt                                             | 6294            | 6294    | 6294    | 6294    | 2       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getActiveTokens                                                           | 27871           | 27871   | 27871   | 27871   | 1       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getActiveTokensAt                                                         | 26685           | 29528   | 29618   | 32193   | 4       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getActiveTokensLength                                                     | 4921            | 4921    | 4921    | 4921    | 3       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getActiveTokensLengthAt                                                   | 5932            | 6111    | 6111    | 6290    | 2       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getAllOperatorVaults                                                      | 5489            | 5489    | 5489    | 5489    | 1       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getAllOperatorVaultsLength                                                | 2768            | 2768    | 2768    | 2768    | 2       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getAllSharedVaults                                                        | 5197            | 5197    | 5197    | 5197    | 1       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getAllSharedVaultsLength                                                  | 2519            | 2519    | 2519    | 2519    | 2       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getAllTokens                                                              | 5214            | 5214    | 5214    | 5214    | 1       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getAllTokensLength                                                        | 2535            | 2535    | 2535    | 2535    | 4       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getOperatorStake                                                          | 76469           | 76469   | 76469   | 76469   | 30      |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getOperatorStakeAt                                                        | 83898           | 83898   | 83898   | 83898   | 30      |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getOperatorVotingPower(function,address,address,bytes)                    | 92201           | 92201   | 92201   | 92201   | 30      |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getOperatorVotingPower(function,address,bytes)                            | 262944          | 263036  | 263082  | 263082  | 30      |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getOperatorVotingPowerAt(function,address,address,bytes,uint48,bytes)     | 100752          | 100752  | 100752  | 100752  | 30      |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getOperatorVotingPowerAt(function,address,bytes,uint48,bytes)             | 289752          | 289752  | 289752  | 289752  | 10      |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getOperatorVotingPowers                                                   | 264638          | 264638  | 264638  | 264638  | 10      |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getOperatorVotingPowersAt                                                 | 291472          | 291472  | 291472  | 291472  | 10      |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getSlashingWindow                                                         | 2413            | 2413    | 2413    | 2413    | 60      |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getTotalVotingPower                                                       | 1374756         | 1375938 | 1376136 | 1376136 | 7       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getTotalVotingPowerAt                                                     | 1641460         | 1641460 | 1641460 | 1641460 | 1       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getVotingPowers                                                           | 1397353         | 1397353 | 1397353 | 1397353 | 1       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getVotingPowersAt                                                         | 1664328         | 1664328 | 1664328 | 1664328 | 1       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| isOperatorVaultActive                                                     | 3047            | 9291    | 9949    | 9949    | 21      |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| isOperatorVaultActiveAt                                                   | 11235           | 11235   | 11235   | 11235   | 1       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| isOperatorVaultRegistered                                                 | 2994            | 2994    | 2994    | 2994    | 1       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| isSharedVaultActive                                                       | 9725            | 9725    | 9725    | 9725    | 3       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| isSharedVaultActiveAt                                                     | 11044           | 11044   | 11044   | 11044   | 1       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| isSharedVaultRegistered                                                   | 2816            | 2816    | 2816    | 2816    | 1       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| isTokenActive                                                             | 9676            | 9676    | 9676    | 9676    | 3       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| isTokenActiveAt                                                           | 11017           | 11017   | 11017   | 11017   | 1       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| isTokenRegistered                                                         | 2811            | 2811    | 2811    | 2811    | 1       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| registerToken                                                             | 493             | 171982  | 179902  | 179902  | 58      |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| setSlashingWindow                                                         | 2675            | 4196    | 4196    | 5717    | 2       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| unregisterOperatorVault                                                   | 36115           | 40915   | 44115   | 44115   | 5       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| unregisterSharedVault                                                     | 22190           | 22190   | 22190   | 22190   | 2       |
+|---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| unregisterToken                                                           | 9886            | 19108   | 22183   | 22183   | 4       |
+╰---------------------------------------------------------------------------+-----------------+---------+---------+---------+---------╯
+
+╭-----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╮
+| src/contracts/implementations/key-registries/KeyRegistry.sol:KeyRegistry Contract |                 |        |        |        |         |
++==========================================================================================================================================+
+| Deployment Cost                                                                   | Deployment Size |        |        |        |         |
+|-----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| 1697221                                                                           | 7629            |        |        |        |         |
+|-----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+|                                                                                   |                 |        |        |        |         |
+|-----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| Function Name                                                                     | Min             | Avg    | Median | Max    | # Calls |
+|-----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| hashTypedDataV4                                                                   | 9779            | 9779   | 9779   | 9779   | 60      |
+|-----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| initialize                                                                        | 101860          | 101860 | 101860 | 101860 | 3       |
+|-----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| setKey                                                                            | 322316          | 351816 | 368386 | 432558 | 60      |
+╰-----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
+
+╭---------------------------------------------------------------------+-----------------+--------+--------+--------+---------╮
+| src/contracts/implementations/settlement/Master.sol:Master Contract |                 |        |        |        |         |
++============================================================================================================================+
+| Deployment Cost                                                     | Deployment Size |        |        |        |         |
+|---------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| 3812518                                                             | 19069           |        |        |        |         |
+|---------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+|                                                                     |                 |        |        |        |         |
+|---------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| Function Name                                                       | Min             | Avg    | Median | Max    | # Calls |
+|---------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| SUBNETWORK                                                          | 2736            | 2736   | 2736   | 2736   | 1       |
+|---------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| commitValSetHeader                                                  | 582185          | 582185 | 582185 | 582185 | 1       |
+|---------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getCurrentEpoch                                                     | 9135            | 9135   | 9135   | 9135   | 1       |
+|---------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getCurrentEpochStart                                                | 10908           | 10908  | 10908  | 10908  | 1       |
+|---------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getCurrentValSetEpoch                                               | 12352           | 12352  | 12352  | 12352  | 2       |
+|---------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getEpochDuration                                                    | 10217           | 10217  | 10217  | 10217  | 1       |
+|---------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getExtraDataAt                                                      | 3583            | 3583   | 3583   | 3583   | 7       |
+|---------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getNextEpochStart                                                   | 12341           | 12341  | 12341  | 12341  | 1       |
+|---------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getSigVerifier                                                      | 12166           | 12166  | 12166  | 12166  | 1       |
+|---------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| hashTypedDataV4CrossChain                                           | 9801            | 9801   | 9801   | 9801   | 1       |
+|---------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| initialize                                                          | 995274          | 995274 | 995274 | 995274 | 3       |
+|---------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| setGenesis                                                          | 177280          | 178369 | 177280 | 180549 | 3       |
+|---------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| verifyQuorumSig                                                     | 229720          | 307546 | 307546 | 385373 | 2       |
+╰---------------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
+
+╭-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╮
+| src/contracts/implementations/settlement/logic/ConfigProviderLogic.sol:ConfigProviderLogic Contract |                 |        |        |        |         |
++============================================================================================================================================================+
+| Deployment Cost                                                                                     | Deployment Size |        |        |        |         |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| 2224598                                                                                             | 11163           |        |        |        |         |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+|                                                                                                     |                 |        |        |        |         |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| Function Name                                                                                       | Min             | Avg    | Median | Max    | # Calls |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getActiveReplicas                                                                                   | 28541           | 29583  | 28547  | 31662  | 3       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getActiveReplicasAt                                                                                 | 33423           | 33423  | 33423  | 33423  | 1       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getActiveVotingPowerProviders                                                                       | 31743           | 33305  | 33306  | 34864  | 4       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getActiveVotingPowerProvidersAt                                                                     | 33371           | 33371  | 33371  | 33371  | 1       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getConfig                                                                                           | 116518          | 116518 | 116518 | 116518 | 2       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getConfigAt                                                                                         | 124175          | 124994 | 124175 | 126634 | 3       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getKeysProvider                                                                                     | 9591            | 9591   | 9591   | 9591   | 2       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getKeysProviderAt                                                                                   | 10868           | 10868  | 10868  | 10868  | 1       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getMaxValidatorsCount                                                                               | 4820            | 4820   | 4820   | 4820   | 2       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getMaxValidatorsCountAt                                                                             | 6168            | 6987   | 6168   | 8627   | 3       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getMaxVotingPower                                                                                   | 9154            | 9154   | 9154   | 9154   | 3       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getMaxVotingPowerAt                                                                                 | 10564           | 11547  | 10564  | 13023  | 5       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getMinInclusionVotingPower                                                                          | 9153            | 9153   | 9153   | 9153   | 2       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getMinInclusionVotingPowerAt                                                                        | 10543           | 11362  | 10543  | 13002  | 3       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getRequiredKeyTags                                                                                  | 19596           | 19690  | 19690  | 19784  | 2       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getRequiredKeyTagsAt                                                                                | 20989           | 21934  | 21178  | 23637  | 3       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getVerificationType                                                                                 | 4852            | 4852   | 4852   | 4852   | 2       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getVerificationTypeAt                                                                               | 6179            | 7408   | 7408   | 8638   | 2       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| setMaxValidatorsCount                                                                               | 8279            | 19413  | 19413  | 30548  | 2       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| setMaxVotingPower                                                                                   | 13394           | 37393  | 37393  | 61393  | 4       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| setMinInclusionVotingPower                                                                          | 30538           | 45987  | 45987  | 61437  | 2       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| setRequiredKeyTags                                                                                  | 9503            | 20456  | 20456  | 31409  | 2       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| setVerificationType                                                                                 | 8351            | 19485  | 19485  | 30620  | 2       |
+╰-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
+
+╭---------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╮
+| src/contracts/implementations/settlement/logic/SettlementLogic.sol:SettlementLogic Contract |                 |        |        |        |         |
++====================================================================================================================================================+
+| Deployment Cost                                                                             | Deployment Size |        |        |        |         |
+|---------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| 2356350                                                                                     | 11821           |        |        |        |         |
+|---------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+|                                                                                             |                 |        |        |        |         |
+|---------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| Function Name                                                                               | Min             | Avg    | Median | Max    | # Calls |
+|---------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getCurrentValSetEpoch                                                                       | 9130            | 9130   | 9130   | 9130   | 2       |
+|---------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getExtraDataAt                                                                              | 2686            | 2686   | 2686   | 2686   | 7       |
+|---------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getSigVerifier                                                                              | 8898            | 8898   | 8898   | 8898   | 1       |
+|---------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| verifyQuorumSig                                                                             | 184218          | 267473 | 267473 | 350728 | 2       |
+╰---------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
+
+╭--------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╮
+| src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254Simple.sol:SigVerifierBlsBn254Simple Contract |                 |        |        |        |         |
++=====================================================================================================================================================================+
+| Deployment Cost                                                                                              | Deployment Size |        |        |        |         |
+|--------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| 1501241                                                                                                      | 6724            |        |        |        |         |
+|--------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+|                                                                                                              |                 |        |        |        |         |
+|--------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| Function Name                                                                                                | Min             | Avg    | Median | Max    | # Calls |
+|--------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| AGGREGATED_PUBLIC_KEY_G1                                                                                     | 435             | 435    | 435    | 435    | 1       |
+|--------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| TOTAL_VOTING_POWER                                                                                           | 413             | 413    | 413    | 413    | 1       |
+|--------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| VALIDATOR_SET_HASH_KECCAK256                                                                                 | 457             | 457    | 457    | 457    | 1       |
+|--------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| verifyQuorumSig                                                                                              | 171304          | 171304 | 171304 | 171304 | 1       |
+╰--------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
+
+╭------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╮
+| src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254ZK.sol:SigVerifierBlsBn254ZK Contract |                 |        |        |        |         |
++=============================================================================================================================================================+
+| Deployment Cost                                                                                      | Deployment Size |        |        |        |         |
+|------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| 881162                                                                                               | 4217            |        |        |        |         |
+|------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+|                                                                                                      |                 |        |        |        |         |
+|------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| Function Name                                                                                        | Min             | Avg    | Median | Max    | # Calls |
+|------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| verifyQuorumSig                                                                                      | 338044          | 338044 | 338044 | 338044 | 2       |
+╰------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
+
+╭----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╮
+| src/contracts/implementations/sig-verifiers/zk/Verifier_10.sol:Verifier Contract |                 |        |        |        |         |
++=========================================================================================================================================+
+| Deployment Cost                                                                  | Deployment Size |        |        |        |         |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| 1443957                                                                          | 6460            |        |        |        |         |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+|                                                                                  |                 |        |        |        |         |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| Function Name                                                                    | Min             | Avg    | Median | Max    | # Calls |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| verifyProof                                                                      | 309915          | 309915 | 309915 | 309915 | 2       |
+╰----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
+
+╭-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------╮
+| src/contracts/implementations/voting-power-providers/SelfRegisterVotingPowerProvider.sol:SelfRegisterVotingPowerProvider Contract |                 |         |         |         |         |
++=============================================================================================================================================================================================+
+| Deployment Cost                                                                                                                   | Deployment Size |         |         |         |         |
+|-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| 3921799                                                                                                                           | 18141           |         |         |         |         |
+|-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+|                                                                                                                                   |                 |         |         |         |         |
+|-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| Function Name                                                                                                                     | Min             | Avg     | Median  | Max     | # Calls |
+|-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| SUBNETWORK                                                                                                                        | 2718            | 2718    | 2718    | 2718    | 99      |
+|-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| forcePauseOperator                                                                                                                | 73884           | 73884   | 73884   | 73884   | 1       |
+|-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| forceUnpauseOperator                                                                                                              | 24707           | 24707   | 24707   | 24707   | 1       |
+|-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getOperatorVotingPower                                                                                                            | 267212          | 267212  | 267212  | 267212  | 20      |
+|-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getSlashingWindow                                                                                                                 | 5658            | 5658    | 5658    | 5658    | 4       |
+|-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getTotalVotingPower                                                                                                               | 1380082         | 1380082 | 1380082 | 1380082 | 6       |
+|-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| initialize                                                                                                                        | 183207          | 194578  | 203107  | 203107  | 7       |
+|-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| isOperatorActive                                                                                                                  | 13212           | 13212   | 13212   | 13212   | 3       |
+|-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| isOperatorForcePaused                                                                                                             | 2715            | 2715    | 2715    | 2715    | 2       |
+|-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| isOperatorVaultActive                                                                                                             | 13550           | 13550   | 13550   | 13550   | 2       |
+|-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| owner                                                                                                                             | 2486            | 2486    | 2486    | 2486    | 1       |
+|-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| registerOperator                                                                                                                  | 28408           | 113892  | 104118  | 216619  | 33      |
+|-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| registerOperatorVault                                                                                                             | 457002          | 457002  | 457002  | 457002  | 1       |
+|-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| registerSharedVault                                                                                                               | 153423          | 190162  | 153423  | 263640  | 9       |
+|-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| registerToken                                                                                                                     | 206882          | 206882  | 206882  | 206882  | 7       |
+|-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| setWhitelistStatus                                                                                                                | 23837           | 23837   | 23837   | 23837   | 1       |
+|-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| stakeToVotingPower                                                                                                                | 937             | 937     | 937     | 937     | 241     |
+|-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| stakeToVotingPowerAt                                                                                                              | 989             | 989     | 989     | 989     | 1       |
+|-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| whitelistOperator                                                                                                                 | 46701           | 46701   | 46701   | 46701   | 1       |
+|-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| whitelistOperatorVault                                                                                                            | 47246           | 47246   | 47246   | 47246   | 1       |
+╰-----------------------------------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------╯
+
+╭--------------------------------------------------------+-----------------+--------+--------+--------+---------╮
+| test/base/EpochManager.t.sol:TestEpochManager Contract |                 |        |        |        |         |
++===============================================================================================================+
+| Deployment Cost                                        | Deployment Size |        |        |        |         |
+|--------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| 919172                                                 | 4032            |        |        |        |         |
+|--------------------------------------------------------+-----------------+--------+--------+--------+---------|
+|                                                        |                 |        |        |        |         |
+|--------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| Function Name                                          | Min             | Avg    | Median | Max    | # Calls |
+|--------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| EpochManager_VERSION                                   | 266             | 266    | 266    | 266    | 1       |
+|--------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| deserializeEpochDurationData                           | 614             | 614    | 614    | 614    | 1       |
+|--------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getCaptureTimestamp                                    | 10785           | 10785  | 10785  | 10785  | 1       |
+|--------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getCurrentEpoch                                        | 5479            | 8656   | 9156   | 9156   | 9       |
+|--------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getCurrentEpochDuration                                | 8788            | 8788   | 8788   | 8788   | 1       |
+|--------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getCurrentEpochDurationData                            | 5444            | 7234   | 7234   | 9024   | 2       |
+|--------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getCurrentEpochStart                                   | 10841           | 10841  | 10841  | 10841  | 1       |
+|--------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getCurrentValuePublic                                  | 5669            | 9842   | 8898   | 11695  | 11      |
+|--------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getEpochDuration                                       | 9939            | 11166  | 11166  | 12394  | 2       |
+|--------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getEpochDurationDataByIndex                            | 10227           | 10227  | 10227  | 10227  | 2       |
+|--------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getEpochDurationDataByTimestamp                        | 10388           | 10388  | 10388  | 10388  | 1       |
+|--------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getEpochIndex                                          | 10386           | 10386  | 10386  | 10386  | 1       |
+|--------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getEpochStart                                          | 10296           | 11523  | 11523  | 12751  | 2       |
+|--------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getNextEpoch                                           | 9301            | 9301   | 9301   | 9301   | 2       |
+|--------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getNextEpochStart                                      | 12363           | 13828  | 12363  | 16758  | 3       |
+|--------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| initialize                                             | 48205           | 125283 | 139286 | 139286 | 13      |
+|--------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| pushTestCheckpoint                                     | 51898           | 59253  | 59253  | 66609  | 4       |
+|--------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| serializeEpochDurationData                             | 749             | 749    | 749    | 749    | 1       |
+|--------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| setEpochDuration(uint48)                               | 37403           | 74977  | 93765  | 93765  | 3       |
+|--------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| setEpochDuration(uint48,uint48,uint48)                 | 31299           | 59503  | 59503  | 87708  | 2       |
+╰--------------------------------------------------------+-----------------+--------+--------+--------+---------╯
+
+╭----------------------------------------------------+-----------------+--------+--------+--------+---------╮
+| test/base/KeyManager.t.sol:TestKeyManager Contract |                 |        |        |        |         |
++===========================================================================================================+
+| Deployment Cost                                    | Deployment Size |        |        |        |         |
+|----------------------------------------------------+-----------------+--------+--------+--------+---------|
+| 1805797                                            | 8131            |        |        |        |         |
+|----------------------------------------------------+-----------------+--------+--------+--------+---------|
+|                                                    |                 |        |        |        |         |
+|----------------------------------------------------+-----------------+--------+--------+--------+---------|
+| Function Name                                      | Min             | Avg    | Median | Max    | # Calls |
+|----------------------------------------------------+-----------------+--------+--------+--------+---------|
+| KEY_TYPE_BLS_BN254                                 | 266             | 266    | 266    | 266    | 5       |
+|----------------------------------------------------+-----------------+--------+--------+--------+---------|
+| KEY_TYPE_ECDSA_SECP256K1                           | 257             | 257    | 257    | 257    | 21      |
+|----------------------------------------------------+-----------------+--------+--------+--------+---------|
+| KeyManager_VERSION                                 | 211             | 211    | 211    | 211    | 1       |
+|----------------------------------------------------+-----------------+--------+--------+--------+---------|
+| TOTAL_KEY_TYPES                                    | 3512            | 3512   | 3512   | 3512   | 1       |
+|----------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getKey                                             | 3834            | 11806  | 14558  | 16748  | 7       |
+|----------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getKeyAt                                           | 5262            | 11548  | 11000  | 18929  | 4       |
+|----------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getKeyTags                                         | 23982           | 23982  | 23982  | 23982  | 2       |
+|----------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getKeyTagsAt                                       | 25973           | 26692  | 26184  | 28428  | 4       |
+|----------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getKeys()                                          | 100358          | 100358 | 100358 | 100358 | 1       |
+|----------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getKeys(address)                                   | 35583           | 39529  | 35583  | 47422  | 3       |
+|----------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getKeysAt(address,uint48,bytes)                    | 41392           | 46522  | 46522  | 51652  | 2       |
+|----------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getKeysAt(uint48,bytes)                            | 107380          | 107380 | 107380 | 107380 | 1       |
+|----------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getOperator                                        | 6979            | 6989   | 6982   | 7006   | 3       |
+|----------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getOperators                                       | 34666           | 34666  | 34666  | 34666  | 1       |
+|----------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getOperatorsAt                                     | 37095           | 37095  | 37095  | 37095  | 1       |
+|----------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getOperatorsLength                                 | 8059            | 8059   | 8059   | 8059   | 1       |
+|----------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getOperatorsLengthAt                               | 10303           | 10303  | 10303  | 10303  | 1       |
+|----------------------------------------------------+-----------------+--------+--------+--------+---------|
+| hashTypedDataV4                                    | 9779            | 9779   | 9779   | 9779   | 13      |
+|----------------------------------------------------+-----------------+--------+--------+--------+---------|
+| initialize                                         | 101580          | 101580 | 101580 | 101580 | 12      |
+|----------------------------------------------------+-----------------+--------+--------+--------+---------|
+| setKey                                             | 40418           | 286754 | 322362 | 574820 | 15      |
+╰----------------------------------------------------+-----------------+--------+--------+--------+---------╯
+
+╭------------------------------------------------------------+-----------------+-------+--------+-------+---------╮
+| test/base/NetworkManager.t.sol:TestNetworkManager Contract |                 |       |        |       |         |
++=================================================================================================================+
+| Deployment Cost                                            | Deployment Size |       |        |       |         |
+|------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| 347462                                                     | 1389            |       |        |       |         |
+|------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+|                                                            |                 |       |        |       |         |
+|------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| Function Name                                              | Min             | Avg   | Median | Max   | # Calls |
+|------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| NETWORK                                                    | 2418            | 2418  | 2418   | 2418  | 2       |
+|------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| NetworkManager_VERSION                                     | 143             | 143   | 143    | 143   | 1       |
+|------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| SUBNETWORK                                                 | 2639            | 2639  | 2639   | 2639  | 2       |
+|------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| SUBNETWORK_IDENTIFIER                                      | 2491            | 2491  | 2491   | 2491  | 2       |
+|------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| initialize                                                 | 24242           | 53596 | 68274  | 68274 | 3       |
+╰------------------------------------------------------------+-----------------+-------+--------+-------+---------╯
+
+╭--------------------------------------------------------------+-----------------+--------+--------+--------+---------╮
+| test/base/OperatorManager.t.sol:TestOperatorManager Contract |                 |        |        |        |         |
++=====================================================================================================================+
+| Deployment Cost                                              | Deployment Size |        |        |        |         |
+|--------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| 980213                                                       | 4444            |        |        |        |         |
+|--------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+|                                                              |                 |        |        |        |         |
+|--------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| Function Name                                                | Min             | Avg    | Median | Max    | # Calls |
+|--------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| OperatorManager_VERSION                                      | 220             | 220    | 220    | 220    | 1       |
+|--------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getActiveOperators                                           | 28915           | 31746  | 31745  | 34581  | 4       |
+|--------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getActiveOperatorsAt                                         | 36563           | 36748  | 36748  | 36934  | 2       |
+|--------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getActiveOperatorsLength                                     | 8115            | 8115   | 8115   | 8115   | 3       |
+|--------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getActiveOperatorsLengthAt                                   | 10261           | 10261  | 10261  | 10261  | 2       |
+|--------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getAllOperators                                              | 9104            | 9104   | 9104   | 9104   | 3       |
+|--------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getAllOperatorsLength                                        | 5477            | 5477   | 5477   | 5477   | 2       |
+|--------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| initialize                                                   | 24303           | 67444  | 71366  | 71366  | 12      |
+|--------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| isOperatorActive                                             | 13116           | 13116  | 13116  | 13116  | 2       |
+|--------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| isOperatorActiveAt                                           | 14664           | 14902  | 15021  | 15021  | 3       |
+|--------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| isOperatorRegistered                                         | 6200            | 6200   | 6200   | 6200   | 2       |
+|--------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| registerOperator                                             | 30305           | 163639 | 209730 | 209730 | 9       |
+|--------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| unregisterOperator                                           | 27337           | 36973  | 36973  | 46609  | 2       |
+╰--------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
+
+╭------------------------------------------------------------------+-----------------+-------+--------+-------+---------╮
+| test/base/PermissionManager.t.sol:TestPermissionManager Contract |                 |       |        |       |         |
++=======================================================================================================================+
+| Deployment Cost                                                  | Deployment Size |       |        |       |         |
+|------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| 196191                                                           | 689             |       |        |       |         |
+|------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+|                                                                  |                 |       |        |       |         |
+|------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| Function Name                                                    | Min             | Avg   | Median | Max   | # Calls |
+|------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| PermissionManager_VERSION                                        | 225             | 225   | 225    | 225   | 1       |
+|------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| initialize                                                       | 67842           | 67842 | 67842  | 67842 | 3       |
+|------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| protectedAction                                                  | 23348           | 23394 | 23394  | 23440 | 2       |
+╰------------------------------------------------------------------+-----------------+-------+--------+-------+---------╯
+
+╭----------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╮
+| test/base/StakeToVotingPowerManager.t.sol:TestStakeToVotingPowerManager Contract |                 |       |        |       |         |
++=======================================================================================================================================+
+| Deployment Cost                                                                  | Deployment Size |       |        |       |         |
+|----------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| 268579                                                                           | 1024            |       |        |       |         |
+|----------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+|                                                                                  |                 |       |        |       |         |
+|----------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| Function Name                                                                    | Min             | Avg   | Median | Max   | # Calls |
+|----------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| StakeToVotingPowerManager_VERSION                                                | 225             | 225   | 225    | 225   | 1       |
+|----------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| initialize                                                                       | 23688           | 60066 | 67342  | 67342 | 6       |
+|----------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| stakeToVotingPower                                                               | 774             | 786   | 786    | 798   | 2       |
+|----------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| stakeToVotingPowerAt                                                             | 902             | 902   | 902    | 902   | 1       |
+╰----------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╯
+
+╭--------------------------------------------------------------+-----------------+---------+---------+---------+---------╮
+| test/base/VaultManager.t.sol:TestVaultManager Contract       |                 |         |         |         |         |
++========================================================================================================================+
+| Deployment Cost                                              | Deployment Size |         |         |         |         |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| 3153374                                                      | 14596           |         |         |         |         |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+|                                                              |                 |         |         |         |         |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| Function Name                                                | Min             | Avg     | Median  | Max     | # Calls |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| SUBNETWORK                                                   | 2718            | 2718    | 2718    | 2718    | 33      |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| VaultManager_VERSION                                         | 337             | 337     | 337     | 337     | 1       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getActiveOperatorVaults                                      | 29417           | 30832   | 30832   | 32247   | 2       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getActiveOperatorVaultsAt                                    | 34741           | 34741   | 34741   | 34741   | 1       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getActiveOperatorVaultsLength                                | 8603            | 8603    | 8603    | 8603    | 1       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getActiveOperatorVaultsLengthAt                              | 10779           | 10779   | 10779   | 10779   | 2       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getActiveSharedVaults                                        | 28976           | 30391   | 30391   | 31806   | 2       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getActiveSharedVaultsAt                                      | 34458           | 34458   | 34458   | 34458   | 1       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getActiveSharedVaultsLength                                  | 8165            | 8165    | 8165    | 8165    | 1       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getActiveSharedVaultsLengthAt                                | 10335           | 10335   | 10335   | 10335   | 2       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getActiveTokens                                              | 31873           | 31873   | 31873   | 31873   | 1       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getActiveTokensAt                                            | 31288           | 34389   | 34479   | 37312   | 4       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getActiveTokensLength                                        | 8095            | 8095    | 8095    | 8095    | 3       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getActiveTokensLengthAt                                      | 10042           | 10221   | 10221   | 10400   | 2       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getAllOperatorVaults                                         | 9647            | 9647    | 9647    | 9647    | 1       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getAllOperatorVaultsLength                                   | 6142            | 6142    | 6142    | 6142    | 2       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getAllSharedVaults                                           | 9110            | 9110    | 9110    | 9110    | 1       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getAllSharedVaultsLength                                     | 5614            | 5614    | 5614    | 5614    | 2       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getAllTokens                                                 | 9150            | 9150    | 9150    | 9150    | 1       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getAllTokensLength                                           | 5652            | 5652    | 5652    | 5652    | 4       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getOperatorStake                                             | 80082           | 80082   | 80082   | 80082   | 30      |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getOperatorStakeAt                                           | 88233           | 88233   | 88233   | 88233   | 30      |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getOperatorVotingPower(address,address,bytes)                | 96427           | 96427   | 96427   | 96427   | 30      |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getOperatorVotingPower(address,bytes)                        | 266981          | 266981  | 266981  | 266981  | 10      |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getOperatorVotingPowerAt(address,address,bytes,uint48,bytes) | 105687          | 105687  | 105687  | 105687  | 30      |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getOperatorVotingPowerAt(address,bytes,uint48,bytes)         | 294607          | 294607  | 294607  | 294607  | 10      |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getOperatorVotingPowers                                      | 270727          | 270727  | 270727  | 270727  | 10      |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getOperatorVotingPowersAt                                    | 298371          | 298371  | 298371  | 298371  | 10      |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getSlashingWindow                                            | 5613            | 5613    | 5613    | 5613    | 9       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getTotalVotingPower                                          | 1378724         | 1378724 | 1378724 | 1378724 | 1       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getTotalVotingPowerAt                                        | 1646117         | 1646117 | 1646117 | 1646117 | 1       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getVotingPowers                                              | 1428074         | 1428074 | 1428074 | 1428074 | 1       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getVotingPowersAt                                            | 1695708         | 1695708 | 1695708 | 1695708 | 1       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| initialize                                                   | 97589           | 97598   | 97589   | 97781   | 20      |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| isOperatorVaultActive                                        | 13531           | 13531   | 13531   | 13531   | 1       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| isOperatorVaultActiveAt                                      | 15602           | 15602   | 15602   | 15602   | 1       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| isOperatorVaultRegistered                                    | 6619            | 6619    | 6619    | 6619    | 1       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| isSharedVaultActive                                          | 13150           | 13150   | 13150   | 13150   | 1       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| isSharedVaultActiveAt                                        | 15217           | 15217   | 15217   | 15217   | 1       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| isSharedVaultRegistered                                      | 6264            | 6264    | 6264    | 6264    | 1       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| isTokenActive                                                | 13080           | 13080   | 13080   | 13080   | 1       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| isTokenActiveAt                                              | 15280           | 15280   | 15280   | 15280   | 1       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| isTokenRegistered                                            | 6249            | 6249    | 6249    | 6249    | 1       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| registerOperator                                             | 99762           | 119792  | 99774   | 209988  | 11      |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| registerOperatorVault                                        | 88949           | 213380  | 100991  | 450200  | 3       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| registerSharedVault                                          | 30578           | 110153  | 64045   | 261470  | 11      |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| registerToken                                                | 24975           | 166322  | 204639  | 204639  | 12      |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| setSlashingWindow                                            | 27111           | 28639   | 28639   | 30168   | 2       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| stakeToVotingPower                                           | 891             | 891     | 891     | 891     | 150     |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| stakeToVotingPowerAt                                         | 1043            | 1043    | 1043    | 1043    | 150     |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| unregisterOperatorVault                                      | 69217           | 69217   | 69217   | 69217   | 1       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| unregisterSharedVault                                        | 46892           | 46892   | 46892   | 46892   | 1       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| unregisterToken                                              | 34617           | 42753   | 46713   | 46929   | 3       |
+|--------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| validateVault                                                | 35894           | 42726   | 42726   | 49559   | 2       |
+╰--------------------------------------------------------------+-----------------+---------+---------+---------+---------╯
+
+╭-------------------------------------------------------+-----------------+-------+--------+--------+---------╮
+| test/base/common/OzEIP712.t.sol:TestOzEIP712 Contract |                 |       |        |        |         |
++=============================================================================================================+
+| Deployment Cost                                       | Deployment Size |       |        |        |         |
+|-------------------------------------------------------+-----------------+-------+--------+--------+---------|
+| 507575                                                | 2129            |       |        |        |         |
+|-------------------------------------------------------+-----------------+-------+--------+--------+---------|
+|                                                       |                 |       |        |        |         |
+|-------------------------------------------------------+-----------------+-------+--------+--------+---------|
+| Function Name                                         | Min             | Avg   | Median | Max    | # Calls |
+|-------------------------------------------------------+-----------------+-------+--------+--------+---------|
+| OzEIP712_VERSION                                      | 143             | 143   | 143    | 143    | 1       |
+|-------------------------------------------------------+-----------------+-------+--------+--------+---------|
+| eip712Domain                                          | 16196           | 16196 | 16196  | 16196  | 1       |
+|-------------------------------------------------------+-----------------+-------+--------+--------+---------|
+| hashTypedDataV4                                       | 9690            | 9690  | 9690   | 9690   | 2       |
+|-------------------------------------------------------+-----------------+-------+--------+--------+---------|
+| hashTypedDataV4CrossChain                             | 9732            | 9732  | 9732   | 9732   | 1       |
+|-------------------------------------------------------+-----------------+-------+--------+--------+---------|
+| initialize                                            | 25480           | 86020 | 101159 | 101159 | 5       |
+╰-------------------------------------------------------+-----------------+-------+--------+--------+---------╯
+
+╭--------------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╮
+| test/features/permissions/NoPermissionManager.t.sol:TestNoPermissionManager Contract |                 |       |        |       |         |
++===========================================================================================================================================+
+| Deployment Cost                                                                      | Deployment Size |       |        |       |         |
+|--------------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| 167011                                                                               | 554             |       |        |       |         |
+|--------------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+|                                                                                      |                 |       |        |       |         |
+|--------------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| Function Name                                                                        | Min             | Avg   | Median | Max   | # Calls |
+|--------------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| NoPermissionManager_VERSION                                                          | 169             | 169   | 169    | 169   | 1       |
+|--------------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| PermissionManager_VERSION                                                            | 235             | 235   | 235    | 235   | 1       |
+|--------------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| actionRequiringNoPermission                                                          | 21183           | 21183 | 21183  | 21183 | 1       |
+|--------------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| initialize                                                                           | 45354           | 45354 | 45354  | 45354 | 3       |
+╰--------------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╯
+
+╭------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╮
+| test/features/permissions/OzAccessControl.t.sol:TestOzAccessControl Contract |                 |       |        |       |         |
++===================================================================================================================================+
+| Deployment Cost                                                              | Deployment Size |       |        |       |         |
+|------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| 482330                                                                       | 2012            |       |        |       |         |
+|------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+|                                                                              |                 |       |        |       |         |
+|------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| Function Name                                                                | Min             | Avg   | Median | Max   | # Calls |
+|------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| ADMIN_ROLE                                                                   | 260             | 260   | 260    | 260   | 1       |
+|------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| OzAccessControl_VERSION                                                      | 269             | 269   | 269    | 269   | 1       |
+|------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getRole                                                                      | 2596            | 2596  | 2596   | 2596  | 2       |
+|------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| grantRole                                                                    | 51373           | 51373 | 51373  | 51373 | 1       |
+|------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| initialize                                                                   | 73973           | 73973 | 73973  | 73973 | 7       |
+|------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| protectedFunction                                                            | 25912           | 25938 | 25912  | 25977 | 5       |
+|------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| setSelectorRole                                                              | 27803           | 41325 | 48087  | 48087 | 3       |
+╰------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╯
+
+╭------------------------------------------------------------------------+-----------------+------+--------+------+---------╮
+| test/features/permissions/OzAccessManaged.t.sol:MockAuthority Contract |                 |      |        |      |         |
++===========================================================================================================================+
+| Deployment Cost                                                        | Deployment Size |      |        |      |         |
+|------------------------------------------------------------------------+-----------------+------+--------+------+---------|
+| 142318                                                                 | 465             |      |        |      |         |
+|------------------------------------------------------------------------+-----------------+------+--------+------+---------|
+|                                                                        |                 |      |        |      |         |
+|------------------------------------------------------------------------+-----------------+------+--------+------+---------|
+| Function Name                                                          | Min             | Avg  | Median | Max  | # Calls |
+|------------------------------------------------------------------------+-----------------+------+--------+------+---------|
+| canCall                                                                | 2629            | 2629 | 2629   | 2629 | 2       |
+╰------------------------------------------------------------------------+-----------------+------+--------+------+---------╯
+
+╭------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╮
+| test/features/permissions/OzAccessManaged.t.sol:TestOzAccessManaged Contract |                 |       |        |       |         |
++===================================================================================================================================+
+| Deployment Cost                                                              | Deployment Size |       |        |       |         |
+|------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| 477890                                                                       | 1992            |       |        |       |         |
+|------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+|                                                                              |                 |       |        |       |         |
+|------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| Function Name                                                                | Min             | Avg   | Median | Max   | # Calls |
+|------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| OzAccessManaged_VERSION                                                      | 225             | 225   | 225    | 225   | 1       |
+|------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| initialize                                                                   | 23962           | 60495 | 69629  | 69629 | 5       |
+|------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| protectedAction                                                              | 29769           | 29807 | 29807  | 29845 | 2       |
+╰------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╯
+
+╭------------------------------------------------------------------+-----------------+-------+--------+-------+---------╮
+| test/features/permissions/OzOwnable.t.sol:TestOzOwnable Contract |                 |       |        |       |         |
++=======================================================================================================================+
+| Deployment Cost                                                  | Deployment Size |       |        |       |         |
+|------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| 287401                                                           | 1111            |       |        |       |         |
+|------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+|                                                                  |                 |       |        |       |         |
+|------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| Function Name                                                    | Min             | Avg   | Median | Max   | # Calls |
+|------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| OzOwnable_VERSION                                                | 247             | 247   | 247    | 247   | 1       |
+|------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| initialize                                                       | 23918           | 62193 | 69849  | 69849 | 6       |
+|------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| protectedAction                                                  | 23418           | 23444 | 23444  | 23470 | 4       |
+|------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
+| transferOwnership                                                | 28412           | 28412 | 28412  | 28412 | 1       |
+╰------------------------------------------------------------------+-----------------+-------+--------+-------+---------╯
+
+╭-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╮
+| test/features/registration/operators/SelfRegisterOperators.t.sol:TestSelfRegisterOperators Contract |                 |        |        |        |         |
++============================================================================================================================================================+
+| Deployment Cost                                                                                     | Deployment Size |        |        |        |         |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| 3205528                                                                                             | 14821           |        |        |        |         |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+|                                                                                                     |                 |        |        |        |         |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| Function Name                                                                                       | Min             | Avg    | Median | Max    | # Calls |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| SelfRegisterOperators_VERSION                                                                       | 282             | 282    | 282    | 282    | 1       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getSlashingWindow                                                                                   | 5613            | 5613   | 5613   | 5613   | 7       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| hashTypedDataV4                                                                                     | 13572           | 13572  | 13572  | 13572  | 6       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| increaseNonce                                                                                       | 43531           | 43531  | 43531  | 43531  | 1       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| initialize                                                                                          | 97969           | 97969  | 97969  | 97969  | 10      |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| isOperatorActive                                                                                    | 13094           | 13094  | 13094  | 13094  | 10      |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| isOperatorVaultActive                                                                               | 13499           | 13499  | 13499  | 13499  | 7       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| nonces                                                                                              | 2651            | 2651   | 2651   | 2651   | 8       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| registerOperator                                                                                    | 209767          | 351067 | 209767 | 633667 | 6       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| registerOperatorVault                                                                               | 449970          | 449970 | 449970 | 449970 | 1       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| registerOperatorVaultWithSignature                                                                  | 494585          | 494585 | 494585 | 494585 | 1       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| registerOperatorWithSignature                                                                       | 66473           | 372394 | 372394 | 678315 | 2       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| registerToken                                                                                       | 204639          | 204639 | 204639 | 204639 | 10      |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| unregisterOperator                                                                                  | 46369           | 46369  | 46369  | 46369  | 1       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| unregisterOperatorVault                                                                             | 68834           | 68834  | 68834  | 68834  | 1       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| unregisterOperatorVaultWithSignature                                                                | 66504           | 90016  | 90016  | 113529 | 2       |
+|-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| unregisterOperatorWithSignature                                                                     | 90998           | 90998  | 90998  | 90998  | 1       |
+╰-----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
+
+╭------------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╮
+| test/features/registration/operators/extensions/ForcePauseSelfRegisterOperators.t.sol:TestForcePauseSelfRegisterOperators Contract |                 |        |        |        |         |
++===========================================================================================================================================================================================+
+| Deployment Cost                                                                                                                    | Deployment Size |        |        |        |         |
+|------------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| 3405135                                                                                                                            | 15744           |        |        |        |         |
+|------------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+|                                                                                                                                    |                 |        |        |        |         |
+|------------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| Function Name                                                                                                                      | Min             | Avg    | Median | Max    | # Calls |
+|------------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| forcePauseOperator                                                                                                                 | 24074           | 48900  | 50042  | 71445  | 4       |
+|------------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| forcePauseOperatorVault                                                                                                            | 24698           | 55271  | 50986  | 94417  | 4       |
+|------------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| forceUnpauseOperator                                                                                                               | 22396           | 23266  | 23266  | 24136  | 2       |
+|------------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| forceUnpauseOperatorVault                                                                                                          | 23000           | 23813  | 23813  | 24627  | 2       |
+|------------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getSlashingWindow                                                                                                                  | 5635            | 5635   | 5635   | 5635   | 10      |
+|------------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| initialize                                                                                                                         | 98157           | 98157  | 98157  | 98157  | 10      |
+|------------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| isOperatorActive                                                                                                                   | 13183           | 13183  | 13183  | 13183  | 3       |
+|------------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| isOperatorForcePaused                                                                                                              | 2666            | 2666   | 2666   | 2666   | 4       |
+|------------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| isOperatorVaultActive                                                                                                              | 13499           | 13499  | 13499  | 13499  | 3       |
+|------------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| isOperatorVaultForcePaused                                                                                                         | 2827            | 2827   | 2827   | 2827   | 2       |
+|------------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| registerOperator                                                                                                                   | 23855           | 174403 | 212040 | 212040 | 5       |
+|------------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| registerOperatorVault                                                                                                              | 24186           | 309617 | 452333 | 452333 | 3       |
+|------------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| registerToken                                                                                                                      | 204661          | 204661 | 204661 | 204661 | 10      |
+╰------------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
+
+╭----------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╮
+| test/features/registration/operators/extensions/WhitelistSelfRegisterOperators.t.sol:TestWhitelistSelfRegisterOperators Contract |                 |        |        |        |         |
++=========================================================================================================================================================================================+
+| Deployment Cost                                                                                                                  | Deployment Size |        |        |        |         |
+|----------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| 3481706                                                                                                                          | 16098           |        |        |        |         |
+|----------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+|                                                                                                                                  |                 |        |        |        |         |
+|----------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| Function Name                                                                                                                    | Min             | Avg    | Median | Max    | # Calls |
+|----------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| WhitelistSelfRegisterOperators_VERSION                                                                                           | 304             | 304    | 304    | 304    | 1       |
+|----------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getSlashingWindow                                                                                                                | 5635            | 5635   | 5635   | 5635   | 30      |
+|----------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| initialize                                                                                                                       | 120741          | 120741 | 120741 | 120741 | 15      |
+|----------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| isOperatorActive                                                                                                                 | 13123           | 13123  | 13123  | 13123  | 5       |
+|----------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| isOperatorVaultActive                                                                                                            | 13439           | 13439  | 13439  | 13439  | 4       |
+|----------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| isOperatorVaultWhitelisted                                                                                                       | 2805            | 2805   | 2805   | 2805   | 1       |
+|----------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| isOperatorWhitelisted                                                                                                            | 2686            | 2686   | 2686   | 2686   | 2       |
+|----------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| isWhitelistEnabled                                                                                                               | 2401            | 2401   | 2401   | 2401   | 2       |
+|----------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| registerOperator                                                                                                                 | 26040           | 190145 | 214225 | 214225 | 8       |
+|----------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| registerOperatorVault                                                                                                            | 26349           | 346880 | 453337 | 454496 | 4       |
+|----------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| registerToken                                                                                                                    | 204639          | 204639 | 204639 | 204639 | 15      |
+|----------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| setWhitelistStatus                                                                                                               | 21864           | 21864  | 21864  | 21864  | 2       |
+|----------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| unwhitelistOperator                                                                                                              | 24160           | 37986  | 37986  | 51813  | 2       |
+|----------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| unwhitelistOperatorVault                                                                                                         | 24716           | 49716  | 49716  | 74717  | 2       |
+|----------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| whitelistOperator                                                                                                                | 24074           | 41359  | 44240  | 44240  | 7       |
+|----------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| whitelistOperatorVault                                                                                                           | 24676           | 39865  | 44929  | 44929  | 4       |
+╰----------------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
+
+╭--------------------------------------------------------------------+-----------------+--------+--------+--------+---------╮
+| test/features/registration/tokens/Tokens.t.sol:TestTokens Contract |                 |        |        |        |         |
++===========================================================================================================================+
+| Deployment Cost                                                    | Deployment Size |        |        |        |         |
+|--------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| 2577898                                                            | 11893           |        |        |        |         |
+|--------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+|                                                                    |                 |        |        |        |         |
+|--------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| Function Name                                                      | Min             | Avg    | Median | Max    | # Calls |
+|--------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| Tokens_VERSION                                                     | 349             | 349    | 349    | 349    | 1       |
+|--------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| initialize                                                         | 97891           | 97891  | 97891  | 97891  | 3       |
+|--------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| isTokenActive                                                      | 13022           | 13022  | 13022  | 13022  | 2       |
+|--------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| registerToken                                                      | 204617          | 204617 | 204617 | 204617 | 2       |
+|--------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| unregisterToken                                                    | 46885           | 46885  | 46885  | 46885  | 1       |
+╰--------------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
+
+╭--------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╮
+| test/features/registration/vaults/SharedVaults.t.sol:TestSharedVaults Contract |                 |        |        |        |         |
++=======================================================================================================================================+
+| Deployment Cost                                                                | Deployment Size |        |        |        |         |
+|--------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| 2610356                                                                        | 12061           |        |        |        |         |
+|--------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+|                                                                                |                 |        |        |        |         |
+|--------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| Function Name                                                                  | Min             | Avg    | Median | Max    | # Calls |
+|--------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| SharedVaults_VERSION                                                           | 329             | 329    | 329    | 329    | 1       |
+|--------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| initialize                                                                     | 97880           | 97880  | 97880  | 97880  | 3       |
+|--------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| isSharedVaultActive                                                            | 13093           | 13093  | 13093  | 13093  | 2       |
+|--------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| registerSharedVault                                                            | 261418          | 261418 | 261418 | 261418 | 2       |
+|--------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| registerToken                                                                  | 204617          | 204617 | 204617 | 204617 | 2       |
+|--------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| unregisterSharedVault                                                          | 46892           | 46892  | 46892  | 46892  | 1       |
+╰--------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
+
+╭----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╮
+| test/implementations/settlement/ConfigProvider.t.sol:TestConfigProvider Contract |                 |        |        |        |         |
++=========================================================================================================================================+
+| Deployment Cost                                                                  | Deployment Size |        |        |        |         |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| 1766935                                                                          | 7952            |        |        |        |         |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+|                                                                                  |                 |        |        |        |         |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| Function Name                                                                    | Min             | Avg    | Median | Max    | # Calls |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| ConfigProvider_VERSION                                                           | 237             | 237    | 237    | 237    | 1       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| addReplica                                                                       | 24274           | 53016  | 37649  | 97125  | 3       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| addVotingPowerProvider                                                           | 24263           | 56061  | 37610  | 97086  | 5       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getActiveReplicas                                                                | 32890           | 34143  | 32896  | 36643  | 3       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getActiveReplicasAt                                                              | 39154           | 39154  | 39154  | 39154  | 1       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getActiveVotingPowerProviders                                                    | 36767           | 38644  | 38646  | 40519  | 4       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getActiveVotingPowerProvidersAt                                                  | 39167           | 39167  | 39167  | 39167  | 1       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getConfig                                                                        | 125228          | 125228 | 125228 | 125228 | 2       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getConfigAt                                                                      | 133677          | 134496 | 133677 | 136136 | 3       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getKeysProvider                                                                  | 13290           | 13290  | 13290  | 13290  | 2       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getKeysProviderAt                                                                | 15400           | 15400  | 15400  | 15400  | 1       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getMaxValidatorsCount                                                            | 8022            | 8022   | 8022   | 8022   | 2       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getMaxValidatorsCountAt                                                          | 10263           | 11082  | 10263  | 12722  | 3       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getMaxVotingPower                                                                | 12259           | 12259  | 12259  | 12259  | 3       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getMaxVotingPowerAt                                                              | 14518           | 15501  | 14518  | 16977  | 5       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getMinInclusionVotingPower                                                       | 12236           | 12236  | 12236  | 12236  | 2       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getMinInclusionVotingPowerAt                                                     | 14521           | 15340  | 14521  | 16980  | 3       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getRequiredKeyTags                                                               | 23576           | 23782  | 23782  | 23989  | 2       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getRequiredKeyTagsAt                                                             | 25832           | 26927  | 26246  | 28705  | 3       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getVerificationType                                                              | 8052            | 8052   | 8052   | 8052   | 2       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| getVerificationTypeAt                                                            | 10207           | 11436  | 11436  | 12666  | 2       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| initialize                                                                       | 884219          | 884219 | 884219 | 884219 | 12      |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| isReplicaActive                                                                  | 6936            | 10387  | 10387  | 13838  | 2       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| isReplicaActiveAt                                                                | 15833           | 15833  | 15833  | 15833  | 1       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| isVotingPowerProviderActive                                                      | 6865            | 11466  | 13767  | 13767  | 3       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| isVotingPowerProviderActiveAt                                                    | 8139            | 13250  | 15806  | 15806  | 3       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| removeReplica                                                                    | 24318           | 37128  | 37381  | 49685  | 3       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| removeVotingPowerProvider                                                        | 24306           | 37082  | 37319  | 49623  | 3       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| setKeysProvider                                                                  | 24275           | 32630  | 32630  | 40985  | 2       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| setMaxValidatorsCount                                                            | 34920           | 46054  | 46054  | 57189  | 2       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| setMaxVotingPower                                                                | 23768           | 55893  | 39934  | 87921  | 5       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| setMinInclusionVotingPower                                                       | 57098           | 72547  | 72547  | 87997  | 2       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| setRequiredKeyTags                                                               | 37469           | 48242  | 48242  | 59016  | 2       |
+|----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
+| setVerificationType                                                              | 23799           | 38639  | 34925  | 57194  | 3       |
+╰----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
+
+╭-------------------------------------------------------------------------+-----------------+------+--------+------+---------╮
+| test/libraries/utils/InputNormalizer.t.sol:InputNormalizerTest Contract |                 |      |        |      |         |
++============================================================================================================================+
+| Deployment Cost                                                         | Deployment Size |      |        |      |         |
+|-------------------------------------------------------------------------+-----------------+------+--------+------+---------|
+| 1610299                                                                 | 7879            |      |        |      |         |
+|-------------------------------------------------------------------------+-----------------+------+--------+------+---------|
+|                                                                         |                 |      |        |      |         |
+|-------------------------------------------------------------------------+-----------------+------+--------+------+---------|
+| Function Name                                                           | Min             | Avg  | Median | Max  | # Calls |
+|-------------------------------------------------------------------------+-----------------+------+--------+------+---------|
+| normalizeDoubleDim                                                      | 2940            | 2940 | 2940   | 2940 | 1       |
+|-------------------------------------------------------------------------+-----------------+------+--------+------+---------|
+| normalizeSingleDim                                                      | 2361            | 2361 | 2361   | 2361 | 1       |
+╰-------------------------------------------------------------------------+-----------------+------+--------+------+---------╯
+
+╭-------------------------------------------------------+-----------------+------+--------+------+---------╮
+| test/libraries/utils/KeyTag.t.sol:KeyTagTest Contract |                 |      |        |      |         |
++==========================================================================================================+
+| Deployment Cost                                       | Deployment Size |      |        |      |         |
+|-------------------------------------------------------+-----------------+------+--------+------+---------|
+| 1437912                                               | 7018            |      |        |      |         |
+|-------------------------------------------------------+-----------------+------+--------+------+---------|
+|                                                       |                 |      |        |      |         |
+|-------------------------------------------------------+-----------------+------+--------+------+---------|
+| Function Name                                         | Min             | Avg  | Median | Max  | # Calls |
+|-------------------------------------------------------+-----------------+------+--------+------+---------|
+| getKeyTag                                             | 534             | 550  | 550    | 566  | 2       |
+|-------------------------------------------------------+-----------------+------+--------+------+---------|
+| getTag                                                | 464             | 464  | 464    | 464  | 1       |
+|-------------------------------------------------------+-----------------+------+--------+------+---------|
+| getType                                               | 465             | 465  | 465    | 465  | 1       |
+|-------------------------------------------------------+-----------------+------+--------+------+---------|
+| serialize                                             | 1663            | 1663 | 1663   | 1663 | 1       |
+╰-------------------------------------------------------+-----------------+------+--------+------+---------╯
+
+╭---------------------------------------------------------+-----------------+------+--------+------+---------╮
+| test/mocks/KeyBlsBn254Mock.sol:KeyBlsBn254Mock Contract |                 |      |        |      |         |
++============================================================================================================+
+| Deployment Cost                                         | Deployment Size |      |        |      |         |
+|---------------------------------------------------------+-----------------+------+--------+------+---------|
+| 663838                                                  | 2852            |      |        |      |         |
+|---------------------------------------------------------+-----------------+------+--------+------+---------|
+|                                                         |                 |      |        |      |         |
+|---------------------------------------------------------+-----------------+------+--------+------+---------|
+| Function Name                                           | Min             | Avg  | Median | Max  | # Calls |
+|---------------------------------------------------------+-----------------+------+--------+------+---------|
+| deserialize                                             | 828             | 828  | 828    | 828  | 1       |
+|---------------------------------------------------------+-----------------+------+--------+------+---------|
+| equal                                                   | 1228            | 1241 | 1241   | 1255 | 2       |
+|---------------------------------------------------------+-----------------+------+--------+------+---------|
+| fromBytes                                               | 807             | 2492 | 2492   | 4178 | 2       |
+|---------------------------------------------------------+-----------------+------+--------+------+---------|
+| wrap                                                    | 788             | 3143 | 3242   | 3283 | 264     |
+|---------------------------------------------------------+-----------------+------+--------+------+---------|
+| zeroKey                                                 | 562             | 562  | 562    | 562  | 1       |
+╰---------------------------------------------------------+-----------------+------+--------+------+---------╯
+
+╭---------------------------------------------------------------------+-----------------+------+--------+------+---------╮
+| test/mocks/KeyEcdsaSecp256k1Mock.sol:KeyEcdsaSecp256k1Mock Contract |                 |      |        |      |         |
++========================================================================================================================+
+| Deployment Cost                                                     | Deployment Size |      |        |      |         |
+|---------------------------------------------------------------------+-----------------+------+--------+------+---------|
+| 368103                                                              | 1484            |      |        |      |         |
+|---------------------------------------------------------------------+-----------------+------+--------+------+---------|
+|                                                                     |                 |      |        |      |         |
+|---------------------------------------------------------------------+-----------------+------+--------+------+---------|
+| Function Name                                                       | Min             | Avg  | Median | Max  | # Calls |
+|---------------------------------------------------------------------+-----------------+------+--------+------+---------|
+| deserialize                                                         | 755             | 755  | 755    | 755  | 1       |
+|---------------------------------------------------------------------+-----------------+------+--------+------+---------|
+| equal                                                               | 885             | 885  | 885    | 885  | 2       |
+|---------------------------------------------------------------------+-----------------+------+--------+------+---------|
+| fromBytes                                                           | 779             | 1136 | 1136   | 1493 | 2       |
+|---------------------------------------------------------------------+-----------------+------+--------+------+---------|
+| wrap                                                                | 575             | 575  | 575    | 575  | 4       |
+|---------------------------------------------------------------------+-----------------+------+--------+------+---------|
+| zeroKey                                                             | 374             | 374  | 374    | 374  | 1       |
+╰---------------------------------------------------------------------+-----------------+------+--------+------+---------╯
+
+╭---------------------------------------------------------------+-----------------+------+--------+------+---------╮
+| test/mocks/ValSetVerifierMock.sol:ValSetVerifierMock Contract |                 |      |        |      |         |
++==================================================================================================================+
+| Deployment Cost                                               | Deployment Size |      |        |      |         |
+|---------------------------------------------------------------+-----------------+------+--------+------+---------|
+| 315813                                                        | 1243            |      |        |      |         |
+|---------------------------------------------------------------+-----------------+------+--------+------+---------|
+|                                                               |                 |      |        |      |         |
+|---------------------------------------------------------------+-----------------+------+--------+------+---------|
+| Function Name                                                 | Min             | Avg  | Median | Max  | # Calls |
+|---------------------------------------------------------------+-----------------+------+--------+------+---------|
+| verifyOperator                                                | 9911            | 9911 | 9911   | 9911 | 1       |
+|---------------------------------------------------------------+-----------------+------+--------+------+---------|
+| verifyValidatorOperatorLocal                                  | 1766            | 1766 | 1766   | 1766 | 1       |
+|---------------------------------------------------------------+-----------------+------+--------+------+---------|
+| verifyValidatorRootLocal                                      | 8299            | 8304 | 8304   | 8309 | 2       |
+|---------------------------------------------------------------+-----------------+------+--------+------+---------|
+| verifyValidatorVaultRootLocal                                 | 4354            | 4354 | 4354   | 4354 | 1       |
+|---------------------------------------------------------------+-----------------+------+--------+------+---------|
+| verifyVaultVotingPowerLocal                                   | 1516            | 1516 | 1516   | 1516 | 1       |
+╰---------------------------------------------------------------+-----------------+------+--------+------+---------╯
+
+
+Ran 34 test suites in 746.88ms (1.34s CPU time): 228 tests passed, 0 failed, 0 skipped (228 total tests)
