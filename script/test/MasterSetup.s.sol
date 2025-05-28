@@ -4,8 +4,7 @@ pragma solidity ^0.8.25;
 import {Script, console2} from "forge-std/Script.sol";
 
 import {ISettlement} from "../../src/interfaces/implementations/settlement/ISettlement.sol";
-import {IValSetConfigProvider} from "../../src/interfaces/implementations/settlement/IValSetConfigProvider.sol";
-import {IMasterConfigProvider} from "../../src/interfaces/implementations/settlement/IMasterConfigProvider.sol";
+import {IConfigProvider} from "../../src/interfaces/implementations/settlement/IConfigProvider.sol";
 import {IEpochManager} from "../../src/interfaces/base/IEpochManager.sol";
 
 import {KeyTags} from "../../src/contracts/libraries/utils/KeyTags.sol";
@@ -158,25 +157,24 @@ contract MasterSetupScript is SecondarySetupScript {
             uint8[] memory requiredKeyTags = new uint8[](2);
             requiredKeyTags[0] = KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15);
             requiredKeyTags[1] = KeyManagerLogic.KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0);
-            IMasterConfigProvider.CrossChainAddress[] memory votingPowerProviders =
-                new IMasterConfigProvider.CrossChainAddress[](1);
-            // IMasterConfigProvider.CrossChainAddress[] memory votingPowerProviders =
-            //     new IMasterConfigProvider.CrossChainAddress[](2);
-            votingPowerProviders[0] = IMasterConfigProvider.CrossChainAddress({
+            IConfigProvider.CrossChainAddress[] memory votingPowerProviders = new IConfigProvider.CrossChainAddress[](1);
+            // IConfigProvider.CrossChainAddress[] memory votingPowerProviders =
+            //     new IConfigProvider.CrossChainAddress[](2);
+            votingPowerProviders[0] = IConfigProvider.CrossChainAddress({
                 addr: address(masterSetupParams.votingPowerProvider),
                 chainId: uint64(initSetupParams.masterChain.chainId)
             });
-            // votingPowerProviders[1] = IMasterConfigProvider.CrossChainAddress({
+            // votingPowerProviders[1] = IConfigProvider.CrossChainAddress({
             //     addr: address(secondarySetupParams.votingPowerProvider),
             //     chainId: uint64(initSetupParams.secondaryChain.chainId)
             // });
-            IMasterConfigProvider.CrossChainAddress memory keysProvider = IMasterConfigProvider.CrossChainAddress({
+            IConfigProvider.CrossChainAddress memory keysProvider = IConfigProvider.CrossChainAddress({
                 addr: address(masterSetupParams.keyRegistry),
                 chainId: uint64(initSetupParams.masterChain.chainId)
             });
-            IMasterConfigProvider.CrossChainAddress[] memory replicas = new IMasterConfigProvider.CrossChainAddress[](0);
-            // IMasterConfigProvider.CrossChainAddress[] memory replicas = new IMasterConfigProvider.CrossChainAddress[](1);
-            // replicas[0] = IMasterConfigProvider.CrossChainAddress({
+            IConfigProvider.CrossChainAddress[] memory replicas = new IConfigProvider.CrossChainAddress[](0);
+            // IConfigProvider.CrossChainAddress[] memory replicas = new IConfigProvider.CrossChainAddress[](1);
+            // replicas[0] = IConfigProvider.CrossChainAddress({
             //     addr: address(secondarySetupParams.replica),
             //     chainId: uint64(initSetupParams.secondaryChain.chainId)
             // });
@@ -204,17 +202,15 @@ contract MasterSetupScript is SecondarySetupScript {
                     requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15),
                     sigVerifier: address(new SigVerifierBlsBn254ZK(verifiers, maxValidators))
                 }),
-                IValSetConfigProvider.ValSetConfigProviderInitParams({
+                IConfigProvider.ConfigProviderInitParams({
+                    votingPowerProviders: votingPowerProviders,
+                    keysProvider: keysProvider,
+                    replicas: replicas,
+                    verificationType: 0,
                     maxVotingPower: 1e36,
                     minInclusionVotingPower: 0,
                     maxValidatorsCount: 99_999_999,
                     requiredKeyTags: requiredKeyTags
-                }),
-                IMasterConfigProvider.MasterConfigProviderInitParams({
-                    votingPowerProviders: votingPowerProviders,
-                    keysProvider: keysProvider,
-                    replicas: replicas,
-                    verificationType: 0
                 }),
                 vars.deployer.addr
             );

@@ -4,23 +4,31 @@ pragma solidity ^0.8.0;
 import {PersistentSet} from "../../../contracts/libraries/structs/PersistentSet.sol";
 import {Checkpoints} from "../../../contracts/libraries/structs/Checkpoints.sol";
 
-interface IMasterConfigProvider {
-    error MasterConfigProvider_AlreadyAdded();
-    error MasterConfigProvider_NotAdded();
+interface IConfigProvider {
+    error ConfigProvider_AlreadyAdded();
+    error ConfigProvider_NotAdded();
 
-    /// @custom:storage-location erc7201:symbiotic.storage.MasterConfigProvider
-    struct MasterConfigProviderStorage {
+    /// @custom:storage-location erc7201:symbiotic.storage.ConfigProvider
+    struct ConfigProviderStorage {
         PersistentSet.Bytes32Set _votingPowerProviders;
         Checkpoints.Trace256 _keysProvider;
         PersistentSet.Bytes32Set _replicas;
         Checkpoints.Trace208 _verificationType;
+        Checkpoints.Trace256 _maxVotingPower;
+        Checkpoints.Trace256 _minInclusionVotingPower;
+        Checkpoints.Trace208 _maxValidatorsCount;
+        Checkpoints.Trace208 _requiredKeyTags;
     }
 
-    struct MasterConfigProviderInitParams {
+    struct ConfigProviderInitParams {
         CrossChainAddress[] votingPowerProviders;
         CrossChainAddress keysProvider;
         CrossChainAddress[] replicas;
         uint32 verificationType;
+        uint256 maxVotingPower;
+        uint256 minInclusionVotingPower;
+        uint208 maxValidatorsCount;
+        uint8[] requiredKeyTags;
     }
 
     struct CrossChainAddress {
@@ -28,21 +36,29 @@ interface IMasterConfigProvider {
         uint64 chainId;
     }
 
-    struct MasterConfig {
+    struct Config {
         CrossChainAddress[] votingPowerProviders;
         CrossChainAddress keysProvider;
         CrossChainAddress[] replicas;
         uint32 verificationType;
+        uint256 maxVotingPower;
+        uint256 minInclusionVotingPower;
+        uint208 maxValidatorsCount;
+        uint8[] requiredKeyTags;
     }
 
-    struct MasterConfigHints {
+    struct ConfigHints {
         bytes[] votingPowerProvidersHints;
         bytes keysProviderHint;
         bytes[] replicasHints;
         bytes verificationTypeHint;
+        bytes maxVotingPowerHint;
+        bytes minInclusionVotingPowerHint;
+        bytes maxValidatorsCountHint;
+        bytes requiredKeyTagsHint;
     }
 
-    function MasterConfigProvider_VERSION() external pure returns (uint64);
+    function ConfigProvider_VERSION() external pure returns (uint64);
 
     function isVotingPowerProviderActiveAt(
         CrossChainAddress memory votingPowerProvider,
@@ -86,9 +102,25 @@ interface IMasterConfigProvider {
 
     function getVerificationType() external view returns (uint32);
 
-    function getMasterConfigAt(uint48 timestamp, bytes memory hints) external view returns (MasterConfig memory);
+    function getMaxVotingPowerAt(uint48 timestamp, bytes memory hint) external view returns (uint256);
 
-    function getMasterConfig() external view returns (MasterConfig memory);
+    function getMaxVotingPower() external view returns (uint256);
+
+    function getMinInclusionVotingPowerAt(uint48 timestamp, bytes memory hint) external view returns (uint256);
+
+    function getMinInclusionVotingPower() external view returns (uint256);
+
+    function getMaxValidatorsCountAt(uint48 timestamp, bytes memory hint) external view returns (uint208);
+
+    function getMaxValidatorsCount() external view returns (uint208);
+
+    function getRequiredKeyTagsAt(uint48 timestamp, bytes memory hint) external view returns (uint8[] memory);
+
+    function getRequiredKeyTags() external view returns (uint8[] memory);
+
+    function getConfigAt(uint48 timestamp, bytes memory hints) external view returns (Config memory);
+
+    function getConfig() external view returns (Config memory);
 
     function addVotingPowerProvider(
         CrossChainAddress memory votingPowerProvider
@@ -112,5 +144,21 @@ interface IMasterConfigProvider {
 
     function setVerificationType(
         uint32 verificationType
+    ) external;
+
+    function setMaxVotingPower(
+        uint256 maxVotingPower
+    ) external;
+
+    function setMinInclusionVotingPower(
+        uint256 minInclusionVotingPower
+    ) external;
+
+    function setMaxValidatorsCount(
+        uint208 maxValidatorsCount
+    ) external;
+
+    function setRequiredKeyTags(
+        uint8[] memory requiredKeyTags
     ) external;
 }
