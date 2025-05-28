@@ -5,9 +5,6 @@ import {IPermissionManager} from "../../base/IPermissionManager.sol";
 
 import {IAccessManaged} from "@openzeppelin/contracts/access/manager/IAccessManaged.sol";
 
-/**
- * @title IOzAccessManaged
- */
 interface IOzAccessManaged {
     struct OzAccessManagedInitParams {
         address authority;

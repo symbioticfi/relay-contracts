@@ -11,8 +11,8 @@ interface IEpochManager {
 
     /// @custom:storage-location erc7201:symbiotic.storage.EpochManager
     struct EpochManagerStorage {
-        Checkpoints.Trace208 _epochDurationDataByTimestamp; // 14 empty bytes + 6 bytes for epochDurationIndex + 6 bytes for epochDuration
-        Checkpoints.Trace208 _epochDurationDataByIndex; // 14 empty bytes + 6 bytes for epochDurationStart + 6 bytes for epochDuration
+        Checkpoints.Trace208 _epochDurationDataByTimestamp;
+        Checkpoints.Trace208 _epochDurationDataByIndex;
     }
 
     struct EpochManagerInitParams {

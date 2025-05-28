@@ -3,10 +3,6 @@ pragma solidity ^0.8.0;
 
 import {IPermissionManager} from "../../base/IPermissionManager.sol";
 
-/**
- * @title IOzOwnable
- * @notice Interface for a middleware extension that restricts access to a single owner address
- */
 interface IOzOwnable {
     struct OzOwnableInitParams {
         address owner;

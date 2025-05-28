@@ -5,16 +5,11 @@ import {IPermissionManager} from "../../base/IPermissionManager.sol";
 
 import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
 
-/**
- * @title IOzAccessControl
- * @notice Interface for a middleware extension that implements role-based access control
- */
 interface IOzAccessControl {
-    /**
-     * @notice Returns the role required for a function selector
-     * @param selector The function selector
-     * @return bytes32 The required role
-     */
+    event SetSelectorRole(bytes4 selector, bytes32 role);
+
+    function OzAccessControl_VERSION() external view returns (uint64);
+
     function getRole(
         bytes4 selector
     ) external view returns (bytes32);

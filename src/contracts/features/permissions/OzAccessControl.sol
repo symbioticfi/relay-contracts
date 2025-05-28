@@ -8,8 +8,9 @@ import {IOzAccessControl} from "../../../interfaces/features/permissions/IOzAcce
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
 abstract contract OzAccessControl is PermissionManager, AccessControlUpgradeable, IOzAccessControl {
-    event SelectorRoleSet(bytes4 selector, bytes32 role);
-
+    /**
+     * @inheritdoc IOzAccessControl
+     */
     uint64 public constant OzAccessControl_VERSION = 1;
 
     /// @custom:storage-location erc7201:symbiotic.storage.OzAccessControl
@@ -44,19 +45,14 @@ abstract contract OzAccessControl is PermissionManager, AccessControlUpgradeable
     }
 
     /**
-     * @notice Sets the role required for a function selector
-     * @param selector The function selector
-     * @param role The required role
-     */
-    function _setSelectorRole(bytes4 selector, bytes32 role) internal virtual {
-        _getOzAccessControlStorage()._selectorRoles[selector] = role;
-        emit SelectorRoleSet(selector, role);
-    }
-
-    /**
      * @inheritdoc PermissionManager
      */
     function _checkPermission() internal view virtual override {
         _checkRole(getRole(msg.sig));
+    }
+
+    function _setSelectorRole(bytes4 selector, bytes32 role) internal virtual {
+        _getOzAccessControlStorage()._selectorRoles[selector] = role;
+        emit SetSelectorRole(selector, role);
     }
 }

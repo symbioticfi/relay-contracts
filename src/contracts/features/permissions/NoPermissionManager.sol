@@ -16,7 +16,5 @@ abstract contract NoPermissionManager is PermissionManager, INoPermissionManager
     /**
      * @inheritdoc PermissionManager
      */
-    function _checkPermission() internal pure virtual override {
-        // Allow all access by default
-    }
+    function _checkPermission() internal pure virtual override {}
 }

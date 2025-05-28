@@ -11,7 +11,7 @@ library OzEIP712Logic {
     bytes32 private constant TYPE_HASH =
         keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
 
-    bytes32 private constant MULTICHAIN_TYPE_HASH = keccak256("EIP712Domain(string name,string version)");
+    bytes32 private constant CROSS_CHAIN_TYPE_HASH = keccak256("EIP712Domain(string name,string version)");
 
     /// @custom:storage-location erc7201:openzeppelin.storage.OzEIP712
     struct OzEIP712Storage {
@@ -85,7 +85,7 @@ library OzEIP712Logic {
         bytes32 structHash
     ) public view returns (bytes32) {
         return MessageHashUtils.toTypedDataHash(
-            keccak256(abi.encode(MULTICHAIN_TYPE_HASH, _EIP712NameHash(), _EIP712VersionHash())), structHash
+            keccak256(abi.encode(CROSS_CHAIN_TYPE_HASH, _EIP712NameHash(), _EIP712VersionHash())), structHash
         );
     }
 
