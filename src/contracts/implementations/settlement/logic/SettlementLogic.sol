@@ -7,11 +7,9 @@ import {OzEIP712Logic} from "../../../base/common/logic/OzEIP712Logic.sol";
 import {NetworkManagerLogic} from "../../../base/logic/NetworkManagerLogic.sol";
 
 import {ISigVerifier} from "../../../../interfaces/base/ISigVerifier.sol";
-import {IBaseKeyManager} from "../../../../interfaces/base/IBaseKeyManager.sol";
 import {ISettlement} from "../../../../interfaces/implementations/settlement/ISettlement.sol";
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
-import {MulticallUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
 
 library SettlementLogic {
     using Checkpoints for Checkpoints.Trace208;
@@ -350,9 +348,9 @@ library SettlementLogic {
             revert ISettlement.Settlement_InvalidEpoch();
         }
 
-        // if (header.captureTimestamp != EpochManagerLogic.getCurrentEpochStart()) {
-        //     revert ISettlement.Settlement_InvalidCaptureTimestamp();
-        // }
+        if (header.captureTimestamp != EpochManagerLogic.getCurrentEpochStart()) {
+            revert ISettlement.Settlement_InvalidCaptureTimestamp();
+        }
 
         ISettlement.SettlementStorage storage $ = _getSettlementStorage();
         uint48 currentEpoch = EpochManagerLogic.getCurrentEpoch();
