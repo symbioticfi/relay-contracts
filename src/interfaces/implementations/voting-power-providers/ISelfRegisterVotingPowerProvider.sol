@@ -5,6 +5,8 @@ import {INetworkManager} from "../../base/INetworkManager.sol";
 import {IVaultManager} from "../../base/IVaultManager.sol";
 import {ISelfRegisterOperators} from "../../features/registration/operators/ISelfRegisterOperators.sol";
 import {IOzOwnable} from "../../features/permissions/IOzOwnable.sol";
+import {IWhitelistSelfRegisterOperators} from
+    "../../features/registration/operators/extensions/IWhitelistSelfRegisterOperators.sol";
 import {IOzEIP712} from "../../base/common/IOzEIP712.sol";
 
 interface ISelfRegisterVotingPowerProvider {
@@ -12,6 +14,8 @@ interface ISelfRegisterVotingPowerProvider {
         INetworkManager.NetworkManagerInitParams memory networkManagerInitParams,
         IVaultManager.VaultManagerInitParams memory vaultManagerInitParams,
         IOzEIP712.OzEIP712InitParams memory ozEip712InitParams,
+        IWhitelistSelfRegisterOperators.WhitelistSelfRegisterOperatorsInitParams memory
+            whitelistSelfRegisterOperatorsInitParams,
         IOzOwnable.OzOwnableInitParams memory ozOwnableInitParams
     ) external;
 }

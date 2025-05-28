@@ -7,6 +7,8 @@ import {ISettlement} from "../../src/interfaces/implementations/settlement/ISett
 import {IOzOwnable} from "../../src/interfaces/features/permissions/IOzOwnable.sol";
 import {INetworkManager} from "../../src/interfaces/base/INetworkManager.sol";
 import {IEpochManager} from "../../src/interfaces/base/IEpochManager.sol";
+import {IWhitelistSelfRegisterOperators} from
+    "../../src/interfaces/features/registration/operators/extensions/IWhitelistSelfRegisterOperators.sol";
 import {IOzEIP712} from "../../src/interfaces/base/common/IOzEIP712.sol";
 import {IVaultManager} from "../../src/interfaces/base/IVaultManager.sol";
 
@@ -59,6 +61,7 @@ contract SecondarySetupScript is InitSetupScript {
             }),
             IVaultManager.VaultManagerInitParams({slashingWindow: initSetupParams.slashingWindow}),
             IOzEIP712.OzEIP712InitParams({name: "SelfRegisterVotingPowerProvider", version: "1"}),
+            IWhitelistSelfRegisterOperators.WhitelistSelfRegisterOperatorsInitParams({isWhitelistEnabled: false}),
             IOzOwnable.OzOwnableInitParams({owner: vars.network.addr})
         );
         vm.stopBroadcast();

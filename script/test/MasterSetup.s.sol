@@ -62,6 +62,7 @@ contract MasterSetupScript is SecondarySetupScript {
             }),
             IVaultManager.VaultManagerInitParams({slashingWindow: initSetupParams.slashingWindow}),
             IOzEIP712.OzEIP712InitParams({name: "SelfRegisterVotingPowerProvider", version: "1"}),
+            IWhitelistSelfRegisterOperators.WhitelistSelfRegisterOperatorsInitParams({isWhitelistEnabled: false}),
             IOzOwnable.OzOwnableInitParams({owner: vars.network.addr})
         );
         vm.stopBroadcast();

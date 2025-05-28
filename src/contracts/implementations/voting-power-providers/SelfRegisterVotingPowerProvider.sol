@@ -34,6 +34,7 @@ contract SelfRegisterVotingPowerProvider is
         NetworkManagerInitParams memory networkManagerInitParams,
         VaultManagerInitParams memory vaultManagerInitParams,
         OzEIP712InitParams memory ozEip712InitParams,
+        WhitelistSelfRegisterOperatorsInitParams memory whitelistSelfRegisterOperatorsInitParams,
         OzOwnableInitParams memory ozOwnableInitParams
     ) public virtual initializer {
         __NetworkManager_init(networkManagerInitParams);
@@ -43,6 +44,7 @@ contract SelfRegisterVotingPowerProvider is
         __OzEIP712_init(ozEip712InitParams);
         __SelfRegisterOperators_init();
         __ForcePauseSelfRegisterOperators_init();
+        __WhitelistSelfRegisterOperators_init(whitelistSelfRegisterOperatorsInitParams);
         __Tokens_init();
         __OzOwnable_init(ozOwnableInitParams);
         __EqualStakeToVP_init();

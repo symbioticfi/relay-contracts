@@ -6,6 +6,8 @@ import {Script, console2} from "forge-std/Script.sol";
 import {ISettlement} from "../src/interfaces/implementations/settlement/ISettlement.sol";
 import {IValSetConfigProvider} from "../src/interfaces/implementations/settlement/IValSetConfigProvider.sol";
 import {IMasterConfigProvider} from "../src/interfaces/implementations/settlement/IMasterConfigProvider.sol";
+import {IWhitelistSelfRegisterOperators} from
+    "../src/interfaces/features/registration/operators/extensions/IWhitelistSelfRegisterOperators.sol";
 import {IEpochManager} from "../src/interfaces/base/IEpochManager.sol";
 
 import {KeyTags} from "../src/contracts/libraries/utils/KeyTags.sol";
@@ -73,6 +75,7 @@ contract MasterSetup is InitSetup {
             }),
             IVaultManager.VaultManagerInitParams({slashingWindow: initSetupParams.slashingWindow}),
             IOzEIP712.OzEIP712InitParams({name: "SelfRegisterVotingPowerProvider", version: "1"}),
+            IWhitelistSelfRegisterOperators.WhitelistSelfRegisterOperatorsInitParams({isWhitelistEnabled: false}),
             IOzOwnable.OzOwnableInitParams({owner: vars.network.addr})
         );
         vm.stopPrank();
