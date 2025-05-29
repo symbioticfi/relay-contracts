@@ -48,7 +48,7 @@ library ConfigProviderLogic {
         setRequiredKeyTags(configProviderInitParams.requiredKeyTags);
     }
 
-    function isVotingPowerProviderActiveAt(
+    function isVotingPowerProviderRegisteredAt(
         IConfigProvider.CrossChainAddress memory votingPowerProvider,
         uint48 timestamp,
         bytes memory hint
@@ -58,34 +58,34 @@ library ConfigProviderLogic {
         );
     }
 
-    function isVotingPowerProviderActive(
+    function isVotingPowerProviderRegistered(
         IConfigProvider.CrossChainAddress memory votingPowerProvider
     ) public view returns (bool) {
         return
             _getConfigProviderStorage()._votingPowerProviders.contains(serializeCrossChainAddress(votingPowerProvider));
     }
 
-    function getActiveVotingPowerProvidersAt(
+    function getVotingPowerProvidersAt(
         uint48 timestamp,
         bytes[] memory hints
-    ) public view returns (IConfigProvider.CrossChainAddress[] memory activeVotingPowerProviders) {
-        bytes32[] memory activeVotingPowerProvidersRaw =
+    ) public view returns (IConfigProvider.CrossChainAddress[] memory votingPowerProviders) {
+        bytes32[] memory votingPowerProvidersRaw =
             _getConfigProviderStorage()._votingPowerProviders.valuesAt(timestamp, hints);
-        activeVotingPowerProviders = new IConfigProvider.CrossChainAddress[](activeVotingPowerProvidersRaw.length);
-        for (uint256 i; i < activeVotingPowerProvidersRaw.length; ++i) {
-            activeVotingPowerProviders[i] = deserializeCrossChainAddress(activeVotingPowerProvidersRaw[i]);
+        votingPowerProviders = new IConfigProvider.CrossChainAddress[](votingPowerProvidersRaw.length);
+        for (uint256 i; i < votingPowerProvidersRaw.length; ++i) {
+            votingPowerProviders[i] = deserializeCrossChainAddress(votingPowerProvidersRaw[i]);
         }
     }
 
-    function getActiveVotingPowerProviders()
+    function getVotingPowerProviders()
         public
         view
-        returns (IConfigProvider.CrossChainAddress[] memory activeVotingPowerProviders)
+        returns (IConfigProvider.CrossChainAddress[] memory votingPowerProviders)
     {
-        bytes32[] memory activeVotingPowerProvidersRaw = _getConfigProviderStorage()._votingPowerProviders.values();
-        activeVotingPowerProviders = new IConfigProvider.CrossChainAddress[](activeVotingPowerProvidersRaw.length);
-        for (uint256 i; i < activeVotingPowerProvidersRaw.length; ++i) {
-            activeVotingPowerProviders[i] = deserializeCrossChainAddress(activeVotingPowerProvidersRaw[i]);
+        bytes32[] memory votingPowerProvidersRaw = _getConfigProviderStorage()._votingPowerProviders.values();
+        votingPowerProviders = new IConfigProvider.CrossChainAddress[](votingPowerProvidersRaw.length);
+        for (uint256 i; i < votingPowerProvidersRaw.length; ++i) {
+            votingPowerProviders[i] = deserializeCrossChainAddress(votingPowerProvidersRaw[i]);
         }
     }
 
@@ -102,7 +102,7 @@ library ConfigProviderLogic {
         return deserializeCrossChainAddress(bytes32(_getConfigProviderStorage()._keysProvider.latest()));
     }
 
-    function isReplicaActiveAt(
+    function isReplicaRegisteredAt(
         IConfigProvider.CrossChainAddress memory replica,
         uint48 timestamp,
         bytes memory hint
@@ -110,28 +110,28 @@ library ConfigProviderLogic {
         return _getConfigProviderStorage()._replicas.containsAt(timestamp, serializeCrossChainAddress(replica), hint);
     }
 
-    function isReplicaActive(
+    function isReplicaRegistered(
         IConfigProvider.CrossChainAddress memory replica
     ) public view returns (bool) {
         return _getConfigProviderStorage()._replicas.contains(serializeCrossChainAddress(replica));
     }
 
-    function getActiveReplicasAt(
+    function getReplicasAt(
         uint48 timestamp,
         bytes[] memory hints
-    ) public view returns (IConfigProvider.CrossChainAddress[] memory activeReplicas) {
-        bytes32[] memory activeReplicasRaw = _getConfigProviderStorage()._replicas.valuesAt(timestamp, hints);
-        activeReplicas = new IConfigProvider.CrossChainAddress[](activeReplicasRaw.length);
-        for (uint256 i; i < activeReplicasRaw.length; ++i) {
-            activeReplicas[i] = deserializeCrossChainAddress(activeReplicasRaw[i]);
+    ) public view returns (IConfigProvider.CrossChainAddress[] memory replicas) {
+        bytes32[] memory replicasRaw = _getConfigProviderStorage()._replicas.valuesAt(timestamp, hints);
+        replicas = new IConfigProvider.CrossChainAddress[](replicasRaw.length);
+        for (uint256 i; i < replicasRaw.length; ++i) {
+            replicas[i] = deserializeCrossChainAddress(replicasRaw[i]);
         }
     }
 
-    function getActiveReplicas() public view returns (IConfigProvider.CrossChainAddress[] memory activeReplicas) {
-        bytes32[] memory activeReplicasRaw = _getConfigProviderStorage()._replicas.values();
-        activeReplicas = new IConfigProvider.CrossChainAddress[](activeReplicasRaw.length);
-        for (uint256 i; i < activeReplicasRaw.length; ++i) {
-            activeReplicas[i] = deserializeCrossChainAddress(activeReplicasRaw[i]);
+    function getReplicas() public view returns (IConfigProvider.CrossChainAddress[] memory replicas) {
+        bytes32[] memory replicasRaw = _getConfigProviderStorage()._replicas.values();
+        replicas = new IConfigProvider.CrossChainAddress[](replicasRaw.length);
+        for (uint256 i; i < replicasRaw.length; ++i) {
+            replicas[i] = deserializeCrossChainAddress(replicasRaw[i]);
         }
     }
 
@@ -185,9 +185,9 @@ library ConfigProviderLogic {
         }
 
         return IConfigProvider.Config({
-            votingPowerProviders: getActiveVotingPowerProvidersAt(timestamp, configHints.votingPowerProvidersHints),
+            votingPowerProviders: getVotingPowerProvidersAt(timestamp, configHints.votingPowerProvidersHints),
             keysProvider: getKeysProviderAt(timestamp, configHints.keysProviderHint),
-            replicas: getActiveReplicasAt(timestamp, configHints.replicasHints),
+            replicas: getReplicasAt(timestamp, configHints.replicasHints),
             verificationType: getVerificationTypeAt(timestamp, configHints.verificationTypeHint),
             maxVotingPower: getMaxVotingPowerAt(timestamp, configHints.maxVotingPowerHint),
             minInclusionVotingPower: getMinInclusionVotingPowerAt(timestamp, configHints.minInclusionVotingPowerHint),
@@ -198,9 +198,9 @@ library ConfigProviderLogic {
 
     function getConfig() public view returns (IConfigProvider.Config memory) {
         return IConfigProvider.Config({
-            votingPowerProviders: getActiveVotingPowerProviders(),
+            votingPowerProviders: getVotingPowerProviders(),
             keysProvider: getKeysProvider(),
-            replicas: getActiveReplicas(),
+            replicas: getReplicas(),
             verificationType: getVerificationType(),
             maxVotingPower: getMaxVotingPower(),
             minInclusionVotingPower: getMinInclusionVotingPower(),

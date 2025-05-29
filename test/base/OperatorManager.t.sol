@@ -65,8 +65,8 @@ contract OperatorManagerTest is InitSetup {
     function test_RegisterOperatorValid() public {
         opManager.registerOperator(validOperator);
 
-        bool isActive = opManager.isOperatorActive(validOperator);
-        assertTrue(isActive, "Should be active now");
+        bool isRegistered = opManager.isOperatorRegistered(validOperator);
+        assertTrue(isRegistered, "Should be registered now");
     }
 
     function test_RegisterOperator_RevertIfNotEntity() public {
@@ -83,20 +83,20 @@ contract OperatorManagerTest is InitSetup {
     function test_UnregisterOperator() public {
         opManager.registerOperator(validOperator);
 
-        address[] memory actOps = opManager.getActiveOperators();
-        assertEq(actOps.length, 1, "Should have exactly 1 active operator");
+        address[] memory actOps = opManager.getOperators();
+        assertEq(actOps.length, 1, "Should have exactly 1 registered operator");
         assertEq(actOps[0], validOperator, "Operator mismatch in actOps");
 
         opManager.unregisterOperator(validOperator);
 
-        bool isActive = opManager.isOperatorActive(validOperator);
-        assertFalse(isActive, "Should not be active after unregister");
+        bool isRegistered = opManager.isOperatorRegistered(validOperator);
+        assertFalse(isRegistered, "Should not be registered after unregister");
 
-        actOps = opManager.getActiveOperators();
-        assertEq(actOps.length, 0, "Should have no active operators");
+        actOps = opManager.getOperators();
+        assertEq(actOps.length, 0, "Should have no registered operators");
 
-        uint256 actOpsLength = opManager.getActiveOperatorsLength();
-        assertEq(actOpsLength, 0, "Should have no active operators");
+        uint256 actOpsLength = opManager.getOperatorsLength();
+        assertEq(actOpsLength, 0, "Should have no registered operators");
     }
 
     function test_UnregisterOperator_RevertIfNotRegistered() public {
@@ -104,22 +104,22 @@ contract OperatorManagerTest is InitSetup {
         opManager.unregisterOperator(validOperator);
     }
 
-    function test_IsOperatorActiveAt_withTime() public {
+    function test_IsOperatorRegisteredAt_withTime() public {
         uint48 t0 = uint48(vm.getBlockTimestamp());
         opManager.registerOperator(validOperator);
 
         vm.warp(vm.getBlockTimestamp() + 100);
         uint48 t1 = uint48(vm.getBlockTimestamp());
 
-        bool wasActiveBefore = opManager.isOperatorActiveAt(validOperator, t0 - 1, "");
-        assertFalse(wasActiveBefore, "Should be inactive before we registered");
-        bool isActiveT0 = opManager.isOperatorActiveAt(validOperator, t0, "");
-        assertTrue(isActiveT0, "Should be active at T0");
-        bool isActiveT1 = opManager.isOperatorActiveAt(validOperator, t1, "");
-        assertTrue(isActiveT1, "Should be active at T1");
+        bool wasRegisteredBefore = opManager.isOperatorRegisteredAt(validOperator, t0 - 1, "");
+        assertFalse(wasRegisteredBefore, "Should be inregistered before we registered");
+        bool isRegisteredT0 = opManager.isOperatorRegisteredAt(validOperator, t0, "");
+        assertTrue(isRegisteredT0, "Should be registered at T0");
+        bool isRegisteredT1 = opManager.isOperatorRegisteredAt(validOperator, t1, "");
+        assertTrue(isRegisteredT1, "Should be registered at T1");
     }
 
-    function testGetActiveOperatorsAt_withTime() public {
+    function testGetOperatorsAt_withTime() public {
         address validOp2 = address(0x3333);
         _registerOperator_SymbioticCore(symbioticCore, validOp2);
 
@@ -128,12 +128,12 @@ contract OperatorManagerTest is InitSetup {
         opManager.registerOperator(validOperator);
 
         {
-            address[] memory actOps = opManager.getActiveOperators();
-            assertEq(actOps.length, 1, "At T0, 1 active operator");
+            address[] memory actOps = opManager.getOperators();
+            assertEq(actOps.length, 1, "At T0, 1 registered operator");
             assertEq(actOps[0], validOperator);
 
-            uint256 actOpsT0Length = opManager.getActiveOperatorsLength();
-            assertEq(actOpsT0Length, 1, "At T0, 1 active operator");
+            uint256 actOpsT0Length = opManager.getOperatorsLength();
+            assertEq(actOpsT0Length, 1, "At T0, 1 registered operator");
         }
 
         vm.warp(t0 + 50);
@@ -141,24 +141,24 @@ contract OperatorManagerTest is InitSetup {
         opManager.registerOperator(validOp2);
 
         {
-            address[] memory actOpsT0 = opManager.getActiveOperatorsAt(t0, new bytes[](0));
-            assertEq(actOpsT0.length, 1, "At T0, only 1 active operator");
+            address[] memory actOpsT0 = opManager.getOperatorsAt(t0, new bytes[](0));
+            assertEq(actOpsT0.length, 1, "At T0, only 1 registered operator");
             assertEq(actOpsT0[0], validOperator);
         }
         {
-            address[] memory actOpsT1 = opManager.getActiveOperatorsAt(t1, new bytes[](0));
-            assertEq(actOpsT1.length, 2, "At T1, 2 active operators");
+            address[] memory actOpsT1 = opManager.getOperatorsAt(t1, new bytes[](0));
+            assertEq(actOpsT1.length, 2, "At T1, 2 registered operators");
             assertEq(actOpsT1[0], validOperator);
             assertEq(actOpsT1[1], validOp2);
         }
         {
-            address[] memory actOps = opManager.getActiveOperators();
-            assertEq(actOps.length, 2, "At T1, 2 active operators");
+            address[] memory actOps = opManager.getOperators();
+            assertEq(actOps.length, 2, "At T1, 2 registered operators");
             assertEq(actOps[0], validOperator);
             assertEq(actOps[1], validOp2);
 
-            uint256 actOpsT1Length = opManager.getActiveOperatorsLength();
-            assertEq(actOpsT1Length, 2, "At T1, 2 active operators");
+            uint256 actOpsT1Length = opManager.getOperatorsLength();
+            assertEq(actOpsT1Length, 2, "At T1, 2 registered operators");
         }
     }
 

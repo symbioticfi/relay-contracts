@@ -84,16 +84,21 @@ contract SelfRegisterOperatorsTest is InitSetup {
         selfRegisterOperators.registerOperator(vault);
         vm.stopPrank();
 
-        assertTrue(selfRegisterOperators.isOperatorActive(vars.operators[0].addr), "Operator should be active");
-        assertTrue(selfRegisterOperators.isOperatorVaultActive(vars.operators[0].addr, vault), "Vault should be active");
+        assertTrue(selfRegisterOperators.isOperatorRegistered(vars.operators[0].addr), "Operator should be registered");
+        assertTrue(
+            selfRegisterOperators.isOperatorVaultRegistered(vars.operators[0].addr, vault), "Vault should be registered"
+        );
 
         vm.startPrank(vars.operators[0].addr);
         selfRegisterOperators.unregisterOperator();
         vm.stopPrank();
 
-        assertFalse(selfRegisterOperators.isOperatorActive(vars.operators[0].addr), "Operator should be unregistered");
+        assertFalse(
+            selfRegisterOperators.isOperatorRegistered(vars.operators[0].addr), "Operator should be unregistered"
+        );
         assertTrue(
-            selfRegisterOperators.isOperatorVaultActive(vars.operators[0].addr, vault), "Vault should be unregistered"
+            selfRegisterOperators.isOperatorVaultRegistered(vars.operators[0].addr, vault),
+            "Vault should be unregistered"
         );
     }
 
@@ -119,16 +124,19 @@ contract SelfRegisterOperatorsTest is InitSetup {
         selfRegisterOperators.registerOperator(vault);
         vm.stopPrank();
 
-        assertTrue(selfRegisterOperators.isOperatorActive(vars.operators[0].addr), "Operator should be active");
-        assertTrue(selfRegisterOperators.isOperatorVaultActive(vars.operators[0].addr, vault), "Vault should be active");
+        assertTrue(selfRegisterOperators.isOperatorRegistered(vars.operators[0].addr), "Operator should be registered");
+        assertTrue(
+            selfRegisterOperators.isOperatorVaultRegistered(vars.operators[0].addr, vault), "Vault should be registered"
+        );
 
         vm.startPrank(vars.operators[0].addr);
         selfRegisterOperators.unregisterOperatorVault(vault);
         vm.stopPrank();
 
-        assertTrue(selfRegisterOperators.isOperatorActive(vars.operators[0].addr), "Operator should be active");
+        assertTrue(selfRegisterOperators.isOperatorRegistered(vars.operators[0].addr), "Operator should be registered");
         assertFalse(
-            selfRegisterOperators.isOperatorVaultActive(vars.operators[0].addr, vault), "Vault should be unregistered"
+            selfRegisterOperators.isOperatorVaultRegistered(vars.operators[0].addr, vault),
+            "Vault should be unregistered"
         );
     }
 
@@ -166,8 +174,10 @@ contract SelfRegisterOperatorsTest is InitSetup {
 
         selfRegisterOperators.registerOperatorWithSignature(operatorAddr, someVault, signature);
 
-        assertTrue(selfRegisterOperators.isOperatorActive(operatorAddr), "Operator should be active");
-        assertTrue(selfRegisterOperators.isOperatorVaultActive(operatorAddr, someVault), "Vault should be active");
+        assertTrue(selfRegisterOperators.isOperatorRegistered(operatorAddr), "Operator should be registered");
+        assertTrue(
+            selfRegisterOperators.isOperatorVaultRegistered(operatorAddr, someVault), "Vault should be registered"
+        );
     }
 
     function test_registerOperatorWithSignature_RevertIfInvalidSig() public {
@@ -251,8 +261,8 @@ contract SelfRegisterOperatorsTest is InitSetup {
 
         selfRegisterOperators.registerOperatorVaultWithSignature(operatorAddr, vault, signature);
 
-        assertTrue(selfRegisterOperators.isOperatorActive(operatorAddr), "Operator is active");
-        assertTrue(selfRegisterOperators.isOperatorVaultActive(operatorAddr, vault), "Vault is active");
+        assertTrue(selfRegisterOperators.isOperatorRegistered(operatorAddr), "Operator is registered");
+        assertTrue(selfRegisterOperators.isOperatorVaultRegistered(operatorAddr, vault), "Vault is registered");
     }
 
     function test_unregisterOperatorWithSignature() public {
@@ -261,7 +271,7 @@ contract SelfRegisterOperatorsTest is InitSetup {
 
         vm.prank(operatorAddr);
         selfRegisterOperators.registerOperator(address(0));
-        assertTrue(selfRegisterOperators.isOperatorActive(operatorAddr));
+        assertTrue(selfRegisterOperators.isOperatorRegistered(operatorAddr));
 
         uint256 currentNonce = selfRegisterOperators.nonces(operatorAddr);
         bytes32 typehash = keccak256("UnregisterOperator(address operator,uint256 nonce)");
@@ -273,7 +283,7 @@ contract SelfRegisterOperatorsTest is InitSetup {
 
         selfRegisterOperators.unregisterOperatorWithSignature(operatorAddr, signature);
 
-        assertFalse(selfRegisterOperators.isOperatorActive(operatorAddr), "Should be unregistered now");
+        assertFalse(selfRegisterOperators.isOperatorRegistered(operatorAddr), "Should be unregistered now");
     }
 
     function test_unregisterOperatorVaultWithSignature() public {
@@ -282,7 +292,7 @@ contract SelfRegisterOperatorsTest is InitSetup {
 
         vm.prank(operatorAddr);
         selfRegisterOperators.registerOperator(address(0));
-        assertTrue(selfRegisterOperators.isOperatorActive(operatorAddr));
+        assertTrue(selfRegisterOperators.isOperatorRegistered(operatorAddr));
 
         uint256 currentNonce = selfRegisterOperators.nonces(operatorAddr);
         address vault = _getVault_SymbioticCore(
@@ -316,8 +326,8 @@ contract SelfRegisterOperatorsTest is InitSetup {
 
         selfRegisterOperators.unregisterOperatorVaultWithSignature(operatorAddr, vault, signature);
 
-        assertTrue(selfRegisterOperators.isOperatorActive(operatorAddr), "Should be registered now");
-        assertFalse(selfRegisterOperators.isOperatorVaultActive(operatorAddr, vault), "Should be unregistered now");
+        assertTrue(selfRegisterOperators.isOperatorRegistered(operatorAddr), "Should be registered now");
+        assertFalse(selfRegisterOperators.isOperatorVaultRegistered(operatorAddr, vault), "Should be unregistered now");
     }
 
     function test_unregisterOperatorVaultWithSignature_RevertIfInvalidSig() public {

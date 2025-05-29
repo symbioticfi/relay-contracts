@@ -23,38 +23,38 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     /**
      * @inheritdoc IConfigProvider
      */
-    function isVotingPowerProviderActiveAt(
+    function isVotingPowerProviderRegisteredAt(
         CrossChainAddress memory votingPowerProvider,
         uint48 timestamp,
         bytes memory hint
     ) public view virtual returns (bool) {
-        return ConfigProviderLogic.isVotingPowerProviderActiveAt(votingPowerProvider, timestamp, hint);
+        return ConfigProviderLogic.isVotingPowerProviderRegisteredAt(votingPowerProvider, timestamp, hint);
     }
 
     /**
      * @inheritdoc IConfigProvider
      */
-    function isVotingPowerProviderActive(
+    function isVotingPowerProviderRegistered(
         CrossChainAddress memory votingPowerProvider
     ) public view virtual returns (bool) {
-        return ConfigProviderLogic.isVotingPowerProviderActive(votingPowerProvider);
+        return ConfigProviderLogic.isVotingPowerProviderRegistered(votingPowerProvider);
     }
 
     /**
      * @inheritdoc IConfigProvider
      */
-    function getActiveVotingPowerProvidersAt(
+    function getVotingPowerProvidersAt(
         uint48 timestamp,
         bytes[] memory hints
     ) public view virtual returns (CrossChainAddress[] memory) {
-        return ConfigProviderLogic.getActiveVotingPowerProvidersAt(timestamp, hints);
+        return ConfigProviderLogic.getVotingPowerProvidersAt(timestamp, hints);
     }
 
     /**
      * @inheritdoc IConfigProvider
      */
-    function getActiveVotingPowerProviders() public view virtual returns (CrossChainAddress[] memory) {
-        return ConfigProviderLogic.getActiveVotingPowerProviders();
+    function getVotingPowerProviders() public view virtual returns (CrossChainAddress[] memory) {
+        return ConfigProviderLogic.getVotingPowerProviders();
     }
 
     /**
@@ -77,38 +77,38 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     /**
      * @inheritdoc IConfigProvider
      */
-    function isReplicaActiveAt(
+    function isReplicaRegisteredAt(
         CrossChainAddress memory replica,
         uint48 timestamp,
         bytes memory hint
     ) public view virtual returns (bool) {
-        return ConfigProviderLogic.isReplicaActiveAt(replica, timestamp, hint);
+        return ConfigProviderLogic.isReplicaRegisteredAt(replica, timestamp, hint);
     }
 
     /**
      * @inheritdoc IConfigProvider
      */
-    function isReplicaActive(
+    function isReplicaRegistered(
         CrossChainAddress memory replica
     ) public view virtual returns (bool) {
-        return ConfigProviderLogic.isReplicaActive(replica);
+        return ConfigProviderLogic.isReplicaRegistered(replica);
     }
 
     /**
      * @inheritdoc IConfigProvider
      */
-    function getActiveReplicasAt(
+    function getReplicasAt(
         uint48 timestamp,
         bytes[] memory hints
     ) public view virtual returns (CrossChainAddress[] memory) {
-        return ConfigProviderLogic.getActiveReplicasAt(timestamp, hints);
+        return ConfigProviderLogic.getReplicasAt(timestamp, hints);
     }
 
     /**
      * @inheritdoc IConfigProvider
      */
-    function getActiveReplicas() public view virtual returns (CrossChainAddress[] memory) {
-        return ConfigProviderLogic.getActiveReplicas();
+    function getReplicas() public view virtual returns (CrossChainAddress[] memory) {
+        return ConfigProviderLogic.getReplicas();
     }
 
     /**

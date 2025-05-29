@@ -51,7 +51,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
             revert ForcePauseSelfRegisterOperators_OperatorForcePaused();
         }
         _getForcePauseStorage()._forcePaused[operator] = true;
-        if (isOperatorActive(operator)) {
+        if (isOperatorRegistered(operator)) {
             _unregisterOperator(operator);
         }
     }
@@ -76,7 +76,7 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
             revert ForcePauseSelfRegisterOperators_OperatorVaultForcePaused();
         }
         _getForcePauseStorage()._forcePausedVault[operator][vault] = true;
-        if (isOperatorVaultActive(operator, vault)) {
+        if (isOperatorVaultRegistered(operator, vault)) {
             _unregisterOperatorVault(operator, vault);
         }
     }

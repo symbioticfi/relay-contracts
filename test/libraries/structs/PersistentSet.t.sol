@@ -94,9 +94,9 @@ contract PersistentSetTest is Test {
         addressSet.add(2, second);
         addressSet.remove(3, first);
 
-        address[] memory active = addressSet.values();
-        assertEq(active.length, 1, "Currently only 'second' is active");
-        assertEq(active[0], second, "Active address should be second");
+        address[] memory registered = addressSet.values();
+        assertEq(registered.length, 1, "Currently only 'second' is registered");
+        assertEq(registered[0], second, "Registered address should be second");
     }
 
     function test_Bytes32SetAddRemoveAndContains() public {
@@ -149,7 +149,7 @@ contract PersistentSetTest is Test {
         bytes32Set.add(6, itemC);
 
         bytes32[] memory currentVals = bytes32Set.values();
-        assertEq(currentVals.length, 2, "2 active items");
+        assertEq(currentVals.length, 2, "2 registered items");
 
         bool foundA;
         bool foundC;
@@ -179,9 +179,9 @@ contract PersistentSetTest is Test {
         bytes32Set.add(2, y);
         bytes32Set.remove(3, x);
 
-        bytes32[] memory activeValues = bytes32Set.values();
-        assertEq(activeValues.length, 1, "Only y remains active after removing x");
-        assertEq(activeValues[0], y);
+        bytes32[] memory registeredValues = bytes32Set.values();
+        assertEq(registeredValues.length, 1, "Only y remains registered after removing x");
+        assertEq(registeredValues[0], y);
     }
 
     function testLargeAddressSetExceed256Elements() public {
@@ -195,7 +195,7 @@ contract PersistentSetTest is Test {
         }
 
         uint256 currentLength = uint256(addressSet.length());
-        assertEq(currentLength, totalItems, "Should have 300 active addresses");
+        assertEq(currentLength, totalItems, "Should have 300 registered addresses");
 
         address firstInserted = address(uint160(0x100000));
         address lastInserted = address(uint160(0x100000 + (totalItems - 1)));
@@ -212,17 +212,19 @@ contract PersistentSetTest is Test {
 
         assertEq(uint256(addressSet.length()), 298, "Should have removed 2 addresses, length=298");
 
-        assertFalse(addressSet.contains(firstInserted), "First inserted address should now be inactive");
-        assertFalse(addressSet.contains(address(uint160(0x100000 + 257))), "Removed address at index 257 is inactive");
+        assertFalse(addressSet.contains(firstInserted), "First inserted address should now be unregistered");
+        assertFalse(
+            addressSet.contains(address(uint160(0x100000 + 257))), "Removed address at index 257 is unregistered"
+        );
 
-        assertTrue(addressSet.containsAt(1, firstInserted, ""), "At key=1, the first address was active");
+        assertTrue(addressSet.containsAt(1, firstInserted, ""), "At key=1, the first address was registered");
         assertTrue(
             addressSet.containsAt(1, address(uint160(0x100000 + 257)), ""),
-            "At key=1, the address at index 257 was active"
+            "At key=1, the address at index 257 was registered"
         );
 
         address randomExisting = address(uint160(0x100000 + 150));
-        assertTrue(addressSet.contains(randomExisting), "Item at index 150 is still active at key=2");
+        assertTrue(addressSet.contains(randomExisting), "Item at index 150 is still registered at key=2");
 
         address[] memory valuesAtKey1 = addressSet.valuesAt(1, new bytes[](0));
         assertEq(valuesAtKey1.length, totalItems, "Should have 300 addresses at key=1");

@@ -40,45 +40,42 @@ abstract contract OperatorManager is NetworkManager, IOperatorManager {
     /**
      * @inheritdoc IOperatorManager
      */
-    function isOperatorActiveAt(
+    function isOperatorRegisteredAt(
         address operator,
         uint48 timestamp,
         bytes memory hint
     ) public view virtual returns (bool) {
-        return OperatorManagerLogic.isOperatorActiveAt(operator, timestamp, hint);
+        return OperatorManagerLogic.isOperatorRegisteredAt(operator, timestamp, hint);
     }
 
     /**
      * @inheritdoc IOperatorManager
      */
-    function isOperatorActive(
+    function isOperatorRegistered(
         address operator
     ) public view virtual returns (bool) {
-        return OperatorManagerLogic.isOperatorActive(operator);
+        return OperatorManagerLogic.isOperatorRegistered(operator);
     }
 
     /**
      * @inheritdoc IOperatorManager
      */
-    function getActiveOperatorsAt(
-        uint48 timestamp,
-        bytes[] memory hints
-    ) public view virtual returns (address[] memory) {
-        return OperatorManagerLogic.getActiveOperatorsAt(timestamp, hints);
+    function getOperatorsAt(uint48 timestamp, bytes[] memory hints) public view virtual returns (address[] memory) {
+        return OperatorManagerLogic.getOperatorsAt(timestamp, hints);
     }
 
     /**
      * @inheritdoc IOperatorManager
      */
-    function getActiveOperators() public view virtual returns (address[] memory) {
-        return OperatorManagerLogic.getActiveOperators();
+    function getOperators() public view virtual returns (address[] memory) {
+        return OperatorManagerLogic.getOperators();
     }
 
     /**
      * @inheritdoc IOperatorManager
      */
-    function getActiveOperatorsLength() public view virtual returns (uint256) {
-        return OperatorManagerLogic.getActiveOperatorsLength();
+    function getOperatorsLength() public view virtual returns (uint256) {
+        return OperatorManagerLogic.getOperatorsLength();
     }
 
     function _registerOperator(

@@ -72,36 +72,37 @@ contract ConfigProviderTest is Test {
         assertEq(reqTags.length, 1, "Should have 1 required keyTag");
         assertEq(reqTags[0], 0x2A, "KeyTag mismatch");
 
-        IConfigProvider.CrossChainAddress[] memory vpps = testMCP.getActiveVotingPowerProviders();
+        IConfigProvider.CrossChainAddress[] memory vpps = testMCP.getVotingPowerProviders();
         assertEq(vpps.length, 2, "Should have 2 votingPowerProviders");
         assertEq(vpps[0].addr, address(0xAA01));
         assertEq(vpps[0].chainId, 101);
         assertEq(vpps[1].addr, address(0xAA02));
         assertEq(vpps[1].chainId, 102);
 
-        assertEq(testMCP.isVotingPowerProviderActive(vpps[0]), true);
-        assertEq(testMCP.isVotingPowerProviderActive(vpps[1]), true);
-        assertEq(testMCP.isVotingPowerProviderActive(cca(address(0xAA03), 103)), false);
+        assertEq(testMCP.isVotingPowerProviderRegistered(vpps[0]), true);
+        assertEq(testMCP.isVotingPowerProviderRegistered(vpps[1]), true);
+        assertEq(testMCP.isVotingPowerProviderRegistered(cca(address(0xAA03), 103)), false);
 
-        IConfigProvider.CrossChainAddress[] memory activeVpps =
-            testMCP.getActiveVotingPowerProvidersAt(uint48(vm.getBlockTimestamp()), new bytes[](0));
-        assertEq(activeVpps.length, 2, "Should have 2 active votingPowerProviders");
-        assertEq(activeVpps[0].addr, address(0xAA01));
-        assertEq(activeVpps[0].chainId, 101);
-        assertEq(activeVpps[1].addr, address(0xAA02));
-        assertEq(activeVpps[1].chainId, 102);
+        IConfigProvider.CrossChainAddress[] memory registeredVpps =
+            testMCP.getVotingPowerProvidersAt(uint48(vm.getBlockTimestamp()), new bytes[](0));
+        assertEq(registeredVpps.length, 2, "Should have 2 registered votingPowerProviders");
+        assertEq(registeredVpps[0].addr, address(0xAA01));
+        assertEq(registeredVpps[0].chainId, 101);
+        assertEq(registeredVpps[1].addr, address(0xAA02));
+        assertEq(registeredVpps[1].chainId, 102);
 
-        assertEq(testMCP.isVotingPowerProviderActiveAt(vpps[0], uint48(vm.getBlockTimestamp()), ""), true);
-        assertEq(testMCP.isVotingPowerProviderActiveAt(vpps[1], uint48(vm.getBlockTimestamp()), ""), true);
+        assertEq(testMCP.isVotingPowerProviderRegisteredAt(vpps[0], uint48(vm.getBlockTimestamp()), ""), true);
+        assertEq(testMCP.isVotingPowerProviderRegisteredAt(vpps[1], uint48(vm.getBlockTimestamp()), ""), true);
         assertEq(
-            testMCP.isVotingPowerProviderActiveAt(cca(address(0xAA03), 103), uint48(vm.getBlockTimestamp()), ""), false
+            testMCP.isVotingPowerProviderRegisteredAt(cca(address(0xAA03), 103), uint48(vm.getBlockTimestamp()), ""),
+            false
         );
 
         IConfigProvider.CrossChainAddress memory keysP = testMCP.getKeysProvider();
         assertEq(keysP.addr, address(444), "keysProvider addr mismatch");
         assertEq(keysP.chainId, 222, "keysProvider chainId mismatch");
 
-        IConfigProvider.CrossChainAddress[] memory reps = testMCP.getActiveReplicas();
+        IConfigProvider.CrossChainAddress[] memory reps = testMCP.getReplicas();
         assertEq(reps.length, 1, "Should have 1 replica");
         assertEq(reps[0].addr, address(0xBB01));
         assertEq(reps[0].chainId, 303);
@@ -130,7 +131,7 @@ contract ConfigProviderTest is Test {
         vm.expectRevert(IConfigProvider.ConfigProvider_AlreadyAdded.selector);
         testMCP.addVotingPowerProvider(newVPP);
 
-        IConfigProvider.CrossChainAddress[] memory vpps = testMCP.getActiveVotingPowerProviders();
+        IConfigProvider.CrossChainAddress[] memory vpps = testMCP.getVotingPowerProviders();
         assertEq(vpps.length, 3, "Now have 3 vpps");
 
         vm.prank(nonOwner);
@@ -152,7 +153,7 @@ contract ConfigProviderTest is Test {
 
         vm.prank(owner);
         testMCP.addVotingPowerProvider(vpp4);
-        IConfigProvider.CrossChainAddress[] memory vpps = testMCP.getActiveVotingPowerProviders();
+        IConfigProvider.CrossChainAddress[] memory vpps = testMCP.getVotingPowerProviders();
         assertEq(vpps.length, 3, "Should have 3 after adding vpp4");
 
         vm.prank(nonOwner);
@@ -161,7 +162,7 @@ contract ConfigProviderTest is Test {
 
         vm.prank(owner);
         testMCP.removeVotingPowerProvider(vpp4);
-        vpps = testMCP.getActiveVotingPowerProviders();
+        vpps = testMCP.getVotingPowerProviders();
         assertEq(vpps.length, 2);
 
         vm.prank(owner);
@@ -197,7 +198,7 @@ contract ConfigProviderTest is Test {
 
         vm.prank(owner);
         testMCP.addReplica(rep2);
-        IConfigProvider.CrossChainAddress[] memory reps = testMCP.getActiveReplicas();
+        IConfigProvider.CrossChainAddress[] memory reps = testMCP.getReplicas();
         assertEq(reps.length, 2, "Should have 2 replicas now");
         assertEq(reps[1].addr, address(0xBB02));
 
@@ -205,13 +206,13 @@ contract ConfigProviderTest is Test {
         vm.expectRevert(IConfigProvider.ConfigProvider_AlreadyAdded.selector);
         testMCP.addReplica(rep2);
 
-        reps = testMCP.getActiveReplicasAt(uint48(vm.getBlockTimestamp()), new bytes[](0));
+        reps = testMCP.getReplicasAt(uint48(vm.getBlockTimestamp()), new bytes[](0));
         assertEq(reps.length, 2, "Should have 2 replicas now");
         assertEq(reps[1].addr, address(0xBB02));
 
-        assertEq(testMCP.isReplicaActive(rep2), true);
-        assertEq(testMCP.isReplicaActiveAt(rep2, uint48(vm.getBlockTimestamp()), ""), true);
-        assertEq(testMCP.isReplicaActive(cca(address(0xBB03), 305)), false);
+        assertEq(testMCP.isReplicaRegistered(rep2), true);
+        assertEq(testMCP.isReplicaRegisteredAt(rep2, uint48(vm.getBlockTimestamp()), ""), true);
+        assertEq(testMCP.isReplicaRegistered(cca(address(0xBB03), 305)), false);
 
         vm.prank(nonOwner);
         vm.expectRevert("Not authorized");
@@ -219,7 +220,7 @@ contract ConfigProviderTest is Test {
 
         vm.prank(owner);
         testMCP.removeReplica(rep2);
-        reps = testMCP.getActiveReplicas();
+        reps = testMCP.getReplicas();
         assertEq(reps.length, 1);
 
         vm.prank(owner);

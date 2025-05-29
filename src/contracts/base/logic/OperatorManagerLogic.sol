@@ -30,28 +30,25 @@ library OperatorManagerLogic {
 
     function initialize() public {}
 
-    function isOperatorActiveAt(address operator, uint48 timestamp, bytes memory hint) public view returns (bool) {
+    function isOperatorRegisteredAt(address operator, uint48 timestamp, bytes memory hint) public view returns (bool) {
         return _getOperatorManagerStorage()._operators.containsAt(timestamp, operator, hint);
     }
 
-    function isOperatorActive(
+    function isOperatorRegistered(
         address operator
     ) public view returns (bool) {
         return _getOperatorManagerStorage()._operators.contains(operator);
     }
 
-    function getActiveOperatorsAt(
-        uint48 timestamp,
-        bytes[] memory hints
-    ) public view returns (address[] memory activeOperators) {
+    function getOperatorsAt(uint48 timestamp, bytes[] memory hints) public view returns (address[] memory) {
         return _getOperatorManagerStorage()._operators.valuesAt(timestamp, hints);
     }
 
-    function getActiveOperators() public view returns (address[] memory activeOperators) {
+    function getOperators() public view returns (address[] memory) {
         return _getOperatorManagerStorage()._operators.values();
     }
 
-    function getActiveOperatorsLength() public view returns (uint256) {
+    function getOperatorsLength() public view returns (uint256) {
         return _getOperatorManagerStorage()._operators.length();
     }
 

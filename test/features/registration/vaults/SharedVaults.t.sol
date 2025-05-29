@@ -73,10 +73,10 @@ contract SharedVaultsTest is InitSetup {
 
         sharedVaults.registerSharedVault(initSetupParams.masterChain.vaults[0]);
 
-        assertTrue(sharedVaults.isSharedVaultActive(initSetupParams.masterChain.vaults[0]));
+        assertTrue(sharedVaults.isSharedVaultRegistered(initSetupParams.masterChain.vaults[0]));
 
         sharedVaults.unregisterSharedVault(initSetupParams.masterChain.vaults[0]);
 
-        assertFalse(sharedVaults.isSharedVaultActive(initSetupParams.masterChain.vaults[0]));
+        assertFalse(sharedVaults.isSharedVaultRegistered(initSetupParams.masterChain.vaults[0]));
     }
 }

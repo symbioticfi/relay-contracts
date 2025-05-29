@@ -62,10 +62,10 @@ contract TokensTest is InitSetup {
     function test_RegisterUnregisterToken_VaultManagerSide() public {
         tokens.registerToken(initSetupParams.masterChain.tokens[0]);
 
-        assertTrue(tokens.isTokenActive(initSetupParams.masterChain.tokens[0]));
+        assertTrue(tokens.isTokenRegistered(initSetupParams.masterChain.tokens[0]));
 
         tokens.unregisterToken(initSetupParams.masterChain.tokens[0]);
 
-        assertFalse(tokens.isTokenActive(initSetupParams.masterChain.tokens[0]));
+        assertFalse(tokens.isTokenRegistered(initSetupParams.masterChain.tokens[0]));
     }
 }

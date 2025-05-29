@@ -60,43 +60,40 @@ interface IConfigProvider {
 
     function ConfigProvider_VERSION() external pure returns (uint64);
 
-    function isVotingPowerProviderActiveAt(
+    function isVotingPowerProviderRegisteredAt(
         CrossChainAddress memory votingPowerProvider,
         uint48 timestamp,
         bytes memory hint
     ) external view returns (bool);
 
-    function isVotingPowerProviderActive(
+    function isVotingPowerProviderRegistered(
         CrossChainAddress memory votingPowerProvider
     ) external view returns (bool);
 
-    function getActiveVotingPowerProvidersAt(
+    function getVotingPowerProvidersAt(
         uint48 timestamp,
         bytes[] memory hints
     ) external view returns (CrossChainAddress[] memory);
 
-    function getActiveVotingPowerProviders() external view returns (CrossChainAddress[] memory);
+    function getVotingPowerProviders() external view returns (CrossChainAddress[] memory);
 
     function getKeysProviderAt(uint48 timestamp, bytes memory hint) external view returns (CrossChainAddress memory);
 
     function getKeysProvider() external view returns (CrossChainAddress memory);
 
-    function isReplicaActiveAt(
+    function isReplicaRegisteredAt(
         CrossChainAddress memory replica,
         uint48 timestamp,
         bytes memory hint
     ) external view returns (bool);
 
-    function isReplicaActive(
+    function isReplicaRegistered(
         CrossChainAddress memory replica
     ) external view returns (bool);
 
-    function getActiveReplicasAt(
-        uint48 timestamp,
-        bytes[] memory hints
-    ) external view returns (CrossChainAddress[] memory);
+    function getReplicasAt(uint48 timestamp, bytes[] memory hints) external view returns (CrossChainAddress[] memory);
 
-    function getActiveReplicas() external view returns (CrossChainAddress[] memory);
+    function getReplicas() external view returns (CrossChainAddress[] memory);
 
     function getVerificationTypeAt(uint48 timestamp, bytes memory hint) external view returns (uint32);
 

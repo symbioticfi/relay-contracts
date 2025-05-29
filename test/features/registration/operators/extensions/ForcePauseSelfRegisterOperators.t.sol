@@ -94,12 +94,12 @@ contract ForcePauseSelfRegisterOperatorsTest is InitSetup {
         forcePauseOps.registerOperator(address(0));
         vm.stopPrank();
 
-        assertTrue(forcePauseOps.isOperatorActive(operator1));
+        assertTrue(forcePauseOps.isOperatorRegistered(operator1));
 
         forcePauseOps.forcePauseOperator(operator1);
 
         assertTrue(forcePauseOps.isOperatorForcePaused(operator1));
-        assertFalse(forcePauseOps.isOperatorActive(operator1));
+        assertFalse(forcePauseOps.isOperatorRegistered(operator1));
 
         vm.startPrank(operator1);
         vm.expectRevert(IForcePauseSelfRegisterOperators.ForcePauseSelfRegisterOperators_OperatorForcePaused.selector);
@@ -125,7 +125,7 @@ contract ForcePauseSelfRegisterOperatorsTest is InitSetup {
         forcePauseOps.registerOperator(address(0));
         vm.stopPrank();
 
-        assertTrue(forcePauseOps.isOperatorActive(operator1));
+        assertTrue(forcePauseOps.isOperatorRegistered(operator1));
     }
 
     function test_ForceUnpauseOperator_NotPaused() public {
@@ -144,12 +144,12 @@ contract ForcePauseSelfRegisterOperatorsTest is InitSetup {
         forcePauseOps.registerOperatorVault(vault1);
         vm.stopPrank();
 
-        assertTrue(forcePauseOps.isOperatorVaultActive(operator1, vault1));
+        assertTrue(forcePauseOps.isOperatorVaultRegistered(operator1, vault1));
 
         forcePauseOps.forcePauseOperatorVault(operator1, vault1);
 
         assertTrue(forcePauseOps.isOperatorVaultForcePaused(operator1, vault1));
-        assertFalse(forcePauseOps.isOperatorVaultActive(operator1, vault1));
+        assertFalse(forcePauseOps.isOperatorVaultRegistered(operator1, vault1));
 
         vm.startPrank(operator1);
         vm.expectRevert(
@@ -182,7 +182,7 @@ contract ForcePauseSelfRegisterOperatorsTest is InitSetup {
         forcePauseOps.registerOperatorVault(vault1);
         vm.stopPrank();
 
-        assertTrue(forcePauseOps.isOperatorVaultActive(operator1, vault1));
+        assertTrue(forcePauseOps.isOperatorVaultRegistered(operator1, vault1));
     }
 
     function test_ForceUnpauseOperatorVault_NotPaused() public {

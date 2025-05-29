@@ -4,21 +4,21 @@ pragma solidity ^0.8.0;
 import {PersistentSet} from "../../contracts/libraries/structs/PersistentSet.sol";
 
 interface IVaultManager {
-    error VaultManager_InactiveOperatorSlash();
-    error VaultManager_InactiveVaultSlash();
+    error VaultManager_UnregisteredOperatorSlash();
+    error VaultManager_UnregisteredVaultSlash();
     error VaultManager_UnknownSlasherType();
     error VaultManager_NonVetoSlasher();
     error VaultManager_NoSlasher();
     error VaultManager_InvalidSharedVault();
     error VaultManager_InvalidVault();
     error VaultManager_InvalidOperatorVault();
-    error VaultManager_SharedVaultAlreadyIsActive();
-    error VaultManager_OperatorVaultAlreadyIsActive();
-    error VaultManager_TokenAlreadyIsActive();
-    error VaultManager_TokenNotActive();
+    error VaultManager_SharedVaultAlreadyIsRegistered();
+    error VaultManager_OperatorVaultAlreadyIsRegistered();
+    error VaultManager_TokenAlreadyIsRegistered();
+    error VaultManager_TokenNotRegistered();
     error VaultManager_OperatorNotRegistered();
-    error VaultManager_SharedVaultNotActive();
-    error VaultManager_OperatorVaultNotActive();
+    error VaultManager_SharedVaultNotRegistered();
+    error VaultManager_OperatorVaultNotRegistered();
     error VaultManager_InvalidToken();
     error VaultManager_SlashingWindowTooLarge();
 
@@ -59,14 +59,14 @@ interface IVaultManager {
     }
 
     struct OperatorVaultVotingPowerHints {
-        bytes isTokenActiveHint;
+        bytes isTokenRegisteredHint;
         bytes stakeHints;
     }
 
     struct OperatorVotingPowersHints {
-        bytes[] activeSharedVaultsHints;
+        bytes[] sharedVaultsHints;
         bytes[] sharedVaultsVotingPowerHints;
-        bytes[] activeOperatorVaultsHints;
+        bytes[] operatorVaultsHints;
         bytes[] operatorVaultsVotingPowerHints;
     }
 
@@ -76,14 +76,14 @@ interface IVaultManager {
     }
 
     struct VotingPowersHints {
-        bytes[] activeOperatorsHints;
+        bytes[] operatorsHints;
         bytes[] operatorVotingPowersHints;
     }
 
     struct SlashVaultHints {
-        bytes operatorActiveHint;
-        bytes operatorVaultActiveHint;
-        bytes sharedVaultActiveHint;
+        bytes operatorRegisteredHint;
+        bytes operatorVaultRegisteredHint;
+        bytes sharedVaultRegisteredHint;
         bytes slashHints;
     }
 
@@ -97,50 +97,54 @@ interface IVaultManager {
 
     function getSlashingWindow() external view returns (uint48);
 
-    function isTokenActive(
+    function isTokenRegistered(
         address token
     ) external view returns (bool);
 
-    function isTokenActiveAt(address token, uint48 timestamp, bytes memory hint) external view returns (bool);
+    function isTokenRegisteredAt(address token, uint48 timestamp, bytes memory hint) external view returns (bool);
 
-    function getActiveTokensAt(uint48 timestamp, bytes[] memory hints) external view returns (address[] memory);
+    function getTokensAt(uint48 timestamp, bytes[] memory hints) external view returns (address[] memory);
 
-    function getActiveTokens() external view returns (address[] memory);
+    function getTokens() external view returns (address[] memory);
 
-    function getActiveTokensLength() external view returns (uint256);
+    function getTokensLength() external view returns (uint256);
 
-    function isSharedVaultActive(
+    function isSharedVaultRegistered(
         address vault
     ) external view returns (bool);
 
-    function isSharedVaultActiveAt(address vault, uint48 timestamp, bytes memory hint) external view returns (bool);
+    function isSharedVaultRegisteredAt(
+        address vault,
+        uint48 timestamp,
+        bytes memory hint
+    ) external view returns (bool);
 
-    function getActiveSharedVaultsAt(uint48 timestamp, bytes[] memory hints) external view returns (address[] memory);
+    function getSharedVaultsAt(uint48 timestamp, bytes[] memory hints) external view returns (address[] memory);
 
-    function getActiveSharedVaults() external view returns (address[] memory);
+    function getSharedVaults() external view returns (address[] memory);
 
-    function getActiveSharedVaultsLength() external view returns (uint256);
+    function getSharedVaultsLength() external view returns (uint256);
 
-    function isOperatorVaultActive(address operator, address vault) external view returns (bool);
+    function isOperatorVaultRegistered(address operator, address vault) external view returns (bool);
 
-    function isOperatorVaultActiveAt(
+    function isOperatorVaultRegisteredAt(
         address operator,
         address vault,
         uint48 timestamp,
         bytes memory hint
     ) external view returns (bool);
 
-    function getActiveOperatorVaultsAt(
+    function getOperatorVaultsAt(
         address operator,
         uint48 timestamp,
         bytes[] memory hints
     ) external view returns (address[] memory);
 
-    function getActiveOperatorVaults(
+    function getOperatorVaults(
         address operator
     ) external view returns (address[] memory);
 
-    function getActiveOperatorVaultsLength(
+    function getOperatorVaultsLength(
         address operator
     ) external view returns (uint256);
 

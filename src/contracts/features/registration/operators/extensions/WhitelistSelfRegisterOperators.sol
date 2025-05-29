@@ -84,7 +84,7 @@ abstract contract WhitelistSelfRegisterOperators is SelfRegisterOperators, IWhit
             revert WhitelistSelfRegisterOperators_OperatorNotWhitelisted();
         }
         _getWhitelistStorage()._whitelisted[operator] = false;
-        if (isWhitelistEnabled() && isOperatorActive(operator)) {
+        if (isWhitelistEnabled() && isOperatorRegistered(operator)) {
             _unregisterOperator(operator);
         }
     }
@@ -107,7 +107,7 @@ abstract contract WhitelistSelfRegisterOperators is SelfRegisterOperators, IWhit
             revert WhitelistSelfRegisterOperators_OperatorVaultNotWhitelisted();
         }
         _getWhitelistStorage()._whitelistedVault[operator][vault] = false;
-        if (isWhitelistEnabled() && isOperatorVaultActive(operator, vault)) {
+        if (isWhitelistEnabled() && isOperatorVaultRegistered(operator, vault)) {
             _unregisterOperatorVault(operator, vault);
         }
     }

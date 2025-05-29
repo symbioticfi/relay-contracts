@@ -132,17 +132,17 @@ contract WhitelistSelfRegisterOperatorsTest is Test, InitSetup {
         whitelistOps.registerOperator(address(0));
         vm.stopPrank();
 
-        assertTrue(whitelistOps.isOperatorActive(operator1));
+        assertTrue(whitelistOps.isOperatorRegistered(operator1));
     }
 
-    function test_UnwhitelistOperator_ActiveOperatorGetsUnregistered() public {
+    function test_UnwhitelistOperator_RegisteredOperatorGetsUnregistered() public {
         whitelistOps.whitelistOperator(operator1);
         vm.prank(operator1);
         whitelistOps.registerOperator(address(0));
-        assertTrue(whitelistOps.isOperatorActive(operator1));
+        assertTrue(whitelistOps.isOperatorRegistered(operator1));
 
         whitelistOps.unwhitelistOperator(operator1);
-        assertFalse(whitelistOps.isOperatorActive(operator1));
+        assertFalse(whitelistOps.isOperatorRegistered(operator1));
         assertFalse(whitelistOps.isOperatorWhitelisted(operator1));
     }
 
@@ -152,7 +152,7 @@ contract WhitelistSelfRegisterOperatorsTest is Test, InitSetup {
 
         vm.prank(operator1);
         whitelistOps.registerOperator(address(0));
-        assertTrue(whitelistOps.isOperatorActive(operator1));
+        assertTrue(whitelistOps.isOperatorRegistered(operator1));
     }
 
     function test_RegisterOperatorVault_RevertIfNotWhitelisted() public {
@@ -176,22 +176,22 @@ contract WhitelistSelfRegisterOperatorsTest is Test, InitSetup {
         whitelistOps.registerOperatorVault(vaultA);
         vm.stopPrank();
 
-        // confirm active
-        assertTrue(whitelistOps.isOperatorActive(operator1));
-        assertTrue(whitelistOps.isOperatorVaultActive(operator1, vaultA));
+        // confirm registered
+        assertTrue(whitelistOps.isOperatorRegistered(operator1));
+        assertTrue(whitelistOps.isOperatorVaultRegistered(operator1, vaultA));
     }
 
-    function test_UnwhitelistOperatorVault_ActiveGetsUnregistered() public {
+    function test_UnwhitelistOperatorVault_RegisteredGetsUnregistered() public {
         whitelistOps.whitelistOperator(operator1);
         whitelistOps.whitelistOperatorVault(operator1, vaultA);
         vm.startPrank(operator1);
         whitelistOps.registerOperator(address(0));
         whitelistOps.registerOperatorVault(vaultA);
         vm.stopPrank();
-        assertTrue(whitelistOps.isOperatorVaultActive(operator1, vaultA));
+        assertTrue(whitelistOps.isOperatorVaultRegistered(operator1, vaultA));
 
         whitelistOps.unwhitelistOperatorVault(operator1, vaultA);
-        assertFalse(whitelistOps.isOperatorVaultActive(operator1, vaultA));
+        assertFalse(whitelistOps.isOperatorVaultRegistered(operator1, vaultA));
         assertFalse(whitelistOps.isOperatorVaultWhitelisted(operator1, vaultA));
     }
 
@@ -203,7 +203,7 @@ contract WhitelistSelfRegisterOperatorsTest is Test, InitSetup {
         whitelistOps.registerOperatorVault(vaultA);
         vm.stopPrank();
 
-        assertTrue(whitelistOps.isOperatorVaultActive(operator1, vaultA));
+        assertTrue(whitelistOps.isOperatorVaultRegistered(operator1, vaultA));
     }
 
     function test_UnwhitelistOperator_RevertIfNotWhitelisted() public {

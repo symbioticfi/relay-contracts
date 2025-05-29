@@ -94,14 +94,14 @@ contract SelfRegisterVotingPowerProviderTest is InitSetup {
         aggregator.registerOperatorVault(vaultA);
         vm.stopPrank();
 
-        assertTrue(aggregator.isOperatorActive(operator1), "Operator not active");
-        assertTrue(aggregator.isOperatorVaultActive(operator1, vaultA), "Vault not active");
+        assertTrue(aggregator.isOperatorRegistered(operator1), "Operator not registered");
+        assertTrue(aggregator.isOperatorVaultRegistered(operator1, vaultA), "Vault not registered");
 
         vm.prank(owner);
         aggregator.forcePauseOperator(operator1);
 
         assertTrue(aggregator.isOperatorForcePaused(operator1), "Operator not force paused");
-        assertFalse(aggregator.isOperatorActive(operator1), "Operator should be unregistered after pause");
+        assertFalse(aggregator.isOperatorRegistered(operator1), "Operator should be unregistered after pause");
 
         vm.startPrank(operator1);
         vm.expectRevert(bytes4(keccak256("ForcePauseSelfRegisterOperators_OperatorForcePaused()")));
@@ -117,8 +117,8 @@ contract SelfRegisterVotingPowerProviderTest is InitSetup {
         aggregator.registerOperator(address(0));
         vm.stopPrank();
 
-        assertTrue(aggregator.isOperatorActive(operator1), "Should be active again");
-        assertTrue(aggregator.isOperatorVaultActive(operator1, vaultA), "Vault active again");
+        assertTrue(aggregator.isOperatorRegistered(operator1), "Should be registered again");
+        assertTrue(aggregator.isOperatorVaultRegistered(operator1, vaultA), "Vault registered again");
     }
 
     function testStakeToVotingPower() public {

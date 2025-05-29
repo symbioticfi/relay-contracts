@@ -61,57 +61,51 @@ library VaultManagerLogic {
         return _getVaultManagerStorage()._slashingWindow;
     }
 
-    function isTokenActiveAt(address token, uint48 timestamp, bytes memory hint) public view returns (bool) {
+    function isTokenRegisteredAt(address token, uint48 timestamp, bytes memory hint) public view returns (bool) {
         return _getVaultManagerStorage()._tokens.containsAt(timestamp, token, hint);
     }
 
-    function isTokenActive(
+    function isTokenRegistered(
         address token
     ) public view returns (bool) {
         return _getVaultManagerStorage()._tokens.contains(token);
     }
 
-    function getActiveTokensAt(
-        uint48 timestamp,
-        bytes[] memory hints
-    ) public view returns (address[] memory activeTokens) {
+    function getTokensAt(uint48 timestamp, bytes[] memory hints) public view returns (address[] memory) {
         return _getVaultManagerStorage()._tokens.valuesAt(timestamp, hints);
     }
 
-    function getActiveTokens() public view returns (address[] memory activeTokens) {
+    function getTokens() public view returns (address[] memory) {
         return _getVaultManagerStorage()._tokens.values();
     }
 
-    function getActiveTokensLength() public view returns (uint256) {
+    function getTokensLength() public view returns (uint256) {
         return _getVaultManagerStorage()._tokens.length();
     }
 
-    function isSharedVaultActiveAt(address vault, uint48 timestamp, bytes memory hint) public view returns (bool) {
+    function isSharedVaultRegisteredAt(address vault, uint48 timestamp, bytes memory hint) public view returns (bool) {
         return _getVaultManagerStorage()._sharedVaults.containsAt(timestamp, vault, hint);
     }
 
-    function isSharedVaultActive(
+    function isSharedVaultRegistered(
         address vault
     ) public view returns (bool) {
         return _getVaultManagerStorage()._sharedVaults.contains(vault);
     }
 
-    function getActiveSharedVaultsAt(
-        uint48 timestamp,
-        bytes[] memory hints
-    ) public view returns (address[] memory activeSharedVaults) {
+    function getSharedVaultsAt(uint48 timestamp, bytes[] memory hints) public view returns (address[] memory) {
         return _getVaultManagerStorage()._sharedVaults.valuesAt(timestamp, hints);
     }
 
-    function getActiveSharedVaults() public view returns (address[] memory activeSharedVaults) {
+    function getSharedVaults() public view returns (address[] memory) {
         return _getVaultManagerStorage()._sharedVaults.values();
     }
 
-    function getActiveSharedVaultsLength() public view returns (uint256) {
+    function getSharedVaultsLength() public view returns (uint256) {
         return _getVaultManagerStorage()._sharedVaults.length();
     }
 
-    function isOperatorVaultActiveAt(
+    function isOperatorVaultRegisteredAt(
         address operator,
         address vault,
         uint48 timestamp,
@@ -120,25 +114,25 @@ library VaultManagerLogic {
         return _getVaultManagerStorage()._operatorVaults[operator].containsAt(timestamp, vault, hint);
     }
 
-    function isOperatorVaultActive(address operator, address vault) public view returns (bool) {
+    function isOperatorVaultRegistered(address operator, address vault) public view returns (bool) {
         return _getVaultManagerStorage()._operatorVaults[operator].contains(vault);
     }
 
-    function getActiveOperatorVaultsAt(
+    function getOperatorVaultsAt(
         address operator,
         uint48 timestamp,
         bytes[] memory hints
-    ) public view returns (address[] memory activeOperatorVaults) {
+    ) public view returns (address[] memory) {
         return _getVaultManagerStorage()._operatorVaults[operator].valuesAt(timestamp, hints);
     }
 
-    function getActiveOperatorVaults(
+    function getOperatorVaults(
         address operator
-    ) public view returns (address[] memory activeOperatorVaults) {
+    ) public view returns (address[] memory) {
         return _getVaultManagerStorage()._operatorVaults[operator].values();
     }
 
-    function getActiveOperatorVaultsLength(
+    function getOperatorVaultsLength(
         address operator
     ) public view returns (uint256) {
         return _getVaultManagerStorage()._operatorVaults[operator].length();
@@ -172,7 +166,11 @@ library VaultManagerLogic {
             operatorVaultVotingPowerHints = abi.decode(hints, (IVaultManager.OperatorVaultVotingPowerHints));
         }
 
-        if (!isTokenActiveAt(IVault(vault).collateral(), timestamp, operatorVaultVotingPowerHints.isTokenActiveHint)) {
+        if (
+            !isTokenRegisteredAt(
+                IVault(vault).collateral(), timestamp, operatorVaultVotingPowerHints.isTokenRegisteredHint
+            )
+        ) {
             return 0;
         }
         return stakeToVotingPowerAt(
@@ -189,7 +187,7 @@ library VaultManagerLogic {
         address vault,
         bytes memory extraData
     ) public view returns (uint256) {
-        if (!isTokenActive(IVault(vault).collateral())) {
+        if (!isTokenRegistered(IVault(vault).collateral())) {
             return 0;
         }
         return stakeToVotingPower(vault, getOperatorStake(vault, operator), extraData);
@@ -211,8 +209,7 @@ library VaultManagerLogic {
             operatorVotingPowersExtraData = abi.decode(extraData, (IVaultManager.OperatorVotingPowersExtraData));
         }
 
-        address[] memory sharedVaults =
-            getActiveSharedVaultsAt(timestamp, operatorVotingPowersHints.activeSharedVaultsHints);
+        address[] memory sharedVaults = getSharedVaultsAt(timestamp, operatorVotingPowersHints.sharedVaultsHints);
         operatorVotingPowersHints.sharedVaultsVotingPowerHints =
             operatorVotingPowersHints.sharedVaultsVotingPowerHints.normalize(sharedVaults.length);
         operatorVotingPowersExtraData.sharedVaultsExtraData =
@@ -228,7 +225,7 @@ library VaultManagerLogic {
             );
         }
         address[] memory operatorVaults =
-            getActiveOperatorVaultsAt(operator, timestamp, operatorVotingPowersHints.activeOperatorVaultsHints);
+            getOperatorVaultsAt(operator, timestamp, operatorVotingPowersHints.operatorVaultsHints);
         operatorVotingPowersHints.operatorVaultsVotingPowerHints =
             operatorVotingPowersHints.operatorVaultsVotingPowerHints.normalize(operatorVaults.length);
         operatorVotingPowersExtraData.operatorVaultsExtraData =
@@ -255,7 +252,7 @@ library VaultManagerLogic {
             operatorVotingPowersExtraData = abi.decode(extraData, (IVaultManager.OperatorVotingPowersExtraData));
         }
 
-        address[] memory sharedVaults = getActiveSharedVaults();
+        address[] memory sharedVaults = getSharedVaults();
         operatorVotingPowersExtraData.sharedVaultsExtraData =
             operatorVotingPowersExtraData.sharedVaultsExtraData.normalize(sharedVaults.length);
         for (uint256 i; i < sharedVaults.length; ++i) {
@@ -263,7 +260,7 @@ library VaultManagerLogic {
                 stakeToVotingPower, operator, sharedVaults[i], operatorVotingPowersExtraData.sharedVaultsExtraData[i]
             );
         }
-        address[] memory operatorVaults = getActiveOperatorVaults(operator);
+        address[] memory operatorVaults = getOperatorVaults(operator);
         operatorVotingPowersExtraData.operatorVaultsExtraData =
             operatorVotingPowersExtraData.operatorVaultsExtraData.normalize(operatorVaults.length);
         for (uint256 i; i < operatorVaults.length; ++i) {
@@ -293,10 +290,9 @@ library VaultManagerLogic {
         }
 
         uint256 length;
-        address[] memory sharedVaults =
-            getActiveSharedVaultsAt(timestamp, operatorVotingPowersHints.activeSharedVaultsHints);
+        address[] memory sharedVaults = getSharedVaultsAt(timestamp, operatorVotingPowersHints.sharedVaultsHints);
         address[] memory operatorVaults =
-            getActiveOperatorVaultsAt(operator, timestamp, operatorVotingPowersHints.activeOperatorVaultsHints);
+            getOperatorVaultsAt(operator, timestamp, operatorVotingPowersHints.operatorVaultsHints);
         vaultVotingPowers = new IVaultManager.VaultVotingPower[](sharedVaults.length + operatorVaults.length);
         operatorVotingPowersHints.sharedVaultsVotingPowerHints =
             operatorVotingPowersHints.sharedVaultsVotingPowerHints.normalize(sharedVaults.length);
@@ -351,8 +347,8 @@ library VaultManagerLogic {
         }
 
         uint256 length;
-        address[] memory sharedVaults = getActiveSharedVaults();
-        address[] memory operatorVaults = getActiveOperatorVaults(operator);
+        address[] memory sharedVaults = getSharedVaults();
+        address[] memory operatorVaults = getOperatorVaults(operator);
         vaultVotingPowers = new IVaultManager.VaultVotingPower[](sharedVaults.length + operatorVaults.length);
         operatorVotingPowersExtraData.sharedVaultsExtraData =
             operatorVotingPowersExtraData.sharedVaultsExtraData.normalize(sharedVaults.length);
@@ -396,8 +392,7 @@ library VaultManagerLogic {
             votingPowersHints = abi.decode(hints, (IVaultManager.VotingPowersHints));
         }
 
-        address[] memory operators =
-            OperatorManagerLogic.getActiveOperatorsAt(timestamp, votingPowersHints.activeOperatorsHints);
+        address[] memory operators = OperatorManagerLogic.getOperatorsAt(timestamp, votingPowersHints.operatorsHints);
         votingPowersHints.operatorVotingPowersHints =
             votingPowersHints.operatorVotingPowersHints.normalize(operators.length);
         extraData = extraData.normalize(operators.length);
@@ -416,7 +411,7 @@ library VaultManagerLogic {
         function (address, uint256, bytes memory) external view returns (uint256) stakeToVotingPower,
         bytes[] memory extraData
     ) public view returns (uint256 votingPower) {
-        address[] memory operators = OperatorManagerLogic.getActiveOperators();
+        address[] memory operators = OperatorManagerLogic.getOperators();
         extraData = extraData.normalize(operators.length);
         for (uint256 i; i < operators.length; ++i) {
             votingPower += getOperatorVotingPower(stakeToVotingPower, operators[i], extraData[i]);
@@ -435,8 +430,7 @@ library VaultManagerLogic {
         }
 
         uint256 length;
-        address[] memory operators =
-            OperatorManagerLogic.getActiveOperatorsAt(timestamp, votingPowersHints.activeOperatorsHints);
+        address[] memory operators = OperatorManagerLogic.getOperatorsAt(timestamp, votingPowersHints.operatorsHints);
         operatorVotingPowers = new IVaultManager.OperatorVotingPower[](operators.length);
         votingPowersHints.operatorVotingPowersHints =
             votingPowersHints.operatorVotingPowersHints.normalize(operators.length);
@@ -464,7 +458,7 @@ library VaultManagerLogic {
         bytes[] memory extraData
     ) public view returns (IVaultManager.OperatorVotingPower[] memory operatorVotingPowers) {
         uint256 length;
-        address[] memory operators = OperatorManagerLogic.getActiveOperators();
+        address[] memory operators = OperatorManagerLogic.getOperators();
         operatorVotingPowers = new IVaultManager.OperatorVotingPower[](operators.length);
         extraData = extraData.normalize(operators.length);
         for (uint256 i; i < operators.length; ++i) {
@@ -496,7 +490,7 @@ library VaultManagerLogic {
             revert IVaultManager.VaultManager_InvalidToken();
         }
         if (!_getVaultManagerStorage()._tokens.add(Time.timestamp(), token)) {
-            revert IVaultManager.VaultManager_TokenAlreadyIsActive();
+            revert IVaultManager.VaultManager_TokenAlreadyIsRegistered();
         }
     }
 
@@ -504,7 +498,7 @@ library VaultManagerLogic {
         address token
     ) public {
         if (!_getVaultManagerStorage()._tokens.remove(Time.timestamp(), token)) {
-            revert IVaultManager.VaultManager_TokenNotActive();
+            revert IVaultManager.VaultManager_TokenNotRegistered();
         }
     }
 
@@ -517,10 +511,10 @@ library VaultManagerLogic {
             revert IVaultManager.VaultManager_InvalidSharedVault();
         }
         if ($._allOperatorVaults.contains(vault)) {
-            revert IVaultManager.VaultManager_OperatorVaultAlreadyIsActive();
+            revert IVaultManager.VaultManager_OperatorVaultAlreadyIsRegistered();
         }
         if (!$._sharedVaults.add(Time.timestamp(), vault)) {
-            revert IVaultManager.VaultManager_SharedVaultAlreadyIsActive();
+            revert IVaultManager.VaultManager_SharedVaultAlreadyIsRegistered();
         }
     }
 
@@ -532,14 +526,14 @@ library VaultManagerLogic {
         if (!_validateOperatorVault(operator, vault)) {
             revert IVaultManager.VaultManager_InvalidOperatorVault();
         }
-        if (!OperatorManagerLogic.isOperatorActive(operator)) {
+        if (!OperatorManagerLogic.isOperatorRegistered(operator)) {
             revert IVaultManager.VaultManager_OperatorNotRegistered();
         }
         if ($._sharedVaults.contains(vault)) {
-            revert IVaultManager.VaultManager_SharedVaultAlreadyIsActive();
+            revert IVaultManager.VaultManager_SharedVaultAlreadyIsRegistered();
         }
         if (!$._allOperatorVaults.add(Time.timestamp(), vault)) {
-            revert IVaultManager.VaultManager_OperatorVaultAlreadyIsActive();
+            revert IVaultManager.VaultManager_OperatorVaultAlreadyIsRegistered();
         }
         $._operatorVaults[operator].add(Time.timestamp(), vault);
     }
@@ -548,14 +542,14 @@ library VaultManagerLogic {
         address vault
     ) public {
         if (!_getVaultManagerStorage()._sharedVaults.remove(Time.timestamp(), vault)) {
-            revert IVaultManager.VaultManager_SharedVaultNotActive();
+            revert IVaultManager.VaultManager_SharedVaultNotRegistered();
         }
     }
 
     function unregisterOperatorVault(address operator, address vault) public {
         IVaultManager.VaultManagerStorage storage $ = _getVaultManagerStorage();
         if (!$._operatorVaults[operator].remove(Time.timestamp(), vault)) {
-            revert IVaultManager.VaultManager_OperatorVaultNotActive();
+            revert IVaultManager.VaultManager_OperatorVaultNotRegistered();
         }
         $._allOperatorVaults.remove(Time.timestamp(), vault);
     }
@@ -572,15 +566,15 @@ library VaultManagerLogic {
             slashVaultHints = abi.decode(hints, (IVaultManager.SlashVaultHints));
         }
 
-        if (!OperatorManagerLogic.isOperatorActiveAt(operator, timestamp, slashVaultHints.operatorActiveHint)) {
-            revert IVaultManager.VaultManager_InactiveOperatorSlash();
+        if (!OperatorManagerLogic.isOperatorRegisteredAt(operator, timestamp, slashVaultHints.operatorRegisteredHint)) {
+            revert IVaultManager.VaultManager_UnregisteredOperatorSlash();
         }
 
         if (
-            !isOperatorVaultActiveAt(operator, vault, timestamp, slashVaultHints.operatorVaultActiveHint)
-                && !isSharedVaultActiveAt(vault, timestamp, slashVaultHints.sharedVaultActiveHint)
+            !isOperatorVaultRegisteredAt(operator, vault, timestamp, slashVaultHints.operatorVaultRegisteredHint)
+                && !isSharedVaultRegisteredAt(vault, timestamp, slashVaultHints.sharedVaultRegisteredHint)
         ) {
-            revert IVaultManager.VaultManager_InactiveVaultSlash();
+            revert IVaultManager.VaultManager_UnregisteredVaultSlash();
         }
 
         address slasher = IVault(vault).slasher();
@@ -658,7 +652,7 @@ library VaultManagerLogic {
             return false;
         }
 
-        if (!isTokenActive(IVault(vault).collateral())) {
+        if (!isTokenRegistered(IVault(vault).collateral())) {
             return false;
         }
 
