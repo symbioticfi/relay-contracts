@@ -145,11 +145,7 @@ abstract contract KeyManager is MulticallUpgradeable, OzEIP712, IKeyManager {
         return KeyManagerLogic.getKeysOperators();
     }
 
-    function _getKeysOperatorsLengthAt(uint48 timestamp, bytes memory hint) internal view virtual returns (uint208) {
-        return KeyManagerLogic.getKeysOperatorsLengthAt(timestamp, hint);
-    }
-
-    function _getKeysOperatorsLength() internal view virtual returns (uint208) {
+    function _getKeysOperatorsLength() internal view virtual returns (uint256) {
         return KeyManagerLogic.getKeysOperatorsLength();
     }
 

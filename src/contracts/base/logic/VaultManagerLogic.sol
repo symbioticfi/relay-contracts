@@ -61,20 +61,6 @@ library VaultManagerLogic {
         return _getVaultManagerStorage()._slashingWindow;
     }
 
-    function getAllTokensLength() public view returns (uint256) {
-        return _getVaultManagerStorage()._tokens.allValues().length();
-    }
-
-    function getAllTokens() public view returns (address[] memory) {
-        return _getVaultManagerStorage()._tokens.allValues().values();
-    }
-
-    function isTokenRegistered(
-        address token
-    ) public view returns (bool) {
-        return _getVaultManagerStorage()._tokens.allValues().contains(token);
-    }
-
     function isTokenActiveAt(address token, uint48 timestamp, bytes memory hint) public view returns (bool) {
         return _getVaultManagerStorage()._tokens.containsAt(timestamp, token, hint);
     }
@@ -96,26 +82,8 @@ library VaultManagerLogic {
         return _getVaultManagerStorage()._tokens.values();
     }
 
-    function getActiveTokensLengthAt(uint48 timestamp, bytes memory hint) public view returns (uint208) {
-        return _getVaultManagerStorage()._tokens.lengthAt(timestamp, hint);
-    }
-
-    function getActiveTokensLength() public view returns (uint208) {
+    function getActiveTokensLength() public view returns (uint256) {
         return _getVaultManagerStorage()._tokens.length();
-    }
-
-    function getAllSharedVaultsLength() public view returns (uint256) {
-        return _getVaultManagerStorage()._sharedVaults.allValues().length();
-    }
-
-    function getAllSharedVaults() public view returns (address[] memory) {
-        return _getVaultManagerStorage()._sharedVaults.allValues().values();
-    }
-
-    function isSharedVaultRegistered(
-        address vault
-    ) public view returns (bool) {
-        return _getVaultManagerStorage()._sharedVaults.allValues().contains(vault);
     }
 
     function isSharedVaultActiveAt(address vault, uint48 timestamp, bytes memory hint) public view returns (bool) {
@@ -139,28 +107,8 @@ library VaultManagerLogic {
         return _getVaultManagerStorage()._sharedVaults.values();
     }
 
-    function getActiveSharedVaultsLengthAt(uint48 timestamp, bytes memory hint) public view returns (uint208) {
-        return _getVaultManagerStorage()._sharedVaults.lengthAt(timestamp, hint);
-    }
-
-    function getActiveSharedVaultsLength() public view returns (uint208) {
+    function getActiveSharedVaultsLength() public view returns (uint256) {
         return _getVaultManagerStorage()._sharedVaults.length();
-    }
-
-    function getAllOperatorVaultsLength(
-        address operator
-    ) public view returns (uint256) {
-        return _getVaultManagerStorage()._operatorVaults[operator].allValues().length();
-    }
-
-    function getAllOperatorVaults(
-        address operator
-    ) public view returns (address[] memory) {
-        return _getVaultManagerStorage()._operatorVaults[operator].allValues().values();
-    }
-
-    function isOperatorVaultRegistered(address operator, address vault) public view returns (bool) {
-        return _getVaultManagerStorage()._operatorVaults[operator].allValues().contains(vault);
     }
 
     function isOperatorVaultActiveAt(
@@ -190,17 +138,9 @@ library VaultManagerLogic {
         return _getVaultManagerStorage()._operatorVaults[operator].values();
     }
 
-    function getActiveOperatorVaultsLengthAt(
-        address operator,
-        uint48 timestamp,
-        bytes memory hint
-    ) public view returns (uint208) {
-        return _getVaultManagerStorage()._operatorVaults[operator].lengthAt(timestamp, hint);
-    }
-
     function getActiveOperatorVaultsLength(
         address operator
-    ) public view returns (uint208) {
+    ) public view returns (uint256) {
         return _getVaultManagerStorage()._operatorVaults[operator].length();
     }
 
@@ -592,7 +532,7 @@ library VaultManagerLogic {
         if (!_validateOperatorVault(operator, vault)) {
             revert IVaultManager.VaultManager_InvalidOperatorVault();
         }
-        if (!OperatorManagerLogic.isOperatorRegistered(operator)) {
+        if (!OperatorManagerLogic.isOperatorActive(operator)) {
             revert IVaultManager.VaultManager_OperatorNotRegistered();
         }
         if ($._sharedVaults.contains(vault)) {

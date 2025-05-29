@@ -199,19 +199,11 @@ contract VaultManagerTest is InitSetup {
     }
 
     function test_RegisterToken() public {
-        assertEq(vaultManager.getAllTokensLength(), 0);
         vaultManager.registerToken(initSetupParams.masterChain.tokens[0]);
-        assertEq(vaultManager.getAllTokensLength(), 1);
         vm.expectRevert(ERR_TOKEN_ALREADY_ACTIVE);
         vaultManager.registerToken(initSetupParams.masterChain.tokens[0]);
 
-        address[] memory tokens = vaultManager.getAllTokens();
-        assertEq(tokens.length, 1);
-        assertEq(tokens[0], initSetupParams.masterChain.tokens[0]);
-
         assertEq(vaultManager.getActiveTokensLength(), 1);
-        assertEq(vaultManager.getActiveTokensLengthAt(uint48(vm.getBlockTimestamp()) - 100, ""), 0);
-        assertEq(vaultManager.getActiveTokensLengthAt(uint48(vm.getBlockTimestamp()), ""), 1);
 
         address[] memory activeTokens =
             vaultManager.getActiveTokensAt(uint48(vm.getBlockTimestamp()) - 100, new bytes[](0));
@@ -220,7 +212,6 @@ contract VaultManagerTest is InitSetup {
 
         vaultManager.registerToken(tokenB);
 
-        assertEq(vaultManager.getAllTokensLength(), 2);
         assertEq(vaultManager.getActiveTokensLength(), 2);
 
         activeTokens = vaultManager.getActiveTokensAt(uint48(vm.getBlockTimestamp()), new bytes[](0));
@@ -230,7 +221,6 @@ contract VaultManagerTest is InitSetup {
 
         vaultManager.unregisterToken(tokenB);
 
-        assertEq(vaultManager.getAllTokensLength(), 2);
         assertEq(vaultManager.getActiveTokensLength(), 1);
 
         activeTokens = vaultManager.getActiveTokensAt(uint48(vm.getBlockTimestamp()), new bytes[](0));
@@ -239,7 +229,6 @@ contract VaultManagerTest is InitSetup {
 
         assertTrue(vaultManager.isTokenActive(initSetupParams.masterChain.tokens[0]));
         assertFalse(vaultManager.isTokenActiveAt(tokenB, uint48(vm.getBlockTimestamp()), ""));
-        assertTrue(vaultManager.isTokenRegistered(tokenB));
 
         activeTokens = vaultManager.getActiveTokens();
         assertEq(activeTokens.length, 1);
@@ -266,17 +255,10 @@ contract VaultManagerTest is InitSetup {
         vm.expectRevert(ERR_SHARED_VAULT_ALREADY_ACTIVE);
         vaultManager.registerSharedVault(initSetupParams.masterChain.vaults[0]);
 
-        address[] memory allSharedVaults = vaultManager.getAllSharedVaults();
-        assertEq(allSharedVaults.length, 1);
-        assertEq(allSharedVaults[0], initSetupParams.masterChain.vaults[0]);
-
-        assertEq(vaultManager.getAllSharedVaultsLength(), 1);
-
         address[] memory activeSharedVaults = vaultManager.getActiveSharedVaults();
         assertEq(activeSharedVaults.length, 1);
         assertEq(activeSharedVaults[0], initSetupParams.masterChain.vaults[0]);
 
-        assertEq(vaultManager.getActiveSharedVaultsLengthAt(uint48(vm.getBlockTimestamp()), ""), 1);
         activeSharedVaults = vaultManager.getActiveSharedVaultsAt(uint48(vm.getBlockTimestamp()), new bytes[](0));
         assertEq(activeSharedVaults.length, 1);
 
@@ -287,13 +269,10 @@ contract VaultManagerTest is InitSetup {
             ),
             true
         );
-        assertTrue(vaultManager.isSharedVaultRegistered(initSetupParams.masterChain.vaults[0]));
 
         vaultManager.unregisterSharedVault(initSetupParams.masterChain.vaults[0]);
 
-        assertEq(vaultManager.getAllSharedVaultsLength(), 1);
         assertEq(vaultManager.getActiveSharedVaultsLength(), 0);
-        assertEq(vaultManager.getActiveSharedVaultsLengthAt(uint48(vm.getBlockTimestamp()), ""), 0);
 
         activeSharedVaults = vaultManager.getActiveSharedVaults();
         assertEq(activeSharedVaults.length, 0);
@@ -423,16 +402,9 @@ contract VaultManagerTest is InitSetup {
         vm.expectRevert(ERR_OPERATOR_VAULT_ALREADY_ACTIVE);
         vaultManager.registerOperatorVault(operator1, opVault);
 
-        assertEq(vaultManager.getAllOperatorVaultsLength(operator1), 1);
-        address[] memory allOperatorVaults = vaultManager.getAllOperatorVaults(operator1);
-        assertEq(allOperatorVaults.length, 1);
-        assertEq(allOperatorVaults[0], opVault);
-
         address[] memory activeOperatorVaults = vaultManager.getActiveOperatorVaults(operator1);
         assertEq(activeOperatorVaults.length, 1);
         assertEq(activeOperatorVaults[0], opVault);
-
-        assertEq(vaultManager.getActiveOperatorVaultsLengthAt(operator1, uint48(vm.getBlockTimestamp()), ""), 1);
 
         activeOperatorVaults =
             vaultManager.getActiveOperatorVaultsAt(operator1, uint48(vm.getBlockTimestamp()), new bytes[](0));
@@ -443,14 +415,10 @@ contract VaultManagerTest is InitSetup {
 
         vaultManager.unregisterOperatorVault(operator1, opVault);
 
-        assertEq(vaultManager.getAllOperatorVaultsLength(operator1), 1);
         assertEq(vaultManager.getActiveOperatorVaultsLength(operator1), 0);
 
         activeOperatorVaults = vaultManager.getActiveOperatorVaults(operator1);
         assertEq(activeOperatorVaults.length, 0);
-        assertTrue(vaultManager.isOperatorVaultRegistered(operator1, opVault));
-
-        assertEq(vaultManager.getActiveOperatorVaultsLengthAt(operator1, uint48(vm.getBlockTimestamp()), ""), 0);
     }
 
     function test_RegisterOperatorVault_RevertIfOperatorNotRegistered() public {

@@ -30,20 +30,6 @@ library OperatorManagerLogic {
 
     function initialize() public {}
 
-    function getAllOperatorsLength() public view returns (uint256) {
-        return _getOperatorManagerStorage()._operators.allValues().length();
-    }
-
-    function getAllOperators() public view returns (address[] memory) {
-        return _getOperatorManagerStorage()._operators.allValues().values();
-    }
-
-    function isOperatorRegistered(
-        address operator
-    ) public view returns (bool) {
-        return _getOperatorManagerStorage()._operators.allValues().contains(operator);
-    }
-
     function isOperatorActiveAt(address operator, uint48 timestamp, bytes memory hint) public view returns (bool) {
         return _getOperatorManagerStorage()._operators.containsAt(timestamp, operator, hint);
     }
@@ -65,11 +51,7 @@ library OperatorManagerLogic {
         return _getOperatorManagerStorage()._operators.values();
     }
 
-    function getActiveOperatorsLengthAt(uint48 timestamp, bytes memory hint) public view returns (uint208) {
-        return _getOperatorManagerStorage()._operators.lengthAt(timestamp, hint);
-    }
-
-    function getActiveOperatorsLength() public view returns (uint208) {
+    function getActiveOperatorsLength() public view returns (uint256) {
         return _getOperatorManagerStorage()._operators.length();
     }
 

@@ -65,14 +65,8 @@ contract OperatorManagerTest is InitSetup {
     function test_RegisterOperatorValid() public {
         opManager.registerOperator(validOperator);
 
-        bool isReg = opManager.isOperatorRegistered(validOperator);
-        assertTrue(isReg, "Should be registered");
         bool isActive = opManager.isOperatorActive(validOperator);
         assertTrue(isActive, "Should be active now");
-
-        address[] memory allOps = opManager.getAllOperators();
-        assertEq(allOps.length, 1, "Should have exactly 1 operator");
-        assertEq(allOps[0], validOperator, "Operator mismatch in allOps");
     }
 
     function test_RegisterOperator_RevertIfNotEntity() public {
@@ -89,10 +83,6 @@ contract OperatorManagerTest is InitSetup {
     function test_UnregisterOperator() public {
         opManager.registerOperator(validOperator);
 
-        address[] memory allOps = opManager.getAllOperators();
-        assertEq(allOps.length, 1, "Should have exactly 1 operator");
-        assertEq(allOps[0], validOperator, "Operator mismatch in allOps");
-
         address[] memory actOps = opManager.getActiveOperators();
         assertEq(actOps.length, 1, "Should have exactly 1 active operator");
         assertEq(actOps[0], validOperator, "Operator mismatch in actOps");
@@ -102,17 +92,10 @@ contract OperatorManagerTest is InitSetup {
         bool isActive = opManager.isOperatorActive(validOperator);
         assertFalse(isActive, "Should not be active after unregister");
 
-        bool isReg = opManager.isOperatorRegistered(validOperator);
-        assertTrue(isReg, "It remains physically in 'all' set but is not active");
-
-        allOps = opManager.getAllOperators();
-        assertEq(allOps.length, 1, "Should have exactly 1 operator");
-        assertEq(allOps[0], validOperator, "Operator mismatch in allOps");
-
         actOps = opManager.getActiveOperators();
         assertEq(actOps.length, 0, "Should have no active operators");
 
-        uint208 actOpsLength = opManager.getActiveOperatorsLength();
+        uint256 actOpsLength = opManager.getActiveOperatorsLength();
         assertEq(actOpsLength, 0, "Should have no active operators");
     }
 
@@ -149,10 +132,7 @@ contract OperatorManagerTest is InitSetup {
             assertEq(actOps.length, 1, "At T0, 1 active operator");
             assertEq(actOps[0], validOperator);
 
-            uint208 actOpsT0 = opManager.getActiveOperatorsLengthAt(t0, "");
-            assertEq(actOpsT0, 1, "At T0, 1 active operator");
-
-            uint208 actOpsT0Length = opManager.getActiveOperatorsLength();
+            uint256 actOpsT0Length = opManager.getActiveOperatorsLength();
             assertEq(actOpsT0Length, 1, "At T0, 1 active operator");
         }
 
@@ -177,18 +157,9 @@ contract OperatorManagerTest is InitSetup {
             assertEq(actOps[0], validOperator);
             assertEq(actOps[1], validOp2);
 
-            uint208 actOpsT1 = opManager.getActiveOperatorsLengthAt(t1, "");
-            assertEq(actOpsT1, 2, "At T1, 2 active operators");
-
-            uint208 actOpsT1Length = opManager.getActiveOperatorsLength();
+            uint256 actOpsT1Length = opManager.getActiveOperatorsLength();
             assertEq(actOpsT1Length, 2, "At T1, 2 active operators");
         }
-    }
-
-    function test_GetAllOperatorsLength() public {
-        assertEq(opManager.getAllOperatorsLength(), 0, "Initially zero operators");
-        opManager.registerOperator(validOperator);
-        assertEq(opManager.getAllOperatorsLength(), 1, "Now one operator");
     }
 
     function test_ReinitializeReverts() public {

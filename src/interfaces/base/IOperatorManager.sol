@@ -18,15 +18,7 @@ interface IOperatorManager {
 
     function OPERATOR_REGISTRY() external view returns (address);
 
-    function getAllOperatorsLength() external view returns (uint256);
-
-    function getAllOperators() external view returns (address[] memory);
-
     function isOperatorActive(
-        address operator
-    ) external view returns (bool);
-
-    function isOperatorRegistered(
         address operator
     ) external view returns (bool);
 
@@ -36,7 +28,5 @@ interface IOperatorManager {
 
     function getActiveOperators() external view returns (address[] memory);
 
-    function getActiveOperatorsLengthAt(uint48 timestamp, bytes memory hint) external view returns (uint208);
-
-    function getActiveOperatorsLength() external view returns (uint208);
+    function getActiveOperatorsLength() external view returns (uint256);
 }

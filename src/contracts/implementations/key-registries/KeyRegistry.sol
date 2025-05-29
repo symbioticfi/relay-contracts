@@ -9,14 +9,7 @@ contract KeyRegistry is KeyManager, IKeyRegistry {
     /**
      * @inheritdoc IKeyRegistry
      */
-    function getOperatorsLengthAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint208) {
-        return _getKeysOperatorsLengthAt(timestamp, hint);
-    }
-
-    /**
-     * @inheritdoc IKeyRegistry
-     */
-    function getOperatorsLength() public view virtual returns (uint208) {
+    function getOperatorsLength() public view virtual returns (uint256) {
         return _getKeysOperatorsLength();
     }
 

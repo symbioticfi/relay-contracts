@@ -40,29 +40,6 @@ abstract contract OperatorManager is NetworkManager, IOperatorManager {
     /**
      * @inheritdoc IOperatorManager
      */
-    function getAllOperatorsLength() public view virtual returns (uint256) {
-        return OperatorManagerLogic.getAllOperatorsLength();
-    }
-
-    /**
-     * @inheritdoc IOperatorManager
-     */
-    function getAllOperators() public view virtual returns (address[] memory) {
-        return OperatorManagerLogic.getAllOperators();
-    }
-
-    /**
-     * @inheritdoc IOperatorManager
-     */
-    function isOperatorRegistered(
-        address operator
-    ) public view virtual returns (bool) {
-        return OperatorManagerLogic.isOperatorRegistered(operator);
-    }
-
-    /**
-     * @inheritdoc IOperatorManager
-     */
     function isOperatorActiveAt(
         address operator,
         uint48 timestamp,
@@ -100,14 +77,7 @@ abstract contract OperatorManager is NetworkManager, IOperatorManager {
     /**
      * @inheritdoc IOperatorManager
      */
-    function getActiveOperatorsLengthAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint208) {
-        return OperatorManagerLogic.getActiveOperatorsLengthAt(timestamp, hint);
-    }
-
-    /**
-     * @inheritdoc IOperatorManager
-     */
-    function getActiveOperatorsLength() public view virtual returns (uint208) {
+    function getActiveOperatorsLength() public view virtual returns (uint256) {
         return OperatorManagerLogic.getActiveOperatorsLength();
     }
 

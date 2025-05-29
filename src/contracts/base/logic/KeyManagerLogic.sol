@@ -162,11 +162,7 @@ library KeyManagerLogic {
         return _getKeyManagerStorage()._operators.values();
     }
 
-    function getKeysOperatorsLengthAt(uint48 timestamp, bytes memory hint) public view returns (uint208) {
-        return _getKeyManagerStorage()._operators.lengthAt(timestamp, hint);
-    }
-
-    function getKeysOperatorsLength() public view returns (uint208) {
+    function getKeysOperatorsLength() public view returns (uint256) {
         return _getKeyManagerStorage()._operators.length();
     }
 

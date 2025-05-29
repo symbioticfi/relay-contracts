@@ -22,11 +22,7 @@ contract TestKeyManager is KeyManager {
         __KeyManager_init();
     }
 
-    function getOperatorsLengthAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint208) {
-        return _getKeysOperatorsLengthAt(timestamp, hint);
-    }
-
-    function getOperatorsLength() public view virtual returns (uint208) {
+    function getOperatorsLength() public view virtual returns (uint256) {
         return _getKeysOperatorsLength();
     }
 
@@ -316,9 +312,6 @@ contract KeyManagerTest is Test {
 
         uint256 opsLength = keyManager.getOperatorsLength();
         assertEq(opsLength, 2, "Should have 2 operators");
-
-        uint256 opsLengthAt = keyManager.getOperatorsLengthAt(uint48(vm.getBlockTimestamp()), new bytes(0));
-        assertEq(opsLengthAt, 2, "Should have 2 operators");
 
         IKeyManager.Key[] memory keysOp1 = keyManager.getKeys(ecdsaUser);
         assertEq(keysOp1.length, 1, "Operator #1 should have exactly 1 key");

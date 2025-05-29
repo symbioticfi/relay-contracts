@@ -97,31 +97,17 @@ interface IVaultManager {
 
     function getSlashingWindow() external view returns (uint48);
 
-    function isTokenRegistered(
-        address token
-    ) external view returns (bool);
-
     function isTokenActive(
         address token
     ) external view returns (bool);
 
     function isTokenActiveAt(address token, uint48 timestamp, bytes memory hint) external view returns (bool);
 
-    function getAllTokensLength() external view returns (uint256);
-
-    function getAllTokens() external view returns (address[] memory);
-
     function getActiveTokensAt(uint48 timestamp, bytes[] memory hints) external view returns (address[] memory);
 
     function getActiveTokens() external view returns (address[] memory);
 
-    function getActiveTokensLength() external view returns (uint208);
-
-    function getActiveTokensLengthAt(uint48 timestamp, bytes memory hint) external view returns (uint208);
-
-    function isSharedVaultRegistered(
-        address vault
-    ) external view returns (bool);
+    function getActiveTokensLength() external view returns (uint256);
 
     function isSharedVaultActive(
         address vault
@@ -129,19 +115,11 @@ interface IVaultManager {
 
     function isSharedVaultActiveAt(address vault, uint48 timestamp, bytes memory hint) external view returns (bool);
 
-    function getAllSharedVaultsLength() external view returns (uint256);
-
-    function getAllSharedVaults() external view returns (address[] memory);
-
     function getActiveSharedVaultsAt(uint48 timestamp, bytes[] memory hints) external view returns (address[] memory);
 
     function getActiveSharedVaults() external view returns (address[] memory);
 
-    function getActiveSharedVaultsLength() external view returns (uint208);
-
-    function getActiveSharedVaultsLengthAt(uint48 timestamp, bytes memory hint) external view returns (uint208);
-
-    function isOperatorVaultRegistered(address operator, address vault) external view returns (bool);
+    function getActiveSharedVaultsLength() external view returns (uint256);
 
     function isOperatorVaultActive(address operator, address vault) external view returns (bool);
 
@@ -151,14 +129,6 @@ interface IVaultManager {
         uint48 timestamp,
         bytes memory hint
     ) external view returns (bool);
-
-    function getAllOperatorVaultsLength(
-        address operator
-    ) external view returns (uint256);
-
-    function getAllOperatorVaults(
-        address operator
-    ) external view returns (address[] memory);
 
     function getActiveOperatorVaultsAt(
         address operator,
@@ -172,13 +142,7 @@ interface IVaultManager {
 
     function getActiveOperatorVaultsLength(
         address operator
-    ) external view returns (uint208);
-
-    function getActiveOperatorVaultsLengthAt(
-        address operator,
-        uint48 timestamp,
-        bytes memory hint
-    ) external view returns (uint208);
+    ) external view returns (uint256);
 
     function getOperatorVotingPowerAt(
         address operator,

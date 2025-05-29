@@ -6,6 +6,9 @@ import {PermissionManager} from "../../../base/PermissionManager.sol";
 import {ISharedVaults} from "../../../../interfaces/features/registration/vaults/ISharedVaults.sol";
 
 abstract contract SharedVaults is VaultManager, PermissionManager, ISharedVaults {
+    /**
+     * @inheritdoc ISharedVaults
+     */
     uint64 public constant SharedVaults_VERSION = 1;
 
     function __SharedVaults_init() internal virtual onlyInitializing {}

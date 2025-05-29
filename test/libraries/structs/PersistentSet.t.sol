@@ -62,7 +62,6 @@ contract PersistentSetTest is Test {
         addressSet.add(10, alice);
         addressSet.add(10, bob);
         assertEq(uint256(addressSet.length()), 2);
-        assertEq(uint256(addressSet.lengthAt(10, "")), 2);
 
         addressSet.remove(11, bob);
         addressSet.add(11, carol);
@@ -85,9 +84,6 @@ contract PersistentSetTest is Test {
         }
         assertTrue(foundAlice, "Should have Alice at key=10");
         assertTrue(foundBob, "Should have Bob at key=10");
-
-        assertEq(uint256(addressSet.lengthAt(10, "")), 2, "lengthAt(10) should be 2");
-        assertEq(uint256(addressSet.lengthAt(11, "")), 2, "lengthAt(11) should be 2");
     }
 
     function test_AddressSetAllValues() public {
@@ -97,9 +93,6 @@ contract PersistentSetTest is Test {
         addressSet.add(1, first);
         addressSet.add(2, second);
         addressSet.remove(3, first);
-
-        EnumerableSet.AddressSet storage all = addressSet.allValues();
-        assertEq(all.length(), 2, "Should have 2 addresses in allValues set");
 
         address[] memory active = addressSet.values();
         assertEq(active.length, 1, "Currently only 'second' is active");
@@ -133,7 +126,6 @@ contract PersistentSetTest is Test {
 
         assertEq(uint256(bytes32Set.length()), 2);
 
-        assertEq(uint256(bytes32Set.lengthAt(101, "")), 1, "At key=101, we only had data2");
         assertTrue(bytes32Set.containsAt(101, data2, ""), "data2 at key=101");
         assertFalse(bytes32Set.containsAt(101, data1, ""), "data1 was removed at key=101");
         assertFalse(bytes32Set.containsAt(101, bytes32(uint256(0x789)), ""), "data1 was removed at key=101");
@@ -175,11 +167,9 @@ contract PersistentSetTest is Test {
             if (valsKey5[i] == itemB) foundB = true;
         }
         assertTrue(foundB, "B must be present at key=5");
-        assertEq(uint256(bytes32Set.lengthAt(5, "")), 2, "lengthAt(5) == 2");
 
         bytes32[] memory valsKey6 = bytes32Set.valuesAt(6, new bytes[](0));
         assertEq(valsKey6.length, 2, "At key=6, length is 2");
-        assertEq(uint256(bytes32Set.lengthAt(6, "")), 2, "lengthAt(6) == 2");
     }
 
     function test_Bytes32SetAllValues() public {
@@ -188,9 +178,6 @@ contract PersistentSetTest is Test {
         bytes32Set.add(1, x);
         bytes32Set.add(2, y);
         bytes32Set.remove(3, x);
-
-        EnumerableSet.Bytes32Set storage all = bytes32Set.allValues();
-        assertEq(all.length(), 2, "allValues() has both x and y inside the underlying enumerableset");
 
         bytes32[] memory activeValues = bytes32Set.values();
         assertEq(activeValues.length, 1, "Only y remains active after removing x");
@@ -233,9 +220,6 @@ contract PersistentSetTest is Test {
             addressSet.containsAt(1, address(uint160(0x100000 + 257)), ""),
             "At key=1, the address at index 257 was active"
         );
-        assertEq(uint256(addressSet.lengthAt(1, "")), 300, "At key=1, length was 300");
-
-        assertEq(uint256(addressSet.lengthAt(2, "")), 298, "At key=2, length is 298");
 
         address randomExisting = address(uint160(0x100000 + 150));
         assertTrue(addressSet.contains(randomExisting), "Item at index 150 is still active at key=2");
