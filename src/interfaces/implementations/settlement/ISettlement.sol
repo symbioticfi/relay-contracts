@@ -29,11 +29,9 @@ interface ISettlement {
 
     /// @custom:storage-location erc7201:symbiotic.storage.Settlement
     struct SettlementStorage {
-        uint48 _prolongDuration;
         uint48 _lastCommittedHeaderEpoch;
-        uint48 _lastCommittedHeaderEpochDuration;
-        uint48 _lastCommittedHeaderCaptureTimestamp;
         Checkpoints.Trace208 _requiredKeyTag;
+        Checkpoints.Trace208 _prolongDuration;
         Checkpoints.Trace208 _commitDuration;
         Checkpoints.Trace208 _sigVerifier;
         mapping(uint48 epoch => ValSetHeader) _valSetHeader;
@@ -73,6 +71,8 @@ interface ISettlement {
 
     function getCurrentValSetEpoch() external view returns (uint48);
 
+    function getProlongDurationAt(uint48 timestamp, bytes memory hint) external view returns (uint48);
+
     function getProlongDuration() external view returns (uint48);
 
     function getCommitDurationAt(uint48 timestamp, bytes memory hint) external view returns (uint48);
@@ -87,7 +87,7 @@ interface ISettlement {
 
     function getSigVerifier() external view returns (address);
 
-    function getLastCommittedHeaderCaptureTimestamp() external view returns (uint48);
+    function getLastCommittedHeaderEpoch() external view returns (uint48);
 
     function isValSetHeaderCommittedAt(
         uint48 epoch
@@ -153,6 +153,10 @@ interface ISettlement {
         bytes calldata proof,
         bytes memory hint
     ) external view returns (bool);
+
+    function setProlongDuration(
+        uint48 prolongDuration
+    ) external;
 
     function setCommitDuration(
         uint48 commitDuration

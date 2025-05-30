@@ -55,6 +55,13 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     /**
      * @inheritdoc ISettlement
      */
+    function getProlongDurationAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint48) {
+        return SettlementLogic.getProlongDurationAt(timestamp, hint);
+    }
+
+    /**
+     * @inheritdoc ISettlement
+     */
     function getProlongDuration() public view virtual returns (uint48) {
         return SettlementLogic.getProlongDuration();
     }
@@ -104,8 +111,8 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     /**
      * @inheritdoc ISettlement
      */
-    function getLastCommittedHeaderCaptureTimestamp() public view virtual returns (uint48) {
-        return SettlementLogic.getLastCommittedHeaderCaptureTimestamp();
+    function getLastCommittedHeaderEpoch() public view virtual returns (uint48) {
+        return SettlementLogic.getLastCommittedHeaderEpoch();
     }
 
     /**
@@ -280,6 +287,15 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
         uint48 epochDuration
     ) public virtual override checkPermission {
         return SettlementLogic.setEpochDuration(epochDuration);
+    }
+
+    /**
+     * @inheritdoc ISettlement
+     */
+    function setProlongDuration(
+        uint48 prolongDuration
+    ) public virtual checkPermission {
+        SettlementLogic.setProlongDuration(prolongDuration);
     }
 
     /**

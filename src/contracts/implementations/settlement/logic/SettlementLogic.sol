@@ -44,7 +44,7 @@ library SettlementLogic {
         if (settlementInitParams.epochManagerInitParams.epochDuration <= settlementInitParams.commitDuration) {
             revert ISettlement.Settlement_EpochDurationTooShort();
         }
-        $._prolongDuration = settlementInitParams.prolongDuration;
+        $._prolongDuration.push(Time.timestamp(), settlementInitParams.prolongDuration);
         $._commitDuration.push(Time.timestamp(), settlementInitParams.commitDuration);
         $._requiredKeyTag.push(Time.timestamp(), settlementInitParams.requiredKeyTag);
         $._sigVerifier.push(Time.timestamp(), uint160(settlementInitParams.sigVerifier));
@@ -59,28 +59,34 @@ library SettlementLogic {
         if (currentEpoch == 0) {
             return currentEpoch;
         }
-        uint48 commitDuration = getCommitDuration();
         if (
             isValSetHeaderCommittedAt(currentEpoch - 1)
-                && Time.timestamp() < EpochManagerLogic.getCurrentEpochStart() + commitDuration
+                && Time.timestamp() < EpochManagerLogic.getCurrentEpochStart() + getCommitDuration()
         ) {
             return currentEpoch - 1;
         }
         if (isValSetHeaderCommittedAt(currentEpoch)) {
             return currentEpoch;
         }
+        uint48 lastCommittedHeaderNextCaptureTimestamp =
+            EpochManagerLogic.getEpochStart(getLastCommittedHeaderEpoch() + 1, new bytes(0));
         if (
             Time.timestamp()
-                < getLastCommittedHeaderCaptureTimestamp() + getLastCommittedHeaderEpochDuration() + commitDuration
-                    + getProlongDuration()
+                < lastCommittedHeaderNextCaptureTimestamp
+                    + getCommitDurationAt(lastCommittedHeaderNextCaptureTimestamp, new bytes(0))
+                    + getProlongDurationAt(lastCommittedHeaderNextCaptureTimestamp, new bytes(0))
         ) {
             return getLastCommittedHeaderEpoch();
         }
         return currentEpoch;
     }
 
+    function getProlongDurationAt(uint48 timestamp, bytes memory hint) public view returns (uint48) {
+        return uint48(_getSettlementStorage()._prolongDuration.upperLookupRecent(timestamp, hint));
+    }
+
     function getProlongDuration() public view returns (uint48) {
-        return _getSettlementStorage()._prolongDuration;
+        return uint48(EpochManagerLogic.getCurrentValue(_getSettlementStorage()._prolongDuration, Time.timestamp()));
     }
 
     function getCommitDurationAt(uint48 timestamp, bytes memory hint) public view returns (uint48) {
@@ -112,14 +118,6 @@ library SettlementLogic {
         return _getSettlementStorage()._lastCommittedHeaderEpoch;
     }
 
-    function getLastCommittedHeaderEpochDuration() public view returns (uint48) {
-        return _getSettlementStorage()._lastCommittedHeaderEpochDuration;
-    }
-
-    function getLastCommittedHeaderCaptureTimestamp() public view returns (uint48) {
-        return _getSettlementStorage()._lastCommittedHeaderCaptureTimestamp;
-    }
-
     function isValSetHeaderCommittedAt(
         uint48 epoch
     ) public view returns (bool) {
@@ -146,10 +144,13 @@ library SettlementLogic {
         if (isCurrentValSetHeaderCommitted) {
             return ISettlement.ValSetPhase.IDLE;
         }
+        uint48 lastCommittedHeaderNextCaptureTimestamp =
+            EpochManagerLogic.getEpochStart(getLastCommittedHeaderEpoch() + 1, new bytes(0));
         if (
             Time.timestamp()
-                < getLastCommittedHeaderCaptureTimestamp() + getLastCommittedHeaderEpochDuration() + commitDuration
-                    + getProlongDuration()
+                < lastCommittedHeaderNextCaptureTimestamp
+                    + getCommitDurationAt(lastCommittedHeaderNextCaptureTimestamp, new bytes(0))
+                    + getProlongDurationAt(lastCommittedHeaderNextCaptureTimestamp, new bytes(0))
         ) {
             return ISettlement.ValSetPhase.PROLONG;
         }
@@ -256,6 +257,12 @@ library SettlementLogic {
             revert ISettlement.Settlement_EpochDurationTooShort();
         }
         EpochManagerLogic.setEpochDuration(epochDuration);
+    }
+
+    function setProlongDuration(
+        uint48 prolongDuration
+    ) public {
+        _getSettlementStorage()._prolongDuration.push(EpochManagerLogic.getNextEpochStart(), prolongDuration);
     }
 
     function setCommitDuration(
@@ -371,7 +378,5 @@ library SettlementLogic {
         }
 
         $._lastCommittedHeaderEpoch = currentEpoch;
-        $._lastCommittedHeaderEpochDuration = EpochManagerLogic.getCurrentEpochDuration();
-        $._lastCommittedHeaderCaptureTimestamp = EpochManagerLogic.getCaptureTimestamp();
     }
 }
