@@ -51,6 +51,13 @@ library EpochManagerLogic {
         return getCurrentEpoch() + 1;
     }
 
+    function getNextEpochDuration() public view returns (uint48) {
+        (uint48 epochDuration,,) =
+            deserializeEpochDurationData(_getEpochManagerStorage()._epochDurationDataByTimestamp.latest());
+
+        return epochDuration;
+    }
+
     function getNextEpochStart() public view returns (uint48) {
         return getCurrentEpochStart() + getCurrentEpochDuration();
     }

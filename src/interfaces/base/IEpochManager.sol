@@ -32,6 +32,8 @@ interface IEpochManager {
 
     function getNextEpoch() external view returns (uint48);
 
+    function getNextEpochDuration() external view returns (uint48);
+
     function getNextEpochStart() external view returns (uint48);
 
     function getEpochIndex(uint48 timestamp, bytes memory hint) external view returns (uint48);

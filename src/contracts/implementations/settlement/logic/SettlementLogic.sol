@@ -268,6 +268,9 @@ library SettlementLogic {
     function setCommitDuration(
         uint48 commitDuration
     ) public {
+        if (commitDuration >= EpochManagerLogic.getNextEpochDuration()) {
+            revert ISettlement.Settlement_CommitDurationTooLong();
+        }
         _getSettlementStorage()._commitDuration.push(EpochManagerLogic.getNextEpochStart(), commitDuration);
     }
 
@@ -280,8 +283,7 @@ library SettlementLogic {
     function setSigVerifier(
         address sigVerifier
     ) public {
-        uint48 nextEpochStart = EpochManagerLogic.getNextEpochStart();
-        _getSettlementStorage()._sigVerifier.push(nextEpochStart, uint160(sigVerifier));
+        _getSettlementStorage()._sigVerifier.push(EpochManagerLogic.getNextEpochStart(), uint160(sigVerifier));
     }
 
     function setGenesis(

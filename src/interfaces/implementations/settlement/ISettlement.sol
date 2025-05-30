@@ -18,6 +18,7 @@ interface ISettlement {
     error Settlement_ValSetHeaderAlreadySubmitted();
     error Settlement_InvalidEpoch();
     error Settlement_InvalidCaptureTimestamp();
+    error Settlement_CommitDurationTooLong();
 
     enum ValSetPhase {
         IDLE,

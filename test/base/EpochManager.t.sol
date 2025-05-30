@@ -97,6 +97,7 @@ contract EpochManagerTest is Test {
 
         assertEq(epochManager.getNextEpoch(), 1);
         assertEq(epochManager.getNextEpochStart(), startTime + 100);
+        assertEq(epochManager.getNextEpochDuration(), 100);
 
         assertEq(epochManager.EpochManager_VERSION(), 1, "Version mismatch");
 
@@ -143,6 +144,7 @@ contract EpochManagerTest is Test {
 
         uint48 expectedNextEpochStart = uint48(initParams.epochDurationTimestamp + 2 * 100);
         assertEq(epochManager.getNextEpochStart(), expectedNextEpochStart);
+        assertEq(epochManager.getNextEpochDuration(), 100);
     }
 
     function test_SetEpochDuration_RevertIfIndexLessThanCurrent() public {
@@ -155,7 +157,9 @@ contract EpochManagerTest is Test {
         vm.warp(vm.getBlockTimestamp() + 110);
         assertEq(epochManager.getCurrentEpoch(), 1);
 
+        assertEq(epochManager.getNextEpochDuration(), 100);
         epochManager.setEpochDuration(50);
+        assertEq(epochManager.getNextEpochDuration(), 50);
 
         vm.warp(epochManager.getNextEpochStart() + 1);
         assertEq(epochManager.getCurrentEpochDuration(), 50, "Should have updated duration for epoch #2 onward");

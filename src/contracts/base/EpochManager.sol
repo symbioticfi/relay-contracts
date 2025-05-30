@@ -61,6 +61,13 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
     /**
      * @inheritdoc IEpochManager
      */
+    function getNextEpochDuration() public view virtual returns (uint48) {
+        return EpochManagerLogic.getNextEpochDuration();
+    }
+
+    /**
+     * @inheritdoc IEpochManager
+     */
     function getNextEpochStart() public view virtual returns (uint48) {
         return EpochManagerLogic.getNextEpochStart();
     }
