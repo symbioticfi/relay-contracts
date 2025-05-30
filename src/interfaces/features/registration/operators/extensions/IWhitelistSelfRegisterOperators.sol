@@ -20,6 +20,16 @@ interface IWhitelistSelfRegisterOperators {
         bool isWhitelistEnabled;
     }
 
+    event SetWhitelistStatus(bool status);
+
+    event WhitelistOperator(address indexed operator);
+
+    event UnwhitelistOperator(address indexed operator);
+
+    event WhitelistOperatorVault(address indexed operator, address indexed vault);
+
+    event UnwhitelistOperatorVault(address indexed operator, address indexed vault);
+
     function WhitelistSelfRegisterOperators_VERSION() external view returns (uint64);
 
     function isWhitelistEnabled() external view returns (bool);

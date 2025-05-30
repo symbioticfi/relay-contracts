@@ -58,6 +58,26 @@ interface IConfigProvider {
         bytes requiredKeyTagsHint;
     }
 
+    event AddVotingPowerProvider(CrossChainAddress votingPowerProvider);
+
+    event RemoveVotingPowerProvider(CrossChainAddress votingPowerProvider);
+
+    event SetKeysProvider(CrossChainAddress keysProvider);
+
+    event AddReplica(CrossChainAddress replica);
+
+    event RemoveReplica(CrossChainAddress replica);
+
+    event SetVerificationType(uint32 verificationType);
+
+    event SetMaxVotingPower(uint256 maxVotingPower);
+
+    event SetMinInclusionVotingPower(uint256 minInclusionVotingPower);
+
+    event SetMaxValidatorsCount(uint208 maxValidatorsCount);
+
+    event SetRequiredKeyTags(uint8[] requiredKeyTags);
+
     function ConfigProvider_VERSION() external pure returns (uint64);
 
     function isVotingPowerProviderRegisteredAt(

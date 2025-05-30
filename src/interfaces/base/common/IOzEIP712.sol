@@ -9,6 +9,8 @@ interface IOzEIP712 is IERC5267 {
         string version;
     }
 
+    event InitEIP712(string name, string version);
+
     function OzEIP712_VERSION() external view returns (uint64);
 
     function hashTypedDataV4(

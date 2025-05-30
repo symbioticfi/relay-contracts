@@ -219,6 +219,7 @@ library ConfigProviderLogic {
         ) {
             revert IConfigProvider.ConfigProvider_AlreadyAdded();
         }
+        emit IConfigProvider.AddVotingPowerProvider(votingPowerProvider);
     }
 
     function removeVotingPowerProvider(
@@ -231,6 +232,7 @@ library ConfigProviderLogic {
         ) {
             revert IConfigProvider.ConfigProvider_NotAdded();
         }
+        emit IConfigProvider.RemoveVotingPowerProvider(votingPowerProvider);
     }
 
     function setKeysProvider(
@@ -239,6 +241,7 @@ library ConfigProviderLogic {
         _getConfigProviderStorage()._keysProvider.push(
             Time.timestamp(), uint256(serializeCrossChainAddress(keysProvider))
         );
+        emit IConfigProvider.SetKeysProvider(keysProvider);
     }
 
     function addReplica(
@@ -247,6 +250,7 @@ library ConfigProviderLogic {
         if (!_getConfigProviderStorage()._replicas.add(Time.timestamp(), serializeCrossChainAddress(replica))) {
             revert IConfigProvider.ConfigProvider_AlreadyAdded();
         }
+        emit IConfigProvider.AddReplica(replica);
     }
 
     function removeReplica(
@@ -255,36 +259,42 @@ library ConfigProviderLogic {
         if (!_getConfigProviderStorage()._replicas.remove(Time.timestamp(), serializeCrossChainAddress(replica))) {
             revert IConfigProvider.ConfigProvider_NotAdded();
         }
+        emit IConfigProvider.RemoveReplica(replica);
     }
 
     function setVerificationType(
         uint32 verificationType
     ) public {
         _getConfigProviderStorage()._verificationType.push(Time.timestamp(), verificationType);
+        emit IConfigProvider.SetVerificationType(verificationType);
     }
 
     function setMaxVotingPower(
         uint256 maxVotingPower
     ) public {
         _getConfigProviderStorage()._maxVotingPower.push(Time.timestamp(), maxVotingPower);
+        emit IConfigProvider.SetMaxVotingPower(maxVotingPower);
     }
 
     function setMinInclusionVotingPower(
         uint256 minInclusionVotingPower
     ) public {
         _getConfigProviderStorage()._minInclusionVotingPower.push(Time.timestamp(), minInclusionVotingPower);
+        emit IConfigProvider.SetMinInclusionVotingPower(minInclusionVotingPower);
     }
 
     function setMaxValidatorsCount(
         uint208 maxValidatorsCount
     ) public {
         _getConfigProviderStorage()._maxValidatorsCount.push(Time.timestamp(), maxValidatorsCount);
+        emit IConfigProvider.SetMaxValidatorsCount(maxValidatorsCount);
     }
 
     function setRequiredKeyTags(
         uint8[] memory requiredKeyTags
     ) public {
         _getConfigProviderStorage()._requiredKeyTags.push(Time.timestamp(), requiredKeyTags.serialize());
+        emit IConfigProvider.SetRequiredKeyTags(requiredKeyTags);
     }
 
     function deserializeCrossChainAddress(

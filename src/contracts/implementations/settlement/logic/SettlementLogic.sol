@@ -45,9 +45,13 @@ library SettlementLogic {
             revert ISettlement.Settlement_EpochDurationTooShort();
         }
         $._prolongDuration.push(Time.timestamp(), settlementInitParams.prolongDuration);
+        emit ISettlement.InitProlongDuration(settlementInitParams.prolongDuration);
         $._commitDuration.push(Time.timestamp(), settlementInitParams.commitDuration);
+        emit ISettlement.InitCommitDuration(settlementInitParams.commitDuration);
         $._requiredKeyTag.push(Time.timestamp(), settlementInitParams.requiredKeyTag);
+        emit ISettlement.InitRequiredKeyTag(settlementInitParams.requiredKeyTag);
         $._sigVerifier.push(Time.timestamp(), uint160(settlementInitParams.sigVerifier));
+        emit ISettlement.InitSigVerifier(settlementInitParams.sigVerifier);
     }
 
     function getCurrentValSetTimestamp() public view returns (uint48) {
@@ -263,6 +267,7 @@ library SettlementLogic {
         uint48 prolongDuration
     ) public {
         _getSettlementStorage()._prolongDuration.push(EpochManagerLogic.getNextEpochStart(), prolongDuration);
+        emit ISettlement.SetProlongDuration(prolongDuration);
     }
 
     function setCommitDuration(
@@ -272,18 +277,21 @@ library SettlementLogic {
             revert ISettlement.Settlement_CommitDurationTooLong();
         }
         _getSettlementStorage()._commitDuration.push(EpochManagerLogic.getNextEpochStart(), commitDuration);
+        emit ISettlement.SetCommitDuration(commitDuration);
     }
 
     function setRequiredKeyTag(
         uint8 requiredKeyTag
     ) public {
         _getSettlementStorage()._requiredKeyTag.push(EpochManagerLogic.getNextEpochStart(), requiredKeyTag);
+        emit ISettlement.SetRequiredKeyTag(requiredKeyTag);
     }
 
     function setSigVerifier(
         address sigVerifier
     ) public {
         _getSettlementStorage()._sigVerifier.push(EpochManagerLogic.getNextEpochStart(), uint160(sigVerifier));
+        emit ISettlement.SetSigVerifier(sigVerifier);
     }
 
     function setGenesis(
@@ -295,6 +303,8 @@ library SettlementLogic {
         }
 
         setValSetHeader(valSetHeader, extraData);
+
+        emit ISettlement.SetGenesis(valSetHeader, extraData);
     }
 
     function commitValSetHeader(
@@ -336,6 +346,8 @@ library SettlementLogic {
         }
 
         setValSetHeader(header, extraData);
+
+        emit ISettlement.CommitValSetHeader(header, extraData);
     }
 
     function setValSetHeader(

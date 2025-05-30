@@ -15,7 +15,7 @@ interface IOperatorManager {
     }
 
     event RegisterOperator(address indexed operator);
-    
+
     event UnregisterOperator(address indexed operator);
 
     function OperatorManager_VERSION() external view returns (uint64);

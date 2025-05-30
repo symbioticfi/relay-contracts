@@ -23,9 +23,8 @@ interface IVaultManager {
     error VaultManager_SlashingWindowTooLarge();
 
     enum SlasherType {
-        INSTANT, // Instant slasher type
-        VETO // Veto slasher type
-
+        INSTANT,
+        VETO
     }
 
     enum DelegatorType {
@@ -87,12 +86,34 @@ interface IVaultManager {
         bytes slashHints;
     }
 
+    event InitSlashingWindow(uint48 slashingWindow);
+
+    event SetSlashingWindow(uint48 slashingWindow);
+
+    event RegisterToken(address indexed token);
+
+    event UnregisterToken(address indexed token);
+
+    event RegisterSharedVault(address indexed vault);
+
+    event UnregisterSharedVault(address indexed vault);
+
+    event RegisterOperatorVault(address indexed operator, address indexed vault);
+
+    event UnregisterOperatorVault(address indexed operator, address indexed vault);
+
     event InstantSlash(address indexed slasher, address indexed operator, bool indexed success, uint256 slashedAmount);
 
     event VetoSlash(address indexed slasher, address indexed operator, bool indexed success, uint256 slashIndex);
 
     event ExecuteSlash(
         address indexed slasher, uint256 indexed slashIndex, bool indexed success, uint256 slashedAmount
+    );
+
+    event DistributeStakerRewards(address indexed stakerRewards, address indexed token, uint256 amount, bytes data);
+
+    event DistributeOperatorRewards(
+        address indexed operatorRewards, address indexed token, uint256 amount, bytes32 root
     );
 
     function VaultManager_VERSION() external view returns (uint64);

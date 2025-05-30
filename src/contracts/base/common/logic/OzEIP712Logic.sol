@@ -51,6 +51,7 @@ library OzEIP712Logic {
         OzEIP712Storage storage $ = _getOzEIP712Storage();
         $._name = initParams.name;
         $._version = initParams.version;
+        emit IOzEIP712.InitEIP712(initParams.name, initParams.version);
 
         // Reset prior values in storage if upgrading
         $._hashedName = 0;

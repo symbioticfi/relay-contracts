@@ -6,7 +6,7 @@ import {IPermissionManager} from "../../base/IPermissionManager.sol";
 import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 interface IOzAccessControl {
-    event SetSelectorRole(bytes4 selector, bytes32 role);
+    event SetSelectorRole(bytes4 indexed selector, bytes32 indexed role);
 
     function OzAccessControl_VERSION() external view returns (uint64);
 

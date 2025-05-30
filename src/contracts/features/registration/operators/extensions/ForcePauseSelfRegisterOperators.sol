@@ -54,6 +54,8 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
         if (isOperatorRegistered(operator)) {
             _unregisterOperator(operator);
         }
+
+        emit ForcePauseOperator(operator);
     }
 
     /**
@@ -66,6 +68,8 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
             revert ForcePauseSelfRegisterOperators_OperatorNotForcePaused();
         }
         _getForcePauseStorage()._forcePaused[operator] = false;
+
+        emit ForceUnpauseOperator(operator);
     }
 
     /**
@@ -79,6 +83,8 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
         if (isOperatorVaultRegistered(operator, vault)) {
             _unregisterOperatorVault(operator, vault);
         }
+
+        emit ForcePauseOperatorVault(operator, vault);
     }
 
     /**
@@ -89,6 +95,8 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
             revert ForcePauseSelfRegisterOperators_OperatorVaultNotForcePaused();
         }
         _getForcePauseStorage()._forcePausedVault[operator][vault] = false;
+
+        emit ForceUnpauseOperatorVault(operator, vault);
     }
 
     function _registerOperatorImpl(address operator, address vault) internal virtual override {

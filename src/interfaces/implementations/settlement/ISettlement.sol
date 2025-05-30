@@ -63,6 +63,26 @@ interface ISettlement {
         bytes32 value;
     }
 
+    event InitProlongDuration(uint48 prolongDuration);
+
+    event InitCommitDuration(uint48 commitDuration);
+
+    event InitRequiredKeyTag(uint8 requiredKeyTag);
+
+    event InitSigVerifier(address sigVerifier);
+
+    event SetProlongDuration(uint48 prolongDuration);
+
+    event SetCommitDuration(uint48 commitDuration);
+
+    event SetRequiredKeyTag(uint8 requiredKeyTag);
+
+    event SetSigVerifier(address sigVerifier);
+
+    event SetGenesis(ValSetHeader valSetHeader, ExtraData[] extraData);
+
+    event CommitValSetHeader(ValSetHeader valSetHeader, ExtraData[] extraData);
+
     function Settlement_VERSION() external pure returns (uint64);
 
     function VALIDATOR_SET_VERSION() external pure returns (uint8);

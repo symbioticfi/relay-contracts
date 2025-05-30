@@ -60,6 +60,8 @@ abstract contract WhitelistSelfRegisterOperators is SelfRegisterOperators, IWhit
         bool status
     ) public virtual checkPermission {
         _getWhitelistStorage()._isWhitelistEnabled = status;
+
+        emit SetWhitelistStatus(status);
     }
 
     /**
@@ -72,6 +74,8 @@ abstract contract WhitelistSelfRegisterOperators is SelfRegisterOperators, IWhit
             revert WhitelistSelfRegisterOperators_OperatorAlreadyWhitelisted();
         }
         _getWhitelistStorage()._whitelisted[operator] = true;
+
+        emit WhitelistOperator(operator);
     }
 
     /**
@@ -87,6 +91,8 @@ abstract contract WhitelistSelfRegisterOperators is SelfRegisterOperators, IWhit
         if (isWhitelistEnabled() && isOperatorRegistered(operator)) {
             _unregisterOperator(operator);
         }
+
+        emit UnwhitelistOperator(operator);
     }
 
     /**
@@ -97,6 +103,8 @@ abstract contract WhitelistSelfRegisterOperators is SelfRegisterOperators, IWhit
             revert WhitelistSelfRegisterOperators_OperatorVaultAlreadyWhitelisted();
         }
         _getWhitelistStorage()._whitelistedVault[operator][vault] = true;
+
+        emit WhitelistOperatorVault(operator, vault);
     }
 
     /**
@@ -110,6 +118,8 @@ abstract contract WhitelistSelfRegisterOperators is SelfRegisterOperators, IWhit
         if (isWhitelistEnabled() && isOperatorVaultRegistered(operator, vault)) {
             _unregisterOperatorVault(operator, vault);
         }
+
+        emit UnwhitelistOperatorVault(operator, vault);
     }
 
     function _registerOperatorImpl(address operator, address vault) internal virtual override {

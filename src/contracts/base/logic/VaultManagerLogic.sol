@@ -55,6 +55,8 @@ library VaultManagerLogic {
         IVaultManager.VaultManagerInitParams memory initParams
     ) public {
         _getVaultManagerStorage()._slashingWindow = initParams.slashingWindow;
+
+        emit IVaultManager.InitSlashingWindow(initParams.slashingWindow);
     }
 
     function getSlashingWindow() public view returns (uint48) {
@@ -481,6 +483,8 @@ library VaultManagerLogic {
             revert IVaultManager.VaultManager_SlashingWindowTooLarge();
         }
         _getVaultManagerStorage()._slashingWindow = slashingWindow;
+
+        emit IVaultManager.SetSlashingWindow(slashingWindow);
     }
 
     function registerToken(
@@ -492,6 +496,8 @@ library VaultManagerLogic {
         if (!_getVaultManagerStorage()._tokens.add(Time.timestamp(), token)) {
             revert IVaultManager.VaultManager_TokenAlreadyIsRegistered();
         }
+
+        emit IVaultManager.RegisterToken(token);
     }
 
     function unregisterToken(
@@ -500,6 +506,8 @@ library VaultManagerLogic {
         if (!_getVaultManagerStorage()._tokens.remove(Time.timestamp(), token)) {
             revert IVaultManager.VaultManager_TokenNotRegistered();
         }
+
+        emit IVaultManager.UnregisterToken(token);
     }
 
     function registerSharedVault(address VAULT_FACTORY, address vault) public {
@@ -516,6 +524,8 @@ library VaultManagerLogic {
         if (!$._sharedVaults.add(Time.timestamp(), vault)) {
             revert IVaultManager.VaultManager_SharedVaultAlreadyIsRegistered();
         }
+
+        emit IVaultManager.RegisterSharedVault(vault);
     }
 
     function registerOperatorVault(address VAULT_FACTORY, address operator, address vault) public {
@@ -536,6 +546,8 @@ library VaultManagerLogic {
             revert IVaultManager.VaultManager_OperatorVaultAlreadyIsRegistered();
         }
         $._operatorVaults[operator].add(Time.timestamp(), vault);
+
+        emit IVaultManager.RegisterOperatorVault(operator, vault);
     }
 
     function unregisterSharedVault(
@@ -544,6 +556,8 @@ library VaultManagerLogic {
         if (!_getVaultManagerStorage()._sharedVaults.remove(Time.timestamp(), vault)) {
             revert IVaultManager.VaultManager_SharedVaultNotRegistered();
         }
+
+        emit IVaultManager.UnregisterSharedVault(vault);
     }
 
     function unregisterOperatorVault(address operator, address vault) public {
@@ -552,6 +566,8 @@ library VaultManagerLogic {
             revert IVaultManager.VaultManager_OperatorVaultNotRegistered();
         }
         $._allOperatorVaults.remove(Time.timestamp(), vault);
+
+        emit IVaultManager.UnregisterOperatorVault(operator, vault);
     }
 
     function slashVault(
@@ -641,10 +657,12 @@ library VaultManagerLogic {
 
     function distributeStakerRewards(address stakerRewards, address token, uint256 amount, bytes memory data) public {
         IStakerRewards(stakerRewards).distributeRewards(NetworkManagerLogic.NETWORK(), token, amount, data);
+        emit IVaultManager.DistributeStakerRewards(stakerRewards, token, amount, data);
     }
 
     function distributeOperatorRewards(address operatorRewards, address token, uint256 amount, bytes32 root) public {
         IDefaultOperatorRewards(operatorRewards).distributeRewards(NetworkManagerLogic.NETWORK(), token, amount, root);
+        emit IVaultManager.DistributeOperatorRewards(operatorRewards, token, amount, root);
     }
 
     function _validateVault(address VAULT_FACTORY, address vault) public view returns (bool) {
