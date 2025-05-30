@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
+import {Test} from "forge-std/Test.sol";
+
 import {KeyTags} from "../../../src/contracts/libraries/utils/KeyTags.sol";
 import {KeyEcdsaSecp256k1} from "../../../src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol";
 import {KeyBlsBn254, BN254} from "../../../src/contracts/libraries/keys/KeyBlsBn254.sol";
@@ -20,6 +22,14 @@ import {SigVerifierBlsBn254ZK} from "../../../src/contracts/implementations/sig-
 
 import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+import {Settlement} from "../../../src/contracts/implementations/settlement/Settlement.sol";
+
+import {IEpochManager} from "../../../src/interfaces/base/IEpochManager.sol";
+import {IOzEIP712} from "../../../src/interfaces/base/common/IOzEIP712.sol";
+import {INetworkManager} from "../../../src/interfaces/base/INetworkManager.sol";
+import {SigVerifierMock} from "../../mocks/SigVerifierMock.sol";
+import {SigVerifierBlsBn254Simple} from
+    "../../../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254Simple.sol";
 
 contract SettlementTest is MasterGenesisSetup {
     using KeyTags for uint8;
@@ -115,5 +125,165 @@ contract SettlementTest is MasterGenesisSetup {
         console2.logBytes32(messageHash);
 
         masterSetupParams.master.commitValSetHeader(valSetHeader, extraData, fullProof, new bytes(0));
+    }
+}
+
+contract TestSettlement is Settlement {
+    address public owner;
+
+    function initialize(SettlementInitParams memory settlementInitParams, address _owner) external initializer {
+        __Settlement_init(settlementInitParams);
+        owner = _owner;
+    }
+
+    // PermissionManager requirement:
+    function _checkPermission() internal view override {
+        require(msg.sender == owner, "Not authorized");
+    }
+}
+
+contract SettlementRawTest is Test {
+    TestSettlement private testSettle;
+
+    address private owner = address(0xABC);
+    address private nonOwner = address(0x999);
+
+    ISettlement.ValSetHeader private sampleHeader;
+    ISettlement.ExtraData[] private emptyExtra;
+
+    function setUp() public {
+        testSettle = new TestSettlement();
+
+        ISettlement.SettlementInitParams memory initParams;
+        {
+            IEpochManager.EpochManagerInitParams memory epochInit;
+            epochInit.epochDuration = 120;
+            epochInit.epochDurationTimestamp = uint48(vm.getBlockTimestamp());
+
+            IOzEIP712.OzEIP712InitParams memory eip712;
+            eip712.name = "Settlement";
+            eip712.version = "1";
+
+            INetworkManager.NetworkManagerInitParams memory netInit;
+            netInit.network = address(0xDEF);
+            netInit.subnetworkID = 999;
+
+            initParams.epochManagerInitParams = epochInit;
+            initParams.ozEip712InitParams = eip712;
+            initParams.networkManagerInitParams = netInit;
+            initParams.commitDuration = 60;
+            initParams.prolongDuration = 30;
+            initParams.requiredKeyTag = 7;
+            initParams.sigVerifier = address(new SigVerifierMock());
+        }
+
+        testSettle.initialize(initParams, owner);
+
+        sampleHeader = ISettlement.ValSetHeader({
+            version: testSettle.VALIDATOR_SET_VERSION(),
+            requiredKeyTag: 7,
+            epoch: 0,
+            captureTimestamp: uint48(vm.getBlockTimestamp()),
+            quorumThreshold: 1000,
+            validatorsSszMRoot: bytes32(uint256(0xAAA)),
+            previousHeaderHash: bytes32(0)
+        });
+    }
+
+    function testVersion() public {
+        assertEq(testSettle.Settlement_VERSION(), 1, "Settlement_VERSION mismatch");
+        assertEq(testSettle.VALIDATOR_SET_VERSION(), 1, "VALIDATOR_SET_VERSION mismatch");
+    }
+
+    function testInitParams() public {
+        assertEq(testSettle.getCurrentEpochDuration(), 120, "Epoch duration mismatch");
+        assertEq(testSettle.getCommitDuration(), 60, "Commit duration mismatch");
+    }
+
+    function testSetCommitDuration_Permission() public {
+        vm.prank(nonOwner);
+        vm.expectRevert("Not authorized");
+        testSettle.setCommitDuration(90);
+
+        vm.prank(owner);
+        testSettle.setCommitDuration(90);
+        assertEq(testSettle.getCommitDuration(), 60);
+
+        vm.warp(vm.getBlockTimestamp() + 120);
+
+        assertEq(testSettle.getCommitDuration(), 90);
+    }
+
+    function testSetGenesis_Permission() public {
+        vm.prank(nonOwner);
+        vm.expectRevert("Not authorized");
+        testSettle.setGenesis(sampleHeader, emptyExtra);
+
+        vm.prank(owner);
+        testSettle.setGenesis(sampleHeader, emptyExtra);
+
+        vm.prank(owner);
+        vm.expectRevert(ISettlement.Settlement_InvalidPhase.selector);
+        testSettle.setGenesis(sampleHeader, emptyExtra);
+    }
+
+    function testSetGenesis_InFailPhase() public {
+        vm.prank(owner);
+        testSettle.setGenesis(sampleHeader, emptyExtra);
+
+        ISettlement.ValSetHeader memory stored = testSettle.getValSetHeaderAt(0);
+
+        assertEq(stored.version, sampleHeader.version, "ValSet version mismatch after setGenesis");
+        assertEq(stored.epoch, 0, "ValSet epoch mismatch after setGenesis");
+        assertEq(
+            stored.captureTimestamp, uint48(vm.getBlockTimestamp()), "ValSet captureTimestamp mismatch after setGenesis"
+        );
+        assertEq(stored.quorumThreshold, 1000, "ValSet quorumThreshold mismatch after setGenesis");
+        assertEq(
+            stored.validatorsSszMRoot, bytes32(uint256(0xAAA)), "ValSet validatorsSszMRoot mismatch after setGenesis"
+        );
+        assertEq(stored.previousHeaderHash, bytes32(0), "ValSet previousHeaderHash mismatch after setGenesis");
+    }
+
+    function testCommitValSetHeader_Basic() public {
+        vm.prank(owner);
+        testSettle.setGenesis(sampleHeader, emptyExtra);
+
+        address sigVerifier = address(new SigVerifierBlsBn254Simple());
+        vm.prank(owner);
+        testSettle.setSigVerifier(sigVerifier);
+
+        vm.warp(vm.getBlockTimestamp() + 130);
+
+        ISettlement.ValSetHeader memory header = sampleHeader;
+        header.epoch = 1;
+        header.captureTimestamp = uint48(vm.getBlockTimestamp() - 10);
+
+        testSettle.commitValSetHeader(header, emptyExtra, bytes(""), bytes(""));
+
+        vm.warp(vm.getBlockTimestamp() + 120);
+
+        header.epoch = 2;
+        header.captureTimestamp = uint48(vm.getBlockTimestamp() - 10);
+
+        vm.expectRevert();
+        testSettle.commitValSetHeader(header, emptyExtra, bytes(""), bytes(""));
+    }
+
+    function testSetEpochDuration() public {
+        vm.prank(nonOwner);
+        vm.expectRevert("Not authorized");
+        testSettle.setEpochDuration(120);
+
+        vm.prank(owner);
+        vm.expectRevert(ISettlement.Settlement_EpochDurationTooShort.selector);
+        testSettle.setEpochDuration(60);
+
+        vm.prank(owner);
+        testSettle.setEpochDuration(70);
+
+        vm.warp(vm.getBlockTimestamp() + 120);
+
+        assertEq(testSettle.getCurrentEpochDuration(), 70);
     }
 }

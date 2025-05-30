@@ -48,7 +48,7 @@ contract StakeToVotingPowerManagerTest is Test {
 
     function testStakeToVotingPowerAt() public {
         uint256 stake = 1000;
-        uint48 timestamp = uint48(block.timestamp);
+        uint48 timestamp = uint48(vm.getBlockTimestamp());
         // We'll pass in some dummy values for the other arguments.
         uint256 power = manager.stakeToVotingPowerAt(address(0x1234), stake, bytes("extra"), timestamp);
         assertEq(power, 100, "Expect stake/10");

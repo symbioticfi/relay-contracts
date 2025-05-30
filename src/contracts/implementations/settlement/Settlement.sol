@@ -278,7 +278,7 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
      */
     function setEpochDuration(
         uint48 epochDuration
-    ) public virtual override {
+    ) public virtual override checkPermission {
         return SettlementLogic.setEpochDuration(epochDuration);
     }
 

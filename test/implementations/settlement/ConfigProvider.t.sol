@@ -284,15 +284,15 @@ contract ConfigProviderTest is Test {
         assertEq(gotTags[0], 1);
         assertEq(gotTags[1], 2);
 
-        assertEq(testMCP.getMaxVotingPowerAt(uint48(block.timestamp), ""), 5000);
-        assertEq(testMCP.getMinInclusionVotingPowerAt(uint48(block.timestamp), ""), 123);
-        assertEq(testMCP.getMaxValidatorsCountAt(uint48(block.timestamp), ""), 777);
-        uint8[] memory gotTagsAt = testMCP.getRequiredKeyTagsAt(uint48(block.timestamp), "");
+        assertEq(testMCP.getMaxVotingPowerAt(uint48(vm.getBlockTimestamp()), ""), 5000);
+        assertEq(testMCP.getMinInclusionVotingPowerAt(uint48(vm.getBlockTimestamp()), ""), 123);
+        assertEq(testMCP.getMaxValidatorsCountAt(uint48(vm.getBlockTimestamp()), ""), 777);
+        uint8[] memory gotTagsAt = testMCP.getRequiredKeyTagsAt(uint48(vm.getBlockTimestamp()), "");
         assertEq(gotTagsAt.length, 2);
         assertEq(gotTagsAt[0], 1);
         assertEq(gotTagsAt[1], 2);
 
-        vm.warp(block.timestamp + 100);
+        vm.warp(vm.getBlockTimestamp() + 100);
 
         vm.startPrank(owner);
         testMCP.setMaxVotingPower(999);
@@ -303,22 +303,22 @@ contract ConfigProviderTest is Test {
         testMCP.setRequiredKeyTags(newTags2);
         vm.stopPrank();
 
-        assertEq(testMCP.getMaxVotingPowerAt(uint48(block.timestamp) - 1, ""), 5000);
-        assertEq(testMCP.getMinInclusionVotingPowerAt(uint48(block.timestamp) - 1, ""), 123);
-        assertEq(testMCP.getMaxValidatorsCountAt(uint48(block.timestamp) - 1, ""), 777);
-        uint8[] memory gotTagsAt2 = testMCP.getRequiredKeyTagsAt(uint48(block.timestamp) - 1, "");
+        assertEq(testMCP.getMaxVotingPowerAt(uint48(vm.getBlockTimestamp()) - 1, ""), 5000);
+        assertEq(testMCP.getMinInclusionVotingPowerAt(uint48(vm.getBlockTimestamp()) - 1, ""), 123);
+        assertEq(testMCP.getMaxValidatorsCountAt(uint48(vm.getBlockTimestamp()) - 1, ""), 777);
+        uint8[] memory gotTagsAt2 = testMCP.getRequiredKeyTagsAt(uint48(vm.getBlockTimestamp()) - 1, "");
         assertEq(gotTagsAt2.length, 2);
         assertEq(gotTagsAt2[0], 1);
         assertEq(gotTagsAt2[1], 2);
 
-        assertEq(testMCP.getMaxVotingPowerAt(uint48(block.timestamp + 100), ""), 999);
-        assertEq(testMCP.getMinInclusionVotingPowerAt(uint48(block.timestamp + 100), ""), 124);
-        assertEq(testMCP.getMaxValidatorsCountAt(uint48(block.timestamp + 100), ""), 778);
-        uint8[] memory gotTagsAt3 = testMCP.getRequiredKeyTagsAt(uint48(block.timestamp + 100), "");
+        assertEq(testMCP.getMaxVotingPowerAt(uint48(vm.getBlockTimestamp() + 100), ""), 999);
+        assertEq(testMCP.getMinInclusionVotingPowerAt(uint48(vm.getBlockTimestamp() + 100), ""), 124);
+        assertEq(testMCP.getMaxValidatorsCountAt(uint48(vm.getBlockTimestamp() + 100), ""), 778);
+        uint8[] memory gotTagsAt3 = testMCP.getRequiredKeyTagsAt(uint48(vm.getBlockTimestamp() + 100), "");
         assertEq(gotTagsAt3.length, 1);
         assertEq(gotTagsAt3[0], 3);
 
-        IConfigProvider.Config memory cfg = testMCP.getConfigAt(uint48(block.timestamp), "");
+        IConfigProvider.Config memory cfg = testMCP.getConfigAt(uint48(vm.getBlockTimestamp()), "");
         assertEq(cfg.maxVotingPower, 999);
         assertEq(cfg.minInclusionVotingPower, 124);
         assertEq(cfg.maxValidatorsCount, 778);
@@ -327,15 +327,15 @@ contract ConfigProviderTest is Test {
     }
 
     function test_TimeBasedConfig() public {
-        vm.warp(block.timestamp + 100);
+        vm.warp(vm.getBlockTimestamp() + 100);
 
         vm.prank(owner);
         testMCP.setMaxVotingPower(999);
 
-        uint256 oldValue = testMCP.getMaxVotingPowerAt(uint48(block.timestamp - 1), "");
+        uint256 oldValue = testMCP.getMaxVotingPowerAt(uint48(vm.getBlockTimestamp() - 1), "");
         assertEq(oldValue, 1e36, "Old maxVotingPower mismatch");
 
-        uint256 newValue = testMCP.getMaxVotingPowerAt(uint48(block.timestamp), "");
+        uint256 newValue = testMCP.getMaxVotingPowerAt(uint48(vm.getBlockTimestamp()), "");
         assertEq(newValue, 999, "New maxVotingPower mismatch");
     }
 

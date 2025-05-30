@@ -126,7 +126,7 @@ contract SelfRegisterVotingPowerProviderTest is InitSetup {
         uint256 vp = aggregator.stakeToVotingPower(address(0xAAA), stake, bytes(""));
         assertEq(vp, stake, "EqualStakeToVP must return stake exactly");
 
-        uint48 someTimestamp = uint48(block.timestamp + 100);
+        uint48 someTimestamp = uint48(vm.getBlockTimestamp() + 100);
         uint256 vp2 = aggregator.stakeToVotingPowerAt(address(0xAAA), stake, bytes("whatever"), someTimestamp);
         assertEq(vp2, stake, "Should be 1:1 stake => vp");
     }
