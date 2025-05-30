@@ -13,6 +13,8 @@ interface INetworkManager {
         uint96 subnetworkID;
     }
 
+    event InitSubnetwork(address network, uint96 subnetworkID);
+
     function NetworkManager_VERSION() external view returns (uint64);
 
     function NETWORK() external view returns (address);

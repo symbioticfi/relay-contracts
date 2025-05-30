@@ -60,6 +60,8 @@ library OperatorManagerLogic {
         if (!_getOperatorManagerStorage()._operators.add(Time.timestamp(), operator)) {
             revert IOperatorManager.OperatorManager_OperatorAlreadyRegistered();
         }
+
+        emit IOperatorManager.RegisterOperator(operator);
     }
 
     function unregisterOperator(
@@ -68,5 +70,7 @@ library OperatorManagerLogic {
         if (!_getOperatorManagerStorage()._operators.remove(Time.timestamp(), operator)) {
             revert IOperatorManager.OperatorManager_OperatorNotRegistered();
         }
+
+        emit IOperatorManager.UnregisterOperator(operator);
     }
 }

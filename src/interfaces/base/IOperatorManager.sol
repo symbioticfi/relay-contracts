@@ -14,6 +14,10 @@ interface IOperatorManager {
         PersistentSet.AddressSet _operators;
     }
 
+    event RegisterOperator(address indexed operator);
+    
+    event UnregisterOperator(address indexed operator);
+
     function OperatorManager_VERSION() external view returns (uint64);
 
     function OPERATOR_REGISTRY() external view returns (address);

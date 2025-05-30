@@ -223,6 +223,8 @@ library KeyManagerLogic {
         $._operators.add(Time.timestamp(), operator);
         $._operatorKeyTags[operator].push(Time.timestamp(), uint128($._operatorKeyTags[operator].latest()).add(keyTag));
         setKey(operator, keyTag, key);
+
+        emit IKeyManager.SetKey(operator, keyTag, key, extraData);
     }
 
     function setKey(address operator, uint8 keyTag, bytes memory key) public {

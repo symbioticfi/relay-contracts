@@ -20,6 +20,10 @@ interface IEpochManager {
         uint48 epochDurationTimestamp;
     }
 
+    event InitEpochDuration(uint48 epochDuration, uint48 epochDurationTimestamp);
+
+    event SetEpochDuration(uint48 epochDuration);
+
     function EpochManager_VERSION() external view returns (uint64);
 
     function getCaptureTimestamp() external view returns (uint48);

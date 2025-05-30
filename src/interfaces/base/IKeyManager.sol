@@ -41,6 +41,8 @@ interface IKeyManager is IBaseKeyManager {
         bytes[] operatorKeysHints;
     }
 
+    event SetKey(address indexed operator, uint8 indexed tag, bytes indexed key, bytes extraData);
+
     function KeyManager_VERSION() external view returns (uint64);
 
     function KEY_TYPE_BLS_BN254() external view returns (uint8);

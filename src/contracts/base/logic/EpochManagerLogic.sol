@@ -27,6 +27,7 @@ library EpochManagerLogic {
         IEpochManager.EpochManagerInitParams memory initParams
     ) public {
         setEpochDurationInternal(initParams.epochDuration, initParams.epochDurationTimestamp, 0);
+        emit IEpochManager.InitEpochDuration(initParams.epochDuration, initParams.epochDurationTimestamp);
     }
 
     function getCaptureTimestamp() public view returns (uint48) {
@@ -79,12 +80,6 @@ library EpochManagerLogic {
         return epochDurationTimestamp + (epoch - epochDurationIndex) * epochDuration;
     }
 
-    function setEpochDuration(
-        uint48 epochDuration
-    ) public {
-        setEpochDuration(epochDuration, getNextEpochStart(), getNextEpoch());
-    }
-
     function getEpochDurationDataByTimestamp(
         uint48 timestamp,
         bytes memory hint
@@ -107,6 +102,13 @@ library EpochManagerLogic {
         return deserializeEpochDurationData(
             getCurrentValue(_getEpochManagerStorage()._epochDurationDataByTimestamp, Time.timestamp())
         );
+    }
+
+    function setEpochDuration(
+        uint48 epochDuration
+    ) public {
+        setEpochDuration(epochDuration, getNextEpochStart(), getNextEpoch());
+        emit IEpochManager.SetEpochDuration(epochDuration);
     }
 
     function setEpochDuration(uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex) public {

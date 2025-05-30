@@ -25,6 +25,7 @@ library NetworkManagerLogic {
         INetworkManager.NetworkManagerStorage storage $ = _getNetworkManagerStorage();
         $._network = initParams.network;
         $._subnetworkID = initParams.subnetworkID;
+        emit INetworkManager.InitSubnetwork(initParams.network, initParams.subnetworkID);
     }
 
     function NETWORK() internal view returns (address) {
