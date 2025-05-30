@@ -582,33 +582,35 @@ library VaultManagerLogic {
             revert IVaultManager.VaultManager_NoSlasher();
         }
 
+        return slash(timestamp, slasher, operator, amount, slashVaultHints.slashHints);
+    }
+
+    function slash(
+        uint48 timestamp,
+        address slasher,
+        address operator,
+        uint256 amount,
+        bytes memory hints
+    ) public returns (bool success, bytes memory response) {
         uint64 slasherType = IEntity(slasher).TYPE();
         if (slasherType == uint64(IVaultManager.SlasherType.INSTANT)) {
-            try ISlasher(slasher).slash(
-                NetworkManagerLogic.SUBNETWORK(), operator, amount, timestamp, slashVaultHints.slashHints
-            ) returns (uint256 slashedAmount) {
-                emit IVaultManager.InstantSlash(vault, operator, slashedAmount);
-                success = true;
-                response = abi.encode(slashedAmount);
-            } catch {
-                success = false;
-            }
+            (success, response) = slasher.call(
+                abi.encodeCall(ISlasher.slash, (NetworkManagerLogic.SUBNETWORK(), operator, amount, timestamp, hints))
+            );
+            emit IVaultManager.InstantSlash(slasher, operator, success, success ? abi.decode(response, (uint256)) : 0);
         } else if (slasherType == uint64(IVaultManager.SlasherType.VETO)) {
-            try IVetoSlasher(slasher).requestSlash(
-                NetworkManagerLogic.SUBNETWORK(), operator, amount, timestamp, slashVaultHints.slashHints
-            ) returns (uint256 slashIndex) {
-                emit IVaultManager.VetoSlash(vault, operator, slashIndex);
-                success = true;
-                response = abi.encode(slashIndex);
-            } catch {
-                success = false;
-            }
+            (success, response) = slasher.call(
+                abi.encodeCall(
+                    IVetoSlasher.requestSlash, (NetworkManagerLogic.SUBNETWORK(), operator, amount, timestamp, hints)
+                )
+            );
+            emit IVaultManager.VetoSlash(slasher, operator, success, success ? abi.decode(response, (uint256)) : 0);
         } else {
             revert IVaultManager.VaultManager_UnknownSlasherType();
         }
     }
 
-    function executeSlash(
+    function executeSlashVault(
         address vault,
         uint256 slashIndex,
         bytes memory hints
@@ -618,14 +620,20 @@ library VaultManagerLogic {
             revert IVaultManager.VaultManager_NoSlasher();
         }
 
+        return executeSlash(slasher, slashIndex, hints);
+    }
+
+    function executeSlash(
+        address slasher,
+        uint256 slashIndex,
+        bytes memory hints
+    ) public returns (bool success, uint256 slashedAmount) {
         uint64 slasherType = IEntity(slasher).TYPE();
         if (slasherType == uint64(IVaultManager.SlasherType.VETO)) {
-            try IVetoSlasher(slasher).executeSlash(slashIndex, hints) returns (uint256 slashedAmount_) {
-                success = true;
-                slashedAmount = slashedAmount_;
-            } catch {
-                success = false;
-            }
+            bytes memory response;
+            (success, response) = slasher.call(abi.encodeCall(IVetoSlasher.executeSlash, (slashIndex, hints)));
+            slashedAmount = success ? abi.decode(response, (uint256)) : 0;
+            emit IVaultManager.ExecuteSlash(slasher, slashIndex, success, slashedAmount);
         } else {
             revert IVaultManager.VaultManager_NonVetoSlasher();
         }

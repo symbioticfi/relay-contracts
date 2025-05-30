@@ -363,12 +363,30 @@ abstract contract VaultManager is OperatorManager, StakeToVotingPowerManager, IV
         return VaultManagerLogic.slashVault(timestamp, vault, operator, amount, hints);
     }
 
-    function _executeSlash(
+    function _slash(
+        uint48 timestamp,
+        address slasher,
+        address operator,
+        uint256 amount,
+        bytes memory hints
+    ) internal virtual returns (bool success, bytes memory response) {
+        return VaultManagerLogic.slash(timestamp, slasher, operator, amount, hints);
+    }
+
+    function _executeSlashVault(
         address vault,
         uint256 slashIndex,
         bytes memory hints
     ) internal virtual returns (bool success, uint256 slashedAmount) {
-        return VaultManagerLogic.executeSlash(vault, slashIndex, hints);
+        return VaultManagerLogic.executeSlashVault(vault, slashIndex, hints);
+    }
+
+    function _executeSlash(
+        address slasher,
+        uint256 slashIndex,
+        bytes memory hints
+    ) internal virtual returns (bool success, uint256 slashedAmount) {
+        return VaultManagerLogic.executeSlash(slasher, slashIndex, hints);
     }
 
     function _distributeStakerRewards(

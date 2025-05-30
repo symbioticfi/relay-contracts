@@ -87,9 +87,13 @@ interface IVaultManager {
         bytes slashHints;
     }
 
-    event InstantSlash(address vault, address operator, uint256 slashedAmount);
+    event InstantSlash(address indexed slasher, address indexed operator, bool indexed success, uint256 slashedAmount);
 
-    event VetoSlash(address vault, address operator, uint256 slashIndex);
+    event VetoSlash(address indexed slasher, address indexed operator, bool indexed success, uint256 slashIndex);
+
+    event ExecuteSlash(
+        address indexed slasher, uint256 indexed slashIndex, bool indexed success, uint256 slashedAmount
+    );
 
     function VaultManager_VERSION() external view returns (uint64);
 
