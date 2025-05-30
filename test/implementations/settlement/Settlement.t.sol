@@ -149,12 +149,13 @@ contract SettlementRawTest is Test {
     address private nonOwner = address(0x999);
 
     ISettlement.ValSetHeader private sampleHeader;
-    ISettlement.ExtraData[] private emptyExtra;
+    ISettlement.ExtraData[] private someExtra;
+
+    ISettlement.SettlementInitParams private initParams;
 
     function setUp() public {
         testSettle = new TestSettlement();
 
-        ISettlement.SettlementInitParams memory initParams;
         {
             IEpochManager.EpochManagerInitParams memory epochInit;
             epochInit.epochDuration = 120;
@@ -177,6 +178,11 @@ contract SettlementRawTest is Test {
             initParams.sigVerifier = address(new SigVerifierMock());
         }
 
+        initParams.commitDuration = 120;
+        vm.expectRevert(ISettlement.Settlement_EpochDurationTooShort.selector);
+        testSettle.initialize(initParams, owner);
+
+        initParams.commitDuration = 60;
         testSettle.initialize(initParams, owner);
 
         sampleHeader = ISettlement.ValSetHeader({
@@ -188,6 +194,7 @@ contract SettlementRawTest is Test {
             validatorsSszMRoot: bytes32(uint256(0xAAA)),
             previousHeaderHash: bytes32(0)
         });
+        someExtra.push(ISettlement.ExtraData({key: bytes32(uint256(0xCCC)), value: bytes32(uint256(0xBBB))}));
     }
 
     function testVersion() public {
@@ -198,6 +205,20 @@ contract SettlementRawTest is Test {
     function testInitParams() public {
         assertEq(testSettle.getCurrentEpochDuration(), 120, "Epoch duration mismatch");
         assertEq(testSettle.getCommitDuration(), 60, "Commit duration mismatch");
+        assertEq(
+            testSettle.getCommitDurationAt(uint48(vm.getBlockTimestamp()), new bytes(0)), 60, "Commit duration mismatch"
+        );
+        assertEq(testSettle.getProlongDuration(), 30, "Prolong duration mismatch");
+        assertEq(testSettle.getRequiredKeyTag(), 7, "Required key tag mismatch");
+        assertEq(
+            testSettle.getRequiredKeyTagAt(uint48(vm.getBlockTimestamp()), new bytes(0)), 7, "Required key tag mismatch"
+        );
+        assertEq(testSettle.getSigVerifier(), initParams.sigVerifier, "Sig verifier mismatch");
+        assertEq(
+            testSettle.getSigVerifierAt(uint48(vm.getBlockTimestamp()), new bytes(0)),
+            initParams.sigVerifier,
+            "Sig verifier mismatch"
+        );
     }
 
     function testSetCommitDuration_Permission() public {
@@ -217,22 +238,127 @@ contract SettlementRawTest is Test {
     function testSetGenesis_Permission() public {
         vm.prank(nonOwner);
         vm.expectRevert("Not authorized");
-        testSettle.setGenesis(sampleHeader, emptyExtra);
+        testSettle.setGenesis(sampleHeader, someExtra);
 
         vm.prank(owner);
-        testSettle.setGenesis(sampleHeader, emptyExtra);
+        testSettle.setGenesis(sampleHeader, someExtra);
 
         vm.prank(owner);
         vm.expectRevert(ISettlement.Settlement_InvalidPhase.selector);
-        testSettle.setGenesis(sampleHeader, emptyExtra);
+        testSettle.setGenesis(sampleHeader, someExtra);
+
+        vm.assertEq(
+            testSettle.getPreviousHeaderHashFromValSetHeader(),
+            sampleHeader.previousHeaderHash,
+            "ValSet previousHeaderHash mismatch after setGenesis"
+        );
+        assertEq(
+            testSettle.getPreviousHeaderHashFromValSetHeaderAt(sampleHeader.epoch),
+            sampleHeader.previousHeaderHash,
+            "ValSet previousHeaderHash mismatch after setGenesis"
+        );
+        assertEq(
+            testSettle.getValidatorsSszMRootFromValSetHeader(),
+            sampleHeader.validatorsSszMRoot,
+            "ValSet validatorsSszMRoot mismatch after setGenesis"
+        );
+        assertEq(
+            testSettle.getValidatorsSszMRootFromValSetHeaderAt(sampleHeader.epoch),
+            sampleHeader.validatorsSszMRoot,
+            "ValSet validatorsSszMRoot mismatch after setGenesis"
+        );
+        assertEq(
+            testSettle.getQuorumThresholdFromValSetHeader(),
+            sampleHeader.quorumThreshold,
+            "ValSet quorumThreshold mismatch after setGenesis"
+        );
+        assertEq(
+            testSettle.getQuorumThresholdFromValSetHeaderAt(sampleHeader.epoch),
+            sampleHeader.quorumThreshold,
+            "ValSet quorumThreshold mismatch after setGenesis"
+        );
+        assertEq(
+            testSettle.getRequiredKeyTagFromValSetHeader(),
+            sampleHeader.requiredKeyTag,
+            "ValSet requiredKeyTag mismatch after setGenesis"
+        );
+        assertEq(
+            testSettle.getRequiredKeyTagFromValSetHeaderAt(sampleHeader.epoch),
+            sampleHeader.requiredKeyTag,
+            "ValSet requiredKeyTag mismatch after setGenesis"
+        );
+        assertEq(
+            testSettle.getCaptureTimestampFromValSetHeader(),
+            sampleHeader.captureTimestamp,
+            "ValSet captureTimestamp mismatch after setGenesis"
+        );
+        assertEq(
+            testSettle.getCaptureTimestampFromValSetHeaderAt(sampleHeader.epoch),
+            sampleHeader.captureTimestamp,
+            "ValSet captureTimestamp mismatch after setGenesis"
+        );
+        assertEq(
+            testSettle.getVersionFromValSetHeader(), sampleHeader.version, "ValSet version mismatch after setGenesis"
+        );
+        assertEq(
+            testSettle.getVersionFromValSetHeaderAt(sampleHeader.epoch),
+            sampleHeader.version,
+            "ValSet version mismatch after setGenesis"
+        );
+        assertEq(testSettle.getExtraData(someExtra[0].key), someExtra[0].value, "Extra data mismatch after setGenesis");
+        assertEq(
+            testSettle.getExtraDataAt(sampleHeader.epoch, someExtra[0].key),
+            someExtra[0].value,
+            "Extra data mismatch after setGenesis"
+        );
+
+        assertEq(testSettle.getCurrentValSetEpoch(), sampleHeader.epoch, "ValSet epoch mismatch after setGenesis");
+        assertEq(
+            testSettle.getCurrentValSetTimestamp(),
+            sampleHeader.captureTimestamp,
+            "ValSet timestamp mismatch after setGenesis"
+        );
+        assertEq(uint256(testSettle.getCurrentPhase()), uint256(ISettlement.ValSetPhase.IDLE));
+
+        vm.warp(vm.getBlockTimestamp() + 120);
+
+        assertEq(testSettle.getCurrentValSetEpoch(), sampleHeader.epoch, "ValSet epoch mismatch after setGenesis");
+        assertEq(
+            testSettle.getCurrentValSetTimestamp(),
+            sampleHeader.captureTimestamp,
+            "ValSet timestamp mismatch after setGenesis"
+        );
+        assertEq(uint256(testSettle.getCurrentPhase()), uint256(ISettlement.ValSetPhase.COMMIT));
+
+        vm.warp(vm.getBlockTimestamp() + 60);
+
+        assertEq(testSettle.getCurrentValSetEpoch(), sampleHeader.epoch, "ValSet epoch mismatch after setGenesis");
+        assertEq(
+            testSettle.getCurrentValSetTimestamp(),
+            sampleHeader.captureTimestamp,
+            "ValSet timestamp mismatch after setGenesis"
+        );
+        assertEq(uint256(testSettle.getCurrentPhase()), uint256(ISettlement.ValSetPhase.PROLONG));
     }
 
     function testSetGenesis_InFailPhase() public {
         vm.prank(owner);
-        testSettle.setGenesis(sampleHeader, emptyExtra);
+        testSettle.setGenesis(sampleHeader, someExtra);
 
         ISettlement.ValSetHeader memory stored = testSettle.getValSetHeaderAt(0);
 
+        assertEq(stored.version, sampleHeader.version, "ValSet version mismatch after setGenesis");
+        assertEq(stored.epoch, 0, "ValSet epoch mismatch after setGenesis");
+        assertEq(
+            stored.captureTimestamp, uint48(vm.getBlockTimestamp()), "ValSet captureTimestamp mismatch after setGenesis"
+        );
+        assertEq(stored.quorumThreshold, 1000, "ValSet quorumThreshold mismatch after setGenesis");
+        assertEq(
+            stored.validatorsSszMRoot, bytes32(uint256(0xAAA)), "ValSet validatorsSszMRoot mismatch after setGenesis"
+        );
+        assertEq(stored.previousHeaderHash, bytes32(0), "ValSet previousHeaderHash mismatch after setGenesis");
+
+        stored = testSettle.getValSetHeader();
         assertEq(stored.version, sampleHeader.version, "ValSet version mismatch after setGenesis");
         assertEq(stored.epoch, 0, "ValSet epoch mismatch after setGenesis");
         assertEq(
@@ -247,7 +373,7 @@ contract SettlementRawTest is Test {
 
     function testCommitValSetHeader_Basic() public {
         vm.prank(owner);
-        testSettle.setGenesis(sampleHeader, emptyExtra);
+        testSettle.setGenesis(sampleHeader, someExtra);
 
         address sigVerifier = address(new SigVerifierBlsBn254Simple());
         vm.prank(owner);
@@ -259,15 +385,87 @@ contract SettlementRawTest is Test {
         header.epoch = 1;
         header.captureTimestamp = uint48(vm.getBlockTimestamp() - 10);
 
-        testSettle.commitValSetHeader(header, emptyExtra, bytes(""), bytes(""));
+        testSettle.commitValSetHeader(header, someExtra, bytes(""), bytes(""));
 
-        vm.warp(vm.getBlockTimestamp() + 120);
+        vm.expectRevert(ISettlement.Settlement_ValSetHeaderAlreadySubmitted.selector);
+        testSettle.commitValSetHeader(header, someExtra, bytes(""), bytes(""));
+
+        assertTrue(testSettle.isValSetHeaderCommittedAt(header.epoch - 1));
+        assertTrue(testSettle.isValSetHeaderCommittedAt(header.epoch));
+        assertFalse(testSettle.isValSetHeaderCommittedAt(header.epoch + 1));
+        assertTrue(testSettle.isValSetHeaderCommitted());
+
+        assertEq(
+            testSettle.getCurrentValSetEpoch(), header.epoch - 1, "ValSet epoch mismatch after commitValSetHeader 1"
+        );
+        assertEq(
+            testSettle.getCurrentValSetTimestamp(),
+            header.captureTimestamp - 120,
+            "ValSet timestamp mismatch after commitValSetHeader"
+        );
+        assertEq(uint256(testSettle.getCurrentPhase()), uint256(ISettlement.ValSetPhase.COMMIT));
+
+        vm.warp(vm.getBlockTimestamp() + 50);
+
+        assertEq(testSettle.getCurrentValSetEpoch(), header.epoch, "ValSet epoch mismatch after commitValSetHeade 2");
+        assertEq(
+            testSettle.getCurrentValSetTimestamp(),
+            header.captureTimestamp,
+            "ValSet timestamp mismatch after commitValSetHeader"
+        );
+        assertEq(uint256(testSettle.getCurrentPhase()), uint256(ISettlement.ValSetPhase.IDLE));
+
+        vm.warp(vm.getBlockTimestamp() + 60);
 
         header.epoch = 2;
-        header.captureTimestamp = uint48(vm.getBlockTimestamp() - 10);
+        header.captureTimestamp = uint48(vm.getBlockTimestamp());
 
         vm.expectRevert();
-        testSettle.commitValSetHeader(header, emptyExtra, bytes(""), bytes(""));
+        testSettle.commitValSetHeader(header, someExtra, bytes(""), bytes(""));
+
+        assertEq(
+            testSettle.getCurrentValSetEpoch(), header.epoch - 1, "ValSet epoch mismatch after commitValSetHeader 3"
+        );
+        assertEq(
+            testSettle.getCurrentValSetTimestamp(),
+            header.captureTimestamp - 120,
+            "ValSet timestamp mismatch after commitValSetHeader"
+        );
+        assertEq(uint256(testSettle.getCurrentPhase()), uint256(ISettlement.ValSetPhase.COMMIT));
+
+        vm.warp(vm.getBlockTimestamp() + 60);
+
+        assertEq(
+            testSettle.getCurrentValSetEpoch(), header.epoch - 1, "ValSet epoch mismatch after commitValSetHeader 4"
+        );
+        assertEq(
+            testSettle.getCurrentValSetTimestamp(),
+            header.captureTimestamp - 120,
+            "ValSet timestamp mismatch after commitValSetHeader"
+        );
+        assertEq(uint256(testSettle.getCurrentPhase()), uint256(ISettlement.ValSetPhase.PROLONG));
+
+        vm.warp(vm.getBlockTimestamp() + 30);
+
+        assertEq(testSettle.getCurrentValSetEpoch(), header.epoch, "ValSet epoch mismatch after commitValSetHeader 5");
+        assertEq(
+            testSettle.getCurrentValSetTimestamp(),
+            header.captureTimestamp,
+            "ValSet timestamp mismatch after commitValSetHeader"
+        );
+        assertEq(uint256(testSettle.getCurrentPhase()), uint256(ISettlement.ValSetPhase.FAIL));
+
+        vm.warp(vm.getBlockTimestamp() + 30);
+
+        assertEq(
+            testSettle.getCurrentValSetEpoch(), header.epoch + 1, "ValSet epoch mismatch after commitValSetHeader 6"
+        );
+        assertEq(
+            testSettle.getCurrentValSetTimestamp(),
+            header.captureTimestamp + 120,
+            "ValSet timestamp mismatch after commitValSetHeader"
+        );
+        assertEq(uint256(testSettle.getCurrentPhase()), uint256(ISettlement.ValSetPhase.FAIL));
     }
 
     function testSetEpochDuration() public {

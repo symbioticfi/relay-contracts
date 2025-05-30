@@ -31,6 +31,7 @@ interface ISettlement {
     struct SettlementStorage {
         uint48 _prolongDuration;
         uint48 _lastCommittedHeaderEpoch;
+        uint48 _lastCommittedHeaderEpochDuration;
         uint48 _lastCommittedHeaderCaptureTimestamp;
         Checkpoints.Trace208 _requiredKeyTag;
         Checkpoints.Trace208 _commitDuration;
