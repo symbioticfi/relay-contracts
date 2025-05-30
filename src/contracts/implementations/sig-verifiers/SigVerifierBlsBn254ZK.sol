@@ -45,15 +45,15 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
     uint256[] public maxValidators;
 
     constructor(address[] memory verifiers_, uint256[] memory maxValidators_) {
-        uint256 length = verifiers.length;
-        if (length != maxValidators.length) {
+        uint256 length = verifiers_.length;
+        if (length != maxValidators_.length) {
             revert SigVerifierBlsBn254ZK_InvalidLength();
         }
         for (uint256 i; i < length; ++i) {
-            if (maxValidators[i] == 0) {
+            if (maxValidators_[i] == 0) {
                 revert SigVerifierBlsBn254ZK_InvalidMaxValidators();
             }
-            if (i > 0 && maxValidators[i - 1] >= maxValidators[i]) {
+            if (i > 0 && maxValidators_[i - 1] >= maxValidators_[i]) {
                 revert SigVerifierBlsBn254ZK_InvalidMaxValidators();
             }
         }
