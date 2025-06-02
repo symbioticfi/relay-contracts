@@ -77,40 +77,43 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
     function test_verifyQuorumSig() public {
         bytes32 messageHash = 0x204e0c470c62e2f8426b236c004b581084dd3aaa935ed3afe24dc37e0d040823;
 
-        BN254.G1Point memory aggKeyG1;
         BN254.G2Point memory aggKeyG2;
         BN254.G1Point memory aggSigG1;
 
         for (uint256 i; i < vars.operators.length; ++i) {
-            BN254.G1Point memory keyG1 = BN254.generatorG1().scalar_mul(vars.operators[i].privateKey);
-
             BN254.G2Point memory keyG2 = getG2Key(vars.operators[i].privateKey);
             BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash);
             BN254.G1Point memory sigG1 = messageG1.scalar_mul(vars.operators[i].privateKey);
-            aggSigG1 = aggSigG1.plus(sigG1);
-            aggKeyG1 = aggKeyG1.plus(keyG1);
 
-            if (aggKeyG2.X[0] == 0 && aggKeyG2.X[1] == 0 && aggKeyG2.Y[0] == 0 && aggKeyG2.Y[1] == 0) {
-                aggKeyG2 = keyG2;
-            } else {
-                (uint256 x1, uint256 x2, uint256 y1, uint256 y2) = BN254G2.ECTwistAdd(
-                    aggKeyG2.X[1],
-                    aggKeyG2.X[0],
-                    aggKeyG2.Y[1],
-                    aggKeyG2.Y[0],
-                    keyG2.X[1],
-                    keyG2.X[0],
-                    keyG2.Y[1],
-                    keyG2.Y[0]
-                );
-                aggKeyG2 = BN254.G2Point([x2, x1], [y2, y1]);
+            if (i % 4 != 0) {
+                aggSigG1 = aggSigG1.plus(sigG1);
+
+                if (aggKeyG2.X[0] == 0 && aggKeyG2.X[1] == 0 && aggKeyG2.Y[0] == 0 && aggKeyG2.Y[1] == 0) {
+                    aggKeyG2 = keyG2;
+                } else {
+                    (uint256 x1, uint256 x2, uint256 y1, uint256 y2) = BN254G2.ECTwistAdd(
+                        aggKeyG2.X[1],
+                        aggKeyG2.X[0],
+                        aggKeyG2.Y[1],
+                        aggKeyG2.Y[0],
+                        keyG2.X[1],
+                        keyG2.X[0],
+                        keyG2.Y[1],
+                        keyG2.Y[0]
+                    );
+                    aggKeyG2 = BN254.G2Point([x2, x1], [y2, y1]);
+                }
             }
         }
 
         ISigVerifierBlsBn254Simple.ValidatorData[] memory validatorsData = getValidatorsData();
         bool[] memory isNonSigners = new bool[](validatorsData.length);
         for (uint256 i; i < validatorsData.length; ++i) {
-            isNonSigners[i] = false;
+            if (i % 4 != 0) {
+                isNonSigners[i] = false;
+            } else {
+                isNonSigners[i] = true;
+            }
         }
         bytes memory fullProof = abi.encodePacked(
             abi.encode(aggSigG1), abi.encode(aggKeyG2), abi.encode(validatorsData), abi.encode(isNonSigners)
@@ -128,8 +131,9 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
             new bytes(0)
         );
         vm.startPrank(vars.deployer.addr);
-        (bool success,) = address(masterSetupParams.master).call(data);
+        (bool success, bytes memory result) = address(masterSetupParams.master).call(data);
         assertTrue(success);
+        assertTrue(abi.decode(result, (bool)));
         // assertTrue(
         //     masterSetupParams.master.verifyQuorumSig(
         //         masterSetupParams.master.getCurrentValSetEpoch(),
