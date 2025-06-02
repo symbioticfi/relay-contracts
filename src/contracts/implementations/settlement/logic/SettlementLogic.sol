@@ -317,9 +317,11 @@ library SettlementLogic {
         if (currentPhase != ISettlement.ValSetPhase.COMMIT && currentPhase != ISettlement.ValSetPhase.PROLONG) {
             revert ISettlement.Settlement_InvalidPhase();
         }
-        uint48 valSetEpoch = currentPhase == ISettlement.ValSetPhase.COMMIT
-            ? EpochManagerLogic.getCurrentEpoch() - 1
-            : getLastCommittedHeaderEpoch();
+        uint48 currentEpoch = EpochManagerLogic.getCurrentEpoch();
+        if (isValSetHeaderCommittedAt(currentEpoch)) {
+            revert ISettlement.Settlement_ValSetHeaderAlreadySubmitted();
+        }
+        uint48 valSetEpoch = getLastCommittedHeaderEpoch();
         if (
             !verifyQuorumSig(
                 valSetEpoch,
@@ -329,7 +331,7 @@ library SettlementLogic {
                             abi.encode(
                                 VALSET_HEADER_COMMIT_TYPEHASH,
                                 NetworkManagerLogic.SUBNETWORK(),
-                                EpochManagerLogic.getCurrentEpoch(),
+                                currentEpoch,
                                 keccak256(abi.encode(header)),
                                 keccak256(abi.encode(extraData))
                             )
@@ -358,7 +360,8 @@ library SettlementLogic {
             revert ISettlement.Settlement_InvalidVersion();
         }
 
-        if (header.epoch != EpochManagerLogic.getCurrentEpoch()) {
+        uint48 currentEpoch = EpochManagerLogic.getCurrentEpoch();
+        if (header.epoch != currentEpoch) {
             revert ISettlement.Settlement_InvalidEpoch();
         }
 
@@ -367,14 +370,8 @@ library SettlementLogic {
         }
 
         ISettlement.SettlementStorage storage $ = _getSettlementStorage();
-        uint48 currentEpoch = EpochManagerLogic.getCurrentEpoch();
-
-        if (isValSetHeaderCommittedAt(currentEpoch)) {
-            revert ISettlement.Settlement_ValSetHeaderAlreadySubmitted();
-        }
 
         ISettlement.ValSetHeader storage headerStorage = $._valSetHeader[currentEpoch];
-
         headerStorage.version = header.version;
         headerStorage.requiredKeyTag = header.requiredKeyTag;
         headerStorage.epoch = header.epoch;
