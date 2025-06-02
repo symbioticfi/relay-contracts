@@ -26,12 +26,13 @@ library SigBlsBn254 {
         BN254.G1Point memory keyG1 = key.unwrap();
         BN254.G2Point memory keyG2 = abi.decode(extraData, (BN254.G2Point));
         BN254.G1Point memory signatureG1 = abi.decode(signature, (BN254.G1Point));
-        BN254.G1Point memory messageG1 = BN254.hashToG1(abi.decode(message, (bytes32)));
+        bytes32 messageHash = abi.decode(message, (bytes32));
+        BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash);
 
         uint256 alpha = uint256(
             keccak256(
                 abi.encodePacked(
-                    signatureG1.X, signatureG1.Y, keyG1.X, keyG1.Y, keyG2.X, keyG2.Y, messageG1.X, messageG1.Y
+                    messageHash, keyG1.X, keyG1.Y, keyG2.X, keyG2.Y, signatureG1.X, signatureG1.Y
                 )
             )
         ) % BN254.FR_MODULUS;
