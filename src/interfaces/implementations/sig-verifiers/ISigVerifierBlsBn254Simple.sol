@@ -6,7 +6,7 @@ import {BN254} from "../../../contracts/libraries/utils/BN254.sol";
 import {ISigVerifier} from "../../../interfaces/base/ISigVerifier.sol";
 
 interface ISigVerifierBlsBn254Simple is ISigVerifier {
-    error SigVerifierBlsBn254Simple_InvalidValidatorSetHash();
+    error SigVerifierBlsBn254Simple_UnsupportedKeyTag();
 
     struct ValidatorData {
         BN254.G1Point publicKey;

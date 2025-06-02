@@ -6,6 +6,8 @@ import {BN254} from "../../libraries/utils/BN254.sol";
 import {KeyBlsBn254} from "../../libraries/keys/KeyBlsBn254.sol";
 import {ExtraDataStorageHelper} from "./libraries/ExtraDataStorageHelper.sol";
 import {BN254} from "../../libraries/utils/BN254.sol";
+import {KeyManagerLogic} from "../../base/logic/KeyManagerLogic.sol";
+import {KeyTags} from "../../libraries/utils/KeyTags.sol";
 
 import {ISigVerifier} from "../../../interfaces/base/ISigVerifier.sol";
 import {ISettlement} from "../../../interfaces/implementations/settlement/ISettlement.sol";
@@ -19,6 +21,7 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
     using SigBlsBn254 for bytes;
     using BN254 for BN254.G1Point;
     using ExtraDataStorageHelper for uint32;
+    using KeyTags for uint8;
 
     /**
      * @inheritdoc ISigVerifier
@@ -51,6 +54,10 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
         uint256 quorumThreshold,
         bytes calldata proof
     ) public view returns (bool) {
+        if (keyTag.getType() != KeyManagerLogic.KEY_TYPE_BLS_BN254) {
+            revert SigVerifierBlsBn254Simple_UnsupportedKeyTag();
+        }
+
         BN254.G1Point memory nonSignersPublicKeyG1;
         {
             uint256 length;
@@ -63,7 +70,7 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
                         epoch, VERIFICATION_TYPE.getKey(keyTag, VALIDATOR_SET_HASH_KECCAK256)
                     )
             ) {
-                revert SigVerifierBlsBn254Simple_InvalidValidatorSetHash();
+                return false;
             }
 
             ValidatorData[] memory validatorsData = abi.decode(proof[192:256 + length * 96], (ValidatorData[]));
