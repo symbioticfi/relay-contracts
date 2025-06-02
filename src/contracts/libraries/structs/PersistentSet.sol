@@ -14,6 +14,7 @@ library PersistentSet {
     using InputNormalizer for bytes[];
 
     struct Status {
+        bool isAdded;
         uint48 addedAt;
         Checkpoints.Trace208 isRemoved;
     }
@@ -26,13 +27,14 @@ library PersistentSet {
 
     function _add(Set storage set, uint48 key, bytes32 value) private returns (bool) {
         unchecked {
-            if (set._statuses[value].addedAt > 0) {
+            if (set._statuses[value].isAdded) {
                 if (set._statuses[value].isRemoved.latest() == 0) {
                     return false;
                 }
                 set._statuses[value].isRemoved.push(key, 0);
             } else {
                 set._elements.push(value);
+                set._statuses[value].isAdded = true;
                 set._statuses[value].addedAt = key;
             }
             set._length += 1;
@@ -52,12 +54,12 @@ library PersistentSet {
     }
 
     function _containsAt(Set storage set, uint48 key, bytes32 value, bytes memory hint) private view returns (bool) {
-        uint48 addedAt = set._statuses[value].addedAt;
-        return addedAt > 0 && key >= addedAt && set._statuses[value].isRemoved.upperLookupRecent(key, hint) == 0;
+        return set._statuses[value].isAdded && key >= set._statuses[value].addedAt
+            && set._statuses[value].isRemoved.upperLookupRecent(key, hint) == 0;
     }
 
     function _contains(Set storage set, bytes32 value) private view returns (bool) {
-        return set._statuses[value].addedAt > 0 && set._statuses[value].isRemoved.latest() == 0;
+        return set._statuses[value].isAdded && set._statuses[value].isRemoved.latest() == 0;
     }
 
     function _length(
