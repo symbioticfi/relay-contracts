@@ -12,6 +12,8 @@ library SigBlsBn254 {
     using Strings for bytes;
     using Strings for string;
 
+    uint256 internal constant PAIRING_CHECK_GAS_LIMIT = 120_000;
+
     function verify(
         bytes memory keyBytes,
         bytes memory message,
@@ -30,18 +32,16 @@ library SigBlsBn254 {
         BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash);
 
         uint256 alpha = uint256(
-            keccak256(
-                abi.encodePacked(
-                    messageHash, keyG1.X, keyG1.Y, keyG2.X, keyG2.Y, signatureG1.X, signatureG1.Y
-                )
-            )
+            keccak256(abi.encodePacked(messageHash, keyG1.X, keyG1.Y, keyG2.X, keyG2.Y, signatureG1.X, signatureG1.Y))
         ) % BN254.FR_MODULUS;
 
-        return BN254.pairing(
+        (bool success, bool result) = BN254.safePairing(
             signatureG1.plus(keyG1.scalar_mul(alpha)),
             BN254.negGeneratorG2(),
             messageG1.plus(BN254.generatorG1().scalar_mul(alpha)),
-            keyG2
+            keyG2,
+            PAIRING_CHECK_GAS_LIMIT
         );
+        return success && result;
     }
 }
