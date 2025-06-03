@@ -1,12 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-
 library KeyEcdsaSecp256k1 {
     using KeyEcdsaSecp256k1 for KEY_ECDSA_SECP256K1;
     using KeyEcdsaSecp256k1 for address;
-    using Strings for string;
 
     error KeyEcdsaSecp256k1_InvalidBytes();
 

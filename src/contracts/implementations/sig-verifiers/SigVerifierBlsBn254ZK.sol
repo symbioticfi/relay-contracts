@@ -14,11 +14,6 @@ import {ISigVerifierBlsBn254ZK} from "../../../interfaces/implementations/sig-ve
 import {IVerifier} from "../../../interfaces/implementations/sig-verifiers/zk/IVerifier.sol";
 
 contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
-    using KeyBlsBn254 for bytes;
-    using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
-    using KeyBlsBn254 for BN254.G1Point;
-    using SigBlsBn254 for bytes;
-    using BN254 for BN254.G1Point;
     using ExtraDataStorageHelper for uint32;
     using KeyTags for uint8;
 
@@ -67,7 +62,6 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
 
     /**
      * @inheritdoc ISigVerifier
-     * @dev proof is 64 bytes zkProof | 64 bytes commitments | 64 bytes commitmentPok | 32 nonSignersVotingPower
      */
     function verifyQuorumSig(
         address settlement,

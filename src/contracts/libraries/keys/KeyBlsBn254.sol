@@ -3,12 +3,9 @@ pragma solidity ^0.8.25;
 
 import {BN254} from "../utils/BN254.sol";
 
-import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-
 library KeyBlsBn254 {
     using KeyBlsBn254 for KEY_BLS_BN254;
     using KeyBlsBn254 for BN254.G1Point;
-    using Strings for string;
 
     error KeyBlsBn254_InvalidKey();
     error KeyBlsBn254_InvalidBytes();

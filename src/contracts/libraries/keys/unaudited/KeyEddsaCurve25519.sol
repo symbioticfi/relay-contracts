@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-
 import {SCL_sha512} from "@crypto-lib/hash/SCL_sha512.sol";
 import {SqrtMod} from "../../utils/unaudited/SCL_sqrtMod_5mod8.sol";
 import {p, d, pMINUS_1} from "@crypto-lib/fields/SCL_wei25519.sol";
@@ -11,7 +9,6 @@ import {ModInv} from "@crypto-lib/modular/SCL_modular.sol";
 library KeyEddsaCurve25519 {
     using KeyEddsaCurve25519 for KEY_EDDSA_CURVE25519;
     using KeyEddsaCurve25519 for bytes32;
-    using Strings for string;
 
     error KeyEddsaCurve25519_InvalidBytes();
     error KeyEddsaCurve25519_InvalidKey();

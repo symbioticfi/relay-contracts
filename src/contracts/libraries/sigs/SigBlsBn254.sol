@@ -4,13 +4,9 @@ pragma solidity ^0.8.25;
 import {KeyBlsBn254} from "../keys/KeyBlsBn254.sol";
 import {BN254} from "../utils/BN254.sol";
 
-import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-
 library SigBlsBn254 {
     using BN254 for BN254.G1Point;
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
-    using Strings for bytes;
-    using Strings for string;
 
     uint256 internal constant PAIRING_CHECK_GAS_LIMIT = 120_000;
 

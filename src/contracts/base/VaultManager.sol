@@ -300,7 +300,7 @@ abstract contract VaultManager is OperatorManager, StakeToVotingPowerManager, IV
         address operator,
         uint48 timestamp,
         bytes memory hints
-    ) public view virtual returns (uint256) {
+    ) internal view virtual returns (uint256) {
         return VaultManagerLogic.getOperatorStakeAt(vault, operator, timestamp, hints);
     }
 

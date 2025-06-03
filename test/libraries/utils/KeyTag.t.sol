@@ -103,7 +103,7 @@ contract KeyTagTest is Test {
 
         assertFalse(bitmask.contains(3));
         assertFalse(bitmask.contains(126));
-        assertFalse(bitmask.contains(128));
+        assertFalse(bitmask.contains(125));
     }
 
     function test_SerializeUniqueKeyTags() public {

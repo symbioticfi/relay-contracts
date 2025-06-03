@@ -9,7 +9,11 @@ library KeyTags {
     error KeyTags_Duplicate();
 
     // 3 bits for type, 4 bits for tag
-    uint256 public constant TOTAL_KEY_TAGS = 128;
+    uint256 internal constant TOTAL_KEY_TAGS = 128;
+
+    uint8 internal constant MAX_KEY_TYPE = 7;
+
+    uint8 internal constant MAX_KEY_TAG = 15;
 
     function validateKeyTag(
         uint8 keyTag
@@ -22,7 +26,7 @@ library KeyTags {
     function validateType(
         uint8 type_
     ) internal pure {
-        if (type_ > 7) {
+        if (type_ > MAX_KEY_TYPE) {
             revert KeyTags_InvalidKeyType();
         }
     }
@@ -30,7 +34,7 @@ library KeyTags {
     function validateTag(
         uint8 tag
     ) internal pure {
-        if (tag > 15) {
+        if (tag > MAX_KEY_TAG) {
             revert KeyTags_InvalidKeyTag();
         }
     }
