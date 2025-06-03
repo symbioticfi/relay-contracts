@@ -320,7 +320,7 @@ library ValSetVerifier {
 
     function verifyKeyTagLocal(SszProof calldata keyTagProof, bytes32 keyRoot) internal view returns (bool) {
         return processInclusionProofSha256(
-            keyTagProof.proof, keyTagProof.leaf, keyRoot, KEY_TAG_LOCAL_INDEX, KEY_ROOT_PROOF_EXPECTED_HEIGHT
+            keyTagProof.proof, keyTagProof.leaf, keyRoot, KEY_TAG_LOCAL_INDEX, KEY_TAG_PROOF_EXPECTED_HEIGHT
         );
     }
 
