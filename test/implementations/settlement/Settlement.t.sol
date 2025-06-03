@@ -179,7 +179,7 @@ contract SettlementRawTest is Test {
         }
 
         initParams.commitDuration = 120;
-        vm.expectRevert(ISettlement.Settlement_EpochDurationTooShort.selector);
+        vm.expectRevert(ISettlement.Settlement_CommitDurationTooLong.selector);
         testSettle.initialize(initParams, owner);
 
         initParams.commitDuration = 60;

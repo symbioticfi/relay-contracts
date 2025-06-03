@@ -42,8 +42,12 @@ library SettlementLogic {
         ISettlement.SettlementStorage storage $ = _getSettlementStorage();
 
         if (settlementInitParams.epochManagerInitParams.epochDuration <= settlementInitParams.commitDuration) {
-            revert ISettlement.Settlement_EpochDurationTooShort();
+            revert ISettlement.Settlement_CommitDurationTooLong();
         }
+        if (settlementInitParams.commitDuration == 0) {
+            revert ISettlement.Settlement_CommitDurationTooShort();
+        }
+
         $._prolongDuration.push(Time.timestamp(), settlementInitParams.prolongDuration);
         emit ISettlement.InitProlongDuration(settlementInitParams.prolongDuration);
         $._commitDuration.push(Time.timestamp(), settlementInitParams.commitDuration);
@@ -275,6 +279,9 @@ library SettlementLogic {
     ) public {
         if (commitDuration >= EpochManagerLogic.getNextEpochDuration()) {
             revert ISettlement.Settlement_CommitDurationTooLong();
+        }
+        if (commitDuration == 0) {
+            revert ISettlement.Settlement_CommitDurationTooShort();
         }
         _getSettlementStorage()._commitDuration.push(EpochManagerLogic.getNextEpochStart(), commitDuration);
         emit ISettlement.SetCommitDuration(commitDuration);
