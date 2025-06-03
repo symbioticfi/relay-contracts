@@ -20,6 +20,7 @@ interface ISettlement {
     error Settlement_InvalidCaptureTimestamp();
     error Settlement_CommitDurationTooLong();
     error Settlement_CommitDurationTooShort();
+    error Settlement_InvalidSigVerifier();
 
     enum ValSetPhase {
         IDLE,

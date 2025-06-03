@@ -47,6 +47,9 @@ library SettlementLogic {
         if (settlementInitParams.commitDuration == 0) {
             revert ISettlement.Settlement_CommitDurationTooShort();
         }
+        if (settlementInitParams.sigVerifier == address(0)) {
+            revert ISettlement.Settlement_InvalidSigVerifier();
+        }
 
         $._prolongDuration.push(Time.timestamp(), settlementInitParams.prolongDuration);
         emit ISettlement.InitProlongDuration(settlementInitParams.prolongDuration);
@@ -297,6 +300,9 @@ library SettlementLogic {
     function setSigVerifier(
         address sigVerifier
     ) public {
+        if (sigVerifier == address(0)) {
+            revert ISettlement.Settlement_InvalidSigVerifier();
+        }
         _getSettlementStorage()._sigVerifier.push(EpochManagerLogic.getNextEpochStart(), uint160(sigVerifier));
         emit ISettlement.SetSigVerifier(sigVerifier);
     }
