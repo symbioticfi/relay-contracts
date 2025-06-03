@@ -177,7 +177,7 @@ contract VaultManagerTest is InitSetup {
         INetworkManager.NetworkManagerInitParams memory netInit =
             INetworkManager.NetworkManagerInitParams({network: address(0x1111), subnetworkID: 777});
         IVaultManager.VaultManagerInitParams memory vaultInit =
-            IVaultManager.VaultManagerInitParams({slashingWindow: 100});
+            IVaultManager.VaultManagerInitParams({slashingWindow: 100, token: initSetupParams.masterChain.tokens[0]});
         vaultManager.initialize(netInit, vaultInit);
 
         _registerOperator_SymbioticCore(symbioticCore, operator1);
@@ -517,7 +517,7 @@ contract VaultManagerTest is InitSetup {
             subnetworkID: initSetupParams.subnetworkID
         });
         IVaultManager.VaultManagerInitParams memory vaultInit =
-            IVaultManager.VaultManagerInitParams({slashingWindow: 100});
+            IVaultManager.VaultManagerInitParams({slashingWindow: 100, token: initSetupParams.masterChain.tokens[0]});
         vaultManager.initialize(netInit, vaultInit);
 
         _networkSetMiddleware_SymbioticCore(vars.network.addr, address(vaultManager));

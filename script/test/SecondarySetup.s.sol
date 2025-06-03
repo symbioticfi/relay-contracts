@@ -3,14 +3,14 @@ pragma solidity ^0.8.25;
 
 import {Script, console2} from "forge-std/Script.sol";
 
-import {ISettlement} from "../../src/interfaces/implementations/settlement/ISettlement.sol";
-import {IOzOwnable} from "../../src/interfaces/features/permissions/IOzOwnable.sol";
+import {ISettlement} from "../../src/interfaces/modules/settlement/ISettlement.sol";
+import {IOzOwnable} from "../../src/interfaces/modules/common/permissions/IOzOwnable.sol";
 import {INetworkManager} from "../../src/interfaces/base/INetworkManager.sol";
 import {IEpochManager} from "../../src/interfaces/base/IEpochManager.sol";
-import {IWhitelistSelfRegisterOperators} from
-    "../../src/interfaces/features/registration/operators/extensions/IWhitelistSelfRegisterOperators.sol";
+import {IOperatorsWhitelist} from "../../src/interfaces/modules/voting-power/extensions/IOperatorsWhitelist.sol";
 import {IOzEIP712} from "../../src/interfaces/base/common/IOzEIP712.sol";
 import {IVaultManager} from "../../src/interfaces/base/IVaultManager.sol";
+import {IVotingPowerProvider} from "../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
 
 import {KeyTags} from "../../src/contracts/libraries/utils/KeyTags.sol";
 import {KeyManagerLogic} from "../../src/contracts/base/logic/KeyManagerLogic.sol";
@@ -21,10 +21,12 @@ import "./InitSetup.s.sol";
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {SigVerifierBlsBn254ZK} from "../../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254ZK.sol";
-import {Verifier as Verifier_10} from "../../src/contracts/implementations/sig-verifiers/zk/Verifier_10.sol";
-import {Verifier as Verifier_100} from "../../src/contracts/implementations/sig-verifiers/zk/Verifier_100.sol";
-import {Verifier as Verifier_1000} from "../../src/contracts/implementations/sig-verifiers/zk/Verifier_1000.sol";
+import {SigVerifierBlsBn254ZK} from "../../src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol";
+import {Verifier as Verifier_10} from "../../src/contracts/modules/settlement/sig-verifiers/zk/Verifier_10.sol";
+import {Verifier as Verifier_100} from "../../src/contracts/modules/settlement/sig-verifiers/zk/Verifier_100.sol";
+import {Verifier as Verifier_1000} from "../../src/contracts/modules/settlement/sig-verifiers/zk/Verifier_1000.sol";
+
+import {VotingPowerProviderSharedVaults} from "../../test/mocks/VotingPowerProviderSharedVaults.sol";
 
 // forge script script/test/SecondarySetup.s.sol:SecondarySetupScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_SECONDARY
 
@@ -34,8 +36,8 @@ contract SecondarySetupScript is InitSetupScript {
     bytes32 internal constant KEY_OWNERSHIP_TYPEHASH = keccak256("KeyOwnership(address operator,bytes key)");
 
     struct SecondarySetupParams {
-        Replica replica;
-        SelfRegisterVotingPowerProvider votingPowerProvider;
+        ReplicaSettlement replica;
+        VotingPowerProviderSharedVaults votingPowerProvider;
     }
 
     function run(
@@ -51,17 +53,21 @@ contract SecondarySetupScript is InitSetupScript {
         SecondarySetupParams memory secondarySetupParams;
 
         vm.startBroadcast(vars.deployer.privateKey);
-        secondarySetupParams.votingPowerProvider = new SelfRegisterVotingPowerProvider(
+        secondarySetupParams.votingPowerProvider = new VotingPowerProviderSharedVaults(
             address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory)
         );
         secondarySetupParams.votingPowerProvider.initialize(
-            INetworkManager.NetworkManagerInitParams({
-                network: vars.network.addr,
-                subnetworkID: initSetupParams.subnetworkID
+            IVotingPowerProvider.VotingPowerProviderInitParams({
+                networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
+                    network: vars.network.addr,
+                    subnetworkID: initSetupParams.subnetworkID
+                }),
+                vaultManagerInitParams: IVaultManager.VaultManagerInitParams({
+                    slashingWindow: initSetupParams.slashingWindow,
+                    token: initSetupParams.secondaryChain.tokens[0]
+                }),
+                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"})
             }),
-            IVaultManager.VaultManagerInitParams({slashingWindow: initSetupParams.slashingWindow}),
-            IOzEIP712.OzEIP712InitParams({name: "SelfRegisterVotingPowerProvider", version: "1"}),
-            IWhitelistSelfRegisterOperators.WhitelistSelfRegisterOperatorsInitParams({isWhitelistEnabled: false}),
             IOzOwnable.OzOwnableInitParams({owner: vars.network.addr})
         );
         vm.stopBroadcast();
@@ -69,11 +75,11 @@ contract SecondarySetupScript is InitSetupScript {
 
         _networkSetMiddleware_SymbioticCore(vars.network.addr, address(secondarySetupParams.votingPowerProvider));
 
-        for (uint256 i; i < initSetupParams.secondaryChain.tokens.length; ++i) {
-            vm.startBroadcast(vars.network.privateKey);
-            secondarySetupParams.votingPowerProvider.registerToken(initSetupParams.secondaryChain.tokens[i]);
-            vm.stopBroadcast();
-        }
+        // for (uint256 i; i < initSetupParams.secondaryChain.tokens.length; ++i) {
+        //     vm.startBroadcast(vars.network.privateKey);
+        //     secondarySetupParams.votingPowerProvider.registerToken(initSetupParams.secondaryChain.tokens[i]);
+        //     vm.stopBroadcast();
+        // }
         for (uint256 i; i < initSetupParams.secondaryChain.vaults.length; ++i) {
             _setMaxNetworkLimit_SymbioticCore(
                 vars.network.addr,
@@ -114,7 +120,7 @@ contract SecondarySetupScript is InitSetupScript {
         }
 
         vm.startBroadcast(vars.network.privateKey);
-        secondarySetupParams.replica = new Replica();
+        secondarySetupParams.replica = new ReplicaSettlement();
         uint8[] memory requiredKeyTags = new uint8[](2);
         requiredKeyTags[0] = KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15);
         requiredKeyTags[1] = KeyManagerLogic.KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0);
@@ -149,7 +155,7 @@ contract SecondarySetupScript is InitSetupScript {
         finalJson = vm.serializeAddress(obj, "replica", address(secondarySetupParams.replica));
 
         console2.log("Secondary - VotingPowerProvider: ", address(secondarySetupParams.votingPowerProvider));
-        console2.log("Secondary - Replica: ", address(secondarySetupParams.replica));
+        console2.log("Secondary - ReplicaSettlement: ", address(secondarySetupParams.replica));
 
         vm.writeJson(finalJson, "script/test/data/secondary_setup_params.json");
     }

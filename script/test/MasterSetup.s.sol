@@ -3,8 +3,8 @@ pragma solidity ^0.8.25;
 
 import {Script, console2} from "forge-std/Script.sol";
 
-import {ISettlement} from "../../src/interfaces/implementations/settlement/ISettlement.sol";
-import {IConfigProvider} from "../../src/interfaces/implementations/settlement/IConfigProvider.sol";
+import {ISettlement} from "../../src/interfaces/modules/settlement/ISettlement.sol";
+import {IConfigProvider} from "../../src/interfaces/modules/settlement/IConfigProvider.sol";
 import {IEpochManager} from "../../src/interfaces/base/IEpochManager.sol";
 
 import {KeyTags} from "../../src/contracts/libraries/utils/KeyTags.sol";
@@ -16,10 +16,12 @@ import {BN254G2} from "../../test/helpers/BN254G2.sol";
 
 import "./SecondarySetup.s.sol";
 
-import {SigVerifierBlsBn254ZK} from "../../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254ZK.sol";
-import {Verifier as Verifier_10} from "../../src/contracts/implementations/sig-verifiers/zk/Verifier_10.sol";
-import {Verifier as Verifier_100} from "../../src/contracts/implementations/sig-verifiers/zk/Verifier_100.sol";
-import {Verifier as Verifier_1000} from "../../src/contracts/implementations/sig-verifiers/zk/Verifier_1000.sol";
+import {SigVerifierBlsBn254ZK} from "../../src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol";
+import {Verifier as Verifier_10} from "../../src/contracts/modules/settlement/sig-verifiers/zk/Verifier_10.sol";
+import {Verifier as Verifier_100} from "../../src/contracts/modules/settlement/sig-verifiers/zk/Verifier_100.sol";
+import {Verifier as Verifier_1000} from "../../src/contracts/modules/settlement/sig-verifiers/zk/Verifier_1000.sol";
+
+import {VotingPowerProviderSharedVaults} from "../../test/mocks/VotingPowerProviderSharedVaults.sol";
 
 // forge script script/test/MasterSetup.s.sol:MasterSetupScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_MASTER
 
@@ -32,8 +34,8 @@ contract MasterSetupScript is SecondarySetupScript {
 
     struct MasterSetupParams {
         KeyRegistry keyRegistry;
-        Master master;
-        SelfRegisterVotingPowerProvider votingPowerProvider;
+        MasterSettlement master;
+        VotingPowerProviderSharedVaults votingPowerProvider;
     }
 
     function run(
@@ -50,18 +52,22 @@ contract MasterSetupScript is SecondarySetupScript {
         MasterSetupParams memory masterSetupParams;
 
         vm.startBroadcast(vars.deployer.privateKey);
-        console2.log("SelfRegisterVotingPowerProvider nonce", vm.getNonce(vars.deployer.addr));
-        masterSetupParams.votingPowerProvider = new SelfRegisterVotingPowerProvider(
+        console2.log("MyVotingPowerProvider nonce", vm.getNonce(vars.deployer.addr));
+        masterSetupParams.votingPowerProvider = new VotingPowerProviderSharedVaults(
             address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory)
         );
         masterSetupParams.votingPowerProvider.initialize(
-            INetworkManager.NetworkManagerInitParams({
-                network: vars.network.addr,
-                subnetworkID: initSetupParams.subnetworkID
+            IVotingPowerProvider.VotingPowerProviderInitParams({
+                networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
+                    network: vars.network.addr,
+                    subnetworkID: initSetupParams.subnetworkID
+                }),
+                vaultManagerInitParams: IVaultManager.VaultManagerInitParams({
+                    slashingWindow: initSetupParams.slashingWindow,
+                    token: initSetupParams.masterChain.tokens[0]
+                }),
+                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"})
             }),
-            IVaultManager.VaultManagerInitParams({slashingWindow: initSetupParams.slashingWindow}),
-            IOzEIP712.OzEIP712InitParams({name: "SelfRegisterVotingPowerProvider", version: "1"}),
-            IWhitelistSelfRegisterOperators.WhitelistSelfRegisterOperatorsInitParams({isWhitelistEnabled: false}),
             IOzOwnable.OzOwnableInitParams({owner: vars.network.addr})
         );
         vm.stopBroadcast();
@@ -69,11 +75,11 @@ contract MasterSetupScript is SecondarySetupScript {
 
         _networkSetMiddleware_SymbioticCore(vars.network.addr, address(masterSetupParams.votingPowerProvider));
 
-        for (uint256 i; i < initSetupParams.masterChain.tokens.length; ++i) {
-            vm.startBroadcast(vars.deployer.privateKey);
-            masterSetupParams.votingPowerProvider.registerToken(initSetupParams.masterChain.tokens[i]);
-            vm.stopBroadcast();
-        }
+        // for (uint256 i; i < initSetupParams.masterChain.tokens.length; ++i) {
+        //     vm.startBroadcast(vars.deployer.privateKey);
+        //     masterSetupParams.votingPowerProvider.registerToken(initSetupParams.masterChain.tokens[i]);
+        //     vm.stopBroadcast();
+        // }
         for (uint256 i; i < initSetupParams.masterChain.vaults.length; ++i) {
             _setMaxNetworkLimit_SymbioticCore(
                 vars.network.addr,
@@ -151,8 +157,8 @@ contract MasterSetupScript is SecondarySetupScript {
         }
 
         vm.startBroadcast(vars.deployer.privateKey);
-        console2.log("Master nonce", vm.getNonce(vars.deployer.addr));
-        masterSetupParams.master = new Master{salt: bytes32("master")}();
+        console2.log("MasterSettlement nonce", vm.getNonce(vars.deployer.addr));
+        masterSetupParams.master = new MasterSettlement{salt: bytes32("master")}();
         {
             uint8[] memory requiredKeyTags = new uint8[](2);
             requiredKeyTags[0] = KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15);
@@ -218,9 +224,9 @@ contract MasterSetupScript is SecondarySetupScript {
         vm.stopBroadcast();
         finalJson = vm.serializeAddress(obj, "master", address(masterSetupParams.master));
 
-        console2.log("Master - VotingPowerProvider: ", address(masterSetupParams.votingPowerProvider));
-        console2.log("Master - KeyRegistry: ", address(masterSetupParams.keyRegistry));
-        console2.log("Master - Master: ", address(masterSetupParams.master));
+        console2.log("MasterSettlement - VotingPowerProvider: ", address(masterSetupParams.votingPowerProvider));
+        console2.log("MasterSettlement - KeyRegistry: ", address(masterSetupParams.keyRegistry));
+        console2.log("MasterSettlement - MasterSettlement: ", address(masterSetupParams.master));
 
         vm.writeJson(finalJson, "script/test/data/master_setup_params.json");
     }

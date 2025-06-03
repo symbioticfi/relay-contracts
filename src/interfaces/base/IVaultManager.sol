@@ -45,6 +45,7 @@ interface IVaultManager {
 
     struct VaultManagerInitParams {
         uint48 slashingWindow;
+        address token;
     }
 
     struct VaultVotingPower {

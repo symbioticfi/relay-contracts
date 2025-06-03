@@ -3,10 +3,9 @@ pragma solidity ^0.8.25;
 
 import {Script, console2} from "forge-std/Script.sol";
 
-import {ISettlement} from "../src/interfaces/implementations/settlement/ISettlement.sol";
-import {IConfigProvider} from "../src/interfaces/implementations/settlement/IConfigProvider.sol";
-import {IWhitelistSelfRegisterOperators} from
-    "../src/interfaces/features/registration/operators/extensions/IWhitelistSelfRegisterOperators.sol";
+import {ISettlement} from "../src/interfaces/modules/settlement/ISettlement.sol";
+import {IConfigProvider} from "../src/interfaces/modules/settlement/IConfigProvider.sol";
+import {IOperatorsWhitelist} from "../src/interfaces/modules/voting-power/extensions/IOperatorsWhitelist.sol";
 import {IEpochManager} from "../src/interfaces/base/IEpochManager.sol";
 
 import {KeyTags} from "../src/contracts/libraries/utils/KeyTags.sol";
@@ -16,17 +15,20 @@ import {KeyManagerLogic} from "../src/contracts/base/logic/KeyManagerLogic.sol";
 
 import {BN254G2} from "./helpers/BN254G2.sol";
 
-import {ISettlement} from "../src/interfaces/implementations/settlement/ISettlement.sol";
-import {IOzOwnable} from "../src/interfaces/features/permissions/IOzOwnable.sol";
+import {ISettlement} from "../src/interfaces/modules/settlement/ISettlement.sol";
+import {IOzOwnable} from "../src/interfaces/modules/common/permissions/IOzOwnable.sol";
 import {INetworkManager} from "../src/interfaces/base/INetworkManager.sol";
 import {IEpochManager} from "../src/interfaces/base/IEpochManager.sol";
 import {IOzEIP712} from "../src/interfaces/base/common/IOzEIP712.sol";
 import {IVaultManager} from "../src/interfaces/base/IVaultManager.sol";
+import {IVotingPowerProvider} from "../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
 
-import {Verifier as Verifier_10} from "../src/contracts/implementations/sig-verifiers/zk/Verifier_10.sol";
-import {Verifier as Verifier_100} from "../src/contracts/implementations/sig-verifiers/zk/Verifier_100.sol";
-import {Verifier as Verifier_1000} from "../src/contracts/implementations/sig-verifiers/zk/Verifier_1000.sol";
-import {SigVerifierBlsBn254ZK} from "../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254ZK.sol";
+import {Verifier as Verifier_10} from "../src/contracts/modules/settlement/sig-verifiers/zk/Verifier_10.sol";
+import {Verifier as Verifier_100} from "../src/contracts/modules/settlement/sig-verifiers/zk/Verifier_100.sol";
+import {Verifier as Verifier_1000} from "../src/contracts/modules/settlement/sig-verifiers/zk/Verifier_1000.sol";
+import {SigVerifierBlsBn254ZK} from "../src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol";
+
+import {VotingPowerProviderSharedVaults} from "./mocks/VotingPowerProviderSharedVaults.sol";
 
 import "./InitSetup.sol";
 
@@ -41,8 +43,8 @@ contract MasterSetup is InitSetup {
 
     struct MasterSetupParams {
         KeyRegistry keyRegistry;
-        Master master;
-        SelfRegisterVotingPowerProvider votingPowerProvider;
+        MasterSettlement master;
+        VotingPowerProviderSharedVaults votingPowerProvider;
     }
 
     MasterSetupParams public masterSetupParams;
@@ -64,28 +66,32 @@ contract MasterSetup is InitSetup {
     function loadMasterSetupParams() public {
         vm.startPrank(vars.deployer.addr);
         // vm.setNonce(vars.deployer.addr, 44);
-        masterSetupParams.votingPowerProvider = new SelfRegisterVotingPowerProvider(
+        masterSetupParams.votingPowerProvider = new VotingPowerProviderSharedVaults(
             address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory)
         );
         masterSetupParams.votingPowerProvider.initialize(
-            INetworkManager.NetworkManagerInitParams({
-                network: vars.network.addr,
-                subnetworkID: initSetupParams.subnetworkID
+            IVotingPowerProvider.VotingPowerProviderInitParams({
+                networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
+                    network: vars.network.addr,
+                    subnetworkID: initSetupParams.subnetworkID
+                }),
+                vaultManagerInitParams: IVaultManager.VaultManagerInitParams({
+                    slashingWindow: initSetupParams.slashingWindow,
+                    token: initSetupParams.masterChain.tokens[0]
+                }),
+                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"})
             }),
-            IVaultManager.VaultManagerInitParams({slashingWindow: initSetupParams.slashingWindow}),
-            IOzEIP712.OzEIP712InitParams({name: "SelfRegisterVotingPowerProvider", version: "1"}),
-            IWhitelistSelfRegisterOperators.WhitelistSelfRegisterOperatorsInitParams({isWhitelistEnabled: false}),
             IOzOwnable.OzOwnableInitParams({owner: vars.network.addr})
         );
         vm.stopPrank();
 
         _networkSetMiddleware_SymbioticCore(vars.network.addr, address(masterSetupParams.votingPowerProvider));
 
-        for (uint256 i; i < initSetupParams.masterChain.tokens.length; ++i) {
-            vm.startPrank(vars.deployer.addr);
-            masterSetupParams.votingPowerProvider.registerToken(initSetupParams.masterChain.tokens[i]);
-            vm.stopPrank();
-        }
+        // for (uint256 i; i < initSetupParams.masterChain.tokens.length; ++i) {
+        //     vm.startPrank(vars.deployer.addr);
+        //     masterSetupParams.votingPowerProvider.registerToken(initSetupParams.masterChain.tokens[i]);
+        //     vm.stopPrank();
+        // }
         for (uint256 i; i < initSetupParams.masterChain.vaults.length; ++i) {
             _setMaxNetworkLimit_SymbioticCore(
                 vars.network.addr,
@@ -163,7 +169,7 @@ contract MasterSetup is InitSetup {
 
         vm.startPrank(vars.deployer.addr);
         // vm.setNonce(vars.deployer.addr, 68);
-        masterSetupParams.master = new Master{salt: bytes32("master")}();
+        masterSetupParams.master = new MasterSettlement{salt: bytes32("master")}();
         {
             uint8[] memory requiredKeyTags = new uint8[](2);
             requiredKeyTags[0] = KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15);

@@ -2,7 +2,7 @@
 pragma solidity ^0.8.25;
 
 import "forge-std/Test.sol";
-import {NoPermissionManager} from "../../src/contracts/features/permissions/NoPermissionManager.sol";
+import {NoPermissionManager} from "../../src/contracts/modules/common/permissions/NoPermissionManager.sol";
 import {EpochManager} from "../../src/contracts/base/EpochManager.sol";
 import {IEpochManager} from "../../src/interfaces/base/IEpochManager.sol";
 import {Checkpoints} from "../../src/contracts/libraries/structs/Checkpoints.sol";
