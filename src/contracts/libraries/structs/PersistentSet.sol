@@ -4,13 +4,8 @@ pragma solidity ^0.8.20;
 import {Checkpoints} from "../structs/Checkpoints.sol";
 import {InputNormalizer} from "../utils/InputNormalizer.sol";
 
-import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
-
 library PersistentSet {
-    using EnumerableSet for EnumerableSet.Bytes32Set;
     using Checkpoints for Checkpoints.Trace208;
-    using Math for uint256;
     using InputNormalizer for bytes[];
 
     struct Status {

@@ -2,7 +2,8 @@
 pragma solidity ^0.8.20;
 
 import "forge-std/Test.sol";
-import {PersistentSet, EnumerableSet} from "../../../src/contracts/libraries/structs/PersistentSet.sol";
+import {PersistentSet} from "../../../src/contracts/libraries/structs/PersistentSet.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 contract PersistentSetTest is Test {
     using PersistentSet for PersistentSet.Bytes32Set;
