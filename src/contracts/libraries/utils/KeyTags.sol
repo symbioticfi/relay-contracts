@@ -11,43 +11,62 @@ library KeyTags {
     // 3 bits for type, 4 bits for tag
     uint256 public constant TOTAL_KEY_TAGS = 128;
 
-    function getKeyTag(uint8 type_, uint8 tag) internal pure returns (uint8) {
+    function validateKeyTag(
+        uint8 keyTag
+    ) internal pure {
+        if (keyTag >= TOTAL_KEY_TAGS) {
+            revert KeyTags_InvalidKeyTag();
+        }
+    }
+
+    function validateType(
+        uint8 type_
+    ) internal pure {
         if (type_ > 7) {
             revert KeyTags_InvalidKeyType();
         }
+    }
+
+    function validateTag(
+        uint8 tag
+    ) internal pure {
         if (tag > 15) {
             revert KeyTags_InvalidKeyTag();
         }
+    }
+
+    function getKeyTag(uint8 type_, uint8 tag) internal pure returns (uint8) {
+        validateType(type_);
+        validateTag(tag);
         return type_ << 4 | tag;
     }
 
     function getType(
         uint8 keyTag
-    ) internal pure returns (uint8 type_) {
-        if (keyTag >= TOTAL_KEY_TAGS) {
-            revert KeyTags_InvalidKeyTag();
-        }
+    ) internal pure returns (uint8) {
+        validateKeyTag(keyTag);
         return keyTag >> 4;
     }
 
     function getTag(
         uint8 keyTag
     ) internal pure returns (uint8) {
-        if (keyTag >= TOTAL_KEY_TAGS) {
-            revert KeyTags_InvalidKeyTag();
-        }
+        validateKeyTag(keyTag);
         return keyTag & 0x0F;
     }
 
     function contains(uint128 keyTagsSerialized, uint8 keyTag) internal pure returns (bool) {
+        validateKeyTag(keyTag);
         return keyTagsSerialized & (1 << keyTag) > 0;
     }
 
     function add(uint128 keyTagsSerialized, uint8 keyTag) internal pure returns (uint128) {
+        validateKeyTag(keyTag);
         return keyTagsSerialized | uint128(1 << keyTag);
     }
 
     function remove(uint128 keyTagsSerialized, uint8 keyTag) internal pure returns (uint128) {
+        validateKeyTag(keyTag);
         return keyTagsSerialized & ~uint128(1 << keyTag);
     }
 
