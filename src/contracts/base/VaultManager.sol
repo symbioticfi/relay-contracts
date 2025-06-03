@@ -26,13 +26,6 @@ import {VaultManagerLogic} from "./logic/VaultManagerLogic.sol";
 import {IVaultManager} from "../../interfaces/base/IVaultManager.sol";
 
 abstract contract VaultManager is OperatorManager, StakeToVotingPowerManager, IVaultManager {
-    using EnumerableMap for EnumerableMap.AddressToUintMap;
-    using EnumerableMap for EnumerableMap.AddressToAddressMap;
-    using EnumerableSet for EnumerableSet.AddressSet;
-    using Subnetwork for address;
-    using Subnetwork for bytes32;
-    using Checkpoints for Checkpoints.Trace208;
-
     /**
      * @inheritdoc IVaultManager
      */

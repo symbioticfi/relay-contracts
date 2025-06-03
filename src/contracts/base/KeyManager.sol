@@ -18,16 +18,6 @@ import {KeyEcdsaSecp256k1} from "../libraries/keys/KeyEcdsaSecp256k1.sol";
 import {IKeyManager} from "../../interfaces/base/IKeyManager.sol";
 
 abstract contract KeyManager is MulticallUpgradeable, OzEIP712, IKeyManager {
-    using KeyTags for uint8;
-    using Checkpoints for Checkpoints.Trace208;
-    using Checkpoints for Checkpoints.Trace256;
-    using Checkpoints for Checkpoints.Trace512;
-    using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
-    using KeyEcdsaSecp256k1 for KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1;
-    using InputNormalizer for bytes[];
-    using InputNormalizer for bytes[][];
-    using PersistentSet for PersistentSet.AddressSet;
-
     /**
      * @inheritdoc IKeyManager
      */

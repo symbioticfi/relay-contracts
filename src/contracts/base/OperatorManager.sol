@@ -12,9 +12,6 @@ import {OperatorManagerLogic} from "./logic/OperatorManagerLogic.sol";
 import {IOperatorManager} from "../../interfaces/base/IOperatorManager.sol";
 
 abstract contract OperatorManager is NetworkManager, IOperatorManager {
-    using Checkpoints for Checkpoints.Trace208;
-    using Arrays for address[];
-
     /**
      * @inheritdoc IOperatorManager
      */

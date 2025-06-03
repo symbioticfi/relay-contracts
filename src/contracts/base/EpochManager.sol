@@ -8,8 +8,6 @@ import {EpochManagerLogic} from "./logic/EpochManagerLogic.sol";
 import {IEpochManager} from "../../interfaces/base/IEpochManager.sol";
 
 abstract contract EpochManager is PermissionManager, IEpochManager {
-    using Checkpoints for Checkpoints.Trace208;
-
     /**
      * @inheritdoc IEpochManager
      */
