@@ -192,14 +192,18 @@ contract MasterSetupScript is SecondarySetupScript {
             //     addr: address(secondarySetupParams.replica),
             //     chainId: uint64(initSetupParams.secondaryChain.chainId)
             // });
-            address[] memory verifiers = new address[](3);
-            verifiers[0] = address(new Verifier_10());
-            verifiers[1] = address(new Verifier_100());
-            verifiers[2] = address(new Verifier_1000());
-            uint256[] memory maxValidators = new uint256[](verifiers.length);
-            maxValidators[0] = 10;
-            maxValidators[1] = 100;
-            maxValidators[2] = 1000;
+            address sigVerifier;
+            {
+                address[] memory verifiers = new address[](3);
+                verifiers[0] = address(new Verifier_10());
+                verifiers[1] = address(new Verifier_100());
+                verifiers[2] = address(new Verifier_1000());
+                uint256[] memory maxValidators = new uint256[](verifiers.length);
+                maxValidators[0] = 10;
+                maxValidators[1] = 100;
+                maxValidators[2] = 1000;
+                sigVerifier = address(new SigVerifierBlsBn254ZK(verifiers, maxValidators));
+            }
             masterSetupParams.master.initialize(
                 IMasterSettlement.MasterSettlementInitParams({
                     settlementInitParams: ISettlement.SettlementInitParams({
@@ -215,7 +219,7 @@ contract MasterSetupScript is SecondarySetupScript {
                         commitDuration: initSetupParams.commitDuration,
                         prolongDuration: initSetupParams.prolongDuration,
                         requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15),
-                        sigVerifier: address(new SigVerifierBlsBn254ZK(verifiers, maxValidators))
+                        sigVerifier: sigVerifier
                     }),
                     configProviderInitParams: IConfigProvider.ConfigProviderInitParams({
                         votingPowerProviders: votingPowerProviders,
