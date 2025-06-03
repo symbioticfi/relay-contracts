@@ -309,6 +309,6 @@ library ConfigProviderLogic {
     function serializeCrossChainAddress(
         IConfigProvider.CrossChainAddress memory crossChainAddress
     ) public pure returns (bytes32) {
-        return bytes32(uint256(crossChainAddress.chainId) << 160 | uint160(crossChainAddress.addr));
+        return bytes32(uint256(crossChainAddress.chainId) << 160 | uint256(uint160(crossChainAddress.addr)));
     }
 }

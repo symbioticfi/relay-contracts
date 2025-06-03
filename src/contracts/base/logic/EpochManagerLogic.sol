@@ -143,7 +143,7 @@ library EpochManagerLogic {
         uint48 epochDurationTimestamp,
         uint48 epochDurationIndex
     ) internal pure returns (uint208) {
-        return (uint208(epochDurationIndex) << 96) | (uint208(epochDurationTimestamp) << 48) | epochDuration;
+        return (uint208(epochDurationIndex) << 96) | (uint208(epochDurationTimestamp) << 48) | uint208(epochDuration);
     }
 
     function deserializeEpochDurationData(
