@@ -5,42 +5,42 @@ import {IVotingPowerProvider} from "../IVotingPowerProvider.sol";
 
 interface IOperatorsBlacklist {
     error OperatorsBlacklist_OperatorNotRegistered();
-    error OperatorsBlacklist_OperatorNotForcePaused();
-    error OperatorsBlacklist_OperatorForcePaused();
-    error OperatorsBlacklist_OperatorVaultNotForcePaused();
-    error OperatorsBlacklist_OperatorVaultForcePaused();
+    error OperatorsBlacklist_OperatorNotBlacklisted();
+    error OperatorsBlacklist_OperatorBlacklisted();
+    error OperatorsBlacklist_OperatorVaultNotBlacklisted();
+    error OperatorsBlacklist_OperatorVaultBlacklisted();
 
     /// @custom:storage-location erc7201:symbiotic.storage.OperatorsBlacklist
     struct OperatorsBlacklistStorage {
-        mapping(address => bool) _forcePaused;
-        mapping(address => mapping(address => bool)) _forcePausedVault;
+        mapping(address => bool) _blacklisted;
+        mapping(address => mapping(address => bool)) _blacklistedVault;
     }
 
-    event ForcePauseOperator(address indexed operator);
+    event BlacklistOperator(address indexed operator);
 
-    event ForceUnpauseOperator(address indexed operator);
+    event UnblacklistOperator(address indexed operator);
 
-    event ForcePauseOperatorVault(address indexed operator, address indexed vault);
+    event BlacklistOperatorVault(address indexed operator, address indexed vault);
 
-    event ForceUnpauseOperatorVault(address indexed operator, address indexed vault);
+    event UnblacklistOperatorVault(address indexed operator, address indexed vault);
 
     function OperatorsBlacklist_VERSION() external view returns (uint64);
 
-    function isOperatorForcePaused(
+    function isOperatorBlacklisted(
         address operator
     ) external view returns (bool);
 
-    function isOperatorVaultForcePaused(address operator, address vault) external view returns (bool);
+    function isOperatorVaultBlacklisted(address operator, address vault) external view returns (bool);
 
-    function forcePauseOperator(
+    function blacklistOperator(
         address operator
     ) external;
 
-    function forcePauseOperatorVault(address operator, address vault) external;
+    function blacklistOperatorVault(address operator, address vault) external;
 
-    function forceUnpauseOperator(
+    function unblacklistOperator(
         address operator
     ) external;
 
-    function forceUnpauseOperatorVault(address operator, address vault) external;
+    function unblacklistOperatorVault(address operator, address vault) external;
 }

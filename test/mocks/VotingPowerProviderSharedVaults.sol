@@ -3,10 +3,10 @@ pragma solidity ^0.8.25;
 
 import {VotingPowerProvider} from "../../src/contracts/modules/voting-power/VotingPowerProvider.sol";
 import {OzOwnable} from "../../src/contracts/modules/common/permissions/OzOwnable.sol";
-import {EqualStakeToVP} from "../../src/contracts/features/stakeToVotingPower/EqualStakeToVP.sol";
+import {EqualStakeVPCalc} from "../../src/contracts/modules/voting-power/extensions/EqualStakeVPCalc.sol";
 import {SharedVaults} from "../../src/contracts/modules/voting-power/extensions/SharedVaults.sol";
 
-contract VotingPowerProviderSharedVaults is VotingPowerProvider, OzOwnable, EqualStakeToVP, SharedVaults {
+contract VotingPowerProviderSharedVaults is VotingPowerProvider, OzOwnable, EqualStakeVPCalc, SharedVaults {
     constructor(address operatorRegistry, address vaultFactory) VotingPowerProvider(operatorRegistry, vaultFactory) {}
 
     function initialize(
@@ -15,7 +15,7 @@ contract VotingPowerProviderSharedVaults is VotingPowerProvider, OzOwnable, Equa
     ) public virtual initializer {
         __VotingPowerProvider_init(votingPowerProviderInitParams);
         __OzOwnable_init(ozOwnableInitParams);
-        __EqualStakeToVP_init();
+        __EqualStakeVPCalc_init();
         __SharedVaults_init();
     }
 }

@@ -17,11 +17,15 @@ import {BN254G2} from "../../test/helpers/BN254G2.sol";
 import "./SecondarySetup.s.sol";
 
 import {SigVerifierBlsBn254ZK} from "../../src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol";
-import {Verifier as Verifier_10} from "../../src/contracts/modules/settlement/sig-verifiers/zk/Verifier_10.sol";
-import {Verifier as Verifier_100} from "../../src/contracts/modules/settlement/sig-verifiers/zk/Verifier_100.sol";
-import {Verifier as Verifier_1000} from "../../src/contracts/modules/settlement/sig-verifiers/zk/Verifier_1000.sol";
+import {Verifier as Verifier_10} from "./data/zk/Verifier_10.sol";
+import {Verifier as Verifier_100} from "./data/zk/Verifier_100.sol";
+import {Verifier as Verifier_1000} from "./data/zk/Verifier_1000.sol";
 
 import {VotingPowerProviderSharedVaults} from "../../test/mocks/VotingPowerProviderSharedVaults.sol";
+import {MyMasterSettlement} from "../../examples/MyMasterSettlement.sol";
+import {MyKeyRegistry} from "../../examples/MyKeyRegistry.sol";
+import {IKeyRegistry} from "../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
+import {IMasterSettlement} from "../../src/interfaces/modules/settlement/IMasterSettlement.sol";
 
 // forge script script/test/MasterSetup.s.sol:MasterSetupScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_MASTER
 
@@ -33,8 +37,8 @@ contract MasterSetupScript is SecondarySetupScript {
     using KeyEcdsaSecp256k1 for KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1;
 
     struct MasterSetupParams {
-        KeyRegistry keyRegistry;
-        MasterSettlement master;
+        MyKeyRegistry keyRegistry;
+        MyMasterSettlement master;
         VotingPowerProviderSharedVaults votingPowerProvider;
     }
 
@@ -109,8 +113,12 @@ contract MasterSetupScript is SecondarySetupScript {
 
         vm.startBroadcast(vars.deployer.privateKey);
         console2.log("KeyRegistry nonce", vm.getNonce(vars.deployer.addr));
-        masterSetupParams.keyRegistry = new KeyRegistry();
-        masterSetupParams.keyRegistry.initialize(IOzEIP712.OzEIP712InitParams({name: "KeyRegistry", version: "1"}));
+        masterSetupParams.keyRegistry = new MyKeyRegistry();
+        masterSetupParams.keyRegistry.initialize(
+            IKeyRegistry.KeyRegistryInitParams({
+                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "KeyRegistry", version: "1"})
+            })
+        );
         vm.stopBroadcast();
         vm.serializeAddress(obj, "keyRegistry", address(masterSetupParams.keyRegistry));
 
@@ -158,7 +166,7 @@ contract MasterSetupScript is SecondarySetupScript {
 
         vm.startBroadcast(vars.deployer.privateKey);
         console2.log("MasterSettlement nonce", vm.getNonce(vars.deployer.addr));
-        masterSetupParams.master = new MasterSettlement{salt: bytes32("master")}();
+        masterSetupParams.master = new MyMasterSettlement{salt: bytes32("master")}();
         {
             uint8[] memory requiredKeyTags = new uint8[](2);
             requiredKeyTags[0] = KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15);
@@ -193,30 +201,32 @@ contract MasterSetupScript is SecondarySetupScript {
             maxValidators[1] = 100;
             maxValidators[2] = 1000;
             masterSetupParams.master.initialize(
-                ISettlement.SettlementInitParams({
-                    networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
-                        network: vars.network.addr,
-                        subnetworkID: initSetupParams.subnetworkID
+                IMasterSettlement.MasterSettlementInitParams({
+                    settlementInitParams: ISettlement.SettlementInitParams({
+                        networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
+                            network: vars.network.addr,
+                            subnetworkID: initSetupParams.subnetworkID
+                        }),
+                        epochManagerInitParams: IEpochManager.EpochManagerInitParams({
+                            epochDuration: initSetupParams.epochDuration,
+                            epochDurationTimestamp: initSetupParams.zeroTimestamp
+                        }),
+                        ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
+                        commitDuration: initSetupParams.commitDuration,
+                        prolongDuration: initSetupParams.prolongDuration,
+                        requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15),
+                        sigVerifier: address(new SigVerifierBlsBn254ZK(verifiers, maxValidators))
                     }),
-                    epochManagerInitParams: IEpochManager.EpochManagerInitParams({
-                        epochDuration: initSetupParams.epochDuration,
-                        epochDurationTimestamp: initSetupParams.zeroTimestamp
-                    }),
-                    ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
-                    commitDuration: initSetupParams.commitDuration,
-                    prolongDuration: initSetupParams.prolongDuration,
-                    requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15),
-                    sigVerifier: address(new SigVerifierBlsBn254ZK(verifiers, maxValidators))
-                }),
-                IConfigProvider.ConfigProviderInitParams({
-                    votingPowerProviders: votingPowerProviders,
-                    keysProvider: keysProvider,
-                    replicas: replicas,
-                    verificationType: 0,
-                    maxVotingPower: 1e36,
-                    minInclusionVotingPower: 0,
-                    maxValidatorsCount: 99_999_999,
-                    requiredKeyTags: requiredKeyTags
+                    configProviderInitParams: IConfigProvider.ConfigProviderInitParams({
+                        votingPowerProviders: votingPowerProviders,
+                        keysProvider: keysProvider,
+                        replicas: replicas,
+                        verificationType: 0,
+                        maxVotingPower: 1e36,
+                        minInclusionVotingPower: 0,
+                        maxValidatorsCount: 99_999_999,
+                        requiredKeyTags: requiredKeyTags
+                    })
                 }),
                 vars.deployer.addr
             );

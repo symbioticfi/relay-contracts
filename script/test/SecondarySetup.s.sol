@@ -22,11 +22,13 @@ import "./InitSetup.s.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {SigVerifierBlsBn254ZK} from "../../src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol";
-import {Verifier as Verifier_10} from "../../src/contracts/modules/settlement/sig-verifiers/zk/Verifier_10.sol";
-import {Verifier as Verifier_100} from "../../src/contracts/modules/settlement/sig-verifiers/zk/Verifier_100.sol";
-import {Verifier as Verifier_1000} from "../../src/contracts/modules/settlement/sig-verifiers/zk/Verifier_1000.sol";
+import {Verifier as Verifier_10} from "./data/zk/Verifier_10.sol";
+import {Verifier as Verifier_100} from "./data/zk/Verifier_100.sol";
+import {Verifier as Verifier_1000} from "./data/zk/Verifier_1000.sol";
 
 import {VotingPowerProviderSharedVaults} from "../../test/mocks/VotingPowerProviderSharedVaults.sol";
+import {MyReplicaSettlement} from "../../examples/MyReplicaSettlement.sol";
+import {IReplicaSettlement} from "../../src/interfaces/modules/settlement/IReplicaSettlement.sol";
 
 // forge script script/test/SecondarySetup.s.sol:SecondarySetupScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_SECONDARY
 
@@ -36,7 +38,7 @@ contract SecondarySetupScript is InitSetupScript {
     bytes32 internal constant KEY_OWNERSHIP_TYPEHASH = keccak256("KeyOwnership(address operator,bytes key)");
 
     struct SecondarySetupParams {
-        ReplicaSettlement replica;
+        MyReplicaSettlement replica;
         VotingPowerProviderSharedVaults votingPowerProvider;
     }
 
@@ -120,7 +122,7 @@ contract SecondarySetupScript is InitSetupScript {
         }
 
         vm.startBroadcast(vars.network.privateKey);
-        secondarySetupParams.replica = new ReplicaSettlement();
+        secondarySetupParams.replica = new MyReplicaSettlement();
         uint8[] memory requiredKeyTags = new uint8[](2);
         requiredKeyTags[0] = KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15);
         requiredKeyTags[1] = KeyManagerLogic.KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0);
@@ -134,20 +136,22 @@ contract SecondarySetupScript is InitSetupScript {
         maxValidators[1] = 100;
         maxValidators[2] = 1000;
         secondarySetupParams.replica.initialize(
-            ISettlement.SettlementInitParams({
-                networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
-                    network: vars.network.addr,
-                    subnetworkID: initSetupParams.subnetworkID
-                }),
-                epochManagerInitParams: IEpochManager.EpochManagerInitParams({
-                    epochDuration: initSetupParams.epochDuration,
-                    epochDurationTimestamp: initSetupParams.zeroTimestamp
-                }),
-                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
-                commitDuration: initSetupParams.commitDuration,
-                prolongDuration: initSetupParams.prolongDuration,
-                requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15),
-                sigVerifier: address(new SigVerifierBlsBn254ZK(verifiers, maxValidators))
+            IReplicaSettlement.ReplicaSettlementInitParams({
+                settlementInitParams: ISettlement.SettlementInitParams({
+                    networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
+                        network: vars.network.addr,
+                        subnetworkID: initSetupParams.subnetworkID
+                    }),
+                    epochManagerInitParams: IEpochManager.EpochManagerInitParams({
+                        epochDuration: initSetupParams.epochDuration,
+                        epochDurationTimestamp: initSetupParams.zeroTimestamp
+                    }),
+                    ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
+                    commitDuration: initSetupParams.commitDuration,
+                    prolongDuration: initSetupParams.prolongDuration,
+                    requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15),
+                    sigVerifier: address(new SigVerifierBlsBn254ZK(verifiers, maxValidators))
+                })
             }),
             vars.deployer.addr
         );

@@ -13,9 +13,9 @@ abstract contract OperatorsWhitelist is VotingPowerProvider, IOperatorsWhitelist
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OperatorsWhitelist")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant OperatorsWhitelistStorageLocation =
-        0x25b93ff8b4a329091c8d52079f1be19dcd6e61195383d70f54f5235ddae87400;
+        0x3fa7d7e58a4c604e915cc85c236f89892f2e36ec13dff506efa6b5ea5fafeb00;
 
-    function _getWhitelistStorage() internal pure returns (OperatorsWhitelistStorage storage $) {
+    function _getOperatorsWhitelistStorage() internal pure returns (OperatorsWhitelistStorage storage $) {
         bytes32 location = OperatorsWhitelistStorageLocation;
         assembly {
             $.slot := location
@@ -25,7 +25,7 @@ abstract contract OperatorsWhitelist is VotingPowerProvider, IOperatorsWhitelist
     function __OperatorsWhitelist_init(
         OperatorsWhitelistInitParams memory initParams
     ) internal virtual onlyInitializing {
-        OperatorsWhitelistStorage storage $ = _getWhitelistStorage();
+        OperatorsWhitelistStorage storage $ = _getOperatorsWhitelistStorage();
         $._isWhitelistEnabled = initParams.isWhitelistEnabled;
     }
 
@@ -33,7 +33,7 @@ abstract contract OperatorsWhitelist is VotingPowerProvider, IOperatorsWhitelist
      * @inheritdoc IOperatorsWhitelist
      */
     function isWhitelistEnabled() public view virtual returns (bool) {
-        return _getWhitelistStorage()._isWhitelistEnabled;
+        return _getOperatorsWhitelistStorage()._isWhitelistEnabled;
     }
 
     /**
@@ -42,14 +42,14 @@ abstract contract OperatorsWhitelist is VotingPowerProvider, IOperatorsWhitelist
     function isOperatorWhitelisted(
         address operator
     ) public view virtual returns (bool) {
-        return _getWhitelistStorage()._whitelisted[operator];
+        return _getOperatorsWhitelistStorage()._whitelisted[operator];
     }
 
     /**
      * @inheritdoc IOperatorsWhitelist
      */
     function isOperatorVaultWhitelisted(address operator, address vault) public view virtual returns (bool) {
-        return _getWhitelistStorage()._whitelistedVault[operator][vault];
+        return _getOperatorsWhitelistStorage()._whitelistedVault[operator][vault];
     }
 
     /**
@@ -58,7 +58,7 @@ abstract contract OperatorsWhitelist is VotingPowerProvider, IOperatorsWhitelist
     function setWhitelistStatus(
         bool status
     ) public virtual checkPermission {
-        _getWhitelistStorage()._isWhitelistEnabled = status;
+        _getOperatorsWhitelistStorage()._isWhitelistEnabled = status;
 
         emit SetWhitelistStatus(status);
     }
@@ -72,7 +72,7 @@ abstract contract OperatorsWhitelist is VotingPowerProvider, IOperatorsWhitelist
         if (isOperatorWhitelisted(operator)) {
             revert OperatorsWhitelist_OperatorAlreadyWhitelisted();
         }
-        _getWhitelistStorage()._whitelisted[operator] = true;
+        _getOperatorsWhitelistStorage()._whitelisted[operator] = true;
 
         emit WhitelistOperator(operator);
     }
@@ -86,7 +86,7 @@ abstract contract OperatorsWhitelist is VotingPowerProvider, IOperatorsWhitelist
         if (!isOperatorWhitelisted(operator)) {
             revert OperatorsWhitelist_OperatorNotWhitelisted();
         }
-        _getWhitelistStorage()._whitelisted[operator] = false;
+        _getOperatorsWhitelistStorage()._whitelisted[operator] = false;
         if (isWhitelistEnabled() && isOperatorRegistered(operator)) {
             _unregisterOperator(operator);
         }
@@ -101,7 +101,7 @@ abstract contract OperatorsWhitelist is VotingPowerProvider, IOperatorsWhitelist
         if (isOperatorVaultWhitelisted(operator, vault)) {
             revert OperatorsWhitelist_OperatorVaultAlreadyWhitelisted();
         }
-        _getWhitelistStorage()._whitelistedVault[operator][vault] = true;
+        _getOperatorsWhitelistStorage()._whitelistedVault[operator][vault] = true;
 
         emit WhitelistOperatorVault(operator, vault);
     }
@@ -113,7 +113,7 @@ abstract contract OperatorsWhitelist is VotingPowerProvider, IOperatorsWhitelist
         if (!isOperatorVaultWhitelisted(operator, vault)) {
             revert OperatorsWhitelist_OperatorVaultNotWhitelisted();
         }
-        _getWhitelistStorage()._whitelistedVault[operator][vault] = false;
+        _getOperatorsWhitelistStorage()._whitelistedVault[operator][vault] = false;
         if (isWhitelistEnabled() && isOperatorVaultRegistered(operator, vault)) {
             _unregisterOperatorVault(operator, vault);
         }

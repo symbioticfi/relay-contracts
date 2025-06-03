@@ -2,7 +2,7 @@
 pragma solidity ^0.8.25;
 
 import "forge-std/Test.sol";
-import {NoPermissionManager} from "../../../../src/contracts/modules/common/permissions/NoPermissionManager.sol";
+import {NoPermissionManager} from "../../../../test/mocks/NoPermissionManager.sol";
 
 contract TestNoPermissionManager is NoPermissionManager {
     function initialize() external initializer {

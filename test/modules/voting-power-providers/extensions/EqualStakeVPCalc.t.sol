@@ -3,7 +3,7 @@ pragma solidity ^0.8.25;
 
 import "forge-std/Test.sol";
 
-contract EqualStakeToVPTest is Test {
+contract EqualStakeVPCalcTest is Test {
     function setUp() public {}
 
     function test_create() public {}

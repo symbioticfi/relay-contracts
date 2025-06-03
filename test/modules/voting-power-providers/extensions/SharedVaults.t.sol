@@ -8,16 +8,16 @@ import {VaultManagerLogic} from "../../../../src/contracts/base/logic/VaultManag
 import {ISharedVaults} from "../../../../src/interfaces/modules/voting-power/extensions/ISharedVaults.sol";
 import {INetworkManager} from "../../../../src/interfaces/base/INetworkManager.sol";
 import {IVaultManager} from "../../../../src/interfaces/base/IVaultManager.sol";
-import {NoPermissionManager} from "../../../../src/contracts/modules/common/permissions/NoPermissionManager.sol";
+import {NoPermissionManager} from "../../../../test/mocks/NoPermissionManager.sol";
 import {VaultManager} from "../../../../src/contracts/base/VaultManager.sol";
-import {EqualStakeToVP} from "../../../../src/contracts/features/stakeToVotingPower/EqualStakeToVP.sol";
+import {EqualStakeVPCalc} from "../../../../src/contracts/modules/voting-power/extensions/EqualStakeVPCalc.sol";
 import {IVotingPowerProvider} from "../../../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
 import {IOzEIP712} from "../../../../src/interfaces/base/common/IOzEIP712.sol";
 import {VotingPowerProvider} from "../../../../src/contracts/modules/voting-power/VotingPowerProvider.sol";
 
 import "../../../InitSetup.sol";
 
-contract TestSharedVaults is SharedVaults, NoPermissionManager, EqualStakeToVP {
+contract TestSharedVaults is SharedVaults, NoPermissionManager, EqualStakeVPCalc {
     constructor(address operatorRegistry, address vaultFactory) VotingPowerProvider(operatorRegistry, vaultFactory) {}
 
     function initialize(

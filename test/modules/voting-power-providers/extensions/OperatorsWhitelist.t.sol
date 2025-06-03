@@ -7,8 +7,8 @@ import {IOperatorsWhitelist} from "../../../../src/interfaces/modules/voting-pow
 import "../../../InitSetup.sol";
 
 import {OperatorsWhitelist} from "../../../../src/contracts/modules/voting-power/extensions/OperatorsWhitelist.sol";
-import {NoPermissionManager} from "../../../../src/contracts/modules/common/permissions/NoPermissionManager.sol";
-import {EqualStakeToVP} from "../../../../src/contracts/features/stakeToVotingPower/EqualStakeToVP.sol";
+import {NoPermissionManager} from "../../../../test/mocks/NoPermissionManager.sol";
+import {EqualStakeVPCalc} from "../../../../src/contracts/modules/voting-power/extensions/EqualStakeVPCalc.sol";
 import {VaultManager} from "../../../../src/contracts/base/VaultManager.sol";
 import {INetworkManager} from "../../../../src/interfaces/base/INetworkManager.sol";
 import {IVaultManager} from "../../../../src/interfaces/base/IVaultManager.sol";
@@ -17,7 +17,7 @@ import {MultiToken} from "../../../../src/contracts/modules/voting-power/extensi
 import {IOzEIP712} from "../../../../src/interfaces/base/common/IOzEIP712.sol";
 import {VotingPowerProvider} from "../../../../src/contracts/modules/voting-power/VotingPowerProvider.sol";
 
-contract TestOperatorsWhitelist is OperatorsWhitelist, NoPermissionManager, EqualStakeToVP, MultiToken {
+contract TestOperatorsWhitelist is OperatorsWhitelist, NoPermissionManager, EqualStakeVPCalc, MultiToken {
     constructor(address operatorRegistry, address vaultFactory) VotingPowerProvider(operatorRegistry, vaultFactory) {}
 
     function initialize(
@@ -225,6 +225,6 @@ contract OperatorsWhitelistTest is Test, InitSetup {
     function test_Location() public {
         bytes32 location = keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OperatorsWhitelist")) - 1))
             & ~bytes32(uint256(0xff));
-        assertEq(location, 0x25b93ff8b4a329091c8d52079f1be19dcd6e61195383d70f54f5235ddae87400);
+        assertEq(location, 0x3fa7d7e58a4c604e915cc85c236f89892f2e36ec13dff506efa6b5ea5fafeb00);
     }
 }

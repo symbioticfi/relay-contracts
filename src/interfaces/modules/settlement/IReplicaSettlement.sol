@@ -2,8 +2,11 @@
 pragma solidity ^0.8.0;
 
 import {ISettlement} from "../../../interfaces/modules/settlement/ISettlement.sol";
-import {IOzAccessControl} from "src/interfaces/modules/common/permissions/IOzAccessControl.sol";
 
 interface IReplicaSettlement {
-    function initialize(ISettlement.SettlementInitParams memory settlementInitParams, address defaultAdmin) external;
+    struct ReplicaSettlementInitParams {
+        ISettlement.SettlementInitParams settlementInitParams;
+    }
+
+    function ReplicaSettlement_VERSION() external view returns (uint64);
 }

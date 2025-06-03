@@ -10,14 +10,14 @@ import {IVotingPowerProvider} from "../../../src/interfaces/modules/voting-power
 import {INetworkManager} from "../../../src/interfaces/base/INetworkManager.sol";
 import {IVaultManager} from "../../../src/interfaces/base/IVaultManager.sol";
 import {IOzEIP712} from "../../../src/interfaces/base/common/IOzEIP712.sol";
-import {NoPermissionManager} from "../../../src/contracts/modules/common/permissions/NoPermissionManager.sol";
+import {NoPermissionManager} from "../../../test/mocks/NoPermissionManager.sol";
 import {VaultManager} from "../../../src/contracts/base/VaultManager.sol";
-import {EqualStakeToVP} from "../../../src/contracts/features/stakeToVotingPower/EqualStakeToVP.sol";
+import {EqualStakeVPCalc} from "../../../src/contracts/modules/voting-power/extensions/EqualStakeVPCalc.sol";
 
 import {BN254} from "../../../src/contracts/libraries/utils/BN254.sol";
 import "../../InitSetup.sol";
 
-contract TestVotingPowerProvider is MultiToken, VotingPowerProvider, NoPermissionManager, EqualStakeToVP {
+contract TestVotingPowerProvider is MultiToken, VotingPowerProvider, NoPermissionManager, EqualStakeVPCalc {
     constructor(address operatorRegistry, address vaultFactory) VotingPowerProvider(operatorRegistry, vaultFactory) {}
 
     function initialize(

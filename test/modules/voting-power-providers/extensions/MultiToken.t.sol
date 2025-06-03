@@ -8,13 +8,13 @@ import {VaultManagerLogic} from "../../../../src/contracts/base/logic/VaultManag
 import {IMultiToken} from "../../../../src/interfaces/modules/voting-power/extensions/IMultiToken.sol";
 import {INetworkManager} from "../../../../src/interfaces/base/INetworkManager.sol";
 import {IVaultManager} from "../../../../src/interfaces/base/IVaultManager.sol";
-import {NoPermissionManager} from "../../../../src/contracts/modules/common/permissions/NoPermissionManager.sol";
+import {NoPermissionManager} from "../../../../test/mocks/NoPermissionManager.sol";
 import {VaultManager} from "../../../../src/contracts/base/VaultManager.sol";
-import {EqualStakeToVP} from "../../../../src/contracts/features/stakeToVotingPower/EqualStakeToVP.sol";
+import {EqualStakeVPCalc} from "../../../../src/contracts/modules/voting-power/extensions/EqualStakeVPCalc.sol";
 
 import "../../../InitSetup.sol";
 
-contract TestMultiToken is MultiToken, NoPermissionManager, EqualStakeToVP {
+contract TestMultiToken is MultiToken, NoPermissionManager, EqualStakeVPCalc {
     constructor(address operatorRegistry, address vaultFactory) VaultManager(operatorRegistry, vaultFactory) {}
 
     function initialize(
@@ -55,16 +55,16 @@ contract MultiTokenTest is InitSetup {
     }
 
     function test_RegisterToken_OnlyOwnerCanCall() public {
-        tokens.registerToken(initSetupParams.masterChain.tokens[0]);
+        tokens.registerToken(address(1));
     }
 
     function test_RegisterUnregisterToken_VaultManagerSide() public {
-        tokens.registerToken(initSetupParams.masterChain.tokens[0]);
+        tokens.registerToken(address(1));
 
-        assertTrue(tokens.isTokenRegistered(initSetupParams.masterChain.tokens[0]));
+        assertTrue(tokens.isTokenRegistered(address(1)));
 
-        tokens.unregisterToken(initSetupParams.masterChain.tokens[0]);
+        tokens.unregisterToken(address(1));
 
-        assertFalse(tokens.isTokenRegistered(initSetupParams.masterChain.tokens[0]));
+        assertFalse(tokens.isTokenRegistered(address(1)));
     }
 }

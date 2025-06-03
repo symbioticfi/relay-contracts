@@ -16,10 +16,9 @@ import {MasterGenesisSetup} from "../../../MasterGenesisSetup.sol";
 
 import {console2} from "forge-std/console2.sol";
 
-import {Verifier as Verifier_10} from "../../../../src/contracts/modules/settlement/sig-verifiers/zk/Verifier_10.sol";
-import {Verifier as Verifier_100} from "../../../../src/contracts/modules/settlement/sig-verifiers/zk/Verifier_100.sol";
-import {Verifier as Verifier_1000} from
-    "../../../../src/contracts/modules/settlement/sig-verifiers/zk/Verifier_1000.sol";
+import {Verifier as Verifier_10} from "../../../../script/test/data/zk/Verifier_10.sol";
+import {Verifier as Verifier_100} from "../../../../script/test/data/zk/Verifier_100.sol";
+import {Verifier as Verifier_1000} from "../../../../script/test/data/zk/Verifier_1000.sol";
 import {SigVerifierBlsBn254ZK} from
     "../../../../src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol";
 

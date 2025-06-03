@@ -9,6 +9,18 @@ contract KeyRegistry is KeyManager, IKeyRegistry {
     /**
      * @inheritdoc IKeyRegistry
      */
+    uint64 public constant KeyRegistry_VERSION = 1;
+
+    function __KeyRegistry_init(
+        KeyRegistryInitParams memory keyRegistryInitParams
+    ) public virtual onlyInitializing {
+        __KeyManager_init();
+        __OzEIP712_init(keyRegistryInitParams.ozEip712InitParams);
+    }
+
+    /**
+     * @inheritdoc IKeyRegistry
+     */
     function getOperatorsLength() public view virtual returns (uint256) {
         return _getKeysOperatorsLength();
     }
@@ -25,15 +37,5 @@ contract KeyRegistry is KeyManager, IKeyRegistry {
      */
     function getOperators() public view virtual returns (address[] memory) {
         return _getKeysOperators();
-    }
-
-    /**
-     * @inheritdoc IKeyRegistry
-     */
-    function initialize(
-        OzEIP712InitParams memory ozEip712InitParams
-    ) public virtual initializer {
-        __KeyManager_init();
-        __OzEIP712_init(ozEip712InitParams);
     }
 }

@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {StakeToVotingPowerManager} from "../../base/StakeToVotingPowerManager.sol";
+import {StakeToVotingPowerManager} from "../../../base/StakeToVotingPowerManager.sol";
 
-import {IStakeToVotingPowerManager} from "../../../interfaces/base/IStakeToVotingPowerManager.sol";
-import {IEqualStakeToVP} from "../../../interfaces/features/stakeToVotingPower/IEqualStakeToVP.sol";
+import {IEqualStakeVPCalc} from "../../../../interfaces/modules/voting-power/extensions/IEqualStakeVPCalc.sol";
+import {IStakeToVotingPowerManager} from "../../../../interfaces/base/IStakeToVotingPowerManager.sol";
 
-abstract contract EqualStakeToVP is StakeToVotingPowerManager, IEqualStakeToVP {
+abstract contract EqualStakeVPCalc is StakeToVotingPowerManager, IEqualStakeVPCalc {
     /**
-     * @inheritdoc IEqualStakeToVP
+     * @inheritdoc IEqualStakeVPCalc
      */
-    uint64 public constant EqualStakeToVP_VERSION = 1;
+    uint64 public constant EqualStakeVPCalc_VERSION = 1;
 
-    function __EqualStakeToVP_init() internal virtual onlyInitializing {}
+    function __EqualStakeVPCalc_init() internal virtual onlyInitializing {}
 
     /**
      * @inheritdoc IStakeToVotingPowerManager

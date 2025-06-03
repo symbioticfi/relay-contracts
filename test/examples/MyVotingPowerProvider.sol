@@ -97,7 +97,7 @@ contract MyVotingPowerProviderTest is InitSetup {
     function testStakeToVotingPower() public {
         uint256 stake = 12_345;
         uint256 vp = aggregator.stakeToVotingPower(address(0xAAA), stake, bytes(""));
-        assertEq(vp, stake, "EqualStakeToVP must return stake exactly");
+        assertEq(vp, stake, "EqualStakeVPCalc must return stake exactly");
 
         uint48 someTimestamp = uint48(vm.getBlockTimestamp() + 100);
         uint256 vp2 = aggregator.stakeToVotingPowerAt(address(0xAAA), stake, bytes("whatever"), someTimestamp);

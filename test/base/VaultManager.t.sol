@@ -11,9 +11,9 @@ import "../InitSetup.sol";
 
 import {VaultManager} from "../../src/contracts/base/VaultManager.sol";
 import {VaultManagerLogic} from "../../src/contracts/base/logic/VaultManagerLogic.sol";
-import {EqualStakeToVP} from "../../src/contracts/features/stakeToVotingPower/EqualStakeToVP.sol";
+import {EqualStakeVPCalc} from "../../src/contracts/modules/voting-power/extensions/EqualStakeVPCalc.sol";
 
-contract TestVaultManager is VaultManager, EqualStakeToVP {
+contract TestVaultManager is VaultManager, EqualStakeVPCalc {
     constructor(address operatorRegistry, address vaultFactory) VaultManager(operatorRegistry, vaultFactory) {}
 
     function initialize(
@@ -177,7 +177,7 @@ contract VaultManagerTest is InitSetup {
         INetworkManager.NetworkManagerInitParams memory netInit =
             INetworkManager.NetworkManagerInitParams({network: address(0x1111), subnetworkID: 777});
         IVaultManager.VaultManagerInitParams memory vaultInit =
-            IVaultManager.VaultManagerInitParams({slashingWindow: 100, token: initSetupParams.masterChain.tokens[0]});
+            IVaultManager.VaultManagerInitParams({slashingWindow: 100, token: address(0)});
         vaultManager.initialize(netInit, vaultInit);
 
         _registerOperator_SymbioticCore(symbioticCore, operator1);
@@ -522,11 +522,11 @@ contract VaultManagerTest is InitSetup {
 
         _networkSetMiddleware_SymbioticCore(vars.network.addr, address(vaultManager));
 
-        for (uint256 i; i < initSetupParams.masterChain.tokens.length; ++i) {
-            vm.startPrank(vars.deployer.addr);
-            vaultManager.registerToken(initSetupParams.masterChain.tokens[i]);
-            vm.stopPrank();
-        }
+        // for (uint256 i; i < initSetupParams.masterChain.tokens.length; ++i) {
+        //     vm.startPrank(vars.deployer.addr);
+        //     vaultManager.registerToken(initSetupParams.masterChain.tokens[i]);
+        //     vm.stopPrank();
+        // }
         for (uint256 i; i < initSetupParams.masterChain.vaults.length; ++i) {
             _setMaxNetworkLimit_SymbioticCore(
                 vars.network.addr,

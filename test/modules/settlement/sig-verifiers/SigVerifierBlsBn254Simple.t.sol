@@ -29,10 +29,9 @@ import {MasterGenesisSetup} from "../../../MasterGenesisSetup.sol";
 
 import {console2} from "forge-std/console2.sol";
 
-import {Verifier as Verifier_10} from "../../../../src/contracts/modules/settlement/sig-verifiers/zk/Verifier_10.sol";
-import {Verifier as Verifier_100} from "../../../../src/contracts/modules/settlement/sig-verifiers/zk/Verifier_100.sol";
-import {Verifier as Verifier_1000} from
-    "../../../../src/contracts/modules/settlement/sig-verifiers/zk/Verifier_1000.sol";
+import {Verifier as Verifier_10} from "../../../../script/test/data/zk/Verifier_10.sol";
+import {Verifier as Verifier_100} from "../../../../script/test/data/zk/Verifier_100.sol";
+import {Verifier as Verifier_1000} from "../../../../script/test/data/zk/Verifier_1000.sol";
 import {SigVerifierBlsBn254Simple} from
     "../../../../src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol";
 import "../../../InitSetup.sol";
@@ -43,6 +42,10 @@ import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {VotingPowerProviderSharedVaults} from "../../../mocks/VotingPowerProviderSharedVaults.sol";
+import {MyKeyRegistry} from "../../../../examples/MyKeyRegistry.sol";
+import {MyMasterSettlement} from "../../../../examples/MyMasterSettlement.sol";
+import {IMasterSettlement} from "../../../../src/interfaces/modules/settlement/IMasterSettlement.sol";
+import {IKeyRegistry} from "../../../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
 
 contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
     using KeyTags for uint8;
@@ -210,8 +213,12 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
 
         vm.startPrank(vars.deployer.addr);
         // vm.setNonce(vars.deployer.addr, 66);
-        masterSetupParams.keyRegistry = new KeyRegistry();
-        masterSetupParams.keyRegistry.initialize(IOzEIP712.OzEIP712InitParams({name: "KeyRegistry", version: "1"}));
+        masterSetupParams.keyRegistry = new MyKeyRegistry();
+        masterSetupParams.keyRegistry.initialize(
+            IKeyRegistry.KeyRegistryInitParams({
+                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "KeyRegistry", version: "1"})
+            })
+        );
         vm.stopPrank();
 
         for (uint256 i; i < vars.operators.length; ++i) {
@@ -258,7 +265,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
 
         vm.startPrank(vars.deployer.addr);
         // vm.setNonce(vars.deployer.addr, 68);
-        masterSetupParams.master = new MasterSettlement{salt: bytes32("master")}();
+        masterSetupParams.master = new MyMasterSettlement{salt: bytes32("master")}();
         {
             uint8[] memory requiredKeyTags = new uint8[](2);
             requiredKeyTags[0] = KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15);
@@ -285,30 +292,32 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
             //     chainId: uint64(initSetupParams.secondaryChain.chainId)
             // });
             masterSetupParams.master.initialize(
-                ISettlement.SettlementInitParams({
-                    networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
-                        network: vars.network.addr,
-                        subnetworkID: initSetupParams.subnetworkID
+                IMasterSettlement.MasterSettlementInitParams({
+                    settlementInitParams: ISettlement.SettlementInitParams({
+                        networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
+                            network: vars.network.addr,
+                            subnetworkID: initSetupParams.subnetworkID
+                        }),
+                        epochManagerInitParams: IEpochManager.EpochManagerInitParams({
+                            epochDuration: initSetupParams.epochDuration,
+                            epochDurationTimestamp: initSetupParams.zeroTimestamp
+                        }),
+                        ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
+                        commitDuration: initSetupParams.commitDuration,
+                        prolongDuration: initSetupParams.prolongDuration,
+                        requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15),
+                        sigVerifier: address(new SigVerifierBlsBn254Simple())
                     }),
-                    epochManagerInitParams: IEpochManager.EpochManagerInitParams({
-                        epochDuration: initSetupParams.epochDuration,
-                        epochDurationTimestamp: initSetupParams.zeroTimestamp
-                    }),
-                    ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
-                    commitDuration: initSetupParams.commitDuration,
-                    prolongDuration: initSetupParams.prolongDuration,
-                    requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15),
-                    sigVerifier: address(new SigVerifierBlsBn254Simple())
-                }),
-                IConfigProvider.ConfigProviderInitParams({
-                    votingPowerProviders: votingPowerProviders,
-                    keysProvider: keysProvider,
-                    replicas: replicas,
-                    verificationType: 1,
-                    maxVotingPower: 1e36,
-                    minInclusionVotingPower: 0,
-                    maxValidatorsCount: 99_999_999,
-                    requiredKeyTags: requiredKeyTags
+                    configProviderInitParams: IConfigProvider.ConfigProviderInitParams({
+                        votingPowerProviders: votingPowerProviders,
+                        keysProvider: keysProvider,
+                        replicas: replicas,
+                        verificationType: 1,
+                        maxVotingPower: 1e36,
+                        minInclusionVotingPower: 0,
+                        maxValidatorsCount: 99_999_999,
+                        requiredKeyTags: requiredKeyTags
+                    })
                 }),
                 vars.deployer.addr
             );

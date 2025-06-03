@@ -13,9 +13,9 @@ abstract contract OperatorsBlacklist is VotingPowerProvider, IOperatorsBlacklist
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OperatorsBlacklist")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant OperatorsBlacklistStorageLocation =
-        0xf3871d05fd4da42686c3c56dfd4be98b1d278da4bf1fd61b1d6e7a6e37722600;
+        0x23ffaefb5f6b29c7a77ac2a8c6e8b7a8cb63a59ee84629217d13308576dcc800;
 
-    function _getForcePauseStorage() internal pure returns (OperatorsBlacklistStorage storage $) {
+    function _getOperatorsBlacklistStorage() internal pure returns (OperatorsBlacklistStorage storage $) {
         bytes32 location = OperatorsBlacklistStorageLocation;
         assembly {
             $.slot := location
@@ -27,87 +27,87 @@ abstract contract OperatorsBlacklist is VotingPowerProvider, IOperatorsBlacklist
     /**
      * @inheritdoc IOperatorsBlacklist
      */
-    function isOperatorForcePaused(
+    function isOperatorBlacklisted(
         address operator
     ) public view virtual returns (bool) {
-        return _getForcePauseStorage()._forcePaused[operator];
+        return _getOperatorsBlacklistStorage()._blacklisted[operator];
     }
 
     /**
      * @inheritdoc IOperatorsBlacklist
      */
-    function isOperatorVaultForcePaused(address operator, address vault) public view virtual returns (bool) {
-        return _getForcePauseStorage()._forcePausedVault[operator][vault];
+    function isOperatorVaultBlacklisted(address operator, address vault) public view virtual returns (bool) {
+        return _getOperatorsBlacklistStorage()._blacklistedVault[operator][vault];
     }
 
     /**
      * @inheritdoc IOperatorsBlacklist
      */
-    function forcePauseOperator(
+    function blacklistOperator(
         address operator
     ) public virtual checkPermission {
-        if (isOperatorForcePaused(operator)) {
-            revert OperatorsBlacklist_OperatorForcePaused();
+        if (isOperatorBlacklisted(operator)) {
+            revert OperatorsBlacklist_OperatorBlacklisted();
         }
-        _getForcePauseStorage()._forcePaused[operator] = true;
+        _getOperatorsBlacklistStorage()._blacklisted[operator] = true;
         if (isOperatorRegistered(operator)) {
             _unregisterOperator(operator);
         }
 
-        emit ForcePauseOperator(operator);
+        emit BlacklistOperator(operator);
     }
 
     /**
      * @inheritdoc IOperatorsBlacklist
      */
-    function forceUnpauseOperator(
+    function unblacklistOperator(
         address operator
     ) public virtual checkPermission {
-        if (!isOperatorForcePaused(operator)) {
-            revert OperatorsBlacklist_OperatorNotForcePaused();
+        if (!isOperatorBlacklisted(operator)) {
+            revert OperatorsBlacklist_OperatorNotBlacklisted();
         }
-        _getForcePauseStorage()._forcePaused[operator] = false;
+        _getOperatorsBlacklistStorage()._blacklisted[operator] = false;
 
-        emit ForceUnpauseOperator(operator);
+        emit UnblacklistOperator(operator);
     }
 
     /**
      * @inheritdoc IOperatorsBlacklist
      */
-    function forcePauseOperatorVault(address operator, address vault) public virtual checkPermission {
-        if (isOperatorVaultForcePaused(operator, vault)) {
-            revert OperatorsBlacklist_OperatorVaultForcePaused();
+    function blacklistOperatorVault(address operator, address vault) public virtual checkPermission {
+        if (isOperatorVaultBlacklisted(operator, vault)) {
+            revert OperatorsBlacklist_OperatorVaultBlacklisted();
         }
-        _getForcePauseStorage()._forcePausedVault[operator][vault] = true;
+        _getOperatorsBlacklistStorage()._blacklistedVault[operator][vault] = true;
         if (isOperatorVaultRegistered(operator, vault)) {
             _unregisterOperatorVault(operator, vault);
         }
 
-        emit ForcePauseOperatorVault(operator, vault);
+        emit BlacklistOperatorVault(operator, vault);
     }
 
     /**
      * @inheritdoc IOperatorsBlacklist
      */
-    function forceUnpauseOperatorVault(address operator, address vault) public virtual checkPermission {
-        if (!isOperatorVaultForcePaused(operator, vault)) {
-            revert OperatorsBlacklist_OperatorVaultNotForcePaused();
+    function unblacklistOperatorVault(address operator, address vault) public virtual checkPermission {
+        if (!isOperatorVaultBlacklisted(operator, vault)) {
+            revert OperatorsBlacklist_OperatorVaultNotBlacklisted();
         }
-        _getForcePauseStorage()._forcePausedVault[operator][vault] = false;
+        _getOperatorsBlacklistStorage()._blacklistedVault[operator][vault] = false;
 
-        emit ForceUnpauseOperatorVault(operator, vault);
+        emit UnblacklistOperatorVault(operator, vault);
     }
 
     function _registerOperatorImpl(address operator, address vault) internal virtual override {
-        if (isOperatorForcePaused(operator)) {
-            revert OperatorsBlacklist_OperatorForcePaused();
+        if (isOperatorBlacklisted(operator)) {
+            revert OperatorsBlacklist_OperatorBlacklisted();
         }
         super._registerOperatorImpl(operator, vault);
     }
 
     function _registerOperatorVaultImpl(address operator, address vault) internal virtual override {
-        if (isOperatorVaultForcePaused(operator, vault)) {
-            revert OperatorsBlacklist_OperatorVaultForcePaused();
+        if (isOperatorVaultBlacklisted(operator, vault)) {
+            revert OperatorsBlacklist_OperatorVaultBlacklisted();
         }
         super._registerOperatorVaultImpl(operator, vault);
     }

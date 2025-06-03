@@ -3,21 +3,17 @@ pragma solidity ^0.8.25;
 
 import {Settlement} from "./Settlement.sol";
 
-import {OzAccessControl} from "../../modules/common/permissions/OzAccessControl.sol";
-
 import {IReplicaSettlement} from "../../../interfaces/modules/settlement/IReplicaSettlement.sol";
 
-contract ReplicaSettlement is Settlement, OzAccessControl, IReplicaSettlement {
+abstract contract ReplicaSettlement is Settlement, IReplicaSettlement {
     /**
      * @inheritdoc IReplicaSettlement
      */
-    function initialize(
-        SettlementInitParams memory settlementInitParams,
-        address defaultAdmin
-    ) public virtual initializer {
-        __Settlement_init(settlementInitParams);
-        __OzAccessControl_init();
+    uint64 public constant ReplicaSettlement_VERSION = 1;
 
-        _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
+    function __ReplicaSettlement_init(
+        ReplicaSettlementInitParams memory replicaSettlementInitParams
+    ) public virtual onlyInitializing {
+        __Settlement_init(replicaSettlementInitParams.settlementInitParams);
     }
 }
