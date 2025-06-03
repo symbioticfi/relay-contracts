@@ -2,9 +2,9 @@
 pragma solidity ^0.8.25;
 
 import "forge-std/Test.sol";
-import {StakeToVotingPowerManager} from "../../src/contracts/base/StakeToVotingPowerManager.sol";
+import {VotingPowerCalcManager} from "../../src/contracts/base/VotingPowerCalcManager.sol";
 
-contract TestStakeToVotingPowerManager is StakeToVotingPowerManager {
+contract TestVotingPowerCalcManager is VotingPowerCalcManager {
     bool public initialized;
 
     function initialize() external initializer {
@@ -29,16 +29,16 @@ contract TestStakeToVotingPowerManager is StakeToVotingPowerManager {
     }
 }
 
-contract StakeToVotingPowerManagerTest is Test {
-    TestStakeToVotingPowerManager private manager;
+contract VotingPowerCalcManagerTest is Test {
+    TestVotingPowerCalcManager private manager;
 
     function setUp() public {
-        manager = new TestStakeToVotingPowerManager();
+        manager = new TestVotingPowerCalcManager();
         manager.initialize();
     }
 
     function testVersion() public {
-        assertEq(manager.StakeToVotingPowerManager_VERSION(), 1, "Version mismatch");
+        assertEq(manager.VotingPowerCalcManager_VERSION(), 1, "Version mismatch");
     }
 
     function testReInitializeReverts() public {

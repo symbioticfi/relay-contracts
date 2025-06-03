@@ -87,8 +87,6 @@ interface IVaultManager {
         bytes slashHints;
     }
 
-    event InitSlashingWindow(uint48 slashingWindow);
-
     event SetSlashingWindow(uint48 slashingWindow);
 
     event RegisterToken(address indexed token);

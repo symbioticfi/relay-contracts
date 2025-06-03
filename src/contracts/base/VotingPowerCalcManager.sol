@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {IStakeToVotingPowerManager} from "../../interfaces/base/IStakeToVotingPowerManager.sol";
+import {IVotingPowerCalcManager} from "../../interfaces/base/IVotingPowerCalcManager.sol";
 
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-abstract contract StakeToVotingPowerManager is Initializable, IStakeToVotingPowerManager {
+abstract contract VotingPowerCalcManager is Initializable, IVotingPowerCalcManager {
     /**
-     * @inheritdoc IStakeToVotingPowerManager
+     * @inheritdoc IVotingPowerCalcManager
      */
-    uint64 public constant StakeToVotingPowerManager_VERSION = 1;
+    uint64 public constant VotingPowerCalcManager_VERSION = 1;
 
     /**
-     * @inheritdoc IStakeToVotingPowerManager
+     * @inheritdoc IVotingPowerCalcManager
      */
     function stakeToVotingPowerAt(
         address vault,
@@ -22,7 +22,7 @@ abstract contract StakeToVotingPowerManager is Initializable, IStakeToVotingPowe
     ) public view virtual returns (uint256 power);
 
     /**
-     * @inheritdoc IStakeToVotingPowerManager
+     * @inheritdoc IVotingPowerCalcManager
      */
     function stakeToVotingPower(
         address vault,

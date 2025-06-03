@@ -55,7 +55,7 @@ library VaultManagerLogic {
         IVaultManager.VaultManagerInitParams memory initParams
     ) public {
         _getVaultManagerStorage()._slashingWindow = initParams.slashingWindow;
-        emit IVaultManager.InitSlashingWindow(initParams.slashingWindow);
+        emit IVaultManager.SetSlashingWindow(initParams.slashingWindow);
         if (initParams.token != address(0)) {
             registerToken(initParams.token);
         }

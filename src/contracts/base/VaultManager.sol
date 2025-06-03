@@ -18,14 +18,14 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
 import {OperatorManager} from "./OperatorManager.sol";
 
-import {StakeToVotingPowerManager} from "./StakeToVotingPowerManager.sol";
+import {VotingPowerCalcManager} from "./VotingPowerCalcManager.sol";
 
 import {Checkpoints} from "../libraries/structs/Checkpoints.sol";
 import {VaultManagerLogic} from "./logic/VaultManagerLogic.sol";
 
 import {IVaultManager} from "../../interfaces/base/IVaultManager.sol";
 
-abstract contract VaultManager is OperatorManager, StakeToVotingPowerManager, IVaultManager {
+abstract contract VaultManager is OperatorManager, VotingPowerCalcManager, IVaultManager {
     /**
      * @inheritdoc IVaultManager
      */
