@@ -382,14 +382,6 @@ abstract contract VaultManager is OperatorManager, VotingPowerCalcManager, IVaul
         return VaultManagerLogic.executeSlash(slasher, slashIndex, hints);
     }
 
-    function setResolverVault(address vault, address resolver, bytes memory hints) public {
-        VaultManagerLogic.setResolverVault(vault, resolver, hints);
-    }
-
-    function setResolver(address slasher, address resolver, bytes memory hints) public {
-        VaultManagerLogic.setResolver(slasher, resolver, hints);
-    }
-
     function _distributeStakerRewards(
         address stakerRewards,
         address token,
