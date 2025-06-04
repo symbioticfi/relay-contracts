@@ -25,7 +25,6 @@ import {PersistentSet} from "../../libraries/structs/PersistentSet.sol";
 import {InputNormalizer} from "../../libraries/utils/InputNormalizer.sol";
 
 import {NetworkManagerLogic} from "./NetworkManagerLogic.sol";
-import {OperatorManagerLogic} from "./OperatorManagerLogic.sol";
 
 import {IVaultManager} from "../../../interfaces/base/IVaultManager.sol";
 
@@ -87,6 +86,28 @@ library VaultManagerLogic {
         return _getVaultManagerStorage()._tokens.length();
     }
 
+    function isOperatorRegisteredAt(address operator, uint48 timestamp, bytes memory hint) public view returns (bool) {
+        return _getVaultManagerStorage()._operators.containsAt(timestamp, operator, hint);
+    }
+
+    function isOperatorRegistered(
+        address operator
+    ) public view returns (bool) {
+        return _getVaultManagerStorage()._operators.contains(operator);
+    }
+
+    function getOperatorsAt(uint48 timestamp, bytes[] memory hints) public view returns (address[] memory) {
+        return _getVaultManagerStorage()._operators.valuesAt(timestamp, hints);
+    }
+
+    function getOperators() public view returns (address[] memory) {
+        return _getVaultManagerStorage()._operators.values();
+    }
+
+    function getOperatorsLength() public view returns (uint256) {
+        return _getVaultManagerStorage()._operators.length();
+    }
+
     function isSharedVaultRegisteredAt(address vault, uint48 timestamp, bytes memory hint) public view returns (bool) {
         return _getVaultManagerStorage()._sharedVaults.containsAt(timestamp, vault, hint);
     }
@@ -107,6 +128,20 @@ library VaultManagerLogic {
 
     function getSharedVaultsLength() public view returns (uint256) {
         return _getVaultManagerStorage()._sharedVaults.length();
+    }
+
+    function isOperatorVaultRegisteredAt(
+        address vault,
+        uint48 timestamp,
+        bytes memory hint
+    ) public view returns (bool) {
+        return _getVaultManagerStorage()._allOperatorVaults.containsAt(timestamp, vault, hint);
+    }
+
+    function isOperatorVaultRegistered(
+        address vault
+    ) public view returns (bool) {
+        return _getVaultManagerStorage()._allOperatorVaults.contains(vault);
     }
 
     function isOperatorVaultRegisteredAt(
@@ -317,7 +352,7 @@ library VaultManagerLogic {
         }
 
         uint256 length;
-        address[] memory operators = OperatorManagerLogic.getOperatorsAt(timestamp, votingPowersHints.operatorsHints);
+        address[] memory operators = getOperatorsAt(timestamp, votingPowersHints.operatorsHints);
         operatorVotingPowers = new IVaultManager.OperatorVotingPower[](operators.length);
         votingPowersHints.operatorVotingPowersHints =
             votingPowersHints.operatorVotingPowersHints.normalize(operators.length);
@@ -345,7 +380,7 @@ library VaultManagerLogic {
         bytes[] memory extraData
     ) public view returns (IVaultManager.OperatorVotingPower[] memory operatorVotingPowers) {
         uint256 length;
-        address[] memory operators = OperatorManagerLogic.getOperators();
+        address[] memory operators = getOperators();
         operatorVotingPowers = new IVaultManager.OperatorVotingPower[](operators.length);
         extraData = extraData.normalize(operators.length);
         for (uint256 i; i < operators.length; ++i) {
@@ -395,6 +430,28 @@ library VaultManagerLogic {
         emit IVaultManager.UnregisterToken(token);
     }
 
+    function registerOperator(address OPERATOR_REGISTRY, address operator) public {
+        if (!IRegistry(OPERATOR_REGISTRY).isEntity(operator)) {
+            revert IVaultManager.VaultManager_NotOperator();
+        }
+
+        if (!_getVaultManagerStorage()._operators.add(Time.timestamp(), operator)) {
+            revert IVaultManager.VaultManager_OperatorAlreadyRegistered();
+        }
+
+        emit IVaultManager.RegisterOperator(operator);
+    }
+
+    function unregisterOperator(
+        address operator
+    ) public {
+        if (!_getVaultManagerStorage()._operators.remove(Time.timestamp(), operator)) {
+            revert IVaultManager.VaultManager_OperatorNotRegistered();
+        }
+
+        emit IVaultManager.UnregisterOperator(operator);
+    }
+
     function registerSharedVault(address VAULT_FACTORY, address vault) public {
         IVaultManager.VaultManagerStorage storage $ = _getVaultManagerStorage();
         if (!_validateVault(VAULT_FACTORY, vault)) {
@@ -421,7 +478,7 @@ library VaultManagerLogic {
         if (!_validateOperatorVault(operator, vault)) {
             revert IVaultManager.VaultManager_InvalidOperatorVault();
         }
-        if (!OperatorManagerLogic.isOperatorRegistered(operator)) {
+        if (!isOperatorRegistered(operator)) {
             revert IVaultManager.VaultManager_OperatorNotRegistered();
         }
         if ($._sharedVaults.contains(vault)) {

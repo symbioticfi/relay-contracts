@@ -85,6 +85,7 @@ contract MyVotingPowerProviderTest is InitSetup {
 
         assertTrue(aggregator.isOperatorRegistered(operator1), "Operator not registered");
         assertTrue(aggregator.isOperatorVaultRegistered(operator1, vaultA), "Vault not registered");
+        assertTrue(aggregator.isOperatorVaultRegistered(vaultA), "Vault not registered");
 
         vm.startPrank(operator1);
         aggregator.unregisterOperator();
@@ -94,6 +95,7 @@ contract MyVotingPowerProviderTest is InitSetup {
 
         assertFalse(aggregator.isOperatorRegistered(operator1), "Should be registered again");
         assertFalse(aggregator.isOperatorVaultRegistered(operator1, vaultA), "Vault registered again");
+        assertFalse(aggregator.isOperatorVaultRegistered(vaultA), "Vault not registered");
     }
 
     function testStakeToVotingPower() public {

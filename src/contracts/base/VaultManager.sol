@@ -16,7 +16,7 @@ import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
-import {OperatorManager} from "./OperatorManager.sol";
+import {NetworkManager} from "./NetworkManager.sol";
 
 import {VotingPowerCalcManager} from "./VotingPowerCalcManager.sol";
 
@@ -25,7 +25,7 @@ import {VaultManagerLogic} from "./logic/VaultManagerLogic.sol";
 
 import {IVaultManager} from "../../interfaces/base/IVaultManager.sol";
 
-abstract contract VaultManager is OperatorManager, VotingPowerCalcManager, IVaultManager {
+abstract contract VaultManager is NetworkManager, VotingPowerCalcManager, IVaultManager {
     /**
      * @inheritdoc IVaultManager
      */
@@ -36,9 +36,15 @@ abstract contract VaultManager is OperatorManager, VotingPowerCalcManager, IVaul
     /**
      * @inheritdoc IVaultManager
      */
+    address public immutable OPERATOR_REGISTRY;
+
+    /**
+     * @inheritdoc IVaultManager
+     */
     address public immutable VAULT_FACTORY;
 
-    constructor(address operatorRegistry, address vaultFactory) OperatorManager(operatorRegistry) {
+    constructor(address operatorRegistry, address vaultFactory) {
+        OPERATOR_REGISTRY = operatorRegistry;
         VAULT_FACTORY = vaultFactory;
     }
 
@@ -99,6 +105,47 @@ abstract contract VaultManager is OperatorManager, VotingPowerCalcManager, IVaul
     /**
      * @inheritdoc IVaultManager
      */
+    function isOperatorRegisteredAt(
+        address operator,
+        uint48 timestamp,
+        bytes memory hint
+    ) public view virtual returns (bool) {
+        return VaultManagerLogic.isOperatorRegisteredAt(operator, timestamp, hint);
+    }
+
+    /**
+     * @inheritdoc IVaultManager
+     */
+    function isOperatorRegistered(
+        address operator
+    ) public view virtual returns (bool) {
+        return VaultManagerLogic.isOperatorRegistered(operator);
+    }
+
+    /**
+     * @inheritdoc IVaultManager
+     */
+    function getOperatorsAt(uint48 timestamp, bytes[] memory hints) public view virtual returns (address[] memory) {
+        return VaultManagerLogic.getOperatorsAt(timestamp, hints);
+    }
+
+    /**
+     * @inheritdoc IVaultManager
+     */
+    function getOperators() public view virtual returns (address[] memory) {
+        return VaultManagerLogic.getOperators();
+    }
+
+    /**
+     * @inheritdoc IVaultManager
+     */
+    function getOperatorsLength() public view virtual returns (uint256) {
+        return VaultManagerLogic.getOperatorsLength();
+    }
+
+    /**
+     * @inheritdoc IVaultManager
+     */
     function isSharedVaultRegisteredAt(
         address vault,
         uint48 timestamp,
@@ -135,6 +182,26 @@ abstract contract VaultManager is OperatorManager, VotingPowerCalcManager, IVaul
      */
     function getSharedVaultsLength() public view virtual returns (uint256) {
         return VaultManagerLogic.getSharedVaultsLength();
+    }
+
+    /**
+     * @inheritdoc IVaultManager
+     */
+    function isOperatorVaultRegisteredAt(
+        address vault,
+        uint48 timestamp,
+        bytes memory hint
+    ) public view virtual returns (bool) {
+        return VaultManagerLogic.isOperatorVaultRegisteredAt(vault, timestamp, hint);
+    }
+
+    /**
+     * @inheritdoc IVaultManager
+     */
+    function isOperatorVaultRegistered(
+        address vault
+    ) public view virtual returns (bool) {
+        return VaultManagerLogic.isOperatorVaultRegistered(vault);
     }
 
     /**
@@ -284,6 +351,18 @@ abstract contract VaultManager is OperatorManager, VotingPowerCalcManager, IVaul
         address token
     ) internal virtual {
         VaultManagerLogic.unregisterToken(token);
+    }
+
+    function _registerOperator(
+        address operator
+    ) internal virtual {
+        VaultManagerLogic.registerOperator(OPERATOR_REGISTRY, operator);
+    }
+
+    function _unregisterOperator(
+        address operator
+    ) internal virtual {
+        VaultManagerLogic.unregisterOperator(operator);
     }
 
     function _registerSharedVault(

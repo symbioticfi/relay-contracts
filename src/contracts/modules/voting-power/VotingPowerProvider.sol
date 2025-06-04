@@ -34,7 +34,6 @@ abstract contract VotingPowerProvider is
         VotingPowerProviderInitParams memory votingPowerProviderInitParams
     ) internal virtual onlyInitializing {
         __NetworkManager_init(votingPowerProviderInitParams.networkManagerInitParams);
-        __OperatorManager_init();
         __VaultManager_init(votingPowerProviderInitParams.vaultManagerInitParams);
         __MiddlewareBindings_init();
         __OzEIP712_init(votingPowerProviderInitParams.ozEip712InitParams);

@@ -25,7 +25,6 @@ import {PersistentSet} from "../../libraries/structs/PersistentSet.sol";
 import {InputNormalizer} from "../../libraries/utils/InputNormalizer.sol";
 
 import {NetworkManagerLogic} from "./NetworkManagerLogic.sol";
-import {OperatorManagerLogic} from "./OperatorManagerLogic.sol";
 import {VaultManagerLogic} from "./VaultManagerLogic.sol";
 
 import {IVaultManager} from "../../../interfaces/base/IVaultManager.sol";
@@ -48,7 +47,7 @@ library MiddlewareBindingsLogic {
             slashVaultHints = abi.decode(hints, (IMiddlewareBindings.SlashVaultHints));
         }
 
-        if (!OperatorManagerLogic.isOperatorRegisteredAt(operator, timestamp, slashVaultHints.operatorRegisteredHint)) {
+        if (!VaultManagerLogic.isOperatorRegisteredAt(operator, timestamp, slashVaultHints.operatorRegisteredHint)) {
             revert IMiddlewareBindings.MiddlewareBindings_UnregisteredOperatorSlash();
         }
 

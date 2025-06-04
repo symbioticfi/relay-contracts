@@ -95,6 +95,7 @@ contract VotingPowerProviderTest is InitSetup {
         assertTrue(
             votingPowerProvider.isOperatorVaultRegistered(vars.operators[0].addr, vault), "Vault should be registered"
         );
+        assertTrue(votingPowerProvider.isOperatorVaultRegistered(vault), "Vault should be registered");
 
         vm.startPrank(vars.operators[0].addr);
         votingPowerProvider.unregisterOperator();
@@ -104,6 +105,7 @@ contract VotingPowerProviderTest is InitSetup {
         assertTrue(
             votingPowerProvider.isOperatorVaultRegistered(vars.operators[0].addr, vault), "Vault should be unregistered"
         );
+        assertTrue(votingPowerProvider.isOperatorVaultRegistered(vault), "Vault should be unregistered");
     }
 
     function test_RegisterOperatorVault() public {
@@ -134,6 +136,7 @@ contract VotingPowerProviderTest is InitSetup {
         assertTrue(
             votingPowerProvider.isOperatorVaultRegistered(vars.operators[0].addr, vault), "Vault should be registered"
         );
+        assertTrue(votingPowerProvider.isOperatorVaultRegistered(vault), "Vault should be registered");
 
         vm.startPrank(vars.operators[0].addr);
         votingPowerProvider.unregisterOperatorVault(vars.operators[0].addr, vault);
@@ -143,6 +146,7 @@ contract VotingPowerProviderTest is InitSetup {
         assertFalse(
             votingPowerProvider.isOperatorVaultRegistered(vars.operators[0].addr, vault), "Vault should be unregistered"
         );
+        assertFalse(votingPowerProvider.isOperatorVaultRegistered(vault), "Vault should be unregistered");
     }
 
     function test_registerOperatorWithSignature() public {
@@ -183,6 +187,7 @@ contract VotingPowerProviderTest is InitSetup {
 
         votingPowerProvider.registerOperatorVault(operatorAddr, someVault);
         assertTrue(votingPowerProvider.isOperatorVaultRegistered(operatorAddr, someVault), "Vault should be registered");
+        assertTrue(votingPowerProvider.isOperatorVaultRegistered(someVault), "Vault should be registered");
     }
 
     function test_registerOperatorWithSignature_RevertIfInvalidSig() public {

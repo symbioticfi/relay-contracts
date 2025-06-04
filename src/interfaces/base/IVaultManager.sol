@@ -21,6 +21,9 @@ interface IVaultManager {
     error VaultManager_OperatorVaultNotRegistered();
     error VaultManager_InvalidToken();
     error VaultManager_SlashingWindowTooLarge();
+    error VaultManager_NotOperator();
+    error VaultManager_OperatorNotOptedIn();
+    error VaultManager_OperatorAlreadyRegistered();
 
     enum SlasherType {
         INSTANT,
@@ -37,6 +40,7 @@ interface IVaultManager {
     /// @custom:storage-location erc7201:symbiotic.storage.VaultManager
     struct VaultManagerStorage {
         PersistentSet.AddressSet _tokens;
+        PersistentSet.AddressSet _operators;
         PersistentSet.AddressSet _sharedVaults;
         PersistentSet.AddressSet _allOperatorVaults;
         mapping(address operator => PersistentSet.AddressSet) _operatorVaults;
@@ -86,6 +90,10 @@ interface IVaultManager {
 
     event UnregisterToken(address indexed token);
 
+    event RegisterOperator(address indexed operator);
+
+    event UnregisterOperator(address indexed operator);
+
     event RegisterSharedVault(address indexed vault);
 
     event UnregisterSharedVault(address indexed vault);
@@ -95,6 +103,8 @@ interface IVaultManager {
     event UnregisterOperatorVault(address indexed operator, address indexed vault);
 
     function VaultManager_VERSION() external view returns (uint64);
+
+    function OPERATOR_REGISTRY() external view returns (address);
 
     function VAULT_FACTORY() external view returns (address);
 
@@ -112,6 +122,22 @@ interface IVaultManager {
 
     function getTokensLength() external view returns (uint256);
 
+    function isOperatorRegistered(
+        address operator
+    ) external view returns (bool);
+
+    function isOperatorRegisteredAt(
+        address operator,
+        uint48 timestamp,
+        bytes memory hint
+    ) external view returns (bool);
+
+    function getOperatorsAt(uint48 timestamp, bytes[] memory hints) external view returns (address[] memory);
+
+    function getOperators() external view returns (address[] memory);
+
+    function getOperatorsLength() external view returns (uint256);
+
     function isSharedVaultRegistered(
         address vault
     ) external view returns (bool);
@@ -128,7 +154,15 @@ interface IVaultManager {
 
     function getSharedVaultsLength() external view returns (uint256);
 
-    function isOperatorVaultRegistered(address operator, address vault) external view returns (bool);
+    function isOperatorVaultRegisteredAt(
+        address vault,
+        uint48 timestamp,
+        bytes memory hint
+    ) external view returns (bool);
+
+    function isOperatorVaultRegistered(
+        address vault
+    ) external view returns (bool);
 
     function isOperatorVaultRegisteredAt(
         address operator,
@@ -136,6 +170,8 @@ interface IVaultManager {
         uint48 timestamp,
         bytes memory hint
     ) external view returns (bool);
+
+    function isOperatorVaultRegistered(address operator, address vault) external view returns (bool);
 
     function getOperatorVaultsAt(
         address operator,

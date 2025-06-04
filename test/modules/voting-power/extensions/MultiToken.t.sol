@@ -22,7 +22,6 @@ contract TestMultiToken is MultiToken, NoPermissionManager, EqualStakeVPCalc {
         IVaultManager.VaultManagerInitParams memory vaultInit
     ) external initializer {
         __NetworkManager_init(netInit);
-        __OperatorManager_init();
         __VaultManager_init(vaultInit);
     }
 }

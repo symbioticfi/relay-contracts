@@ -174,6 +174,7 @@ contract OperatorsWhitelistTest is Test, InitSetup {
         whitelistOps.registerOperatorVault(operator1, vaultA);
 
         assertTrue(whitelistOps.isOperatorVaultRegistered(operator1, vaultA));
+        assertTrue(whitelistOps.isOperatorVaultRegistered(vaultA));
     }
 
     function test_UnwhitelistOperator_RevertIfNotWhitelisted() public {

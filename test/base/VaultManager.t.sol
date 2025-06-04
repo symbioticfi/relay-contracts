@@ -5,7 +5,6 @@ import "forge-std/Test.sol";
 
 import {IVaultManager} from "../../src/interfaces/base/IVaultManager.sol";
 import {INetworkManager} from "../../src/interfaces/base/INetworkManager.sol";
-import {IOperatorManager} from "../../src/interfaces/base/IOperatorManager.sol";
 
 import "../InitSetup.sol";
 
@@ -21,7 +20,6 @@ contract TestVaultManager is VaultManager, EqualStakeVPCalc {
         IVaultManager.VaultManagerInitParams memory vaultInit
     ) external initializer {
         __NetworkManager_init(netInit);
-        __OperatorManager_init();
         __VaultManager_init(vaultInit);
     }
 
@@ -119,6 +117,13 @@ contract VaultManagerTest is InitSetup {
     address tokenA = address(0xBEE1);
     address tokenB = address(0xBEE2);
 
+    address validOperator = address(0x1111);
+    address invalidOperator = address(0x2222);
+
+    bytes4 private ERR_NOT_OPERATOR = IVaultManager.VaultManager_NotOperator.selector;
+    bytes4 private ERR_ALREADY_REGISTERED = IVaultManager.VaultManager_OperatorAlreadyRegistered.selector;
+    bytes4 private ERR_NOT_REGISTERED = IVaultManager.VaultManager_OperatorNotRegistered.selector;
+
     bytes4 private ERR_TOKEN_ALREADY_registered = IVaultManager.VaultManager_TokenAlreadyIsRegistered.selector;
     bytes4 private ERR_TOKEN_NOT_registered = IVaultManager.VaultManager_TokenNotRegistered.selector;
     bytes4 private ERR_INVALID_TOKEN = IVaultManager.VaultManager_InvalidToken.selector;
@@ -151,10 +156,112 @@ contract VaultManagerTest is InitSetup {
 
         _registerOperator_SymbioticCore(symbioticCore, operator1);
         _registerOperator_SymbioticCore(symbioticCore, operator2);
+
+        _registerOperator_SymbioticCore(symbioticCore, validOperator);
     }
 
     function test_Version() public {
         assertEq(vaultManager.VaultManager_VERSION(), 1, "Version mismatch");
+    }
+
+    function test_RegisterOperatorValid() public {
+        vaultManager.registerOperator(validOperator);
+
+        bool isRegistered = vaultManager.isOperatorRegistered(validOperator);
+        assertTrue(isRegistered, "Should be registered now");
+    }
+
+    function test_RegisterOperator_RevertIfNotEntity() public {
+        vm.expectRevert(ERR_NOT_OPERATOR);
+        vaultManager.registerOperator(invalidOperator);
+    }
+
+    function test_RegisterOperator_RevertIfAlreadyRegistered() public {
+        vaultManager.registerOperator(validOperator);
+        vm.expectRevert(ERR_ALREADY_REGISTERED);
+        vaultManager.registerOperator(validOperator);
+    }
+
+    function test_UnregisterOperator() public {
+        vaultManager.registerOperator(validOperator);
+
+        address[] memory actOps = vaultManager.getOperators();
+        assertEq(actOps.length, 1, "Should have exactly 1 registered operator");
+        assertEq(actOps[0], validOperator, "Operator mismatch in actOps");
+
+        vaultManager.unregisterOperator(validOperator);
+
+        bool isRegistered = vaultManager.isOperatorRegistered(validOperator);
+        assertFalse(isRegistered, "Should not be registered after unregister");
+
+        actOps = vaultManager.getOperators();
+        assertEq(actOps.length, 0, "Should have no registered operators");
+
+        uint256 actOpsLength = vaultManager.getOperatorsLength();
+        assertEq(actOpsLength, 0, "Should have no registered operators");
+    }
+
+    function test_UnregisterOperator_RevertIfNotRegistered() public {
+        vm.expectRevert(ERR_NOT_REGISTERED);
+        vaultManager.unregisterOperator(validOperator);
+    }
+
+    function test_IsOperatorRegisteredAt_withTime() public {
+        uint48 t0 = uint48(vm.getBlockTimestamp());
+        vaultManager.registerOperator(validOperator);
+
+        vm.warp(vm.getBlockTimestamp() + 100);
+        uint48 t1 = uint48(vm.getBlockTimestamp());
+
+        bool wasRegisteredBefore = vaultManager.isOperatorRegisteredAt(validOperator, t0 - 1, "");
+        assertFalse(wasRegisteredBefore, "Should be inregistered before we registered");
+        bool isRegisteredT0 = vaultManager.isOperatorRegisteredAt(validOperator, t0, "");
+        assertTrue(isRegisteredT0, "Should be registered at T0");
+        bool isRegisteredT1 = vaultManager.isOperatorRegisteredAt(validOperator, t1, "");
+        assertTrue(isRegisteredT1, "Should be registered at T1");
+    }
+
+    function testGetOperatorsAt_withTime() public {
+        address validOp2 = address(0x3333);
+        _registerOperator_SymbioticCore(symbioticCore, validOp2);
+
+        uint48 t0 = uint48(vm.getBlockTimestamp());
+
+        vaultManager.registerOperator(validOperator);
+
+        {
+            address[] memory actOps = vaultManager.getOperators();
+            assertEq(actOps.length, 1, "At T0, 1 registered operator");
+            assertEq(actOps[0], validOperator);
+
+            uint256 actOpsT0Length = vaultManager.getOperatorsLength();
+            assertEq(actOpsT0Length, 1, "At T0, 1 registered operator");
+        }
+
+        vm.warp(t0 + 50);
+        uint48 t1 = uint48(vm.getBlockTimestamp());
+        vaultManager.registerOperator(validOp2);
+
+        {
+            address[] memory actOpsT0 = vaultManager.getOperatorsAt(t0, new bytes[](0));
+            assertEq(actOpsT0.length, 1, "At T0, only 1 registered operator");
+            assertEq(actOpsT0[0], validOperator);
+        }
+        {
+            address[] memory actOpsT1 = vaultManager.getOperatorsAt(t1, new bytes[](0));
+            assertEq(actOpsT1.length, 2, "At T1, 2 registered operators");
+            assertEq(actOpsT1[0], validOperator);
+            assertEq(actOpsT1[1], validOp2);
+        }
+        {
+            address[] memory actOps = vaultManager.getOperators();
+            assertEq(actOps.length, 2, "At T1, 2 registered operators");
+            assertEq(actOps[0], validOperator);
+            assertEq(actOps[1], validOp2);
+
+            uint256 actOpsT1Length = vaultManager.getOperatorsLength();
+            assertEq(actOpsT1Length, 2, "At T1, 2 registered operators");
+        }
     }
 
     function test_SlashingWindow() public {
@@ -383,6 +490,7 @@ contract VaultManagerTest is InitSetup {
 
         assertEq(vaultManager.isOperatorVaultRegistered(operator1, opVault), true);
         assertEq(vaultManager.isOperatorVaultRegisteredAt(operator1, opVault, uint48(vm.getBlockTimestamp()), ""), true);
+        assertEq(vaultManager.isOperatorVaultRegisteredAt(opVault, uint48(vm.getBlockTimestamp()), ""), true);
 
         vaultManager.unregisterOperatorVault(operator1, opVault);
 
