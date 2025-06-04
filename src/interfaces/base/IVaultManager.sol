@@ -109,6 +109,8 @@ interface IVaultManager {
         address indexed slasher, uint256 indexed slashIndex, bool indexed success, uint256 slashedAmount
     );
 
+    event SetResolver(address indexed slasher, address resolver);
+
     event DistributeStakerRewards(address indexed stakerRewards, address indexed token, uint256 amount, bytes data);
 
     event DistributeOperatorRewards(

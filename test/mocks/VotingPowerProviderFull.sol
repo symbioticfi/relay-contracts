@@ -9,6 +9,7 @@ import {SelfNetwork} from "../../src/contracts/modules/voting-power/extensions/S
 import {OperatorsBlacklist} from "../../src/contracts/modules/voting-power/extensions/OperatorsBlacklist.sol";
 import {OperatorsWhitelist} from "../../src/contracts/modules/voting-power/extensions/OperatorsWhitelist.sol";
 import {NetworkManager} from "../../src/contracts/base/NetworkManager.sol";
+import {OpNetVaultAutoDeploy} from "../../src/contracts/modules/voting-power/extensions/OpNetVaultAutoDeploy.sol";
 
 contract VotingPowerProviderFull is
     OzOwnable,
@@ -16,19 +17,26 @@ contract VotingPowerProviderFull is
     SharedVaults,
     SelfNetwork,
     OperatorsBlacklist,
-    OperatorsWhitelist
+    OperatorsWhitelist,
+    OpNetVaultAutoDeploy
 {
     constructor(
         address operatorRegistry,
         address vaultFactory,
         address networkRegistry,
-        address networkMiddlewareService
-    ) VotingPowerProvider(operatorRegistry, vaultFactory) SelfNetwork(networkRegistry, networkMiddlewareService) {}
+        address networkMiddlewareService,
+        address vaultConfigurator
+    )
+        VotingPowerProvider(operatorRegistry, vaultFactory)
+        SelfNetwork(networkRegistry, networkMiddlewareService)
+        OpNetVaultAutoDeploy(vaultConfigurator)
+    {}
 
     function initialize(
         VotingPowerProviderInitParams memory votingPowerProviderInitParams,
         OzOwnableInitParams memory ozOwnableInitParams,
-        OperatorsWhitelistInitParams memory operatorsWhitelistInitParams
+        OperatorsWhitelistInitParams memory operatorsWhitelistInitParams,
+        OpNetVaultAutoDeployInitParams memory opNetVaultAutoDeployInitParams
     ) public virtual initializer {
         __VotingPowerProvider_init(votingPowerProviderInitParams);
         __OzOwnable_init(ozOwnableInitParams);
@@ -37,6 +45,7 @@ contract VotingPowerProviderFull is
         __SelfNetwork_init();
         __OperatorsBlacklist_init();
         __OperatorsWhitelist_init(operatorsWhitelistInitParams);
+        __OpNetVaultAutoDeploy_init(opNetVaultAutoDeployInitParams);
     }
 
     function __NetworkManager_init(
@@ -48,7 +57,7 @@ contract VotingPowerProviderFull is
     function _registerOperatorImpl(
         address operator,
         address vault
-    ) internal override(OperatorsBlacklist, OperatorsWhitelist, VotingPowerProvider) {
+    ) internal override(OperatorsBlacklist, OperatorsWhitelist, VotingPowerProvider, OpNetVaultAutoDeploy) {
         super._registerOperatorImpl(operator, vault);
     }
 

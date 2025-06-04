@@ -20,6 +20,8 @@ import {SelfNetwork} from "../../../../src/contracts/modules/voting-power/extens
 import {VotingPowerProviderFull} from "../../../../test/mocks/VotingPowerProviderFull.sol";
 import {IOzOwnable} from "../../../../src/interfaces/modules/common/permissions/IOzOwnable.sol";
 import {ISelfNetwork} from "../../../../src/interfaces/modules/voting-power/extensions/ISelfNetwork.sol";
+import {IOpNetVaultAutoDeploy} from
+    "../../../../src/interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol";
 
 contract SelfNetworkTest is Test, InitSetup {
     VotingPowerProviderFull private votingPowerProvider;
@@ -38,7 +40,8 @@ contract SelfNetworkTest is Test, InitSetup {
             address(symbioticCore.operatorRegistry),
             address(symbioticCore.vaultFactory),
             address(symbioticCore.networkRegistry),
-            address(symbioticCore.networkMiddlewareService)
+            address(symbioticCore.networkMiddlewareService),
+            address(symbioticCore.vaultConfigurator)
         );
     }
 
@@ -63,7 +66,18 @@ contract SelfNetworkTest is Test, InitSetup {
 
         IOzOwnable.OzOwnableInitParams memory ozOwnableInit = IOzOwnable.OzOwnableInitParams({owner: address(this)});
 
-        votingPowerProvider.initialize(votingPowerProviderInit, ozOwnableInit, wlInit);
+        IOpNetVaultAutoDeploy.OpNetVaultAutoDeployInitParams memory opNetVaultAutoDeployInit = IOpNetVaultAutoDeploy
+            .OpNetVaultAutoDeployInitParams({
+            config: IOpNetVaultAutoDeploy.AutoDeployConfig({
+                epochDuration: 100 days,
+                collateral: initSetupParams.masterChain.tokens[0],
+                burner: address(1),
+                withSlasher: true,
+                isBurnerHook: true
+            })
+        });
+
+        votingPowerProvider.initialize(votingPowerProviderInit, ozOwnableInit, wlInit, opNetVaultAutoDeployInit);
 
         assertEq(votingPowerProvider.NETWORK(), address(votingPowerProvider), "NETWORK mismatch");
         assertEq(votingPowerProvider.SUBNETWORK(), votingPowerProvider.SUBNETWORK(), "SUBNETWORK mismatch");
@@ -88,7 +102,18 @@ contract SelfNetworkTest is Test, InitSetup {
 
         IOzOwnable.OzOwnableInitParams memory ozOwnableInit = IOzOwnable.OzOwnableInitParams({owner: address(this)});
 
-        votingPowerProvider.initialize(votingPowerProviderInit, ozOwnableInit, wlInit);
+        IOpNetVaultAutoDeploy.OpNetVaultAutoDeployInitParams memory opNetVaultAutoDeployInit = IOpNetVaultAutoDeploy
+            .OpNetVaultAutoDeployInitParams({
+            config: IOpNetVaultAutoDeploy.AutoDeployConfig({
+                epochDuration: 100 days,
+                collateral: initSetupParams.masterChain.tokens[0],
+                burner: address(1),
+                withSlasher: true,
+                isBurnerHook: true
+            })
+        });
+
+        votingPowerProvider.initialize(votingPowerProviderInit, ozOwnableInit, wlInit, opNetVaultAutoDeployInit);
 
         assertEq(votingPowerProvider.NETWORK(), address(votingPowerProvider), "NETWORK mismatch");
         assertEq(votingPowerProvider.SUBNETWORK(), votingPowerProvider.SUBNETWORK(), "SUBNETWORK mismatch");
@@ -111,7 +136,18 @@ contract SelfNetworkTest is Test, InitSetup {
 
         IOzOwnable.OzOwnableInitParams memory ozOwnableInit = IOzOwnable.OzOwnableInitParams({owner: address(this)});
 
+        IOpNetVaultAutoDeploy.OpNetVaultAutoDeployInitParams memory opNetVaultAutoDeployInit = IOpNetVaultAutoDeploy
+            .OpNetVaultAutoDeployInitParams({
+            config: IOpNetVaultAutoDeploy.AutoDeployConfig({
+                epochDuration: 100 days,
+                collateral: initSetupParams.masterChain.tokens[0],
+                burner: address(1),
+                withSlasher: true,
+                isBurnerHook: true
+            })
+        });
+
         vm.expectRevert(ISelfNetwork.SelfNetwork_InvalidNetwork.selector);
-        votingPowerProvider.initialize(votingPowerProviderInit, ozOwnableInit, wlInit);
+        votingPowerProvider.initialize(votingPowerProviderInit, ozOwnableInit, wlInit, opNetVaultAutoDeployInit);
     }
 }

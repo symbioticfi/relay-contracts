@@ -657,6 +657,22 @@ library VaultManagerLogic {
         }
     }
 
+    function setResolverVault(address vault, address resolver, bytes memory hints) public {
+        address slasher = IVault(vault).slasher();
+        if (slasher == address(0)) {
+            revert IVaultManager.VaultManager_NoSlasher();
+        }
+        setResolver(slasher, resolver, hints);
+    }
+
+    function setResolver(address slasher, address resolver, bytes memory hints) public {
+        if (IEntity(slasher).TYPE() != uint64(IVaultManager.SlasherType.VETO)) {
+            revert IVaultManager.VaultManager_NonVetoSlasher();
+        }
+        IVetoSlasher(slasher).setResolver(NetworkManagerLogic.SUBNETWORK_IDENTIFIER(), resolver, hints);
+        emit IVaultManager.SetResolver(slasher, resolver);
+    }
+
     function distributeStakerRewards(address stakerRewards, address token, uint256 amount, bytes memory data) public {
         IStakerRewards(stakerRewards).distributeRewards(NetworkManagerLogic.NETWORK(), token, amount, data);
         emit IVaultManager.DistributeStakerRewards(stakerRewards, token, amount, data);

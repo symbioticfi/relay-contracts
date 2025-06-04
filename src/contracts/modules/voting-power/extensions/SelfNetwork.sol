@@ -5,8 +5,6 @@ import {VotingPowerProvider} from "../VotingPowerProvider.sol";
 
 import {ISelfNetwork} from "../../../../interfaces/modules/voting-power/extensions/ISelfNetwork.sol";
 
-import {NetworkManagerLogic} from "../../../base/logic/NetworkManagerLogic.sol";
-
 import {INetworkRegistry} from "@symbioticfi/core/src/interfaces/INetworkRegistry.sol";
 import {INetworkMiddlewareService} from "@symbioticfi/core/src/interfaces/service/INetworkMiddlewareService.sol";
 
