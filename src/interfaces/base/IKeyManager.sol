@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {IBaseKeyManager} from "./IBaseKeyManager.sol";
-
 import {Checkpoints} from "../../contracts/libraries/structs/Checkpoints.sol";
 import {PersistentSet} from "../../contracts/libraries/structs/PersistentSet.sol";
 
-interface IKeyManager is IBaseKeyManager {
+interface IKeyManager {
     error KeyManager_InvalidKeyType();
     error KeyManager_Duplicate();
     error KeyManager_InvalidKeySignature();
@@ -22,6 +20,16 @@ interface IKeyManager is IBaseKeyManager {
         mapping(uint8 => mapping(bytes32 => address)) _operatorByTagAndKeyHash;
         PersistentSet.AddressSet _operators;
         mapping(address => Checkpoints.Trace208) _operatorKeyTags;
+    }
+
+    struct Key {
+        uint8 tag;
+        bytes payload;
+    }
+
+    struct OperatorWithKeys {
+        address operator;
+        Key[] keys;
     }
 
     struct KeyWithSignature {
@@ -45,25 +53,6 @@ interface IKeyManager is IBaseKeyManager {
 
     function KeyManager_VERSION() external view returns (uint64);
 
-    function KEY_TYPE_BLS_BN254() external view returns (uint8);
-
-    function KEY_TYPE_ECDSA_SECP256K1() external view returns (uint8);
-
-    function TOTAL_KEY_TYPES() external view returns (uint8);
-
-    function getKeyAt(
-        address operator,
-        uint8 tag,
-        uint48 timestamp,
-        bytes memory hint
-    ) external view returns (bytes memory key);
-
-    function getKey(address operator, uint8 tag) external view returns (bytes memory key);
-
-    function getOperator(
-        bytes memory key
-    ) external view returns (address operator);
-
     function getKeysAt(
         address operator,
         uint48 timestamp,
@@ -74,12 +63,22 @@ interface IKeyManager is IBaseKeyManager {
         address operator
     ) external view returns (Key[] memory keys);
 
-    function getKeysAt(
+    function getKeyAt(
+        address operator,
+        uint8 tag,
         uint48 timestamp,
-        bytes memory hints
-    ) external view returns (OperatorWithKeys[] memory operatorsKeys);
+        bytes memory hint
+    ) external view returns (bytes memory);
 
-    function getKeys() external view returns (OperatorWithKeys[] memory operatorsKeys);
+    function getKey(address operator, uint8 tag) external view returns (bytes memory);
+
+    function getOperator(
+        bytes memory key
+    ) external view returns (address);
+
+    function getKeysAt(uint48 timestamp, bytes memory hint) external view returns (OperatorWithKeys[] memory);
+
+    function getKeys() external view returns (OperatorWithKeys[] memory);
 
     function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memory extraData) external;
 }

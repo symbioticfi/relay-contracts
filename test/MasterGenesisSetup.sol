@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {IBaseKeyManager} from "../src/interfaces/base/IBaseKeyManager.sol";
-
 import "./MasterSetup.sol";
 
 contract MasterGenesisSetup is MasterSetup {

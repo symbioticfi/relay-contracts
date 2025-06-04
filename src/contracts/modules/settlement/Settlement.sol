@@ -9,7 +9,6 @@ import {EpochManagerLogic} from "../../base/logic/EpochManagerLogic.sol";
 import {SettlementLogic} from "./logic/SettlementLogic.sol";
 
 import {ISigVerifier} from "../../../interfaces/base/ISigVerifier.sol";
-import {IBaseKeyManager} from "../../../interfaces/base/IBaseKeyManager.sol";
 import {ISettlement} from "../../../interfaces/modules/settlement/ISettlement.sol";
 import {IEpochManager} from "../../../interfaces/base/IEpochManager.sol";
 import {OzEIP712} from "../../base/common/OzEIP712.sol";

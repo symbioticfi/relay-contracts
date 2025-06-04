@@ -10,7 +10,7 @@ import {IEpochManager} from "../../src/interfaces/base/IEpochManager.sol";
 import {KeyTags} from "../../src/contracts/libraries/utils/KeyTags.sol";
 import {KeyEcdsaSecp256k1} from "../../src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol";
 import {KeyBlsBn254, BN254} from "../../src/contracts/libraries/keys/KeyBlsBn254.sol";
-import {KeyManagerLogic} from "../../src/contracts/base/logic/KeyManagerLogic.sol";
+import {KEY_TYPE_BLS_BN254, KEY_TYPE_ECDSA_SECP256K1} from "../../src/contracts/base/KeyManager.sol";
 
 import {BN254G2} from "../../test/helpers/BN254G2.sol";
 
@@ -143,7 +143,7 @@ contract MasterSetupScript is SecondarySetupScript {
                 (uint8 v, bytes32 r, bytes32 s) = vm.sign(vars.operators[i].privateKey, messageHash1);
                 bytes memory signature1 = abi.encodePacked(r, s, v);
                 masterSetupParams.keyRegistry.setKey(
-                    KeyManagerLogic.KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0), key1Bytes, signature1, new bytes(0)
+                    KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0), key1Bytes, signature1, new bytes(0)
                 );
                 vm.stopBroadcast();
             }
@@ -159,7 +159,7 @@ contract MasterSetupScript is SecondarySetupScript {
                 BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash0);
                 BN254.G1Point memory sigG1 = messageG1.scalar_mul(vars.operators[i].privateKey);
                 masterSetupParams.keyRegistry.setKey(
-                    KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15), key0Bytes, abi.encode(sigG1), abi.encode(keyG2)
+                    KEY_TYPE_BLS_BN254.getKeyTag(15), key0Bytes, abi.encode(sigG1), abi.encode(keyG2)
                 );
                 vm.stopBroadcast();
             }
@@ -170,8 +170,8 @@ contract MasterSetupScript is SecondarySetupScript {
         masterSetupParams.master = new MyMasterSettlement{salt: bytes32("master")}();
         {
             uint8[] memory requiredKeyTags = new uint8[](2);
-            requiredKeyTags[0] = KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15);
-            requiredKeyTags[1] = KeyManagerLogic.KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0);
+            requiredKeyTags[0] = KEY_TYPE_BLS_BN254.getKeyTag(15);
+            requiredKeyTags[1] = KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0);
             IConfigProvider.CrossChainAddress[] memory votingPowerProviders = new IConfigProvider.CrossChainAddress[](1);
             // IConfigProvider.CrossChainAddress[] memory votingPowerProviders =
             //     new IConfigProvider.CrossChainAddress[](2);
@@ -219,7 +219,7 @@ contract MasterSetupScript is SecondarySetupScript {
                         ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
                         commitDuration: initSetupParams.commitDuration,
                         prolongDuration: initSetupParams.prolongDuration,
-                        requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15),
+                        requiredKeyTag: KEY_TYPE_BLS_BN254.getKeyTag(15),
                         sigVerifier: sigVerifier
                     }),
                     configProviderInitParams: IConfigProvider.ConfigProviderInitParams({

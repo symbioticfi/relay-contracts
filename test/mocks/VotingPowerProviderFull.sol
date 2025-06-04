@@ -11,6 +11,8 @@ import {OperatorsWhitelist} from "../../src/contracts/modules/voting-power/exten
 import {NetworkManager} from "../../src/contracts/base/NetworkManager.sol";
 import {OpNetVaultAutoDeploy} from "../../src/contracts/modules/voting-power/extensions/OpNetVaultAutoDeploy.sol";
 import {OperatorVaults} from "../../src/contracts/modules/voting-power/extensions/OperatorVaults.sol";
+import {Slasher} from "../../src/contracts/modules/voting-power/Slasher.sol";
+import {Rewarder} from "../../src/contracts/modules/voting-power/Rewarder.sol";
 
 contract VotingPowerProviderFull is
     OzOwnable,
@@ -20,7 +22,9 @@ contract VotingPowerProviderFull is
     SelfNetwork,
     OperatorsBlacklist,
     OperatorsWhitelist,
-    OpNetVaultAutoDeploy
+    OpNetVaultAutoDeploy,
+    Slasher,
+    Rewarder
 {
     constructor(
         address operatorRegistry,
@@ -49,6 +53,8 @@ contract VotingPowerProviderFull is
         __OperatorsBlacklist_init();
         __OperatorsWhitelist_init(operatorsWhitelistInitParams);
         __OpNetVaultAutoDeploy_init(opNetVaultAutoDeployInitParams);
+        __Slasher_init();
+        __Rewarder_init();
     }
 
     function __NetworkManager_init(
@@ -61,5 +67,23 @@ contract VotingPowerProviderFull is
         address operator
     ) internal override(OperatorsBlacklist, OperatorsWhitelist, VotingPowerProvider, OpNetVaultAutoDeploy) {
         super._registerOperatorImpl(operator);
+    }
+
+    function slashVault(
+        uint48 timestamp,
+        address vault,
+        address operator,
+        uint256 amount,
+        bytes memory hints
+    ) public returns (bool success, bytes memory response) {
+        return _slashVault(timestamp, vault, operator, amount, hints);
+    }
+
+    function executeSlashVault(
+        address vault,
+        uint256 slashIndex,
+        bytes memory hints
+    ) public returns (bool success, uint256 slashedAmount) {
+        return _executeSlashVault(vault, slashIndex, hints);
     }
 }

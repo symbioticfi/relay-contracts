@@ -13,7 +13,7 @@ import {IVaultManager} from "../../src/interfaces/base/IVaultManager.sol";
 import {IVotingPowerProvider} from "../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
 
 import {KeyTags} from "../../src/contracts/libraries/utils/KeyTags.sol";
-import {KeyManagerLogic} from "../../src/contracts/base/logic/KeyManagerLogic.sol";
+import {KEY_TYPE_BLS_BN254, KEY_TYPE_ECDSA_SECP256K1} from "../../src/contracts/base/KeyManager.sol";
 
 import {SigVerifierMock} from "../../test/mocks/SigVerifierMock.sol";
 
@@ -125,8 +125,8 @@ contract SecondarySetupScript is InitSetupScript {
         vm.startBroadcast(vars.network.privateKey);
         secondarySetupParams.replica = new MyReplicaSettlement();
         uint8[] memory requiredKeyTags = new uint8[](2);
-        requiredKeyTags[0] = KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15);
-        requiredKeyTags[1] = KeyManagerLogic.KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0);
+        requiredKeyTags[0] = KEY_TYPE_BLS_BN254.getKeyTag(15);
+        requiredKeyTags[1] = KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0);
 
         address[] memory verifiers = new address[](3);
         verifiers[0] = address(new Verifier_10());
@@ -150,7 +150,7 @@ contract SecondarySetupScript is InitSetupScript {
                     ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
                     commitDuration: initSetupParams.commitDuration,
                     prolongDuration: initSetupParams.prolongDuration,
-                    requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15),
+                    requiredKeyTag: KEY_TYPE_BLS_BN254.getKeyTag(15),
                     sigVerifier: address(new SigVerifierBlsBn254ZK(verifiers, maxValidators))
                 })
             }),

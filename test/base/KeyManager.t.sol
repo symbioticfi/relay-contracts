@@ -11,7 +11,7 @@ import {KeyEcdsaSecp256k1} from "../../src/contracts/libraries/keys/KeyEcdsaSecp
 import {BN254} from "../../src/contracts/libraries/utils/BN254.sol";
 import {BN254G2} from "../helpers/BN254G2.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import {KeyManagerLogic} from "../../src/contracts/base/logic/KeyManagerLogic.sol";
+import {KEY_TYPE_BLS_BN254, KEY_TYPE_ECDSA_SECP256K1} from "../../src/contracts/base/KeyManager.sol";
 
 import {IOzEIP712} from "../../src/interfaces/base/common/IOzEIP712.sol";
 import {KeyTags} from "../../src/contracts/libraries/utils/KeyTags.sol";
@@ -91,17 +91,17 @@ contract KeyManagerTest is Test {
             keyManager.hashTypedDataV4(keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, ecdsaUser, keccak256(key1Bytes))));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(ecdsaUserPrivateKey, messageHash1);
         bytes memory signature1 = abi.encodePacked(r, s, v);
-        keyManager.setKey(keyManager.KEY_TYPE_ECDSA_SECP256K1().getKeyTag(0), key1Bytes, signature1, new bytes(0));
+        keyManager.setKey(KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0), key1Bytes, signature1, new bytes(0));
         vm.stopPrank();
 
         address operator = keyManager.getOperator(key1Bytes);
         assertEq(operator, ecdsaUser, "Operator mismatch for ECDSA key");
 
-        bytes memory storedKey = keyManager.getKey(ecdsaUser, keyManager.KEY_TYPE_ECDSA_SECP256K1().getKeyTag(0));
+        bytes memory storedKey = keyManager.getKey(ecdsaUser, KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0));
         assertEq(keccak256(storedKey), keccak256(key1Bytes), "ECDSA Key mismatch");
 
         bytes memory storedKey2 = keyManager.getKeyAt(
-            ecdsaUser, keyManager.KEY_TYPE_ECDSA_SECP256K1().getKeyTag(0), uint48(vm.getBlockTimestamp()), new bytes(0)
+            ecdsaUser, KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0), uint48(vm.getBlockTimestamp()), new bytes(0)
         );
         assertEq(keccak256(storedKey2), keccak256(key1Bytes), "ECDSA Key mismatch");
 
@@ -113,11 +113,11 @@ contract KeyManagerTest is Test {
 
         uint8[] memory keyTags = keyManager.getKeyTags(ecdsaUser);
         assertEq(keyTags.length, 1, "Should have 1 key tag");
-        assertEq(keyTags[0], keyManager.KEY_TYPE_ECDSA_SECP256K1().getKeyTag(0), "Key tag mismatch");
+        assertEq(keyTags[0], KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0), "Key tag mismatch");
 
         uint8[] memory keyTagsAt = keyManager.getKeyTagsAt(ecdsaUser, uint48(vm.getBlockTimestamp()), new bytes(0));
         assertEq(keyTagsAt.length, 1, "Should have 1 key tag");
-        assertEq(keyTagsAt[0], keyManager.KEY_TYPE_ECDSA_SECP256K1().getKeyTag(0), "Key tag mismatch");
+        assertEq(keyTagsAt[0], KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0), "Key tag mismatch");
     }
 
     function test_SetECDSAKey_RevertOnInvalidSignature() public {
@@ -129,7 +129,7 @@ contract KeyManagerTest is Test {
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(0x9999, digest);
         bytes memory signature = abi.encodePacked(r, s, v);
 
-        uint8 ecdsaKeyTag = keyManager.KEY_TYPE_ECDSA_SECP256K1().getKeyTag(0);
+        uint8 ecdsaKeyTag = KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0);
 
         vm.expectRevert(IKeyManager.KeyManager_InvalidKeySignature.selector);
         keyManager.setKey(ecdsaKeyTag, ecdsaKeyBytes, signature, new bytes(0));
@@ -144,18 +144,16 @@ contract KeyManagerTest is Test {
         BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash0);
         BN254.G1Point memory sigG1 = messageG1.scalar_mul(blsUserSk);
         vm.startPrank(ecdsaUser);
-        keyManager.setKey(
-            keyManager.KEY_TYPE_BLS_BN254().getKeyTag(15), key0Bytes, abi.encode(sigG1), abi.encode(keyG2)
-        );
+        keyManager.setKey(KEY_TYPE_BLS_BN254.getKeyTag(15), key0Bytes, abi.encode(sigG1), abi.encode(keyG2));
         vm.stopPrank();
         address storedOperator = keyManager.getOperator(key0Bytes);
         assertEq(storedOperator, ecdsaUser, "Operator mismatch for BLS key");
 
-        bytes memory storedKey = keyManager.getKey(ecdsaUser, keyManager.KEY_TYPE_BLS_BN254().getKeyTag(15));
+        bytes memory storedKey = keyManager.getKey(ecdsaUser, KEY_TYPE_BLS_BN254.getKeyTag(15));
         assertEq(keccak256(storedKey), keccak256(key0Bytes), "BLS Key mismatch");
 
         bytes memory storedKey2 = keyManager.getKeyAt(
-            ecdsaUser, keyManager.KEY_TYPE_BLS_BN254().getKeyTag(15), uint48(vm.getBlockTimestamp()), new bytes(0)
+            ecdsaUser, KEY_TYPE_BLS_BN254.getKeyTag(15), uint48(vm.getBlockTimestamp()), new bytes(0)
         );
         assertEq(keccak256(storedKey2), keccak256(key0Bytes), "BLS Key mismatch");
 
@@ -167,11 +165,11 @@ contract KeyManagerTest is Test {
 
         uint8[] memory keyTags = keyManager.getKeyTags(ecdsaUser);
         assertEq(keyTags.length, 1, "Should have 1 key tag");
-        assertEq(keyTags[0], keyManager.KEY_TYPE_BLS_BN254().getKeyTag(15), "Key tag mismatch");
+        assertEq(keyTags[0], KEY_TYPE_BLS_BN254.getKeyTag(15), "Key tag mismatch");
 
         uint8[] memory keyTagsAt = keyManager.getKeyTagsAt(ecdsaUser, uint48(vm.getBlockTimestamp()), new bytes(0));
         assertEq(keyTagsAt.length, 1, "Should have 1 key tag");
-        assertEq(keyTagsAt[0], keyManager.KEY_TYPE_BLS_BN254().getKeyTag(15), "Key tag mismatch");
+        assertEq(keyTagsAt[0], KEY_TYPE_BLS_BN254.getKeyTag(15), "Key tag mismatch");
     }
 
     function test_SetKey_AlreadyUsedKeyDifferentOperator() public {
@@ -181,7 +179,7 @@ contract KeyManagerTest is Test {
             keyManager.hashTypedDataV4(keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, ecdsaUser, keccak256(key1Bytes))));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(ecdsaUserPrivateKey, messageHash1);
         bytes memory signature1 = abi.encodePacked(r, s, v);
-        uint8 keyTag = keyManager.KEY_TYPE_ECDSA_SECP256K1().getKeyTag(0);
+        uint8 keyTag = KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0);
         keyManager.setKey(keyTag, key1Bytes, signature1, new bytes(0));
         vm.stopPrank();
 
@@ -211,7 +209,7 @@ contract KeyManagerTest is Test {
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(ecdsaUserPrivateKey, msgHash);
         bytes memory sig = abi.encodePacked(r, s, v);
 
-        uint8 ecdsaTag = keyManager.KEY_TYPE_ECDSA_SECP256K1().getKeyTag(0);
+        uint8 ecdsaTag = KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0);
         keyManager.setKey(ecdsaTag, oldKeyBytes, sig, new bytes(0));
         vm.stopPrank();
 
@@ -234,8 +232,8 @@ contract KeyManagerTest is Test {
 
     function test_SetKey_SameOperatorDifferentTags() public {
         vm.startPrank(ecdsaUser);
-        uint8 ecdsaTag0 = keyManager.KEY_TYPE_ECDSA_SECP256K1().getKeyTag(0);
-        uint8 ecdsaTag1 = keyManager.KEY_TYPE_ECDSA_SECP256K1().getKeyTag(1);
+        uint8 ecdsaTag0 = KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0);
+        uint8 ecdsaTag1 = KEY_TYPE_ECDSA_SECP256K1.getKeyTag(1);
         {
             bytes memory keyBytes0 = KeyEcdsaSecp256k1.wrap(ecdsaUser).toBytes();
             bytes32 structHash0 = keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, ecdsaUser, keccak256(keyBytes0)));
@@ -315,11 +313,11 @@ contract KeyManagerTest is Test {
 
         IKeyManager.Key[] memory keysOp1 = keyManager.getKeys(ecdsaUser);
         assertEq(keysOp1.length, 1, "Operator #1 should have exactly 1 key");
-        assertEq(keysOp1[0].tag, keyManager.KEY_TYPE_ECDSA_SECP256K1().getKeyTag(0), "Tag mismatch for op1's key");
+        assertEq(keysOp1[0].tag, KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0), "Tag mismatch for op1's key");
 
         IKeyManager.Key[] memory keysOp2 = keyManager.getKeys(op2);
         assertEq(keysOp2.length, 1, "Operator #2 should have exactly 1 key");
-        assertEq(keysOp2[0].tag, keyManager.KEY_TYPE_ECDSA_SECP256K1().getKeyTag(1), "Tag mismatch for op2's key");
+        assertEq(keysOp2[0].tag, KEY_TYPE_ECDSA_SECP256K1.getKeyTag(1), "Tag mismatch for op2's key");
 
         IKeyManager.OperatorWithKeys[] memory operatorsKeys = keyManager.getKeys();
         assertEq(operatorsKeys.length, 2, "Should have 2 operators");
@@ -327,11 +325,7 @@ contract KeyManagerTest is Test {
         assertEq(operatorsKeys[1].operator, op2, "Operator #2 mismatch");
         assertEq(operatorsKeys[0].keys.length, 1, "Operator #1 should have exactly 1 key");
         assertEq(operatorsKeys[1].keys.length, 1, "Operator #2 should have exactly 1 key");
-        assertEq(
-            operatorsKeys[0].keys[0].tag,
-            keyManager.KEY_TYPE_ECDSA_SECP256K1().getKeyTag(0),
-            "Tag mismatch for op1's key"
-        );
+        assertEq(operatorsKeys[0].keys[0].tag, KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0), "Tag mismatch for op1's key");
 
         IKeyManager.OperatorWithKeys[] memory operatorsKeysAt = keyManager.getKeysAt(uint48(vm.getBlockTimestamp()), "");
         assertEq(operatorsKeysAt.length, 2, "Should have 2 operators");
@@ -339,11 +333,7 @@ contract KeyManagerTest is Test {
         assertEq(operatorsKeysAt[1].operator, op2, "Operator #2 mismatch");
         assertEq(operatorsKeysAt[0].keys.length, 1, "Operator #1 should have exactly 1 key");
         assertEq(operatorsKeysAt[1].keys.length, 1, "Operator #2 should have exactly 1 key");
-        assertEq(
-            operatorsKeysAt[0].keys[0].tag,
-            keyManager.KEY_TYPE_ECDSA_SECP256K1().getKeyTag(0),
-            "Tag mismatch for op1's key"
-        );
+        assertEq(operatorsKeysAt[0].keys[0].tag, KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0), "Tag mismatch for op1's key");
     }
 
     function test_GetKeysAt_TimeCheckpoints() public {
@@ -365,12 +355,12 @@ contract KeyManagerTest is Test {
 
         uint8[] memory keyTagsAtT1 = keyManager.getKeyTagsAt(ecdsaUser, t1, "");
         assertEq(keyTagsAtT1.length, 1, "Should have only 1 key tag at time t1");
-        assertEq(keyTagsAtT1[0], keyManager.KEY_TYPE_ECDSA_SECP256K1().getKeyTag(0), "Key tag mismatch");
+        assertEq(keyTagsAtT1[0], KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0), "Key tag mismatch");
 
         uint8[] memory keyTagsAtT2 = keyManager.getKeyTagsAt(ecdsaUser, t2, "");
         assertEq(keyTagsAtT2.length, 2, "Should have 2 key tags at time t2");
-        assertEq(keyTagsAtT2[0], keyManager.KEY_TYPE_ECDSA_SECP256K1().getKeyTag(0), "Key tag mismatch");
-        assertEq(keyTagsAtT2[1], keyManager.KEY_TYPE_ECDSA_SECP256K1().getKeyTag(1), "Key tag mismatch");
+        assertEq(keyTagsAtT2[0], KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0), "Key tag mismatch");
+        assertEq(keyTagsAtT2[1], KEY_TYPE_ECDSA_SECP256K1.getKeyTag(1), "Key tag mismatch");
     }
 
     function _registerSimpleECDSA(address operator, uint256 pk, uint8 tagIdentifier) internal {
@@ -382,7 +372,7 @@ contract KeyManagerTest is Test {
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(pk, digest);
         bytes memory sig = abi.encodePacked(r, s, v);
 
-        uint8 ecdsaKeyTag = keyManager.KEY_TYPE_ECDSA_SECP256K1().getKeyTag(tagIdentifier);
+        uint8 ecdsaKeyTag = KEY_TYPE_ECDSA_SECP256K1.getKeyTag(tagIdentifier);
 
         vm.startPrank(operator);
         keyManager.setKey(ecdsaKeyTag, keyBytes, sig, new bytes(0));
@@ -396,7 +386,6 @@ contract KeyManagerTest is Test {
     }
 
     function test_KeyTypes() public {
-        assertEq(keyManager.TOTAL_KEY_TYPES(), 2);
         assertEq(keyManager.KeyManager_VERSION(), 1);
     }
 }

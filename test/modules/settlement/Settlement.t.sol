@@ -7,12 +7,10 @@ import {KeyTags} from "../../../src/contracts/libraries/utils/KeyTags.sol";
 import {KeyEcdsaSecp256k1} from "../../../src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol";
 import {KeyBlsBn254, BN254} from "../../../src/contracts/libraries/keys/KeyBlsBn254.sol";
 import {SigBlsBn254} from "../../../src/contracts/libraries/sigs/SigBlsBn254.sol";
-import {KeyManagerLogic} from "../../../src/contracts/base/logic/KeyManagerLogic.sol";
 
 import {BN254G2} from "../../helpers/BN254G2.sol";
 
 import {ISettlement} from "../../../src/interfaces/modules/settlement/ISettlement.sol";
-import {IBaseKeyManager} from "../../../src/interfaces/base/IBaseKeyManager.sol";
 
 import {MasterGenesisSetup} from "../../MasterGenesisSetup.sol";
 

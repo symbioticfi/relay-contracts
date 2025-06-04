@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 
 import {INetworkManager} from "../../base/INetworkManager.sol";
 import {IEpochManager} from "../../base/IEpochManager.sol";
-import {IBaseKeyManager} from "../../base/IBaseKeyManager.sol";
 import {IOzEIP712} from "../../base/common/IOzEIP712.sol";
 
 import {Checkpoints} from "../../../contracts/libraries/structs/Checkpoints.sol";

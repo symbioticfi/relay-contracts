@@ -10,10 +10,10 @@ import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/Signa
 import {IVotingPowerProvider} from "../../../interfaces/modules/voting-power/IVotingPowerProvider.sol";
 
 import {NoncesUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/NoncesUpgradeable.sol";
-import {MiddlewareBindings} from "../../base/MiddlewareBindings.sol";
+import {VaultManager} from "../../base/VaultManager.sol";
 
 abstract contract VotingPowerProvider is
-    MiddlewareBindings,
+    VaultManager,
     OzEIP712,
     PermissionManager,
     NoncesUpgradeable,
@@ -28,14 +28,13 @@ abstract contract VotingPowerProvider is
     bytes32 private constant UNREGISTER_OPERATOR_TYPEHASH =
         keccak256("UnregisterOperator(address operator,uint256 nonce)");
 
-    constructor(address operatorRegistry, address vaultFactory) MiddlewareBindings(operatorRegistry, vaultFactory) {}
+    constructor(address operatorRegistry, address vaultFactory) VaultManager(operatorRegistry, vaultFactory) {}
 
     function __VotingPowerProvider_init(
         VotingPowerProviderInitParams memory votingPowerProviderInitParams
     ) internal virtual onlyInitializing {
         __NetworkManager_init(votingPowerProviderInitParams.networkManagerInitParams);
         __VaultManager_init(votingPowerProviderInitParams.vaultManagerInitParams);
-        __MiddlewareBindings_init();
         __OzEIP712_init(votingPowerProviderInitParams.ozEip712InitParams);
     }
 

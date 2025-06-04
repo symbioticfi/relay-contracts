@@ -1,52 +1,56 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {MulticallUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
+
+import {OzEIP712} from "./common/OzEIP712.sol";
 
 import {Checkpoints} from "../libraries/structs/Checkpoints.sol";
 import {InputNormalizer} from "../libraries/utils/InputNormalizer.sol";
 import {PersistentSet} from "../libraries/structs/PersistentSet.sol";
-import {KeyManagerLogic} from "./logic/KeyManagerLogic.sol";
-import {OzEIP712} from "./common/OzEIP712.sol";
 
 import {KeyTags} from "../libraries/utils/KeyTags.sol";
 import {KeyBlsBn254} from "../libraries/keys/KeyBlsBn254.sol";
 import {KeyEcdsaSecp256k1} from "../libraries/keys/KeyEcdsaSecp256k1.sol";
 
+import {SigBlsBn254} from "../libraries/sigs/SigBlsBn254.sol";
+import {SigEcdsaSecp256k1} from "../libraries/sigs/SigEcdsaSecp256k1.sol";
+
 import {IKeyManager} from "../../interfaces/base/IKeyManager.sol";
 
+uint8 constant KEY_TYPE_BLS_BN254 = 0;
+uint8 constant KEY_TYPE_ECDSA_SECP256K1 = 1;
+
 abstract contract KeyManager is MulticallUpgradeable, OzEIP712, IKeyManager {
-    /**
-     * @inheritdoc IKeyManager
-     */
-    function KeyManager_VERSION() public pure returns (uint64) {
-        return KeyManagerLogic.KeyManager_VERSION;
-    }
+    using KeyTags for uint8;
+    using KeyTags for uint128;
+    using Checkpoints for Checkpoints.Trace208;
+    using Checkpoints for Checkpoints.Trace256;
+    using Checkpoints for Checkpoints.Trace512;
+    using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
+    using KeyEcdsaSecp256k1 for KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1;
+    using InputNormalizer for bytes[];
+    using InputNormalizer for bytes[][];
+    using PersistentSet for PersistentSet.AddressSet;
 
     /**
      * @inheritdoc IKeyManager
      */
-    function KEY_TYPE_BLS_BN254() public pure returns (uint8) {
-        return KeyManagerLogic.KEY_TYPE_BLS_BN254;
-    }
+    uint64 public constant KeyManager_VERSION = 1;
 
-    /**
-     * @inheritdoc IKeyManager
-     */
-    function KEY_TYPE_ECDSA_SECP256K1() public pure returns (uint8) {
-        return KeyManagerLogic.KEY_TYPE_ECDSA_SECP256K1;
+    bytes32 internal constant KEY_OWNERSHIP_TYPEHASH = keccak256("KeyOwnership(address operator,bytes key)");
+
+    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.KeyManager")) - 1)) & ~bytes32(uint256(0xff))
+    bytes32 private constant KeyManagerLocation = 0x6521690ca2d70b23823c69a92a4a0089d4c270c9c885205eafdf0ae297a8bf00;
+
+    function _getKeyManagerStorage() internal pure returns (IKeyManager.KeyManagerStorage storage $) {
+        assembly {
+            $.slot := KeyManagerLocation
+        }
     }
 
     function __KeyManager_init() internal virtual onlyInitializing {}
-
-    /**
-     * @inheritdoc IKeyManager
-     */
-    function TOTAL_KEY_TYPES() public pure virtual returns (uint8) {
-        return KeyManagerLogic.TOTAL_KEY_TYPES();
-    }
 
     /**
      * @inheritdoc IKeyManager
@@ -57,14 +61,28 @@ abstract contract KeyManager is MulticallUpgradeable, OzEIP712, IKeyManager {
         uint48 timestamp,
         bytes memory hint
     ) public view virtual returns (bytes memory) {
-        return KeyManagerLogic.getKeyAt(operator, tag, timestamp, hint);
+        uint8 keyType = tag.getType();
+        if (keyType == KEY_TYPE_BLS_BN254) {
+            return KeyBlsBn254.deserialize(_getKey32At(operator, tag, timestamp, hint)).toBytes();
+        }
+        if (keyType == KEY_TYPE_ECDSA_SECP256K1) {
+            return KeyEcdsaSecp256k1.deserialize(_getKey32At(operator, tag, timestamp, hint)).toBytes();
+        }
+        revert IKeyManager.KeyManager_InvalidKeyType();
     }
 
     /**
      * @inheritdoc IKeyManager
      */
     function getKey(address operator, uint8 tag) public view virtual returns (bytes memory) {
-        return KeyManagerLogic.getKey(operator, tag);
+        uint8 keyType = tag.getType();
+        if (keyType == KEY_TYPE_BLS_BN254) {
+            return KeyBlsBn254.deserialize(_getKey32(operator, tag)).toBytes();
+        }
+        if (keyType == KEY_TYPE_ECDSA_SECP256K1) {
+            return KeyEcdsaSecp256k1.deserialize(_getKey32(operator, tag)).toBytes();
+        }
+        revert IKeyManager.KeyManager_InvalidKeyType();
     }
 
     /**
@@ -73,7 +91,7 @@ abstract contract KeyManager is MulticallUpgradeable, OzEIP712, IKeyManager {
     function getOperator(
         bytes memory key
     ) public view virtual returns (address) {
-        return KeyManagerLogic.getOperator(key);
+        return _getKeyManagerStorage()._operatorByKeyHash[keccak256(key)];
     }
 
     /**
@@ -83,8 +101,21 @@ abstract contract KeyManager is MulticallUpgradeable, OzEIP712, IKeyManager {
         address operator,
         uint48 timestamp,
         bytes memory hints
-    ) public view virtual returns (Key[] memory) {
-        return KeyManagerLogic.getKeysAt(operator, timestamp, hints);
+    ) public view virtual returns (Key[] memory keys) {
+        IKeyManager.OperatorKeysHints memory operatorKeysHints;
+        if (hints.length > 0) {
+            operatorKeysHints = abi.decode(hints, (IKeyManager.OperatorKeysHints));
+        }
+
+        uint8[] memory keyTags = _getKeyTagsAt(operator, timestamp, operatorKeysHints.keyTagsHint);
+        keys = new Key[](keyTags.length);
+        operatorKeysHints.keyHints = operatorKeysHints.keyHints.normalize(keyTags.length);
+        for (uint256 i; i < keyTags.length; ++i) {
+            keys[i] = Key({
+                tag: keyTags[i],
+                payload: getKeyAt(operator, keyTags[i], timestamp, operatorKeysHints.keyHints[i])
+            });
+        }
     }
 
     /**
@@ -92,22 +123,45 @@ abstract contract KeyManager is MulticallUpgradeable, OzEIP712, IKeyManager {
      */
     function getKeys(
         address operator
-    ) public view virtual returns (Key[] memory) {
-        return KeyManagerLogic.getKeys(operator);
+    ) public view virtual returns (Key[] memory keys) {
+        uint8[] memory keyTags = _getKeyTags(operator);
+        keys = new Key[](keyTags.length);
+        for (uint256 i; i < keyTags.length; ++i) {
+            keys[i] = Key({tag: keyTags[i], payload: getKey(operator, keyTags[i])});
+        }
     }
 
     /**
      * @inheritdoc IKeyManager
      */
-    function getKeysAt(uint48 timestamp, bytes memory hints) public view virtual returns (OperatorWithKeys[] memory) {
-        return KeyManagerLogic.getKeysAt(timestamp, hints);
+    function getKeysAt(
+        uint48 timestamp,
+        bytes memory hints
+    ) public view virtual returns (OperatorWithKeys[] memory operatorsKeys) {
+        IKeyManager.OperatorsKeysHints memory operatorsKeysHints;
+        if (hints.length > 0) {
+            operatorsKeysHints = abi.decode(hints, (IKeyManager.OperatorsKeysHints));
+        }
+
+        address[] memory operators = _getKeysOperatorsAt(timestamp, operatorsKeysHints.operatorsHints);
+        operatorsKeysHints.operatorKeysHints = operatorsKeysHints.operatorKeysHints.normalize(operators.length);
+        operatorsKeys = new IKeyManager.OperatorWithKeys[](operators.length);
+        for (uint256 i; i < operators.length; ++i) {
+            operatorsKeys[i].operator = operators[i];
+            operatorsKeys[i].keys = getKeysAt(operators[i], timestamp, operatorsKeysHints.operatorKeysHints[i]);
+        }
     }
 
     /**
      * @inheritdoc IKeyManager
      */
-    function getKeys() public view virtual returns (OperatorWithKeys[] memory) {
-        return KeyManagerLogic.getKeys();
+    function getKeys() public view virtual returns (OperatorWithKeys[] memory operatorsKeys) {
+        address[] memory operators = _getKeysOperators();
+        operatorsKeys = new OperatorWithKeys[](operators.length);
+        for (uint256 i; i < operators.length; ++i) {
+            operatorsKeys[i].operator = operators[i];
+            operatorsKeys[i].keys = getKeys(operators[i]);
+        }
     }
 
     function _getKeyTagsAt(
@@ -115,35 +169,36 @@ abstract contract KeyManager is MulticallUpgradeable, OzEIP712, IKeyManager {
         uint48 timestamp,
         bytes memory hint
     ) internal view virtual returns (uint8[] memory) {
-        return KeyManagerLogic.getKeyTagsAt(operator, timestamp, hint);
+        return
+            uint128(_getKeyManagerStorage()._operatorKeyTags[operator].upperLookupRecent(timestamp, hint)).deserialize();
     }
 
     function _getKeyTags(
         address operator
     ) internal view virtual returns (uint8[] memory) {
-        return KeyManagerLogic.getKeyTags(operator);
+        return uint128(_getKeyManagerStorage()._operatorKeyTags[operator].latest()).deserialize();
     }
 
     function _getKeysOperatorsAt(
         uint48 timestamp,
         bytes[] memory hints
     ) internal view virtual returns (address[] memory) {
-        return KeyManagerLogic.getKeysOperatorsAt(timestamp, hints);
+        return _getKeyManagerStorage()._operators.valuesAt(timestamp, hints);
     }
 
     function _getKeysOperators() internal view virtual returns (address[] memory) {
-        return KeyManagerLogic.getKeysOperators();
+        return _getKeyManagerStorage()._operators.values();
     }
 
     function _getKeysOperatorsLength() internal view virtual returns (uint256) {
-        return KeyManagerLogic.getKeysOperatorsLength();
+        return _getKeyManagerStorage()._operators.length();
     }
 
     /**
      * @inheritdoc IKeyManager
      */
     function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memory extraData) public virtual {
-        KeyManagerLogic.setKey(this.hashTypedDataV4, tag, key, signature, extraData);
+        _setKey(msg.sender, tag, key, signature, extraData);
     }
 
     function _setKey(
@@ -153,19 +208,72 @@ abstract contract KeyManager is MulticallUpgradeable, OzEIP712, IKeyManager {
         bytes memory signature,
         bytes memory extraData
     ) internal virtual {
-        KeyManagerLogic.setKey(this.hashTypedDataV4, operator, tag, key, signature, extraData);
+        IKeyManager.KeyManagerStorage storage $ = _getKeyManagerStorage();
+
+        bytes32 keyHash = keccak256(key);
+        if (
+            !_verifyKey(
+                tag,
+                key,
+                signature,
+                extraData,
+                abi.encode(hashTypedDataV4(keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, operator, keyHash))))
+            )
+        ) {
+            revert IKeyManager.KeyManager_InvalidKeySignature();
+        }
+
+        // Disallow usage between different operators
+        // Disallow usage of the same key on the same type on different tags
+        // Allow usage of the old key on the same type and tag
+        uint8 type_ = tag.getType();
+        address operatorByCompressedKey = $._operatorByKeyHash[keyHash];
+        if (operatorByCompressedKey != address(0)) {
+            if (operatorByCompressedKey != operator) {
+                revert IKeyManager.KeyManager_AlreadyUsed();
+            }
+            if (
+                $._operatorByTypeAndKeyHash[type_][keyHash] != address(0)
+                    && $._operatorByTagAndKeyHash[tag][keyHash] == address(0)
+            ) {
+                revert IKeyManager.KeyManager_AlreadyUsed();
+            }
+        }
+
+        $._operatorByKeyHash[keyHash] = operator;
+        $._operatorByTypeAndKeyHash[type_][keyHash] = operator;
+        $._operatorByTagAndKeyHash[tag][keyHash] = operator;
+
+        $._operators.add(Time.timestamp(), operator);
+        $._operatorKeyTags[operator].push(Time.timestamp(), uint128($._operatorKeyTags[operator].latest()).add(tag));
+        _setKey(operator, tag, key);
+
+        emit IKeyManager.SetKey(operator, tag, key, extraData);
     }
 
     function _setKey(address operator, uint8 tag, bytes memory key) internal virtual {
-        return KeyManagerLogic.setKey(operator, tag, key);
+        uint8 type_ = tag.getType();
+        if (type_ == KEY_TYPE_BLS_BN254) {
+            _setKey32(operator, tag, KeyBlsBn254.fromBytes(key).serialize());
+            return;
+        }
+        if (type_ == KEY_TYPE_ECDSA_SECP256K1) {
+            _setKey32(operator, tag, KeyEcdsaSecp256k1.fromBytes(key).serialize());
+            return;
+        }
+        revert IKeyManager.KeyManager_InvalidKeyType();
     }
 
     function _setKey32(address operator, uint8 tag, bytes memory key) internal {
-        return KeyManagerLogic.setKey32(operator, tag, key);
+        bytes32 compressedKey = abi.decode(key, (bytes32));
+        _getKeyManagerStorage()._keys32[operator][tag].push(Time.timestamp(), uint256(compressedKey));
     }
 
     function _setKey64(address operator, uint8 tag, bytes memory key) internal {
-        return KeyManagerLogic.setKey64(operator, tag, key);
+        (bytes32 compressedKey1, bytes32 compressedKey2) = abi.decode(key, (bytes32, bytes32));
+        _getKeyManagerStorage()._keys64[operator][tag].push(
+            Time.timestamp(), [uint256(compressedKey1), uint256(compressedKey2)]
+        );
     }
 
     function _verifyKey(
@@ -173,9 +281,16 @@ abstract contract KeyManager is MulticallUpgradeable, OzEIP712, IKeyManager {
         bytes memory key,
         bytes memory signature,
         bytes memory extraData,
-        bytes memory keyOwnershipMessage
+        bytes memory message
     ) internal view virtual returns (bool) {
-        return KeyManagerLogic.verifyKey(tag, key, signature, extraData, keyOwnershipMessage);
+        uint8 type_ = tag.getType();
+        if (type_ == KEY_TYPE_BLS_BN254) {
+            return SigBlsBn254.verify(key, message, signature, extraData);
+        }
+        if (type_ == KEY_TYPE_ECDSA_SECP256K1) {
+            return SigEcdsaSecp256k1.verify(key, message, signature, extraData);
+        }
+        revert IKeyManager.KeyManager_InvalidKeyType();
     }
 
     function _getKey32At(
@@ -184,11 +299,13 @@ abstract contract KeyManager is MulticallUpgradeable, OzEIP712, IKeyManager {
         uint48 timestamp,
         bytes memory hint
     ) internal view returns (bytes memory) {
-        return KeyManagerLogic.getKey32At(operator, tag, timestamp, hint);
+        uint256 compressedKey = _getKeyManagerStorage()._keys32[operator][tag].upperLookupRecent(timestamp, hint);
+        return abi.encode(compressedKey);
     }
 
     function _getKey32(address operator, uint8 tag) internal view returns (bytes memory) {
-        return KeyManagerLogic.getKey32(operator, tag);
+        uint256 compressedKey = _getKeyManagerStorage()._keys32[operator][tag].latest();
+        return abi.encode(compressedKey);
     }
 
     function _getKey64At(
@@ -197,10 +314,13 @@ abstract contract KeyManager is MulticallUpgradeable, OzEIP712, IKeyManager {
         uint48 timestamp,
         bytes memory hint
     ) internal view returns (bytes memory) {
-        return KeyManagerLogic.getKey64At(operator, tag, timestamp, hint);
+        uint256[2] memory compressedKeys =
+            _getKeyManagerStorage()._keys64[operator][tag].upperLookupRecent(timestamp, hint);
+        return abi.encode(compressedKeys[0], compressedKeys[1]);
     }
 
     function _getKey64(address operator, uint8 tag) internal view returns (bytes memory) {
-        return KeyManagerLogic.getKey64(operator, tag);
+        uint256[2] memory compressedKeys = _getKeyManagerStorage()._keys64[operator][tag].latest();
+        return abi.encode(compressedKeys[0], compressedKeys[1]);
     }
 }

@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {IBaseKeyManager} from "../../src/interfaces/base/IBaseKeyManager.sol";
-
 import "./MasterSetup.s.sol";
 
 // forge script script/test/MasterGenesisSetup.s.sol:MasterGenesisSetupScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_MASTER
