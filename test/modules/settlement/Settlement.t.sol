@@ -30,6 +30,7 @@ import {INetworkManager} from "../../../src/interfaces/base/INetworkManager.sol"
 import {SigVerifierMock} from "../../mocks/SigVerifierMock.sol";
 import {SigVerifierBlsBn254Simple} from
     "../../../src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol";
+import {IVaultManager} from "../../../src/interfaces/base/IVaultManager.sol";
 
 contract SettlementTest is MasterGenesisSetup {
     using KeyTags for uint8;
@@ -117,7 +118,14 @@ contract SettlementTest is MasterGenesisSetup {
         bytes memory commitments = Bytes.slice(zkProof, 260, 324);
         bytes memory commitmentPok = Bytes.slice(zkProof, 324, 388);
 
-        uint256 signersVotingPower = masterSetupParams.votingPowerProvider.getTotalVotingPower(new bytes[](0));
+        IVaultManager.OperatorVotingPower[] memory votingPowers =
+            masterSetupParams.votingPowerProvider.getVotingPowers(new bytes[](0));
+        uint256 signersVotingPower = 0;
+        for (uint256 i; i < votingPowers.length; ++i) {
+            for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
+                signersVotingPower += votingPowers[i].vaults[j].votingPower;
+            }
+        }
 
         bytes memory fullProof = abi.encodePacked(proof_, commitments, commitmentPok, signersVotingPower);
 

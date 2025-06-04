@@ -21,7 +21,7 @@ import {Verifier as Verifier_10} from "./data/zk/Verifier_10.sol";
 import {Verifier as Verifier_100} from "./data/zk/Verifier_100.sol";
 import {Verifier as Verifier_1000} from "./data/zk/Verifier_1000.sol";
 
-import {VotingPowerProviderSharedVaults} from "../../test/mocks/VotingPowerProviderSharedVaults.sol";
+import {VotingPowerProviderSemiFull} from "../../test/mocks/VotingPowerProviderSemiFull.sol";
 import {MyMasterSettlement} from "../../examples/MyMasterSettlement.sol";
 import {MyKeyRegistry} from "../../examples/MyKeyRegistry.sol";
 import {IKeyRegistry} from "../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
@@ -39,7 +39,7 @@ contract MasterSetupScript is SecondarySetupScript {
     struct MasterSetupParams {
         MyKeyRegistry keyRegistry;
         MyMasterSettlement master;
-        VotingPowerProviderSharedVaults votingPowerProvider;
+        VotingPowerProviderSemiFull votingPowerProvider;
     }
 
     function run(
@@ -57,7 +57,7 @@ contract MasterSetupScript is SecondarySetupScript {
 
         vm.startBroadcast(vars.deployer.privateKey);
         console2.log("MyVotingPowerProvider nonce", vm.getNonce(vars.deployer.addr));
-        masterSetupParams.votingPowerProvider = new VotingPowerProviderSharedVaults(
+        masterSetupParams.votingPowerProvider = new VotingPowerProviderSemiFull(
             address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory)
         );
         masterSetupParams.votingPowerProvider.initialize(
@@ -72,7 +72,8 @@ contract MasterSetupScript is SecondarySetupScript {
                 }),
                 ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"})
             }),
-            IOzOwnable.OzOwnableInitParams({owner: vars.network.addr})
+            IOzOwnable.OzOwnableInitParams({owner: vars.network.addr}),
+            IOperatorsWhitelist.OperatorsWhitelistInitParams({isWhitelistEnabled: false})
         );
         vm.stopBroadcast();
         vm.serializeAddress(obj, "votingPowerProvider", address(masterSetupParams.votingPowerProvider));
@@ -130,7 +131,7 @@ contract MasterSetupScript is SecondarySetupScript {
             }
 
             vm.startBroadcast(vars.operators[i].privateKey);
-            masterSetupParams.votingPowerProvider.registerOperator(address(0));
+            masterSetupParams.votingPowerProvider.registerOperator();
             vm.stopBroadcast();
 
             {

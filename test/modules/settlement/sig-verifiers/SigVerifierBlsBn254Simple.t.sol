@@ -41,7 +41,7 @@ import {ISigVerifier} from "../../../../src/interfaces/base/ISigVerifier.sol";
 import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {VotingPowerProviderSharedVaults} from "../../../mocks/VotingPowerProviderSharedVaults.sol";
+import {VotingPowerProviderSemiFull} from "../../../mocks/VotingPowerProviderSemiFull.sol";
 import {MyKeyRegistry} from "../../../../examples/MyKeyRegistry.sol";
 import {MyMasterSettlement} from "../../../../examples/MyMasterSettlement.sol";
 import {IMasterSettlement} from "../../../../src/interfaces/modules/settlement/IMasterSettlement.sol";
@@ -125,14 +125,21 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
             abi.encode(aggSigG1), abi.encode(aggKeyG2), abi.encode(validatorsData), abi.encode(isNonSigners)
         );
 
+        IVaultManager.OperatorVotingPower[] memory votingPowers =
+            masterSetupParams.votingPowerProvider.getVotingPowers(new bytes[](0));
+        uint256 totalVotingPower = 0;
+        for (uint256 i; i < votingPowers.length; ++i) {
+            for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
+                totalVotingPower += votingPowers[i].vaults[j].votingPower;
+            }
+        }
+
         bytes memory data = abi.encodeWithSelector(
             ISettlement.verifyQuorumSig.selector,
             masterSetupParams.master.getCurrentValSetEpoch(),
             abi.encode(messageHash),
             KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15),
-            Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(
-                masterSetupParams.votingPowerProvider.getTotalVotingPower(new bytes[](0)), 1e18
-            ) + 1,
+            Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
             fullProof,
             new bytes(0)
         );
@@ -158,9 +165,10 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
     function loadMasterSetupParamsSimple() public {
         vm.startPrank(vars.deployer.addr);
         // vm.setNonce(vars.deployer.addr, 44);
-        masterSetupParams.votingPowerProvider = new VotingPowerProviderSharedVaults(
+        masterSetupParams.votingPowerProvider = new VotingPowerProviderSemiFull(
             address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory)
         );
+
         masterSetupParams.votingPowerProvider.initialize(
             IVotingPowerProvider.VotingPowerProviderInitParams({
                 networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
@@ -173,7 +181,8 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
                 }),
                 ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"})
             }),
-            IOzOwnable.OzOwnableInitParams({owner: vars.network.addr})
+            IOzOwnable.OzOwnableInitParams({owner: vars.network.addr}),
+            IOperatorsWhitelist.OperatorsWhitelistInitParams({isWhitelistEnabled: false})
         );
         vm.stopPrank();
 
@@ -229,7 +238,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
             }
 
             vm.startPrank(vars.operators[i].addr);
-            masterSetupParams.votingPowerProvider.registerOperator(address(0));
+            masterSetupParams.votingPowerProvider.registerOperator();
             vm.stopPrank();
 
             {
@@ -329,14 +338,20 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
         public
         returns (ISettlement.ValSetHeader memory valSetHeader, ISettlement.ExtraData[] memory extraData)
     {
+        IVaultManager.OperatorVotingPower[] memory votingPowers =
+            masterSetupParams.votingPowerProvider.getVotingPowers(new bytes[](0));
+        uint256 totalVotingPower = 0;
+        for (uint256 i; i < votingPowers.length; ++i) {
+            for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
+                totalVotingPower += votingPowers[i].vaults[j].votingPower;
+            }
+        }
         valSetHeader = ISettlement.ValSetHeader({
             version: 1,
             requiredKeyTag: 15,
             epoch: 0,
             captureTimestamp: 1_731_325_031,
-            quorumThreshold: uint256(2).mulDiv(1e18, 3, Math.Rounding.Ceil).mulDiv(
-                masterSetupParams.votingPowerProvider.getTotalVotingPower(new bytes[](0)), 1e18
-            ) + 1,
+            quorumThreshold: uint256(2).mulDiv(1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
             validatorsSszMRoot: 0x0000000000000000000000000000000000000000000000000000000000000000,
             previousHeaderHash: 0x0000000000000000000000000000000000000000000000000000000000000000
         });
@@ -353,11 +368,17 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
             });
         }
         {
-            bytes32 totalVotingPower =
-                bytes32(uint256(masterSetupParams.votingPowerProvider.getTotalVotingPower(new bytes[](0))));
+            IVaultManager.OperatorVotingPower[] memory votingPowers =
+                masterSetupParams.votingPowerProvider.getVotingPowers(new bytes[](0));
+            uint256 totalVotingPower = 0;
+            for (uint256 i; i < votingPowers.length; ++i) {
+                for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
+                    totalVotingPower += votingPowers[i].vaults[j].votingPower;
+                }
+            }
             extraData[1] = ISettlement.ExtraData({
                 key: uint32(1).getKey(sigVerifier.TOTAL_VOTING_POWER()),
-                value: totalVotingPower
+                value: bytes32(totalVotingPower)
             });
         }
         {
@@ -383,12 +404,14 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
         validatorsData = new ISigVerifierBlsBn254Simple.ValidatorData[](vars.operators.length);
         for (uint256 i; i < vars.operators.length; ++i) {
             BN254.G1Point memory keyG1 = BN254.generatorG1().scalar_mul(vars.operators[i].privateKey);
-            validatorsData[i] = ISigVerifierBlsBn254Simple.ValidatorData({
-                publicKey: keyG1,
-                votingPower: masterSetupParams.votingPowerProvider.getOperatorVotingPower(
-                    vars.operators[i].addr, new bytes(0)
-                )
-            });
+            IVaultManager.VaultVotingPower[] memory votingPowers =
+                masterSetupParams.votingPowerProvider.getOperatorVotingPowers(vars.operators[i].addr, new bytes(0));
+            uint256 operatorVotingPower = 0;
+            for (uint256 i; i < votingPowers.length; ++i) {
+                operatorVotingPower += votingPowers[i].votingPower;
+            }
+            validatorsData[i] =
+                ISigVerifierBlsBn254Simple.ValidatorData({publicKey: keyG1, votingPower: operatorVotingPower});
         }
     }
 }

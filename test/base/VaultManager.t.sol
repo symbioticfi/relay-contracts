@@ -75,37 +75,6 @@ contract TestVaultManager is VaultManager, EqualStakeVPCalc {
         _unregisterOperatorVault(operator, vault);
     }
 
-    function slashVault(
-        uint48 timestamp,
-        address vault,
-        address operator,
-        uint256 amount,
-        bytes memory hints
-    ) external returns (bool success, bytes memory response) {
-        return _slashVault(timestamp, vault, operator, amount, hints);
-    }
-
-    function executeSlash(
-        address vault,
-        uint256 slashIndex,
-        bytes memory hints
-    ) external returns (bool success, uint256 slashedAmount) {
-        return _executeSlash(vault, slashIndex, hints);
-    }
-
-    function distributeStakerRewards(
-        address stakerRewards,
-        address token,
-        uint256 amount,
-        bytes memory data
-    ) external {
-        _distributeStakerRewards(stakerRewards, token, amount, data);
-    }
-
-    function distributeOperatorRewards(address operatorRewards, address token, uint256 amount, bytes32 root) external {
-        _distributeOperatorRewards(operatorRewards, token, amount, root);
-    }
-
     function validateVault(
         address vault
     ) external view returns (bool) {
@@ -624,17 +593,7 @@ contract VaultManagerTest is InitSetup {
                 operatorStake += operatorVaultStake;
             }
 
-            assertEq(vaultManager.getOperatorVotingPower(vars.operators[i].addr, ""), operatorStake);
-            assertEq(
-                vaultManager.getOperatorVotingPowerAt(vars.operators[i].addr, "", uint48(vm.getBlockTimestamp()), ""),
-                operatorStake
-            );
             totalStake += operatorStake;
         }
-
-        assertEq(vaultManager.getTotalVotingPower(new bytes[](0)), totalStake);
-        assertEq(
-            vaultManager.getTotalVotingPowerAt(new bytes[](0), uint48(vm.getBlockTimestamp()), new bytes(0)), totalStake
-        );
     }
 }

@@ -13,17 +13,25 @@ import {IOzEIP712} from "../../../src/interfaces/base/common/IOzEIP712.sol";
 import {NoPermissionManager} from "../../../test/mocks/NoPermissionManager.sol";
 import {VaultManager} from "../../../src/contracts/base/VaultManager.sol";
 import {EqualStakeVPCalc} from "../../../src/contracts/modules/voting-power/extensions/EqualStakeVPCalc.sol";
+import {OperatorVaults} from "../../../src/contracts/modules/voting-power/extensions/OperatorVaults.sol";
 
 import {BN254} from "../../../src/contracts/libraries/utils/BN254.sol";
 import "../../InitSetup.sol";
 
-contract TestVotingPowerProvider is MultiToken, VotingPowerProvider, NoPermissionManager, EqualStakeVPCalc {
+contract TestVotingPowerProvider is
+    MultiToken,
+    VotingPowerProvider,
+    OperatorVaults,
+    NoPermissionManager,
+    EqualStakeVPCalc
+{
     constructor(address operatorRegistry, address vaultFactory) VotingPowerProvider(operatorRegistry, vaultFactory) {}
 
     function initialize(
         IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit
     ) external initializer {
         __VotingPowerProvider_init(votingPowerProviderInit);
+        __OperatorVaults_init();
     }
 }
 
@@ -78,8 +86,10 @@ contract VotingPowerProviderTest is InitSetup {
         );
 
         vm.startPrank(vars.operators[0].addr);
-        votingPowerProvider.registerOperator(vault);
+        votingPowerProvider.registerOperator();
         vm.stopPrank();
+
+        votingPowerProvider.registerOperatorVault(vars.operators[0].addr, vault);
 
         assertTrue(votingPowerProvider.isOperatorRegistered(vars.operators[0].addr), "Operator should be registered");
         assertTrue(
@@ -115,8 +125,10 @@ contract VotingPowerProviderTest is InitSetup {
         );
 
         vm.startPrank(vars.operators[0].addr);
-        votingPowerProvider.registerOperator(vault);
+        votingPowerProvider.registerOperator();
         vm.stopPrank();
+
+        votingPowerProvider.registerOperatorVault(vars.operators[0].addr, vault);
 
         assertTrue(votingPowerProvider.isOperatorRegistered(vars.operators[0].addr), "Operator should be registered");
         assertTrue(
@@ -124,7 +136,7 @@ contract VotingPowerProviderTest is InitSetup {
         );
 
         vm.startPrank(vars.operators[0].addr);
-        votingPowerProvider.unregisterOperatorVault(vault);
+        votingPowerProvider.unregisterOperatorVault(vars.operators[0].addr, vault);
         vm.stopPrank();
 
         assertTrue(votingPowerProvider.isOperatorRegistered(vars.operators[0].addr), "Operator should be registered");
@@ -156,18 +168,20 @@ contract VotingPowerProviderTest is InitSetup {
             })
         );
 
-        bytes32 registerOperatorTypehash = keccak256("RegisterOperator(address operator,address vault,uint256 nonce)");
+        bytes32 registerOperatorTypehash = keccak256("RegisterOperator(address operator,uint256 nonce)");
 
-        bytes32 structHash = keccak256(abi.encode(registerOperatorTypehash, operatorAddr, someVault, currentNonce));
+        bytes32 structHash = keccak256(abi.encode(registerOperatorTypehash, operatorAddr, currentNonce));
 
         bytes32 digest = votingPowerProvider.hashTypedDataV4(structHash);
 
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(operatorPk, digest);
         bytes memory signature = abi.encodePacked(r, s, v);
 
-        votingPowerProvider.registerOperatorWithSignature(operatorAddr, someVault, signature);
+        votingPowerProvider.registerOperatorWithSignature(operatorAddr, signature);
 
         assertTrue(votingPowerProvider.isOperatorRegistered(operatorAddr), "Operator should be registered");
+
+        votingPowerProvider.registerOperatorVault(operatorAddr, someVault);
         assertTrue(votingPowerProvider.isOperatorVaultRegistered(operatorAddr, someVault), "Vault should be registered");
     }
 
@@ -196,14 +210,14 @@ contract VotingPowerProviderTest is InitSetup {
         uint256 currentNonce = votingPowerProvider.nonces(operatorAddr);
         bytes32 registerOperatorTypehash = keccak256("RegisterOperator(address operator,address vault,uint256 nonce)");
 
-        bytes32 structHash = keccak256(abi.encode(registerOperatorTypehash, operatorAddr, someVault, currentNonce));
+        bytes32 structHash = keccak256(abi.encode(registerOperatorTypehash, operatorAddr, currentNonce));
         bytes32 digest = votingPowerProvider.hashTypedDataV4(structHash);
 
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(wrongPk, digest);
         bytes memory badSignature = abi.encodePacked(r, s, v);
 
         vm.expectRevert(IVotingPowerProvider.VotingPowerProvider_InvalidSignature.selector);
-        votingPowerProvider.registerOperatorWithSignature(operatorAddr, someVault, badSignature);
+        votingPowerProvider.registerOperatorWithSignature(operatorAddr, badSignature);
     }
 
     function test_IncreaseNonce() public {
@@ -218,50 +232,12 @@ contract VotingPowerProviderTest is InitSetup {
         assertEq(newNonce, 1, "Nonce incremented by 1");
     }
 
-    function test_registerOperatorVaultWithSignature() public {
-        address operatorAddr = vars.operators[1].addr;
-        uint256 operatorPk = vars.operators[1].privateKey;
-
-        vm.prank(operatorAddr);
-        votingPowerProvider.registerOperator(address(0));
-
-        uint256 currentNonce = votingPowerProvider.nonces(operatorAddr);
-        address vault = _getVault_SymbioticCore(
-            VaultParams({
-                owner: operatorAddr,
-                collateral: initSetupParams.masterChain.tokens[0],
-                burner: 0x000000000000000000000000000000000000dEaD,
-                epochDuration: votingPowerProvider.getSlashingWindow() * 2,
-                whitelistedDepositors: new address[](0),
-                depositLimit: 0,
-                delegatorIndex: 2,
-                hook: address(0),
-                network: address(0),
-                withSlasher: true,
-                slasherIndex: 0,
-                vetoDuration: 1
-            })
-        );
-
-        bytes32 operatorVaultTypehash = keccak256("RegisterOperatorVault(address operator,address vault,uint256 nonce)");
-        bytes32 structHash = keccak256(abi.encode(operatorVaultTypehash, operatorAddr, vault, currentNonce));
-        bytes32 digest = votingPowerProvider.hashTypedDataV4(structHash);
-
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(operatorPk, digest);
-        bytes memory signature = abi.encodePacked(r, s, v);
-
-        votingPowerProvider.registerOperatorVaultWithSignature(operatorAddr, vault, signature);
-
-        assertTrue(votingPowerProvider.isOperatorRegistered(operatorAddr), "Operator is registered");
-        assertTrue(votingPowerProvider.isOperatorVaultRegistered(operatorAddr, vault), "Vault is registered");
-    }
-
     function test_unregisterOperatorWithSignature() public {
         address operatorAddr = vars.operators[0].addr;
         uint256 operatorPk = vars.operators[0].privateKey;
 
         vm.prank(operatorAddr);
-        votingPowerProvider.registerOperator(address(0));
+        votingPowerProvider.registerOperator();
         assertTrue(votingPowerProvider.isOperatorRegistered(operatorAddr));
 
         uint256 currentNonce = votingPowerProvider.nonces(operatorAddr);
@@ -275,85 +251,5 @@ contract VotingPowerProviderTest is InitSetup {
         votingPowerProvider.unregisterOperatorWithSignature(operatorAddr, signature);
 
         assertFalse(votingPowerProvider.isOperatorRegistered(operatorAddr), "Should be unregistered now");
-    }
-
-    function test_unregisterOperatorVaultWithSignature() public {
-        address operatorAddr = vars.operators[0].addr;
-        uint256 operatorPk = vars.operators[0].privateKey;
-
-        vm.prank(operatorAddr);
-        votingPowerProvider.registerOperator(address(0));
-        assertTrue(votingPowerProvider.isOperatorRegistered(operatorAddr));
-
-        uint256 currentNonce = votingPowerProvider.nonces(operatorAddr);
-        address vault = _getVault_SymbioticCore(
-            VaultParams({
-                owner: operatorAddr,
-                collateral: initSetupParams.masterChain.tokens[0],
-                burner: 0x000000000000000000000000000000000000dEaD,
-                epochDuration: votingPowerProvider.getSlashingWindow() * 2,
-                whitelistedDepositors: new address[](0),
-                depositLimit: 0,
-                delegatorIndex: 2,
-                hook: address(0),
-                network: address(0),
-                withSlasher: true,
-                slasherIndex: 0,
-                vetoDuration: 1
-            })
-        );
-
-        vm.prank(operatorAddr);
-        votingPowerProvider.registerOperatorVault(vault);
-        vm.stopPrank();
-
-        bytes32 operatorVaultTypehash =
-            keccak256("UnregisterOperatorVault(address operator,address vault,uint256 nonce)");
-        bytes32 structHash = keccak256(abi.encode(operatorVaultTypehash, operatorAddr, vault, currentNonce));
-        bytes32 digest = votingPowerProvider.hashTypedDataV4(structHash);
-
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(operatorPk, digest);
-        bytes memory signature = abi.encodePacked(r, s, v);
-
-        votingPowerProvider.unregisterOperatorVaultWithSignature(operatorAddr, vault, signature);
-
-        assertTrue(votingPowerProvider.isOperatorRegistered(operatorAddr), "Should be registered now");
-        assertFalse(votingPowerProvider.isOperatorVaultRegistered(operatorAddr, vault), "Should be unregistered now");
-    }
-
-    function test_unregisterOperatorVaultWithSignature_RevertIfInvalidSig() public {
-        address operatorAddr = vars.operators[0].addr;
-        uint256 operatorPk = vars.operators[0].privateKey;
-
-        vm.prank(operatorAddr);
-        votingPowerProvider.registerOperator(address(0));
-
-        uint256 currentNonce = votingPowerProvider.nonces(operatorAddr);
-        address vault = _getVault_SymbioticCore(
-            VaultParams({
-                owner: operatorAddr,
-                collateral: initSetupParams.masterChain.tokens[0],
-                burner: 0x000000000000000000000000000000000000dEaD,
-                epochDuration: votingPowerProvider.getSlashingWindow() * 2,
-                whitelistedDepositors: new address[](0),
-                depositLimit: 0,
-                delegatorIndex: 2,
-                hook: address(0),
-                network: address(0),
-                withSlasher: true,
-                slasherIndex: 0,
-                vetoDuration: 1
-            })
-        );
-
-        bytes32 operatorVaultTypehash = keccak256("RegisterOperatorVault(address operator,address vault,uint256 nonce)");
-        bytes32 structHash = keccak256(abi.encode(operatorVaultTypehash, operatorAddr, vault, currentNonce));
-        bytes32 digest = votingPowerProvider.hashTypedDataV4(structHash);
-
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(operatorPk, digest);
-        bytes memory signature = abi.encodePacked(r, s, v);
-
-        vm.expectRevert(IVotingPowerProvider.VotingPowerProvider_InvalidSignature.selector);
-        votingPowerProvider.unregisterOperatorVaultWithSignature(operatorAddr, vault, signature);
     }
 }

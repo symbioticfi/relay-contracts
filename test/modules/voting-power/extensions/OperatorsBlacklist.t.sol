@@ -16,16 +16,30 @@ import {VaultManager} from "../../../../src/contracts/base/VaultManager.sol";
 import {MultiToken} from "../../../../src/contracts/modules/voting-power/extensions/MultiToken.sol";
 import {IVotingPowerProvider} from "../../../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
 import {IOzEIP712} from "../../../../src/interfaces/base/common/IOzEIP712.sol";
+import {OperatorVaults} from "../../../../src/contracts/modules/voting-power/extensions/OperatorVaults.sol";
 
-contract TestOperatorsBlacklist is OperatorsBlacklist, NoPermissionManager, EqualStakeVPCalc, MultiToken {
+contract TestOperatorsBlacklist is
+    OperatorsBlacklist,
+    NoPermissionManager,
+    EqualStakeVPCalc,
+    MultiToken,
+    OperatorVaults
+{
     constructor(address operatorRegistry, address vaultFactory) VotingPowerProvider(operatorRegistry, vaultFactory) {}
 
     function initialize(
         IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit
     ) external initializer {
         __VotingPowerProvider_init(votingPowerProviderInit);
+        __OperatorVaults_init();
 
         __OperatorsBlacklist_init();
+    }
+
+    function _registerOperatorImpl(
+        address operator
+    ) internal override(OperatorsBlacklist, VotingPowerProvider) {
+        super._registerOperatorImpl(operator);
     }
 }
 
@@ -88,7 +102,7 @@ contract OperatorsBlacklistTest is InitSetup {
 
     function test_BlacklistOperator() public {
         vm.startPrank(operator1);
-        blacklistOps.registerOperator(address(0));
+        blacklistOps.registerOperator();
         vm.stopPrank();
 
         assertTrue(blacklistOps.isOperatorRegistered(operator1));
@@ -100,7 +114,7 @@ contract OperatorsBlacklistTest is InitSetup {
 
         vm.startPrank(operator1);
         vm.expectRevert(IOperatorsBlacklist.OperatorsBlacklist_OperatorBlacklisted.selector);
-        blacklistOps.registerOperator(address(0));
+        blacklistOps.registerOperator();
         vm.stopPrank();
     }
 
@@ -119,7 +133,7 @@ contract OperatorsBlacklistTest is InitSetup {
         assertFalse(blacklistOps.isOperatorBlacklisted(operator1));
 
         vm.startPrank(operator1);
-        blacklistOps.registerOperator(address(0));
+        blacklistOps.registerOperator();
         vm.stopPrank();
 
         assertTrue(blacklistOps.isOperatorRegistered(operator1));
@@ -128,57 +142,6 @@ contract OperatorsBlacklistTest is InitSetup {
     function test_UnblacklistOperator_OperatorNotBlacklisted() public {
         vm.expectRevert(IOperatorsBlacklist.OperatorsBlacklist_OperatorNotBlacklisted.selector);
         blacklistOps.unblacklistOperator(operator1);
-    }
-
-    function test_BlacklistOperatorVault() public {
-        vm.startPrank(operator1);
-        blacklistOps.registerOperator(address(0));
-        vm.stopPrank();
-
-        vm.startPrank(operator1);
-        blacklistOps.registerOperatorVault(vault1);
-        vm.stopPrank();
-
-        assertTrue(blacklistOps.isOperatorVaultRegistered(operator1, vault1));
-
-        blacklistOps.blacklistOperatorVault(operator1, vault1);
-
-        assertTrue(blacklistOps.isOperatorVaultBlacklisted(operator1, vault1));
-        assertFalse(blacklistOps.isOperatorVaultRegistered(operator1, vault1));
-
-        vm.startPrank(operator1);
-        vm.expectRevert(IOperatorsBlacklist.OperatorsBlacklist_OperatorVaultBlacklisted.selector);
-        blacklistOps.registerOperatorVault(vault1);
-        vm.stopPrank();
-    }
-
-    function test_BlacklistOperatorVault_OperatorVaultBlacklisted() public {
-        blacklistOps.blacklistOperatorVault(operator1, vault1);
-
-        vm.expectRevert(IOperatorsBlacklist.OperatorsBlacklist_OperatorVaultBlacklisted.selector);
-        blacklistOps.blacklistOperatorVault(operator1, vault1);
-    }
-
-    function test_UnblacklistOperatorVault() public {
-        blacklistOps.blacklistOperatorVault(operator1, vault1);
-
-        blacklistOps.unblacklistOperatorVault(operator1, vault1);
-        assertFalse(blacklistOps.isOperatorVaultBlacklisted(operator1, vault1));
-
-        vm.startPrank(operator1);
-        blacklistOps.registerOperator(address(0));
-        vm.stopPrank();
-
-        vm.startPrank(operator1);
-        blacklistOps.registerOperatorVault(vault1);
-        vm.stopPrank();
-
-        assertTrue(blacklistOps.isOperatorVaultRegistered(operator1, vault1));
-    }
-
-    function test_UnblacklistOperatorVault_OperatorVaultNotBlacklisted() public {
-        vm.expectRevert(IOperatorsBlacklist.OperatorsBlacklist_OperatorVaultNotBlacklisted.selector);
-        blacklistOps.unblacklistOperatorVault(operator1, vault1);
     }
 
     function test_Location() public {

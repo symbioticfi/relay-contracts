@@ -23,6 +23,7 @@ import {SigVerifierBlsBn254ZK} from
     "../../../../src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol";
 
 import {ISigVerifier} from "../../../../src/interfaces/base/ISigVerifier.sol";
+import {IVaultManager} from "../../../../src/interfaces/base/IVaultManager.sol";
 
 import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
@@ -51,8 +52,20 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetup {
 
     function test_verifyQuorumSig() public {
         bytes32 messageHash = 0xcca0534ef01f2606de9b6c90df9f0a2e1a18fb5ce4d1f9cf1f94d35b398ebce4;
-        uint256 totalVotingPower = masterSetupParams.votingPowerProvider.getTotalVotingPower(new bytes[](0));
-        uint256 signersVotingPower = masterSetupParams.votingPowerProvider.getTotalVotingPower(new bytes[](0));
+        IVaultManager.OperatorVotingPower[] memory votingPowers =
+            masterSetupParams.votingPowerProvider.getVotingPowers(new bytes[](0));
+        uint256 totalVotingPower = 0;
+        for (uint256 i; i < votingPowers.length; ++i) {
+            for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
+                totalVotingPower += votingPowers[i].vaults[j].votingPower;
+            }
+        }
+        uint256 signersVotingPower = 0;
+        for (uint256 i; i < votingPowers.length; ++i) {
+            for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
+                signersVotingPower += votingPowers[i].vaults[j].votingPower;
+            }
+        }
 
         bytes memory zkProof =
             hex"0c9d92bd8aac8588329e85aade26354a7b9206e170f0df0ee891c3927e5a58522adf6d35c9649dbf628cfe567bc31647d52cf5ae023c88984cecbf01fb477d492761b1f57ca217b83d1851f3e9276e3a758fe92b0f7022d9610ed51e1d7da1521458461ac568a806eb566e1f177baba0bee7c49bbb225347da8d236def25eb3829f4a51eecc66d28b5c973a943d752aa383cbab591b59406da361cbeac1dfcc22afdfa764b84685fabc31a3e5367ca30c2eaa3480ec44a9f847f952da34df4ca0ec698607fb631abd2939ea85d57c69e097b8cdba0734b21154479dc7c39d2a11d2dec162d71b5fad118e59a9dd6917335f251384a3cb16ed48af9f3dbed8266000000011199b925c505c27fe05e9f75e2a0965aea4b6cdb945a4a481c6bc06bd080da701cd2629a69c1946bcd2695c369de10999ce9ec4f0c51d1f8d265460b4f2646d923e00d2fa0a29d4760394d8da2af4f7545377705157c75b86a20044f792a50b30068fdfeaa3eb3be8444c454fdf3629d902034c84714a652394c35da7fa2fb6f";

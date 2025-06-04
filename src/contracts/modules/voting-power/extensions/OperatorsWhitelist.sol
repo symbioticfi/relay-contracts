@@ -25,8 +25,7 @@ abstract contract OperatorsWhitelist is VotingPowerProvider, IOperatorsWhitelist
     function __OperatorsWhitelist_init(
         OperatorsWhitelistInitParams memory initParams
     ) internal virtual onlyInitializing {
-        OperatorsWhitelistStorage storage $ = _getOperatorsWhitelistStorage();
-        $._isWhitelistEnabled = initParams.isWhitelistEnabled;
+        _setWhitelistStatus(initParams.isWhitelistEnabled);
     }
 
     /**
@@ -48,19 +47,10 @@ abstract contract OperatorsWhitelist is VotingPowerProvider, IOperatorsWhitelist
     /**
      * @inheritdoc IOperatorsWhitelist
      */
-    function isOperatorVaultWhitelisted(address operator, address vault) public view virtual returns (bool) {
-        return _getOperatorsWhitelistStorage()._whitelistedVault[operator][vault];
-    }
-
-    /**
-     * @inheritdoc IOperatorsWhitelist
-     */
     function setWhitelistStatus(
         bool status
     ) public virtual checkPermission {
-        _getOperatorsWhitelistStorage()._isWhitelistEnabled = status;
-
-        emit SetWhitelistStatus(status);
+        _setWhitelistStatus(status);
     }
 
     /**
@@ -94,44 +84,19 @@ abstract contract OperatorsWhitelist is VotingPowerProvider, IOperatorsWhitelist
         emit UnwhitelistOperator(operator);
     }
 
-    /**
-     * @inheritdoc IOperatorsWhitelist
-     */
-    function whitelistOperatorVault(address operator, address vault) public virtual checkPermission {
-        if (isOperatorVaultWhitelisted(operator, vault)) {
-            revert OperatorsWhitelist_OperatorVaultAlreadyWhitelisted();
-        }
-        _getOperatorsWhitelistStorage()._whitelistedVault[operator][vault] = true;
-
-        emit WhitelistOperatorVault(operator, vault);
-    }
-
-    /**
-     * @inheritdoc IOperatorsWhitelist
-     */
-    function unwhitelistOperatorVault(address operator, address vault) public virtual checkPermission {
-        if (!isOperatorVaultWhitelisted(operator, vault)) {
-            revert OperatorsWhitelist_OperatorVaultNotWhitelisted();
-        }
-        _getOperatorsWhitelistStorage()._whitelistedVault[operator][vault] = false;
-        if (isWhitelistEnabled() && isOperatorVaultRegistered(operator, vault)) {
-            _unregisterOperatorVault(operator, vault);
-        }
-
-        emit UnwhitelistOperatorVault(operator, vault);
-    }
-
-    function _registerOperatorImpl(address operator, address vault) internal virtual override {
+    function _registerOperatorImpl(
+        address operator
+    ) internal virtual override {
         if (isWhitelistEnabled() && !isOperatorWhitelisted(operator)) {
             revert OperatorsWhitelist_OperatorNotWhitelisted();
         }
-        super._registerOperatorImpl(operator, vault);
+        super._registerOperatorImpl(operator);
     }
 
-    function _registerOperatorVaultImpl(address operator, address vault) internal virtual override {
-        if (isWhitelistEnabled() && !isOperatorVaultWhitelisted(operator, vault)) {
-            revert OperatorsWhitelist_OperatorVaultNotWhitelisted();
-        }
-        super._registerOperatorVaultImpl(operator, vault);
+    function _setWhitelistStatus(
+        bool status
+    ) internal virtual {
+        _getOperatorsWhitelistStorage()._isWhitelistEnabled = status;
+        emit SetWhitelistStatus(status);
     }
 }

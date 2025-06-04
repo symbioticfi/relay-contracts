@@ -48,7 +48,14 @@ contract MasterCommitScript is MasterGenesisSetupScript {
             )
         );
 
-        uint256 signersVotingPower = masterSetupParams.votingPowerProvider.getTotalVotingPower(new bytes[](0));
+        IVaultManager.OperatorVotingPower[] memory votingPowers =
+            masterSetupParams.votingPowerProvider.getVotingPowers(new bytes[](0));
+        uint256 signersVotingPower = 0;
+        for (uint256 i; i < votingPowers.length; ++i) {
+            for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
+                signersVotingPower += votingPowers[i].vaults[j].votingPower;
+            }
+        }
 
         BN254.G1Point memory aggKeyG1;
         BN254.G2Point memory aggKeyG2;

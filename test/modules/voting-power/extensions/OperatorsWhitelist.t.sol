@@ -16,8 +16,15 @@ import {IVotingPowerProvider} from "../../../../src/interfaces/modules/voting-po
 import {MultiToken} from "../../../../src/contracts/modules/voting-power/extensions/MultiToken.sol";
 import {IOzEIP712} from "../../../../src/interfaces/base/common/IOzEIP712.sol";
 import {VotingPowerProvider} from "../../../../src/contracts/modules/voting-power/VotingPowerProvider.sol";
+import {OperatorVaults} from "../../../../src/contracts/modules/voting-power/extensions/OperatorVaults.sol";
 
-contract TestOperatorsWhitelist is OperatorsWhitelist, NoPermissionManager, EqualStakeVPCalc, MultiToken {
+contract TestOperatorsWhitelist is
+    OperatorsWhitelist,
+    NoPermissionManager,
+    EqualStakeVPCalc,
+    MultiToken,
+    OperatorVaults
+{
     constructor(address operatorRegistry, address vaultFactory) VotingPowerProvider(operatorRegistry, vaultFactory) {}
 
     function initialize(
@@ -25,8 +32,14 @@ contract TestOperatorsWhitelist is OperatorsWhitelist, NoPermissionManager, Equa
         OperatorsWhitelistInitParams memory wlInit
     ) external initializer {
         __VotingPowerProvider_init(votingPowerProviderInit);
-
+        __OperatorVaults_init();
         __OperatorsWhitelist_init(wlInit);
+    }
+
+    function _registerOperatorImpl(
+        address operator
+    ) internal override(OperatorsWhitelist, VotingPowerProvider) {
+        super._registerOperatorImpl(operator);
     }
 }
 
@@ -115,7 +128,7 @@ contract OperatorsWhitelistTest is Test, InitSetup {
     function test_RegisterOperator_RevertIfNotWhitelisted() public {
         vm.startPrank(operator1);
         vm.expectRevert(IOperatorsWhitelist.OperatorsWhitelist_OperatorNotWhitelisted.selector);
-        whitelistOps.registerOperator(address(0));
+        whitelistOps.registerOperator();
         vm.stopPrank();
     }
 
@@ -125,7 +138,7 @@ contract OperatorsWhitelistTest is Test, InitSetup {
         assertTrue(whitelistOps.isOperatorWhitelisted(operator1));
 
         vm.startPrank(operator1);
-        whitelistOps.registerOperator(address(0));
+        whitelistOps.registerOperator();
         vm.stopPrank();
 
         assertTrue(whitelistOps.isOperatorRegistered(operator1));
@@ -134,7 +147,7 @@ contract OperatorsWhitelistTest is Test, InitSetup {
     function test_UnwhitelistOperator_RegisteredOperatorGetsUnregistered() public {
         whitelistOps.whitelistOperator(operator1);
         vm.prank(operator1);
-        whitelistOps.registerOperator(address(0));
+        whitelistOps.registerOperator();
         assertTrue(whitelistOps.isOperatorRegistered(operator1));
 
         whitelistOps.unwhitelistOperator(operator1);
@@ -147,55 +160,18 @@ contract OperatorsWhitelistTest is Test, InitSetup {
         assertFalse(whitelistOps.isWhitelistEnabled());
 
         vm.prank(operator1);
-        whitelistOps.registerOperator(address(0));
+        whitelistOps.registerOperator();
         assertTrue(whitelistOps.isOperatorRegistered(operator1));
-    }
-
-    function test_RegisterOperatorVault_RevertIfNotWhitelisted() public {
-        whitelistOps.whitelistOperator(operator1);
-
-        vm.startPrank(operator1);
-        whitelistOps.registerOperator(address(0));
-        vm.expectRevert(IOperatorsWhitelist.OperatorsWhitelist_OperatorVaultNotWhitelisted.selector);
-        whitelistOps.registerOperatorVault(vaultA);
-        vm.stopPrank();
-    }
-
-    function test_WhitelistOperatorVaultAndRegister() public {
-        whitelistOps.whitelistOperator(operator1);
-        whitelistOps.whitelistOperatorVault(operator1, vaultA);
-
-        vm.startPrank(operator1);
-        whitelistOps.registerOperator(address(0));
-        whitelistOps.registerOperatorVault(vaultA);
-        vm.stopPrank();
-
-        // confirm registered
-        assertTrue(whitelistOps.isOperatorRegistered(operator1));
-        assertTrue(whitelistOps.isOperatorVaultRegistered(operator1, vaultA));
-    }
-
-    function test_UnwhitelistOperatorVault_RegisteredGetsUnregistered() public {
-        whitelistOps.whitelistOperator(operator1);
-        whitelistOps.whitelistOperatorVault(operator1, vaultA);
-        vm.startPrank(operator1);
-        whitelistOps.registerOperator(address(0));
-        whitelistOps.registerOperatorVault(vaultA);
-        vm.stopPrank();
-        assertTrue(whitelistOps.isOperatorVaultRegistered(operator1, vaultA));
-
-        whitelistOps.unwhitelistOperatorVault(operator1, vaultA);
-        assertFalse(whitelistOps.isOperatorVaultRegistered(operator1, vaultA));
-        assertFalse(whitelistOps.isOperatorVaultWhitelisted(operator1, vaultA));
     }
 
     function test_DisableWhitelistAndRegisterOperatorVault() public {
         whitelistOps.setWhitelistStatus(false);
 
         vm.startPrank(operator1);
-        whitelistOps.registerOperator(address(0));
-        whitelistOps.registerOperatorVault(vaultA);
+        whitelistOps.registerOperator();
         vm.stopPrank();
+
+        whitelistOps.registerOperatorVault(operator1, vaultA);
 
         assertTrue(whitelistOps.isOperatorVaultRegistered(operator1, vaultA));
     }
@@ -205,21 +181,10 @@ contract OperatorsWhitelistTest is Test, InitSetup {
         whitelistOps.unwhitelistOperator(operator1);
     }
 
-    function test_UnwhitelistOperatorVault_RevertIfNotWhitelisted() public {
-        vm.expectRevert(IOperatorsWhitelist.OperatorsWhitelist_OperatorVaultNotWhitelisted.selector);
-        whitelistOps.unwhitelistOperatorVault(operator1, vaultB);
-    }
-
     function test_WhitelistOperator_RevertIfAlreadyWhitelisted() public {
         whitelistOps.whitelistOperator(operator1);
         vm.expectRevert(IOperatorsWhitelist.OperatorsWhitelist_OperatorAlreadyWhitelisted.selector);
         whitelistOps.whitelistOperator(operator1);
-    }
-
-    function test_WhitelistOperatorVault_RevertIfAlreadyWhitelisted() public {
-        whitelistOps.whitelistOperatorVault(operator1, vaultB);
-        vm.expectRevert(IOperatorsWhitelist.OperatorsWhitelist_OperatorVaultAlreadyWhitelisted.selector);
-        whitelistOps.whitelistOperatorVault(operator1, vaultB);
     }
 
     function test_Location() public {

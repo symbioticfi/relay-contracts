@@ -78,17 +78,19 @@ contract MyVotingPowerProviderTest is InitSetup {
 
     function testFullScenario() public {
         vm.startPrank(operator1);
-        aggregator.registerOperator(address(0));
-        aggregator.registerOperatorVault(vaultA);
+        aggregator.registerOperator();
         vm.stopPrank();
+
+        aggregator.registerOperatorVault(operator1, vaultA);
 
         assertTrue(aggregator.isOperatorRegistered(operator1), "Operator not registered");
         assertTrue(aggregator.isOperatorVaultRegistered(operator1, vaultA), "Vault not registered");
 
         vm.startPrank(operator1);
         aggregator.unregisterOperator();
-        aggregator.unregisterOperatorVault(vaultA);
         vm.stopPrank();
+
+        aggregator.unregisterOperatorVault(operator1, vaultA);
 
         assertFalse(aggregator.isOperatorRegistered(operator1), "Should be registered again");
         assertFalse(aggregator.isOperatorVaultRegistered(operator1, vaultA), "Vault registered again");

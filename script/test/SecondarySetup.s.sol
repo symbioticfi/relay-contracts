@@ -26,7 +26,7 @@ import {Verifier as Verifier_10} from "./data/zk/Verifier_10.sol";
 import {Verifier as Verifier_100} from "./data/zk/Verifier_100.sol";
 import {Verifier as Verifier_1000} from "./data/zk/Verifier_1000.sol";
 
-import {VotingPowerProviderSharedVaults} from "../../test/mocks/VotingPowerProviderSharedVaults.sol";
+import {VotingPowerProviderSemiFull} from "../../test/mocks/VotingPowerProviderSemiFull.sol";
 import {MyReplicaSettlement} from "../../examples/MyReplicaSettlement.sol";
 import {IReplicaSettlement} from "../../src/interfaces/modules/settlement/IReplicaSettlement.sol";
 
@@ -39,7 +39,7 @@ contract SecondarySetupScript is InitSetupScript {
 
     struct SecondarySetupParams {
         MyReplicaSettlement replica;
-        VotingPowerProviderSharedVaults votingPowerProvider;
+        VotingPowerProviderSemiFull votingPowerProvider;
     }
 
     function run(
@@ -55,7 +55,7 @@ contract SecondarySetupScript is InitSetupScript {
         SecondarySetupParams memory secondarySetupParams;
 
         vm.startBroadcast(vars.deployer.privateKey);
-        secondarySetupParams.votingPowerProvider = new VotingPowerProviderSharedVaults(
+        secondarySetupParams.votingPowerProvider = new VotingPowerProviderSemiFull(
             address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory)
         );
         secondarySetupParams.votingPowerProvider.initialize(
@@ -70,7 +70,8 @@ contract SecondarySetupScript is InitSetupScript {
                 }),
                 ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"})
             }),
-            IOzOwnable.OzOwnableInitParams({owner: vars.network.addr})
+            IOzOwnable.OzOwnableInitParams({owner: vars.network.addr}),
+            IOperatorsWhitelist.OperatorsWhitelistInitParams({isWhitelistEnabled: false})
         );
         vm.stopBroadcast();
         vm.serializeAddress(obj, "votingPowerProvider", address(secondarySetupParams.votingPowerProvider));
@@ -117,7 +118,7 @@ contract SecondarySetupScript is InitSetupScript {
             }
 
             vm.startBroadcast(vars.operators[i].privateKey);
-            secondarySetupParams.votingPowerProvider.registerOperator(address(0));
+            secondarySetupParams.votingPowerProvider.registerOperator();
             vm.stopBroadcast();
         }
 

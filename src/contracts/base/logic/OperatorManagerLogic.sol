@@ -14,7 +14,6 @@ import {IOperatorManager} from "../../../interfaces/base/IOperatorManager.sol";
 library OperatorManagerLogic {
     using Checkpoints for Checkpoints.Trace208;
     using PersistentSet for PersistentSet.AddressSet;
-    using EnumerableSet for EnumerableSet.AddressSet;
 
     uint64 internal constant OperatorManager_VERSION = 1;
 

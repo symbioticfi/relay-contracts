@@ -214,26 +214,6 @@ abstract contract VaultManager is OperatorManager, VotingPowerCalcManager, IVaul
     /**
      * @inheritdoc IVaultManager
      */
-    function getOperatorVotingPowerAt(
-        address operator,
-        bytes memory extraData,
-        uint48 timestamp,
-        bytes memory hints
-    ) public view virtual returns (uint256) {
-        return
-            VaultManagerLogic.getOperatorVotingPowerAt(this.stakeToVotingPowerAt, operator, extraData, timestamp, hints);
-    }
-
-    /**
-     * @inheritdoc IVaultManager
-     */
-    function getOperatorVotingPower(address operator, bytes memory extraData) public view virtual returns (uint256) {
-        return VaultManagerLogic.getOperatorVotingPower(this.stakeToVotingPower, operator, extraData);
-    }
-
-    /**
-     * @inheritdoc IVaultManager
-     */
     function getOperatorVotingPowersAt(
         address operator,
         bytes memory extraData,
@@ -253,26 +233,6 @@ abstract contract VaultManager is OperatorManager, VotingPowerCalcManager, IVaul
         bytes memory extraData
     ) public view virtual returns (VaultVotingPower[] memory) {
         return VaultManagerLogic.getOperatorVotingPowers(this.stakeToVotingPower, operator, extraData);
-    }
-
-    /**
-     * @inheritdoc IVaultManager
-     */
-    function getTotalVotingPowerAt(
-        bytes[] memory extraData,
-        uint48 timestamp,
-        bytes memory hints
-    ) public view virtual returns (uint256) {
-        return VaultManagerLogic.getTotalVotingPowerAt(this.stakeToVotingPowerAt, extraData, timestamp, hints);
-    }
-
-    /**
-     * @inheritdoc IVaultManager
-     */
-    function getTotalVotingPower(
-        bytes[] memory extraData
-    ) public view virtual returns (uint256) {
-        return VaultManagerLogic.getTotalVotingPower(this.stakeToVotingPower, extraData);
     }
 
     /**
@@ -344,59 +304,5 @@ abstract contract VaultManager is OperatorManager, VotingPowerCalcManager, IVaul
 
     function _unregisterOperatorVault(address operator, address vault) internal virtual {
         VaultManagerLogic.unregisterOperatorVault(operator, vault);
-    }
-
-    function _slashVault(
-        uint48 timestamp,
-        address vault,
-        address operator,
-        uint256 amount,
-        bytes memory hints
-    ) internal virtual returns (bool success, bytes memory response) {
-        return VaultManagerLogic.slashVault(timestamp, vault, operator, amount, hints);
-    }
-
-    function _slash(
-        uint48 timestamp,
-        address slasher,
-        address operator,
-        uint256 amount,
-        bytes memory hints
-    ) internal virtual returns (bool success, bytes memory response) {
-        return VaultManagerLogic.slash(timestamp, slasher, operator, amount, hints);
-    }
-
-    function _executeSlashVault(
-        address vault,
-        uint256 slashIndex,
-        bytes memory hints
-    ) internal virtual returns (bool success, uint256 slashedAmount) {
-        return VaultManagerLogic.executeSlashVault(vault, slashIndex, hints);
-    }
-
-    function _executeSlash(
-        address slasher,
-        uint256 slashIndex,
-        bytes memory hints
-    ) internal virtual returns (bool success, uint256 slashedAmount) {
-        return VaultManagerLogic.executeSlash(slasher, slashIndex, hints);
-    }
-
-    function _distributeStakerRewards(
-        address stakerRewards,
-        address token,
-        uint256 amount,
-        bytes memory data
-    ) internal virtual {
-        VaultManagerLogic.distributeStakerRewards(stakerRewards, token, amount, data);
-    }
-
-    function _distributeOperatorRewards(
-        address operatorRewards,
-        address token,
-        uint256 amount,
-        bytes32 root
-    ) internal virtual {
-        VaultManagerLogic.distributeOperatorRewards(operatorRewards, token, amount, root);
     }
 }

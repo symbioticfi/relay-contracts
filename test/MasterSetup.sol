@@ -28,7 +28,7 @@ import {Verifier as Verifier_100} from "../script/test/data/zk/Verifier_100.sol"
 import {Verifier as Verifier_1000} from "../script/test/data/zk/Verifier_1000.sol";
 import {SigVerifierBlsBn254ZK} from "../src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol";
 
-import {VotingPowerProviderSharedVaults} from "./mocks/VotingPowerProviderSharedVaults.sol";
+import {VotingPowerProviderSemiFull} from "./mocks/VotingPowerProviderSemiFull.sol";
 import {MyMasterSettlement} from "../examples/MyMasterSettlement.sol";
 import {MyKeyRegistry} from "../examples/MyKeyRegistry.sol";
 import {IMasterSettlement} from "../src/interfaces/modules/settlement/IMasterSettlement.sol";
@@ -48,7 +48,7 @@ contract MasterSetup is InitSetup {
     struct MasterSetupParams {
         MyKeyRegistry keyRegistry;
         MyMasterSettlement master;
-        VotingPowerProviderSharedVaults votingPowerProvider;
+        VotingPowerProviderSemiFull votingPowerProvider;
     }
 
     MasterSetupParams public masterSetupParams;
@@ -70,7 +70,7 @@ contract MasterSetup is InitSetup {
     function loadMasterSetupParams() public {
         vm.startPrank(vars.deployer.addr);
         // vm.setNonce(vars.deployer.addr, 44);
-        masterSetupParams.votingPowerProvider = new VotingPowerProviderSharedVaults(
+        masterSetupParams.votingPowerProvider = new VotingPowerProviderSemiFull(
             address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory)
         );
         masterSetupParams.votingPowerProvider.initialize(
@@ -85,7 +85,8 @@ contract MasterSetup is InitSetup {
                 }),
                 ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"})
             }),
-            IOzOwnable.OzOwnableInitParams({owner: vars.network.addr})
+            IOzOwnable.OzOwnableInitParams({owner: vars.network.addr}),
+            IOperatorsWhitelist.OperatorsWhitelistInitParams({isWhitelistEnabled: false})
         );
         vm.stopPrank();
 
@@ -141,7 +142,7 @@ contract MasterSetup is InitSetup {
             }
 
             vm.startPrank(vars.operators[i].addr);
-            masterSetupParams.votingPowerProvider.registerOperator(address(0));
+            masterSetupParams.votingPowerProvider.registerOperator();
             vm.stopPrank();
 
             {

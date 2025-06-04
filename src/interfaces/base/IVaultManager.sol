@@ -80,13 +80,6 @@ interface IVaultManager {
         bytes[] operatorVotingPowersHints;
     }
 
-    struct SlashVaultHints {
-        bytes operatorRegisteredHint;
-        bytes operatorVaultRegisteredHint;
-        bytes sharedVaultRegisteredHint;
-        bytes slashHints;
-    }
-
     event SetSlashingWindow(uint48 slashingWindow);
 
     event RegisterToken(address indexed token);
@@ -100,22 +93,6 @@ interface IVaultManager {
     event RegisterOperatorVault(address indexed operator, address indexed vault);
 
     event UnregisterOperatorVault(address indexed operator, address indexed vault);
-
-    event InstantSlash(address indexed slasher, address indexed operator, bool indexed success, uint256 slashedAmount);
-
-    event VetoSlash(address indexed slasher, address indexed operator, bool indexed success, uint256 slashIndex);
-
-    event ExecuteSlash(
-        address indexed slasher, uint256 indexed slashIndex, bool indexed success, uint256 slashedAmount
-    );
-
-    event SetResolver(address indexed slasher, address resolver);
-
-    event DistributeStakerRewards(address indexed stakerRewards, address indexed token, uint256 amount, bytes data);
-
-    event DistributeOperatorRewards(
-        address indexed operatorRewards, address indexed token, uint256 amount, bytes32 root
-    );
 
     function VaultManager_VERSION() external view returns (uint64);
 
@@ -188,15 +165,6 @@ interface IVaultManager {
         bytes memory extraData
     ) external view returns (uint256);
 
-    function getOperatorVotingPowerAt(
-        address operator,
-        bytes memory extraData,
-        uint48 timestamp,
-        bytes memory hints
-    ) external view returns (uint256);
-
-    function getOperatorVotingPower(address operator, bytes memory extraData) external view returns (uint256);
-
     function getOperatorVotingPowersAt(
         address operator,
         bytes memory extraData,
@@ -208,16 +176,6 @@ interface IVaultManager {
         address operator,
         bytes memory extraData
     ) external view returns (VaultVotingPower[] memory);
-
-    function getTotalVotingPowerAt(
-        bytes[] memory extraData,
-        uint48 timestamp,
-        bytes memory hints
-    ) external view returns (uint256);
-
-    function getTotalVotingPower(
-        bytes[] memory extraData
-    ) external view returns (uint256);
 
     function getVotingPowersAt(
         bytes[] memory extraData,

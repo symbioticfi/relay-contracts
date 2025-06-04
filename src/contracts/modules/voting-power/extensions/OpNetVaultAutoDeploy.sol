@@ -66,12 +66,11 @@ abstract contract OpNetVaultAutoDeploy is VotingPowerProvider, IOpNetVaultAutoDe
         _setAutoDeployConfig(config);
     }
 
-    function _registerOperatorImpl(address operator, address vault) internal virtual override {
-        if (vault == address(0)) {
-            _registerOperatorVaultImpl(operator, _createVault(operator));
-        } else {
-            super._registerOperatorImpl(operator, vault);
-        }
+    function _registerOperatorImpl(
+        address operator
+    ) internal virtual override {
+        super._registerOperatorImpl(operator);
+        _registerOperatorVault(operator, _createVault(operator));
     }
 
     function _setAutoDeployConfig(

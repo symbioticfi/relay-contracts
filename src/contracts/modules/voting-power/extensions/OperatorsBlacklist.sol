@@ -36,13 +36,6 @@ abstract contract OperatorsBlacklist is VotingPowerProvider, IOperatorsBlacklist
     /**
      * @inheritdoc IOperatorsBlacklist
      */
-    function isOperatorVaultBlacklisted(address operator, address vault) public view virtual returns (bool) {
-        return _getOperatorsBlacklistStorage()._blacklistedVault[operator][vault];
-    }
-
-    /**
-     * @inheritdoc IOperatorsBlacklist
-     */
     function blacklistOperator(
         address operator
     ) public virtual checkPermission {
@@ -71,44 +64,12 @@ abstract contract OperatorsBlacklist is VotingPowerProvider, IOperatorsBlacklist
         emit UnblacklistOperator(operator);
     }
 
-    /**
-     * @inheritdoc IOperatorsBlacklist
-     */
-    function blacklistOperatorVault(address operator, address vault) public virtual checkPermission {
-        if (isOperatorVaultBlacklisted(operator, vault)) {
-            revert OperatorsBlacklist_OperatorVaultBlacklisted();
-        }
-        _getOperatorsBlacklistStorage()._blacklistedVault[operator][vault] = true;
-        if (isOperatorVaultRegistered(operator, vault)) {
-            _unregisterOperatorVault(operator, vault);
-        }
-
-        emit BlacklistOperatorVault(operator, vault);
-    }
-
-    /**
-     * @inheritdoc IOperatorsBlacklist
-     */
-    function unblacklistOperatorVault(address operator, address vault) public virtual checkPermission {
-        if (!isOperatorVaultBlacklisted(operator, vault)) {
-            revert OperatorsBlacklist_OperatorVaultNotBlacklisted();
-        }
-        _getOperatorsBlacklistStorage()._blacklistedVault[operator][vault] = false;
-
-        emit UnblacklistOperatorVault(operator, vault);
-    }
-
-    function _registerOperatorImpl(address operator, address vault) internal virtual override {
+    function _registerOperatorImpl(
+        address operator
+    ) internal virtual override {
         if (isOperatorBlacklisted(operator)) {
             revert OperatorsBlacklist_OperatorBlacklisted();
         }
-        super._registerOperatorImpl(operator, vault);
-    }
-
-    function _registerOperatorVaultImpl(address operator, address vault) internal virtual override {
-        if (isOperatorVaultBlacklisted(operator, vault)) {
-            revert OperatorsBlacklist_OperatorVaultBlacklisted();
-        }
-        super._registerOperatorVaultImpl(operator, vault);
+        super._registerOperatorImpl(operator);
     }
 }
