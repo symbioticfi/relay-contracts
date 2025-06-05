@@ -2,17 +2,19 @@
 pragma solidity ^0.8.25;
 
 import {ValSetDriver} from "../src/contracts/modules/valset-driver/ValSetDriver.sol";
-import {OzOwnable} from "../src/contracts/modules/common/permissions/OzOwnable.sol";
+import {OzAccessControl} from "../src/contracts/modules/common/permissions/OzAccessControl.sol";
 
 contract MyValSetDriver is
     ValSetDriver,
-    OzOwnable
+    OzAccessControl
 {
     function initialize(
         ValSetDriverInitParams memory valSetDriverInitParams,
-        OzOwnableInitParams memory ozOwnableInitParams
+        address defaultAdmin
     ) public virtual initializer {
         __ValSetDriver_init(valSetDriverInitParams);
-        __OzOwnable_init(ozOwnableInitParams);
+        __OzAccessControl_init();
+
+        _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
     }
 }
