@@ -80,6 +80,12 @@ interface ISettlement {
         uint48 epoch
     ) external view returns (bool);
 
+    function getValSetHeaderHashAt(
+        uint48 epoch
+    ) external view returns (bytes32);
+
+    function getValSetHeaderHash() external view returns (bytes32);
+
     function getValSetHeaderAt(
         uint48 epoch
     ) external view returns (ValSetHeader memory);

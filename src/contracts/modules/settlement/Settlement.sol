@@ -104,6 +104,22 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
     /**
      * @inheritdoc ISettlement
      */
+    function getValSetHeaderHashAt(
+        uint48 epoch
+    ) public view returns (bytes32) {
+        return keccak256(abi.encode(getValSetHeaderAt(epoch)));
+    }
+
+    /**
+     * @inheritdoc ISettlement
+     */
+    function getValSetHeaderHash() public view returns (bytes32) {
+        return getValSetHeaderHashAt(getLastCommittedHeaderEpoch());
+    }
+
+    /**
+     * @inheritdoc ISettlement
+     */
     function getValSetHeaderAt(
         uint48 epoch
     ) public view virtual returns (ValSetHeader memory) {
