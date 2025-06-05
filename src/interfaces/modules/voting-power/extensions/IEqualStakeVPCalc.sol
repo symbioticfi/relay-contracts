@@ -2,5 +2,5 @@
 pragma solidity ^0.8.0;
 
 interface IEqualStakeVPCalc {
-    function EqualStakeVPCalc_VERSION() external pure returns (uint64);
+    function EqualStakeVPCalc_VERSION() external view returns (uint64);
 }

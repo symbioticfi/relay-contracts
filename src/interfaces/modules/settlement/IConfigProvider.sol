@@ -78,7 +78,7 @@ interface IConfigProvider {
 
     event SetRequiredKeyTags(uint8[] requiredKeyTags);
 
-    function ConfigProvider_VERSION() external pure returns (uint64);
+    function ConfigProvider_VERSION() external view returns (uint64);
 
     function isVotingPowerProviderRegisteredAt(
         CrossChainAddress memory votingPowerProvider,
