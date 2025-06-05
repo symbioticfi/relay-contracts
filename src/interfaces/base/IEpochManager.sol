@@ -26,10 +26,6 @@ interface IEpochManager {
 
     function EpochManager_VERSION() external view returns (uint64);
 
-    function getCaptureTimestampAt(uint48 epoch, bytes memory hint) external view returns (uint48);
-
-    function getCaptureTimestamp() external view returns (uint48);
-
     function getCurrentEpoch() external view returns (uint48);
 
     function getCurrentEpochDuration() external view returns (uint48);

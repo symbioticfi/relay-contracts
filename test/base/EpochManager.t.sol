@@ -93,7 +93,6 @@ contract EpochManagerTest is Test {
 
         uint48 currentEpochStart = epochManager.getCurrentEpochStart();
         assertEq(currentEpochStart, startTime, "Epoch start mismatch");
-        assertEq(epochManager.getCaptureTimestamp(), startTime, "Capture timestamp mismatch");
 
         assertEq(epochManager.getNextEpoch(), 1);
         assertEq(epochManager.getNextEpochStart(), startTime + 100);

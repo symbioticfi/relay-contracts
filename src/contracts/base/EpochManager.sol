@@ -37,20 +37,6 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
     /**
      * @inheritdoc IEpochManager
      */
-    function getCaptureTimestampAt(uint48 epoch, bytes memory hint) public view virtual returns (uint48) {
-        return getEpochStart(epoch, hint);
-    }
-
-    /**
-     * @inheritdoc IEpochManager
-     */
-    function getCaptureTimestamp() public view virtual returns (uint48) {
-        return getCurrentEpochStart();
-    }
-
-    /**
-     * @inheritdoc IEpochManager
-     */
     function getCurrentEpoch() public view virtual returns (uint48) {
         (uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex) =
             _getCurrentEpochDurationData();
