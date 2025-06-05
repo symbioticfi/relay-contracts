@@ -6,6 +6,7 @@ up:
 	docker run -d --rm \
 		-p 8545:8545 \
 		-p 8546:8546 \
+		--env-file .env \
 		-v $(shell pwd)/.env:/app/.env \
 		--name symbiotic-tests \
 		symbiotic-tests yarn deploy:snapshot
