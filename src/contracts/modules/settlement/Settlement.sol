@@ -342,7 +342,11 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
         }
 
         uint48 lastCommittedHeaderEpoch = getLastCommittedHeaderEpoch();
-        if (header.epoch <= lastCommittedHeaderEpoch) {
+        if (lastCommittedHeaderEpoch != 0) {
+            if (header.epoch <= lastCommittedHeaderEpoch) {
+                revert Settlement_InvalidEpoch();
+            }
+        } else if (header.epoch == 0 && isValSetHeaderCommittedAt(0)) {
             revert Settlement_InvalidEpoch();
         }
 
@@ -350,7 +354,7 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
             revert Settlement_InvalidCaptureTimestamp();
         }
 
-        if (header.previousHeaderHash != keccak256(abi.encode(getValSetHeaderAt(lastCommittedHeaderEpoch)))) {
+        if (header.previousHeaderHash != getValSetHeaderHashAt(lastCommittedHeaderEpoch)) {
             revert Settlement_InvalidPreviousHeaderHash();
         }
 

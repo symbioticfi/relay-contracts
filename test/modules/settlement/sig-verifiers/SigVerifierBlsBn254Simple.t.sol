@@ -366,7 +366,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
             captureTimestamp: 1_731_325_031,
             quorumThreshold: uint256(2).mulDiv(1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
             validatorsSszMRoot: 0x0000000000000000000000000000000000000000000000000000000000000000,
-            previousHeaderHash: 0x0000000000000000000000000000000000000000000000000000000000000000
+            previousHeaderHash: 0x868e09d528a16744c1f38ea3c10cc2251e01a456434f91172247695087d129b7
         });
 
         extraData = new ISettlement.ExtraData[](3);
