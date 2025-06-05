@@ -86,4 +86,12 @@ contract VotingPowerProviderFull is
     ) public returns (bool success, uint256 slashedAmount) {
         return _executeSlashVault(vault, slashIndex, hints);
     }
+
+    function distributeStakerRewards(address stakerRewards, address token, uint256 amount, bytes memory data) public {
+        _distributeStakerRewards(stakerRewards, token, amount, data);
+    }
+
+    function distributeOperatorRewards(address operatorRewards, address token, uint256 amount, bytes32 root) public {
+        _distributeOperatorRewards(operatorRewards, token, amount, root);
+    }
 }
