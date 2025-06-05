@@ -59,12 +59,7 @@ abstract contract OperatorsWhitelist is VotingPowerProvider, IOperatorsWhitelist
     function whitelistOperator(
         address operator
     ) public virtual checkPermission {
-        if (isOperatorWhitelisted(operator)) {
-            revert OperatorsWhitelist_OperatorAlreadyWhitelisted();
-        }
-        _getOperatorsWhitelistStorage()._whitelisted[operator] = true;
-
-        emit WhitelistOperator(operator);
+        _whitelistOperator(operator);
     }
 
     /**
@@ -73,15 +68,7 @@ abstract contract OperatorsWhitelist is VotingPowerProvider, IOperatorsWhitelist
     function unwhitelistOperator(
         address operator
     ) public virtual checkPermission {
-        if (!isOperatorWhitelisted(operator)) {
-            revert OperatorsWhitelist_OperatorNotWhitelisted();
-        }
-        _getOperatorsWhitelistStorage()._whitelisted[operator] = false;
-        if (isWhitelistEnabled() && isOperatorRegistered(operator)) {
-            _unregisterOperator(operator);
-        }
-
-        emit UnwhitelistOperator(operator);
+        _unwhitelistOperator(operator);
     }
 
     function _registerOperatorImpl(
@@ -98,5 +85,30 @@ abstract contract OperatorsWhitelist is VotingPowerProvider, IOperatorsWhitelist
     ) internal virtual {
         _getOperatorsWhitelistStorage()._isWhitelistEnabled = status;
         emit SetWhitelistStatus(status);
+    }
+
+    function _whitelistOperator(
+        address operator
+    ) internal virtual {
+        if (isOperatorWhitelisted(operator)) {
+            revert OperatorsWhitelist_OperatorAlreadyWhitelisted();
+        }
+        _getOperatorsWhitelistStorage()._whitelisted[operator] = true;
+
+        emit WhitelistOperator(operator);
+    }
+
+    function _unwhitelistOperator(
+        address operator
+    ) internal virtual {
+        if (!isOperatorWhitelisted(operator)) {
+            revert OperatorsWhitelist_OperatorNotWhitelisted();
+        }
+        _getOperatorsWhitelistStorage()._whitelisted[operator] = false;
+        if (isWhitelistEnabled() && isOperatorRegistered(operator)) {
+            _unregisterOperator(operator);
+        }
+
+        emit UnwhitelistOperator(operator);
     }
 }

@@ -40,17 +40,17 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
         ConfigProviderInitParams memory configProviderInitParams
     ) internal virtual onlyInitializing {
         for (uint256 i; i < configProviderInitParams.votingPowerProviders.length; ++i) {
-            addVotingPowerProvider(configProviderInitParams.votingPowerProviders[i]);
+            _addVotingPowerProvider(configProviderInitParams.votingPowerProviders[i]);
         }
-        setKeysProvider(configProviderInitParams.keysProvider);
+        _setKeysProvider(configProviderInitParams.keysProvider);
         for (uint256 i; i < configProviderInitParams.replicas.length; ++i) {
-            addReplica(configProviderInitParams.replicas[i]);
+            _addReplica(configProviderInitParams.replicas[i]);
         }
-        setVerificationType(configProviderInitParams.verificationType);
-        setMaxVotingPower(configProviderInitParams.maxVotingPower);
-        setMinInclusionVotingPower(configProviderInitParams.minInclusionVotingPower);
-        setMaxValidatorsCount(configProviderInitParams.maxValidatorsCount);
-        setRequiredKeyTags(configProviderInitParams.requiredKeyTags);
+        _setVerificationType(configProviderInitParams.verificationType);
+        _setMaxVotingPower(configProviderInitParams.maxVotingPower);
+        _setMinInclusionVotingPower(configProviderInitParams.minInclusionVotingPower);
+        _setMaxValidatorsCount(configProviderInitParams.maxValidatorsCount);
+        _setRequiredKeyTags(configProviderInitParams.requiredKeyTags);
     }
 
     /**
@@ -282,6 +282,93 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     function addVotingPowerProvider(
         CrossChainAddress memory votingPowerProvider
     ) public virtual checkPermission {
+        _addVotingPowerProvider(votingPowerProvider);
+    }
+
+    /**
+     * @inheritdoc IConfigProvider
+     */
+    function removeVotingPowerProvider(
+        CrossChainAddress memory votingPowerProvider
+    ) public virtual checkPermission {
+        _removeVotingPowerProvider(votingPowerProvider);
+    }
+
+    /**
+     * @inheritdoc IConfigProvider
+     */
+    function setKeysProvider(
+        CrossChainAddress memory keysProvider
+    ) public virtual checkPermission {
+        _setKeysProvider(keysProvider);
+    }
+
+    /**
+     * @inheritdoc IConfigProvider
+     */
+    function addReplica(
+        CrossChainAddress memory replica
+    ) public virtual checkPermission {
+        _addReplica(replica);
+    }
+
+    /**
+     * @inheritdoc IConfigProvider
+     */
+    function removeReplica(
+        CrossChainAddress memory replica
+    ) public virtual checkPermission {
+        _removeReplica(replica);
+    }
+
+    /**
+     * @inheritdoc IConfigProvider
+     */
+    function setVerificationType(
+        uint32 verificationType
+    ) public virtual checkPermission {
+        _setVerificationType(verificationType);
+    }
+
+    /**
+     * @inheritdoc IConfigProvider
+     */
+    function setMaxVotingPower(
+        uint256 maxVotingPower
+    ) public virtual checkPermission {
+        _setMaxVotingPower(maxVotingPower);
+    }
+
+    /**
+     * @inheritdoc IConfigProvider
+     */
+    function setMinInclusionVotingPower(
+        uint256 minInclusionVotingPower
+    ) public virtual checkPermission {
+        _setMinInclusionVotingPower(minInclusionVotingPower);
+    }
+
+    /**
+     * @inheritdoc IConfigProvider
+     */
+    function setMaxValidatorsCount(
+        uint208 maxValidatorsCount
+    ) public virtual checkPermission {
+        _setMaxValidatorsCount(maxValidatorsCount);
+    }
+
+    /**
+     * @inheritdoc IConfigProvider
+     */
+    function setRequiredKeyTags(
+        uint8[] memory requiredKeyTags
+    ) public virtual checkPermission {
+        _setRequiredKeyTags(requiredKeyTags);
+    }
+
+    function _addVotingPowerProvider(
+        CrossChainAddress memory votingPowerProvider
+    ) internal virtual {
         if (
             !_getConfigProviderStorage()._votingPowerProviders.add(
                 Time.timestamp(), _serializeCrossChainAddress(votingPowerProvider)
@@ -292,12 +379,9 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
         emit IConfigProvider.AddVotingPowerProvider(votingPowerProvider);
     }
 
-    /**
-     * @inheritdoc IConfigProvider
-     */
-    function removeVotingPowerProvider(
+    function _removeVotingPowerProvider(
         CrossChainAddress memory votingPowerProvider
-    ) public virtual checkPermission {
+    ) internal virtual {
         if (
             !_getConfigProviderStorage()._votingPowerProviders.remove(
                 Time.timestamp(), _serializeCrossChainAddress(votingPowerProvider)
@@ -308,95 +392,71 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
         emit IConfigProvider.RemoveVotingPowerProvider(votingPowerProvider);
     }
 
-    /**
-     * @inheritdoc IConfigProvider
-     */
-    function setKeysProvider(
+    function _setKeysProvider(
         CrossChainAddress memory keysProvider
-    ) public virtual checkPermission {
+    ) internal virtual {
         _getConfigProviderStorage()._keysProvider.push(
             Time.timestamp(), uint256(_serializeCrossChainAddress(keysProvider))
         );
         emit IConfigProvider.SetKeysProvider(keysProvider);
     }
 
-    /**
-     * @inheritdoc IConfigProvider
-     */
-    function addReplica(
+    function _addReplica(
         CrossChainAddress memory replica
-    ) public virtual checkPermission {
+    ) internal virtual {
         if (!_getConfigProviderStorage()._replicas.add(Time.timestamp(), _serializeCrossChainAddress(replica))) {
             revert IConfigProvider.ConfigProvider_AlreadyAdded();
         }
         emit IConfigProvider.AddReplica(replica);
     }
 
-    /**
-     * @inheritdoc IConfigProvider
-     */
-    function removeReplica(
+    function _removeReplica(
         CrossChainAddress memory replica
-    ) public virtual checkPermission {
+    ) internal virtual {
         if (!_getConfigProviderStorage()._replicas.remove(Time.timestamp(), _serializeCrossChainAddress(replica))) {
             revert IConfigProvider.ConfigProvider_NotAdded();
         }
         emit IConfigProvider.RemoveReplica(replica);
     }
 
-    /**
-     * @inheritdoc IConfigProvider
-     */
-    function setVerificationType(
+    function _setVerificationType(
         uint32 verificationType
-    ) public virtual checkPermission {
+    ) internal virtual {
         _getConfigProviderStorage()._verificationType.push(Time.timestamp(), verificationType);
         emit IConfigProvider.SetVerificationType(verificationType);
     }
 
-    /**
-     * @inheritdoc IConfigProvider
-     */
-    function setMaxVotingPower(
+    function _setMaxVotingPower(
         uint256 maxVotingPower
-    ) public virtual checkPermission {
+    ) internal virtual {
         _getConfigProviderStorage()._maxVotingPower.push(Time.timestamp(), maxVotingPower);
         emit IConfigProvider.SetMaxVotingPower(maxVotingPower);
     }
 
-    /**
-     * @inheritdoc IConfigProvider
-     */
-    function setMinInclusionVotingPower(
+    function _setMinInclusionVotingPower(
         uint256 minInclusionVotingPower
-    ) public virtual checkPermission {
+    ) internal virtual {
         _getConfigProviderStorage()._minInclusionVotingPower.push(Time.timestamp(), minInclusionVotingPower);
         emit IConfigProvider.SetMinInclusionVotingPower(minInclusionVotingPower);
     }
 
-    /**
-     * @inheritdoc IConfigProvider
-     */
-    function setMaxValidatorsCount(
+    function _setMaxValidatorsCount(
         uint208 maxValidatorsCount
-    ) public virtual checkPermission {
+    ) internal virtual {
         _getConfigProviderStorage()._maxValidatorsCount.push(Time.timestamp(), maxValidatorsCount);
         emit IConfigProvider.SetMaxValidatorsCount(maxValidatorsCount);
     }
 
-    /**
-     * @inheritdoc IConfigProvider
-     */
-    function setRequiredKeyTags(
+    function _setRequiredKeyTags(
         uint8[] memory requiredKeyTags
-    ) public virtual checkPermission {
+    ) internal virtual {
         _getConfigProviderStorage()._requiredKeyTags.push(Time.timestamp(), requiredKeyTags.serialize());
         emit IConfigProvider.SetRequiredKeyTags(requiredKeyTags);
     }
 
     function _deserializeCrossChainAddress(
         bytes32 compressedAddress
-    ) internal pure returns (IConfigProvider.CrossChainAddress memory) {
+    ) internal pure virtual returns (IConfigProvider.CrossChainAddress memory) {
         return IConfigProvider.CrossChainAddress({
             addr: address(uint160(uint256(compressedAddress))),
             chainId: uint64(uint256(compressedAddress) >> 160)
@@ -405,7 +465,7 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
 
     function _serializeCrossChainAddress(
         IConfigProvider.CrossChainAddress memory crossChainAddress
-    ) internal pure returns (bytes32) {
+    ) internal pure virtual returns (bytes32) {
         return bytes32(uint256(crossChainAddress.chainId) << 160 | uint256(uint160(crossChainAddress.addr)));
     }
 }

@@ -5,16 +5,16 @@ import {IStakerRewards} from "@symbioticfi/rewards/src/interfaces/stakerRewards/
 import {IDefaultOperatorRewards} from
     "@symbioticfi/rewards/src/interfaces/defaultOperatorRewards/IDefaultOperatorRewards.sol";
 
-import {IBaseRewarder} from "../../../interfaces/modules/voting-power/IBaseRewarder.sol";
+import {IBaseRewards} from "../../../interfaces/modules/voting-power/IBaseRewards.sol";
 import {VotingPowerProvider} from "./VotingPowerProvider.sol";
 
-abstract contract BaseRewarder is VotingPowerProvider, IBaseRewarder {
+abstract contract BaseRewards is VotingPowerProvider, IBaseRewards {
     /**
-     * @inheritdoc IBaseRewarder
+     * @inheritdoc IBaseRewards
      */
-    uint64 public constant BaseRewarder_VERSION = 1;
+    uint64 public constant BaseRewards_VERSION = 1;
 
-    function __BaseRewarder_init() internal virtual onlyInitializing {}
+    function __BaseRewards_init() internal virtual onlyInitializing {}
 
     function _distributeStakerRewards(
         address stakerRewards,

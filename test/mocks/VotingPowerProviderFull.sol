@@ -12,7 +12,7 @@ import {NetworkManager} from "../../src/contracts/base/NetworkManager.sol";
 import {OpNetVaultAutoDeploy} from "../../src/contracts/modules/voting-power/extensions/OpNetVaultAutoDeploy.sol";
 import {OperatorVaults} from "../../src/contracts/modules/voting-power/extensions/OperatorVaults.sol";
 import {BaseSlasher} from "../../src/contracts/modules/voting-power/BaseSlasher.sol";
-import {BaseRewarder} from "../../src/contracts/modules/voting-power/BaseRewarder.sol";
+import {BaseRewards} from "../../src/contracts/modules/voting-power/BaseRewards.sol";
 
 contract VotingPowerProviderFull is
     OzOwnable,
@@ -24,7 +24,7 @@ contract VotingPowerProviderFull is
     OperatorsWhitelist,
     OpNetVaultAutoDeploy,
     BaseSlasher,
-    BaseRewarder
+    BaseRewards
 {
     constructor(
         address operatorRegistry,
@@ -54,7 +54,7 @@ contract VotingPowerProviderFull is
         __OperatorsWhitelist_init(operatorsWhitelistInitParams);
         __OpNetVaultAutoDeploy_init(opNetVaultAutoDeployInitParams);
         __BaseSlasher_init();
-        __BaseRewarder_init();
+        __BaseRewards_init();
     }
 
     function __NetworkManager_init(
