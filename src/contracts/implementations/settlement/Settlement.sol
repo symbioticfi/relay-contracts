@@ -141,6 +141,22 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     /**
      * @inheritdoc ISettlement
      */
+    function getValSetHeaderHashAt(
+        uint48 epoch
+    ) public view virtual returns (bytes32) {
+        return SettlementLogic.getValSetHeaderHashAt(epoch);
+    }
+
+    /**
+     * @inheritdoc ISettlement
+     */
+    function getValSetHeaderHash() public view virtual returns (bytes32) {
+        return SettlementLogic.getValSetHeaderHash();
+    }
+
+    /**
+     * @inheritdoc ISettlement
+     */
     function getValSetHeaderAt(
         uint48 epoch
     ) public view virtual returns (ValSetHeader memory) {

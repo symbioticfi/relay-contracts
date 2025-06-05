@@ -165,6 +165,16 @@ library SettlementLogic {
         return ISettlement.ValSetPhase.FAIL;
     }
 
+    function getValSetHeaderHashAt(
+        uint48 epoch
+    ) public view returns (bytes32) {
+        return keccak256(abi.encode(getValSetHeaderAt(epoch)));
+    }
+
+    function getValSetHeaderHash() public view returns (bytes32) {
+        return getValSetHeaderHashAt(getCurrentValSetEpoch());
+    }
+
     function getValSetHeaderAt(
         uint48 epoch
     ) public view returns (ISettlement.ValSetHeader memory) {

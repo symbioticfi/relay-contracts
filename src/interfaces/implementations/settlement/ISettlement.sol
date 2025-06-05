@@ -118,6 +118,12 @@ interface ISettlement {
 
     function getCurrentPhase() external view returns (ValSetPhase);
 
+    function getValSetHeaderHashAt(
+        uint48 epoch
+    ) external view returns (bytes32);
+
+    function getValSetHeaderHash() external view returns (bytes32);
+
     function getValSetHeaderAt(
         uint48 epoch
     ) external view returns (ValSetHeader memory);
