@@ -3,8 +3,8 @@ pragma solidity ^0.8.25;
 
 import "forge-std/Test.sol";
 
-import {ConfigProvider} from "../../../src/contracts/modules/settlement/ConfigProvider.sol";
-import {IConfigProvider} from "../../../src/interfaces/modules/settlement/IConfigProvider.sol";
+import {ConfigProvider} from "../../../src/contracts/modules/valset-driver/ConfigProvider.sol";
+import {IConfigProvider} from "../../../src/interfaces/modules/valset-driver/IConfigProvider.sol";
 
 contract TestConfigProvider is ConfigProvider {
     address public owner;
