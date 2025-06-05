@@ -3,21 +3,54 @@ pragma solidity ^0.8.25;
 
 import {PermissionManager} from "../../base/PermissionManager.sol";
 
-import {ConfigProviderLogic} from "./logic/ConfigProviderLogic.sol";
+import {PersistentSet} from "../../libraries/structs/PersistentSet.sol";
+import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
+import {KeyTags} from "../../libraries/utils/KeyTags.sol";
+
+import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+
 import {IConfigProvider} from "../../../interfaces/modules/settlement/IConfigProvider.sol";
 
 abstract contract ConfigProvider is PermissionManager, IConfigProvider {
+    using EnumerableSet for EnumerableSet.Bytes32Set;
+    using Checkpoints for Checkpoints.Trace256;
+    using Checkpoints for Checkpoints.Trace208;
+    using PersistentSet for PersistentSet.Bytes32Set;
+    using KeyTags for uint128;
+    using KeyTags for uint8[];
+
     /**
      * @inheritdoc IConfigProvider
      */
-    function ConfigProvider_VERSION() public pure virtual returns (uint64) {
-        return ConfigProviderLogic.ConfigProvider_VERSION;
+    uint64 public constant ConfigProvider_VERSION = 1;
+
+    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.ConfigProvider")) - 1)) & ~bytes32(uint256(0xff))
+    bytes32 private constant ConfigProviderStorageLocation =
+        0x69cc2103f98d9422293b17af4701294142032f76ec5b84d4141038932799fa00;
+
+    function _getConfigProviderStorage() internal pure returns (IConfigProvider.ConfigProviderStorage storage $) {
+        bytes32 location = ConfigProviderStorageLocation;
+        assembly {
+            $.slot := location
+        }
     }
 
     function __ConfigProvider_init(
         ConfigProviderInitParams memory configProviderInitParams
     ) internal virtual onlyInitializing {
-        ConfigProviderLogic.initialize(configProviderInitParams);
+        for (uint256 i; i < configProviderInitParams.votingPowerProviders.length; ++i) {
+            addVotingPowerProvider(configProviderInitParams.votingPowerProviders[i]);
+        }
+        setKeysProvider(configProviderInitParams.keysProvider);
+        for (uint256 i; i < configProviderInitParams.replicas.length; ++i) {
+            addReplica(configProviderInitParams.replicas[i]);
+        }
+        setVerificationType(configProviderInitParams.verificationType);
+        setMaxVotingPower(configProviderInitParams.maxVotingPower);
+        setMinInclusionVotingPower(configProviderInitParams.minInclusionVotingPower);
+        setMaxValidatorsCount(configProviderInitParams.maxValidatorsCount);
+        setRequiredKeyTags(configProviderInitParams.requiredKeyTags);
     }
 
     /**
@@ -28,7 +61,9 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
         uint48 timestamp,
         bytes memory hint
     ) public view virtual returns (bool) {
-        return ConfigProviderLogic.isVotingPowerProviderRegisteredAt(votingPowerProvider, timestamp, hint);
+        return _getConfigProviderStorage()._votingPowerProviders.containsAt(
+            timestamp, _serializeCrossChainAddress(votingPowerProvider), hint
+        );
     }
 
     /**
@@ -37,7 +72,8 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     function isVotingPowerProviderRegistered(
         CrossChainAddress memory votingPowerProvider
     ) public view virtual returns (bool) {
-        return ConfigProviderLogic.isVotingPowerProviderRegistered(votingPowerProvider);
+        return
+            _getConfigProviderStorage()._votingPowerProviders.contains(_serializeCrossChainAddress(votingPowerProvider));
     }
 
     /**
@@ -46,15 +82,24 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     function getVotingPowerProvidersAt(
         uint48 timestamp,
         bytes[] memory hints
-    ) public view virtual returns (CrossChainAddress[] memory) {
-        return ConfigProviderLogic.getVotingPowerProvidersAt(timestamp, hints);
+    ) public view virtual returns (CrossChainAddress[] memory votingPowerProviders) {
+        bytes32[] memory votingPowerProvidersRaw =
+            _getConfigProviderStorage()._votingPowerProviders.valuesAt(timestamp, hints);
+        votingPowerProviders = new IConfigProvider.CrossChainAddress[](votingPowerProvidersRaw.length);
+        for (uint256 i; i < votingPowerProvidersRaw.length; ++i) {
+            votingPowerProviders[i] = _deserializeCrossChainAddress(votingPowerProvidersRaw[i]);
+        }
     }
 
     /**
      * @inheritdoc IConfigProvider
      */
-    function getVotingPowerProviders() public view virtual returns (CrossChainAddress[] memory) {
-        return ConfigProviderLogic.getVotingPowerProviders();
+    function getVotingPowerProviders() public view virtual returns (CrossChainAddress[] memory votingPowerProviders) {
+        bytes32[] memory votingPowerProvidersRaw = _getConfigProviderStorage()._votingPowerProviders.values();
+        votingPowerProviders = new IConfigProvider.CrossChainAddress[](votingPowerProvidersRaw.length);
+        for (uint256 i; i < votingPowerProvidersRaw.length; ++i) {
+            votingPowerProviders[i] = _deserializeCrossChainAddress(votingPowerProvidersRaw[i]);
+        }
     }
 
     /**
@@ -64,14 +109,16 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
         uint48 timestamp,
         bytes memory hint
     ) public view virtual returns (CrossChainAddress memory) {
-        return ConfigProviderLogic.getKeysProviderAt(timestamp, hint);
+        return _deserializeCrossChainAddress(
+            bytes32(_getConfigProviderStorage()._keysProvider.upperLookupRecent(timestamp, hint))
+        );
     }
 
     /**
      * @inheritdoc IConfigProvider
      */
     function getKeysProvider() public view virtual returns (CrossChainAddress memory) {
-        return ConfigProviderLogic.getKeysProvider();
+        return _deserializeCrossChainAddress(bytes32(_getConfigProviderStorage()._keysProvider.latest()));
     }
 
     /**
@@ -82,7 +129,7 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
         uint48 timestamp,
         bytes memory hint
     ) public view virtual returns (bool) {
-        return ConfigProviderLogic.isReplicaRegisteredAt(replica, timestamp, hint);
+        return _getConfigProviderStorage()._replicas.containsAt(timestamp, _serializeCrossChainAddress(replica), hint);
     }
 
     /**
@@ -91,7 +138,7 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     function isReplicaRegistered(
         CrossChainAddress memory replica
     ) public view virtual returns (bool) {
-        return ConfigProviderLogic.isReplicaRegistered(replica);
+        return _getConfigProviderStorage()._replicas.contains(_serializeCrossChainAddress(replica));
     }
 
     /**
@@ -100,71 +147,79 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     function getReplicasAt(
         uint48 timestamp,
         bytes[] memory hints
-    ) public view virtual returns (CrossChainAddress[] memory) {
-        return ConfigProviderLogic.getReplicasAt(timestamp, hints);
+    ) public view virtual returns (CrossChainAddress[] memory replicas) {
+        bytes32[] memory replicasRaw = _getConfigProviderStorage()._replicas.valuesAt(timestamp, hints);
+        replicas = new IConfigProvider.CrossChainAddress[](replicasRaw.length);
+        for (uint256 i; i < replicasRaw.length; ++i) {
+            replicas[i] = _deserializeCrossChainAddress(replicasRaw[i]);
+        }
     }
 
     /**
      * @inheritdoc IConfigProvider
      */
-    function getReplicas() public view virtual returns (CrossChainAddress[] memory) {
-        return ConfigProviderLogic.getReplicas();
+    function getReplicas() public view virtual returns (CrossChainAddress[] memory replicas) {
+        bytes32[] memory replicasRaw = _getConfigProviderStorage()._replicas.values();
+        replicas = new IConfigProvider.CrossChainAddress[](replicasRaw.length);
+        for (uint256 i; i < replicasRaw.length; ++i) {
+            replicas[i] = _deserializeCrossChainAddress(replicasRaw[i]);
+        }
     }
 
     /**
      * @inheritdoc IConfigProvider
      */
     function getVerificationTypeAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint32) {
-        return ConfigProviderLogic.getVerificationTypeAt(timestamp, hint);
+        return uint32(_getConfigProviderStorage()._verificationType.upperLookupRecent(timestamp, hint));
     }
 
     /**
      * @inheritdoc IConfigProvider
      */
     function getVerificationType() public view virtual returns (uint32) {
-        return ConfigProviderLogic.getVerificationType();
+        return uint32(_getConfigProviderStorage()._verificationType.latest());
     }
 
     /**
      * @inheritdoc IConfigProvider
      */
     function getMaxVotingPowerAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint256) {
-        return ConfigProviderLogic.getMaxVotingPowerAt(timestamp, hint);
+        return _getConfigProviderStorage()._maxVotingPower.upperLookupRecent(timestamp, hint);
     }
 
     /**
      * @inheritdoc IConfigProvider
      */
     function getMaxVotingPower() public view virtual returns (uint256) {
-        return ConfigProviderLogic.getMaxVotingPower();
+        return _getConfigProviderStorage()._maxVotingPower.latest();
     }
 
     /**
      * @inheritdoc IConfigProvider
      */
     function getMinInclusionVotingPowerAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint256) {
-        return ConfigProviderLogic.getMinInclusionVotingPowerAt(timestamp, hint);
+        return _getConfigProviderStorage()._minInclusionVotingPower.upperLookupRecent(timestamp, hint);
     }
 
     /**
      * @inheritdoc IConfigProvider
      */
     function getMinInclusionVotingPower() public view virtual returns (uint256) {
-        return ConfigProviderLogic.getMinInclusionVotingPower();
+        return _getConfigProviderStorage()._minInclusionVotingPower.latest();
     }
 
     /**
      * @inheritdoc IConfigProvider
      */
     function getMaxValidatorsCountAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint208) {
-        return ConfigProviderLogic.getMaxValidatorsCountAt(timestamp, hint);
+        return _getConfigProviderStorage()._maxValidatorsCount.upperLookupRecent(timestamp, hint);
     }
 
     /**
      * @inheritdoc IConfigProvider
      */
     function getMaxValidatorsCount() public view virtual returns (uint208) {
-        return ConfigProviderLogic.getMaxValidatorsCount();
+        return _getConfigProviderStorage()._maxValidatorsCount.latest();
     }
 
     /**
@@ -174,28 +229,51 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
         uint48 timestamp,
         bytes memory hint
     ) public view returns (uint8[] memory requiredKeyTags) {
-        return ConfigProviderLogic.getRequiredKeyTagsAt(timestamp, hint);
+        return uint128(_getConfigProviderStorage()._requiredKeyTags.upperLookupRecent(timestamp, hint)).deserialize();
     }
 
     /**
      * @inheritdoc IConfigProvider
      */
     function getRequiredKeyTags() public view returns (uint8[] memory requiredKeyTags) {
-        return ConfigProviderLogic.getRequiredKeyTags();
+        return uint128(_getConfigProviderStorage()._requiredKeyTags.latest()).deserialize();
     }
 
     /**
      * @inheritdoc IConfigProvider
      */
     function getConfigAt(uint48 timestamp, bytes memory hints) public view virtual returns (Config memory) {
-        return ConfigProviderLogic.getConfigAt(timestamp, hints);
+        IConfigProvider.ConfigHints memory configHints;
+        if (hints.length > 0) {
+            configHints = abi.decode(hints, (IConfigProvider.ConfigHints));
+        }
+
+        return IConfigProvider.Config({
+            votingPowerProviders: getVotingPowerProvidersAt(timestamp, configHints.votingPowerProvidersHints),
+            keysProvider: getKeysProviderAt(timestamp, configHints.keysProviderHint),
+            replicas: getReplicasAt(timestamp, configHints.replicasHints),
+            verificationType: getVerificationTypeAt(timestamp, configHints.verificationTypeHint),
+            maxVotingPower: getMaxVotingPowerAt(timestamp, configHints.maxVotingPowerHint),
+            minInclusionVotingPower: getMinInclusionVotingPowerAt(timestamp, configHints.minInclusionVotingPowerHint),
+            maxValidatorsCount: getMaxValidatorsCountAt(timestamp, configHints.maxValidatorsCountHint),
+            requiredKeyTags: getRequiredKeyTagsAt(timestamp, configHints.requiredKeyTagsHint)
+        });
     }
 
     /**
      * @inheritdoc IConfigProvider
      */
     function getConfig() public view virtual returns (Config memory) {
-        return ConfigProviderLogic.getConfig();
+        return IConfigProvider.Config({
+            votingPowerProviders: getVotingPowerProviders(),
+            keysProvider: getKeysProvider(),
+            replicas: getReplicas(),
+            verificationType: getVerificationType(),
+            maxVotingPower: getMaxVotingPower(),
+            minInclusionVotingPower: getMinInclusionVotingPower(),
+            maxValidatorsCount: getMaxValidatorsCount(),
+            requiredKeyTags: getRequiredKeyTags()
+        });
     }
 
     /**
@@ -204,7 +282,14 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     function addVotingPowerProvider(
         CrossChainAddress memory votingPowerProvider
     ) public virtual checkPermission {
-        ConfigProviderLogic.addVotingPowerProvider(votingPowerProvider);
+        if (
+            !_getConfigProviderStorage()._votingPowerProviders.add(
+                Time.timestamp(), _serializeCrossChainAddress(votingPowerProvider)
+            )
+        ) {
+            revert IConfigProvider.ConfigProvider_AlreadyAdded();
+        }
+        emit IConfigProvider.AddVotingPowerProvider(votingPowerProvider);
     }
 
     /**
@@ -213,7 +298,14 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     function removeVotingPowerProvider(
         CrossChainAddress memory votingPowerProvider
     ) public virtual checkPermission {
-        ConfigProviderLogic.removeVotingPowerProvider(votingPowerProvider);
+        if (
+            !_getConfigProviderStorage()._votingPowerProviders.remove(
+                Time.timestamp(), _serializeCrossChainAddress(votingPowerProvider)
+            )
+        ) {
+            revert IConfigProvider.ConfigProvider_NotAdded();
+        }
+        emit IConfigProvider.RemoveVotingPowerProvider(votingPowerProvider);
     }
 
     /**
@@ -222,7 +314,10 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     function setKeysProvider(
         CrossChainAddress memory keysProvider
     ) public virtual checkPermission {
-        ConfigProviderLogic.setKeysProvider(keysProvider);
+        _getConfigProviderStorage()._keysProvider.push(
+            Time.timestamp(), uint256(_serializeCrossChainAddress(keysProvider))
+        );
+        emit IConfigProvider.SetKeysProvider(keysProvider);
     }
 
     /**
@@ -231,7 +326,10 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     function addReplica(
         CrossChainAddress memory replica
     ) public virtual checkPermission {
-        ConfigProviderLogic.addReplica(replica);
+        if (!_getConfigProviderStorage()._replicas.add(Time.timestamp(), _serializeCrossChainAddress(replica))) {
+            revert IConfigProvider.ConfigProvider_AlreadyAdded();
+        }
+        emit IConfigProvider.AddReplica(replica);
     }
 
     /**
@@ -240,7 +338,10 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     function removeReplica(
         CrossChainAddress memory replica
     ) public virtual checkPermission {
-        ConfigProviderLogic.removeReplica(replica);
+        if (!_getConfigProviderStorage()._replicas.remove(Time.timestamp(), _serializeCrossChainAddress(replica))) {
+            revert IConfigProvider.ConfigProvider_NotAdded();
+        }
+        emit IConfigProvider.RemoveReplica(replica);
     }
 
     /**
@@ -249,7 +350,8 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     function setVerificationType(
         uint32 verificationType
     ) public virtual checkPermission {
-        ConfigProviderLogic.setVerificationType(verificationType);
+        _getConfigProviderStorage()._verificationType.push(Time.timestamp(), verificationType);
+        emit IConfigProvider.SetVerificationType(verificationType);
     }
 
     /**
@@ -258,7 +360,8 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     function setMaxVotingPower(
         uint256 maxVotingPower
     ) public virtual checkPermission {
-        ConfigProviderLogic.setMaxVotingPower(maxVotingPower);
+        _getConfigProviderStorage()._maxVotingPower.push(Time.timestamp(), maxVotingPower);
+        emit IConfigProvider.SetMaxVotingPower(maxVotingPower);
     }
 
     /**
@@ -267,7 +370,8 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     function setMinInclusionVotingPower(
         uint256 minInclusionVotingPower
     ) public virtual checkPermission {
-        ConfigProviderLogic.setMinInclusionVotingPower(minInclusionVotingPower);
+        _getConfigProviderStorage()._minInclusionVotingPower.push(Time.timestamp(), minInclusionVotingPower);
+        emit IConfigProvider.SetMinInclusionVotingPower(minInclusionVotingPower);
     }
 
     /**
@@ -276,7 +380,8 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     function setMaxValidatorsCount(
         uint208 maxValidatorsCount
     ) public virtual checkPermission {
-        ConfigProviderLogic.setMaxValidatorsCount(maxValidatorsCount);
+        _getConfigProviderStorage()._maxValidatorsCount.push(Time.timestamp(), maxValidatorsCount);
+        emit IConfigProvider.SetMaxValidatorsCount(maxValidatorsCount);
     }
 
     /**
@@ -285,6 +390,22 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     function setRequiredKeyTags(
         uint8[] memory requiredKeyTags
     ) public virtual checkPermission {
-        ConfigProviderLogic.setRequiredKeyTags(requiredKeyTags);
+        _getConfigProviderStorage()._requiredKeyTags.push(Time.timestamp(), requiredKeyTags.serialize());
+        emit IConfigProvider.SetRequiredKeyTags(requiredKeyTags);
+    }
+
+    function _deserializeCrossChainAddress(
+        bytes32 compressedAddress
+    ) internal pure returns (IConfigProvider.CrossChainAddress memory) {
+        return IConfigProvider.CrossChainAddress({
+            addr: address(uint160(uint256(compressedAddress))),
+            chainId: uint64(uint256(compressedAddress) >> 160)
+        });
+    }
+
+    function _serializeCrossChainAddress(
+        IConfigProvider.CrossChainAddress memory crossChainAddress
+    ) internal pure returns (bytes32) {
+        return bytes32(uint256(crossChainAddress.chainId) << 160 | uint256(uint160(crossChainAddress.addr)));
     }
 }
