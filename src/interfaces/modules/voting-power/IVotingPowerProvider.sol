@@ -7,8 +7,8 @@ import {IOzEIP712} from "../../base/common/IOzEIP712.sol";
 
 interface IVotingPowerProvider {
     error VotingPowerProvider_InvalidSignature();
-    /// @custom:storage-location erc7201:symbiotic.storage.VotingPowerProvider
 
+    /// @custom:storage-location erc7201:symbiotic.storage.VotingPowerProvider
     struct VotingPowerProviderStorage {
         uint256 minVotingPowerThreshold;
     }
