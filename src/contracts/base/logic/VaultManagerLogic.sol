@@ -24,9 +24,9 @@ import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
 import {PersistentSet} from "../../libraries/structs/PersistentSet.sol";
 import {InputNormalizer} from "../../libraries/utils/InputNormalizer.sol";
 
-import {NetworkManagerLogic} from "./NetworkManagerLogic.sol";
-
 import {IVaultManager} from "../../../interfaces/base/IVaultManager.sol";
+import {IVotingPowerCalcManager} from "../../../interfaces/base/IVotingPowerCalcManager.sol";
+import {INetworkManager} from "../../../interfaces/base/INetworkManager.sol";
 
 library VaultManagerLogic {
     using EnumerableMap for EnumerableMap.AddressToUintMap;
@@ -184,16 +184,15 @@ library VaultManagerLogic {
         bytes memory hints
     ) public view returns (uint256) {
         return IBaseDelegator(IVault(vault).delegator()).stakeAt(
-            NetworkManagerLogic.SUBNETWORK(), operator, timestamp, hints
+            INetworkManager(address(this)).SUBNETWORK(), operator, timestamp, hints
         );
     }
 
     function getOperatorStake(address vault, address operator) public view returns (uint256) {
-        return IBaseDelegator(IVault(vault).delegator()).stake(NetworkManagerLogic.SUBNETWORK(), operator);
+        return IBaseDelegator(IVault(vault).delegator()).stake(INetworkManager(address(this)).SUBNETWORK(), operator);
     }
 
     function getOperatorVotingPowerAt(
-        function (address, uint256, bytes memory, uint48) external view returns (uint256) stakeToVotingPowerAt,
         address operator,
         address vault,
         bytes memory extraData,
@@ -212,7 +211,7 @@ library VaultManagerLogic {
         ) {
             return 0;
         }
-        return stakeToVotingPowerAt(
+        return IVotingPowerCalcManager(address(this)).stakeToVotingPowerAt(
             vault,
             getOperatorStakeAt(vault, operator, timestamp, operatorVaultVotingPowerHints.stakeHints),
             extraData,
@@ -221,7 +220,6 @@ library VaultManagerLogic {
     }
 
     function getOperatorVotingPower(
-        function (address, uint256, bytes memory) external view returns (uint256) stakeToVotingPower,
         address operator,
         address vault,
         bytes memory extraData
@@ -229,11 +227,10 @@ library VaultManagerLogic {
         if (!isTokenRegistered(IVault(vault).collateral())) {
             return 0;
         }
-        return stakeToVotingPower(vault, getOperatorStake(vault, operator), extraData);
+        return IVotingPowerCalcManager(address(this)).stakeToVotingPower(vault, getOperatorStake(vault, operator), extraData);
     }
 
     function getOperatorVotingPowersAt(
-        function (address, uint256, bytes memory, uint48) external view returns (uint256) stakeToVotingPowerAt,
         address operator,
         bytes memory extraData,
         uint48 timestamp,
@@ -259,7 +256,6 @@ library VaultManagerLogic {
             operatorVotingPowersExtraData.sharedVaultsExtraData.normalize(sharedVaults.length);
         for (uint256 i; i < sharedVaults.length; ++i) {
             uint256 votingPower_ = getOperatorVotingPowerAt(
-                stakeToVotingPowerAt,
                 operator,
                 sharedVaults[i],
                 operatorVotingPowersExtraData.sharedVaultsExtraData[i],
@@ -277,7 +273,6 @@ library VaultManagerLogic {
             operatorVotingPowersExtraData.operatorVaultsExtraData.normalize(operatorVaults.length);
         for (uint256 i; i < operatorVaults.length; ++i) {
             uint256 votingPower_ = getOperatorVotingPowerAt(
-                stakeToVotingPowerAt,
                 operator,
                 operatorVaults[i],
                 operatorVotingPowersExtraData.operatorVaultsExtraData[i],
@@ -296,7 +291,6 @@ library VaultManagerLogic {
     }
 
     function getOperatorVotingPowers(
-        function (address, uint256, bytes memory) external view returns (uint256) stakeToVotingPower,
         address operator,
         bytes memory extraData
     ) public view returns (IVaultManager.VaultVotingPower[] memory vaultVotingPowers) {
@@ -313,7 +307,7 @@ library VaultManagerLogic {
             operatorVotingPowersExtraData.sharedVaultsExtraData.normalize(sharedVaults.length);
         for (uint256 i; i < sharedVaults.length; ++i) {
             uint256 votingPower_ = getOperatorVotingPower(
-                stakeToVotingPower, operator, sharedVaults[i], operatorVotingPowersExtraData.sharedVaultsExtraData[i]
+                operator, sharedVaults[i], operatorVotingPowersExtraData.sharedVaultsExtraData[i]
             );
             if (votingPower_ > 0) {
                 vaultVotingPowers[length++] =
@@ -324,7 +318,6 @@ library VaultManagerLogic {
             operatorVotingPowersExtraData.operatorVaultsExtraData.normalize(operatorVaults.length);
         for (uint256 i; i < operatorVaults.length; ++i) {
             uint256 votingPower_ = getOperatorVotingPower(
-                stakeToVotingPower,
                 operator,
                 operatorVaults[i],
                 operatorVotingPowersExtraData.operatorVaultsExtraData[i]
@@ -341,7 +334,6 @@ library VaultManagerLogic {
     }
 
     function getVotingPowersAt(
-        function (address, uint256, bytes memory, uint48) external view returns (uint256) stakeToVotingPowerAt,
         bytes[] memory extraData,
         uint48 timestamp,
         bytes memory hints
@@ -359,7 +351,6 @@ library VaultManagerLogic {
         extraData = extraData.normalize(operators.length);
         for (uint256 i; i < operators.length; ++i) {
             IVaultManager.VaultVotingPower[] memory votingPowers = getOperatorVotingPowersAt(
-                stakeToVotingPowerAt,
                 operators[i],
                 extraData[i],
                 timestamp,
@@ -376,7 +367,6 @@ library VaultManagerLogic {
     }
 
     function getVotingPowers(
-        function (address, uint256, bytes memory) external view returns (uint256) stakeToVotingPower,
         bytes[] memory extraData
     ) public view returns (IVaultManager.OperatorVotingPower[] memory operatorVotingPowers) {
         uint256 length;
@@ -385,7 +375,7 @@ library VaultManagerLogic {
         extraData = extraData.normalize(operators.length);
         for (uint256 i; i < operators.length; ++i) {
             IVaultManager.VaultVotingPower[] memory votingPowers =
-                getOperatorVotingPowers(stakeToVotingPower, operators[i], extraData[i]);
+                getOperatorVotingPowers(operators[i], extraData[i]);
             if (votingPowers.length > 0) {
                 operatorVotingPowers[length++] =
                     IVaultManager.OperatorVotingPower({operator: operators[i], vaults: votingPowers});
@@ -563,7 +553,7 @@ library VaultManagerLogic {
 
         if (
             delegatorType == uint64(IVaultManager.DelegatorType.OPERATOR_NETWORK_SPECIFIC)
-                && IOperatorNetworkSpecificDelegator(delegator).network() != NetworkManagerLogic.NETWORK()
+                && IOperatorNetworkSpecificDelegator(delegator).network() != INetworkManager(address(this)).NETWORK()
         ) {
             return false;
         }

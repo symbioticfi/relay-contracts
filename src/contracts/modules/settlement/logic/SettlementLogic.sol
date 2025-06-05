@@ -4,10 +4,10 @@ pragma solidity ^0.8.25;
 import {Checkpoints} from "../../../libraries/structs/Checkpoints.sol";
 import {EpochManagerLogic} from "../../../base/logic/EpochManagerLogic.sol";
 import {OzEIP712Logic} from "../../../base/common/logic/OzEIP712Logic.sol";
-import {NetworkManagerLogic} from "../../../base/logic/NetworkManagerLogic.sol";
 
 import {ISigVerifier} from "../../../../interfaces/base/ISigVerifier.sol";
 import {ISettlement} from "../../../../interfaces/modules/settlement/ISettlement.sol";
+import {INetworkManager} from "../../../../interfaces/base/INetworkManager.sol";
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
@@ -37,7 +37,6 @@ library SettlementLogic {
     ) public {
         EpochManagerLogic.initialize(settlementInitParams.epochManagerInitParams);
         OzEIP712Logic.initialize(settlementInitParams.ozEip712InitParams);
-        NetworkManagerLogic.initialize(settlementInitParams.networkManagerInitParams);
 
         ISettlement.SettlementStorage storage $ = _getSettlementStorage();
 
@@ -343,7 +342,7 @@ library SettlementLogic {
                         keccak256(
                             abi.encode(
                                 VALSET_HEADER_COMMIT_TYPEHASH,
-                                NetworkManagerLogic.SUBNETWORK(),
+                                INetworkManager(address(this)).SUBNETWORK(),
                                 currentEpoch,
                                 keccak256(abi.encode(header)),
                                 keccak256(abi.encode(extraData))

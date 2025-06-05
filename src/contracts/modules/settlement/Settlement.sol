@@ -34,6 +34,7 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     function __Settlement_init(
         SettlementInitParams memory settlementInitParams
     ) internal virtual onlyInitializing {
+        __NetworkManager_init(settlementInitParams.networkManagerInitParams);
         SettlementLogic.initialize(settlementInitParams);
     }
 

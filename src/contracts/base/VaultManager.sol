@@ -263,7 +263,7 @@ abstract contract VaultManager is NetworkManager, VotingPowerCalcManager, IVault
         bytes memory hints
     ) public view virtual returns (uint256) {
         return VaultManagerLogic.getOperatorVotingPowerAt(
-            this.stakeToVotingPowerAt, operator, vault, extraData, timestamp, hints
+            operator, vault, extraData, timestamp, hints
         );
     }
 
@@ -275,7 +275,7 @@ abstract contract VaultManager is NetworkManager, VotingPowerCalcManager, IVault
         address vault,
         bytes memory extraData
     ) public view virtual returns (uint256) {
-        return VaultManagerLogic.getOperatorVotingPower(this.stakeToVotingPower, operator, vault, extraData);
+        return VaultManagerLogic.getOperatorVotingPower( operator, vault, extraData);
     }
 
     /**
@@ -288,7 +288,7 @@ abstract contract VaultManager is NetworkManager, VotingPowerCalcManager, IVault
         bytes memory hints
     ) public view virtual returns (VaultVotingPower[] memory) {
         return VaultManagerLogic.getOperatorVotingPowersAt(
-            this.stakeToVotingPowerAt, operator, extraData, timestamp, hints
+            operator, extraData, timestamp, hints
         );
     }
 
@@ -299,7 +299,7 @@ abstract contract VaultManager is NetworkManager, VotingPowerCalcManager, IVault
         address operator,
         bytes memory extraData
     ) public view virtual returns (VaultVotingPower[] memory) {
-        return VaultManagerLogic.getOperatorVotingPowers(this.stakeToVotingPower, operator, extraData);
+        return VaultManagerLogic.getOperatorVotingPowers(operator, extraData);
     }
 
     /**
@@ -310,7 +310,7 @@ abstract contract VaultManager is NetworkManager, VotingPowerCalcManager, IVault
         uint48 timestamp,
         bytes memory hints
     ) public view virtual returns (OperatorVotingPower[] memory) {
-        return VaultManagerLogic.getVotingPowersAt(this.stakeToVotingPowerAt, extraData, timestamp, hints);
+        return VaultManagerLogic.getVotingPowersAt(extraData, timestamp, hints);
     }
 
     /**
@@ -319,7 +319,7 @@ abstract contract VaultManager is NetworkManager, VotingPowerCalcManager, IVault
     function getVotingPowers(
         bytes[] memory extraData
     ) public view virtual returns (OperatorVotingPower[] memory) {
-        return VaultManagerLogic.getVotingPowers(this.stakeToVotingPower, extraData);
+        return VaultManagerLogic.getVotingPowers(extraData);
     }
 
     function _getOperatorStakeAt(
