@@ -227,7 +227,9 @@ library VaultManagerLogic {
         if (!isTokenRegistered(IVault(vault).collateral())) {
             return 0;
         }
-        return IVotingPowerCalcManager(address(this)).stakeToVotingPower(vault, getOperatorStake(vault, operator), extraData);
+        return IVotingPowerCalcManager(address(this)).stakeToVotingPower(
+            vault, getOperatorStake(vault, operator), extraData
+        );
     }
 
     function getOperatorVotingPowersAt(
@@ -318,9 +320,7 @@ library VaultManagerLogic {
             operatorVotingPowersExtraData.operatorVaultsExtraData.normalize(operatorVaults.length);
         for (uint256 i; i < operatorVaults.length; ++i) {
             uint256 votingPower_ = getOperatorVotingPower(
-                operator,
-                operatorVaults[i],
-                operatorVotingPowersExtraData.operatorVaultsExtraData[i]
+                operator, operatorVaults[i], operatorVotingPowersExtraData.operatorVaultsExtraData[i]
             );
             if (votingPower_ > 0) {
                 vaultVotingPowers[length++] =
@@ -351,10 +351,7 @@ library VaultManagerLogic {
         extraData = extraData.normalize(operators.length);
         for (uint256 i; i < operators.length; ++i) {
             IVaultManager.VaultVotingPower[] memory votingPowers = getOperatorVotingPowersAt(
-                operators[i],
-                extraData[i],
-                timestamp,
-                votingPowersHints.operatorVotingPowersHints[i]
+                operators[i], extraData[i], timestamp, votingPowersHints.operatorVotingPowersHints[i]
             );
             if (votingPowers.length > 0) {
                 operatorVotingPowers[length++] =
@@ -374,8 +371,7 @@ library VaultManagerLogic {
         operatorVotingPowers = new IVaultManager.OperatorVotingPower[](operators.length);
         extraData = extraData.normalize(operators.length);
         for (uint256 i; i < operators.length; ++i) {
-            IVaultManager.VaultVotingPower[] memory votingPowers =
-                getOperatorVotingPowers(operators[i], extraData[i]);
+            IVaultManager.VaultVotingPower[] memory votingPowers = getOperatorVotingPowers(operators[i], extraData[i]);
             if (votingPowers.length > 0) {
                 operatorVotingPowers[length++] =
                     IVaultManager.OperatorVotingPower({operator: operators[i], vaults: votingPowers});

@@ -262,9 +262,7 @@ abstract contract VaultManager is NetworkManager, VotingPowerCalcManager, IVault
         uint48 timestamp,
         bytes memory hints
     ) public view virtual returns (uint256) {
-        return VaultManagerLogic.getOperatorVotingPowerAt(
-            operator, vault, extraData, timestamp, hints
-        );
+        return VaultManagerLogic.getOperatorVotingPowerAt(operator, vault, extraData, timestamp, hints);
     }
 
     /**
@@ -275,7 +273,7 @@ abstract contract VaultManager is NetworkManager, VotingPowerCalcManager, IVault
         address vault,
         bytes memory extraData
     ) public view virtual returns (uint256) {
-        return VaultManagerLogic.getOperatorVotingPower( operator, vault, extraData);
+        return VaultManagerLogic.getOperatorVotingPower(operator, vault, extraData);
     }
 
     /**
@@ -287,9 +285,7 @@ abstract contract VaultManager is NetworkManager, VotingPowerCalcManager, IVault
         uint48 timestamp,
         bytes memory hints
     ) public view virtual returns (VaultVotingPower[] memory) {
-        return VaultManagerLogic.getOperatorVotingPowersAt(
-            operator, extraData, timestamp, hints
-        );
+        return VaultManagerLogic.getOperatorVotingPowersAt(operator, extraData, timestamp, hints);
     }
 
     /**
