@@ -30,7 +30,6 @@ interface ISettlement {
 
     struct SettlementInitParams {
         INetworkManager.NetworkManagerInitParams networkManagerInitParams;
-        IEpochManager.EpochManagerInitParams epochManagerInitParams;
         IOzEIP712.OzEIP712InitParams ozEip712InitParams;
         uint8 requiredKeyTag;
         address sigVerifier;
@@ -67,15 +66,11 @@ interface ISettlement {
 
     function VALIDATOR_SET_VERSION() external view returns (uint8);
 
-    function getCurrentValSetTimestamp() external view returns (uint48);
-
-    function getCurrentValSetEpoch() external view returns (uint48);
-
-    function getRequiredKeyTagAt(uint48 timestamp, bytes memory hint) external view returns (uint8);
+    function getRequiredKeyTagAt(uint48 epoch, bytes memory hint) external view returns (uint8);
 
     function getRequiredKeyTag() external view returns (uint8);
 
-    function getSigVerifierAt(uint48 timestamp, bytes memory hint) external view returns (address);
+    function getSigVerifierAt(uint48 epoch, bytes memory hint) external view returns (address);
 
     function getSigVerifier() external view returns (address);
 
@@ -84,8 +79,6 @@ interface ISettlement {
     function isValSetHeaderCommittedAt(
         uint48 epoch
     ) external view returns (bool);
-
-    function isValSetHeaderCommitted() external view returns (bool);
 
     function getValSetHeaderAt(
         uint48 epoch
