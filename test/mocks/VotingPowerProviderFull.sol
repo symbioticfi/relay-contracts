@@ -13,6 +13,7 @@ import {OpNetVaultAutoDeploy} from "../../src/contracts/modules/voting-power/ext
 import {OperatorVaults} from "../../src/contracts/modules/voting-power/extensions/OperatorVaults.sol";
 import {BaseSlashing} from "../../src/contracts/modules/voting-power/BaseSlashing.sol";
 import {BaseRewards} from "../../src/contracts/modules/voting-power/BaseRewards.sol";
+import {IBaseRewards} from "../../src/interfaces/modules/voting-power/IBaseRewards.sol";
 
 contract VotingPowerProviderFull is
     OzOwnable,
@@ -53,8 +54,8 @@ contract VotingPowerProviderFull is
         __OperatorsBlacklist_init();
         __OperatorsWhitelist_init(operatorsWhitelistInitParams);
         __OpNetVaultAutoDeploy_init(opNetVaultAutoDeployInitParams);
-        __BaseSlashing_init();
-        __BaseRewards_init();
+        __BaseSlashing_init(BaseSlashingInitParams({slasher: address(this)}));
+        __BaseRewards_init(BaseRewardsInitParams({rewarder: address(this)}));
     }
 
     function __NetworkManager_init(
@@ -67,31 +68,5 @@ contract VotingPowerProviderFull is
         address operator
     ) internal override(OperatorsBlacklist, OperatorsWhitelist, VotingPowerProvider, OpNetVaultAutoDeploy) {
         super._registerOperatorImpl(operator);
-    }
-
-    function slashVault(
-        uint48 timestamp,
-        address vault,
-        address operator,
-        uint256 amount,
-        bytes memory hints
-    ) public returns (bool success, bytes memory response) {
-        return _slashVault(timestamp, vault, operator, amount, hints);
-    }
-
-    function executeSlashVault(
-        address vault,
-        uint256 slashIndex,
-        bytes memory hints
-    ) public returns (bool success, uint256 slashedAmount) {
-        return _executeSlashVault(vault, slashIndex, hints);
-    }
-
-    function distributeStakerRewards(address stakerRewards, address token, uint256 amount, bytes memory data) public {
-        _distributeStakerRewards(stakerRewards, token, amount, data);
-    }
-
-    function distributeOperatorRewards(address operatorRewards, address token, uint256 amount, bytes32 root) public {
-        _distributeOperatorRewards(operatorRewards, token, amount, root);
     }
 }

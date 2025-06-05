@@ -27,7 +27,70 @@ abstract contract BaseSlashing is VotingPowerProvider, IBaseSlashing {
      */
     uint64 public constant BaseSlashing_VERSION = 1;
 
-    function __BaseSlashing_init() internal virtual onlyInitializing {}
+    modifier onlySlasher() {
+        if (msg.sender != getSlasher()) {
+            revert BaseSlashing_NotSlasher();
+        }
+        _;
+    }
+
+    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.BaseSlashing")) - 1)) & ~bytes32(uint256(0xff))
+    bytes32 private constant BaseSlashingStorageLocation =
+        0xcd08f9337bf45f7ebac10e65ed25c2483d3efb012be3dbf2b4de227af3bf9400;
+
+    function _getBaseSlashingStorage() internal pure returns (IBaseSlashing.BaseSlashingStorage storage $) {
+        bytes32 location = BaseSlashingStorageLocation;
+        assembly {
+            $.slot := location
+        }
+    }
+
+    function __BaseSlashing_init(
+        BaseSlashingInitParams memory initParams
+    ) internal virtual onlyInitializing {
+        _setSlasher(initParams.slasher);
+    }
+
+    /**
+     * @inheritdoc IBaseSlashing
+     */
+    function getSlasher() public view virtual returns (address) {
+        return _getBaseSlashingStorage()._slasher;
+    }
+
+    /**
+     * @inheritdoc IBaseSlashing
+     */
+    function setSlasher(
+        address slasher
+    ) public virtual checkPermission {
+        _setSlasher(slasher);
+    }
+
+    function slashVault(
+        uint48 timestamp,
+        address vault,
+        address operator,
+        uint256 amount,
+        bytes memory hints
+    ) public virtual onlySlasher returns (bool success, bytes memory response) {
+        return _slashVault(timestamp, vault, operator, amount, hints);
+    }
+
+    function executeSlashVault(
+        address vault,
+        uint256 slashIndex,
+        bytes memory hints
+    ) public virtual onlySlasher returns (bool success, uint256 slashedAmount) {
+        return _executeSlashVault(vault, slashIndex, hints);
+    }
+
+    function _setSlasher(
+        address slasher
+    ) internal virtual {
+        _getBaseSlashingStorage()._slasher = slasher;
+        emit SetSlasher(slasher);
+    }
 
     function _slashVault(
         uint48 timestamp,
