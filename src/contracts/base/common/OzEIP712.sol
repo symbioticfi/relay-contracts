@@ -1,25 +1,26 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {OzEIP712Logic} from "./logic/OzEIP712Logic.sol";
-
 import {IOzEIP712} from "../../../interfaces/base/common/IOzEIP712.sol";
 
-import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
 import {IERC5267} from "@openzeppelin/contracts/interfaces/IERC5267.sol";
 
-abstract contract OzEIP712 is Initializable, IOzEIP712 {
+import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
+
+abstract contract OzEIP712 is EIP712Upgradeable, IOzEIP712 {
     /**
      * @inheritdoc IOzEIP712
      */
-    function OzEIP712_VERSION() public view virtual returns (uint64) {
-        return OzEIP712Logic.OzEIP712_VERSION;
-    }
+    uint64 public constant OzEIP712_VERSION = 1;
+
+    bytes32 private constant CROSS_CHAIN_TYPE_HASH = keccak256("EIP712Domain(string name,string version)");
 
     function __OzEIP712_init(
         OzEIP712InitParams memory initParams
     ) internal virtual onlyInitializing {
-        OzEIP712Logic.initialize(initParams);
+        __EIP712_init(initParams.name, initParams.version);
+        emit InitEIP712(initParams.name, initParams.version);
     }
 
     /**
@@ -27,8 +28,8 @@ abstract contract OzEIP712 is Initializable, IOzEIP712 {
      */
     function hashTypedDataV4(
         bytes32 structHash
-    ) public view virtual returns (bytes32) {
-        return OzEIP712Logic.hashTypedDataV4(structHash);
+    ) public view returns (bytes32) {
+        return _hashTypedDataV4(structHash);
     }
 
     /**
@@ -37,26 +38,8 @@ abstract contract OzEIP712 is Initializable, IOzEIP712 {
     function hashTypedDataV4CrossChain(
         bytes32 structHash
     ) public view virtual returns (bytes32) {
-        return OzEIP712Logic.hashTypedDataV4CrossChain(structHash);
-    }
-
-    /**
-     * @inheritdoc IERC5267
-     */
-    function eip712Domain()
-        public
-        view
-        virtual
-        returns (
-            bytes1 fields,
-            string memory name,
-            string memory version,
-            uint256 chainId,
-            address verifyingContract,
-            bytes32 salt,
-            uint256[] memory extensions
-        )
-    {
-        return OzEIP712Logic.eip712Domain();
+        return MessageHashUtils.toTypedDataHash(
+            keccak256(abi.encode(CROSS_CHAIN_TYPE_HASH, _EIP712NameHash(), _EIP712VersionHash())), structHash
+        );
     }
 }
