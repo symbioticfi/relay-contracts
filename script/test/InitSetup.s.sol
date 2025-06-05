@@ -17,7 +17,7 @@ import {SelfRegisterVotingPowerProvider} from
 
 contract InitSetupScript is SymbioticCoreInit {
     uint256 public constant SYMBIOTIC_CORE_NUMBER_OF_VAULTS = 3;
-    uint256 public constant SYMBIOTIC_CORE_NUMBER_OF_OPERATORS = 10;
+    uint256 public constant SYMBIOTIC_CORE_NUMBER_OF_OPERATORS = 3;
     uint256 public constant SYMBIOTIC_CORE_NUMBER_OF_STAKERS = 1;
 
     uint96 public constant IDENTIFIER = 0;
