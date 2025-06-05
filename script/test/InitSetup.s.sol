@@ -7,11 +7,6 @@ import "../../script/integration/SymbioticCoreInit.sol";
 
 import {Token} from "@symbioticfi/core/test/mocks/Token.sol";
 
-import {MasterSettlement} from "../../src/contracts/modules/settlement/MasterSettlement.sol";
-import {ReplicaSettlement} from "../../src/contracts/modules/settlement/ReplicaSettlement.sol";
-import {KeyRegistry} from "../../src/contracts/modules/key-registry/KeyRegistry.sol";
-import {MyVotingPowerProvider} from "../../examples/MyVotingPowerProvider.sol";
-
 // forge script script/test/InitSetup.s.sol:InitSetupScript 25235 --sig "run(uint256)"
 
 contract InitSetupScript is SymbioticCoreInit {

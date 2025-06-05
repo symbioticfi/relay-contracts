@@ -8,32 +8,21 @@ import {IOzEIP712} from "../../base/common/IOzEIP712.sol";
 import {Checkpoints} from "../../../contracts/libraries/structs/Checkpoints.sol";
 
 interface ISettlement {
-    error Settlement_InvalidPhase();
     error Settlement_InvalidVersion();
     error Settlement_Duplicate();
     error Settlement_VerificationFailed();
-    error Settlement_EpochDurationTooShort();
     error Settlement_InvalidKey();
     error Settlement_ValSetHeaderAlreadySubmitted();
     error Settlement_InvalidEpoch();
     error Settlement_InvalidCaptureTimestamp();
-    error Settlement_CommitDurationTooLong();
-    error Settlement_CommitDurationTooShort();
     error Settlement_InvalidSigVerifier();
-
-    enum ValSetPhase {
-        IDLE,
-        COMMIT,
-        PROLONG,
-        FAIL
-    }
+    error Settlement_InvalidPreviousHeaderHash();
+    error Settlement_NoCheckpoint();
 
     /// @custom:storage-location erc7201:symbiotic.storage.Settlement
     struct SettlementStorage {
         uint48 _lastCommittedHeaderEpoch;
         Checkpoints.Trace208 _requiredKeyTag;
-        Checkpoints.Trace208 _prolongDuration;
-        Checkpoints.Trace208 _commitDuration;
         Checkpoints.Trace208 _sigVerifier;
         mapping(uint48 epoch => ValSetHeader) _valSetHeader;
         mapping(uint48 epoch => mapping(bytes32 key => bytes32 value)) _extraData;
@@ -43,8 +32,6 @@ interface ISettlement {
         INetworkManager.NetworkManagerInitParams networkManagerInitParams;
         IEpochManager.EpochManagerInitParams epochManagerInitParams;
         IOzEIP712.OzEIP712InitParams ozEip712InitParams;
-        uint48 commitDuration;
-        uint48 prolongDuration;
         uint8 requiredKeyTag;
         address sigVerifier;
     }
@@ -64,17 +51,9 @@ interface ISettlement {
         bytes32 value;
     }
 
-    event InitProlongDuration(uint48 prolongDuration);
-
-    event InitCommitDuration(uint48 commitDuration);
-
     event InitRequiredKeyTag(uint8 requiredKeyTag);
 
     event InitSigVerifier(address sigVerifier);
-
-    event SetProlongDuration(uint48 prolongDuration);
-
-    event SetCommitDuration(uint48 commitDuration);
 
     event SetRequiredKeyTag(uint8 requiredKeyTag);
 
@@ -92,14 +71,6 @@ interface ISettlement {
 
     function getCurrentValSetEpoch() external view returns (uint48);
 
-    function getProlongDurationAt(uint48 timestamp, bytes memory hint) external view returns (uint48);
-
-    function getProlongDuration() external view returns (uint48);
-
-    function getCommitDurationAt(uint48 timestamp, bytes memory hint) external view returns (uint48);
-
-    function getCommitDuration() external view returns (uint48);
-
     function getRequiredKeyTagAt(uint48 timestamp, bytes memory hint) external view returns (uint8);
 
     function getRequiredKeyTag() external view returns (uint8);
@@ -115,8 +86,6 @@ interface ISettlement {
     ) external view returns (bool);
 
     function isValSetHeaderCommitted() external view returns (bool);
-
-    function getCurrentPhase() external view returns (ValSetPhase);
 
     function getValSetHeaderAt(
         uint48 epoch
@@ -174,14 +143,6 @@ interface ISettlement {
         bytes calldata proof,
         bytes memory hint
     ) external view returns (bool);
-
-    function setProlongDuration(
-        uint48 prolongDuration
-    ) external;
-
-    function setCommitDuration(
-        uint48 commitDuration
-    ) external;
 
     function setRequiredKeyTag(
         uint8 requiredKeyTag

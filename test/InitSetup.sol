@@ -7,11 +7,6 @@ import "./integration/SymbioticCoreInit.sol";
 
 import {Token} from "@symbioticfi/core/test/mocks/Token.sol";
 
-import {MasterSettlement} from "../src/contracts/modules/settlement/MasterSettlement.sol";
-import {ReplicaSettlement} from "../src/contracts/modules/settlement/ReplicaSettlement.sol";
-import {KeyRegistry} from "../src/contracts/modules/key-registry/KeyRegistry.sol";
-import {MyVotingPowerProvider} from "../examples/MyVotingPowerProvider.sol";
-
 import {ExtraDataStorageHelper} from
     "../src/contracts/modules/settlement/sig-verifiers/libraries/ExtraDataStorageHelper.sol";
 

@@ -5,8 +5,9 @@ import {EpochManager} from "../../base/EpochManager.sol";
 import {ConfigProvider} from "./ConfigProvider.sol";
 
 import {IValSetDriver} from "../../../interfaces/modules/valset-driver/IValSetDriver.sol";
+import {MulticallUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
 
-abstract contract ValSetDriver is EpochManager, ConfigProvider, IValSetDriver {
+abstract contract ValSetDriver is EpochManager, ConfigProvider, MulticallUpgradeable, IValSetDriver {
     /**
      * @inheritdoc IValSetDriver
      */

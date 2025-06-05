@@ -1,20 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {EpochManager} from "../../base/EpochManager.sol";
 import {NetworkManager} from "../../base/NetworkManager.sol";
 
 import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
 
 import {ISigVerifier} from "../../../interfaces/base/ISigVerifier.sol";
 import {ISettlement} from "../../../interfaces/modules/settlement/ISettlement.sol";
-import {IEpochManager} from "../../../interfaces/base/IEpochManager.sol";
 import {OzEIP712} from "../../base/common/OzEIP712.sol";
+import {PermissionManager} from "../../base/PermissionManager.sol";
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
-import {MulticallUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
 
-abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, MulticallUpgradeable, ISettlement {
+abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISettlement {
     using Checkpoints for Checkpoints.Trace208;
 
     /**
@@ -45,121 +43,46 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
         SettlementInitParams memory settlementInitParams
     ) internal virtual onlyInitializing {
         __NetworkManager_init(settlementInitParams.networkManagerInitParams);
-        __EpochManager_init(settlementInitParams.epochManagerInitParams);
         __OzEIP712_init(settlementInitParams.ozEip712InitParams);
 
         SettlementStorage storage $ = _getSettlementStorage();
 
-        if (settlementInitParams.epochManagerInitParams.epochDuration <= settlementInitParams.commitDuration) {
-            revert Settlement_CommitDurationTooLong();
-        }
-        if (settlementInitParams.commitDuration == 0) {
-            revert Settlement_CommitDurationTooShort();
-        }
         if (settlementInitParams.sigVerifier == address(0)) {
             revert Settlement_InvalidSigVerifier();
         }
 
-        $._prolongDuration.push(Time.timestamp(), settlementInitParams.prolongDuration);
-        emit InitProlongDuration(settlementInitParams.prolongDuration);
-        $._commitDuration.push(Time.timestamp(), settlementInitParams.commitDuration);
-        emit InitCommitDuration(settlementInitParams.commitDuration);
-        $._requiredKeyTag.push(Time.timestamp(), settlementInitParams.requiredKeyTag);
+        $._requiredKeyTag.push(0, settlementInitParams.requiredKeyTag);
         emit InitRequiredKeyTag(settlementInitParams.requiredKeyTag);
-        $._sigVerifier.push(Time.timestamp(), uint160(settlementInitParams.sigVerifier));
+        $._sigVerifier.push(0, uint160(settlementInitParams.sigVerifier));
         emit InitSigVerifier(settlementInitParams.sigVerifier);
     }
 
     /**
      * @inheritdoc ISettlement
      */
-    function getCurrentValSetTimestamp() public view virtual returns (uint48) {
-        return getEpochStart(getCurrentValSetEpoch(), new bytes(0));
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
-    function getCurrentValSetEpoch() public view virtual returns (uint48) {
-        uint48 currentEpoch = getCurrentEpoch();
-        if (currentEpoch == 0) {
-            return currentEpoch;
-        }
-        if (
-            isValSetHeaderCommittedAt(currentEpoch - 1)
-                && Time.timestamp() < getCurrentEpochStart() + getCommitDuration()
-        ) {
-            return currentEpoch - 1;
-        }
-        if (isValSetHeaderCommittedAt(currentEpoch)) {
-            return currentEpoch;
-        }
-        uint48 lastCommittedHeaderNextCaptureTimestamp = getEpochStart(getLastCommittedHeaderEpoch() + 1, new bytes(0));
-        if (
-            Time.timestamp()
-                < lastCommittedHeaderNextCaptureTimestamp
-                    + getCommitDurationAt(lastCommittedHeaderNextCaptureTimestamp, new bytes(0))
-                    + getProlongDurationAt(lastCommittedHeaderNextCaptureTimestamp, new bytes(0))
-        ) {
-            return getLastCommittedHeaderEpoch();
-        }
-        return currentEpoch;
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
-    function getProlongDurationAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint48) {
-        return uint48(_getSettlementStorage()._prolongDuration.upperLookupRecent(timestamp, hint));
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
-    function getProlongDuration() public view virtual returns (uint48) {
-        return uint48(_getCurrentValue(_getSettlementStorage()._prolongDuration, Time.timestamp()));
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
-    function getCommitDurationAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint48) {
-        return uint48(_getSettlementStorage()._commitDuration.upperLookupRecent(timestamp, hint));
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
-    function getCommitDuration() public view virtual returns (uint48) {
-        return uint48(_getCurrentValue(_getSettlementStorage()._commitDuration, Time.timestamp()));
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
-    function getRequiredKeyTagAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint8) {
-        return uint8(_getSettlementStorage()._requiredKeyTag.upperLookupRecent(timestamp, hint));
+    function getRequiredKeyTagAt(uint48 epoch, bytes memory hint) public view virtual returns (uint8) {
+        return uint8(_getSettlementStorage()._requiredKeyTag.upperLookupRecent(epoch, hint));
     }
 
     /**
      * @inheritdoc ISettlement
      */
     function getRequiredKeyTag() public view virtual returns (uint8) {
-        return uint8(_getCurrentValue(_getSettlementStorage()._requiredKeyTag, Time.timestamp()));
+        return uint8(_getCurrentValue(_getSettlementStorage()._requiredKeyTag, getLastCommittedHeaderEpoch()));
     }
 
     /**
      * @inheritdoc ISettlement
      */
-    function getSigVerifierAt(uint48 timestamp, bytes memory hint) public view virtual returns (address) {
-        return address(uint160(_getSettlementStorage()._sigVerifier.upperLookupRecent(timestamp, hint)));
+    function getSigVerifierAt(uint48 epoch, bytes memory hint) public view virtual returns (address) {
+        return address(uint160(_getSettlementStorage()._sigVerifier.upperLookupRecent(epoch, hint)));
     }
 
     /**
      * @inheritdoc ISettlement
      */
     function getSigVerifier() public view virtual returns (address) {
-        return address(uint160(_getCurrentValue(_getSettlementStorage()._sigVerifier, Time.timestamp())));
+        return address(uint160(_getCurrentValue(_getSettlementStorage()._sigVerifier, getLastCommittedHeaderEpoch())));
     }
 
     /**
@@ -181,41 +104,6 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     /**
      * @inheritdoc ISettlement
      */
-    function isValSetHeaderCommitted() public view virtual returns (bool) {
-        return isValSetHeaderCommittedAt(getCurrentEpoch());
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
-    function getCurrentPhase() public view virtual returns (ValSetPhase) {
-        uint48 currentEpoch = getCurrentEpoch();
-        bool isCurrentValSetHeaderCommitted = isValSetHeaderCommittedAt(currentEpoch);
-        if (currentEpoch == 0) {
-            return isCurrentValSetHeaderCommitted ? ValSetPhase.IDLE : ValSetPhase.FAIL;
-        }
-        uint48 commitDuration = getCommitDuration();
-        if (isValSetHeaderCommittedAt(currentEpoch - 1) && Time.timestamp() < getCurrentEpochStart() + commitDuration) {
-            return ValSetPhase.COMMIT;
-        }
-        if (isCurrentValSetHeaderCommitted) {
-            return ValSetPhase.IDLE;
-        }
-        uint48 lastCommittedHeaderNextCaptureTimestamp = getEpochStart(getLastCommittedHeaderEpoch() + 1, new bytes(0));
-        if (
-            Time.timestamp()
-                < lastCommittedHeaderNextCaptureTimestamp
-                    + getCommitDurationAt(lastCommittedHeaderNextCaptureTimestamp, new bytes(0))
-                    + getProlongDurationAt(lastCommittedHeaderNextCaptureTimestamp, new bytes(0))
-        ) {
-            return ValSetPhase.PROLONG;
-        }
-        return ValSetPhase.FAIL;
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
     function getValSetHeaderAt(
         uint48 epoch
     ) public view virtual returns (ValSetHeader memory) {
@@ -226,7 +114,7 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
      * @inheritdoc ISettlement
      */
     function getValSetHeader() public view virtual returns (ValSetHeader memory header) {
-        return getValSetHeaderAt(getCurrentValSetEpoch());
+        return getValSetHeaderAt(getLastCommittedHeaderEpoch());
     }
 
     /**
@@ -242,7 +130,7 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
      * @inheritdoc ISettlement
      */
     function getVersionFromValSetHeader() public view virtual returns (uint8) {
-        return getVersionFromValSetHeaderAt(getCurrentValSetEpoch());
+        return getVersionFromValSetHeaderAt(getLastCommittedHeaderEpoch());
     }
 
     /**
@@ -258,7 +146,7 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
      * @inheritdoc ISettlement
      */
     function getRequiredKeyTagFromValSetHeader() public view virtual returns (uint8) {
-        return getRequiredKeyTagFromValSetHeaderAt(getCurrentValSetEpoch());
+        return getRequiredKeyTagFromValSetHeaderAt(getLastCommittedHeaderEpoch());
     }
 
     /**
@@ -274,7 +162,7 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
      * @inheritdoc ISettlement
      */
     function getCaptureTimestampFromValSetHeader() public view virtual returns (uint48) {
-        return getCaptureTimestampFromValSetHeaderAt(getCurrentValSetEpoch());
+        return getCaptureTimestampFromValSetHeaderAt(getLastCommittedHeaderEpoch());
     }
 
     /**
@@ -290,7 +178,7 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
      * @inheritdoc ISettlement
      */
     function getQuorumThresholdFromValSetHeader() public view virtual returns (uint256) {
-        return getQuorumThresholdFromValSetHeaderAt(getCurrentValSetEpoch());
+        return getQuorumThresholdFromValSetHeaderAt(getLastCommittedHeaderEpoch());
     }
 
     /**
@@ -306,7 +194,7 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
      * @inheritdoc ISettlement
      */
     function getValidatorsSszMRootFromValSetHeader() public view virtual returns (bytes32) {
-        return getValidatorsSszMRootFromValSetHeaderAt(getCurrentValSetEpoch());
+        return getValidatorsSszMRootFromValSetHeaderAt(getLastCommittedHeaderEpoch());
     }
 
     /**
@@ -322,7 +210,7 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
      * @inheritdoc ISettlement
      */
     function getPreviousHeaderHashFromValSetHeader() public view virtual returns (bytes32) {
-        return getPreviousHeaderHashFromValSetHeaderAt(getCurrentValSetEpoch());
+        return getPreviousHeaderHashFromValSetHeaderAt(getLastCommittedHeaderEpoch());
     }
 
     /**
@@ -338,7 +226,7 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     function getExtraData(
         bytes32 key
     ) public view virtual returns (bytes32) {
-        return getExtraDataAt(getCurrentValSetEpoch(), key);
+        return getExtraDataAt(getLastCommittedHeaderEpoch(), key);
     }
 
     /**
@@ -352,47 +240,9 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
         bytes calldata proof,
         bytes memory hint
     ) public view virtual returns (bool) {
-        return ISigVerifier(getSigVerifierAt(getCaptureTimestampFromValSetHeaderAt(epoch), hint)).verifyQuorumSig(
+        return ISigVerifier(getSigVerifierAt(epoch, hint)).verifyQuorumSig(
             address(this), epoch, message, keyTag, quorumThreshold, proof
         );
-    }
-
-    /**
-     * @inheritdoc IEpochManager
-     */
-    function setEpochDuration(
-        uint48 epochDuration
-    ) public virtual override {
-        if (epochDuration <= _getSettlementStorage()._commitDuration.latest()) {
-            revert Settlement_EpochDurationTooShort();
-        }
-        super.setEpochDuration(epochDuration);
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
-    function setProlongDuration(
-        uint48 prolongDuration
-    ) public virtual checkPermission {
-        _getSettlementStorage()._prolongDuration.push(getNextEpochStart(), prolongDuration);
-        emit SetProlongDuration(prolongDuration);
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
-    function setCommitDuration(
-        uint48 commitDuration
-    ) public virtual checkPermission {
-        if (commitDuration >= getNextEpochDuration()) {
-            revert Settlement_CommitDurationTooLong();
-        }
-        if (commitDuration == 0) {
-            revert Settlement_CommitDurationTooShort();
-        }
-        _getSettlementStorage()._commitDuration.push(getNextEpochStart(), commitDuration);
-        emit SetCommitDuration(commitDuration);
     }
 
     /**
@@ -401,7 +251,7 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
     function setRequiredKeyTag(
         uint8 requiredKeyTag
     ) public virtual checkPermission {
-        _getSettlementStorage()._requiredKeyTag.push(getNextEpochStart(), requiredKeyTag);
+        _getSettlementStorage()._requiredKeyTag.push(getLastCommittedHeaderEpoch() + 1, requiredKeyTag);
         emit SetRequiredKeyTag(requiredKeyTag);
     }
 
@@ -414,7 +264,7 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
         if (sigVerifier == address(0)) {
             revert Settlement_InvalidSigVerifier();
         }
-        _getSettlementStorage()._sigVerifier.push(getNextEpochStart(), uint160(sigVerifier));
+        _getSettlementStorage()._sigVerifier.push(getLastCommittedHeaderEpoch() + 1, uint160(sigVerifier));
         emit SetSigVerifier(sigVerifier);
     }
 
@@ -425,10 +275,6 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
         ValSetHeader calldata valSetHeader,
         ExtraData[] calldata extraData
     ) public virtual checkPermission {
-        if (getCurrentPhase() != ValSetPhase.FAIL) {
-            revert Settlement_InvalidPhase();
-        }
-
         _setValSetHeader(valSetHeader, extraData);
 
         emit SetGenesis(valSetHeader, extraData);
@@ -443,14 +289,6 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
         bytes calldata proof,
         bytes memory hint
     ) public virtual {
-        ValSetPhase currentPhase = getCurrentPhase();
-        if (currentPhase != ValSetPhase.COMMIT && currentPhase != ValSetPhase.PROLONG) {
-            revert Settlement_InvalidPhase();
-        }
-        uint48 currentEpoch = getCurrentEpoch();
-        if (isValSetHeaderCommittedAt(currentEpoch)) {
-            revert Settlement_ValSetHeaderAlreadySubmitted();
-        }
         uint48 valSetEpoch = getLastCommittedHeaderEpoch();
         if (
             !verifyQuorumSig(
@@ -461,7 +299,7 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
                             abi.encode(
                                 VALSET_HEADER_COMMIT_TYPEHASH,
                                 SUBNETWORK(),
-                                currentEpoch,
+                                header.epoch,
                                 keccak256(abi.encode(header)),
                                 keccak256(abi.encode(extraData))
                             )
@@ -487,18 +325,22 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
             revert Settlement_InvalidVersion();
         }
 
-        uint48 currentEpoch = getCurrentEpoch();
-        if (header.epoch != currentEpoch) {
+        uint48 lastCommittedHeaderEpoch = getLastCommittedHeaderEpoch();
+        if (header.epoch <= lastCommittedHeaderEpoch) {
             revert Settlement_InvalidEpoch();
         }
 
-        if (header.captureTimestamp != getCurrentEpochStart()) {
+        if (header.captureTimestamp <= getCaptureTimestampFromValSetHeaderAt(lastCommittedHeaderEpoch)) {
             revert Settlement_InvalidCaptureTimestamp();
+        }
+
+        if (header.previousHeaderHash != keccak256(abi.encode(getValSetHeaderAt(lastCommittedHeaderEpoch)))) {
+            revert Settlement_InvalidPreviousHeaderHash();
         }
 
         SettlementStorage storage $ = _getSettlementStorage();
 
-        ValSetHeader storage headerStorage = $._valSetHeader[currentEpoch];
+        ValSetHeader storage headerStorage = $._valSetHeader[header.epoch];
         headerStorage.version = header.version;
         headerStorage.requiredKeyTag = header.requiredKeyTag;
         headerStorage.epoch = header.epoch;
@@ -507,12 +349,31 @@ abstract contract Settlement is NetworkManager, EpochManager, OzEIP712, Multical
         headerStorage.validatorsSszMRoot = header.validatorsSszMRoot;
         headerStorage.previousHeaderHash = header.previousHeaderHash;
 
-        mapping(bytes32 key => bytes32 value) storage extraDataStorage = $._extraData[currentEpoch];
+        mapping(bytes32 key => bytes32 value) storage extraDataStorage = $._extraData[header.epoch];
         uint256 extraDataLength = extraData.length;
         for (uint256 i; i < extraDataLength; ++i) {
             extraDataStorage[extraData[i].key] = extraData[i].value;
         }
 
-        $._lastCommittedHeaderEpoch = currentEpoch;
+        $._lastCommittedHeaderEpoch = header.epoch;
+    }
+
+    function _getCurrentValue(
+        Checkpoints.Trace208 storage trace,
+        uint48 currentTimepoint
+    ) internal view virtual returns (uint208) {
+        uint256 length = trace.length();
+        if (length == 0) {
+            revert Settlement_NoCheckpoint();
+        }
+        Checkpoints.Checkpoint208 memory checkpoint = trace.at(uint32(length - 1));
+        if (checkpoint._key <= currentTimepoint) {
+            return checkpoint._value;
+        }
+        if (length == 1) {
+            revert Settlement_NoCheckpoint();
+        }
+        checkpoint = trace.at(uint32(length - 2));
+        return checkpoint._value;
     }
 }
