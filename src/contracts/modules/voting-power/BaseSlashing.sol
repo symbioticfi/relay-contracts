@@ -18,16 +18,16 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
 import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
 
-import {IBaseSlasher} from "../../../interfaces/modules/voting-power/IBaseSlasher.sol";
+import {IBaseSlashing} from "../../../interfaces/modules/voting-power/IBaseSlashing.sol";
 import {VotingPowerProvider} from "./VotingPowerProvider.sol";
 
-abstract contract BaseSlasher is VotingPowerProvider, IBaseSlasher {
+abstract contract BaseSlashing is VotingPowerProvider, IBaseSlashing {
     /**
-     * @inheritdoc IBaseSlasher
+     * @inheritdoc IBaseSlashing
      */
-    uint64 public constant BaseSlasher_VERSION = 1;
+    uint64 public constant BaseSlashing_VERSION = 1;
 
-    function __BaseSlasher_init() internal virtual onlyInitializing {}
+    function __BaseSlashing_init() internal virtual onlyInitializing {}
 
     function _slashVault(
         uint48 timestamp,
@@ -42,19 +42,19 @@ abstract contract BaseSlasher is VotingPowerProvider, IBaseSlasher {
         }
 
         if (!isOperatorRegisteredAt(operator, timestamp, slashVaultHints.operatorRegisteredHint)) {
-            revert BaseSlasher_UnregisteredOperatorSlash();
+            revert BaseSlashing_UnregisteredOperatorSlash();
         }
 
         if (
             !isOperatorVaultRegisteredAt(operator, vault, timestamp, slashVaultHints.operatorVaultRegisteredHint)
                 && !isSharedVaultRegisteredAt(vault, timestamp, slashVaultHints.sharedVaultRegisteredHint)
         ) {
-            revert BaseSlasher_UnregisteredVaultSlash();
+            revert BaseSlashing_UnregisteredVaultSlash();
         }
 
         address slasher = IVault(vault).slasher();
         if (slasher == address(0)) {
-            revert BaseSlasher_NoSlasher();
+            revert BaseSlashing_NoSlasher();
         }
 
         return _slash(timestamp, slasher, operator, amount, slashVaultHints.slashHints);
@@ -78,7 +78,7 @@ abstract contract BaseSlasher is VotingPowerProvider, IBaseSlasher {
             );
             emit VetoSlash(slasher, operator, success, success ? abi.decode(response, (uint256)) : 0);
         } else {
-            revert BaseSlasher_UnknownSlasherType();
+            revert BaseSlashing_UnknownSlasherType();
         }
     }
 
@@ -89,7 +89,7 @@ abstract contract BaseSlasher is VotingPowerProvider, IBaseSlasher {
     ) internal virtual returns (bool success, uint256 slashedAmount) {
         address slasher = IVault(vault).slasher();
         if (slasher == address(0)) {
-            revert BaseSlasher_NoSlasher();
+            revert BaseSlashing_NoSlasher();
         }
 
         return _executeSlash(slasher, slashIndex, hints);
@@ -107,7 +107,7 @@ abstract contract BaseSlasher is VotingPowerProvider, IBaseSlasher {
             slashedAmount = success ? abi.decode(response, (uint256)) : 0;
             emit ExecuteSlash(slasher, slashIndex, success, slashedAmount);
         } else {
-            revert BaseSlasher_NonVetoSlasher();
+            revert BaseSlashing_NonVetoSlasher();
         }
     }
 }

@@ -11,7 +11,7 @@ import {OperatorsWhitelist} from "../../src/contracts/modules/voting-power/exten
 import {NetworkManager} from "../../src/contracts/base/NetworkManager.sol";
 import {OpNetVaultAutoDeploy} from "../../src/contracts/modules/voting-power/extensions/OpNetVaultAutoDeploy.sol";
 import {OperatorVaults} from "../../src/contracts/modules/voting-power/extensions/OperatorVaults.sol";
-import {BaseSlasher} from "../../src/contracts/modules/voting-power/BaseSlasher.sol";
+import {BaseSlashing} from "../../src/contracts/modules/voting-power/BaseSlashing.sol";
 import {BaseRewards} from "../../src/contracts/modules/voting-power/BaseRewards.sol";
 
 contract VotingPowerProviderFull is
@@ -23,7 +23,7 @@ contract VotingPowerProviderFull is
     OperatorsBlacklist,
     OperatorsWhitelist,
     OpNetVaultAutoDeploy,
-    BaseSlasher,
+    BaseSlashing,
     BaseRewards
 {
     constructor(
@@ -53,7 +53,7 @@ contract VotingPowerProviderFull is
         __OperatorsBlacklist_init();
         __OperatorsWhitelist_init(operatorsWhitelistInitParams);
         __OpNetVaultAutoDeploy_init(opNetVaultAutoDeployInitParams);
-        __BaseSlasher_init();
+        __BaseSlashing_init();
         __BaseRewards_init();
     }
 
