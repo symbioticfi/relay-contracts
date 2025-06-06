@@ -84,18 +84,17 @@ contract ConfigProviderTest is Test {
         assertEq(testMCP.isVotingPowerProviderRegistered(cca(address(0xAA03), 103)), false);
 
         IConfigProvider.CrossChainAddress[] memory registeredVpps =
-            testMCP.getVotingPowerProvidersAt(uint48(vm.getBlockTimestamp()), new bytes[](0));
+            testMCP.getVotingPowerProvidersAt(uint48(vm.getBlockTimestamp()));
         assertEq(registeredVpps.length, 2, "Should have 2 registered votingPowerProviders");
         assertEq(registeredVpps[0].addr, address(0xAA01));
         assertEq(registeredVpps[0].chainId, 101);
         assertEq(registeredVpps[1].addr, address(0xAA02));
         assertEq(registeredVpps[1].chainId, 102);
 
-        assertEq(testMCP.isVotingPowerProviderRegisteredAt(vpps[0], uint48(vm.getBlockTimestamp()), ""), true);
-        assertEq(testMCP.isVotingPowerProviderRegisteredAt(vpps[1], uint48(vm.getBlockTimestamp()), ""), true);
+        assertEq(testMCP.isVotingPowerProviderRegisteredAt(vpps[0], uint48(vm.getBlockTimestamp())), true);
+        assertEq(testMCP.isVotingPowerProviderRegisteredAt(vpps[1], uint48(vm.getBlockTimestamp())), true);
         assertEq(
-            testMCP.isVotingPowerProviderRegisteredAt(cca(address(0xAA03), 103), uint48(vm.getBlockTimestamp()), ""),
-            false
+            testMCP.isVotingPowerProviderRegisteredAt(cca(address(0xAA03), 103), uint48(vm.getBlockTimestamp())), false
         );
 
         IConfigProvider.CrossChainAddress memory keysP = testMCP.getKeysProvider();
@@ -184,7 +183,7 @@ contract ConfigProviderTest is Test {
         assertEq(got.addr, address(4444));
         assertEq(got.chainId, 555);
 
-        got = testMCP.getKeysProviderAt(uint48(vm.getBlockTimestamp()), "");
+        got = testMCP.getKeysProviderAt(uint48(vm.getBlockTimestamp()));
         assertEq(got.addr, address(4444));
         assertEq(got.chainId, 555);
     }
@@ -206,12 +205,12 @@ contract ConfigProviderTest is Test {
         vm.expectRevert(IConfigProvider.ConfigProvider_AlreadyAdded.selector);
         testMCP.addReplica(rep2);
 
-        reps = testMCP.getReplicasAt(uint48(vm.getBlockTimestamp()), new bytes[](0));
+        reps = testMCP.getReplicasAt(uint48(vm.getBlockTimestamp()));
         assertEq(reps.length, 2, "Should have 2 replicas now");
         assertEq(reps[1].addr, address(0xBB02));
 
         assertEq(testMCP.isReplicaRegistered(rep2), true);
-        assertEq(testMCP.isReplicaRegisteredAt(rep2, uint48(vm.getBlockTimestamp()), ""), true);
+        assertEq(testMCP.isReplicaRegisteredAt(rep2, uint48(vm.getBlockTimestamp())), true);
         assertEq(testMCP.isReplicaRegistered(cca(address(0xBB03), 305)), false);
 
         vm.prank(nonOwner);
@@ -246,16 +245,16 @@ contract ConfigProviderTest is Test {
         testMCP.setVerificationType(777);
         vm.stopPrank();
 
-        uint32 oldVT = testMCP.getVerificationTypeAt(uint48(vm.getBlockTimestamp() - 1), "");
+        uint32 oldVT = testMCP.getVerificationTypeAt(uint48(vm.getBlockTimestamp() - 1));
         assertEq(oldVT, 7);
 
-        uint32 newVT = testMCP.getVerificationTypeAt(uint48(vm.getBlockTimestamp()), "");
+        uint32 newVT = testMCP.getVerificationTypeAt(uint48(vm.getBlockTimestamp()));
         assertEq(newVT, 777);
 
-        IConfigProvider.Config memory mcOld = testMCP.getConfigAt(uint48(vm.getBlockTimestamp() - 1), "");
+        IConfigProvider.Config memory mcOld = testMCP.getConfigAt(uint48(vm.getBlockTimestamp() - 1));
         assertEq(mcOld.verificationType, 7);
 
-        IConfigProvider.Config memory mcNew = testMCP.getConfigAt(uint48(vm.getBlockTimestamp()), "");
+        IConfigProvider.Config memory mcNew = testMCP.getConfigAt(uint48(vm.getBlockTimestamp()));
         assertEq(mcNew.verificationType, 777);
     }
 
@@ -284,10 +283,10 @@ contract ConfigProviderTest is Test {
         assertEq(gotTags[0], 1);
         assertEq(gotTags[1], 2);
 
-        assertEq(testMCP.getMaxVotingPowerAt(uint48(vm.getBlockTimestamp()), ""), 5000);
-        assertEq(testMCP.getMinInclusionVotingPowerAt(uint48(vm.getBlockTimestamp()), ""), 123);
-        assertEq(testMCP.getMaxValidatorsCountAt(uint48(vm.getBlockTimestamp()), ""), 777);
-        uint8[] memory gotTagsAt = testMCP.getRequiredKeyTagsAt(uint48(vm.getBlockTimestamp()), "");
+        assertEq(testMCP.getMaxVotingPowerAt(uint48(vm.getBlockTimestamp())), 5000);
+        assertEq(testMCP.getMinInclusionVotingPowerAt(uint48(vm.getBlockTimestamp())), 123);
+        assertEq(testMCP.getMaxValidatorsCountAt(uint48(vm.getBlockTimestamp())), 777);
+        uint8[] memory gotTagsAt = testMCP.getRequiredKeyTagsAt(uint48(vm.getBlockTimestamp()));
         assertEq(gotTagsAt.length, 2);
         assertEq(gotTagsAt[0], 1);
         assertEq(gotTagsAt[1], 2);
@@ -303,22 +302,22 @@ contract ConfigProviderTest is Test {
         testMCP.setRequiredKeyTags(newTags2);
         vm.stopPrank();
 
-        assertEq(testMCP.getMaxVotingPowerAt(uint48(vm.getBlockTimestamp()) - 1, ""), 5000);
-        assertEq(testMCP.getMinInclusionVotingPowerAt(uint48(vm.getBlockTimestamp()) - 1, ""), 123);
-        assertEq(testMCP.getMaxValidatorsCountAt(uint48(vm.getBlockTimestamp()) - 1, ""), 777);
-        uint8[] memory gotTagsAt2 = testMCP.getRequiredKeyTagsAt(uint48(vm.getBlockTimestamp()) - 1, "");
+        assertEq(testMCP.getMaxVotingPowerAt(uint48(vm.getBlockTimestamp()) - 1), 5000);
+        assertEq(testMCP.getMinInclusionVotingPowerAt(uint48(vm.getBlockTimestamp()) - 1), 123);
+        assertEq(testMCP.getMaxValidatorsCountAt(uint48(vm.getBlockTimestamp()) - 1), 777);
+        uint8[] memory gotTagsAt2 = testMCP.getRequiredKeyTagsAt(uint48(vm.getBlockTimestamp()) - 1);
         assertEq(gotTagsAt2.length, 2);
         assertEq(gotTagsAt2[0], 1);
         assertEq(gotTagsAt2[1], 2);
 
-        assertEq(testMCP.getMaxVotingPowerAt(uint48(vm.getBlockTimestamp() + 100), ""), 999);
-        assertEq(testMCP.getMinInclusionVotingPowerAt(uint48(vm.getBlockTimestamp() + 100), ""), 124);
-        assertEq(testMCP.getMaxValidatorsCountAt(uint48(vm.getBlockTimestamp() + 100), ""), 778);
-        uint8[] memory gotTagsAt3 = testMCP.getRequiredKeyTagsAt(uint48(vm.getBlockTimestamp() + 100), "");
+        assertEq(testMCP.getMaxVotingPowerAt(uint48(vm.getBlockTimestamp() + 100)), 999);
+        assertEq(testMCP.getMinInclusionVotingPowerAt(uint48(vm.getBlockTimestamp() + 100)), 124);
+        assertEq(testMCP.getMaxValidatorsCountAt(uint48(vm.getBlockTimestamp() + 100)), 778);
+        uint8[] memory gotTagsAt3 = testMCP.getRequiredKeyTagsAt(uint48(vm.getBlockTimestamp() + 100));
         assertEq(gotTagsAt3.length, 1);
         assertEq(gotTagsAt3[0], 3);
 
-        IConfigProvider.Config memory cfg = testMCP.getConfigAt(uint48(vm.getBlockTimestamp()), "");
+        IConfigProvider.Config memory cfg = testMCP.getConfigAt(uint48(vm.getBlockTimestamp()));
         assertEq(cfg.maxVotingPower, 999);
         assertEq(cfg.minInclusionVotingPower, 124);
         assertEq(cfg.maxValidatorsCount, 778);
@@ -332,10 +331,10 @@ contract ConfigProviderTest is Test {
         vm.prank(owner);
         testMCP.setMaxVotingPower(999);
 
-        uint256 oldValue = testMCP.getMaxVotingPowerAt(uint48(vm.getBlockTimestamp() - 1), "");
+        uint256 oldValue = testMCP.getMaxVotingPowerAt(uint48(vm.getBlockTimestamp() - 1));
         assertEq(oldValue, 1e36, "Old maxVotingPower mismatch");
 
-        uint256 newValue = testMCP.getMaxVotingPowerAt(uint48(vm.getBlockTimestamp()), "");
+        uint256 newValue = testMCP.getMaxVotingPowerAt(uint48(vm.getBlockTimestamp()));
         assertEq(newValue, 999, "New maxVotingPower mismatch");
     }
 

@@ -77,7 +77,7 @@ library VaultManagerLogic {
     function getTokensAt(
         uint48 timestamp
     ) public view returns (address[] memory) {
-        return _getVaultManagerStorage()._tokens.valuesAt(timestamp, new bytes[](0));
+        return _getVaultManagerStorage()._tokens.valuesAt(timestamp);
     }
 
     function getTokens() public view returns (address[] memory) {
@@ -101,7 +101,7 @@ library VaultManagerLogic {
     function getOperatorsAt(
         uint48 timestamp
     ) public view returns (address[] memory) {
-        return _getVaultManagerStorage()._operators.valuesAt(timestamp, new bytes[](0));
+        return _getVaultManagerStorage()._operators.valuesAt(timestamp);
     }
 
     function getOperators() public view returns (address[] memory) {
@@ -125,7 +125,7 @@ library VaultManagerLogic {
     function getSharedVaultsAt(
         uint48 timestamp
     ) public view returns (address[] memory) {
-        return _getVaultManagerStorage()._sharedVaults.valuesAt(timestamp, new bytes[](0));
+        return _getVaultManagerStorage()._sharedVaults.valuesAt(timestamp);
     }
 
     function getSharedVaults() public view returns (address[] memory) {
@@ -164,7 +164,7 @@ library VaultManagerLogic {
     }
 
     function getOperatorVaultsAt(address operator, uint48 timestamp) public view returns (address[] memory) {
-        return _getVaultManagerStorage()._operatorVaults[operator].valuesAt(timestamp, new bytes[](0));
+        return _getVaultManagerStorage()._operatorVaults[operator].valuesAt(timestamp);
     }
 
     function getOperatorVaults(

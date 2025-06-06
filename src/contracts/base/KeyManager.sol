@@ -175,7 +175,7 @@ abstract contract KeyManager is MulticallUpgradeable, OzEIP712, IKeyManager {
     function _getKeysOperatorsAt(
         uint48 timestamp
     ) internal view virtual returns (address[] memory) {
-        return _getKeyManagerStorage()._operators.valuesAt(timestamp, new bytes[](0));
+        return _getKeyManagerStorage()._operators.valuesAt(timestamp);
     }
 
     function _getKeysOperators() internal view virtual returns (address[] memory) {

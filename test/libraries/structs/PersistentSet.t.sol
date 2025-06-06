@@ -74,7 +74,7 @@ contract PersistentSetTest is Test {
 
         assertEq(uint256(addressSet.length()), 2);
 
-        address[] memory valuesKey10 = addressSet.valuesAt(10, new bytes[](0));
+        address[] memory valuesKey10 = addressSet.valuesAt(10);
         assertEq(valuesKey10.length, 2, "At key=10, we should have 2 addresses");
 
         bool foundAlice;
@@ -161,7 +161,7 @@ contract PersistentSetTest is Test {
         assertTrue(foundA, "Current set should have A");
         assertTrue(foundC, "Current set should have C");
 
-        bytes32[] memory valsKey5 = bytes32Set.valuesAt(5, new bytes[](0));
+        bytes32[] memory valsKey5 = bytes32Set.valuesAt(5);
         assertEq(valsKey5.length, 2, "At key=5, length is 2");
         bool foundB;
         for (uint256 i; i < valsKey5.length; ++i) {
@@ -169,7 +169,7 @@ contract PersistentSetTest is Test {
         }
         assertTrue(foundB, "B must be present at key=5");
 
-        bytes32[] memory valsKey6 = bytes32Set.valuesAt(6, new bytes[](0));
+        bytes32[] memory valsKey6 = bytes32Set.valuesAt(6);
         assertEq(valsKey6.length, 2, "At key=6, length is 2");
     }
 
@@ -227,13 +227,13 @@ contract PersistentSetTest is Test {
         address randomExisting = address(uint160(0x100000 + 150));
         assertTrue(addressSet.contains(randomExisting), "Item at index 150 is still registered at key=2");
 
-        address[] memory valuesAtKey1 = addressSet.valuesAt(1, new bytes[](0));
+        address[] memory valuesAtKey1 = addressSet.valuesAt(1);
         assertEq(valuesAtKey1.length, totalItems, "Should have 300 addresses at key=1");
         for (uint256 i; i < valuesAtKey1.length; ++i) {
             assertEq(valuesAtKey1[i], address(uint160(0x100000 + i)));
         }
 
-        address[] memory valuesAtKey2 = addressSet.valuesAt(2, new bytes[](0));
+        address[] memory valuesAtKey2 = addressSet.valuesAt(2);
         assertEq(valuesAtKey2.length, 298, "Should have 298 addresses at key=2");
         for (uint256 i; i < valuesAtKey2.length; ++i) {
             if (i < 256) {
@@ -245,7 +245,7 @@ contract PersistentSetTest is Test {
 
         assertTrue(addressSet.add(2, address(uint160(0x100000 + 11_111))), "Should add an address at key=2");
 
-        address[] memory valuesAtKey2Again = addressSet.valuesAt(2, new bytes[](0));
+        address[] memory valuesAtKey2Again = addressSet.valuesAt(2);
         assertEq(valuesAtKey2Again.length, 299, "Should have 299 addresses at key=2");
         for (uint256 i; i < valuesAtKey2Again.length - 1; ++i) {
             if (i < 256) {

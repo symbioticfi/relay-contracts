@@ -47,17 +47,6 @@ interface IConfigProvider {
         uint8[] requiredKeyTags;
     }
 
-    struct ConfigHints {
-        bytes[] votingPowerProvidersHints;
-        bytes keysProviderHint;
-        bytes[] replicasHints;
-        bytes verificationTypeHint;
-        bytes maxVotingPowerHint;
-        bytes minInclusionVotingPowerHint;
-        bytes maxValidatorsCountHint;
-        bytes requiredKeyTagsHint;
-    }
-
     event AddVotingPowerProvider(CrossChainAddress votingPowerProvider);
 
     event RemoveVotingPowerProvider(CrossChainAddress votingPowerProvider);
@@ -82,8 +71,7 @@ interface IConfigProvider {
 
     function isVotingPowerProviderRegisteredAt(
         CrossChainAddress memory votingPowerProvider,
-        uint48 timestamp,
-        bytes memory hint
+        uint48 timestamp
     ) external view returns (bool);
 
     function isVotingPowerProviderRegistered(
@@ -91,51 +79,62 @@ interface IConfigProvider {
     ) external view returns (bool);
 
     function getVotingPowerProvidersAt(
-        uint48 timestamp,
-        bytes[] memory hints
+        uint48 timestamp
     ) external view returns (CrossChainAddress[] memory);
 
     function getVotingPowerProviders() external view returns (CrossChainAddress[] memory);
 
-    function getKeysProviderAt(uint48 timestamp, bytes memory hint) external view returns (CrossChainAddress memory);
+    function getKeysProviderAt(
+        uint48 timestamp
+    ) external view returns (CrossChainAddress memory);
 
     function getKeysProvider() external view returns (CrossChainAddress memory);
 
-    function isReplicaRegisteredAt(
-        CrossChainAddress memory replica,
-        uint48 timestamp,
-        bytes memory hint
-    ) external view returns (bool);
+    function isReplicaRegisteredAt(CrossChainAddress memory replica, uint48 timestamp) external view returns (bool);
 
     function isReplicaRegistered(
         CrossChainAddress memory replica
     ) external view returns (bool);
 
-    function getReplicasAt(uint48 timestamp, bytes[] memory hints) external view returns (CrossChainAddress[] memory);
+    function getReplicasAt(
+        uint48 timestamp
+    ) external view returns (CrossChainAddress[] memory);
 
     function getReplicas() external view returns (CrossChainAddress[] memory);
 
-    function getVerificationTypeAt(uint48 timestamp, bytes memory hint) external view returns (uint32);
+    function getVerificationTypeAt(
+        uint48 timestamp
+    ) external view returns (uint32);
 
     function getVerificationType() external view returns (uint32);
 
-    function getMaxVotingPowerAt(uint48 timestamp, bytes memory hint) external view returns (uint256);
+    function getMaxVotingPowerAt(
+        uint48 timestamp
+    ) external view returns (uint256);
 
     function getMaxVotingPower() external view returns (uint256);
 
-    function getMinInclusionVotingPowerAt(uint48 timestamp, bytes memory hint) external view returns (uint256);
+    function getMinInclusionVotingPowerAt(
+        uint48 timestamp
+    ) external view returns (uint256);
 
     function getMinInclusionVotingPower() external view returns (uint256);
 
-    function getMaxValidatorsCountAt(uint48 timestamp, bytes memory hint) external view returns (uint208);
+    function getMaxValidatorsCountAt(
+        uint48 timestamp
+    ) external view returns (uint208);
 
     function getMaxValidatorsCount() external view returns (uint208);
 
-    function getRequiredKeyTagsAt(uint48 timestamp, bytes memory hint) external view returns (uint8[] memory);
+    function getRequiredKeyTagsAt(
+        uint48 timestamp
+    ) external view returns (uint8[] memory);
 
     function getRequiredKeyTags() external view returns (uint8[] memory);
 
-    function getConfigAt(uint48 timestamp, bytes memory hints) external view returns (Config memory);
+    function getConfigAt(
+        uint48 timestamp
+    ) external view returns (Config memory);
 
     function getConfig() external view returns (Config memory);
 
