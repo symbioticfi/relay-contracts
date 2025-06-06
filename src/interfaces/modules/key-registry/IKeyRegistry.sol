@@ -12,7 +12,9 @@ interface IKeyRegistry {
 
     function getOperatorsLength() external view returns (uint256);
 
-    function getOperatorsAt(uint48 timestamp, bytes[] memory hints) external view returns (address[] memory);
+    function getOperatorsAt(
+        uint48 timestamp
+    ) external view returns (address[] memory);
 
     function getOperators() external view returns (address[] memory);
 }

@@ -74,8 +74,10 @@ library VaultManagerLogic {
         return _getVaultManagerStorage()._tokens.contains(token);
     }
 
-    function getTokensAt(uint48 timestamp, bytes[] memory hints) public view returns (address[] memory) {
-        return _getVaultManagerStorage()._tokens.valuesAt(timestamp, hints);
+    function getTokensAt(
+        uint48 timestamp
+    ) public view returns (address[] memory) {
+        return _getVaultManagerStorage()._tokens.valuesAt(timestamp, new bytes[](0));
     }
 
     function getTokens() public view returns (address[] memory) {
@@ -96,8 +98,10 @@ library VaultManagerLogic {
         return _getVaultManagerStorage()._operators.contains(operator);
     }
 
-    function getOperatorsAt(uint48 timestamp, bytes[] memory hints) public view returns (address[] memory) {
-        return _getVaultManagerStorage()._operators.valuesAt(timestamp, hints);
+    function getOperatorsAt(
+        uint48 timestamp
+    ) public view returns (address[] memory) {
+        return _getVaultManagerStorage()._operators.valuesAt(timestamp, new bytes[](0));
     }
 
     function getOperators() public view returns (address[] memory) {
@@ -118,8 +122,10 @@ library VaultManagerLogic {
         return _getVaultManagerStorage()._sharedVaults.contains(vault);
     }
 
-    function getSharedVaultsAt(uint48 timestamp, bytes[] memory hints) public view returns (address[] memory) {
-        return _getVaultManagerStorage()._sharedVaults.valuesAt(timestamp, hints);
+    function getSharedVaultsAt(
+        uint48 timestamp
+    ) public view returns (address[] memory) {
+        return _getVaultManagerStorage()._sharedVaults.valuesAt(timestamp, new bytes[](0));
     }
 
     function getSharedVaults() public view returns (address[] memory) {
@@ -157,12 +163,8 @@ library VaultManagerLogic {
         return _getVaultManagerStorage()._operatorVaults[operator].contains(vault);
     }
 
-    function getOperatorVaultsAt(
-        address operator,
-        uint48 timestamp,
-        bytes[] memory hints
-    ) public view returns (address[] memory) {
-        return _getVaultManagerStorage()._operatorVaults[operator].valuesAt(timestamp, hints);
+    function getOperatorVaultsAt(address operator, uint48 timestamp) public view returns (address[] memory) {
+        return _getVaultManagerStorage()._operatorVaults[operator].valuesAt(timestamp, new bytes[](0));
     }
 
     function getOperatorVaults(
@@ -235,25 +237,17 @@ library VaultManagerLogic {
     function getOperatorVotingPowersAt(
         address operator,
         bytes memory extraData,
-        uint48 timestamp,
-        bytes memory hints
+        uint48 timestamp
     ) public view returns (IVaultManager.VaultVotingPower[] memory vaultVotingPowers) {
-        IVaultManager.OperatorVotingPowersHints memory operatorVotingPowersHints;
-        if (hints.length > 0) {
-            operatorVotingPowersHints = abi.decode(hints, (IVaultManager.OperatorVotingPowersHints));
-        }
         IVaultManager.OperatorVotingPowersExtraData memory operatorVotingPowersExtraData;
         if (extraData.length > 0) {
             operatorVotingPowersExtraData = abi.decode(extraData, (IVaultManager.OperatorVotingPowersExtraData));
         }
 
         uint256 length;
-        address[] memory sharedVaults = getSharedVaultsAt(timestamp, operatorVotingPowersHints.sharedVaultsHints);
-        address[] memory operatorVaults =
-            getOperatorVaultsAt(operator, timestamp, operatorVotingPowersHints.operatorVaultsHints);
+        address[] memory sharedVaults = getSharedVaultsAt(timestamp);
+        address[] memory operatorVaults = getOperatorVaultsAt(operator, timestamp);
         vaultVotingPowers = new IVaultManager.VaultVotingPower[](sharedVaults.length + operatorVaults.length);
-        operatorVotingPowersHints.sharedVaultsVotingPowerHints =
-            operatorVotingPowersHints.sharedVaultsVotingPowerHints.normalize(sharedVaults.length);
         operatorVotingPowersExtraData.sharedVaultsExtraData =
             operatorVotingPowersExtraData.sharedVaultsExtraData.normalize(sharedVaults.length);
         for (uint256 i; i < sharedVaults.length; ++i) {
@@ -262,15 +256,13 @@ library VaultManagerLogic {
                 sharedVaults[i],
                 operatorVotingPowersExtraData.sharedVaultsExtraData[i],
                 timestamp,
-                operatorVotingPowersHints.sharedVaultsVotingPowerHints[i]
+                new bytes(0)
             );
             if (votingPower_ > 0) {
                 vaultVotingPowers[length++] =
                     IVaultManager.VaultVotingPower({vault: sharedVaults[i], votingPower: votingPower_});
             }
         }
-        operatorVotingPowersHints.operatorVaultsVotingPowerHints =
-            operatorVotingPowersHints.operatorVaultsVotingPowerHints.normalize(operatorVaults.length);
         operatorVotingPowersExtraData.operatorVaultsExtraData =
             operatorVotingPowersExtraData.operatorVaultsExtraData.normalize(operatorVaults.length);
         for (uint256 i; i < operatorVaults.length; ++i) {
@@ -279,7 +271,7 @@ library VaultManagerLogic {
                 operatorVaults[i],
                 operatorVotingPowersExtraData.operatorVaultsExtraData[i],
                 timestamp,
-                operatorVotingPowersHints.operatorVaultsVotingPowerHints[i]
+                new bytes(0)
             );
             if (votingPower_ > 0) {
                 vaultVotingPowers[length++] =
@@ -335,24 +327,15 @@ library VaultManagerLogic {
 
     function getVotingPowersAt(
         bytes[] memory extraData,
-        uint48 timestamp,
-        bytes memory hints
+        uint48 timestamp
     ) public view returns (IVaultManager.OperatorVotingPower[] memory operatorVotingPowers) {
-        IVaultManager.VotingPowersHints memory votingPowersHints;
-        if (hints.length > 0) {
-            votingPowersHints = abi.decode(hints, (IVaultManager.VotingPowersHints));
-        }
-
         uint256 length;
-        address[] memory operators = getOperatorsAt(timestamp, votingPowersHints.operatorsHints);
+        address[] memory operators = getOperatorsAt(timestamp);
         operatorVotingPowers = new IVaultManager.OperatorVotingPower[](operators.length);
-        votingPowersHints.operatorVotingPowersHints =
-            votingPowersHints.operatorVotingPowersHints.normalize(operators.length);
         extraData = extraData.normalize(operators.length);
         for (uint256 i; i < operators.length; ++i) {
-            IVaultManager.VaultVotingPower[] memory votingPowers = getOperatorVotingPowersAt(
-                operators[i], extraData[i], timestamp, votingPowersHints.operatorVotingPowersHints[i]
-            );
+            IVaultManager.VaultVotingPower[] memory votingPowers =
+                getOperatorVotingPowersAt(operators[i], extraData[i], timestamp);
             if (votingPowers.length > 0) {
                 operatorVotingPowers[length++] =
                     IVaultManager.OperatorVotingPower({operator: operators[i], vaults: votingPowers});

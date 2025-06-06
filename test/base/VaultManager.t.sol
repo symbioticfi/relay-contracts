@@ -243,12 +243,12 @@ contract VaultManagerTest is InitSetup {
         vaultManager.registerOperator(validOp2);
 
         {
-            address[] memory actOpsT0 = vaultManager.getOperatorsAt(t0, new bytes[](0));
+            address[] memory actOpsT0 = vaultManager.getOperatorsAt(t0);
             assertEq(actOpsT0.length, 1, "At T0, only 1 registered operator");
             assertEq(actOpsT0[0], validOperator);
         }
         {
-            address[] memory actOpsT1 = vaultManager.getOperatorsAt(t1, new bytes[](0));
+            address[] memory actOpsT1 = vaultManager.getOperatorsAt(t1);
             assertEq(actOpsT1.length, 2, "At T1, 2 registered operators");
             assertEq(actOpsT1[0], validOperator);
             assertEq(actOpsT1[1], validOp2);
@@ -283,16 +283,15 @@ contract VaultManagerTest is InitSetup {
 
         assertEq(vaultManager.getTokensLength(), 1);
 
-        address[] memory registeredTokens =
-            vaultManager.getTokensAt(uint48(vm.getBlockTimestamp()) - 100, new bytes[](0));
+        address[] memory registeredTokens = vaultManager.getTokensAt(uint48(vm.getBlockTimestamp()) - 100);
         assertEq(registeredTokens.length, 0);
-        registeredTokens = vaultManager.getTokensAt(uint48(vm.getBlockTimestamp()), new bytes[](0));
+        registeredTokens = vaultManager.getTokensAt(uint48(vm.getBlockTimestamp()));
 
         vaultManager.registerToken(tokenB);
 
         assertEq(vaultManager.getTokensLength(), 2);
 
-        registeredTokens = vaultManager.getTokensAt(uint48(vm.getBlockTimestamp()), new bytes[](0));
+        registeredTokens = vaultManager.getTokensAt(uint48(vm.getBlockTimestamp()));
         assertEq(registeredTokens.length, 2);
         assertEq(registeredTokens[0], initSetupParams.masterChain.tokens[0]);
         assertEq(registeredTokens[1], tokenB);
@@ -301,7 +300,7 @@ contract VaultManagerTest is InitSetup {
 
         assertEq(vaultManager.getTokensLength(), 1);
 
-        registeredTokens = vaultManager.getTokensAt(uint48(vm.getBlockTimestamp()), new bytes[](0));
+        registeredTokens = vaultManager.getTokensAt(uint48(vm.getBlockTimestamp()));
         assertEq(registeredTokens.length, 1);
         assertEq(registeredTokens[0], initSetupParams.masterChain.tokens[0]);
 
@@ -337,7 +336,7 @@ contract VaultManagerTest is InitSetup {
         assertEq(registeredSharedVaults.length, 1);
         assertEq(registeredSharedVaults[0], initSetupParams.masterChain.vaults[0]);
 
-        registeredSharedVaults = vaultManager.getSharedVaultsAt(uint48(vm.getBlockTimestamp()), new bytes[](0));
+        registeredSharedVaults = vaultManager.getSharedVaultsAt(uint48(vm.getBlockTimestamp()));
         assertEq(registeredSharedVaults.length, 1);
 
         assertEq(vaultManager.isSharedVaultRegistered(initSetupParams.masterChain.vaults[0]), true);
@@ -484,8 +483,7 @@ contract VaultManagerTest is InitSetup {
         assertEq(registeredOperatorVaults.length, 1);
         assertEq(registeredOperatorVaults[0], opVault);
 
-        registeredOperatorVaults =
-            vaultManager.getOperatorVaultsAt(operator1, uint48(vm.getBlockTimestamp()), new bytes[](0));
+        registeredOperatorVaults = vaultManager.getOperatorVaultsAt(operator1, uint48(vm.getBlockTimestamp()));
         assertEq(registeredOperatorVaults.length, 1);
 
         assertEq(vaultManager.isOperatorVaultRegistered(operator1, opVault), true);
@@ -642,14 +640,14 @@ contract VaultManagerTest is InitSetup {
 
         IVaultManager.OperatorVotingPower[] memory operatorVotingPowers1 = vaultManager.getVotingPowers(new bytes[](0));
         IVaultManager.OperatorVotingPower[] memory operatorVotingPowers2 =
-            vaultManager.getVotingPowersAt(new bytes[](0), uint48(vm.getBlockTimestamp()), new bytes(0));
+            vaultManager.getVotingPowersAt(new bytes[](0), uint48(vm.getBlockTimestamp()));
 
         uint256 totalStake;
         for (uint256 i; i < vars.operators.length; ++i) {
             IVaultManager.VaultVotingPower[] memory vaultVotingPowers1 =
                 vaultManager.getOperatorVotingPowers(vars.operators[i].addr, "");
             IVaultManager.VaultVotingPower[] memory vaultVotingPowers2 =
-                vaultManager.getOperatorVotingPowersAt(vars.operators[i].addr, "", uint48(vm.getBlockTimestamp()), "");
+                vaultManager.getOperatorVotingPowersAt(vars.operators[i].addr, "", uint48(vm.getBlockTimestamp()));
             uint256 operatorStake;
             for (uint256 j; j < initSetupParams.masterChain.vaults.length; ++j) {
                 uint256 operatorVaultStake = (

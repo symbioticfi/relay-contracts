@@ -84,8 +84,10 @@ abstract contract VaultManager is NetworkManager, VotingPowerCalcManager, IVault
     /**
      * @inheritdoc IVaultManager
      */
-    function getTokensAt(uint48 timestamp, bytes[] memory hints) public view virtual returns (address[] memory) {
-        return VaultManagerLogic.getTokensAt(timestamp, hints);
+    function getTokensAt(
+        uint48 timestamp
+    ) public view virtual returns (address[] memory) {
+        return VaultManagerLogic.getTokensAt(timestamp);
     }
 
     /**
@@ -125,8 +127,10 @@ abstract contract VaultManager is NetworkManager, VotingPowerCalcManager, IVault
     /**
      * @inheritdoc IVaultManager
      */
-    function getOperatorsAt(uint48 timestamp, bytes[] memory hints) public view virtual returns (address[] memory) {
-        return VaultManagerLogic.getOperatorsAt(timestamp, hints);
+    function getOperatorsAt(
+        uint48 timestamp
+    ) public view virtual returns (address[] memory) {
+        return VaultManagerLogic.getOperatorsAt(timestamp);
     }
 
     /**
@@ -166,8 +170,10 @@ abstract contract VaultManager is NetworkManager, VotingPowerCalcManager, IVault
     /**
      * @inheritdoc IVaultManager
      */
-    function getSharedVaultsAt(uint48 timestamp, bytes[] memory hints) public view virtual returns (address[] memory) {
-        return VaultManagerLogic.getSharedVaultsAt(timestamp, hints);
+    function getSharedVaultsAt(
+        uint48 timestamp
+    ) public view virtual returns (address[] memory) {
+        return VaultManagerLogic.getSharedVaultsAt(timestamp);
     }
 
     /**
@@ -226,12 +232,8 @@ abstract contract VaultManager is NetworkManager, VotingPowerCalcManager, IVault
     /**
      * @inheritdoc IVaultManager
      */
-    function getOperatorVaultsAt(
-        address operator,
-        uint48 timestamp,
-        bytes[] memory hints
-    ) public view virtual returns (address[] memory) {
-        return VaultManagerLogic.getOperatorVaultsAt(operator, timestamp, hints);
+    function getOperatorVaultsAt(address operator, uint48 timestamp) public view virtual returns (address[] memory) {
+        return VaultManagerLogic.getOperatorVaultsAt(operator, timestamp);
     }
 
     /**
@@ -282,10 +284,9 @@ abstract contract VaultManager is NetworkManager, VotingPowerCalcManager, IVault
     function getOperatorVotingPowersAt(
         address operator,
         bytes memory extraData,
-        uint48 timestamp,
-        bytes memory hints
+        uint48 timestamp
     ) public view virtual returns (VaultVotingPower[] memory) {
-        return VaultManagerLogic.getOperatorVotingPowersAt(operator, extraData, timestamp, hints);
+        return VaultManagerLogic.getOperatorVotingPowersAt(operator, extraData, timestamp);
     }
 
     /**
@@ -303,10 +304,9 @@ abstract contract VaultManager is NetworkManager, VotingPowerCalcManager, IVault
      */
     function getVotingPowersAt(
         bytes[] memory extraData,
-        uint48 timestamp,
-        bytes memory hints
+        uint48 timestamp
     ) public view virtual returns (OperatorVotingPower[] memory) {
-        return VaultManagerLogic.getVotingPowersAt(extraData, timestamp, hints);
+        return VaultManagerLogic.getVotingPowersAt(extraData, timestamp);
     }
 
     /**

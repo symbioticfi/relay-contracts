@@ -135,20 +135,13 @@ abstract contract KeyManager is MulticallUpgradeable, OzEIP712, IKeyManager {
      * @inheritdoc IKeyManager
      */
     function getKeysAt(
-        uint48 timestamp,
-        bytes memory hints
+        uint48 timestamp
     ) public view virtual returns (OperatorWithKeys[] memory operatorsKeys) {
-        IKeyManager.OperatorsKeysHints memory operatorsKeysHints;
-        if (hints.length > 0) {
-            operatorsKeysHints = abi.decode(hints, (IKeyManager.OperatorsKeysHints));
-        }
-
-        address[] memory operators = _getKeysOperatorsAt(timestamp, operatorsKeysHints.operatorsHints);
-        operatorsKeysHints.operatorKeysHints = operatorsKeysHints.operatorKeysHints.normalize(operators.length);
+        address[] memory operators = _getKeysOperatorsAt(timestamp);
         operatorsKeys = new IKeyManager.OperatorWithKeys[](operators.length);
         for (uint256 i; i < operators.length; ++i) {
             operatorsKeys[i].operator = operators[i];
-            operatorsKeys[i].keys = getKeysAt(operators[i], timestamp, operatorsKeysHints.operatorKeysHints[i]);
+            operatorsKeys[i].keys = getKeysAt(operators[i], timestamp, new bytes(0));
         }
     }
 
@@ -180,10 +173,9 @@ abstract contract KeyManager is MulticallUpgradeable, OzEIP712, IKeyManager {
     }
 
     function _getKeysOperatorsAt(
-        uint48 timestamp,
-        bytes[] memory hints
+        uint48 timestamp
     ) internal view virtual returns (address[] memory) {
-        return _getKeyManagerStorage()._operators.valuesAt(timestamp, hints);
+        return _getKeyManagerStorage()._operators.valuesAt(timestamp, new bytes[](0));
     }
 
     function _getKeysOperators() internal view virtual returns (address[] memory) {

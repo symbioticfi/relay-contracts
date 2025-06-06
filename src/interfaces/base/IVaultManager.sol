@@ -67,21 +67,9 @@ interface IVaultManager {
         bytes stakeHints;
     }
 
-    struct OperatorVotingPowersHints {
-        bytes[] sharedVaultsHints;
-        bytes[] sharedVaultsVotingPowerHints;
-        bytes[] operatorVaultsHints;
-        bytes[] operatorVaultsVotingPowerHints;
-    }
-
     struct OperatorVotingPowersExtraData {
         bytes[] sharedVaultsExtraData;
         bytes[] operatorVaultsExtraData;
-    }
-
-    struct VotingPowersHints {
-        bytes[] operatorsHints;
-        bytes[] operatorVotingPowersHints;
     }
 
     event SetSlashingWindow(uint48 slashingWindow);
@@ -116,7 +104,9 @@ interface IVaultManager {
 
     function isTokenRegisteredAt(address token, uint48 timestamp, bytes memory hint) external view returns (bool);
 
-    function getTokensAt(uint48 timestamp, bytes[] memory hints) external view returns (address[] memory);
+    function getTokensAt(
+        uint48 timestamp
+    ) external view returns (address[] memory);
 
     function getTokens() external view returns (address[] memory);
 
@@ -132,7 +122,9 @@ interface IVaultManager {
         bytes memory hint
     ) external view returns (bool);
 
-    function getOperatorsAt(uint48 timestamp, bytes[] memory hints) external view returns (address[] memory);
+    function getOperatorsAt(
+        uint48 timestamp
+    ) external view returns (address[] memory);
 
     function getOperators() external view returns (address[] memory);
 
@@ -148,7 +140,9 @@ interface IVaultManager {
         bytes memory hint
     ) external view returns (bool);
 
-    function getSharedVaultsAt(uint48 timestamp, bytes[] memory hints) external view returns (address[] memory);
+    function getSharedVaultsAt(
+        uint48 timestamp
+    ) external view returns (address[] memory);
 
     function getSharedVaults() external view returns (address[] memory);
 
@@ -173,11 +167,7 @@ interface IVaultManager {
 
     function isOperatorVaultRegistered(address operator, address vault) external view returns (bool);
 
-    function getOperatorVaultsAt(
-        address operator,
-        uint48 timestamp,
-        bytes[] memory hints
-    ) external view returns (address[] memory);
+    function getOperatorVaultsAt(address operator, uint48 timestamp) external view returns (address[] memory);
 
     function getOperatorVaults(
         address operator
@@ -204,8 +194,7 @@ interface IVaultManager {
     function getOperatorVotingPowersAt(
         address operator,
         bytes memory extraData,
-        uint48 timestamp,
-        bytes memory hints
+        uint48 timestamp
     ) external view returns (VaultVotingPower[] memory);
 
     function getOperatorVotingPowers(
@@ -215,8 +204,7 @@ interface IVaultManager {
 
     function getVotingPowersAt(
         bytes[] memory extraData,
-        uint48 timestamp,
-        bytes memory hints
+        uint48 timestamp
     ) external view returns (OperatorVotingPower[] memory);
 
     function getVotingPowers(

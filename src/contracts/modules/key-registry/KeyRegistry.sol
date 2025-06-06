@@ -28,8 +28,10 @@ contract KeyRegistry is KeyManager, IKeyRegistry {
     /**
      * @inheritdoc IKeyRegistry
      */
-    function getOperatorsAt(uint48 timestamp, bytes[] memory hints) public view virtual returns (address[] memory) {
-        return _getKeysOperatorsAt(timestamp, hints);
+    function getOperatorsAt(
+        uint48 timestamp
+    ) public view virtual returns (address[] memory) {
+        return _getKeysOperatorsAt(timestamp);
     }
 
     /**

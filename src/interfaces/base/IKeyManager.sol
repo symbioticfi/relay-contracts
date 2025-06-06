@@ -76,7 +76,9 @@ interface IKeyManager {
         bytes memory key
     ) external view returns (address);
 
-    function getKeysAt(uint48 timestamp, bytes memory hint) external view returns (OperatorWithKeys[] memory);
+    function getKeysAt(
+        uint48 timestamp
+    ) external view returns (OperatorWithKeys[] memory);
 
     function getKeys() external view returns (OperatorWithKeys[] memory);
 

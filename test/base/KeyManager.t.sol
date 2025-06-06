@@ -26,8 +26,10 @@ contract TestKeyManager is KeyManager {
         return _getKeysOperatorsLength();
     }
 
-    function getOperatorsAt(uint48 timestamp, bytes[] memory hints) public view virtual returns (address[] memory) {
-        return _getKeysOperatorsAt(timestamp, hints);
+    function getOperatorsAt(
+        uint48 timestamp
+    ) public view virtual returns (address[] memory) {
+        return _getKeysOperatorsAt(timestamp);
     }
 
     function getOperators() public view virtual returns (address[] memory) {
@@ -303,7 +305,7 @@ contract KeyManagerTest is Test {
         assertTrue(foundOp1, "Should find operator #1 in set");
         assertTrue(foundOp2, "Should find operator #2 in set");
 
-        address[] memory opsAt = keyManager.getOperatorsAt(uint48(vm.getBlockTimestamp()), new bytes[](0));
+        address[] memory opsAt = keyManager.getOperatorsAt(uint48(vm.getBlockTimestamp()));
         assertEq(opsAt.length, 2, "Should have 2 operators");
         assertEq(opsAt[0], ecdsaUser, "Operator #1 mismatch");
         assertEq(opsAt[1], op2, "Operator #2 mismatch");
@@ -327,7 +329,7 @@ contract KeyManagerTest is Test {
         assertEq(operatorsKeys[1].keys.length, 1, "Operator #2 should have exactly 1 key");
         assertEq(operatorsKeys[0].keys[0].tag, KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0), "Tag mismatch for op1's key");
 
-        IKeyManager.OperatorWithKeys[] memory operatorsKeysAt = keyManager.getKeysAt(uint48(vm.getBlockTimestamp()), "");
+        IKeyManager.OperatorWithKeys[] memory operatorsKeysAt = keyManager.getKeysAt(uint48(vm.getBlockTimestamp()));
         assertEq(operatorsKeysAt.length, 2, "Should have 2 operators");
         assertEq(operatorsKeysAt[0].operator, ecdsaUser, "Operator #1 mismatch");
         assertEq(operatorsKeysAt[1].operator, op2, "Operator #2 mismatch");
