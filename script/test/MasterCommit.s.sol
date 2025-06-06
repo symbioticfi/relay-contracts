@@ -39,8 +39,8 @@ contract MasterCommitScript is MasterGenesisSetupScript {
 
         (ISettlement.ValSetHeader memory valSetHeader, ISettlement.ExtraData[] memory extraData) = loadGenesis();
         valSetHeader.previousHeaderHash = keccak256(abi.encode(valSetHeader));
-        valSetHeader.epoch = 1;
-        valSetHeader.captureTimestamp = 1_746_024_939;
+        valSetHeader.epoch = masterSetupParams.master.getCurrentEpoch();
+        valSetHeader.captureTimestamp = masterSetupParams.master.getCurrentEpochStart();
 
         bytes32 messageHash = masterSetupParams.master.hashTypedDataV4CrossChain(
             keccak256(
@@ -53,6 +53,9 @@ contract MasterCommitScript is MasterGenesisSetupScript {
                 )
             )
         );
+
+        console2.log("messageHash");
+        console2.logBytes32(messageHash);
 
         uint256 signersVotingPower = masterSetupParams.votingPowerProvider.getTotalVotingPower(new bytes[](0));
 
