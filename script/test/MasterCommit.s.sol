@@ -7,10 +7,13 @@ import "./MasterGenesisSetup.s.sol";
 
 import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+import {ExtraDataStorageHelper} from
+    "../../src/contracts/implementations/sig-verifiers/libraries/ExtraDataStorageHelper.sol";
 
 // forge script script/test/MasterCommit.s.sol:MasterCommitScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_MASTER
 
 contract MasterCommitScript is MasterGenesisSetupScript {
+    using ExtraDataStorageHelper for uint32;
     using KeyTags for uint8;
     using KeyBlsBn254 for BN254.G1Point;
     using BN254 for BN254.G1Point;
@@ -18,7 +21,7 @@ contract MasterCommitScript is MasterGenesisSetupScript {
     using KeyEcdsaSecp256k1 for KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1;
 
     bytes32 private constant VALSET_HEADER_COMMIT_TYPEHASH =
-        keccak256("ValSetHeaderCommit(bytes32 subnetwork,uint48 epoch,bytes32 headerHash)");
+        keccak256("ValSetHeaderCommit(bytes32 subnetwork,uint48 epoch,bytes32 headerHash,bytes32 extraDataHash)");
 
     struct ZkProof {
         uint256[] input;
@@ -35,6 +38,9 @@ contract MasterCommitScript is MasterGenesisSetupScript {
         MasterSetupParams memory masterSetupParams = loadMasterSetupParams();
 
         (ISettlement.ValSetHeader memory valSetHeader, ISettlement.ExtraData[] memory extraData) = loadGenesis();
+        valSetHeader.previousHeaderHash = keccak256(abi.encode(valSetHeader));
+        valSetHeader.epoch = 1;
+        valSetHeader.captureTimestamp = 1_746_024_939;
 
         bytes32 messageHash = masterSetupParams.master.hashTypedDataV4CrossChain(
             keccak256(
@@ -59,6 +65,9 @@ contract MasterCommitScript is MasterGenesisSetupScript {
 
             BN254.G2Point memory keyG2 = getG2Key(vars.operators[i].privateKey);
             BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash);
+            console2.log("messageG1");
+            console2.log(messageG1.X, messageG1.Y);
+
             BN254.G1Point memory sigG1 = messageG1.scalar_mul(vars.operators[i].privateKey);
             aggSigG1 = aggSigG1.plus(sigG1);
             aggKeyG1 = aggKeyG1.plus(keyG1);
@@ -109,6 +118,27 @@ contract MasterCommitScript is MasterGenesisSetupScript {
         console2.logBytes(fullProof);
 
         console2.log("commitValSetHeader");
+
+        console2.log("subnetwork");
+        console2.logBytes32(masterSetupParams.master.SUBNETWORK());
+
+        console2.log("epoch");
+        console2.log(masterSetupParams.master.getCurrentEpoch());
+
+        console2.log("header");
+        console2.log(valSetHeader.captureTimestamp);
+        console2.log(valSetHeader.epoch);
+        console2.logBytes32(valSetHeader.previousHeaderHash);
+        console2.log(valSetHeader.quorumThreshold);
+        console2.log(valSetHeader.requiredKeyTag);
+        console2.logBytes32(valSetHeader.validatorsSszMRoot);
+        console2.log(valSetHeader.version);
+
+        console2.log("extraData");
+        console2.logBytes32(extraData[0].key);
+        console2.logBytes32(extraData[0].value);
+        console2.logBytes32(extraData[1].key);
+        console2.logBytes32(extraData[1].value);
 
         vm.startBroadcast(vars.deployer.privateKey);
         masterSetupParams.master.commitValSetHeader(valSetHeader, extraData, fullProof, new bytes(0));
