@@ -242,7 +242,8 @@ contract MasterSetupScript is SecondarySetupScript {
                         maxVotingPower: 1e36,
                         minInclusionVotingPower: 0,
                         maxValidatorsCount: 99_999_999,
-                        requiredKeyTags: requiredKeyTags
+                        requiredKeyTags: requiredKeyTags,
+                        requiredKeyTag: requiredKeyTags[0]
                     })
                 }),
                 vars.deployer.addr

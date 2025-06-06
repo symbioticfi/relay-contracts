@@ -60,20 +60,6 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
     /**
      * @inheritdoc ISettlement
      */
-    function getRequiredKeyTagAt(uint48 epoch, bytes memory hint) public view virtual returns (uint8) {
-        return uint8(_getSettlementStorage()._requiredKeyTag.upperLookupRecent(epoch, hint));
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
-    function getRequiredKeyTag() public view virtual returns (uint8) {
-        return uint8(_getCurrentValue(_getSettlementStorage()._requiredKeyTag, getLastCommittedHeaderEpoch()));
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
     function getSigVerifierAt(uint48 epoch, bytes memory hint) public view virtual returns (address) {
         return address(uint160(_getSettlementStorage()._sigVerifier.upperLookupRecent(epoch, hint)));
     }
@@ -264,16 +250,6 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
     /**
      * @inheritdoc ISettlement
      */
-    function setRequiredKeyTag(
-        uint8 requiredKeyTag
-    ) public virtual checkPermission {
-        _getSettlementStorage()._requiredKeyTag.push(getLastCommittedHeaderEpoch() + 1, requiredKeyTag);
-        emit SetRequiredKeyTag(requiredKeyTag);
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
     function setSigVerifier(
         address sigVerifier
     ) public virtual checkPermission {
@@ -347,10 +323,13 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
                 revert Settlement_InvalidEpoch();
             }
         } else if (header.epoch == 0 && isValSetHeaderCommittedAt(0)) {
-            revert Settlement_InvalidEpoch();
+            revert Settlement_ValSetHeaderAlreadySubmitted();
         }
 
-        if (header.captureTimestamp <= getCaptureTimestampFromValSetHeaderAt(lastCommittedHeaderEpoch)) {
+        if (
+            header.captureTimestamp <= getCaptureTimestampFromValSetHeaderAt(lastCommittedHeaderEpoch)
+                || header.captureTimestamp >= Time.timestamp()
+        ) {
             revert Settlement_InvalidCaptureTimestamp();
         }
 

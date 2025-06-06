@@ -66,10 +66,6 @@ interface ISettlement {
 
     function VALIDATOR_SET_VERSION() external view returns (uint8);
 
-    function getRequiredKeyTagAt(uint48 epoch, bytes memory hint) external view returns (uint8);
-
-    function getRequiredKeyTag() external view returns (uint8);
-
     function getSigVerifierAt(uint48 epoch, bytes memory hint) external view returns (address);
 
     function getSigVerifier() external view returns (address);
@@ -142,10 +138,6 @@ interface ISettlement {
         bytes calldata proof,
         bytes memory hint
     ) external view returns (bool);
-
-    function setRequiredKeyTag(
-        uint8 requiredKeyTag
-    ) external;
 
     function setSigVerifier(
         address sigVerifier

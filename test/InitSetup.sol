@@ -158,7 +158,7 @@ contract InitSetup is SymbioticCoreInit {
         vm.stopPrank();
 
         // uint48 zeroTimestamp = uint48(vm.getBlockTimestamp() + DEPLOYMENT_BUFFER);
-        uint48 zeroTimestamp = 1_731_325_331 - EPOCH_DURATION;
+        uint48 zeroTimestamp = 1_746_024_875;
 
         for (uint256 i; i < vars.stakers.length; ++i) {
             for (uint256 j; j < initSetupParams.masterChain.tokens.length; ++j) {

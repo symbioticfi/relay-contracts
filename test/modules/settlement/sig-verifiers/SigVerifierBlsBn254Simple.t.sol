@@ -70,7 +70,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
     function setUp() public override {
         InitSetup.setUp();
 
-        vm.warp(initSetupParams.zeroTimestamp);
+        vm.warp(initSetupParams.zeroTimestamp + 1);
 
         loadMasterSetupParamsSimple();
 
@@ -328,7 +328,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
                 IValSetDriver.ValSetDriverInitParams({
                     epochManagerInitParams: IEpochManager.EpochManagerInitParams({
                         epochDuration: initSetupParams.epochDuration,
-                        epochDurationTimestamp: initSetupParams.zeroTimestamp
+                        epochDurationTimestamp: initSetupParams.zeroTimestamp + 1
                     }),
                     configProviderInitParams: IConfigProvider.ConfigProviderInitParams({
                         votingPowerProviders: votingPowerProviders,
@@ -338,7 +338,8 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
                         maxVotingPower: 1e36,
                         minInclusionVotingPower: 0,
                         maxValidatorsCount: 99_999_999,
-                        requiredKeyTags: requiredKeyTags
+                        requiredKeyTags: requiredKeyTags,
+                        requiredKeyTag: requiredKeyTags[0]
                     })
                 }),
                 vars.deployer.addr

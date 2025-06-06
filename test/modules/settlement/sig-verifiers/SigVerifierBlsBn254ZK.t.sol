@@ -43,7 +43,7 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetup {
     function setUp() public override {
         super.setUp();
 
-        vm.warp(initSetupParams.zeroTimestamp);
+        vm.warp(initSetupParams.zeroTimestamp + 1);
         vm.warp(vm.getBlockTimestamp() + 0 * masterSetupParams.valSetDriver.getEpochDuration(0, new bytes(0)));
 
         setGenesis();

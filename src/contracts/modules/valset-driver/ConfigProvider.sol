@@ -29,7 +29,7 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     bytes32 private constant ConfigProviderStorageLocation =
         0x69cc2103f98d9422293b17af4701294142032f76ec5b84d4141038932799fa00;
 
-    function _getConfigProviderStorage() internal pure returns (IConfigProvider.ConfigProviderStorage storage $) {
+    function _getConfigProviderStorage() internal pure returns (ConfigProviderStorage storage $) {
         bytes32 location = ConfigProviderStorageLocation;
         assembly {
             $.slot := location
@@ -82,7 +82,7 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
         uint48 timestamp
     ) public view virtual returns (CrossChainAddress[] memory votingPowerProviders) {
         bytes32[] memory votingPowerProvidersRaw = _getConfigProviderStorage()._votingPowerProviders.valuesAt(timestamp);
-        votingPowerProviders = new IConfigProvider.CrossChainAddress[](votingPowerProvidersRaw.length);
+        votingPowerProviders = new CrossChainAddress[](votingPowerProvidersRaw.length);
         for (uint256 i; i < votingPowerProvidersRaw.length; ++i) {
             votingPowerProviders[i] = _deserializeCrossChainAddress(votingPowerProvidersRaw[i]);
         }
@@ -93,7 +93,7 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
      */
     function getVotingPowerProviders() public view virtual returns (CrossChainAddress[] memory votingPowerProviders) {
         bytes32[] memory votingPowerProvidersRaw = _getConfigProviderStorage()._votingPowerProviders.values();
-        votingPowerProviders = new IConfigProvider.CrossChainAddress[](votingPowerProvidersRaw.length);
+        votingPowerProviders = new CrossChainAddress[](votingPowerProvidersRaw.length);
         for (uint256 i; i < votingPowerProvidersRaw.length; ++i) {
             votingPowerProviders[i] = _deserializeCrossChainAddress(votingPowerProvidersRaw[i]);
         }
@@ -143,7 +143,7 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
         uint48 timestamp
     ) public view virtual returns (CrossChainAddress[] memory replicas) {
         bytes32[] memory replicasRaw = _getConfigProviderStorage()._replicas.valuesAt(timestamp);
-        replicas = new IConfigProvider.CrossChainAddress[](replicasRaw.length);
+        replicas = new CrossChainAddress[](replicasRaw.length);
         for (uint256 i; i < replicasRaw.length; ++i) {
             replicas[i] = _deserializeCrossChainAddress(replicasRaw[i]);
         }
@@ -154,7 +154,7 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
      */
     function getReplicas() public view virtual returns (CrossChainAddress[] memory replicas) {
         bytes32[] memory replicasRaw = _getConfigProviderStorage()._replicas.values();
-        replicas = new IConfigProvider.CrossChainAddress[](replicasRaw.length);
+        replicas = new CrossChainAddress[](replicasRaw.length);
         for (uint256 i; i < replicasRaw.length; ++i) {
             replicas[i] = _deserializeCrossChainAddress(replicasRaw[i]);
         }
@@ -243,10 +243,26 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     /**
      * @inheritdoc IConfigProvider
      */
+    function getRequiredKeyTagAt(
+        uint48 timestamp
+    ) public view virtual returns (uint8) {
+        return uint8(_getConfigProviderStorage()._requiredKeyTag.upperLookupRecent(timestamp));
+    }
+
+    /**
+     * @inheritdoc IConfigProvider
+     */
+    function getRequiredKeyTag() public view virtual returns (uint8) {
+        return uint8(_getConfigProviderStorage()._requiredKeyTag.latest());
+    }
+
+    /**
+     * @inheritdoc IConfigProvider
+     */
     function getConfigAt(
         uint48 timestamp
     ) public view virtual returns (Config memory) {
-        return IConfigProvider.Config({
+        return Config({
             votingPowerProviders: getVotingPowerProvidersAt(timestamp),
             keysProvider: getKeysProviderAt(timestamp),
             replicas: getReplicasAt(timestamp),
@@ -254,7 +270,8 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
             maxVotingPower: getMaxVotingPowerAt(timestamp),
             minInclusionVotingPower: getMinInclusionVotingPowerAt(timestamp),
             maxValidatorsCount: getMaxValidatorsCountAt(timestamp),
-            requiredKeyTags: getRequiredKeyTagsAt(timestamp)
+            requiredKeyTags: getRequiredKeyTagsAt(timestamp),
+            requiredKeyTag: getRequiredKeyTagAt(timestamp)
         });
     }
 
@@ -262,7 +279,7 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
      * @inheritdoc IConfigProvider
      */
     function getConfig() public view virtual returns (Config memory) {
-        return IConfigProvider.Config({
+        return Config({
             votingPowerProviders: getVotingPowerProviders(),
             keysProvider: getKeysProvider(),
             replicas: getReplicas(),
@@ -270,7 +287,8 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
             maxVotingPower: getMaxVotingPower(),
             minInclusionVotingPower: getMinInclusionVotingPower(),
             maxValidatorsCount: getMaxValidatorsCount(),
-            requiredKeyTags: getRequiredKeyTags()
+            requiredKeyTags: getRequiredKeyTags(),
+            requiredKeyTag: getRequiredKeyTag()
         });
     }
 
@@ -364,6 +382,15 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
         _setRequiredKeyTags(requiredKeyTags);
     }
 
+    /**
+     * @inheritdoc IConfigProvider
+     */
+    function setRequiredKeyTag(
+        uint8 requiredKeyTag
+    ) public virtual checkPermission {
+        _setRequiredKeyTag(requiredKeyTag);
+    }
+
     function _addVotingPowerProvider(
         CrossChainAddress memory votingPowerProvider
     ) internal virtual {
@@ -372,9 +399,9 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
                 Time.timestamp(), _serializeCrossChainAddress(votingPowerProvider)
             )
         ) {
-            revert IConfigProvider.ConfigProvider_AlreadyAdded();
+            revert ConfigProvider_AlreadyAdded();
         }
-        emit IConfigProvider.AddVotingPowerProvider(votingPowerProvider);
+        emit AddVotingPowerProvider(votingPowerProvider);
     }
 
     function _removeVotingPowerProvider(
@@ -385,9 +412,9 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
                 Time.timestamp(), _serializeCrossChainAddress(votingPowerProvider)
             )
         ) {
-            revert IConfigProvider.ConfigProvider_NotAdded();
+            revert ConfigProvider_NotAdded();
         }
-        emit IConfigProvider.RemoveVotingPowerProvider(votingPowerProvider);
+        emit RemoveVotingPowerProvider(votingPowerProvider);
     }
 
     function _setKeysProvider(
@@ -396,73 +423,80 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
         _getConfigProviderStorage()._keysProvider.push(
             Time.timestamp(), uint256(_serializeCrossChainAddress(keysProvider))
         );
-        emit IConfigProvider.SetKeysProvider(keysProvider);
+        emit SetKeysProvider(keysProvider);
     }
 
     function _addReplica(
         CrossChainAddress memory replica
     ) internal virtual {
         if (!_getConfigProviderStorage()._replicas.add(Time.timestamp(), _serializeCrossChainAddress(replica))) {
-            revert IConfigProvider.ConfigProvider_AlreadyAdded();
+            revert ConfigProvider_AlreadyAdded();
         }
-        emit IConfigProvider.AddReplica(replica);
+        emit AddReplica(replica);
     }
 
     function _removeReplica(
         CrossChainAddress memory replica
     ) internal virtual {
         if (!_getConfigProviderStorage()._replicas.remove(Time.timestamp(), _serializeCrossChainAddress(replica))) {
-            revert IConfigProvider.ConfigProvider_NotAdded();
+            revert ConfigProvider_NotAdded();
         }
-        emit IConfigProvider.RemoveReplica(replica);
+        emit RemoveReplica(replica);
     }
 
     function _setVerificationType(
         uint32 verificationType
     ) internal virtual {
         _getConfigProviderStorage()._verificationType.push(Time.timestamp(), verificationType);
-        emit IConfigProvider.SetVerificationType(verificationType);
+        emit SetVerificationType(verificationType);
     }
 
     function _setMaxVotingPower(
         uint256 maxVotingPower
     ) internal virtual {
         _getConfigProviderStorage()._maxVotingPower.push(Time.timestamp(), maxVotingPower);
-        emit IConfigProvider.SetMaxVotingPower(maxVotingPower);
+        emit SetMaxVotingPower(maxVotingPower);
     }
 
     function _setMinInclusionVotingPower(
         uint256 minInclusionVotingPower
     ) internal virtual {
         _getConfigProviderStorage()._minInclusionVotingPower.push(Time.timestamp(), minInclusionVotingPower);
-        emit IConfigProvider.SetMinInclusionVotingPower(minInclusionVotingPower);
+        emit SetMinInclusionVotingPower(minInclusionVotingPower);
     }
 
     function _setMaxValidatorsCount(
         uint208 maxValidatorsCount
     ) internal virtual {
         _getConfigProviderStorage()._maxValidatorsCount.push(Time.timestamp(), maxValidatorsCount);
-        emit IConfigProvider.SetMaxValidatorsCount(maxValidatorsCount);
+        emit SetMaxValidatorsCount(maxValidatorsCount);
     }
 
     function _setRequiredKeyTags(
         uint8[] memory requiredKeyTags
     ) internal virtual {
         _getConfigProviderStorage()._requiredKeyTags.push(Time.timestamp(), requiredKeyTags.serialize());
-        emit IConfigProvider.SetRequiredKeyTags(requiredKeyTags);
+        emit SetRequiredKeyTags(requiredKeyTags);
+    }
+
+    function _setRequiredKeyTag(
+        uint8 requiredKeyTag
+    ) internal virtual {
+        _getConfigProviderStorage()._requiredKeyTag.push(Time.timestamp(), requiredKeyTag);
+        emit SetRequiredKeyTag(requiredKeyTag);
     }
 
     function _deserializeCrossChainAddress(
         bytes32 compressedAddress
-    ) internal pure virtual returns (IConfigProvider.CrossChainAddress memory) {
-        return IConfigProvider.CrossChainAddress({
+    ) internal pure virtual returns (CrossChainAddress memory) {
+        return CrossChainAddress({
             addr: address(uint160(uint256(compressedAddress))),
             chainId: uint64(uint256(compressedAddress) >> 160)
         });
     }
 
     function _serializeCrossChainAddress(
-        IConfigProvider.CrossChainAddress memory crossChainAddress
+        CrossChainAddress memory crossChainAddress
     ) internal pure virtual returns (bytes32) {
         return bytes32(uint256(crossChainAddress.chainId) << 160 | uint256(uint160(crossChainAddress.addr)));
     }
