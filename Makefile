@@ -1,6 +1,16 @@
-
 build-docker:
-	docker build -t symbiotic-tests .
+	@bash -c ' \
+	  echo "Starting Anvil in the background..."; \
+	  yarn snapshot & \
+	  PID=$$!; \
+	  echo "Waiting 60s for Anvil to be fully up..."; \
+	  sleep 60; \
+	  echo "Killing Anvil (PID=$$PID)..."; \
+	  kill $$PID; \
+	  echo "Building Docker image..."; \
+	  docker build -t symbiotic-tests .; \
+	'
+
 
 up:
 	docker run -d --rm \

@@ -57,10 +57,11 @@
       "0x5a7b26D6a0D2b1cC4b28dB6106Ce7CD4be1F136F"
     ]
   },
+  "sigVerifierType": 0,
   "slashingWindow": 1200,
   "stakerPrivateKeys": [
     2000000000000000000
   ],
   "subnetworkID": 0,
-  "zeroTimestamp": 1746024878
+  "zeroTimestamp": 1746024875
 }

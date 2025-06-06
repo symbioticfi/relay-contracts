@@ -22,6 +22,8 @@ import "./InitSetup.s.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {SigVerifierBlsBn254ZK} from "../../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254ZK.sol";
+import {SigVerifierBlsBn254Simple} from
+    "../../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254Simple.sol";
 import {Verifier as Verifier_10} from "../../src/contracts/implementations/sig-verifiers/zk/Verifier_10.sol";
 import {Verifier as Verifier_100} from "../../src/contracts/implementations/sig-verifiers/zk/Verifier_100.sol";
 import {Verifier as Verifier_1000} from "../../src/contracts/implementations/sig-verifiers/zk/Verifier_1000.sol";
@@ -119,14 +121,23 @@ contract SecondarySetupScript is InitSetupScript {
         requiredKeyTags[0] = KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15);
         requiredKeyTags[1] = KeyManagerLogic.KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0);
 
-        address[] memory verifiers = new address[](3);
-        verifiers[0] = address(new Verifier_10());
-        verifiers[1] = address(new Verifier_100());
-        verifiers[2] = address(new Verifier_1000());
-        uint256[] memory maxValidators = new uint256[](verifiers.length);
-        maxValidators[0] = 10;
-        maxValidators[1] = 100;
-        maxValidators[2] = 1000;
+        address sigVerifier;
+        if (initSetupParams.sigVerifierType == 0) {
+            address[] memory verifiers = new address[](3);
+            verifiers[0] = address(new Verifier_10());
+            verifiers[1] = address(new Verifier_100());
+            verifiers[2] = address(new Verifier_1000());
+            uint256[] memory maxValidators = new uint256[](verifiers.length);
+            maxValidators[0] = 10;
+            maxValidators[1] = 100;
+            maxValidators[2] = 1000;
+            sigVerifier = address(new SigVerifierBlsBn254ZK(verifiers, maxValidators));
+        } else if (initSetupParams.sigVerifierType == 1) {
+            sigVerifier = address(new SigVerifierBlsBn254Simple());
+        } else {
+            revert("Invalid sig verifier type");
+        }
+
         secondarySetupParams.replica.initialize(
             ISettlement.SettlementInitParams({
                 networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
@@ -141,7 +152,7 @@ contract SecondarySetupScript is InitSetupScript {
                 commitDuration: initSetupParams.commitDuration,
                 prolongDuration: initSetupParams.prolongDuration,
                 requiredKeyTag: KeyManagerLogic.KEY_TYPE_BLS_BN254.getKeyTag(15),
-                sigVerifier: address(new SigVerifierBlsBn254ZK(verifiers, maxValidators))
+                sigVerifier: sigVerifier
             }),
             vars.deployer.addr
         );

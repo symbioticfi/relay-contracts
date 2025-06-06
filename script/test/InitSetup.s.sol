@@ -16,9 +16,9 @@ import {SelfRegisterVotingPowerProvider} from
 // forge script script/test/InitSetup.s.sol:InitSetupScript 25235 --sig "run(uint256)"
 
 contract InitSetupScript is SymbioticCoreInit {
-    uint256 public constant SYMBIOTIC_CORE_NUMBER_OF_VAULTS = 3;
-    uint256 public constant SYMBIOTIC_CORE_NUMBER_OF_OPERATORS = 3;
-    uint256 public constant SYMBIOTIC_CORE_NUMBER_OF_STAKERS = 1;
+    uint256 public SYMBIOTIC_CORE_NUMBER_OF_VAULTS = 3;
+    uint256 public SYMBIOTIC_CORE_NUMBER_OF_OPERATORS;
+    uint256 public SYMBIOTIC_CORE_NUMBER_OF_STAKERS = 1;
 
     uint96 public constant IDENTIFIER = 0;
 
@@ -45,6 +45,7 @@ contract InitSetupScript is SymbioticCoreInit {
         uint48 prolongDuration;
         bool random;
         ChainSetup secondaryChain;
+        uint256 sigVerifierType;
         uint48 slashingWindow;
         uint256[] stakerPrivateKeys;
         uint96 subnetworkID;
@@ -73,6 +74,8 @@ contract InitSetupScript is SymbioticCoreInit {
         SYMBIOTIC_CORE_MAX_OPERATOR_NETWORK_LIMIT_TIMES_1e18 = 0.001 * 1e18;
 
         SYMBIOTIC_CORE_DELEGATOR_TYPES = [0];
+
+        SYMBIOTIC_CORE_NUMBER_OF_OPERATORS = vm.envUint("OPERATORS");
 
         SymbioticInit.run(seed);
 
@@ -319,6 +322,7 @@ contract InitSetupScript is SymbioticCoreInit {
         vm.serializeUint(obj, "zeroTimestamp", zeroTimestamp);
         vm.serializeUint(obj, "subnetworkID", IDENTIFIER);
         vm.serializeUint(obj, "slashingWindow", vm.envUint("SLASHING_WINDOW"));
+        vm.serializeUint(obj, "sigVerifierType", vm.envUint("SIG_VERIFIER"));
         finalJson = vm.serializeBool(obj, "random", initSetupParams.random);
 
         vm.writeJson(finalJson, "script/test/data/init_setup_params.json");
