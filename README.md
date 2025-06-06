@@ -33,6 +33,22 @@ yarn deploy
 You'll get `http://127.0.0.1:8545` and `http://127.0.0.1:8546` RPC URLs
 Also, you can go to [this folder](./script/deploy/data/) to get all the available data
 
+## Docker
+
+```
+make build-docker
+```
+
+```
+make up
+```
+
+To kill the container:
+
+```
+make down
+```
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
