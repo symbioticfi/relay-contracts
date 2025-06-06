@@ -45,10 +45,10 @@ contract InitSetupScript is SymbioticCoreInit {
         uint48 prolongDuration;
         bool random;
         ChainSetup secondaryChain;
-        uint256 sigVerifierType;
         uint48 slashingWindow;
         uint256[] stakerPrivateKeys;
         uint96 subnetworkID;
+        uint32 verificationType;
         uint48 zeroTimestamp;
     }
 
@@ -322,7 +322,7 @@ contract InitSetupScript is SymbioticCoreInit {
         vm.serializeUint(obj, "zeroTimestamp", zeroTimestamp);
         vm.serializeUint(obj, "subnetworkID", IDENTIFIER);
         vm.serializeUint(obj, "slashingWindow", vm.envUint("SLASHING_WINDOW"));
-        vm.serializeUint(obj, "sigVerifierType", vm.envUint("SIG_VERIFIER"));
+        vm.serializeUint(obj, "verificationType", vm.envUint("VERIFICATION_TYPE"));
         finalJson = vm.serializeBool(obj, "random", initSetupParams.random);
 
         vm.writeJson(finalJson, "script/test/data/init_setup_params.json");

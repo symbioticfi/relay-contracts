@@ -122,7 +122,7 @@ contract SecondarySetupScript is InitSetupScript {
         requiredKeyTags[1] = KeyManagerLogic.KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0);
 
         address sigVerifier;
-        if (initSetupParams.sigVerifierType == 0) {
+        if (initSetupParams.verificationType == 0) {
             address[] memory verifiers = new address[](3);
             verifiers[0] = address(new Verifier_10());
             verifiers[1] = address(new Verifier_100());
@@ -132,10 +132,10 @@ contract SecondarySetupScript is InitSetupScript {
             maxValidators[1] = 100;
             maxValidators[2] = 1000;
             sigVerifier = address(new SigVerifierBlsBn254ZK(verifiers, maxValidators));
-        } else if (initSetupParams.sigVerifierType == 1) {
+        } else if (initSetupParams.verificationType == 1) {
             sigVerifier = address(new SigVerifierBlsBn254Simple());
         } else {
-            revert("Invalid sig verifier type");
+            revert("Invalid verification type");
         }
 
         secondarySetupParams.replica.initialize(
