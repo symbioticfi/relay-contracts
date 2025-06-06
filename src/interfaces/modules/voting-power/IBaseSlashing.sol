@@ -20,6 +20,7 @@ interface IBaseSlashing {
     error BaseSlashing_InvalidToken();
     error BaseSlashing_SlashingWindowTooLarge();
     error BaseSlashing_NotSlasher();
+    error BaseSlashing_InvalidSlasher();
 
     /// @custom:storage-location erc7201:symbiotic.storage.BaseSlashing
     struct BaseSlashingStorage {

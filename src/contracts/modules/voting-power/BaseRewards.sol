@@ -7,6 +7,7 @@ import {IDefaultOperatorRewards} from
 
 import {IBaseRewards} from "../../../interfaces/modules/voting-power/IBaseRewards.sol";
 import {VotingPowerProvider} from "./VotingPowerProvider.sol";
+import {BaseRewardsLogic} from "./logic/BaseRewardsLogic.sol";
 
 abstract contract BaseRewards is VotingPowerProvider, IBaseRewards {
     /**
@@ -63,7 +64,7 @@ abstract contract BaseRewards is VotingPowerProvider, IBaseRewards {
         uint256 amount,
         bytes memory data
     ) public virtual onlyRewarder {
-        _distributeStakerRewards(stakerRewards, token, amount, data);
+        BaseRewardsLogic.distributeStakerRewards(stakerRewards, token, amount, data);
     }
 
     /**
@@ -75,33 +76,16 @@ abstract contract BaseRewards is VotingPowerProvider, IBaseRewards {
         uint256 amount,
         bytes32 root
     ) public virtual onlyRewarder {
-        _distributeOperatorRewards(operatorRewards, token, amount, root);
+        BaseRewardsLogic.distributeOperatorRewards(operatorRewards, token, amount, root);
     }
 
     function _setRewarder(
         address rewarder
     ) internal virtual {
+        if (rewarder == address(0)) {
+            revert BaseRewards_InvalidRewarder();
+        }
         _getBaseRewardsStorage()._rewarder = rewarder;
         emit SetRewarder(rewarder);
-    }
-
-    function _distributeStakerRewards(
-        address stakerRewards,
-        address token,
-        uint256 amount,
-        bytes memory data
-    ) internal virtual {
-        IStakerRewards(stakerRewards).distributeRewards(NETWORK(), token, amount, data);
-        emit DistributeStakerRewards(stakerRewards, token, amount, data);
-    }
-
-    function _distributeOperatorRewards(
-        address operatorRewards,
-        address token,
-        uint256 amount,
-        bytes32 root
-    ) internal virtual {
-        IDefaultOperatorRewards(operatorRewards).distributeRewards(NETWORK(), token, amount, root);
-        emit DistributeOperatorRewards(operatorRewards, token, amount, root);
     }
 }

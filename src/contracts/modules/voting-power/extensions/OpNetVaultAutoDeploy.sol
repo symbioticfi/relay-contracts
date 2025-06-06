@@ -14,28 +14,19 @@ abstract contract OpNetVaultAutoDeploy is VotingPowerProvider, IOpNetVaultAutoDe
     /**
      * @inheritdoc IOpNetVaultAutoDeploy
      */
-    uint64 public constant OpNetVaultAutoDeploy_VERSION = 1;
+    function OpNetVaultAutoDeploy_VERSION() public pure returns (uint64) {
+        return OpNetVaultAutoDeployLogic.OpNetVaultAutoDeploy_VERSION;
+    }
 
     /**
      * @inheritdoc IOpNetVaultAutoDeploy
      */
     address public immutable VAULT_CONFIGURATOR;
 
-    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OpNetVaultAutoDeploy")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant OpNetVaultAutoDeployStorageLocation =
-        0x85a64baaaf23c04aec63d80adaee49297f70e3944d69ec004fa7cee8ee6e8b00;
-
     constructor(
         address vaultConfigurator
     ) {
         VAULT_CONFIGURATOR = vaultConfigurator;
-    }
-
-    function _getOpNetVaultAutoDeployStorage() internal pure returns (OpNetVaultAutoDeployStorage storage $) {
-        bytes32 location = OpNetVaultAutoDeployStorageLocation;
-        assembly {
-            $.slot := location
-        }
     }
 
     /**
@@ -44,14 +35,14 @@ abstract contract OpNetVaultAutoDeploy is VotingPowerProvider, IOpNetVaultAutoDe
     function __OpNetVaultAutoDeploy_init(
         OpNetVaultAutoDeployInitParams memory initParams
     ) internal virtual onlyInitializing {
-        _setAutoDeployConfig(initParams.config);
+        OpNetVaultAutoDeployLogic.initialize(initParams);
     }
 
     /**
      * @inheritdoc IOpNetVaultAutoDeploy
      */
     function getAutoDeployConfig() public view virtual returns (AutoDeployConfig memory) {
-        return _getOpNetVaultAutoDeployStorage()._config;
+        return OpNetVaultAutoDeployLogic.getAutoDeployConfig();
     }
 
     /**
@@ -60,95 +51,14 @@ abstract contract OpNetVaultAutoDeploy is VotingPowerProvider, IOpNetVaultAutoDe
     function setAutoDeployConfig(
         AutoDeployConfig memory config
     ) public virtual checkPermission {
-        _setAutoDeployConfig(config);
+        OpNetVaultAutoDeployLogic.setAutoDeployConfig(config);
     }
 
     function _registerOperatorImpl(
         address operator
     ) internal virtual override {
         super._registerOperatorImpl(operator);
-        _registerOperatorVault(operator, _createVault(operator));
-    }
-
-    function _setAutoDeployConfig(
-        AutoDeployConfig memory config
-    ) internal virtual {
-        _validateConfig(config);
-        _getOpNetVaultAutoDeployStorage()._config = config;
-        emit SetAutoDeployConfig(config);
-    }
-
-    function _validateConfig(
-        AutoDeployConfig memory config
-    ) internal view virtual {
-        if (config.epochDuration < getSlashingWindow()) {
-            revert OpNetVaultAutoDeploy_InvalidEpochDuration();
-        }
-        if (config.collateral == address(0)) {
-            revert OpNetVaultAutoDeploy_InvalidCollateral();
-        }
-        if (!config.withSlasher && getSlashingWindow() > 0) {
-            revert OpNetVaultAutoDeploy_InvalidWithSlasher();
-        }
-        if (!config.withSlasher && config.isBurnerHook) {
-            revert OpNetVaultAutoDeploy_InvalidBurnerHook();
-        }
-    }
-
-    function _createVault(
-        address operator
-    ) internal virtual returns (address) {
-        AutoDeployConfig memory config = _getOpNetVaultAutoDeployStorage()._config;
-        (uint64 version, bytes memory vaultParams) = _getVaultParams(config);
-        (uint64 delegatorIndex, bytes memory delegatorParams) = _getDelegatorParams(config, operator);
-        (bool withSlasher, uint64 slasherIndex, bytes memory slasherParams) = _getSlasherParams(config);
-
-        (address vault, address delegator,) = OpNetVaultAutoDeployLogic.createVault(
-            version, address(0), vaultParams, delegatorIndex, delegatorParams, withSlasher, slasherIndex, slasherParams
-        );
-        if (NETWORK() == address(this)) {
-            IBaseDelegator(delegator).setMaxNetworkLimit(SUBNETWORK_IDENTIFIER(), type(uint256).max);
-        }
-        return vault;
-    }
-
-    function _getVaultParams(
-        AutoDeployConfig memory config
-    ) internal view virtual returns (uint64, bytes memory) {
-        return OpNetVaultAutoDeployLogic.getVaultParams(
-            IVault.InitParams({
-                collateral: config.collateral,
-                burner: config.burner,
-                epochDuration: config.epochDuration,
-                depositWhitelist: false,
-                isDepositLimit: false,
-                depositLimit: 0,
-                defaultAdminRoleHolder: address(0),
-                depositWhitelistSetRoleHolder: address(0),
-                depositorWhitelistRoleHolder: address(0),
-                isDepositLimitSetRoleHolder: address(0),
-                depositLimitSetRoleHolder: address(0)
-            })
-        );
-    }
-
-    function _getDelegatorParams(
-        AutoDeployConfig memory, /* config */
-        address operator
-    ) internal view virtual returns (uint64, bytes memory) {
-        return OpNetVaultAutoDeployLogic.getOperatorNetworkSpecificDelegatorParams(
-            operator, address(0), address(0), address(0)
-        );
-    }
-
-    function _getSlasherParams(
-        AutoDeployConfig memory config
-    ) internal view virtual returns (bool, uint64, bytes memory) {
-        if (!config.withSlasher) {
-            return (false, 0, new bytes(0));
-        }
-        (uint64 slasherIndex, bytes memory slasherParams) =
-            OpNetVaultAutoDeployLogic.getSlasherParams(config.isBurnerHook);
-        return (true, slasherIndex, slasherParams);
+        (address vault,,) = OpNetVaultAutoDeployLogic.createVault(operator);
+        _registerOperatorVault(operator, vault);
     }
 }

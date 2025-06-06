@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 interface IBaseRewards {
     error BaseRewards_NotRewarder();
+    error BaseRewards_InvalidRewarder();
 
     /// @custom:storage-location erc7201:symbiotic.storage.BaseRewards
     struct BaseRewardsStorage {

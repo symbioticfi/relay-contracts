@@ -20,6 +20,7 @@ import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
 
 import {IBaseSlashing} from "../../../interfaces/modules/voting-power/IBaseSlashing.sol";
 import {VotingPowerProvider} from "./VotingPowerProvider.sol";
+import {BaseSlashingLogic} from "./logic/BaseSlashingLogic.sol";
 
 abstract contract BaseSlashing is VotingPowerProvider, IBaseSlashing {
     /**
@@ -74,7 +75,7 @@ abstract contract BaseSlashing is VotingPowerProvider, IBaseSlashing {
         uint256 amount,
         bytes memory hints
     ) public virtual onlySlasher returns (bool success, bytes memory response) {
-        return _slashVault(timestamp, vault, operator, amount, hints);
+        return BaseSlashingLogic.slashVault(timestamp, vault, operator, amount, hints);
     }
 
     function executeSlashVault(
@@ -82,95 +83,16 @@ abstract contract BaseSlashing is VotingPowerProvider, IBaseSlashing {
         uint256 slashIndex,
         bytes memory hints
     ) public virtual onlySlasher returns (bool success, uint256 slashedAmount) {
-        return _executeSlashVault(vault, slashIndex, hints);
+        return BaseSlashingLogic.executeSlashVault(vault, slashIndex, hints);
     }
 
     function _setSlasher(
         address slasher
     ) internal virtual {
+        if (slasher == address(0)) {
+            revert BaseSlashing_InvalidSlasher();
+        }
         _getBaseSlashingStorage()._slasher = slasher;
         emit SetSlasher(slasher);
-    }
-
-    function _slashVault(
-        uint48 timestamp,
-        address vault,
-        address operator,
-        uint256 amount,
-        bytes memory hints
-    ) internal virtual returns (bool success, bytes memory response) {
-        SlashVaultHints memory slashVaultHints;
-        if (hints.length > 0) {
-            slashVaultHints = abi.decode(hints, (SlashVaultHints));
-        }
-
-        if (!isOperatorRegisteredAt(operator, timestamp, slashVaultHints.operatorRegisteredHint)) {
-            revert BaseSlashing_UnregisteredOperatorSlash();
-        }
-
-        if (
-            !isOperatorVaultRegisteredAt(operator, vault, timestamp, slashVaultHints.operatorVaultRegisteredHint)
-                && !isSharedVaultRegisteredAt(vault, timestamp, slashVaultHints.sharedVaultRegisteredHint)
-        ) {
-            revert BaseSlashing_UnregisteredVaultSlash();
-        }
-
-        address slasher = IVault(vault).slasher();
-        if (slasher == address(0)) {
-            revert BaseSlashing_NoSlasher();
-        }
-
-        return _slash(timestamp, slasher, operator, amount, slashVaultHints.slashHints);
-    }
-
-    function _slash(
-        uint48 timestamp,
-        address slasher,
-        address operator,
-        uint256 amount,
-        bytes memory hints
-    ) internal virtual returns (bool success, bytes memory response) {
-        uint64 slasherType = IEntity(slasher).TYPE();
-        if (slasherType == uint64(SlasherType.INSTANT)) {
-            (success, response) =
-                slasher.call(abi.encodeCall(IInstantSlasher.slash, (SUBNETWORK(), operator, amount, timestamp, hints)));
-            emit InstantSlash(slasher, operator, success, success ? abi.decode(response, (uint256)) : 0);
-        } else if (slasherType == uint64(SlasherType.VETO)) {
-            (success, response) = slasher.call(
-                abi.encodeCall(IVetoSlasher.requestSlash, (SUBNETWORK(), operator, amount, timestamp, hints))
-            );
-            emit VetoSlash(slasher, operator, success, success ? abi.decode(response, (uint256)) : 0);
-        } else {
-            revert BaseSlashing_UnknownSlasherType();
-        }
-    }
-
-    function _executeSlashVault(
-        address vault,
-        uint256 slashIndex,
-        bytes memory hints
-    ) internal virtual returns (bool success, uint256 slashedAmount) {
-        address slasher = IVault(vault).slasher();
-        if (slasher == address(0)) {
-            revert BaseSlashing_NoSlasher();
-        }
-
-        return _executeSlash(slasher, slashIndex, hints);
-    }
-
-    function _executeSlash(
-        address slasher,
-        uint256 slashIndex,
-        bytes memory hints
-    ) internal virtual returns (bool success, uint256 slashedAmount) {
-        uint64 slasherType = IEntity(slasher).TYPE();
-        if (slasherType == uint64(SlasherType.VETO)) {
-            bytes memory response;
-            (success, response) = slasher.call(abi.encodeCall(IVetoSlasher.executeSlash, (slashIndex, hints)));
-            slashedAmount = success ? abi.decode(response, (uint256)) : 0;
-            emit ExecuteSlash(slasher, slashIndex, success, slashedAmount);
-        } else {
-            revert BaseSlashing_NonVetoSlasher();
-        }
     }
 }

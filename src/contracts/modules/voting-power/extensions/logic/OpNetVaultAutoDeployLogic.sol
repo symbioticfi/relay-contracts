@@ -20,29 +20,110 @@ uint64 constant BASE_VAULT_VERSION = 1;
 uint64 constant TOKENIZED_VAULT_VERSION = 2;
 
 library OpNetVaultAutoDeployLogic {
+    uint64 internal constant OpNetVaultAutoDeploy_VERSION = 1;
+
+    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OpNetVaultAutoDeploy")) - 1)) & ~bytes32(uint256(0xff))
+    bytes32 private constant OpNetVaultAutoDeployStorageLocation =
+        0x85a64baaaf23c04aec63d80adaee49297f70e3944d69ec004fa7cee8ee6e8b00;
+
+    function _getOpNetVaultAutoDeployStorage()
+        internal
+        pure
+        returns (IOpNetVaultAutoDeploy.OpNetVaultAutoDeployStorage storage $)
+    {
+        bytes32 location = OpNetVaultAutoDeployStorageLocation;
+        assembly {
+            $.slot := location
+        }
+    }
+
+    function initialize(
+        IOpNetVaultAutoDeploy.OpNetVaultAutoDeployInitParams memory initParams
+    ) public {
+        setAutoDeployConfig(initParams.config);
+    }
+
+    function getAutoDeployConfig() public view returns (IOpNetVaultAutoDeploy.AutoDeployConfig memory) {
+        return _getOpNetVaultAutoDeployStorage()._config;
+    }
+
+    function setAutoDeployConfig(
+        IOpNetVaultAutoDeploy.AutoDeployConfig memory config
+    ) public {
+        _validateConfig(config);
+        _getOpNetVaultAutoDeployStorage()._config = config;
+        emit IOpNetVaultAutoDeploy.SetAutoDeployConfig(config);
+    }
+
     function createVault(
-        uint64 version,
-        address owner,
-        bytes memory vaultParams,
-        uint64 delegatorIndex,
-        bytes memory delegatorParams,
-        bool withSlasher,
-        uint64 slasherIndex,
-        bytes memory slasherParams
+        address operator
     ) public returns (address, address, address) {
-        return IVaultConfigurator(IOpNetVaultAutoDeploy(address(this)).VAULT_CONFIGURATOR()).create(
-            IVaultConfigurator.InitParams({
-                version: version,
-                owner: owner,
-                vaultParams: vaultParams,
-                delegatorIndex: delegatorIndex,
-                delegatorParams: delegatorParams,
-                withSlasher: withSlasher,
-                slasherIndex: slasherIndex,
-                slasherParams: slasherParams
+        IOpNetVaultAutoDeploy.AutoDeployConfig memory config = getAutoDeployConfig();
+        (uint64 version, bytes memory vaultParams) = getVaultParams(config);
+        (uint64 delegatorIndex, bytes memory delegatorParams) = getDelegatorParams(config, operator);
+        (bool withSlasher, uint64 slasherIndex, bytes memory slasherParams) = getSlasherParams(config);
+
+        return createVault(
+            version, address(0), vaultParams, delegatorIndex, delegatorParams, withSlasher, slasherIndex, slasherParams
+        );
+    }
+
+    function getVaultParams(
+        IOpNetVaultAutoDeploy.AutoDeployConfig memory config
+    ) public view returns (uint64, bytes memory) {
+        return getVaultParams(
+            IVault.InitParams({
+                collateral: config.collateral,
+                burner: config.burner,
+                epochDuration: config.epochDuration,
+                depositWhitelist: false,
+                isDepositLimit: false,
+                depositLimit: 0,
+                defaultAdminRoleHolder: address(0),
+                depositWhitelistSetRoleHolder: address(0),
+                depositorWhitelistRoleHolder: address(0),
+                isDepositLimitSetRoleHolder: address(0),
+                depositLimitSetRoleHolder: address(0)
             })
         );
     }
+
+    function getDelegatorParams(
+        IOpNetVaultAutoDeploy.AutoDeployConfig memory, /* config */
+        address operator
+    ) public view returns (uint64, bytes memory) {
+        return getOperatorNetworkSpecificDelegatorParams(operator, address(0), address(0), address(0));
+    }
+
+    function getSlasherParams(
+        IOpNetVaultAutoDeploy.AutoDeployConfig memory config
+    ) public view returns (bool, uint64, bytes memory) {
+        if (!config.withSlasher) {
+            return (false, 0, new bytes(0));
+        }
+        (uint64 slasherIndex, bytes memory slasherParams) = getSlasherParams(config.isBurnerHook);
+        return (true, slasherIndex, slasherParams);
+    }
+
+    function _validateConfig(
+        IOpNetVaultAutoDeploy.AutoDeployConfig memory config
+    ) public view {
+        if (config.collateral == address(0)) {
+            revert IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidCollateral();
+        }
+        uint48 slashingWindow = IVaultManager(address(this)).getSlashingWindow();
+        if (config.epochDuration < slashingWindow) {
+            revert IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidEpochDuration();
+        }
+        if (!config.withSlasher && slashingWindow > 0) {
+            revert IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidWithSlasher();
+        }
+        if (!config.withSlasher && config.isBurnerHook) {
+            revert IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidBurnerHook();
+        }
+    }
+
+    // ------------------------------------ HELPER FUNCTIONS ------------------------------------
 
     function getVaultParams(
         IVault.InitParams memory params
@@ -106,6 +187,30 @@ library OpNetVaultAutoDeployLogic {
                     resolverSetEpochsDelay: resolverSetEpochsDelay
                 })
             )
+        );
+    }
+
+    function createVault(
+        uint64 version,
+        address owner,
+        bytes memory vaultParams,
+        uint64 delegatorIndex,
+        bytes memory delegatorParams,
+        bool withSlasher,
+        uint64 slasherIndex,
+        bytes memory slasherParams
+    ) public returns (address, address, address) {
+        return IVaultConfigurator(IOpNetVaultAutoDeploy(address(this)).VAULT_CONFIGURATOR()).create(
+            IVaultConfigurator.InitParams({
+                version: version,
+                owner: owner,
+                vaultParams: vaultParams,
+                delegatorIndex: delegatorIndex,
+                delegatorParams: delegatorParams,
+                withSlasher: withSlasher,
+                slasherIndex: slasherIndex,
+                slasherParams: slasherParams
+            })
         );
     }
 }
