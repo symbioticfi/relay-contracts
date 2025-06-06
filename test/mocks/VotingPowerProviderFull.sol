@@ -58,15 +58,12 @@ contract VotingPowerProviderFull is
         __BaseRewards_init(BaseRewardsInitParams({rewarder: address(this)}));
     }
 
-    function __NetworkManager_init(
-        NetworkManagerInitParams memory initParams
-    ) internal override(NetworkManager, SelfNetwork) {
-        super.__NetworkManager_init(initParams);
-    }
-
     function _registerOperatorImpl(
         address operator
-    ) internal override(OperatorsBlacklist, OperatorsWhitelist, VotingPowerProvider, OpNetVaultAutoDeploy) {
+    )
+        internal
+        override(OperatorsBlacklist, OperatorsWhitelist, VotingPowerProvider, OpNetVaultAutoDeploy, SelfNetwork)
+    {
         super._registerOperatorImpl(operator);
     }
 }

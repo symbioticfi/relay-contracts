@@ -118,36 +118,4 @@ contract SelfNetworkTest is Test, InitSetup {
         assertEq(votingPowerProvider.NETWORK(), address(votingPowerProvider), "NETWORK mismatch");
         assertEq(votingPowerProvider.SUBNETWORK(), votingPowerProvider.SUBNETWORK(), "SUBNETWORK mismatch");
     }
-
-    function test_Revert_InvalidNetwork() public {
-        INetworkManager.NetworkManagerInitParams memory netInit =
-            INetworkManager.NetworkManagerInitParams({network: address(1), subnetworkID: initSetupParams.subnetworkID});
-        IVaultManager.VaultManagerInitParams memory vaultInit =
-            IVaultManager.VaultManagerInitParams({slashingWindow: 100, token: initSetupParams.masterChain.tokens[0]});
-        IOperatorsWhitelist.OperatorsWhitelistInitParams memory wlInit =
-            IOperatorsWhitelist.OperatorsWhitelistInitParams({isWhitelistEnabled: true});
-
-        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
-            .VotingPowerProviderInitParams({
-            networkManagerInitParams: netInit,
-            vaultManagerInitParams: vaultInit,
-            ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"})
-        });
-
-        IOzOwnable.OzOwnableInitParams memory ozOwnableInit = IOzOwnable.OzOwnableInitParams({owner: address(this)});
-
-        IOpNetVaultAutoDeploy.OpNetVaultAutoDeployInitParams memory opNetVaultAutoDeployInit = IOpNetVaultAutoDeploy
-            .OpNetVaultAutoDeployInitParams({
-            config: IOpNetVaultAutoDeploy.AutoDeployConfig({
-                epochDuration: 100 days,
-                collateral: initSetupParams.masterChain.tokens[0],
-                burner: address(1),
-                withSlasher: true,
-                isBurnerHook: true
-            })
-        });
-
-        vm.expectRevert(ISelfNetwork.SelfNetwork_InvalidNetwork.selector);
-        votingPowerProvider.initialize(votingPowerProviderInit, ozOwnableInit, wlInit, opNetVaultAutoDeployInit);
-    }
 }

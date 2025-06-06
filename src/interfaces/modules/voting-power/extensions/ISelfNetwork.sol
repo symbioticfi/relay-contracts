@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 interface ISelfNetwork {
-    error SelfNetwork_InvalidNetwork();
+    error SelfNetwork_InvalidSlasher();
 
     function SelfNetwork_VERSION() external view returns (uint64);
 

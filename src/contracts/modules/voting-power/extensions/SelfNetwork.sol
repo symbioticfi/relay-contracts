@@ -7,8 +7,14 @@ import {ISelfNetwork} from "../../../../interfaces/modules/voting-power/extensio
 
 import {INetworkRegistry} from "@symbioticfi/core/src/interfaces/INetworkRegistry.sol";
 import {INetworkMiddlewareService} from "@symbioticfi/core/src/interfaces/service/INetworkMiddlewareService.sol";
+import {IOpNetVaultAutoDeploy} from "../../../../interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol";
+import {PersistentSet} from "../../../../contracts/libraries/structs/PersistentSet.sol";
+import {VaultManagerLogic} from "../../../../contracts/base/VaultManager.sol";
+import {SelfNetworkLogic} from "./logic/SelfNetworkLogic.sol";
 
 abstract contract SelfNetwork is VotingPowerProvider, ISelfNetwork {
+    using PersistentSet for PersistentSet.AddressSet;
+
     /**
      * @inheritdoc ISelfNetwork
      */
@@ -31,16 +37,27 @@ abstract contract SelfNetwork is VotingPowerProvider, ISelfNetwork {
 
     function __SelfNetwork_init() internal virtual onlyInitializing {}
 
-    function __NetworkManager_init(
-        NetworkManagerInitParams memory initParams
+    function _registerOperatorImpl(
+        address operator
     ) internal virtual override {
-        if (initParams.network != address(0) && initParams.network != address(this)) {
-            revert ISelfNetwork.SelfNetwork_InvalidNetwork();
+        super._registerOperatorImpl(operator);
+        (bool isOpNetVaultAutoDeploySupported,) =
+            address(this).call(abi.encodeCall(IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_VERSION, ()));
+        if (isOpNetVaultAutoDeploySupported) {
+            PersistentSet.AddressSet storage allOperatorVaults =
+                VaultManagerLogic._getVaultManagerStorage()._allOperatorVaults;
+            _setMaxNetworkLimitVault(
+                address(uint160(uint256(allOperatorVaults._inner._elements[allOperatorVaults.length() - 1]))),
+                type(uint256).max
+            );
         }
-        INetworkRegistry(NETWORK_REGISTRY).registerNetwork();
-        INetworkMiddlewareService(NETWORK_MIDDLEWARE_SERVICE).setMiddleware(address(this));
+    }
 
-        initParams.network = address(this);
-        super.__NetworkManager_init(initParams);
+    function _setMaxNetworkLimitVault(address vault, uint256 maxNetworkLimit) internal virtual {
+        SelfNetworkLogic.setMaxNetworkLimit(vault, maxNetworkLimit);
+    }
+
+    function _setResolverVault(address vault, address resolver, bytes memory hints) internal virtual {
+        SelfNetworkLogic.setResolverVault(vault, resolver, hints);
     }
 }
