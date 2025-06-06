@@ -29,7 +29,8 @@
   "operatorPrivateKeys": [
     1000000000000000000,
     1000000000000000001,
-    1000000000000000002
+    1000000000000000002,
+    1000000000000000003
   ],
   "prolongDuration": 75,
   "random": false,
@@ -62,6 +63,6 @@
     2000000000000000000
   ],
   "subnetworkID": 0,
-  "verificationType": 0,
-  "zeroTimestamp": 1746024876
+  "verificationType": 1,
+  "zeroTimestamp": 1746024874
 }
