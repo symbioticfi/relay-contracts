@@ -5,13 +5,10 @@ import {VotingPowerProvider} from "../VotingPowerProvider.sol";
 
 import {IOpNetVaultAutoDeploy} from "../../../../interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol";
 
-import {IVaultConfigurator} from "@symbioticfi/core/src/interfaces/IVaultConfigurator.sol";
 import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
-import {IOperatorNetworkSpecificDelegator} from
-    "@symbioticfi/core/src/interfaces/delegator/IOperatorNetworkSpecificDelegator.sol";
 import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
-import {IBaseSlasher} from "@symbioticfi/core/src/interfaces/slasher/IBaseSlasher.sol";
-import {ISlasher} from "@symbioticfi/core/src/interfaces/slasher/ISlasher.sol";
+
+import {OpNetVaultAutoDeployLogic} from "./logic/OpNetVaultAutoDeployLogic.sol";
 
 abstract contract OpNetVaultAutoDeploy is VotingPowerProvider, IOpNetVaultAutoDeploy {
     /**
@@ -105,17 +102,9 @@ abstract contract OpNetVaultAutoDeploy is VotingPowerProvider, IOpNetVaultAutoDe
         (uint64 version, bytes memory vaultParams) = _getVaultParams(config);
         (uint64 delegatorIndex, bytes memory delegatorParams) = _getDelegatorParams(config, operator);
         (bool withSlasher, uint64 slasherIndex, bytes memory slasherParams) = _getSlasherParams(config);
-        (address vault, address delegator,) = IVaultConfigurator(VAULT_CONFIGURATOR).create(
-            IVaultConfigurator.InitParams({
-                version: version,
-                owner: address(0),
-                vaultParams: vaultParams,
-                delegatorIndex: delegatorIndex,
-                delegatorParams: delegatorParams,
-                withSlasher: withSlasher,
-                slasherIndex: slasherIndex,
-                slasherParams: slasherParams
-            })
+
+        (address vault, address delegator,) = OpNetVaultAutoDeployLogic.createVault(
+            version, address(0), vaultParams, delegatorIndex, delegatorParams, withSlasher, slasherIndex, slasherParams
         );
         if (NETWORK() == address(this)) {
             IBaseDelegator(delegator).setMaxNetworkLimit(SUBNETWORK_IDENTIFIER(), type(uint256).max);
@@ -126,23 +115,20 @@ abstract contract OpNetVaultAutoDeploy is VotingPowerProvider, IOpNetVaultAutoDe
     function _getVaultParams(
         AutoDeployConfig memory config
     ) internal view virtual returns (uint64, bytes memory) {
-        return (
-            1,
-            abi.encode(
-                IVault.InitParams({
-                    collateral: config.collateral,
-                    burner: config.burner,
-                    epochDuration: config.epochDuration,
-                    depositWhitelist: false,
-                    isDepositLimit: false,
-                    depositLimit: 0,
-                    defaultAdminRoleHolder: address(0),
-                    depositWhitelistSetRoleHolder: address(0),
-                    depositorWhitelistRoleHolder: address(0),
-                    isDepositLimitSetRoleHolder: address(0),
-                    depositLimitSetRoleHolder: address(0)
-                })
-            )
+        return OpNetVaultAutoDeployLogic.getVaultParams(
+            IVault.InitParams({
+                collateral: config.collateral,
+                burner: config.burner,
+                epochDuration: config.epochDuration,
+                depositWhitelist: false,
+                isDepositLimit: false,
+                depositLimit: 0,
+                defaultAdminRoleHolder: address(0),
+                depositWhitelistSetRoleHolder: address(0),
+                depositorWhitelistRoleHolder: address(0),
+                isDepositLimitSetRoleHolder: address(0),
+                depositLimitSetRoleHolder: address(0)
+            })
         );
     }
 
@@ -150,19 +136,8 @@ abstract contract OpNetVaultAutoDeploy is VotingPowerProvider, IOpNetVaultAutoDe
         AutoDeployConfig memory, /* config */
         address operator
     ) internal view virtual returns (uint64, bytes memory) {
-        return (
-            uint64(DelegatorType.OPERATOR_NETWORK_SPECIFIC),
-            abi.encode(
-                IOperatorNetworkSpecificDelegator.InitParams({
-                    baseParams: IBaseDelegator.BaseParams({
-                        defaultAdminRoleHolder: address(0),
-                        hook: address(0),
-                        hookSetRoleHolder: address(0)
-                    }),
-                    network: NETWORK(),
-                    operator: operator
-                })
-            )
+        return OpNetVaultAutoDeployLogic.getOperatorNetworkSpecificDelegatorParams(
+            operator, address(0), address(0), address(0)
         );
     }
 
@@ -172,10 +147,8 @@ abstract contract OpNetVaultAutoDeploy is VotingPowerProvider, IOpNetVaultAutoDe
         if (!config.withSlasher) {
             return (false, 0, new bytes(0));
         }
-        return (
-            true,
-            uint64(SlasherType.INSTANT),
-            abi.encode(ISlasher.InitParams({baseParams: IBaseSlasher.BaseParams({isBurnerHook: config.isBurnerHook})}))
-        );
+        (uint64 slasherIndex, bytes memory slasherParams) =
+            OpNetVaultAutoDeployLogic.getSlasherParams(config.isBurnerHook);
+        return (true, slasherIndex, slasherParams);
     }
 }

@@ -25,16 +25,16 @@ interface IVaultManager {
     error VaultManager_OperatorNotOptedIn();
     error VaultManager_OperatorAlreadyRegistered();
 
-    enum SlasherType {
-        INSTANT,
-        VETO
-    }
-
     enum DelegatorType {
         NETWORK_RESTAKE,
         FULL_RESTAKE,
         OPERATOR_SPECIFIC,
         OPERATOR_NETWORK_SPECIFIC
+    }
+
+    enum SlasherType {
+        INSTANT,
+        VETO
     }
 
     /// @custom:storage-location erc7201:symbiotic.storage.VaultManager
