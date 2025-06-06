@@ -21,6 +21,7 @@ up:
 		--name symbiotic-tests \
 		symbiotic-tests yarn deploy:snapshot
 
+
 down:
 	docker stop symbiotic-tests
 

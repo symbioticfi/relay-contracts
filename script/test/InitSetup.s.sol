@@ -44,7 +44,6 @@ contract InitSetupScript is SymbioticCoreInit {
         uint256[] operatorPrivateKeys;
         uint48 prolongDuration;
         bool random;
-        ChainSetup secondaryChain;
         uint48 slashingWindow;
         uint256[] stakerPrivateKeys;
         uint96 subnetworkID;
@@ -83,7 +82,7 @@ contract InitSetupScript is SymbioticCoreInit {
         string memory finalJson;
         Vars memory vars;
         InitSetupParams memory initSetupParams;
-        initSetupParams.random = vm.envBool("RANDOM");
+        initSetupParams.random = vm.envBool("RANDOM_SETUP");
         vars.deployer = vm.createWallet(vm.envUint("PRIVATE_KEY"));
 
         vars.network = vars.deployer;
@@ -213,108 +212,6 @@ contract InitSetupScript is SymbioticCoreInit {
         vm.serializeUint("masterData", "chainId", block.chainid);
         chainData = vm.serializeAddress("masterData", "vaults", initSetupParams.masterChain.vaults);
         finalJson = vm.serializeString(obj, "masterChain", chainData);
-
-        vm.createSelectFork(vm.rpcUrl("secondary_chain"));
-        _initCore_SymbioticCore(false);
-
-        vm.startBroadcast(vars.deployer.privateKey);
-
-        initSetupParams.secondaryChain.tokens = new address[](1);
-        initSetupParams.secondaryChain.tokens[0] = address(new Token("Test"));
-
-        vm.stopBroadcast();
-
-        {
-            if (!symbioticCore.networkRegistry.isEntity(vars.network.addr)) {
-                _networkRegister_SymbioticCore(vars.network.addr);
-            }
-        }
-
-        for (uint256 i; i < vars.stakers.length; ++i) {
-            for (uint256 j; j < initSetupParams.secondaryChain.tokens.length; ++j) {
-                _deal_Symbiotic(
-                    initSetupParams.secondaryChain.tokens[j],
-                    vars.stakers[i].addr,
-                    _normalizeForToken_Symbiotic(
-                        SYMBIOTIC_CORE_TOKENS_TO_SET_TIMES_1e18, initSetupParams.secondaryChain.tokens[j]
-                    )
-                );
-            }
-            _deal_Symbiotic(vars.stakers[i].addr, 10 ether);
-        }
-
-        for (uint256 i; i < vars.operators.length; ++i) {
-            _deal_Symbiotic(vars.operators[i].addr, 10 ether);
-            _operatorRegister_SymbioticCore(vars.operators[i].addr);
-        }
-
-        initSetupParams.secondaryChain.vaults = new address[](SYMBIOTIC_CORE_NUMBER_OF_VAULTS);
-        for (uint256 i; i < initSetupParams.secondaryChain.vaults.length; ++i) {
-            initSetupParams.secondaryChain.vaults[i] = initSetupParams.random
-                ? _getVaultRandom_SymbioticCore(
-                    _vmWalletsToAddresses_Symbiotic(vars.operators),
-                    _randomPick_Symbiotic(initSetupParams.secondaryChain.tokens)
-                )
-                : _getVault_SymbioticCore(
-                    VaultParams({
-                        owner: vars.deployer.addr,
-                        collateral: initSetupParams.secondaryChain.tokens[0],
-                        burner: 0x000000000000000000000000000000000000dEaD,
-                        epochDuration: uint48(SYMBIOTIC_CORE_MIN_EPOCH_DURATION * (i + 1)),
-                        whitelistedDepositors: new address[](0),
-                        depositLimit: 0,
-                        delegatorIndex: 0,
-                        hook: address(0),
-                        network: address(0),
-                        withSlasher: true,
-                        slasherIndex: 0,
-                        vetoDuration: uint48(SYMBIOTIC_CORE_MIN_VETO_DURATION * (i + 1))
-                    })
-                );
-            console2.log("Vault -", initSetupParams.secondaryChain.vaults[i]);
-        }
-
-        for (uint256 i; i < vars.stakers.length; ++i) {
-            for (uint256 j; j < initSetupParams.secondaryChain.vaults.length; ++j) {
-                initSetupParams.random
-                    ? _stakerDepositRandom_SymbioticCore(vars.stakers[i].addr, initSetupParams.secondaryChain.vaults[j])
-                    : _stakerDeposit_SymbioticCore(
-                        vars.stakers[i].addr,
-                        initSetupParams.secondaryChain.vaults[j],
-                        _normalizeForToken_Symbiotic(
-                            SYMBIOTIC_CORE_MIN_TOKENS_TO_DEPOSIT_TIMES_1e18, initSetupParams.masterChain.tokens[0]
-                        ) * (i + 1) + j
-                    );
-            }
-        }
-
-        vm.serializeAddress("secondaryCoreData", "vaultFactory", address(symbioticCore.vaultFactory));
-        vm.serializeAddress("secondaryCoreData", "delegatorFactory", address(symbioticCore.delegatorFactory));
-        vm.serializeAddress("secondaryCoreData", "slasherFactory", address(symbioticCore.slasherFactory));
-        vm.serializeAddress("secondaryCoreData", "networkRegistry", address(symbioticCore.networkRegistry));
-        vm.serializeAddress(
-            "secondaryCoreData", "networkMetadataService", address(symbioticCore.networkMetadataService)
-        );
-        vm.serializeAddress(
-            "secondaryCoreData", "networkMiddlewareService", address(symbioticCore.networkMiddlewareService)
-        );
-        vm.serializeAddress("secondaryCoreData", "operatorRegistry", address(symbioticCore.operatorRegistry));
-        vm.serializeAddress(
-            "secondaryCoreData", "operatorMetadataService", address(symbioticCore.operatorMetadataService)
-        );
-        vm.serializeAddress(
-            "secondaryCoreData", "operatorVaultOptInService", address(symbioticCore.operatorVaultOptInService)
-        );
-        vm.serializeAddress(
-            "secondaryCoreData", "operatorNetworkOptInService", address(symbioticCore.operatorNetworkOptInService)
-        );
-        coreData =
-            vm.serializeAddress("secondaryCoreData", "vaultConfigurator", address(symbioticCore.vaultConfigurator));
-        vm.serializeString("secondaryData", "core", coreData);
-        vm.serializeAddress("secondaryData", "tokens", initSetupParams.secondaryChain.tokens);
-        vm.serializeUint("secondaryData", "chainId", block.chainid);
-        chainData = vm.serializeAddress("secondaryData", "vaults", initSetupParams.secondaryChain.vaults);
-        vm.serializeString(obj, "secondaryChain", chainData);
 
         vm.serializeUint(obj, "epochDuration", vm.envUint("EPOCH_DURATION"));
         vm.serializeUint(obj, "commitDuration", vm.envUint("COMMIT_DURATION"));

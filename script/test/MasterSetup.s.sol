@@ -4,8 +4,19 @@ pragma solidity ^0.8.25;
 import {Script, console2} from "forge-std/Script.sol";
 
 import {ISettlement} from "../../src/interfaces/implementations/settlement/ISettlement.sol";
-import {IConfigProvider} from "../../src/interfaces/implementations/settlement/IConfigProvider.sol";
+import {IOzOwnable} from "../../src/interfaces/features/permissions/IOzOwnable.sol";
+import {INetworkManager} from "../../src/interfaces/base/INetworkManager.sol";
 import {IEpochManager} from "../../src/interfaces/base/IEpochManager.sol";
+import {IWhitelistSelfRegisterOperators} from
+    "../../src/interfaces/features/registration/operators/extensions/IWhitelistSelfRegisterOperators.sol";
+import {IOzEIP712} from "../../src/interfaces/base/common/IOzEIP712.sol";
+import {IVaultManager} from "../../src/interfaces/base/IVaultManager.sol";
+import {IConfigProvider} from "../../src/interfaces/implementations/settlement/IConfigProvider.sol";
+
+import {KeyTags} from "../../src/contracts/libraries/utils/KeyTags.sol";
+import {KeyManagerLogic} from "../../src/contracts/base/logic/KeyManagerLogic.sol";
+
+import {SigVerifierMock} from "../../test/mocks/SigVerifierMock.sol";
 
 import {KeyTags} from "../../src/contracts/libraries/utils/KeyTags.sol";
 import {KeyEcdsaSecp256k1} from "../../src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol";
@@ -13,22 +24,25 @@ import {KeyBlsBn254, BN254} from "../../src/contracts/libraries/keys/KeyBlsBn254
 import {KeyManagerLogic} from "../../src/contracts/base/logic/KeyManagerLogic.sol";
 
 import {BN254G2} from "../../test/helpers/BN254G2.sol";
-
-import "./SecondarySetup.s.sol";
+import "./InitSetup.s.sol";
 
 import {SigVerifierBlsBn254ZK} from "../../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254ZK.sol";
+import {SigVerifierBlsBn254Simple} from
+    "../../src/contracts/implementations/sig-verifiers/SigVerifierBlsBn254Simple.sol";
 import {Verifier as Verifier_10} from "../../src/contracts/implementations/sig-verifiers/zk/Verifier_10.sol";
 import {Verifier as Verifier_100} from "../../src/contracts/implementations/sig-verifiers/zk/Verifier_100.sol";
 import {Verifier as Verifier_1000} from "../../src/contracts/implementations/sig-verifiers/zk/Verifier_1000.sol";
 
 // forge script script/test/MasterSetup.s.sol:MasterSetupScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_MASTER
 
-contract MasterSetupScript is SecondarySetupScript {
+contract MasterSetupScript is InitSetupScript {
     using KeyTags for uint8;
     using KeyBlsBn254 for BN254.G1Point;
     using BN254 for BN254.G1Point;
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
     using KeyEcdsaSecp256k1 for KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1;
+
+    bytes32 internal constant KEY_OWNERSHIP_TYPEHASH = keccak256("KeyOwnership(address operator,bytes key)");
 
     struct MasterSetupParams {
         KeyRegistry keyRegistry;
@@ -202,7 +216,7 @@ contract MasterSetupScript is SecondarySetupScript {
                     }),
                     epochManagerInitParams: IEpochManager.EpochManagerInitParams({
                         epochDuration: initSetupParams.epochDuration,
-                        epochDurationTimestamp: initSetupParams.zeroTimestamp
+                        epochDurationTimestamp: uint48(vm.getBlockTimestamp() + vm.envUint("DEPLOYMENT_BUFFER"))
                     }),
                     ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
                     commitDuration: initSetupParams.commitDuration,
@@ -224,6 +238,7 @@ contract MasterSetupScript is SecondarySetupScript {
             );
         }
         vm.stopBroadcast();
+        finalJson = vm.serializeAddress(obj, "master", address(masterSetupParams.master));
         finalJson = vm.serializeAddress(obj, "master", address(masterSetupParams.master));
 
         console2.log("Master - VotingPowerProvider: ", address(masterSetupParams.votingPowerProvider));
