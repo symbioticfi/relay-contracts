@@ -76,7 +76,7 @@ contract TestVaultManager is VaultManager, EqualStakeVPCalc {
     function validateVault(
         address vault
     ) external view returns (bool) {
-        return VaultManagerLogic._validateVault(VAULT_FACTORY, vault);
+        return VaultManagerLogic._validateVault(vault);
     }
 
     function validateSharedVault(
@@ -120,7 +120,7 @@ contract VaultManagerTest is InitSetup {
     address validOperator = address(0x1111);
     address invalidOperator = address(0x2222);
 
-    bytes4 private ERR_NOT_OPERATOR = IVaultManager.VaultManager_NotOperator.selector;
+    bytes4 private ERR_INVALID_OPERATOR = IVaultManager.VaultManager_InvalidOperator.selector;
     bytes4 private ERR_ALREADY_REGISTERED = IVaultManager.VaultManager_OperatorAlreadyRegistered.selector;
     bytes4 private ERR_NOT_REGISTERED = IVaultManager.VaultManager_OperatorNotRegistered.selector;
 
@@ -172,7 +172,7 @@ contract VaultManagerTest is InitSetup {
     }
 
     function test_RegisterOperator_RevertIfNotEntity() public {
-        vm.expectRevert(ERR_NOT_OPERATOR);
+        vm.expectRevert(ERR_INVALID_OPERATOR);
         vaultManager.registerOperator(invalidOperator);
     }
 

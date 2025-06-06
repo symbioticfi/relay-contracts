@@ -416,9 +416,11 @@ library VaultManagerLogic {
         emit IVaultManager.UnregisterToken(token);
     }
 
-    function registerOperator(address OPERATOR_REGISTRY, address operator) public {
-        if (!IRegistry(OPERATOR_REGISTRY).isEntity(operator)) {
-            revert IVaultManager.VaultManager_NotOperator();
+    function registerOperator(
+        address operator
+    ) public {
+        if (!_validateOperator(operator)) {
+            revert IVaultManager.VaultManager_InvalidOperator();
         }
 
         if (!_getVaultManagerStorage()._operators.add(Time.timestamp(), operator)) {
@@ -438,9 +440,11 @@ library VaultManagerLogic {
         emit IVaultManager.UnregisterOperator(operator);
     }
 
-    function registerSharedVault(address VAULT_FACTORY, address vault) public {
+    function registerSharedVault(
+        address vault
+    ) public {
         IVaultManager.VaultManagerStorage storage $ = _getVaultManagerStorage();
-        if (!_validateVault(VAULT_FACTORY, vault)) {
+        if (!_validateVault(vault)) {
             revert IVaultManager.VaultManager_InvalidVault();
         }
         if (!_validateSharedVault(vault)) {
@@ -456,9 +460,9 @@ library VaultManagerLogic {
         emit IVaultManager.RegisterSharedVault(vault);
     }
 
-    function registerOperatorVault(address VAULT_FACTORY, address operator, address vault) public {
+    function registerOperatorVault(address operator, address vault) public {
         IVaultManager.VaultManagerStorage storage $ = _getVaultManagerStorage();
-        if (!_validateVault(VAULT_FACTORY, vault)) {
+        if (!_validateVault(vault)) {
             revert IVaultManager.VaultManager_InvalidVault();
         }
         if (!_validateOperatorVault(operator, vault)) {
@@ -498,8 +502,19 @@ library VaultManagerLogic {
         emit IVaultManager.UnregisterOperatorVault(operator, vault);
     }
 
-    function _validateVault(address VAULT_FACTORY, address vault) public view returns (bool) {
-        if (!IRegistry(VAULT_FACTORY).isEntity(vault)) {
+    function _validateOperator(
+        address operator
+    ) public view returns (bool) {
+        if (!IRegistry(IVaultManager(address(this)).OPERATOR_REGISTRY()).isEntity(operator)) {
+            return false;
+        }
+        return true;
+    }
+
+    function _validateVault(
+        address vault
+    ) public view returns (bool) {
+        if (!IRegistry(IVaultManager(address(this)).VAULT_FACTORY()).isEntity(vault)) {
             return false;
         }
 

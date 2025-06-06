@@ -21,7 +21,7 @@ interface IVaultManager {
     error VaultManager_OperatorVaultNotRegistered();
     error VaultManager_InvalidToken();
     error VaultManager_SlashingWindowTooLarge();
-    error VaultManager_NotOperator();
+    error VaultManager_InvalidOperator();
     error VaultManager_OperatorNotOptedIn();
     error VaultManager_OperatorAlreadyRegistered();
 

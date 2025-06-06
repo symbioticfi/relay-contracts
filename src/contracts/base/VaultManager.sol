@@ -352,7 +352,7 @@ abstract contract VaultManager is NetworkManager, VotingPowerCalcManager, IVault
     function _registerOperator(
         address operator
     ) internal virtual {
-        VaultManagerLogic.registerOperator(OPERATOR_REGISTRY, operator);
+        VaultManagerLogic.registerOperator(operator);
     }
 
     function _unregisterOperator(
@@ -364,11 +364,11 @@ abstract contract VaultManager is NetworkManager, VotingPowerCalcManager, IVault
     function _registerSharedVault(
         address vault
     ) internal virtual {
-        VaultManagerLogic.registerSharedVault(VAULT_FACTORY, vault);
+        VaultManagerLogic.registerSharedVault(vault);
     }
 
     function _registerOperatorVault(address operator, address vault) internal virtual {
-        VaultManagerLogic.registerOperatorVault(VAULT_FACTORY, operator, vault);
+        VaultManagerLogic.registerOperatorVault(operator, vault);
     }
 
     function _unregisterSharedVault(
