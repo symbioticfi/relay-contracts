@@ -330,10 +330,11 @@ library SettlementLogic {
         bytes calldata proof,
         bytes memory hint
     ) public {
-        ISettlement.ValSetPhase currentPhase = getCurrentPhase();
-        if (currentPhase != ISettlement.ValSetPhase.COMMIT && currentPhase != ISettlement.ValSetPhase.PROLONG) {
-            revert ISettlement.Settlement_InvalidPhase();
-        }
+        // accept any new epoch header, verify against the last committed header
+        // ISettlement.ValSetPhase currentPhase = getCurrentPhase();
+        // if (currentPhase != ISettlement.ValSetPhase.COMMIT && currentPhase != ISettlement.ValSetPhase.PROLONG) {
+        //     revert ISettlement.Settlement_InvalidPhase();
+        // }
         uint48 currentEpoch = EpochManagerLogic.getCurrentEpoch();
         if (isValSetHeaderCommittedAt(currentEpoch)) {
             revert ISettlement.Settlement_ValSetHeaderAlreadySubmitted();
