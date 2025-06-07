@@ -6,28 +6,20 @@
   "scripts": {
     "deploy:anvil": "anvil --host 0.0.0.0 --port 8545 --mnemonic \"test test test test test test test test test test test junk\" --auto-impersonate --no-request-size-limit --chain-id 111 --block-time $BLOCK_TIME --slots-in-an-epoch 4 --hardfork prague",
     "deploy:anvil_wait_buffer": "cast rpc evm_increaseTime $DEPLOYMENT_BUFFER --rpc-url $ETH_RPC_URL_MASTER",
-    "deploy:initSetup": "forge script script/test/InitSetup.s.sol:InitSetupScript 25235 --sig \"run(uint256)\" --multi --broadcast --legacy  --gas-estimate-multiplier 200 -vv",
-    "deploy:masterSetup": "forge script script/test/MasterSetup.s.sol:MasterSetupScript 25235 --sig \"run(uint256)\" --rpc-url $ETH_RPC_URL_MASTER --broadcast --legacy --gas-estimate-multiplier 200 -vv",
+    "deploy:initSetup": "forge script script/test/InitSetup.s.sol:InitSetupScript 25235 --sig \"run(uint256)\" --rpc-url $ETH_RPC_URL_MASTER --broadcast --legacy  --gas-estimate-multiplier 200 -vv",
+    "deploy:masterSetup": "forge script script/test/MasterSetup.s.sol:MasterSetupScript 25235 --sig \"run(uint256)\" --rpc-url $ETH_RPC_URL_MASTER --broadcast --legacy --gas-estimate-multiplier 200 ",
     "deploy:generateGenesis": "chmod +x script/test/utils/generate_genesis && script/test/utils/generate_genesis --master-address $MASTER_CONTRACT --rpc-url $ETH_RPC_URL_MASTER -o script/test/data/genesis_header.json",
     "deploy:genesisSetup": "forge script script/test/MasterGenesisSetup.s.sol:MasterGenesisSetupScript 25235 --sig \"run(uint256)\" --rpc-url $ETH_RPC_URL_MASTER --broadcast --legacy --slow --gas-estimate-multiplier 200 -vv",
     "deploy:genesis": "npm-run-all -s deploy:generateGenesis deploy:genesisSetup",
-    "deploy": "npm-run-all -s deploy:initSetup deploy:masterSetup deploy:anvil_wait_buffer deploy:generateGenesis deploy:genesisSetup",
-
+    "deploy:full": "npm-run-all -s deploy:initSetup deploy:masterSetup deploy:anvil_wait_buffer deploy:generateGenesis deploy:genesisSetup",
+    "deploy:init_snapshot": "npm-run-all -s deploy:initSetup anvil:dump",
+    "deploy:network": "npm-run-all -s anvil:bump deploy:masterSetup deploy:anvil_wait_buffer deploy:generateGenesis deploy:genesisSetup",
     "anvil:dump": "cast rpc anvil_dumpState --rpc-url $ETH_RPC_URL_MASTER > script/test/data/anvil_master.txt",
-    "anvil:bump": "source .env && node script/test/utils/load-anvil-state.js --stateFile script/test/data/anvil_master.txt --rpcEnv ETH_RPC_URL_MASTER",
-    "snapshot": "concurrently \"yarn deploy:anvil\" \"yarn sleep && yarn deploy:setup && yarn anvil:dump\"",
-    "anvil_master_wait_commit": "source .env && cast rpc evm_increaseTime $COMMIT_DURATION --rpc-url $ETH_RPC_URL_MASTER",
-    "anvil_secondary_wait_commit": "source .env && cast rpc evm_increaseTime $COMMIT_DURATION --rpc-url $ETH_RPC_URL_SECONDARY",
-    "anvil_wait_commit": "concurrently \"yarn anvil_master_wait_commit\" \"yarn anvil_secondary_wait_commit\"",
-    "deploy:snapshot": "concurrently \"yarn deploy:anvil\" \"yarn sleep && yarn anvil:bump && yarn deploy:genesis && yarn anvil_wait_commit\"",
-    "freeze:anvil_master": "source .env && cast rpc evm_setIntervalMining 999999999999 --rpc-url $ETH_RPC_URL_MASTER",
-    "freeze:anvil_secondary": "source .env && cast rpc evm_setIntervalMining 999999999999 --rpc-url $ETH_RPC_URL_SECONDARY",
-    "freeze": "concurrently \"yarn freeze:anvil_master\" \"yarn freeze:anvil_secondary\"",
-    "test_anvil": "concurrently \"yarn deploy:snapshot\"  \"yarn sleep && yarn sleep_long && yarn freeze && forge test -vvvv\"",
-    "anvil_commit": "source .env && forge script script/test/MasterCommit.s.sol:MasterCommitScript 25235 --sig \"run(uint256)\" --rpc-url $ETH_RPC_URL_MASTER --broadcast --legacy --slow --gas-estimate-multiplier 200 -vvvvv"
+    "anvil:bump": "node script/test/utils/load-anvil-state.js --stateFile script/test/data/anvil_master.txt --rpcUrl $ETH_RPC_URL_MASTER"
   },
   "dependencies": {
     "@noble/curves": "^1.3.0",
+    "dotenv": "^16.5.0",
     "ethereum-cryptography": "^2.1.3",
     "ethers": "^6.11.1"
   },
