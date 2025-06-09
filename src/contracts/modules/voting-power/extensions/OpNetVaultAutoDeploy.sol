@@ -7,6 +7,7 @@ import {IOpNetVaultAutoDeploy} from "../../../../interfaces/modules/voting-power
 
 import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
 import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
+import {ISelfNetwork} from "../../../../interfaces/modules/voting-power/extensions/ISelfNetwork.sol";
 
 import {OpNetVaultAutoDeployLogic} from "./logic/OpNetVaultAutoDeployLogic.sol";
 
@@ -60,5 +61,9 @@ abstract contract OpNetVaultAutoDeploy is VotingPowerProvider, IOpNetVaultAutoDe
         super._registerOperatorImpl(operator);
         (address vault,,) = OpNetVaultAutoDeployLogic.createVault(operator);
         _registerOperatorVault(operator, vault);
+        (bool isSelfNetworkSupported,) = address(this).call(abi.encodeCall(ISelfNetwork.SelfNetwork_VERSION, ()));
+        if (isSelfNetworkSupported) {
+            ISelfNetwork(address(this)).setMaxNetworkLimitVault(vault, type(uint256).max);
+        }
     }
 }

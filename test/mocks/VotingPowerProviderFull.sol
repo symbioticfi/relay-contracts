@@ -30,12 +30,11 @@ contract VotingPowerProviderFull is
     constructor(
         address operatorRegistry,
         address vaultFactory,
-        address networkRegistry,
         address networkMiddlewareService,
         address vaultConfigurator
     )
         VotingPowerProvider(operatorRegistry, vaultFactory)
-        SelfNetwork(networkRegistry, networkMiddlewareService)
+        SelfNetwork(networkMiddlewareService)
         OpNetVaultAutoDeploy(vaultConfigurator)
     {}
 
@@ -62,7 +61,7 @@ contract VotingPowerProviderFull is
         address operator
     )
         internal
-        override(OperatorsBlacklist, OperatorsWhitelist, VotingPowerProvider, OpNetVaultAutoDeploy, SelfNetwork)
+        override(OperatorsBlacklist, OperatorsWhitelist, VotingPowerProvider, OpNetVaultAutoDeploy)
     {
         super._registerOperatorImpl(operator);
     }

@@ -23,34 +23,35 @@ abstract contract SelfNetwork is VotingPowerProvider, ISelfNetwork {
     /**
      * @inheritdoc ISelfNetwork
      */
-    address public immutable NETWORK_REGISTRY;
-
-    /**
-     * @inheritdoc ISelfNetwork
-     */
     address public immutable NETWORK_MIDDLEWARE_SERVICE;
 
-    constructor(address networkRegistry, address networkMiddlewareService) {
-        NETWORK_REGISTRY = networkRegistry;
+    modifier onlySelf() {
+        if (msg.sender != address(this)) {
+            revert SelfNetwork_NotAuthorized();
+        }
+        _;
+    }
+
+    constructor(
+        address networkMiddlewareService
+    ) {
         NETWORK_MIDDLEWARE_SERVICE = networkMiddlewareService;
     }
 
     function __SelfNetwork_init() internal virtual onlyInitializing {}
 
-    function _registerOperatorImpl(
-        address operator
-    ) internal virtual override {
-        super._registerOperatorImpl(operator);
-        (bool isOpNetVaultAutoDeploySupported,) =
-            address(this).call(abi.encodeCall(IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_VERSION, ()));
-        if (isOpNetVaultAutoDeploySupported) {
-            PersistentSet.AddressSet storage allOperatorVaults =
-                VaultManagerLogic._getVaultManagerStorage()._allOperatorVaults;
-            _setMaxNetworkLimitVault(
-                address(uint160(uint256(allOperatorVaults._inner._elements[allOperatorVaults.length() - 1]))),
-                type(uint256).max
-            );
-        }
+    function setMaxNetworkLimitVault(address vault, uint256 maxNetworkLimit) public virtual onlySelf {
+        _setMaxNetworkLimitVault(vault, maxNetworkLimit);
+    }
+
+    function setResolverVault(address vault, address resolver, bytes memory hints) public virtual onlySelf {
+        _setResolverVault(vault, resolver, hints);
+    }
+
+    function setMiddleware(
+        address middleware
+    ) public virtual onlySelf {
+        _setMiddleware(middleware);
     }
 
     function _setMaxNetworkLimitVault(address vault, uint256 maxNetworkLimit) internal virtual {
@@ -59,5 +60,11 @@ abstract contract SelfNetwork is VotingPowerProvider, ISelfNetwork {
 
     function _setResolverVault(address vault, address resolver, bytes memory hints) internal virtual {
         SelfNetworkLogic.setResolverVault(vault, resolver, hints);
+    }
+
+    function _setMiddleware(
+        address middleware
+    ) internal virtual {
+        SelfNetworkLogic.setMiddleware(middleware);
     }
 }

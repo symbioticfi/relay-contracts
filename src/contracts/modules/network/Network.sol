@@ -1,15 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {MigratableEntity} from "./common/MigratableEntity.sol";
-
 import {INetwork} from "../../../interfaces/modules/network/INetwork.sol";
 
 import {TimelockControllerUpgradeable} from
     "@openzeppelin/contracts-upgradeable/governance/TimelockControllerUpgradeable.sol";
 import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 
-contract Network is MigratableEntity, TimelockControllerUpgradeable, INetwork {
+contract Network is TimelockControllerUpgradeable, INetwork {
     using Bytes for bytes;
 
     /**
@@ -30,10 +28,6 @@ contract Network is MigratableEntity, TimelockControllerUpgradeable, INetwork {
     // keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.TimelockController")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant TimelockControllerStorageLocation =
         0x9a37c2aa9d186a0969ff8a8267bf4e07e864c2f2768f5040949e28a624fb3600;
-
-    constructor(
-        address networkFactory
-    ) MigratableEntity(networkFactory) {}
 
     function _getNetworkStorage() internal pure returns (NetworkStorage storage $) {
         bytes32 location = NetworkStorageLocation;
@@ -73,6 +67,36 @@ contract Network is MigratableEntity, TimelockControllerUpgradeable, INetwork {
      */
     function metadataURI() public view returns (bytes memory) {
         return _getNetworkStorage()._metadataURI;
+    }
+
+    /**
+     * @inheritdoc INetwork
+     */
+    function initialize(
+        InitParams memory initParams
+    ) public virtual initializer {
+        __TimelockController_init(
+            initParams.globalMinDelay, initParams.proposers, initParams.executors, initParams.defaultAdminRoleHolder
+        );
+
+        if (initParams.defaultAdminRoleHolder != address(0)) {
+            _grantRole(DEFAULT_ADMIN_ROLE, initParams.defaultAdminRoleHolder);
+        }
+        if (initParams.nameUpdateRoleHolder != address(0)) {
+            _grantRole(NAME_UPDATE_ROLE, initParams.nameUpdateRoleHolder);
+        }
+        if (initParams.metadataURIUpdateRoleHolder != address(0)) {
+            _grantRole(METADATA_URI_UPDATE_ROLE, initParams.metadataURIUpdateRoleHolder);
+        }
+
+        for (uint256 i; i < initParams.delayParams.length; ++i) {
+            updateDelay(
+                initParams.delayParams[i].target,
+                initParams.delayParams[i].selector,
+                true,
+                initParams.delayParams[i].delay
+            );
+        }
     }
 
     /**
@@ -241,35 +265,5 @@ contract Network is MigratableEntity, TimelockControllerUpgradeable, INetwork {
             revert InvalidDataLength();
         }
         return data.slice(4);
-    }
-
-    function _initialize(uint64, address, bytes memory data) internal virtual override {
-        (InitParams memory params) = abi.decode(data, (InitParams));
-
-        __TimelockController_init(
-            params.globalMinDelay, params.proposers, params.executors, params.defaultAdminRoleHolder
-        );
-
-        if (params.defaultAdminRoleHolder != address(0)) {
-            _grantRole(DEFAULT_ADMIN_ROLE, params.defaultAdminRoleHolder);
-        }
-        if (params.nameUpdateRoleHolder != address(0)) {
-            _grantRole(NAME_UPDATE_ROLE, params.nameUpdateRoleHolder);
-        }
-        if (params.metadataURIUpdateRoleHolder != address(0)) {
-            _grantRole(METADATA_URI_UPDATE_ROLE, params.metadataURIUpdateRoleHolder);
-        }
-
-        for (uint256 i; i < params.delayParams.length; ++i) {
-            updateDelay(params.delayParams[i].target, params.delayParams[i].selector, true, params.delayParams[i].delay);
-        }
-    }
-
-    function _migrate(
-        uint64, /* oldVersion */
-        uint64, /* newVersion */
-        bytes calldata /* data */
-    ) internal virtual override {
-        revert();
     }
 }

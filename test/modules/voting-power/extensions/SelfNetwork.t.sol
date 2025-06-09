@@ -39,7 +39,6 @@ contract SelfNetworkTest is Test, InitSetup {
         votingPowerProvider = new VotingPowerProviderFull(
             address(symbioticCore.operatorRegistry),
             address(symbioticCore.vaultFactory),
-            address(symbioticCore.networkRegistry),
             address(symbioticCore.networkMiddlewareService),
             address(symbioticCore.vaultConfigurator)
         );

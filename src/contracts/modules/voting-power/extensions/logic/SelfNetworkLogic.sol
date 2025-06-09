@@ -10,6 +10,7 @@ import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDe
 import {IBaseSlasher} from "@symbioticfi/core/src/interfaces/slasher/IBaseSlasher.sol";
 import {ISlasher} from "@symbioticfi/core/src/interfaces/slasher/ISlasher.sol";
 import {IVetoSlasher} from "@symbioticfi/core/src/interfaces/slasher/IVetoSlasher.sol";
+import {INetworkMiddlewareService} from "@symbioticfi/core/src/interfaces/service/INetworkMiddlewareService.sol";
 
 import {IOpNetVaultAutoDeploy} from
     "../../../../../interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol";
@@ -38,5 +39,11 @@ library SelfNetworkLogic {
 
     function setResolver(address slasher, address resolver, bytes memory hints) public {
         IVetoSlasher(slasher).setResolver(INetworkManager(address(this)).SUBNETWORK_IDENTIFIER(), resolver, hints);
+    }
+
+    function setMiddleware(
+        address middleware
+    ) public {
+        INetworkMiddlewareService(ISelfNetwork(address(this)).NETWORK_MIDDLEWARE_SERVICE()).setMiddleware(middleware);
     }
 }
