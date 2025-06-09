@@ -60,27 +60,23 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
 
         BN254.G1Point memory nonSignersPublicKeyG1;
         {
-            uint256 length;
-            assembly {
-                length := calldataload(add(proof.offset, 224))
-            }
+            ValidatorData[] memory validatorsData = abi.decode(proof[192:], (ValidatorData[]));
+            uint256 nonSignersOffset = 256 + validatorsData.length * 96;
             if (
-                keccak256(proof[192:256 + length * 96])
+                keccak256(proof[192:nonSignersOffset])
                     != ISettlement(settlement).getExtraDataAt(
                         epoch, VERIFICATION_TYPE.getKey(keyTag, VALIDATOR_SET_HASH_KECCAK256)
                     )
             ) {
                 return false;
             }
+            uint256[] memory nonSigners = abi.decode(proof[nonSignersOffset:], (uint256[]));
 
-            ValidatorData[] memory validatorsData = abi.decode(proof[192:256 + length * 96], (ValidatorData[]));
-            bool[] memory isNonSigners = abi.decode(proof[256 + length * 96:], (bool[]));
+            uint256 nonSignersLength = nonSigners.length;
             uint256 nonSignersVotingPower;
-            for (uint256 i; i < length; ++i) {
-                if (isNonSigners[i]) {
-                    nonSignersPublicKeyG1 = nonSignersPublicKeyG1.plus(validatorsData[i].publicKey);
-                    nonSignersVotingPower += validatorsData[i].votingPower;
-                }
+            for (uint256 i; i < nonSignersLength; ++i) {
+                nonSignersPublicKeyG1 = nonSignersPublicKeyG1.plus(validatorsData[nonSigners[i]].publicKey);
+                nonSignersVotingPower += validatorsData[nonSigners[i]].votingPower;
             }
 
             if (

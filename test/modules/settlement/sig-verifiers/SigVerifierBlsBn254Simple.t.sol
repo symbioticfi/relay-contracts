@@ -114,16 +114,18 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
         }
 
         ISigVerifierBlsBn254Simple.ValidatorData[] memory validatorsData = getValidatorsData();
-        bool[] memory isNonSigners = new bool[](validatorsData.length);
+        uint256[] memory nonSigners = new uint256[](validatorsData.length);
+        uint256 nonSignersLength;
         for (uint256 i; i < validatorsData.length; ++i) {
-            if (i % 4 != 0) {
-                isNonSigners[i] = false;
-            } else {
-                isNonSigners[i] = true;
+            if (i % 4 == 0) {
+                nonSigners[nonSignersLength++] = i;
             }
         }
+        assembly ("memory-safe") {
+            mstore(nonSigners, nonSignersLength)
+        }
         bytes memory fullProof = abi.encodePacked(
-            abi.encode(aggSigG1), abi.encode(aggKeyG2), abi.encode(validatorsData), abi.encode(isNonSigners)
+            abi.encode(aggSigG1), abi.encode(aggKeyG2), abi.encode(validatorsData), abi.encode(nonSigners)
         );
 
         IVaultManager.OperatorVotingPower[] memory votingPowers =
