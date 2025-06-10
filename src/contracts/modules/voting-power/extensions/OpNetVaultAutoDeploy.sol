@@ -7,7 +7,7 @@ import {IOpNetVaultAutoDeploy} from "../../../../interfaces/modules/voting-power
 
 import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
 import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
-import {ISelfNetwork} from "../../../../interfaces/modules/voting-power/extensions/ISelfNetwork.sol";
+import {ISetMaxNetworkLimitHook} from "../../../../interfaces/modules/network/ISetMaxNetworkLimitHook.sol";
 
 import {OpNetVaultAutoDeployLogic} from "./logic/OpNetVaultAutoDeployLogic.sol";
 
@@ -42,8 +42,31 @@ abstract contract OpNetVaultAutoDeploy is VotingPowerProvider, IOpNetVaultAutoDe
     /**
      * @inheritdoc IOpNetVaultAutoDeploy
      */
+    function isAutoDeployEnabled() public view virtual returns (bool) {
+        return OpNetVaultAutoDeployLogic.isAutoDeployEnabled();
+    }
+
+    /**
+     * @inheritdoc IOpNetVaultAutoDeploy
+     */
     function getAutoDeployConfig() public view virtual returns (AutoDeployConfig memory) {
         return OpNetVaultAutoDeployLogic.getAutoDeployConfig();
+    }
+
+    /**
+     * @inheritdoc IOpNetVaultAutoDeploy
+     */
+    function isSetMaxNetworkLimitHookEnabled() public view virtual returns (bool) {
+        return OpNetVaultAutoDeployLogic.isSetMaxNetworkLimitHookEnabled();
+    }
+
+    /**
+     * @inheritdoc IOpNetVaultAutoDeploy
+     */
+    function setAutoDeployStatus(
+        bool status
+    ) public virtual checkPermission {
+        OpNetVaultAutoDeployLogic.setAutoDeployStatus(status);
     }
 
     /**
@@ -55,15 +78,27 @@ abstract contract OpNetVaultAutoDeploy is VotingPowerProvider, IOpNetVaultAutoDe
         OpNetVaultAutoDeployLogic.setAutoDeployConfig(config);
     }
 
+    /**
+     * @inheritdoc IOpNetVaultAutoDeploy
+     */
+    function setSetMaxNetworkLimitHookStatus(
+        bool status
+    ) public virtual checkPermission {
+        OpNetVaultAutoDeployLogic.setSetMaxNetworkLimitHookStatus(status);
+    }
+
     function _registerOperatorImpl(
         address operator
     ) internal virtual override {
         super._registerOperatorImpl(operator);
-        (address vault,,) = OpNetVaultAutoDeployLogic.createVault(operator);
-        _registerOperatorVault(operator, vault);
-        (bool isSelfNetworkSupported,) = address(this).call(abi.encodeCall(ISelfNetwork.SelfNetwork_VERSION, ()));
-        if (isSelfNetworkSupported) {
-            ISelfNetwork(address(this)).setMaxNetworkLimitVault(vault, type(uint256).max);
+        if (isAutoDeployEnabled()) {
+            (address vault, address delegator,) = OpNetVaultAutoDeployLogic.createVault(operator);
+            _registerOperatorVault(operator, vault);
+            if (isSetMaxNetworkLimitHookEnabled()) {
+                ISetMaxNetworkLimitHook(NETWORK()).setMaxNetworkLimit(
+                    delegator, SUBNETWORK_IDENTIFIER(), type(uint256).max
+                );
+            }
         }
     }
 }

@@ -40,11 +40,28 @@ library OpNetVaultAutoDeployLogic {
     function initialize(
         IOpNetVaultAutoDeploy.OpNetVaultAutoDeployInitParams memory initParams
     ) public {
+        setAutoDeployStatus(initParams.isAutoDeployEnabled);
         setAutoDeployConfig(initParams.config);
+        setSetMaxNetworkLimitHookStatus(initParams.isSetMaxNetworkLimitHookEnabled);
+    }
+
+    function isAutoDeployEnabled() public view returns (bool) {
+        return _getOpNetVaultAutoDeployStorage()._isAutoDeployEnabled;
     }
 
     function getAutoDeployConfig() public view returns (IOpNetVaultAutoDeploy.AutoDeployConfig memory) {
         return _getOpNetVaultAutoDeployStorage()._config;
+    }
+
+    function isSetMaxNetworkLimitHookEnabled() public view returns (bool) {
+        return _getOpNetVaultAutoDeployStorage()._isSetMaxNetworkLimitHookEnabled;
+    }
+
+    function setAutoDeployStatus(
+        bool status
+    ) public {
+        _getOpNetVaultAutoDeployStorage()._isAutoDeployEnabled = status;
+        emit IOpNetVaultAutoDeploy.SetAutoDeployStatus(status);
     }
 
     function setAutoDeployConfig(
@@ -53,6 +70,13 @@ library OpNetVaultAutoDeployLogic {
         _validateConfig(config);
         _getOpNetVaultAutoDeployStorage()._config = config;
         emit IOpNetVaultAutoDeploy.SetAutoDeployConfig(config);
+    }
+
+    function setSetMaxNetworkLimitHookStatus(
+        bool status
+    ) public {
+        _getOpNetVaultAutoDeployStorage()._isSetMaxNetworkLimitHookEnabled = status;
+        emit IOpNetVaultAutoDeploy.SetSetMaxNetworkLimitHookStatus(status);
     }
 
     function createVault(

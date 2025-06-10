@@ -5,7 +5,6 @@ import {VotingPowerProvider} from "../../src/contracts/modules/voting-power/Voti
 import {OzOwnable} from "../../src/contracts/modules/common/permissions/OzOwnable.sol";
 import {EqualStakeVPCalc} from "../../src/contracts/modules/voting-power/extensions/EqualStakeVPCalc.sol";
 import {SharedVaults} from "../../src/contracts/modules/voting-power/extensions/SharedVaults.sol";
-import {SelfNetwork} from "../../src/contracts/modules/voting-power/extensions/SelfNetwork.sol";
 import {OperatorsBlacklist} from "../../src/contracts/modules/voting-power/extensions/OperatorsBlacklist.sol";
 import {OperatorsWhitelist} from "../../src/contracts/modules/voting-power/extensions/OperatorsWhitelist.sol";
 import {NetworkManager} from "../../src/contracts/base/NetworkManager.sol";

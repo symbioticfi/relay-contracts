@@ -2,10 +2,14 @@
 pragma solidity ^0.8.25;
 
 import {INetwork} from "../../../interfaces/modules/network/INetwork.sol";
+import {ISetMaxNetworkLimitHook} from "../../../interfaces/modules/network/ISetMaxNetworkLimitHook.sol";
 
 import {TimelockControllerUpgradeable} from
     "@openzeppelin/contracts-upgradeable/governance/TimelockControllerUpgradeable.sol";
 import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
+
+import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
+import {INetworkMiddlewareService} from "@symbioticfi/core/src/interfaces/service/INetworkMiddlewareService.sol";
 
 contract Network is TimelockControllerUpgradeable, INetwork {
     using Bytes for bytes;
@@ -20,7 +24,13 @@ contract Network is TimelockControllerUpgradeable, INetwork {
      */
     bytes32 public constant METADATA_URI_UPDATE_ROLE = keccak256("METADATA_URI_UPDATE_ROLE");
 
-    bytes4 private constant CUSTOM_UPDATE_DELAY_SELECTOR = 0x6a63fa02;
+    bytes4 internal constant CUSTOM_UPDATE_DELAY_SELECTOR =
+        bytes4(keccak256("updateDelay(address,bytes4,bool,uint256)"));
+
+    /**
+     * @inheritdoc INetwork
+     */
+    address public immutable NETWORK_MIDDLEWARE_SERVICE;
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.Network")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant NetworkStorageLocation = 0xad58d27706f0faa4634000571d7d9c19a0123d182a06ad775cbe8a9c22f64400;
@@ -28,6 +38,12 @@ contract Network is TimelockControllerUpgradeable, INetwork {
     // keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.TimelockController")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant TimelockControllerStorageLocation =
         0x9a37c2aa9d186a0969ff8a8267bf4e07e864c2f2768f5040949e28a624fb3600;
+
+    constructor(
+        address networkMiddlewareService
+    ) {
+        NETWORK_MIDDLEWARE_SERVICE = networkMiddlewareService;
+    }
 
     function _getNetworkStorage() internal pure returns (NetworkStorage storage $) {
         bytes32 location = NetworkStorageLocation;
@@ -45,7 +61,7 @@ contract Network is TimelockControllerUpgradeable, INetwork {
     /**
      * @inheritdoc INetwork
      */
-    function getMinDelay(address target, bytes memory data) public view returns (uint256) {
+    function getMinDelay(address target, bytes memory data) public view virtual returns (uint256) {
         bytes4 selector = _getSelector(data);
         if (target == address(this) && selector == CUSTOM_UPDATE_DELAY_SELECTOR) {
             (address underlyingTarget, bytes4 underlyingSelector,,) =
@@ -58,14 +74,14 @@ contract Network is TimelockControllerUpgradeable, INetwork {
     /**
      * @inheritdoc INetwork
      */
-    function name() public view returns (string memory) {
+    function name() public view virtual returns (string memory) {
         return _getNetworkStorage()._name;
     }
 
     /**
      * @inheritdoc INetwork
      */
-    function metadataURI() public view returns (bytes memory) {
+    function metadataURI() public view virtual returns (bytes memory) {
         return _getNetworkStorage()._metadataURI;
     }
 
@@ -115,24 +131,6 @@ contract Network is TimelockControllerUpgradeable, INetwork {
         emit MinDelayChange(target, selector, $._isMinDelayEnabled[id], $._minDelays[id], enabled, newDelay);
         $._isMinDelayEnabled[id] = enabled;
         $._minDelays[id] = newDelay;
-    }
-
-    /**
-     * @inheritdoc INetwork
-     */
-    function updateName(
-        string calldata name_
-    ) external virtual onlyRole(NAME_UPDATE_ROLE) {
-        _updateName(name_);
-    }
-
-    /**
-     * @inheritdoc INetwork
-     */
-    function updateMetadataURI(
-        bytes calldata metadataURI_
-    ) external virtual onlyRole(METADATA_URI_UPDATE_ROLE) {
-        _updateMetadataURI(metadataURI_);
     }
 
     /**
@@ -189,20 +187,47 @@ contract Network is TimelockControllerUpgradeable, INetwork {
         }
     }
 
-    function _updateDelay(address target, bytes4 selector, bool enabled, uint256 newDelay) internal {}
-
-    function _updateName(
+    /**
+     * @inheritdoc INetwork
+     */
+    function updateName(
         string calldata name_
-    ) internal {
-        _getNetworkStorage()._name = name_;
-        emit NameSet(name_);
+    ) public virtual onlyRole(NAME_UPDATE_ROLE) {
+        _updateName(name_);
     }
 
-    function _updateMetadataURI(
+    /**
+     * @inheritdoc INetwork
+     */
+    function updateMetadataURI(
         bytes calldata metadataURI_
-    ) internal {
-        _getNetworkStorage()._metadataURI = metadataURI_;
-        emit MetadataURISet(metadataURI_);
+    ) public virtual onlyRole(METADATA_URI_UPDATE_ROLE) {
+        _updateMetadataURI(metadataURI_);
+    }
+
+    /**
+     * @inheritdoc ISetMaxNetworkLimitHook
+     */
+    function setMaxNetworkLimit(address delegator, uint96 subnetworkID, uint256 maxNetworkLimit) public virtual {
+        if (msg.sender != INetworkMiddlewareService(NETWORK_MIDDLEWARE_SERVICE).middleware(address(this))) {
+            revert NotMiddleware();
+        }
+        _setMaxNetworkLimit(delegator, subnetworkID, maxNetworkLimit);
+    }
+
+    function _updateDelay(address target, bytes4 selector, bool enabled, uint256 newDelay) internal virtual {
+        NetworkStorage storage $ = _getNetworkStorage();
+        address sender = _msgSender();
+        if (sender != address(this)) {
+            revert TimelockUnauthorizedCaller(sender);
+        }
+        if (!enabled && newDelay != 0) {
+            revert InvalidNewDelay();
+        }
+        bytes32 id = _getId(target, selector);
+        emit MinDelayChange(target, selector, $._isMinDelayEnabled[id], $._minDelays[id], enabled, newDelay);
+        $._isMinDelayEnabled[id] = enabled;
+        $._minDelays[id] = newDelay;
     }
 
     function _scheduleOverriden(bytes32 id, uint256 delay) internal virtual {
@@ -211,6 +236,24 @@ contract Network is TimelockControllerUpgradeable, INetwork {
             revert TimelockUnexpectedOperationState(id, _encodeStateBitmap(OperationState.Unset));
         }
         $._timestamps[id] = block.timestamp + delay;
+    }
+
+    function _updateName(
+        string calldata name_
+    ) internal virtual {
+        _getNetworkStorage()._name = name_;
+        emit NameSet(name_);
+    }
+
+    function _updateMetadataURI(
+        bytes calldata metadataURI_
+    ) internal virtual {
+        _getNetworkStorage()._metadataURI = metadataURI_;
+        emit MetadataURISet(metadataURI_);
+    }
+
+    function _setMaxNetworkLimit(address delegator, uint96 subnetworkID, uint256 maxNetworkLimit) internal virtual {
+        IBaseDelegator(delegator).setMaxNetworkLimit(subnetworkID, maxNetworkLimit);
     }
 
     function _getId(address target, bytes4 selector) internal pure virtual returns (bytes32 id) {

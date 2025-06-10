@@ -1,10 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-interface INetwork {
+import {ISetMaxNetworkLimitHook} from "./ISetMaxNetworkLimitHook.sol";
+
+interface INetwork is ISetMaxNetworkLimitHook {
     error InvalidNewDelay();
     error InvalidTargetAndSelector();
     error InvalidDataLength();
+    error NotMiddleware();
 
     /// @custom:storage-location erc7201:symbiotic.storage.Network
     struct NetworkStorage {
@@ -49,6 +52,8 @@ interface INetwork {
 
     function METADATA_URI_UPDATE_ROLE() external view returns (bytes32);
 
+    function NETWORK_MIDDLEWARE_SERVICE() external view returns (address);
+
     function getMinDelay(address target, bytes memory data) external view returns (uint256 delay);
 
     function name() external view returns (string memory);
@@ -68,4 +73,6 @@ interface INetwork {
     function updateMetadataURI(
         bytes calldata metadataURI
     ) external;
+
+    function setMaxNetworkLimit(address delegator, uint96 subnetworkID, uint256 maxNetworkLimit) external;
 }

@@ -5,7 +5,6 @@ import {VotingPowerProvider} from "../../src/contracts/modules/voting-power/Voti
 import {OzOwnable} from "../../src/contracts/modules/common/permissions/OzOwnable.sol";
 import {EqualStakeVPCalc} from "../../src/contracts/modules/voting-power/extensions/EqualStakeVPCalc.sol";
 import {SharedVaults} from "../../src/contracts/modules/voting-power/extensions/SharedVaults.sol";
-import {SelfNetwork} from "../../src/contracts/modules/voting-power/extensions/SelfNetwork.sol";
 import {OperatorsBlacklist} from "../../src/contracts/modules/voting-power/extensions/OperatorsBlacklist.sol";
 import {OperatorsWhitelist} from "../../src/contracts/modules/voting-power/extensions/OperatorsWhitelist.sol";
 import {NetworkManager} from "../../src/contracts/base/NetworkManager.sol";
@@ -20,7 +19,6 @@ contract VotingPowerProviderFull is
     EqualStakeVPCalc,
     OperatorVaults,
     SharedVaults,
-    SelfNetwork,
     OperatorsBlacklist,
     OperatorsWhitelist,
     OpNetVaultAutoDeploy,
@@ -32,11 +30,7 @@ contract VotingPowerProviderFull is
         address vaultFactory,
         address networkMiddlewareService,
         address vaultConfigurator
-    )
-        VotingPowerProvider(operatorRegistry, vaultFactory)
-        SelfNetwork(networkMiddlewareService)
-        OpNetVaultAutoDeploy(vaultConfigurator)
-    {}
+    ) VotingPowerProvider(operatorRegistry, vaultFactory) OpNetVaultAutoDeploy(vaultConfigurator) {}
 
     function initialize(
         VotingPowerProviderInitParams memory votingPowerProviderInitParams,
@@ -49,7 +43,6 @@ contract VotingPowerProviderFull is
         __EqualStakeVPCalc_init();
         __OperatorVaults_init();
         __SharedVaults_init();
-        __SelfNetwork_init();
         __OperatorsBlacklist_init();
         __OperatorsWhitelist_init(operatorsWhitelistInitParams);
         __OpNetVaultAutoDeploy_init(opNetVaultAutoDeployInitParams);
@@ -59,10 +52,7 @@ contract VotingPowerProviderFull is
 
     function _registerOperatorImpl(
         address operator
-    )
-        internal
-        override(OperatorsBlacklist, OperatorsWhitelist, VotingPowerProvider, OpNetVaultAutoDeploy)
-    {
+    ) internal override(OperatorsBlacklist, OperatorsWhitelist, VotingPowerProvider, OpNetVaultAutoDeploy) {
         super._registerOperatorImpl(operator);
     }
 }
