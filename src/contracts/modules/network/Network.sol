@@ -58,6 +58,33 @@ contract Network is TimelockControllerUpgradeable, INetwork {
         }
     }
 
+    function __Network_init(
+        NetworkInitParams memory initParams
+    ) public virtual initializer {
+        __TimelockController_init(
+            initParams.globalMinDelay, initParams.proposers, initParams.executors, initParams.defaultAdminRoleHolder
+        );
+
+        if (initParams.defaultAdminRoleHolder != address(0)) {
+            _grantRole(DEFAULT_ADMIN_ROLE, initParams.defaultAdminRoleHolder);
+        }
+        if (initParams.nameUpdateRoleHolder != address(0)) {
+            _grantRole(NAME_UPDATE_ROLE, initParams.nameUpdateRoleHolder);
+        }
+        if (initParams.metadataURIUpdateRoleHolder != address(0)) {
+            _grantRole(METADATA_URI_UPDATE_ROLE, initParams.metadataURIUpdateRoleHolder);
+        }
+
+        for (uint256 i; i < initParams.delayParams.length; ++i) {
+            updateDelay(
+                initParams.delayParams[i].target,
+                initParams.delayParams[i].selector,
+                true,
+                initParams.delayParams[i].delay
+            );
+        }
+    }
+
     /**
      * @inheritdoc INetwork
      */
@@ -83,36 +110,6 @@ contract Network is TimelockControllerUpgradeable, INetwork {
      */
     function metadataURI() public view virtual returns (bytes memory) {
         return _getNetworkStorage()._metadataURI;
-    }
-
-    /**
-     * @inheritdoc INetwork
-     */
-    function initialize(
-        InitParams memory initParams
-    ) public virtual initializer {
-        __TimelockController_init(
-            initParams.globalMinDelay, initParams.proposers, initParams.executors, initParams.defaultAdminRoleHolder
-        );
-
-        if (initParams.defaultAdminRoleHolder != address(0)) {
-            _grantRole(DEFAULT_ADMIN_ROLE, initParams.defaultAdminRoleHolder);
-        }
-        if (initParams.nameUpdateRoleHolder != address(0)) {
-            _grantRole(NAME_UPDATE_ROLE, initParams.nameUpdateRoleHolder);
-        }
-        if (initParams.metadataURIUpdateRoleHolder != address(0)) {
-            _grantRole(METADATA_URI_UPDATE_ROLE, initParams.metadataURIUpdateRoleHolder);
-        }
-
-        for (uint256 i; i < initParams.delayParams.length; ++i) {
-            updateDelay(
-                initParams.delayParams[i].target,
-                initParams.delayParams[i].selector,
-                true,
-                initParams.delayParams[i].delay
-            );
-        }
     }
 
     /**

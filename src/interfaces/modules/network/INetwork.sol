@@ -23,7 +23,7 @@ interface INetwork is ISetMaxNetworkLimitHook {
         uint256 delay;
     }
 
-    struct InitParams {
+    struct NetworkInitParams {
         uint256 globalMinDelay;
         DelayParams[] delayParams;
         address[] proposers;
@@ -59,10 +59,6 @@ interface INetwork is ISetMaxNetworkLimitHook {
     function name() external view returns (string memory);
 
     function metadataURI() external view returns (bytes memory);
-
-    function initialize(
-        InitParams memory initParams
-    ) external;
 
     function updateDelay(address target, bytes4 selector, bool enabled, uint256 newDelay) external;
 
