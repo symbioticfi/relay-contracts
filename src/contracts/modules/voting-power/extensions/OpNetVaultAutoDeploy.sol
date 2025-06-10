@@ -49,6 +49,15 @@ abstract contract OpNetVaultAutoDeploy is VotingPowerProvider, IOpNetVaultAutoDe
     /**
      * @inheritdoc IOpNetVaultAutoDeploy
      */
+    function getAutoDeployedVault(
+        address operator
+    ) public view virtual returns (address) {
+        return OpNetVaultAutoDeployLogic.getAutoDeployedVault(operator);
+    }
+
+    /**
+     * @inheritdoc IOpNetVaultAutoDeploy
+     */
     function getAutoDeployConfig() public view virtual returns (AutoDeployConfig memory) {
         return OpNetVaultAutoDeployLogic.getAutoDeployConfig();
     }
@@ -91,7 +100,7 @@ abstract contract OpNetVaultAutoDeploy is VotingPowerProvider, IOpNetVaultAutoDe
         address operator
     ) internal virtual override {
         super._registerOperatorImpl(operator);
-        if (isAutoDeployEnabled()) {
+        if (isAutoDeployEnabled() && getAutoDeployedVault(operator) == address(0)) {
             (address vault, address delegator,) = OpNetVaultAutoDeployLogic.createVault(operator);
             _registerOperatorVault(operator, vault);
             if (isSetMaxNetworkLimitHookEnabled()) {

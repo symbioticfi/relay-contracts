@@ -49,6 +49,12 @@ library OpNetVaultAutoDeployLogic {
         return _getOpNetVaultAutoDeployStorage()._isAutoDeployEnabled;
     }
 
+    function getAutoDeployedVault(
+        address operator
+    ) public view returns (address) {
+        return _getOpNetVaultAutoDeployStorage()._autoDeployedVault[operator];
+    }
+
     function getAutoDeployConfig() public view returns (IOpNetVaultAutoDeploy.AutoDeployConfig memory) {
         return _getOpNetVaultAutoDeployStorage()._config;
     }
@@ -81,15 +87,16 @@ library OpNetVaultAutoDeployLogic {
 
     function createVault(
         address operator
-    ) public returns (address, address, address) {
+    ) public returns (address vault, address delegator, address slasher) {
         IOpNetVaultAutoDeploy.AutoDeployConfig memory config = getAutoDeployConfig();
         (uint64 version, bytes memory vaultParams) = getVaultParams(config);
         (uint64 delegatorIndex, bytes memory delegatorParams) = getDelegatorParams(config, operator);
         (bool withSlasher, uint64 slasherIndex, bytes memory slasherParams) = getSlasherParams(config);
 
-        return createVault(
+        (vault, delegator, slasher) = createVault(
             version, address(0), vaultParams, delegatorIndex, delegatorParams, withSlasher, slasherIndex, slasherParams
         );
+        _getOpNetVaultAutoDeployStorage()._autoDeployedVault[operator] = vault;
     }
 
     function getVaultParams(

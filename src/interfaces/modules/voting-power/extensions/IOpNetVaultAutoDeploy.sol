@@ -13,8 +13,9 @@ interface IOpNetVaultAutoDeploy {
     /// @custom:storage-location erc7201:symbiotic.storage.OpNetVaultAutoDeploy
     struct OpNetVaultAutoDeployStorage {
         bool _isAutoDeployEnabled;
-        AutoDeployConfig _config;
         bool _isSetMaxNetworkLimitHookEnabled;
+        mapping(address => address) _autoDeployedVault;
+        AutoDeployConfig _config;
     }
 
     struct OpNetVaultAutoDeployInitParams {
@@ -42,6 +43,10 @@ interface IOpNetVaultAutoDeploy {
     function VAULT_CONFIGURATOR() external view returns (address);
 
     function isAutoDeployEnabled() external view returns (bool);
+
+    function getAutoDeployedVault(
+        address operator
+    ) external view returns (address);
 
     function getAutoDeployConfig() external view returns (AutoDeployConfig memory);
 
