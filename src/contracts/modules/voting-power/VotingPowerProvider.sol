@@ -77,6 +77,7 @@ abstract contract VotingPowerProvider is
      */
     function invalidateOldSignatures() public virtual {
         _useNonce(msg.sender);
+        emit InvalidateOldSignatures(msg.sender);
     }
 
     function _registerOperatorImpl(

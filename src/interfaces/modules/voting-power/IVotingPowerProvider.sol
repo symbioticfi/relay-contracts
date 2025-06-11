@@ -19,6 +19,8 @@ interface IVotingPowerProvider {
         IOzEIP712.OzEIP712InitParams ozEip712InitParams;
     }
 
+    event InvalidateOldSignatures(address operator);
+
     function VotingPowerProvider_VERSION() external view returns (uint64);
 
     function registerOperator() external;
