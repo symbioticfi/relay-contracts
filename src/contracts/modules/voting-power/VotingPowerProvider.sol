@@ -75,7 +75,7 @@ abstract contract VotingPowerProvider is
     /**
      * @inheritdoc IVotingPowerProvider
      */
-    function increaseNonce() public virtual {
+    function invalidateOldSignatures() public virtual {
         _useNonce(msg.sender);
     }
 

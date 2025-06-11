@@ -29,5 +29,5 @@ interface IVotingPowerProvider {
 
     function unregisterOperatorWithSignature(address operator, bytes memory signature) external;
 
-    function increaseNonce() external;
+    function invalidateOldSignatures() external;
 }

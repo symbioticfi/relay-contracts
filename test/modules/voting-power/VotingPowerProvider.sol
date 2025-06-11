@@ -229,7 +229,7 @@ contract VotingPowerProviderTest is InitSetupTest {
         assertEq(oldNonce, 0, "Initial nonce is 0");
 
         vm.prank(operatorAddr);
-        votingPowerProvider.increaseNonce();
+        votingPowerProvider.invalidateOldSignatures();
 
         uint256 newNonce = votingPowerProvider.nonces(operatorAddr);
         assertEq(newNonce, 1, "Nonce incremented by 1");
