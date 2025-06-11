@@ -67,25 +67,6 @@ library PersistentSet {
         return set._length;
     }
 
-    function _valueAt(
-        Set storage set,
-        uint256 index,
-        uint48 key,
-        bytes memory hint
-    ) private view returns (bool, bytes32) {
-        bytes32 element = set._elements[index];
-        return (_containsAt(set, key, element, hint), element);
-    }
-
-    function _valueAt(Set storage set, uint256 index, uint48 key) private view returns (bool, bytes32) {
-        return _valueAt(set, index, key, new bytes(0));
-    }
-
-    function _value(Set storage set, uint256 index) private view returns (bool, bytes32) {
-        bytes32 element = set._elements[index];
-        return (_contains(set, element), element);
-    }
-
     function _valuesAt(Set storage set, uint48 key) private view returns (bytes32[] memory values_) {
         unchecked {
             uint256 totalLength = set._elements.length;
@@ -157,23 +138,6 @@ library PersistentSet {
         return _length(set._inner);
     }
 
-    function valueAt(
-        Bytes32Set storage set,
-        uint256 index,
-        uint48 key,
-        bytes memory hint
-    ) internal view returns (bool, bytes32) {
-        return _valueAt(set._inner, index, key, hint);
-    }
-
-    function valueAt(Bytes32Set storage set, uint256 index, uint48 key) internal view returns (bool, bytes32) {
-        return _valueAt(set._inner, index, key);
-    }
-
-    function value(Bytes32Set storage set, uint256 index) internal view returns (bool, bytes32) {
-        return _value(set._inner, index);
-    }
-
     function valuesAt(Bytes32Set storage set, uint48 key) internal view returns (bytes32[] memory result) {
         bytes32[] memory store = _valuesAt(set._inner, key);
         assembly ("memory-safe") {
@@ -225,26 +189,6 @@ library PersistentSet {
         AddressSet storage set
     ) internal view returns (uint256) {
         return _length(set._inner);
-    }
-
-    function valueAt(
-        AddressSet storage set,
-        uint256 index,
-        uint48 key,
-        bytes memory hint
-    ) internal view returns (bool, address) {
-        (bool isAdded, bytes32 value) = _valueAt(set._inner, index, key, hint);
-        return (isAdded, address(uint160(uint256(value))));
-    }
-
-    function valueAt(AddressSet storage set, uint256 index, uint48 key) internal view returns (bool, address) {
-        (bool isAdded, bytes32 value) = _valueAt(set._inner, index, key);
-        return (isAdded, address(uint160(uint256(value))));
-    }
-
-    function value(AddressSet storage set, uint256 index) internal view returns (bool, address) {
-        (bool isAdded, bytes32 value) = _value(set._inner, index);
-        return (isAdded, address(uint160(uint256(value))));
     }
 
     function valuesAt(AddressSet storage set, uint48 key) internal view returns (address[] memory result) {
