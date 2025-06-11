@@ -33,7 +33,7 @@ contract Network is TimelockControllerUpgradeable, INetwork {
     address public immutable NETWORK_MIDDLEWARE_SERVICE;
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.Network")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant NetworkStorageLocation = 0xad58d27706f0faa4634000571d7d9c19a0123d182a06ad775cbe8a9c22f64400;
+    bytes32 private constant NetworkStorageLocation = 0x2affd7691de6b6d2a998e6b135d73a3c906ea64896dff9dcb273e98dd44a6100;
 
     // keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.TimelockController")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant TimelockControllerStorageLocation =

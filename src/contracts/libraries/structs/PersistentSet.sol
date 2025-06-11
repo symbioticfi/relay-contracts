@@ -8,6 +8,8 @@ library PersistentSet {
     using Checkpoints for Checkpoints.Trace208;
     using InputNormalizer for bytes[];
 
+    error PersistentSet_InvalidKey();
+
     struct Status {
         bool isAdded;
         uint48 addedAt;
@@ -41,6 +43,9 @@ library PersistentSet {
         unchecked {
             if (!_contains(set, value)) {
                 return false;
+            }
+            if (key < set._statuses[value].addedAt) {
+                revert PersistentSet_InvalidKey();
             }
             set._statuses[value].isRemoved.push(key, 1);
             set._length -= 1;

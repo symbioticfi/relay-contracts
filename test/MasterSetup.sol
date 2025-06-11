@@ -213,6 +213,10 @@ contract MasterSetupTest is InitSetupTest {
                         requiredKeyTags: localVars.requiredKeyTags,
                         requiredHeaderKeyTag: localVars.requiredKeyTags[0],
                         quorumThresholds: localVars.quorumThresholds
+                    }),
+                    networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
+                        network: vars.network.addr,
+                        subnetworkID: networkSetupParams.SUBNETWORK_ID
                     })
                 }),
                 vars.deployer.addr

@@ -3,10 +3,12 @@ pragma solidity ^0.8.0;
 
 import {IEpochManager} from "../../base/IEpochManager.sol";
 import {IConfigProvider} from "./IConfigProvider.sol";
+import {INetworkManager} from "../../base/INetworkManager.sol";
 
 interface IValSetDriver {
     struct ValSetDriverInitParams {
         IEpochManager.EpochManagerInitParams epochManagerInitParams;
         IConfigProvider.ConfigProviderInitParams configProviderInitParams;
+        INetworkManager.NetworkManagerInitParams networkManagerInitParams;
     }
 }

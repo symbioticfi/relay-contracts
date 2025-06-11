@@ -25,7 +25,9 @@ contract PersistentSetTest is Test {
         assertTrue(addressSet.contains(alice), "Current set should contain Alice");
 
         assertFalse(addressSet.containsAt(0, alice, ""), "Alice was not added at key=0");
+        assertFalse(addressSet.containsAt(0, alice), "Alice was not added at key=0");
         assertTrue(addressSet.containsAt(1, alice, ""), "Alice should be present at key=1");
+        assertTrue(addressSet.containsAt(1, alice), "Alice should be present at key=1");
 
         bool addedBob = addressSet.add(1, bob);
         assertTrue(addedBob, "Should have added Bob the first time");
@@ -33,7 +35,9 @@ contract PersistentSetTest is Test {
         assertEq(uint256(addressSet.length()), 2, "Length must be 2 in the latest state");
 
         assertTrue(addressSet.containsAt(1, alice, ""), "Alice present at key=1");
+        assertTrue(addressSet.containsAt(1, alice), "Alice present at key=1");
         assertTrue(addressSet.containsAt(1, bob, ""), "Bob present at key=1");
+        assertTrue(addressSet.containsAt(1, bob), "Bob present at key=1");
 
         bool removedAlice = addressSet.remove(2, alice);
         assertTrue(removedAlice, "Should have successfully removed Alice at key=2");
@@ -41,7 +45,9 @@ contract PersistentSetTest is Test {
 
         assertFalse(addressSet.contains(alice), "Alice should no longer be present in the current set");
         assertFalse(addressSet.containsAt(2, alice, ""), "Alice removed at key=2");
+        assertFalse(addressSet.containsAt(2, alice), "Alice removed at key=2");
         assertTrue(addressSet.containsAt(2, bob, ""), "Bob is still in the set at key=2");
+        assertTrue(addressSet.containsAt(2, bob), "Bob is still in the set at key=2");
         assertFalse(
             addressSet.containsAt(2, address(0x789), ""), "Non-existent address should not be in the set at key=2"
         );
@@ -128,8 +134,11 @@ contract PersistentSetTest is Test {
         assertEq(uint256(bytes32Set.length()), 2);
 
         assertTrue(bytes32Set.containsAt(101, data2, ""), "data2 at key=101");
+        assertTrue(bytes32Set.containsAt(101, data2), "data2 at key=101");
         assertFalse(bytes32Set.containsAt(101, data1, ""), "data1 was removed at key=101");
+        assertFalse(bytes32Set.containsAt(101, data1), "data1 was removed at key=101");
         assertFalse(bytes32Set.containsAt(101, bytes32(uint256(0x789)), ""), "data1 was removed at key=101");
+        assertFalse(bytes32Set.containsAt(101, bytes32(uint256(0x789))), "data1 was removed at key=101");
 
         assertFalse(
             bytes32Set.remove(103, bytes32(uint256(0x789))), "Removing a non-existent element should return false"
@@ -219,8 +228,13 @@ contract PersistentSetTest is Test {
         );
 
         assertTrue(addressSet.containsAt(1, firstInserted, ""), "At key=1, the first address was registered");
+        assertTrue(addressSet.containsAt(1, firstInserted), "At key=1, the first address was registered");
         assertTrue(
             addressSet.containsAt(1, address(uint160(0x100000 + 257)), ""),
+            "At key=1, the address at index 257 was registered"
+        );
+        assertTrue(
+            addressSet.containsAt(1, address(uint160(0x100000 + 257))),
             "At key=1, the address at index 257 was registered"
         );
 
