@@ -18,7 +18,7 @@ interface IConfigProvider {
         Checkpoints.Trace256 _minInclusionVotingPower;
         Checkpoints.Trace208 _maxValidatorsCount;
         Checkpoints.Trace208 _requiredKeyTags;
-        Checkpoints.Trace208 _requiredKeyTag;
+        Checkpoints.Trace208 _requiredHeaderKeyTag;
     }
 
     struct ConfigProviderInitParams {
@@ -30,7 +30,7 @@ interface IConfigProvider {
         uint256 minInclusionVotingPower;
         uint208 maxValidatorsCount;
         uint8[] requiredKeyTags;
-        uint8 requiredKeyTag;
+        uint8 requiredHeaderKeyTag;
     }
 
     struct CrossChainAddress {
@@ -47,7 +47,7 @@ interface IConfigProvider {
         uint256 minInclusionVotingPower;
         uint208 maxValidatorsCount;
         uint8[] requiredKeyTags;
-        uint8 requiredKeyTag;
+        uint8 requiredHeaderKeyTag;
     }
 
     event AddVotingPowerProvider(CrossChainAddress votingPowerProvider);
@@ -70,7 +70,7 @@ interface IConfigProvider {
 
     event SetRequiredKeyTags(uint8[] requiredKeyTags);
 
-    event SetRequiredKeyTag(uint8 requiredKeyTag);
+    event SetRequiredHeaderKeyTag(uint8 requiredHeaderKeyTag);
 
     function ConfigProvider_VERSION() external view returns (uint64);
 
@@ -137,11 +137,11 @@ interface IConfigProvider {
 
     function getRequiredKeyTags() external view returns (uint8[] memory);
 
-    function getRequiredKeyTagAt(
+    function getRequiredHeaderKeyTagAt(
         uint48 timestamp
     ) external view returns (uint8);
 
-    function getRequiredKeyTag() external view returns (uint8);
+    function getRequiredHeaderKeyTag() external view returns (uint8);
 
     function getConfigAt(
         uint48 timestamp
@@ -189,7 +189,7 @@ interface IConfigProvider {
         uint8[] memory requiredKeyTags
     ) external;
 
-    function setRequiredKeyTag(
-        uint8 requiredKeyTag
+    function setRequiredHeaderKeyTag(
+        uint8 requiredHeaderKeyTag
     ) external;
 }

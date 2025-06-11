@@ -243,17 +243,17 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     /**
      * @inheritdoc IConfigProvider
      */
-    function getRequiredKeyTagAt(
+    function getRequiredHeaderKeyTagAt(
         uint48 timestamp
     ) public view virtual returns (uint8) {
-        return uint8(_getConfigProviderStorage()._requiredKeyTag.upperLookupRecent(timestamp));
+        return uint8(_getConfigProviderStorage()._requiredHeaderKeyTag.upperLookupRecent(timestamp));
     }
 
     /**
      * @inheritdoc IConfigProvider
      */
-    function getRequiredKeyTag() public view virtual returns (uint8) {
-        return uint8(_getConfigProviderStorage()._requiredKeyTag.latest());
+    function getRequiredHeaderKeyTag() public view virtual returns (uint8) {
+        return uint8(_getConfigProviderStorage()._requiredHeaderKeyTag.latest());
     }
 
     /**
@@ -271,7 +271,7 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
             minInclusionVotingPower: getMinInclusionVotingPowerAt(timestamp),
             maxValidatorsCount: getMaxValidatorsCountAt(timestamp),
             requiredKeyTags: getRequiredKeyTagsAt(timestamp),
-            requiredKeyTag: getRequiredKeyTagAt(timestamp)
+            requiredHeaderKeyTag: getRequiredHeaderKeyTagAt(timestamp)
         });
     }
 
@@ -288,7 +288,7 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
             minInclusionVotingPower: getMinInclusionVotingPower(),
             maxValidatorsCount: getMaxValidatorsCount(),
             requiredKeyTags: getRequiredKeyTags(),
-            requiredKeyTag: getRequiredKeyTag()
+            requiredHeaderKeyTag: getRequiredHeaderKeyTag()
         });
     }
 
@@ -385,10 +385,10 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     /**
      * @inheritdoc IConfigProvider
      */
-    function setRequiredKeyTag(
-        uint8 requiredKeyTag
+    function setRequiredHeaderKeyTag(
+        uint8 requiredHeaderKeyTag
     ) public virtual checkPermission {
-        _setRequiredKeyTag(requiredKeyTag);
+        _setRequiredHeaderKeyTag(requiredHeaderKeyTag);
     }
 
     function _addVotingPowerProvider(
@@ -479,11 +479,11 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
         emit SetRequiredKeyTags(requiredKeyTags);
     }
 
-    function _setRequiredKeyTag(
-        uint8 requiredKeyTag
+    function _setRequiredHeaderKeyTag(
+        uint8 requiredHeaderKeyTag
     ) internal virtual {
-        _getConfigProviderStorage()._requiredKeyTag.push(Time.timestamp(), requiredKeyTag);
-        emit SetRequiredKeyTag(requiredKeyTag);
+        _getConfigProviderStorage()._requiredHeaderKeyTag.push(Time.timestamp(), requiredHeaderKeyTag);
+        emit SetRequiredHeaderKeyTag(requiredHeaderKeyTag);
     }
 
     function _deserializeCrossChainAddress(

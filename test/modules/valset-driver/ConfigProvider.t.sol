@@ -55,7 +55,7 @@ contract ConfigProviderTest is Test {
             minInclusionVotingPower: 0,
             maxValidatorsCount: 100,
             requiredKeyTags: requiredKeyTags,
-            requiredKeyTag: requiredKeyTags[0]
+            requiredHeaderKeyTag: requiredKeyTags[0]
         });
 
         testMCP.initialize(initParams, owner);
@@ -275,7 +275,7 @@ contract ConfigProviderTest is Test {
         newTags[0] = 1;
         newTags[1] = 2;
         testMCP.setRequiredKeyTags(newTags);
-        testMCP.setRequiredKeyTag(3);
+        testMCP.setRequiredHeaderKeyTag(3);
         vm.stopPrank();
 
         assertEq(testMCP.getMaxVotingPower(), 5000);
@@ -303,7 +303,7 @@ contract ConfigProviderTest is Test {
         uint8[] memory newTags2 = new uint8[](1);
         newTags2[0] = 3;
         testMCP.setRequiredKeyTags(newTags2);
-        testMCP.setRequiredKeyTag(4);
+        testMCP.setRequiredHeaderKeyTag(4);
         vm.stopPrank();
 
         assertEq(testMCP.getMaxVotingPowerAt(uint48(vm.getBlockTimestamp()) - 1), 5000);
@@ -313,7 +313,7 @@ contract ConfigProviderTest is Test {
         assertEq(gotTagsAt2.length, 2);
         assertEq(gotTagsAt2[0], 1);
         assertEq(gotTagsAt2[1], 2);
-        assertEq(testMCP.getRequiredKeyTagAt(uint48(vm.getBlockTimestamp()) - 1), 3);
+        assertEq(testMCP.getRequiredHeaderKeyTagAt(uint48(vm.getBlockTimestamp()) - 1), 3);
 
         assertEq(testMCP.getMaxVotingPowerAt(uint48(vm.getBlockTimestamp() + 100)), 999);
         assertEq(testMCP.getMinInclusionVotingPowerAt(uint48(vm.getBlockTimestamp() + 100)), 124);
@@ -321,8 +321,8 @@ contract ConfigProviderTest is Test {
         uint8[] memory gotTagsAt3 = testMCP.getRequiredKeyTagsAt(uint48(vm.getBlockTimestamp() + 100));
         assertEq(gotTagsAt3.length, 1);
         assertEq(gotTagsAt3[0], 3);
-        assertEq(testMCP.getRequiredKeyTag(), 4);
-        assertEq(testMCP.getRequiredKeyTagAt(uint48(vm.getBlockTimestamp())), 4);
+        assertEq(testMCP.getRequiredHeaderKeyTag(), 4);
+        assertEq(testMCP.getRequiredHeaderKeyTagAt(uint48(vm.getBlockTimestamp())), 4);
 
         IConfigProvider.Config memory cfg = testMCP.getConfigAt(uint48(vm.getBlockTimestamp()));
         assertEq(cfg.maxVotingPower, 999);
@@ -330,7 +330,7 @@ contract ConfigProviderTest is Test {
         assertEq(cfg.maxValidatorsCount, 778);
         assertEq(cfg.requiredKeyTags.length, 1);
         assertEq(cfg.requiredKeyTags[0], 3);
-        assertEq(cfg.requiredKeyTag, 4);
+        assertEq(cfg.requiredHeaderKeyTag, 4);
     }
 
     function test_TimeBasedConfig() public {

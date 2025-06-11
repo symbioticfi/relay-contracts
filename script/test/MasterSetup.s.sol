@@ -209,7 +209,7 @@ contract MasterSetupScript is InitSetupScript {
                         minInclusionVotingPower: 0,
                         maxValidatorsCount: 99_999_999,
                         requiredKeyTags: localVars.requiredKeyTags,
-                        requiredKeyTag: localVars.requiredKeyTags[0]
+                        requiredHeaderKeyTag: localVars.requiredKeyTags[0]
                     })
                 }),
                 vars.deployer.addr
