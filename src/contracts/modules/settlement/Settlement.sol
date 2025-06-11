@@ -227,16 +227,30 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
     /**
      * @inheritdoc ISettlement
      */
-    function verifyQuorumSig(
-        uint48 epoch,
+    function verifyQuorumSigAt(
         bytes memory message,
         uint8 keyTag,
         uint256 quorumThreshold,
         bytes calldata proof,
+        uint48 epoch,
         bytes memory hint
     ) public view virtual returns (bool) {
         return ISigVerifier(getSigVerifierAt(epoch, hint)).verifyQuorumSig(
             address(this), epoch, message, keyTag, quorumThreshold, proof
+        );
+    }
+
+    /**
+     * @inheritdoc ISettlement
+     */
+    function verifyQuorumSig(
+        bytes memory message,
+        uint8 keyTag,
+        uint256 quorumThreshold,
+        bytes calldata proof
+    ) public view virtual returns (bool) {
+        return ISigVerifier(getSigVerifier()).verifyQuorumSig(
+            address(this), getLastCommittedHeaderEpoch(), message, keyTag, quorumThreshold, proof
         );
     }
 
@@ -271,13 +285,11 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
     function commitValSetHeader(
         ValSetHeader calldata header,
         ExtraData[] calldata extraData,
-        bytes calldata proof,
-        bytes memory hint
+        bytes calldata proof
     ) public virtual {
         uint48 valSetEpoch = getLastCommittedHeaderEpoch();
         if (
             !verifyQuorumSig(
-                valSetEpoch,
                 abi.encode(
                     hashTypedDataV4CrossChain(
                         keccak256(
@@ -293,8 +305,7 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
                 ),
                 getRequiredKeyTagFromValSetHeaderAt(valSetEpoch),
                 getQuorumThresholdFromValSetHeaderAt(valSetEpoch),
-                proof,
-                hint
+                proof
             )
         ) {
             revert Settlement_VerificationFailed();

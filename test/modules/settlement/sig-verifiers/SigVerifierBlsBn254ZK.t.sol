@@ -88,17 +88,34 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetupTest {
             sigVerifier = new SigVerifierBlsBn254ZK(verifiers, maxValidators);
         }
 
-        bytes memory data = abi.encodeWithSelector(
-            ISettlement.verifyQuorumSig.selector,
-            masterSetupParams.settlement.getLastCommittedHeaderEpoch(),
-            abi.encode(messageHash),
-            KEY_TYPE_BLS_BN254.getKeyTag(15),
-            Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
-            fullProof,
-            new bytes(0)
+        bytes memory data = abi.encodeCall(
+            ISettlement.verifyQuorumSigAt,
+            (
+                abi.encode(messageHash),
+                KEY_TYPE_BLS_BN254.getKeyTag(15),
+                Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
+                fullProof,
+                masterSetupParams.settlement.getLastCommittedHeaderEpoch(),
+                new bytes(0)
+            )
         );
         vm.startPrank(vars.deployer.addr);
         (bool success, bytes memory ret) = address(masterSetupParams.settlement).call(data);
+
+        assertTrue(success);
+        assertTrue(abi.decode(ret, (bool)));
+
+        data = abi.encodeCall(
+            ISettlement.verifyQuorumSig,
+            (
+                abi.encode(messageHash),
+                KEY_TYPE_BLS_BN254.getKeyTag(15),
+                Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
+                fullProof
+            )
+        );
+        vm.startPrank(vars.deployer.addr);
+        (success, ret) = address(masterSetupParams.settlement).call(data);
 
         assertTrue(success);
         assertTrue(abi.decode(ret, (bool)));

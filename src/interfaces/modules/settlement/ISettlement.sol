@@ -126,13 +126,20 @@ interface ISettlement {
         bytes32 key
     ) external view returns (bytes32);
 
-    function verifyQuorumSig(
-        uint48 epoch,
+    function verifyQuorumSigAt(
         bytes memory message,
         uint8 keyTag,
         uint256 quorumThreshold,
         bytes calldata proof,
+        uint48 epoch,
         bytes memory hint
+    ) external view returns (bool);
+
+    function verifyQuorumSig(
+        bytes memory message,
+        uint8 keyTag,
+        uint256 quorumThreshold,
+        bytes calldata proof
     ) external view returns (bool);
 
     function setSigVerifier(
@@ -144,7 +151,6 @@ interface ISettlement {
     function commitValSetHeader(
         ValSetHeader calldata header,
         ExtraData[] calldata extraData,
-        bytes calldata proof,
-        bytes memory hint
+        bytes calldata proof
     ) external;
 }

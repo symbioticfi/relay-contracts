@@ -329,10 +329,10 @@ contract SettlementRawTest is Test {
         header.captureTimestamp = uint48(vm.getBlockTimestamp() - 10);
         header.previousHeaderHash = testSettle.getValSetHeaderHash();
 
-        testSettle.commitValSetHeader(header, someExtra, bytes(""), bytes(""));
+        testSettle.commitValSetHeader(header, someExtra, bytes(""));
 
         vm.expectRevert(ISettlement.Settlement_InvalidEpoch.selector);
-        testSettle.commitValSetHeader(header, someExtra, bytes(""), bytes(""));
+        testSettle.commitValSetHeader(header, someExtra, bytes(""));
 
         assertTrue(testSettle.isValSetHeaderCommittedAt(header.epoch - 1));
         assertTrue(testSettle.isValSetHeaderCommittedAt(header.epoch));
@@ -346,6 +346,6 @@ contract SettlementRawTest is Test {
         header.captureTimestamp = uint48(vm.getBlockTimestamp()) - 1;
 
         vm.expectRevert();
-        testSettle.commitValSetHeader(header, someExtra, bytes(""), bytes(""));
+        testSettle.commitValSetHeader(header, someExtra, bytes(""));
     }
 }
