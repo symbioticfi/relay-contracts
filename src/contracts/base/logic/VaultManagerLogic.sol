@@ -569,10 +569,7 @@ library VaultManagerLogic {
             }
 
             return slashingWindow <= vaultEpochDuration;
-        } else if (slashingWindow > 0) {
-            return false;
         }
-
-        return true;
+        return slashingWindow == 0;
     }
 }

@@ -285,21 +285,6 @@ contract EpochManagerTest is Test {
         assertEq(durIdx, 3, "Updated index mismatch");
     }
 
-    function test_DirectSetEpochDuration_RevertOnInvalidIndex() public {
-        epochManager.initialize(
-            IEpochManager.EpochManagerInitParams({
-                epochDuration: 50,
-                epochDurationTimestamp: uint48(vm.getBlockTimestamp())
-            })
-        );
-
-        vm.warp(vm.getBlockTimestamp() + 150);
-        assertEq(epochManager.getCurrentEpoch(), 3, "We might be in epoch #3 after 150 seconds? (0..2 + remainder)");
-
-        vm.expectRevert(ERR_INVALID_EPOCH_DURATION_INDEX);
-        epochManager.setEpochDuration(75, uint48(vm.getBlockTimestamp() + 100), 2);
-    }
-
     function test_GetCurrentValue_NoCheckpoint() public {
         vm.expectRevert(ERR_NO_CHECKPOINT);
         epochManager.getCurrentValuePublic(100);

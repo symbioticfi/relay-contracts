@@ -25,7 +25,10 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
     function __EpochManager_init(
         EpochManagerInitParams memory initParams
     ) internal virtual onlyInitializing {
-        _setEpochDurationInternal(initParams.epochDuration, initParams.epochDurationTimestamp, 0);
+        if (initParams.epochDurationTimestamp < Time.timestamp()) {
+            revert EpochManager_InvalidEpochDurationTimestamp();
+        }
+        _setEpochDuration(initParams.epochDuration, initParams.epochDurationTimestamp, 0);
         emit InitEpochDuration(initParams.epochDuration, initParams.epochDurationTimestamp);
     }
 
@@ -109,8 +112,31 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
     function setEpochDuration(
         uint48 epochDuration
     ) public virtual checkPermission {
+        _setEpochDuration(epochDuration);
+    }
+
+    function _setEpochDuration(
+        uint48 epochDuration
+    ) internal virtual {
         _setEpochDuration(epochDuration, getNextEpochStart(), getNextEpoch());
         emit SetEpochDuration(epochDuration);
+    }
+
+    function _setEpochDuration(
+        uint48 epochDuration,
+        uint48 epochDurationTimestamp,
+        uint48 epochDurationIndex
+    ) internal virtual {
+        if (epochDuration == 0) {
+            revert EpochManager_InvalidEpochDuration();
+        }
+        _getEpochManagerStorage()._epochDurationDataByTimestamp.push(
+            epochDurationTimestamp,
+            _serializeEpochDurationData(epochDuration, epochDurationTimestamp, epochDurationIndex)
+        );
+        _getEpochManagerStorage()._epochDurationDataByIndex.push(
+            epochDurationIndex, _serializeEpochDurationData(epochDuration, epochDurationTimestamp, epochDurationIndex)
+        );
     }
 
     function _getEpochDurationDataByTimestamp(
@@ -134,37 +160,6 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
     function _getCurrentEpochDurationData() internal view virtual returns (uint48, uint48, uint48) {
         return _deserializeEpochDurationData(
             _getCurrentValue(_getEpochManagerStorage()._epochDurationDataByTimestamp, Time.timestamp())
-        );
-    }
-
-    function _setEpochDuration(
-        uint48 epochDuration,
-        uint48 epochDurationTimestamp,
-        uint48 epochDurationIndex
-    ) internal virtual {
-        if (epochDurationIndex < getCurrentEpoch()) {
-            revert EpochManager_InvalidEpochDurationIndex();
-        }
-        _setEpochDurationInternal(epochDuration, epochDurationTimestamp, epochDurationIndex);
-    }
-
-    function _setEpochDurationInternal(
-        uint48 epochDuration,
-        uint48 epochDurationTimestamp,
-        uint48 epochDurationIndex
-    ) internal virtual {
-        if (epochDuration == 0) {
-            revert EpochManager_InvalidEpochDuration();
-        }
-        if (epochDurationTimestamp < Time.timestamp()) {
-            revert EpochManager_InvalidEpochDurationTimestamp();
-        }
-        _getEpochManagerStorage()._epochDurationDataByTimestamp.push(
-            epochDurationTimestamp,
-            _serializeEpochDurationData(epochDuration, epochDurationTimestamp, epochDurationIndex)
-        );
-        _getEpochManagerStorage()._epochDurationDataByIndex.push(
-            epochDurationIndex, _serializeEpochDurationData(epochDuration, epochDurationTimestamp, epochDurationIndex)
         );
     }
 
