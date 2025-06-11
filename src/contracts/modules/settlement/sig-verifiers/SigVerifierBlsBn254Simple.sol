@@ -58,6 +58,18 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
             revert SigVerifierBlsBn254Simple_UnsupportedKeyTag();
         }
 
+        // proof structure
+        // 0 : 64 - G1 aggregated signature
+        // 64 : 192 - G2 aggregated public key
+        // 192 : 256+validatorsData.length*96 - encoded data of all active validators for a given `keyTag`
+        //     192 : 224 - offset
+        //     224 : 256 - length
+        //     256 : 256+validatorsData.length*96 - ValidatorData[]
+        // 256+validatorsData.length*96 (nonSignersOffset) : 320+nonSigners.length*32 - encoded array of non-signers indices (from validatorsData)
+        //     nonSignersOffset : nonSignersOffset + 32 - offset
+        //     nonSignersOffset + 32 : nonSignersOffset + 64 - length
+        //     nonSignersOffset + 64 : 320+nonSigners.length*32 - bool[]
+
         BN254.G1Point memory nonSignersPublicKeyG1;
         {
             ValidatorData[] memory validatorsData = abi.decode(proof[192:], (ValidatorData[]));

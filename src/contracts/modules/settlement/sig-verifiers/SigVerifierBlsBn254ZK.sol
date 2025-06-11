@@ -76,6 +76,12 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
             revert SigVerifierBlsBn254ZK_UnsupportedKeyTag();
         }
 
+        // proof structure
+        // 0 : 256 - ZK proof (uint256[8])
+        // 256 : 320 - commitments (uint256[2])
+        // 320 : 384 - commitmentPok (uint256[2])
+        // 384 : 416 - voting power of signers (uint256)
+
         uint256 signersVotingPower;
         assembly {
             signersVotingPower := calldataload(add(proof.offset, 384))
