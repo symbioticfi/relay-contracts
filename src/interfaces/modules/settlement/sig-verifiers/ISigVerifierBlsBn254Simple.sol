@@ -7,6 +7,7 @@ import {ISigVerifier} from "../../../../interfaces/base/ISigVerifier.sol";
 
 interface ISigVerifierBlsBn254Simple is ISigVerifier {
     error SigVerifierBlsBn254Simple_UnsupportedKeyTag();
+    error SigVerifierBlsBn254Simple_InvalidNonSignersOrder();
 
     struct ValidatorData {
         BN254.G1Point publicKey;

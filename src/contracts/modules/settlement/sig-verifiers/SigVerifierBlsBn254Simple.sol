@@ -75,6 +75,11 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
             uint256 nonSignersLength = nonSigners.length;
             uint256 nonSignersVotingPower;
             for (uint256 i; i < nonSignersLength; ++i) {
+                unchecked {
+                    if (i > 0 && nonSigners[i - 1] >= nonSigners[i]) {
+                        revert SigVerifierBlsBn254Simple_InvalidNonSignersOrder();
+                    }
+                }
                 nonSignersPublicKeyG1 = nonSignersPublicKeyG1.plus(validatorsData[nonSigners[i]].publicKey);
                 nonSignersVotingPower += validatorsData[nonSigners[i]].votingPower;
             }
