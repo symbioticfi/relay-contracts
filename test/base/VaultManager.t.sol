@@ -94,19 +94,6 @@ contract TestVaultManager is VaultManager, EqualStakeVPCalc {
     ) external view returns (bool) {
         return VaultManagerLogic._validateVaultEpochDuration(vault);
     }
-
-    function getOperatorStake(address vault, address operator) external view returns (uint256) {
-        return _getOperatorStake(vault, operator);
-    }
-
-    function getOperatorStakeAt(
-        address vault,
-        address operator,
-        uint48 timestamp,
-        bytes memory hints
-    ) external view returns (uint256) {
-        return _getOperatorStakeAt(vault, operator, timestamp, hints);
-    }
 }
 
 contract VaultManagerTest is InitSetupTest {

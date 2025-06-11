@@ -250,6 +250,25 @@ abstract contract VaultManager is NetworkManager, VotingPowerCalcManager, IVault
     /**
      * @inheritdoc IVaultManager
      */
+    function getOperatorStakeAt(
+        address vault,
+        address operator,
+        uint48 timestamp,
+        bytes memory hints
+    ) public view virtual returns (uint256) {
+        return VaultManagerLogic.getOperatorStakeAt(vault, operator, timestamp, hints);
+    }
+
+    /**
+     * @inheritdoc IVaultManager
+     */
+    function getOperatorStake(address vault, address operator) public view virtual returns (uint256) {
+        return VaultManagerLogic.getOperatorStake(vault, operator);
+    }
+
+    /**
+     * @inheritdoc IVaultManager
+     */
     function getOperatorVotingPowerAt(
         address operator,
         address vault,
@@ -309,19 +328,6 @@ abstract contract VaultManager is NetworkManager, VotingPowerCalcManager, IVault
         bytes[] memory extraData
     ) public view virtual returns (OperatorVotingPower[] memory) {
         return VaultManagerLogic.getVotingPowers(extraData);
-    }
-
-    function _getOperatorStakeAt(
-        address vault,
-        address operator,
-        uint48 timestamp,
-        bytes memory hints
-    ) internal view virtual returns (uint256) {
-        return VaultManagerLogic.getOperatorStakeAt(vault, operator, timestamp, hints);
-    }
-
-    function _getOperatorStake(address vault, address operator) internal view virtual returns (uint256) {
-        return VaultManagerLogic.getOperatorStake(vault, operator);
     }
 
     function _setSlashingWindow(
