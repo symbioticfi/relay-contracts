@@ -5,7 +5,7 @@ import "forge-std/Test.sol";
 
 import {MyVotingPowerProvider} from "../../examples/MyVotingPowerProvider.sol";
 
-import {InitSetup} from "../InitSetup.sol";
+import {InitSetupTest} from "../InitSetup.sol";
 
 import {INetworkManager} from "../../src/interfaces/base/INetworkManager.sol";
 import {IVaultManager} from "../../src/interfaces/base/IVaultManager.sol";
@@ -14,7 +14,7 @@ import {IOzEIP712} from "../../src/interfaces/base/common/IOzEIP712.sol";
 import {IOzOwnable} from "../../src/interfaces/modules/common/permissions/IOzOwnable.sol";
 import {IVotingPowerProvider} from "../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
 
-contract MyVotingPowerProviderTest is InitSetup {
+contract MyVotingPowerProviderTest is InitSetupTest {
     MyVotingPowerProvider private aggregator;
 
     address private owner = address(this);
@@ -26,15 +26,13 @@ contract MyVotingPowerProviderTest is InitSetup {
     address vaultA;
 
     function setUp() public override {
-        InitSetup.setUp();
+        InitSetupTest.setUp();
 
         aggregator =
             new MyVotingPowerProvider(address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory));
 
-        INetworkManager.NetworkManagerInitParams memory netInit = INetworkManager.NetworkManagerInitParams({
-            network: vars.network.addr,
-            subnetworkID: initSetupParams.subnetworkID
-        });
+        INetworkManager.NetworkManagerInitParams memory netInit =
+            INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkID: IDENTIFIER});
         IVaultManager.VaultManagerInitParams memory vaultInit =
             IVaultManager.VaultManagerInitParams({slashingWindow: 100, token: initSetupParams.masterChain.tokens[0]});
         IOzEIP712.OzEIP712InitParams memory eip712Init =
@@ -49,8 +47,8 @@ contract MyVotingPowerProviderTest is InitSetup {
 
         aggregator.initialize(votingPowerProviderInit, ownableInit);
 
-        operator1 = vars.operators[0].addr;
-        operator1Pk = vars.operators[0].privateKey;
+        operator1 = getOperator(0).addr;
+        operator1Pk = getOperator(0).privateKey;
 
         vaultA = _getVault_SymbioticCore(
             VaultParams({

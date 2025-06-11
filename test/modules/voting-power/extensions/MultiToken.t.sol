@@ -26,7 +26,7 @@ contract TestMultiToken is MultiToken, NoPermissionManager, EqualStakeVPCalc {
     }
 }
 
-contract MultiTokenTest is InitSetup {
+contract MultiTokenTest is InitSetupTest {
     TestMultiToken private tokens;
 
     address private owner = address(0x12345);
@@ -36,13 +36,11 @@ contract MultiTokenTest is InitSetup {
     address dummyVaultFactory = address(0xBBB2);
 
     function setUp() public override {
-        InitSetup.setUp();
+        InitSetupTest.setUp();
         tokens = new TestMultiToken(address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory));
 
-        INetworkManager.NetworkManagerInitParams memory netInit = INetworkManager.NetworkManagerInitParams({
-            network: vars.network.addr,
-            subnetworkID: initSetupParams.subnetworkID
-        });
+        INetworkManager.NetworkManagerInitParams memory netInit =
+            INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkID: IDENTIFIER});
         IVaultManager.VaultManagerInitParams memory vaultInit =
             IVaultManager.VaultManagerInitParams({slashingWindow: 100, token: initSetupParams.masterChain.tokens[0]});
 

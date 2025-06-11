@@ -37,7 +37,7 @@ contract MasterGenesisSetupScript is MasterSetupScript {
 
         vm.startBroadcast(vars.deployer.privateKey);
         (ISettlement.ValSetHeader memory valSetHeader, ISettlement.ExtraData[] memory extraData) = loadGenesis();
-        masterSetupParams.master.setGenesis(valSetHeader, extraData);
+        masterSetupParams.settlement.setGenesis(valSetHeader, extraData);
         vm.stopBroadcast();
     }
 

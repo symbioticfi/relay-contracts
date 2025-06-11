@@ -7,20 +7,42 @@ import "../../script/integration/SymbioticCoreInit.sol";
 
 import {Token} from "@symbioticfi/core/test/mocks/Token.sol";
 
+import {KeyTags} from "../../src/contracts/libraries/utils/KeyTags.sol";
+import {MyKeyRegistry} from "../../examples/MyKeyRegistry.sol";
+import {MyVotingPowerProvider} from "../../examples/MyVotingPowerProvider.sol";
+import {VotingPowerProviderSemiFull} from "../../test/mocks/VotingPowerProviderSemiFull.sol";
+import {MySettlement} from "../../examples/MySettlement.sol";
+import {MyNetwork} from "../../examples/MyNetwork.sol";
+import {MyValSetDriver} from "../../examples/MyValSetDriver.sol";
+import {KeyEcdsaSecp256k1} from "../../src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol";
+import {KeyBlsBn254, BN254} from "../../src/contracts/libraries/keys/KeyBlsBn254.sol";
+import {KEY_TYPE_BLS_BN254, KEY_TYPE_ECDSA_SECP256K1} from "../../src/contracts/base/KeyManager.sol";
+import {BN254G2} from "../../test/helpers/BN254G2.sol";
+import {IOzEIP712} from "../../src/interfaces/base/common/IOzEIP712.sol";
+import {IKeyRegistry} from "../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
+
 // forge script script/test/InitSetup.s.sol:InitSetupScript 25235 --sig "run(uint256)"
 
 contract InitSetupScript is SymbioticCoreInit {
-    uint256 public constant SYMBIOTIC_CORE_NUMBER_OF_VAULTS = 3;
-    uint256 public constant SYMBIOTIC_CORE_NUMBER_OF_OPERATORS = 10;
-    uint256 public constant SYMBIOTIC_CORE_NUMBER_OF_STAKERS = 1;
+    using KeyTags for uint8;
+    using KeyBlsBn254 for BN254.G1Point;
+    using BN254 for BN254.G1Point;
+    using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
+    using SymbioticSubnetwork for address;
+
+    bytes32 internal constant KEY_OWNERSHIP_TYPEHASH = keccak256("KeyOwnership(address operator,bytes key)");
+
+    uint256 public OPERATOR_PRIVATE_KEY_OFFSET = 1e18;
+    uint256 public STAKER_PRIVATE_KEY_OFFSET = 2e18;
+    uint256 public SYMBIOTIC_CORE_NUMBER_OF_VAULTS = 3;
+    uint256 public SYMBIOTIC_CORE_NUMBER_OF_OPERATORS = 5;
+    uint256 public SYMBIOTIC_CORE_NUMBER_OF_STAKERS = 1;
 
     uint96 public constant IDENTIFIER = 0;
 
     struct Vars {
         Vm.Wallet deployer;
         Vm.Wallet network;
-        Vm.Wallet[] stakers;
-        Vm.Wallet[] operators;
     }
 
     struct ChainSetup {
@@ -31,18 +53,9 @@ contract InitSetupScript is SymbioticCoreInit {
     }
 
     struct InitSetupParams {
-        uint48 commitDuration;
-        uint48 epochDuration;
+        address keyRegistry;
         ChainSetup masterChain;
         uint256 networkPrivateKey;
-        uint256[] operatorPrivateKeys;
-        uint48 prolongDuration;
-        bool random;
-        ChainSetup secondaryChain;
-        uint48 slashingWindow;
-        uint256[] stakerPrivateKeys;
-        uint96 subnetworkID;
-        uint48 zeroTimestamp;
     }
 
     function run(
@@ -74,108 +87,144 @@ contract InitSetupScript is SymbioticCoreInit {
         string memory finalJson;
         Vars memory vars;
         InitSetupParams memory initSetupParams;
-        initSetupParams.random = vm.envBool("RANDOM");
-        vars.deployer = vm.createWallet(vm.envUint("PRIVATE_KEY"));
 
-        vars.network = vars.deployer;
-        vm.rememberKey(vars.network.privateKey);
-        console2.log("Network -", vars.network.addr, vars.network.privateKey);
+        vars.deployer = getDeployer();
+        vars.network = getNetwork();
+
+        vm.deal(vars.deployer.addr, 1000 ether);
+        vm.deal(vars.network.addr, 1000 ether);
+
+        console2.log("Deployer address:", vars.deployer.addr, "private key:", vars.deployer.privateKey);
+        console2.log("Network address:", vars.network.addr, "private key:", vars.network.privateKey);
+
         vm.serializeUint(obj, "networkPrivateKey", vars.network.privateKey);
 
-        uint256[] memory operatorPrivateKeys = new uint256[](SYMBIOTIC_CORE_NUMBER_OF_OPERATORS);
-        vars.operators = new Vm.Wallet[](operatorPrivateKeys.length);
-        for (uint256 i; i < operatorPrivateKeys.length; ++i) {
-            vars.operators[i] = initSetupParams.random ? _getAccount_Symbiotic() : vm.createWallet(1e18 + i);
-            vm.rememberKey(vars.operators[i].privateKey);
-            console2.log("Operator -", vars.operators[i].addr, vars.operators[i].privateKey);
-            operatorPrivateKeys[i] = vars.operators[i].privateKey;
-        }
-        vm.serializeUint(obj, "operatorPrivateKeys", operatorPrivateKeys);
-
-        uint256[] memory stakerPrivateKeys = new uint256[](SYMBIOTIC_CORE_NUMBER_OF_STAKERS);
-        vars.stakers = new Vm.Wallet[](stakerPrivateKeys.length);
-        for (uint256 i; i < stakerPrivateKeys.length; ++i) {
-            vars.stakers[i] = initSetupParams.random ? _getAccount_Symbiotic() : vm.createWallet(2e18 + i);
-            vm.rememberKey(vars.stakers[i].privateKey);
-            console2.log("Staker -", vars.stakers[i].addr, vars.stakers[i].privateKey);
-            stakerPrivateKeys[i] = vars.stakers[i].privateKey;
-        }
-        vm.serializeUint(obj, "stakerPrivateKeys", stakerPrivateKeys);
-
-        vm.createSelectFork(vm.rpcUrl("master_chain"));
+        console2.log("Initializing core");
         _initCore_SymbioticCore(false);
-
-        console2.logBytes(abi.encode(symbioticCore));
+        console2.log("Core initialized");
 
         vm.startBroadcast(vars.deployer.privateKey);
-
         initSetupParams.masterChain.tokens = new address[](1);
-        // console2.log("Token nonce", vm.getNonce(vars.deployer.addr));
         initSetupParams.masterChain.tokens[0] = address(new Token("Test"));
-
+        console2.log("Staking token created", address(initSetupParams.masterChain.tokens[0]));
         vm.stopBroadcast();
 
-        uint48 zeroTimestamp = uint48(vm.getBlockTimestamp() + vm.envUint("DEPLOYMENT_BUFFER"));
+        vm.startBroadcast(vars.deployer.privateKey);
+        MyKeyRegistry keyRegistry = new MyKeyRegistry();
+        keyRegistry.initialize(
+            IKeyRegistry.KeyRegistryInitParams({
+                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "KeyRegistry", version: "1"})
+            })
+        );
+        vm.stopBroadcast();
+        console2.log("KeyRegistry deployed", address(keyRegistry));
 
-        for (uint256 i; i < vars.stakers.length; ++i) {
+        for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_STAKERS; ++i) {
+            Vm.Wallet memory staker = getStaker(i);
+
             for (uint256 j; j < initSetupParams.masterChain.tokens.length; ++j) {
                 _deal_Symbiotic(
                     initSetupParams.masterChain.tokens[j],
-                    vars.stakers[i].addr,
+                    staker.addr,
                     _normalizeForToken_Symbiotic(
                         SYMBIOTIC_CORE_TOKENS_TO_SET_TIMES_1e18, initSetupParams.masterChain.tokens[j]
                     )
                 );
             }
-            _deal_Symbiotic(vars.stakers[i].addr, 10 ether);
+            _deal_Symbiotic(staker.addr, 10 ether);
+            console2.log("Staker initialized", staker.addr);
         }
 
         if (!symbioticCore.networkRegistry.isEntity(vars.network.addr)) {
             _networkRegister_SymbioticCore(vars.network.addr);
+            console2.log("Network registered in symbiotic core", vars.network.addr);
         }
 
-        for (uint256 i; i < vars.operators.length; ++i) {
-            _deal_Symbiotic(vars.operators[i].addr, 10 ether);
-            _operatorRegister_SymbioticCore(vars.operators[i].addr);
-        }
+        initSetupParams.keyRegistry = address(keyRegistry);
+        vm.serializeAddress(obj, "keyRegistry", initSetupParams.keyRegistry);
 
         initSetupParams.masterChain.vaults = new address[](SYMBIOTIC_CORE_NUMBER_OF_VAULTS);
         for (uint256 i; i < initSetupParams.masterChain.vaults.length; ++i) {
-            initSetupParams.masterChain.vaults[i] = initSetupParams.random
-                ? _getVaultRandom_SymbioticCore(
-                    _vmWalletsToAddresses_Symbiotic(vars.operators),
-                    _randomPick_Symbiotic(initSetupParams.masterChain.tokens)
-                )
-                : _getVault_SymbioticCore(
-                    VaultParams({
-                        owner: vars.deployer.addr,
-                        collateral: initSetupParams.masterChain.tokens[0],
-                        burner: 0x000000000000000000000000000000000000dEaD,
-                        epochDuration: uint48(SYMBIOTIC_CORE_MIN_EPOCH_DURATION * (i + 1)),
-                        whitelistedDepositors: new address[](0),
-                        depositLimit: 0,
-                        delegatorIndex: 0,
-                        hook: address(0),
-                        network: address(0),
-                        withSlasher: true,
-                        slasherIndex: 0,
-                        vetoDuration: uint48(SYMBIOTIC_CORE_MIN_VETO_DURATION * (i + 1))
-                    })
+            initSetupParams.masterChain.vaults[i] = _getVault_SymbioticCore(
+                VaultParams({
+                    owner: vars.deployer.addr,
+                    collateral: initSetupParams.masterChain.tokens[0],
+                    burner: 0x000000000000000000000000000000000000dEaD,
+                    epochDuration: uint48(SYMBIOTIC_CORE_MIN_EPOCH_DURATION * (i + 1)),
+                    whitelistedDepositors: new address[](0),
+                    depositLimit: 0,
+                    delegatorIndex: 0,
+                    hook: address(0),
+                    network: address(0),
+                    withSlasher: true,
+                    slasherIndex: 0,
+                    vetoDuration: uint48(SYMBIOTIC_CORE_MIN_VETO_DURATION * (i + 1))
+                })
+            );
+
+            _setMaxNetworkLimit_SymbioticCore(
+                vars.network.addr, initSetupParams.masterChain.vaults[i], IDENTIFIER, type(uint256).max
+            );
+            _setNetworkLimit_SymbioticCore(
+                vars.deployer.addr,
+                initSetupParams.masterChain.vaults[i],
+                vars.network.addr.subnetwork(IDENTIFIER),
+                type(uint256).max
+            );
+            for (uint256 j; j < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++j) {
+                Vm.Wallet memory operator = getOperator(j);
+                _setOperatorNetworkShares_SymbioticCore(
+                    vars.deployer.addr,
+                    initSetupParams.masterChain.vaults[i],
+                    vars.network.addr.subnetwork(IDENTIFIER),
+                    operator.addr,
+                    1e18
                 );
-            console2.log("Vault -", initSetupParams.masterChain.vaults[i]);
+            }
+            console2.log("Vault initialized", initSetupParams.masterChain.vaults[i]);
         }
 
-        for (uint256 i; i < vars.stakers.length; ++i) {
+        for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
+            Vm.Wallet memory operator = getOperator(i);
+            _deal_Symbiotic(operator.addr, 10 ether);
+            _operatorRegister_SymbioticCore(operator.addr);
+
+            _operatorOptInWeak_SymbioticCore(operator.addr, vars.network.addr);
+            console2.log("Operator ", operator.addr, " opted in to network ", vars.network.addr);
+
             for (uint256 j; j < initSetupParams.masterChain.vaults.length; ++j) {
-                initSetupParams.random
-                    ? _stakerDepositRandom_SymbioticCore(vars.stakers[i].addr, initSetupParams.masterChain.vaults[j])
-                    : _stakerDeposit_SymbioticCore(
-                        vars.stakers[i].addr,
-                        initSetupParams.masterChain.vaults[j],
-                        _normalizeForToken_Symbiotic(
-                            SYMBIOTIC_CORE_MIN_TOKENS_TO_DEPOSIT_TIMES_1e18, initSetupParams.masterChain.tokens[0]
-                        ) * (i + 1) + j
-                    );
+                _operatorOptInWeak_SymbioticCore(operator.addr, initSetupParams.masterChain.vaults[j]);
+                console2.log("Operator ", operator.addr, " opted in to vault ", initSetupParams.masterChain.vaults[j]);
+            }
+
+            {
+                vm.startBroadcast(operator.privateKey);
+                BN254.G1Point memory keyG1 = BN254.generatorG1().scalar_mul(operator.privateKey);
+                BN254.G2Point memory keyG2 = getG2Key(operator.privateKey);
+                bytes memory key0Bytes = KeyBlsBn254.wrap(keyG1).toBytes();
+                bytes32 messageHash0 = keyRegistry.hashTypedDataV4(
+                    keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, operator.addr, keccak256(key0Bytes)))
+                );
+                BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash0);
+                BN254.G1Point memory sigG1 = messageG1.scalar_mul(operator.privateKey);
+                keyRegistry.setKey(KEY_TYPE_BLS_BN254.getKeyTag(15), key0Bytes, abi.encode(sigG1), abi.encode(keyG2));
+                vm.stopBroadcast();
+            }
+            console2.log("Operator initialized", operator.addr);
+        }
+
+        for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_STAKERS; ++i) {
+            Vm.Wallet memory staker = getStaker(i);
+            for (uint256 j; j < initSetupParams.masterChain.vaults.length; ++j) {
+                _stakerDeposit_SymbioticCore(
+                    staker.addr,
+                    initSetupParams.masterChain.vaults[j],
+                    _normalizeForToken_Symbiotic(
+                        SYMBIOTIC_CORE_MIN_TOKENS_TO_DEPOSIT_TIMES_1e18 * SYMBIOTIC_CORE_NUMBER_OF_OPERATORS,
+                        initSetupParams.masterChain.tokens[0]
+                    ) * (i + 1) + j
+                );
+                console2.log("Staker ", staker.addr, " deposited to vault ", initSetupParams.masterChain.vaults[j]);
             }
         }
 
@@ -205,117 +254,46 @@ contract InitSetupScript is SymbioticCoreInit {
         chainData = vm.serializeAddress("masterData", "vaults", initSetupParams.masterChain.vaults);
         finalJson = vm.serializeString(obj, "masterChain", chainData);
 
-        vm.createSelectFork(vm.rpcUrl("secondary_chain"));
-        _initCore_SymbioticCore(false);
-
-        vm.startBroadcast(vars.deployer.privateKey);
-
-        initSetupParams.secondaryChain.tokens = new address[](1);
-        initSetupParams.secondaryChain.tokens[0] = address(new Token("Test"));
-
-        vm.stopBroadcast();
-
-        {
-            if (!symbioticCore.networkRegistry.isEntity(vars.network.addr)) {
-                _networkRegister_SymbioticCore(vars.network.addr);
-            }
-        }
-
-        for (uint256 i; i < vars.stakers.length; ++i) {
-            for (uint256 j; j < initSetupParams.secondaryChain.tokens.length; ++j) {
-                _deal_Symbiotic(
-                    initSetupParams.secondaryChain.tokens[j],
-                    vars.stakers[i].addr,
-                    _normalizeForToken_Symbiotic(
-                        SYMBIOTIC_CORE_TOKENS_TO_SET_TIMES_1e18, initSetupParams.secondaryChain.tokens[j]
-                    )
-                );
-            }
-            _deal_Symbiotic(vars.stakers[i].addr, 10 ether);
-        }
-
-        for (uint256 i; i < vars.operators.length; ++i) {
-            _deal_Symbiotic(vars.operators[i].addr, 10 ether);
-            _operatorRegister_SymbioticCore(vars.operators[i].addr);
-        }
-
-        initSetupParams.secondaryChain.vaults = new address[](SYMBIOTIC_CORE_NUMBER_OF_VAULTS);
-        for (uint256 i; i < initSetupParams.secondaryChain.vaults.length; ++i) {
-            initSetupParams.secondaryChain.vaults[i] = initSetupParams.random
-                ? _getVaultRandom_SymbioticCore(
-                    _vmWalletsToAddresses_Symbiotic(vars.operators),
-                    _randomPick_Symbiotic(initSetupParams.secondaryChain.tokens)
-                )
-                : _getVault_SymbioticCore(
-                    VaultParams({
-                        owner: vars.deployer.addr,
-                        collateral: initSetupParams.secondaryChain.tokens[0],
-                        burner: 0x000000000000000000000000000000000000dEaD,
-                        epochDuration: uint48(SYMBIOTIC_CORE_MIN_EPOCH_DURATION * (i + 1)),
-                        whitelistedDepositors: new address[](0),
-                        depositLimit: 0,
-                        delegatorIndex: 0,
-                        hook: address(0),
-                        network: address(0),
-                        withSlasher: true,
-                        slasherIndex: 0,
-                        vetoDuration: uint48(SYMBIOTIC_CORE_MIN_VETO_DURATION * (i + 1))
-                    })
-                );
-            console2.log("Vault -", initSetupParams.secondaryChain.vaults[i]);
-        }
-
-        for (uint256 i; i < vars.stakers.length; ++i) {
-            for (uint256 j; j < initSetupParams.secondaryChain.vaults.length; ++j) {
-                initSetupParams.random
-                    ? _stakerDepositRandom_SymbioticCore(vars.stakers[i].addr, initSetupParams.secondaryChain.vaults[j])
-                    : _stakerDeposit_SymbioticCore(
-                        vars.stakers[i].addr,
-                        initSetupParams.secondaryChain.vaults[j],
-                        _normalizeForToken_Symbiotic(
-                            SYMBIOTIC_CORE_MIN_TOKENS_TO_DEPOSIT_TIMES_1e18, initSetupParams.masterChain.tokens[0]
-                        ) * (i + 1) + j
-                    );
-            }
-        }
-
-        vm.serializeAddress("secondaryCoreData", "vaultFactory", address(symbioticCore.vaultFactory));
-        vm.serializeAddress("secondaryCoreData", "delegatorFactory", address(symbioticCore.delegatorFactory));
-        vm.serializeAddress("secondaryCoreData", "slasherFactory", address(symbioticCore.slasherFactory));
-        vm.serializeAddress("secondaryCoreData", "networkRegistry", address(symbioticCore.networkRegistry));
-        vm.serializeAddress(
-            "secondaryCoreData", "networkMetadataService", address(symbioticCore.networkMetadataService)
-        );
-        vm.serializeAddress(
-            "secondaryCoreData", "networkMiddlewareService", address(symbioticCore.networkMiddlewareService)
-        );
-        vm.serializeAddress("secondaryCoreData", "operatorRegistry", address(symbioticCore.operatorRegistry));
-        vm.serializeAddress(
-            "secondaryCoreData", "operatorMetadataService", address(symbioticCore.operatorMetadataService)
-        );
-        vm.serializeAddress(
-            "secondaryCoreData", "operatorVaultOptInService", address(symbioticCore.operatorVaultOptInService)
-        );
-        vm.serializeAddress(
-            "secondaryCoreData", "operatorNetworkOptInService", address(symbioticCore.operatorNetworkOptInService)
-        );
-        coreData =
-            vm.serializeAddress("secondaryCoreData", "vaultConfigurator", address(symbioticCore.vaultConfigurator));
-        vm.serializeString("secondaryData", "core", coreData);
-        vm.serializeAddress("secondaryData", "tokens", initSetupParams.secondaryChain.tokens);
-        vm.serializeUint("secondaryData", "chainId", block.chainid);
-        chainData = vm.serializeAddress("secondaryData", "vaults", initSetupParams.secondaryChain.vaults);
-        vm.serializeString(obj, "secondaryChain", chainData);
-
-        vm.serializeUint(obj, "epochDuration", vm.envUint("EPOCH_DURATION"));
-        vm.serializeUint(obj, "commitDuration", vm.envUint("COMMIT_DURATION"));
-        vm.serializeUint(obj, "prolongDuration", vm.envUint("PROLONG_DURATION"));
-        vm.serializeUint(obj, "zeroTimestamp", zeroTimestamp);
-        vm.serializeUint(obj, "subnetworkID", IDENTIFIER);
-        vm.serializeUint(obj, "slashingWindow", vm.envUint("SLASHING_WINDOW"));
-        finalJson = vm.serializeBool(obj, "random", initSetupParams.random);
-
         vm.writeJson(finalJson, "script/test/data/init_setup_params.json");
+    }
+
+    function getOperator(
+        uint256 index
+    ) public returns (Vm.Wallet memory operator) {
+        // deterministic operator private key
+        operator = vm.createWallet(1e18 + index);
+        vm.rememberKey(operator.privateKey);
+        return operator;
+    }
+
+    function getStaker(
+        uint256 index
+    ) public returns (Vm.Wallet memory staker) {
+        // deterministic operator private key
+        staker = vm.createWallet(STAKER_PRIVATE_KEY_OFFSET + index);
+        vm.rememberKey(staker.privateKey);
+        return staker;
+    }
+
+    function getNetwork() public returns (Vm.Wallet memory network) {
+        network = vm.createWallet(vm.envOr("PRIVATE_KEY", uint256(101)));
+        vm.rememberKey(network.privateKey);
+        return network;
+    }
+
+    function getDeployer() public returns (Vm.Wallet memory deployer) {
+        deployer = vm.createWallet(vm.envOr("PRIVATE_KEY", uint256(101)));
+        vm.rememberKey(deployer.privateKey);
+        return deployer;
+    }
+
+    function getG2Key(
+        uint256 privateKey
+    ) public view returns (BN254.G2Point memory) {
+        BN254.G2Point memory G2 = BN254.generatorG2();
+        (uint256 x1, uint256 x2, uint256 y1, uint256 y2) =
+            BN254G2.ECTwistMul(privateKey, G2.X[1], G2.X[0], G2.Y[1], G2.Y[0]);
+        return BN254.G2Point([x2, x1], [y2, y1]);
     }
 
     function loadInitSetupParamsAndVars() public returns (InitSetupParams memory initSetupParams, Vars memory vars) {
@@ -327,21 +305,7 @@ contract InitSetupScript is SymbioticCoreInit {
             initSetupParams = abi.decode(data, (InitSetupParams));
         }
 
-        vars.deployer = vm.createWallet(initSetupParams.networkPrivateKey);
-
-        vars.network = vars.deployer;
-        vm.rememberKey(vars.deployer.privateKey);
-
-        vars.operators = new Vm.Wallet[](initSetupParams.operatorPrivateKeys.length);
-        for (uint256 i; i < initSetupParams.operatorPrivateKeys.length; ++i) {
-            vars.operators[i] = vm.createWallet(initSetupParams.operatorPrivateKeys[i]);
-            vm.rememberKey(vars.operators[i].privateKey);
-        }
-
-        vars.stakers = new Vm.Wallet[](initSetupParams.stakerPrivateKeys.length);
-        for (uint256 i; i < initSetupParams.stakerPrivateKeys.length; ++i) {
-            vars.stakers[i] = vm.createWallet(initSetupParams.stakerPrivateKeys[i]);
-            vm.rememberKey(vars.stakers[i].privateKey);
-        }
+        vars.deployer = getDeployer();
+        vars.network = getNetwork();
     }
 }

@@ -11,7 +11,7 @@ import {BN254G2} from "../../../helpers/BN254G2.sol";
 
 import {ISettlement} from "../../../../src/interfaces/modules/settlement/ISettlement.sol";
 
-import {MasterGenesisSetup} from "../../../MasterGenesisSetup.sol";
+import {MasterGenesisSetupTest} from "../../../MasterGenesisSetup.sol";
 
 import {console2} from "forge-std/console2.sol";
 
@@ -27,7 +27,7 @@ import {IVaultManager} from "../../../../src/interfaces/base/IVaultManager.sol";
 import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-contract SigVerifierBlsBn254ZKTest is MasterGenesisSetup {
+contract SigVerifierBlsBn254ZKTest is MasterGenesisSetupTest {
     using KeyTags for uint8;
     using KeyBlsBn254 for BN254.G1Point;
     using BN254 for BN254.G1Point;
@@ -41,12 +41,8 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetup {
     }
 
     function setUp() public override {
-        super.setUp();
-
-        vm.warp(initSetupParams.zeroTimestamp + 1);
-        vm.warp(vm.getBlockTimestamp() + 0 * masterSetupParams.valSetDriver.getEpochDuration(0, new bytes(0)));
-
-        setGenesis();
+        VERIFICATION_TYPE = 0;
+        MasterGenesisSetupTest.setUp();
     }
 
     function test_verifyQuorumSig() public {
@@ -94,7 +90,7 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetup {
 
         bytes memory data = abi.encodeWithSelector(
             ISettlement.verifyQuorumSig.selector,
-            masterSetupParams.master.getLastCommittedHeaderEpoch(),
+            masterSetupParams.settlement.getLastCommittedHeaderEpoch(),
             abi.encode(messageHash),
             KEY_TYPE_BLS_BN254.getKeyTag(15),
             Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
@@ -102,7 +98,7 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetup {
             new bytes(0)
         );
         vm.startPrank(vars.deployer.addr);
-        (bool success, bytes memory ret) = address(masterSetupParams.master).call(data);
+        (bool success, bytes memory ret) = address(masterSetupParams.settlement).call(data);
 
         assertTrue(success);
         assertTrue(abi.decode(ret, (bool)));

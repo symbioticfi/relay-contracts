@@ -4,6 +4,10 @@ pragma solidity ^0.8.25;
 import {Network} from "../src/contracts/modules/network/Network.sol";
 
 contract MyNetwork is Network {
+    constructor(
+        address networkMiddlewareService
+    ) Network(networkMiddlewareService) {}
+
     function initialize(
         NetworkInitParams memory networkInitParams
     ) public virtual initializer {

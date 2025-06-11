@@ -34,7 +34,7 @@ contract TestSharedVaults is SharedVaults, NoPermissionManager, EqualStakeVPCalc
     }
 }
 
-contract SharedVaultsTest is InitSetup {
+contract SharedVaultsTest is InitSetupTest {
     TestSharedVaults private sharedVaults;
 
     address private owner = address(0x12345);
@@ -44,14 +44,12 @@ contract SharedVaultsTest is InitSetup {
     address dummyVaultFactory = address(0xBBB2);
 
     function setUp() public override {
-        InitSetup.setUp();
+        InitSetupTest.setUp();
         sharedVaults =
             new TestSharedVaults(address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory));
 
-        INetworkManager.NetworkManagerInitParams memory netInit = INetworkManager.NetworkManagerInitParams({
-            network: vars.network.addr,
-            subnetworkID: initSetupParams.subnetworkID
-        });
+        INetworkManager.NetworkManagerInitParams memory netInit =
+            INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkID: IDENTIFIER});
         IVaultManager.VaultManagerInitParams memory vaultInit =
             IVaultManager.VaultManagerInitParams({slashingWindow: 100, token: initSetupParams.masterChain.tokens[0]});
 

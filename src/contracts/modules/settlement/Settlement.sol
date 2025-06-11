@@ -51,8 +51,6 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
             revert Settlement_InvalidSigVerifier();
         }
 
-        $._requiredKeyTag.push(0, settlementInitParams.requiredKeyTag);
-        emit InitRequiredKeyTag(settlementInitParams.requiredKeyTag);
         $._sigVerifier.push(0, uint160(settlementInitParams.sigVerifier));
         emit InitSigVerifier(settlementInitParams.sigVerifier);
     }

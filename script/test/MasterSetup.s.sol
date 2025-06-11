@@ -4,45 +4,65 @@ pragma solidity ^0.8.25;
 import {Script, console2} from "forge-std/Script.sol";
 
 import {ISettlement} from "../../src/interfaces/modules/settlement/ISettlement.sol";
-import {IConfigProvider} from "../../src/interfaces/modules/valset-driver/IConfigProvider.sol";
+import {IOzOwnable} from "../../src/interfaces/modules/common/permissions/IOzOwnable.sol";
+import {INetworkManager} from "../../src/interfaces/base/INetworkManager.sol";
 import {IEpochManager} from "../../src/interfaces/base/IEpochManager.sol";
+import {IOzEIP712} from "../../src/interfaces/base/common/IOzEIP712.sol";
+import {IVaultManager} from "../../src/interfaces/base/IVaultManager.sol";
+import {IValSetDriver} from "../../src/interfaces/modules/valset-driver/IValSetDriver.sol";
+import {IConfigProvider} from "../../src/interfaces/modules/valset-driver/IConfigProvider.sol";
+import {IOperatorsWhitelist} from "../../src/interfaces/modules/voting-power/extensions/IOperatorsWhitelist.sol";
+import {IVotingPowerProvider} from "../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
+
+import {KeyTags} from "../../src/contracts/libraries/utils/KeyTags.sol";
+
+import {SigVerifierMock} from "../../test/mocks/SigVerifierMock.sol";
 
 import {KeyTags} from "../../src/contracts/libraries/utils/KeyTags.sol";
 import {KeyEcdsaSecp256k1} from "../../src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol";
 import {KeyBlsBn254, BN254} from "../../src/contracts/libraries/keys/KeyBlsBn254.sol";
-import {KEY_TYPE_BLS_BN254, KEY_TYPE_ECDSA_SECP256K1} from "../../src/contracts/base/KeyManager.sol";
 
 import {BN254G2} from "../../test/helpers/BN254G2.sol";
-
-import "./SecondarySetup.s.sol";
+import "./InitSetup.s.sol";
 
 import {SigVerifierBlsBn254ZK} from "../../src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol";
+import {SigVerifierBlsBn254Simple} from
+    "../../src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol";
 import {Verifier as Verifier_10} from "./data/zk/Verifier_10.sol";
 import {Verifier as Verifier_100} from "./data/zk/Verifier_100.sol";
 import {Verifier as Verifier_1000} from "./data/zk/Verifier_1000.sol";
 
-import {VotingPowerProviderSemiFull} from "../../test/mocks/VotingPowerProviderSemiFull.sol";
-import {MySettlement} from "../../examples/MySettlement.sol";
-import {MyKeyRegistry} from "../../examples/MyKeyRegistry.sol";
-import {MyValSetDriver} from "../../examples/MyValSetDriver.sol";
-import {IKeyRegistry} from "../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
-import {ISettlement} from "../../src/interfaces/modules/settlement/ISettlement.sol";
-import {IValSetDriver} from "../../src/interfaces/modules/valset-driver/IValSetDriver.sol";
-
 // forge script script/test/MasterSetup.s.sol:MasterSetupScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_MASTER
 
-contract MasterSetupScript is SecondarySetupScript {
+contract MasterSetupScript is InitSetupScript {
     using KeyTags for uint8;
     using KeyBlsBn254 for BN254.G1Point;
     using BN254 for BN254.G1Point;
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
     using KeyEcdsaSecp256k1 for KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1;
+    using SymbioticSubnetwork for address;
 
     struct MasterSetupParams {
-        MyKeyRegistry keyRegistry;
-        MySettlement master;
+        address keyRegistry;
+        MySettlement settlement;
         MyValSetDriver valSetDriver;
         VotingPowerProviderSemiFull votingPowerProvider;
+    }
+
+    struct NetworkSetupParams {
+        uint256 OPERATORS_TO_REGISTER;
+        uint48 EPOCH_DURATION;
+        uint48 SLASHING_WINDOW;
+        uint32 VERIFICATION_TYPE;
+        uint96 SUBNETWORK_ID;
+    }
+
+    struct LocalVars {
+        uint8[] requiredKeyTags;
+        IConfigProvider.CrossChainAddress[] votingPowerProviders;
+        IConfigProvider.CrossChainAddress[] replicas;
+        IConfigProvider.CrossChainAddress keysProvider;
+        address sigVerifier;
     }
 
     function run(
@@ -51,15 +71,25 @@ contract MasterSetupScript is SecondarySetupScript {
         SYMBIOTIC_CORE_PROJECT_ROOT = "lib/core/";
         SymbioticInit.run(seed);
 
+        NetworkSetupParams memory networkSetupParams;
+
+        networkSetupParams.OPERATORS_TO_REGISTER = vm.envOr("OPERATORS", uint256(4));
+        networkSetupParams.EPOCH_DURATION = uint48(vm.envOr("EPOCH_DURATION", uint256(60)));
+        networkSetupParams.SLASHING_WINDOW = uint48(vm.envOr("SLASHING_WINDOW", uint256(1200)));
+        networkSetupParams.VERIFICATION_TYPE = uint32(vm.envOr("VERIFICATION_TYPE", uint256(1)));
+        networkSetupParams.SUBNETWORK_ID = IDENTIFIER;
+
+        if (networkSetupParams.OPERATORS_TO_REGISTER > SYMBIOTIC_CORE_NUMBER_OF_OPERATORS) {
+            revert("Too many operators to register");
+        }
+
         string memory obj = "data";
         string memory finalJson;
         (InitSetupParams memory initSetupParams, Vars memory vars) = loadInitSetupParamsAndVars();
         symbioticCore = initSetupParams.masterChain.core;
-        // SecondarySetupParams memory secondarySetupParams = loadSecondarySetupParams();
         MasterSetupParams memory masterSetupParams;
 
         vm.startBroadcast(vars.deployer.privateKey);
-        console2.log("MyVotingPowerProvider nonce", vm.getNonce(vars.deployer.addr));
         masterSetupParams.votingPowerProvider = new VotingPowerProviderSemiFull(
             address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory)
         );
@@ -67,13 +97,13 @@ contract MasterSetupScript is SecondarySetupScript {
             IVotingPowerProvider.VotingPowerProviderInitParams({
                 networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
                     network: vars.network.addr,
-                    subnetworkID: initSetupParams.subnetworkID
+                    subnetworkID: networkSetupParams.SUBNETWORK_ID
                 }),
                 vaultManagerInitParams: IVaultManager.VaultManagerInitParams({
-                    slashingWindow: initSetupParams.slashingWindow,
+                    slashingWindow: networkSetupParams.SLASHING_WINDOW,
                     token: initSetupParams.masterChain.tokens[0]
                 }),
-                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"})
+                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "VotingPowerProvider", version: "1"})
             }),
             IOzOwnable.OzOwnableInitParams({owner: vars.network.addr}),
             IOperatorsWhitelist.OperatorsWhitelistInitParams({isWhitelistEnabled: false})
@@ -83,97 +113,33 @@ contract MasterSetupScript is SecondarySetupScript {
 
         _networkSetMiddleware_SymbioticCore(vars.network.addr, address(masterSetupParams.votingPowerProvider));
 
-        // for (uint256 i; i < initSetupParams.masterChain.tokens.length; ++i) {
-        //     vm.startBroadcast(vars.deployer.privateKey);
-        //     masterSetupParams.votingPowerProvider.registerToken(initSetupParams.masterChain.tokens[i]);
-        //     vm.stopBroadcast();
-        // }
+        for (uint256 i; i < initSetupParams.masterChain.tokens.length; ++i) {
+            vm.startBroadcast(vars.deployer.privateKey);
+            masterSetupParams.votingPowerProvider.registerToken(initSetupParams.masterChain.tokens[i]);
+            vm.stopBroadcast();
+        }
         for (uint256 i; i < initSetupParams.masterChain.vaults.length; ++i) {
-            _setMaxNetworkLimit_SymbioticCore(
-                vars.network.addr,
-                initSetupParams.masterChain.vaults[i],
-                initSetupParams.subnetworkID,
-                type(uint256).max
-            );
-            _setNetworkLimit_SymbioticCore(
-                vars.deployer.addr,
-                initSetupParams.masterChain.vaults[i],
-                masterSetupParams.votingPowerProvider.SUBNETWORK(),
-                type(uint256).max
-            );
-            for (uint256 j; j < vars.operators.length; ++j) {
-                _setOperatorNetworkShares_SymbioticCore(
-                    vars.deployer.addr,
-                    initSetupParams.masterChain.vaults[i],
-                    masterSetupParams.votingPowerProvider.SUBNETWORK(),
-                    vars.operators[j].addr,
-                    1e18
-                );
-            }
             vm.startBroadcast(vars.network.privateKey);
             masterSetupParams.votingPowerProvider.registerSharedVault(initSetupParams.masterChain.vaults[i]);
             vm.stopBroadcast();
         }
 
-        vm.startBroadcast(vars.deployer.privateKey);
-        console2.log("KeyRegistry nonce", vm.getNonce(vars.deployer.addr));
-        masterSetupParams.keyRegistry = new MyKeyRegistry();
-        masterSetupParams.keyRegistry.initialize(
-            IKeyRegistry.KeyRegistryInitParams({
-                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "KeyRegistry", version: "1"})
-            })
-        );
-        vm.stopBroadcast();
-        vm.serializeAddress(obj, "keyRegistry", address(masterSetupParams.keyRegistry));
+        masterSetupParams.keyRegistry = initSetupParams.keyRegistry;
+        vm.serializeAddress(obj, "keyRegistry", initSetupParams.keyRegistry);
 
-        for (uint256 i; i < vars.operators.length; ++i) {
-            _operatorOptInWeak_SymbioticCore(vars.operators[i].addr, vars.network.addr);
-
-            for (uint256 j; j < initSetupParams.masterChain.vaults.length; ++j) {
-                _operatorOptInWeak_SymbioticCore(vars.operators[i].addr, initSetupParams.masterChain.vaults[j]);
-            }
-
-            vm.startBroadcast(vars.operators[i].privateKey);
+        for (uint256 i; i < networkSetupParams.OPERATORS_TO_REGISTER; ++i) {
+            Vm.Wallet memory operator = getOperator(i);
+            vm.startBroadcast(operator.privateKey);
             masterSetupParams.votingPowerProvider.registerOperator();
             vm.stopBroadcast();
-
-            {
-                vm.startBroadcast(vars.operators[i].privateKey);
-                bytes memory key1Bytes = KeyEcdsaSecp256k1.wrap(vars.operators[i].addr).toBytes();
-                bytes32 messageHash1 = masterSetupParams.keyRegistry.hashTypedDataV4(
-                    keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, vars.operators[i].addr, keccak256(key1Bytes)))
-                );
-                (uint8 v, bytes32 r, bytes32 s) = vm.sign(vars.operators[i].privateKey, messageHash1);
-                bytes memory signature1 = abi.encodePacked(r, s, v);
-                masterSetupParams.keyRegistry.setKey(
-                    KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0), key1Bytes, signature1, new bytes(0)
-                );
-                vm.stopBroadcast();
-            }
-
-            {
-                vm.startBroadcast(vars.operators[i].privateKey);
-                BN254.G1Point memory keyG1 = BN254.generatorG1().scalar_mul(vars.operators[i].privateKey);
-                BN254.G2Point memory keyG2 = getG2Key(vars.operators[i].privateKey);
-                bytes memory key0Bytes = KeyBlsBn254.wrap(keyG1).toBytes();
-                bytes32 messageHash0 = masterSetupParams.keyRegistry.hashTypedDataV4(
-                    keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, vars.operators[i].addr, keccak256(key0Bytes)))
-                );
-                BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash0);
-                BN254.G1Point memory sigG1 = messageG1.scalar_mul(vars.operators[i].privateKey);
-                masterSetupParams.keyRegistry.setKey(
-                    KEY_TYPE_BLS_BN254.getKeyTag(15), key0Bytes, abi.encode(sigG1), abi.encode(keyG2)
-                );
-                vm.stopBroadcast();
-            }
         }
 
         vm.startBroadcast(vars.deployer.privateKey);
-        console2.log("Master nonce", vm.getNonce(vars.deployer.addr));
-        masterSetupParams.master = new MySettlement{salt: bytes32("master")}();
+        masterSetupParams.settlement = new MySettlement();
         {
-            address sigVerifier;
-            {
+            LocalVars memory localVars;
+
+            if (networkSetupParams.VERIFICATION_TYPE == 0) {
                 address[] memory verifiers = new address[](3);
                 verifiers[0] = address(new Verifier_10());
                 verifiers[1] = address(new Verifier_100());
@@ -182,68 +148,68 @@ contract MasterSetupScript is SecondarySetupScript {
                 maxValidators[0] = 10;
                 maxValidators[1] = 100;
                 maxValidators[2] = 1000;
-                sigVerifier = address(new SigVerifierBlsBn254ZK(verifiers, maxValidators));
+                localVars.sigVerifier = address(new SigVerifierBlsBn254ZK(verifiers, maxValidators));
+            } else if (networkSetupParams.VERIFICATION_TYPE == 1) {
+                localVars.sigVerifier = address(new SigVerifierBlsBn254Simple());
+            } else {
+                revert("Invalid verification type");
             }
-            masterSetupParams.master.initialize(
+
+            masterSetupParams.settlement.initialize(
                 ISettlement.SettlementInitParams({
                     networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
                         network: vars.network.addr,
-                        subnetworkID: initSetupParams.subnetworkID
+                        subnetworkID: networkSetupParams.SUBNETWORK_ID
                     }),
                     ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
-                    requiredKeyTag: KEY_TYPE_BLS_BN254.getKeyTag(15),
-                    sigVerifier: sigVerifier
+                    sigVerifier: localVars.sigVerifier
                 }),
                 vars.deployer.addr
             );
         }
         vm.stopBroadcast();
-        vm.serializeAddress(obj, "master", address(masterSetupParams.master));
+        vm.serializeAddress(obj, "settlement", address(masterSetupParams.settlement));
 
         vm.startBroadcast(vars.deployer.privateKey);
-        console2.log("ValSetDriver nonce", vm.getNonce(vars.deployer.addr));
         masterSetupParams.valSetDriver = new MyValSetDriver{salt: bytes32("valSetDriver")}();
         {
-            uint8[] memory requiredKeyTags = new uint8[](2);
-            requiredKeyTags[0] = KEY_TYPE_BLS_BN254.getKeyTag(15);
-            requiredKeyTags[1] = KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0);
-            IConfigProvider.CrossChainAddress[] memory votingPowerProviders = new IConfigProvider.CrossChainAddress[](1);
-            // IConfigProvider.CrossChainAddress[] memory votingPowerProviders =
-            //     new IConfigProvider.CrossChainAddress[](2);
-            votingPowerProviders[0] = IConfigProvider.CrossChainAddress({
+            LocalVars memory localVars;
+
+            localVars.requiredKeyTags = new uint8[](1);
+            localVars.requiredKeyTags[0] = KEY_TYPE_BLS_BN254.getKeyTag(15);
+
+            localVars.votingPowerProviders = new IConfigProvider.CrossChainAddress[](1);
+            localVars.votingPowerProviders[0] = IConfigProvider.CrossChainAddress({
                 addr: address(masterSetupParams.votingPowerProvider),
                 chainId: uint64(initSetupParams.masterChain.chainId)
             });
-            // votingPowerProviders[1] = IConfigProvider.CrossChainAddress({
-            //     addr: address(secondarySetupParams.votingPowerProvider),
-            //     chainId: uint64(initSetupParams.secondaryChain.chainId)
-            // });
-            IConfigProvider.CrossChainAddress memory keysProvider = IConfigProvider.CrossChainAddress({
+
+            localVars.keysProvider = IConfigProvider.CrossChainAddress({
                 addr: address(masterSetupParams.keyRegistry),
                 chainId: uint64(initSetupParams.masterChain.chainId)
             });
-            IConfigProvider.CrossChainAddress[] memory replicas = new IConfigProvider.CrossChainAddress[](0);
-            // IConfigProvider.CrossChainAddress[] memory replicas = new IConfigProvider.CrossChainAddress[](1);
-            // replicas[0] = IConfigProvider.CrossChainAddress({
-            //     addr: address(secondarySetupParams.replica),
-            //     chainId: uint64(initSetupParams.secondaryChain.chainId)
-            // });
+            localVars.replicas = new IConfigProvider.CrossChainAddress[](1);
+            localVars.replicas[0] = IConfigProvider.CrossChainAddress({
+                addr: address(masterSetupParams.settlement),
+                chainId: uint64(initSetupParams.masterChain.chainId)
+            });
+
             masterSetupParams.valSetDriver.initialize(
                 IValSetDriver.ValSetDriverInitParams({
                     epochManagerInitParams: IEpochManager.EpochManagerInitParams({
-                        epochDuration: initSetupParams.epochDuration,
-                        epochDurationTimestamp: initSetupParams.zeroTimestamp
+                        epochDuration: networkSetupParams.EPOCH_DURATION,
+                        epochDurationTimestamp: uint48(vm.getBlockTimestamp() + vm.envOr("DEPLOYMENT_BUFFER", uint256(600)))
                     }),
                     configProviderInitParams: IConfigProvider.ConfigProviderInitParams({
-                        votingPowerProviders: votingPowerProviders,
-                        keysProvider: keysProvider,
-                        replicas: replicas,
-                        verificationType: 0,
+                        votingPowerProviders: localVars.votingPowerProviders,
+                        keysProvider: localVars.keysProvider,
+                        replicas: localVars.replicas,
+                        verificationType: networkSetupParams.VERIFICATION_TYPE,
                         maxVotingPower: 1e36,
                         minInclusionVotingPower: 0,
                         maxValidatorsCount: 99_999_999,
-                        requiredKeyTags: requiredKeyTags,
-                        requiredKeyTag: requiredKeyTags[0]
+                        requiredKeyTags: localVars.requiredKeyTags,
+                        requiredKeyTag: localVars.requiredKeyTags[0]
                     })
                 }),
                 vars.deployer.addr
@@ -252,21 +218,46 @@ contract MasterSetupScript is SecondarySetupScript {
         vm.stopBroadcast();
         finalJson = vm.serializeAddress(obj, "valSetDriver", address(masterSetupParams.valSetDriver));
 
-        console2.log("Master - VotingPowerProvider: ", address(masterSetupParams.votingPowerProvider));
-        console2.log("Master - KeyRegistry: ", address(masterSetupParams.keyRegistry));
-        console2.log("Master - Settlement: ", address(masterSetupParams.master));
-        console2.log("Master - ValSetDriver: ", address(masterSetupParams.valSetDriver));
+        console2.log("-----------------------------------------------------------------------------------------------");
+        console2.log("Network address: ", vars.network.addr);
+        console2.log("VotingPowerProvider address: ", address(masterSetupParams.votingPowerProvider));
+        console2.log("KeyRegistry address: ", address(masterSetupParams.keyRegistry));
+        console2.log("Settlement address: ", address(masterSetupParams.settlement));
+        console2.log(
+            "ValSetDriver address: ",
+            address(masterSetupParams.valSetDriver),
+            "<--- USE THIS ADDRESS IN OFF-CHAIN CONFIG"
+        );
+        console2.log("-----------------------------------------------------------------------------------------------");
+
+        console2.log("-----------------------------------------------------------------------------------------------");
+        console2.log("Network config: ");
+        console2.log("  Subnetwork ID: ", networkSetupParams.SUBNETWORK_ID);
+        console2.log("  Slashing window: ", networkSetupParams.SLASHING_WINDOW);
+        console2.log("  Epoch duration: ", networkSetupParams.EPOCH_DURATION);
+        console2.log("  Verification type: ", networkSetupParams.VERIFICATION_TYPE == 0 ? "ZK" : "Simple");
+        console2.log("-----------------------------------------------------------------------------------------------");
+
+        console2.log("-----------------------------------------------------------------------------------------------");
+        uint256 totalVotingPower;
+        console2.log("Registred operators: ", networkSetupParams.OPERATORS_TO_REGISTER);
+        for (uint256 i; i < networkSetupParams.OPERATORS_TO_REGISTER; ++i) {
+            Vm.Wallet memory operator = getOperator(i);
+            uint256 operatorVotingPower;
+            IVaultManager.VaultVotingPower[] memory operatorVotingPowers =
+                masterSetupParams.votingPowerProvider.getOperatorVotingPowers(operator.addr, new bytes(0));
+            for (uint256 j; j < operatorVotingPowers.length; ++j) {
+                operatorVotingPower += operatorVotingPowers[j].votingPower;
+            }
+            console2.log("  ", operator.addr);
+            console2.log("      Voting power: ", operatorVotingPower);
+            console2.log("      Private key: ", operator.privateKey);
+            totalVotingPower += operatorVotingPower;
+        }
+        console2.log("Total voting power: ", totalVotingPower);
+        console2.log("-----------------------------------------------------------------------------------------------");
 
         vm.writeJson(finalJson, "script/test/data/master_setup_params.json");
-    }
-
-    function getG2Key(
-        uint256 privateKey
-    ) public view returns (BN254.G2Point memory) {
-        BN254.G2Point memory G2 = BN254.generatorG2();
-        (uint256 x1, uint256 x2, uint256 y1, uint256 y2) =
-            BN254G2.ECTwistMul(privateKey, G2.X[1], G2.X[0], G2.Y[1], G2.Y[0]);
-        return BN254.G2Point([x2, x1], [y2, y1]);
     }
 
     function loadMasterSetupParams() public returns (MasterSetupParams memory masterSetupParams) {

@@ -6,12 +6,7 @@ import {OzOwnable} from "../src/contracts/modules/common/permissions/OzOwnable.s
 import {EqualStakeVPCalc} from "../src/contracts/modules/voting-power/extensions/EqualStakeVPCalc.sol";
 import {OperatorVaults} from "../src/contracts/modules/voting-power/extensions/OperatorVaults.sol";
 
-contract MyVotingPowerProvider is
-    VotingPowerProvider,
-    OzOwnable,
-    EqualStakeVPCalc,
-    OperatorVaults
-{
+contract MyVotingPowerProvider is VotingPowerProvider, OzOwnable, EqualStakeVPCalc, OperatorVaults {
     constructor(address operatorRegistry, address vaultFactory) VotingPowerProvider(operatorRegistry, vaultFactory) {}
 
     function initialize(

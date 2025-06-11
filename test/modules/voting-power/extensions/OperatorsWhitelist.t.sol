@@ -43,7 +43,7 @@ contract TestOperatorsWhitelist is
     }
 }
 
-contract OperatorsWhitelistTest is Test, InitSetup {
+contract OperatorsWhitelistTest is Test, InitSetupTest {
     TestOperatorsWhitelist private whitelistOps;
 
     address operator1;
@@ -54,15 +54,13 @@ contract OperatorsWhitelistTest is Test, InitSetup {
     address vaultB;
 
     function setUp() public override {
-        InitSetup.setUp();
+        InitSetupTest.setUp();
 
         whitelistOps =
             new TestOperatorsWhitelist(address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory));
 
-        INetworkManager.NetworkManagerInitParams memory netInit = INetworkManager.NetworkManagerInitParams({
-            network: vars.network.addr,
-            subnetworkID: initSetupParams.subnetworkID
-        });
+        INetworkManager.NetworkManagerInitParams memory netInit =
+            INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkID: IDENTIFIER});
         IVaultManager.VaultManagerInitParams memory vaultInit =
             IVaultManager.VaultManagerInitParams({slashingWindow: 100, token: initSetupParams.masterChain.tokens[0]});
         IOperatorsWhitelist.OperatorsWhitelistInitParams memory wlInit =
@@ -77,8 +75,8 @@ contract OperatorsWhitelistTest is Test, InitSetup {
 
         whitelistOps.initialize(votingPowerProviderInit, wlInit);
 
-        operator1 = vars.operators[0].addr;
-        operator1Pk = vars.operators[0].privateKey;
+        operator1 = getOperator(0).addr;
+        operator1Pk = getOperator(0).privateKey;
 
         // whitelistOps.registerToken(initSetupParams.masterChain.tokens[0]);
 

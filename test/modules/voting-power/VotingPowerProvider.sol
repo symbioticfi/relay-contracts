@@ -35,19 +35,17 @@ contract TestVotingPowerProvider is
     }
 }
 
-contract VotingPowerProviderTest is InitSetup {
+contract VotingPowerProviderTest is InitSetupTest {
     TestVotingPowerProvider private votingPowerProvider;
 
     function setUp() public override {
-        InitSetup.setUp();
+        InitSetupTest.setUp();
 
         votingPowerProvider =
             new TestVotingPowerProvider(address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory));
 
-        INetworkManager.NetworkManagerInitParams memory netInit = INetworkManager.NetworkManagerInitParams({
-            network: vars.network.addr,
-            subnetworkID: initSetupParams.subnetworkID
-        });
+        INetworkManager.NetworkManagerInitParams memory netInit =
+            INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkID: IDENTIFIER});
         IVaultManager.VaultManagerInitParams memory vaultInit =
             IVaultManager.VaultManagerInitParams({slashingWindow: 100, token: initSetupParams.masterChain.tokens[0]});
 
@@ -70,7 +68,7 @@ contract VotingPowerProviderTest is InitSetup {
     function test_RegisterOperator() public {
         address vault = _getVault_SymbioticCore(
             VaultParams({
-                owner: vars.operators[0].addr,
+                owner: getOperator(0).addr,
                 collateral: initSetupParams.masterChain.tokens[0],
                 burner: 0x000000000000000000000000000000000000dEaD,
                 epochDuration: votingPowerProvider.getSlashingWindow() * 2,
@@ -85,25 +83,25 @@ contract VotingPowerProviderTest is InitSetup {
             })
         );
 
-        vm.startPrank(vars.operators[0].addr);
+        vm.startPrank(getOperator(0).addr);
         votingPowerProvider.registerOperator();
         vm.stopPrank();
 
-        votingPowerProvider.registerOperatorVault(vars.operators[0].addr, vault);
+        votingPowerProvider.registerOperatorVault(getOperator(0).addr, vault);
 
-        assertTrue(votingPowerProvider.isOperatorRegistered(vars.operators[0].addr), "Operator should be registered");
+        assertTrue(votingPowerProvider.isOperatorRegistered(getOperator(0).addr), "Operator should be registered");
         assertTrue(
-            votingPowerProvider.isOperatorVaultRegistered(vars.operators[0].addr, vault), "Vault should be registered"
+            votingPowerProvider.isOperatorVaultRegistered(getOperator(0).addr, vault), "Vault should be registered"
         );
         assertTrue(votingPowerProvider.isOperatorVaultRegistered(vault), "Vault should be registered");
 
-        vm.startPrank(vars.operators[0].addr);
+        vm.startPrank(getOperator(0).addr);
         votingPowerProvider.unregisterOperator();
         vm.stopPrank();
 
-        assertFalse(votingPowerProvider.isOperatorRegistered(vars.operators[0].addr), "Operator should be unregistered");
+        assertFalse(votingPowerProvider.isOperatorRegistered(getOperator(0).addr), "Operator should be unregistered");
         assertTrue(
-            votingPowerProvider.isOperatorVaultRegistered(vars.operators[0].addr, vault), "Vault should be unregistered"
+            votingPowerProvider.isOperatorVaultRegistered(getOperator(0).addr, vault), "Vault should be unregistered"
         );
         assertTrue(votingPowerProvider.isOperatorVaultRegistered(vault), "Vault should be unregistered");
     }
@@ -111,7 +109,7 @@ contract VotingPowerProviderTest is InitSetup {
     function test_RegisterOperatorVault() public {
         address vault = _getVault_SymbioticCore(
             VaultParams({
-                owner: vars.operators[0].addr,
+                owner: getOperator(0).addr,
                 collateral: initSetupParams.masterChain.tokens[0],
                 burner: 0x000000000000000000000000000000000000dEaD,
                 epochDuration: votingPowerProvider.getSlashingWindow() * 2,
@@ -126,32 +124,32 @@ contract VotingPowerProviderTest is InitSetup {
             })
         );
 
-        vm.startPrank(vars.operators[0].addr);
+        vm.startPrank(getOperator(0).addr);
         votingPowerProvider.registerOperator();
         vm.stopPrank();
 
-        votingPowerProvider.registerOperatorVault(vars.operators[0].addr, vault);
+        votingPowerProvider.registerOperatorVault(getOperator(0).addr, vault);
 
-        assertTrue(votingPowerProvider.isOperatorRegistered(vars.operators[0].addr), "Operator should be registered");
+        assertTrue(votingPowerProvider.isOperatorRegistered(getOperator(0).addr), "Operator should be registered");
         assertTrue(
-            votingPowerProvider.isOperatorVaultRegistered(vars.operators[0].addr, vault), "Vault should be registered"
+            votingPowerProvider.isOperatorVaultRegistered(getOperator(0).addr, vault), "Vault should be registered"
         );
         assertTrue(votingPowerProvider.isOperatorVaultRegistered(vault), "Vault should be registered");
 
-        vm.startPrank(vars.operators[0].addr);
-        votingPowerProvider.unregisterOperatorVault(vars.operators[0].addr, vault);
+        vm.startPrank(getOperator(0).addr);
+        votingPowerProvider.unregisterOperatorVault(getOperator(0).addr, vault);
         vm.stopPrank();
 
-        assertTrue(votingPowerProvider.isOperatorRegistered(vars.operators[0].addr), "Operator should be registered");
+        assertTrue(votingPowerProvider.isOperatorRegistered(getOperator(0).addr), "Operator should be registered");
         assertFalse(
-            votingPowerProvider.isOperatorVaultRegistered(vars.operators[0].addr, vault), "Vault should be unregistered"
+            votingPowerProvider.isOperatorVaultRegistered(getOperator(0).addr, vault), "Vault should be unregistered"
         );
         assertFalse(votingPowerProvider.isOperatorVaultRegistered(vault), "Vault should be unregistered");
     }
 
     function test_registerOperatorWithSignature() public {
-        address operatorAddr = vars.operators[0].addr;
-        uint256 operatorPk = vars.operators[0].privateKey;
+        address operatorAddr = getOperator(0).addr;
+        uint256 operatorPk = getOperator(0).privateKey;
 
         uint256 currentNonce = votingPowerProvider.nonces(operatorAddr);
 
@@ -191,8 +189,8 @@ contract VotingPowerProviderTest is InitSetup {
     }
 
     function test_registerOperatorWithSignature_RevertIfInvalidSig() public {
-        address operatorAddr = vars.operators[0].addr;
-        uint256 operatorPk = vars.operators[0].privateKey;
+        address operatorAddr = getOperator(0).addr;
+        uint256 operatorPk = getOperator(0).privateKey;
 
         uint256 wrongPk = 0x999999999;
         address someVault = _getVault_SymbioticCore(
@@ -226,7 +224,7 @@ contract VotingPowerProviderTest is InitSetup {
     }
 
     function test_IncreaseNonce() public {
-        address operatorAddr = vars.operators[0].addr;
+        address operatorAddr = getOperator(0).addr;
         uint256 oldNonce = votingPowerProvider.nonces(operatorAddr);
         assertEq(oldNonce, 0, "Initial nonce is 0");
 
@@ -238,8 +236,8 @@ contract VotingPowerProviderTest is InitSetup {
     }
 
     function test_unregisterOperatorWithSignature() public {
-        address operatorAddr = vars.operators[0].addr;
-        uint256 operatorPk = vars.operators[0].privateKey;
+        address operatorAddr = getOperator(0).addr;
+        uint256 operatorPk = getOperator(0).privateKey;
 
         vm.prank(operatorAddr);
         votingPowerProvider.registerOperator();

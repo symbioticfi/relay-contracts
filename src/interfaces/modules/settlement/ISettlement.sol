@@ -22,7 +22,6 @@ interface ISettlement {
     /// @custom:storage-location erc7201:symbiotic.storage.Settlement
     struct SettlementStorage {
         uint48 _lastCommittedHeaderEpoch;
-        Checkpoints.Trace208 _requiredKeyTag;
         Checkpoints.Trace208 _sigVerifier;
         mapping(uint48 epoch => ValSetHeader) _valSetHeader;
         mapping(uint48 epoch => mapping(bytes32 key => bytes32 value)) _extraData;
@@ -31,7 +30,6 @@ interface ISettlement {
     struct SettlementInitParams {
         INetworkManager.NetworkManagerInitParams networkManagerInitParams;
         IOzEIP712.OzEIP712InitParams ozEip712InitParams;
-        uint8 requiredKeyTag;
         address sigVerifier;
     }
 

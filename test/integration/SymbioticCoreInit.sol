@@ -331,7 +331,9 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
                     address(symbioticCore.vaultFactory)
                 )
             );
+            vm.startPrank(msgSender);
             symbioticCore.vaultFactory.whitelist(vaultImpl);
+            vm.stopPrank();
 
             console2.log(address(vaultImpl));
 
@@ -343,7 +345,9 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
                     address(symbioticCore.vaultFactory)
                 )
             );
+            vm.startPrank(msgSender);
             symbioticCore.vaultFactory.whitelist(vaultTokenizedImpl);
+            vm.stopPrank();
 
             address networkRestakeDelegatorImpl = deployCode(
                 string.concat(
@@ -358,7 +362,9 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
                     symbioticCore.delegatorFactory.totalTypes()
                 )
             );
+            vm.startPrank(msgSender);
             symbioticCore.delegatorFactory.whitelist(networkRestakeDelegatorImpl);
+            vm.stopPrank();
 
             console2.log(address(networkRestakeDelegatorImpl));
 
@@ -373,7 +379,9 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
                     symbioticCore.delegatorFactory.totalTypes()
                 )
             );
+            vm.startPrank(msgSender);
             symbioticCore.delegatorFactory.whitelist(fullRestakeDelegatorImpl);
+            vm.stopPrank();
 
             console2.log(address(fullRestakeDelegatorImpl));
 
@@ -391,7 +399,9 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
                     symbioticCore.delegatorFactory.totalTypes()
                 )
             );
+            vm.startPrank(msgSender);
             symbioticCore.delegatorFactory.whitelist(operatorSpecificDelegatorImpl);
+            vm.stopPrank();
 
             console2.log(address(operatorSpecificDelegatorImpl));
 
@@ -404,7 +414,9 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
                     symbioticCore.slasherFactory.totalTypes()
                 )
             );
+            vm.startPrank(msgSender);
             symbioticCore.slasherFactory.whitelist(slasherImpl);
+            vm.stopPrank();
 
             console2.log(address(slasherImpl));
 
@@ -418,7 +430,9 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
                     symbioticCore.slasherFactory.totalTypes()
                 )
             );
+            vm.startPrank(msgSender);
             symbioticCore.slasherFactory.whitelist(vetoSlasherImpl);
+            vm.stopPrank();
 
             console2.log(address(vetoSlasherImpl));
 
@@ -433,7 +447,7 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
                 )
             );
 
-            // console2.log(address(symbioticCore.vaultConfigurator));
+            console2.log(address(symbioticCore.vaultConfigurator));
         }
     }
 

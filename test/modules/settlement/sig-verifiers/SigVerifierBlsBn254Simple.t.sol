@@ -24,7 +24,7 @@ import {ISigVerifierBlsBn254Simple} from
     "../../../../src/interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254Simple.sol";
 import {IVotingPowerProvider} from "../../../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
 
-import {MasterGenesisSetup} from "../../../MasterGenesisSetup.sol";
+import {MasterSetupTest} from "../../../MasterSetup.sol";
 
 import {console2} from "forge-std/console2.sol";
 
@@ -48,7 +48,7 @@ import {ISettlement} from "../../../../src/interfaces/modules/settlement/ISettle
 import {IKeyRegistry} from "../../../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
 import {IValSetDriver} from "../../../../src/interfaces/modules/valset-driver/IValSetDriver.sol";
 
-contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
+contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
     using KeyTags for uint8;
     using KeyBlsBn254 for BN254.G1Point;
     using BN254 for BN254.G1Point;
@@ -68,16 +68,15 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
     }
 
     function setUp() public override {
-        InitSetup.setUp();
-
-        vm.warp(initSetupParams.zeroTimestamp + 1);
-
-        loadMasterSetupParamsSimple();
+        VERIFICATION_TYPE = 1;
+        MasterSetupTest.setUp();
 
         (ISettlement.ValSetHeader memory valSetHeader, ISettlement.ExtraData[] memory extraData) = loadGenesisSimple();
 
+        vm.warp(masterSetupParams.valSetDriver.getEpochStart(0, new bytes(0)) + 1);
+
         vm.startPrank(vars.deployer.addr);
-        masterSetupParams.master.setGenesis(valSetHeader, extraData);
+        masterSetupParams.settlement.setGenesis(valSetHeader, extraData);
         vm.stopPrank();
     }
 
@@ -87,12 +86,12 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
         BN254.G2Point memory aggKeyG2;
         BN254.G1Point memory aggSigG1;
 
-        for (uint256 i; i < vars.operators.length; ++i) {
-            BN254.G2Point memory keyG2 = getG2Key(vars.operators[i].privateKey);
+        for (uint256 i; i < networkSetupParams.OPERATORS_TO_REGISTER; ++i) {
+            BN254.G2Point memory keyG2 = getG2Key(getOperator(i).privateKey);
             BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash);
-            BN254.G1Point memory sigG1 = messageG1.scalar_mul(vars.operators[i].privateKey);
+            BN254.G1Point memory sigG1 = messageG1.scalar_mul(getOperator(i).privateKey);
 
-            if (i % 4 != 0) {
+            if (i % 6 != 0) {
                 aggSigG1 = aggSigG1.plus(sigG1);
 
                 if (aggKeyG2.X[0] == 0 && aggKeyG2.X[1] == 0 && aggKeyG2.Y[0] == 0 && aggKeyG2.Y[1] == 0) {
@@ -117,7 +116,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
         uint256[] memory nonSigners = new uint256[](validatorsData.length);
         uint256 nonSignersLength;
         for (uint256 i; i < validatorsData.length; ++i) {
-            if (i % 4 == 0) {
+            if (i % 6 == 0) {
                 nonSigners[nonSignersLength++] = i;
             }
         }
@@ -139,7 +138,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
 
         bytes memory data = abi.encodeWithSelector(
             ISettlement.verifyQuorumSig.selector,
-            masterSetupParams.master.getLastCommittedHeaderEpoch(),
+            masterSetupParams.settlement.getLastCommittedHeaderEpoch(),
             abi.encode(messageHash),
             KEY_TYPE_BLS_BN254.getKeyTag(15),
             Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
@@ -147,7 +146,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
             new bytes(0)
         );
         vm.startPrank(vars.deployer.addr);
-        (bool success, bytes memory result) = address(masterSetupParams.master).call(data);
+        (bool success, bytes memory result) = address(masterSetupParams.settlement).call(data);
         assertTrue(success);
         assertTrue(abi.decode(result, (bool)));
         // assertTrue(
@@ -162,191 +161,6 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
         //         new bytes(0)
         //     )
         // );
-        vm.stopPrank();
-    }
-
-    function loadMasterSetupParamsSimple() public {
-        vm.startPrank(vars.deployer.addr);
-        // vm.setNonce(vars.deployer.addr, 44);
-        masterSetupParams.votingPowerProvider = new VotingPowerProviderSemiFull(
-            address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory)
-        );
-
-        masterSetupParams.votingPowerProvider.initialize(
-            IVotingPowerProvider.VotingPowerProviderInitParams({
-                networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
-                    network: vars.network.addr,
-                    subnetworkID: initSetupParams.subnetworkID
-                }),
-                vaultManagerInitParams: IVaultManager.VaultManagerInitParams({
-                    slashingWindow: initSetupParams.slashingWindow,
-                    token: initSetupParams.masterChain.tokens[0]
-                }),
-                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"})
-            }),
-            IOzOwnable.OzOwnableInitParams({owner: vars.network.addr}),
-            IOperatorsWhitelist.OperatorsWhitelistInitParams({isWhitelistEnabled: false})
-        );
-        vm.stopPrank();
-
-        _networkSetMiddleware_SymbioticCore(vars.network.addr, address(masterSetupParams.votingPowerProvider));
-
-        // for (uint256 i; i < initSetupParams.masterChain.tokens.length; ++i) {
-        //     vm.startPrank(vars.deployer.addr);
-        //     masterSetupParams.votingPowerProvider.registerToken(initSetupParams.masterChain.tokens[i]);
-        //     vm.stopPrank();
-        // }
-        for (uint256 i; i < initSetupParams.masterChain.vaults.length; ++i) {
-            _setMaxNetworkLimit_SymbioticCore(
-                vars.network.addr,
-                initSetupParams.masterChain.vaults[i],
-                initSetupParams.subnetworkID,
-                type(uint256).max
-            );
-            _setNetworkLimit_SymbioticCore(
-                vars.deployer.addr,
-                initSetupParams.masterChain.vaults[i],
-                masterSetupParams.votingPowerProvider.SUBNETWORK(),
-                type(uint256).max
-            );
-            for (uint256 j; j < vars.operators.length; ++j) {
-                _setOperatorNetworkShares_SymbioticCore(
-                    vars.deployer.addr,
-                    initSetupParams.masterChain.vaults[i],
-                    masterSetupParams.votingPowerProvider.SUBNETWORK(),
-                    vars.operators[j].addr,
-                    1e18
-                );
-            }
-            vm.startPrank(vars.network.addr);
-            masterSetupParams.votingPowerProvider.registerSharedVault(initSetupParams.masterChain.vaults[i]);
-            vm.stopPrank();
-        }
-
-        vm.startPrank(vars.deployer.addr);
-        // vm.setNonce(vars.deployer.addr, 66);
-        masterSetupParams.keyRegistry = new MyKeyRegistry();
-        masterSetupParams.keyRegistry.initialize(
-            IKeyRegistry.KeyRegistryInitParams({
-                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "KeyRegistry", version: "1"})
-            })
-        );
-        vm.stopPrank();
-
-        for (uint256 i; i < vars.operators.length; ++i) {
-            _operatorOptInWeak_SymbioticCore(vars.operators[i].addr, vars.network.addr);
-
-            for (uint256 j; j < initSetupParams.masterChain.vaults.length; ++j) {
-                _operatorOptInWeak_SymbioticCore(vars.operators[i].addr, initSetupParams.masterChain.vaults[j]);
-            }
-
-            vm.startPrank(vars.operators[i].addr);
-            masterSetupParams.votingPowerProvider.registerOperator();
-            vm.stopPrank();
-
-            {
-                vm.startPrank(vars.operators[i].addr);
-                bytes memory key1Bytes = KeyEcdsaSecp256k1.wrap(vars.operators[i].addr).toBytes();
-                bytes32 messageHash1 = masterSetupParams.keyRegistry.hashTypedDataV4(
-                    keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, vars.operators[i].addr, keccak256(key1Bytes)))
-                );
-                (uint8 v, bytes32 r, bytes32 s) = vm.sign(vars.operators[i].privateKey, messageHash1);
-                bytes memory signature1 = abi.encodePacked(r, s, v);
-                masterSetupParams.keyRegistry.setKey(
-                    KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0), key1Bytes, signature1, new bytes(0)
-                );
-                vm.stopPrank();
-            }
-
-            {
-                vm.startPrank(vars.operators[i].addr);
-                BN254.G1Point memory keyG1 = BN254.generatorG1().scalar_mul(vars.operators[i].privateKey);
-                BN254.G2Point memory keyG2 = getG2Key(vars.operators[i].privateKey);
-                bytes memory key0Bytes = KeyBlsBn254.wrap(keyG1).toBytes();
-                bytes32 messageHash0 = masterSetupParams.keyRegistry.hashTypedDataV4(
-                    keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, vars.operators[i].addr, keccak256(key0Bytes)))
-                );
-                BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash0);
-                BN254.G1Point memory sigG1 = messageG1.scalar_mul(vars.operators[i].privateKey);
-                masterSetupParams.keyRegistry.setKey(
-                    KEY_TYPE_BLS_BN254.getKeyTag(15), key0Bytes, abi.encode(sigG1), abi.encode(keyG2)
-                );
-                vm.stopPrank();
-            }
-        }
-
-        vm.startPrank(vars.deployer.addr);
-        // vm.setNonce(vars.deployer.addr, 68);
-        masterSetupParams.master = new MySettlement{salt: bytes32("master")}();
-        {
-            masterSetupParams.master.initialize(
-                ISettlement.SettlementInitParams({
-                    networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
-                        network: vars.network.addr,
-                        subnetworkID: initSetupParams.subnetworkID
-                    }),
-                    ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
-                    requiredKeyTag: KEY_TYPE_BLS_BN254.getKeyTag(15),
-                    sigVerifier: address(new SigVerifierBlsBn254Simple())
-                }),
-                vars.deployer.addr
-            );
-        }
-        vm.stopPrank();
-
-        vm.startPrank(vars.deployer.addr);
-        // vm.setNonce(vars.deployer.addr, 68);
-        masterSetupParams.valSetDriver = new MyValSetDriver{salt: bytes32("valSetDriver")}();
-        {
-            uint8[] memory requiredKeyTags = new uint8[](2);
-            requiredKeyTags[0] = KEY_TYPE_BLS_BN254.getKeyTag(15);
-            requiredKeyTags[1] = KEY_TYPE_ECDSA_SECP256K1.getKeyTag(0);
-            IConfigProvider.CrossChainAddress[] memory votingPowerProviders = new IConfigProvider.CrossChainAddress[](1);
-            // IConfigProvider.CrossChainAddress[] memory votingPowerProviders =
-            //     new IConfigProvider.CrossChainAddress[](2);
-            votingPowerProviders[0] = IConfigProvider.CrossChainAddress({
-                addr: address(masterSetupParams.votingPowerProvider),
-                chainId: uint64(initSetupParams.masterChain.chainId)
-            });
-            // votingPowerProviders[1] = IConfigProvider.CrossChainAddress({
-            //     addr: address(secondarySetupParams.votingPowerProvider),
-            //     chainId: uint64(initSetupParams.secondaryChain.chainId)
-            // });
-            IConfigProvider.CrossChainAddress memory keysProvider = IConfigProvider.CrossChainAddress({
-                addr: address(masterSetupParams.keyRegistry),
-                chainId: uint64(initSetupParams.masterChain.chainId)
-            });
-            IConfigProvider.CrossChainAddress[] memory replicas = new IConfigProvider.CrossChainAddress[](1);
-            // IConfigProvider.CrossChainAddress[] memory replicas = new IConfigProvider.CrossChainAddress[](2);
-            replicas[0] = IConfigProvider.CrossChainAddress({
-                addr: address(masterSetupParams.master),
-                chainId: uint64(initSetupParams.masterChain.chainId)
-            });
-            // replicas[0] = IConfigProvider.CrossChainAddress({
-            //     addr: address(secondarySetupParams.replica),
-            //     chainId: uint64(initSetupParams.secondaryChain.chainId)
-            // });
-            masterSetupParams.valSetDriver.initialize(
-                IValSetDriver.ValSetDriverInitParams({
-                    epochManagerInitParams: IEpochManager.EpochManagerInitParams({
-                        epochDuration: initSetupParams.epochDuration,
-                        epochDurationTimestamp: initSetupParams.zeroTimestamp + 1
-                    }),
-                    configProviderInitParams: IConfigProvider.ConfigProviderInitParams({
-                        votingPowerProviders: votingPowerProviders,
-                        keysProvider: keysProvider,
-                        replicas: replicas,
-                        verificationType: 0,
-                        maxVotingPower: 1e36,
-                        minInclusionVotingPower: 0,
-                        maxValidatorsCount: 99_999_999,
-                        requiredKeyTags: requiredKeyTags,
-                        requiredKeyTag: requiredKeyTags[0]
-                    })
-                }),
-                vars.deployer.addr
-            );
-        }
         vm.stopPrank();
     }
 
@@ -366,14 +180,14 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
             version: 1,
             requiredKeyTag: 15,
             epoch: 0,
-            captureTimestamp: 1_731_325_031,
+            captureTimestamp: masterSetupParams.valSetDriver.getEpochStart(0, new bytes(0)),
             quorumThreshold: uint256(2).mulDiv(1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
             validatorsSszMRoot: 0x0000000000000000000000000000000000000000000000000000000000000000,
             previousHeaderHash: 0x868e09d528a16744c1f38ea3c10cc2251e01a456434f91172247695087d129b7
         });
 
         extraData = new ISettlement.ExtraData[](3);
-        SigVerifierBlsBn254Simple sigVerifier = SigVerifierBlsBn254Simple(masterSetupParams.master.getSigVerifier());
+        SigVerifierBlsBn254Simple sigVerifier = SigVerifierBlsBn254Simple(masterSetupParams.settlement.getSigVerifier());
 
         {
             ISigVerifierBlsBn254Simple.ValidatorData[] memory validatorsData = getValidatorsData();
@@ -384,14 +198,6 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
             });
         }
         {
-            IVaultManager.OperatorVotingPower[] memory votingPowers =
-                masterSetupParams.votingPowerProvider.getVotingPowers(new bytes[](0));
-            uint256 totalVotingPower = 0;
-            for (uint256 i; i < votingPowers.length; ++i) {
-                for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
-                    totalVotingPower += votingPowers[i].vaults[j].votingPower;
-                }
-            }
             extraData[1] = ISettlement.ExtraData({
                 key: uint32(1).getKey(sigVerifier.TOTAL_VOTING_POWER()),
                 value: bytes32(totalVotingPower)
@@ -399,8 +205,8 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
         }
         {
             BN254.G1Point memory aggPublicKeyG1Raw;
-            for (uint256 i; i < vars.operators.length; ++i) {
-                BN254.G1Point memory keyG1 = BN254.generatorG1().scalar_mul(vars.operators[i].privateKey);
+            for (uint256 i; i < networkSetupParams.OPERATORS_TO_REGISTER; ++i) {
+                BN254.G1Point memory keyG1 = BN254.generatorG1().scalar_mul(getOperator(i).privateKey);
                 aggPublicKeyG1Raw = aggPublicKeyG1Raw.plus(keyG1);
             }
             bytes32 aggPublicKeyG1 = abi.decode(aggPublicKeyG1Raw.wrap().serialize(), (bytes32));
@@ -412,17 +218,15 @@ contract SigVerifierBlsBn254SimpleTest is MasterGenesisSetup {
         }
     }
 
-    function getValidatorsData()
-        public
-        view
-        returns (ISigVerifierBlsBn254Simple.ValidatorData[] memory validatorsData)
-    {
-        validatorsData = new ISigVerifierBlsBn254Simple.ValidatorData[](vars.operators.length);
-        for (uint256 i; i < vars.operators.length; ++i) {
-            BN254.G1Point memory keyG1 = BN254.generatorG1().scalar_mul(vars.operators[i].privateKey);
+    function getValidatorsData() public returns (ISigVerifierBlsBn254Simple.ValidatorData[] memory validatorsData) {
+        console2.log("getValidatorsData");
+        console2.log(networkSetupParams.OPERATORS_TO_REGISTER);
+        validatorsData = new ISigVerifierBlsBn254Simple.ValidatorData[](networkSetupParams.OPERATORS_TO_REGISTER);
+        for (uint256 i; i < networkSetupParams.OPERATORS_TO_REGISTER; ++i) {
+            BN254.G1Point memory keyG1 = BN254.generatorG1().scalar_mul(getOperator(i).privateKey);
             IVaultManager.VaultVotingPower[] memory votingPowers =
-                masterSetupParams.votingPowerProvider.getOperatorVotingPowers(vars.operators[i].addr, new bytes(0));
-            uint256 operatorVotingPower = 0;
+                masterSetupParams.votingPowerProvider.getOperatorVotingPowers(getOperator(i).addr, new bytes(0));
+            uint256 operatorVotingPower;
             for (uint256 j; j < votingPowers.length; ++j) {
                 operatorVotingPower += votingPowers[j].votingPower;
             }

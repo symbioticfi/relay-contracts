@@ -11,7 +11,7 @@ import {EqualStakeVPCalc} from "../../../../src/contracts/modules/voting-power/e
 import {INetworkManager} from "../../../../src/interfaces/base/INetworkManager.sol";
 import {IVaultManager} from "../../../../src/interfaces/base/IVaultManager.sol";
 import {IOperatorsBlacklist} from "../../../../src/interfaces/modules/voting-power/extensions/IOperatorsBlacklist.sol";
-import {InitSetup} from "../../../InitSetup.sol";
+import {InitSetupTest} from "../../../InitSetup.sol";
 import {VaultManager} from "../../../../src/contracts/base/VaultManager.sol";
 import {MultiToken} from "../../../../src/contracts/modules/voting-power/extensions/MultiToken.sol";
 import {IVotingPowerProvider} from "../../../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
@@ -43,7 +43,7 @@ contract TestOperatorsBlacklist is
     }
 }
 
-contract OperatorsBlacklistTest is InitSetup {
+contract OperatorsBlacklistTest is InitSetupTest {
     TestOperatorsBlacklist private blacklistOps;
 
     address operator1;
@@ -52,15 +52,13 @@ contract OperatorsBlacklistTest is InitSetup {
     address vault1;
 
     function setUp() public override {
-        InitSetup.setUp();
+        InitSetupTest.setUp();
 
         blacklistOps =
             new TestOperatorsBlacklist(address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory));
 
-        INetworkManager.NetworkManagerInitParams memory netInit = INetworkManager.NetworkManagerInitParams({
-            network: vars.network.addr,
-            subnetworkID: initSetupParams.subnetworkID
-        });
+        INetworkManager.NetworkManagerInitParams memory netInit =
+            INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkID: IDENTIFIER});
         IVaultManager.VaultManagerInitParams memory vaultInit =
             IVaultManager.VaultManagerInitParams({slashingWindow: 100, token: initSetupParams.masterChain.tokens[0]});
 
@@ -73,8 +71,8 @@ contract OperatorsBlacklistTest is InitSetup {
 
         blacklistOps.initialize(votingPowerProviderInit);
 
-        operator1 = vars.operators[0].addr;
-        operator1Pk = vars.operators[0].privateKey;
+        operator1 = getOperator(0).addr;
+        operator1Pk = getOperator(0).privateKey;
 
         // blacklistOps.registerToken(initSetupParams.masterChain.tokens[0]);
 

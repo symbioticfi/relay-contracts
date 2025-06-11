@@ -109,7 +109,7 @@ contract TestVaultManager is VaultManager, EqualStakeVPCalc {
     }
 }
 
-contract VaultManagerTest is InitSetup {
+contract VaultManagerTest is InitSetupTest {
     TestVaultManager vaultManager;
 
     address operator1 = address(0xAAA1);
@@ -143,7 +143,7 @@ contract VaultManagerTest is InitSetup {
     bytes4 private ERR_NO_SLASHER = IVaultManager.VaultManager_NoSlasher.selector;
 
     function setUp() public override {
-        InitSetup.setUp();
+        InitSetupTest.setUp();
 
         vaultManager =
             new TestVaultManager(address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory));
@@ -587,10 +587,8 @@ contract VaultManagerTest is InitSetup {
         vaultManager =
             new TestVaultManager(address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory));
 
-        INetworkManager.NetworkManagerInitParams memory netInit = INetworkManager.NetworkManagerInitParams({
-            network: vars.network.addr,
-            subnetworkID: initSetupParams.subnetworkID
-        });
+        INetworkManager.NetworkManagerInitParams memory netInit =
+            INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkID: IDENTIFIER});
         IVaultManager.VaultManagerInitParams memory vaultInit =
             IVaultManager.VaultManagerInitParams({slashingWindow: 100, token: initSetupParams.masterChain.tokens[0]});
         vaultManager.initialize(netInit, vaultInit);
@@ -603,39 +601,16 @@ contract VaultManagerTest is InitSetup {
         //     vm.stopPrank();
         // }
         for (uint256 i; i < initSetupParams.masterChain.vaults.length; ++i) {
-            _setMaxNetworkLimit_SymbioticCore(
-                vars.network.addr,
-                initSetupParams.masterChain.vaults[i],
-                initSetupParams.subnetworkID,
-                type(uint256).max
-            );
-            _setNetworkLimit_SymbioticCore(
-                vars.deployer.addr, initSetupParams.masterChain.vaults[i], vaultManager.SUBNETWORK(), type(uint256).max
-            );
-            for (uint256 j; j < vars.operators.length; ++j) {
-                _setOperatorNetworkShares_SymbioticCore(
-                    vars.deployer.addr,
-                    initSetupParams.masterChain.vaults[i],
-                    vaultManager.SUBNETWORK(),
-                    vars.operators[j].addr,
-                    1e18
-                );
-            }
             vm.startPrank(vars.network.addr);
             vaultManager.registerSharedVault(initSetupParams.masterChain.vaults[i]);
             vm.stopPrank();
         }
 
-        for (uint256 i; i < vars.operators.length; ++i) {
-            vm.startPrank(vars.operators[i].addr);
-            vaultManager.registerOperator(vars.operators[i].addr);
+        for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
+            Vm.Wallet memory operator = getOperator(i);
+            vm.startPrank(operator.addr);
+            vaultManager.registerOperator(operator.addr);
             vm.stopPrank();
-
-            _operatorOptInWeak_SymbioticCore(vars.operators[i].addr, vars.network.addr);
-
-            for (uint256 j; j < initSetupParams.masterChain.vaults.length; ++j) {
-                _operatorOptInWeak_SymbioticCore(vars.operators[i].addr, initSetupParams.masterChain.vaults[j]);
-            }
         }
 
         IVaultManager.OperatorVotingPower[] memory operatorVotingPowers1 = vaultManager.getVotingPowers(new bytes[](0));
@@ -643,46 +618,39 @@ contract VaultManagerTest is InitSetup {
             vaultManager.getVotingPowersAt(new bytes[](0), uint48(vm.getBlockTimestamp()));
 
         uint256 totalStake;
-        for (uint256 i; i < vars.operators.length; ++i) {
+        for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
+            Vm.Wallet memory operator = getOperator(i);
             IVaultManager.VaultVotingPower[] memory vaultVotingPowers1 =
-                vaultManager.getOperatorVotingPowers(vars.operators[i].addr, "");
+                vaultManager.getOperatorVotingPowers(operator.addr, "");
             IVaultManager.VaultVotingPower[] memory vaultVotingPowers2 =
-                vaultManager.getOperatorVotingPowersAt(vars.operators[i].addr, "", uint48(vm.getBlockTimestamp()));
+                vaultManager.getOperatorVotingPowersAt(operator.addr, "", uint48(vm.getBlockTimestamp()));
             uint256 operatorStake;
             for (uint256 j; j < initSetupParams.masterChain.vaults.length; ++j) {
                 uint256 operatorVaultStake = (
                     _normalizeForToken_Symbiotic(
-                        SYMBIOTIC_CORE_MIN_TOKENS_TO_DEPOSIT_TIMES_1e18, initSetupParams.masterChain.tokens[0]
+                        SYMBIOTIC_CORE_MIN_TOKENS_TO_DEPOSIT_TIMES_1e18 * SYMBIOTIC_CORE_NUMBER_OF_OPERATORS,
+                        initSetupParams.masterChain.tokens[0]
                     ) + j
-                ) / vars.operators.length;
+                ) / SYMBIOTIC_CORE_NUMBER_OF_OPERATORS;
                 assertEq(
-                    vaultManager.getOperatorStake(initSetupParams.masterChain.vaults[j], vars.operators[i].addr),
+                    vaultManager.getOperatorStake(initSetupParams.masterChain.vaults[j], operator.addr),
                     operatorVaultStake
                 );
                 assertEq(
                     vaultManager.getOperatorStakeAt(
-                        initSetupParams.masterChain.vaults[j],
-                        vars.operators[i].addr,
-                        uint48(vm.getBlockTimestamp()),
-                        ""
+                        initSetupParams.masterChain.vaults[j], operator.addr, uint48(vm.getBlockTimestamp()), ""
                     ),
                     operatorVaultStake
                 );
 
                 assertEq(
-                    vaultManager.getOperatorVotingPower(
-                        vars.operators[i].addr, initSetupParams.masterChain.vaults[j], ""
-                    ),
+                    vaultManager.getOperatorVotingPower(operator.addr, initSetupParams.masterChain.vaults[j], ""),
                     operatorVaultStake
                 );
 
                 assertEq(
                     vaultManager.getOperatorVotingPowerAt(
-                        vars.operators[i].addr,
-                        initSetupParams.masterChain.vaults[j],
-                        "",
-                        uint48(vm.getBlockTimestamp()),
-                        ""
+                        operator.addr, initSetupParams.masterChain.vaults[j], "", uint48(vm.getBlockTimestamp()), ""
                     ),
                     operatorVaultStake
                 );
@@ -690,10 +658,10 @@ contract VaultManagerTest is InitSetup {
                 assertEq(vaultVotingPowers1[j].votingPower, operatorVaultStake);
                 assertEq(vaultVotingPowers2[j].vault, initSetupParams.masterChain.vaults[j]);
                 assertEq(vaultVotingPowers2[j].votingPower, operatorVaultStake);
-                assertEq(operatorVotingPowers1[i].operator, vars.operators[i].addr);
+                assertEq(operatorVotingPowers1[i].operator, operator.addr);
                 assertEq(operatorVotingPowers1[i].vaults[j].vault, initSetupParams.masterChain.vaults[j]);
                 assertEq(operatorVotingPowers1[i].vaults[j].votingPower, operatorVaultStake);
-                assertEq(operatorVotingPowers2[i].operator, vars.operators[i].addr);
+                assertEq(operatorVotingPowers2[i].operator, operator.addr);
                 assertEq(operatorVotingPowers2[i].vaults[j].vault, initSetupParams.masterChain.vaults[j]);
                 assertEq(operatorVotingPowers2[i].vaults[j].votingPower, operatorVaultStake);
                 operatorStake += operatorVaultStake;

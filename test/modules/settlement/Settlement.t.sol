@@ -12,7 +12,7 @@ import {BN254G2} from "../../helpers/BN254G2.sol";
 
 import {ISettlement} from "../../../src/interfaces/modules/settlement/ISettlement.sol";
 
-import {MasterGenesisSetup} from "../../MasterGenesisSetup.sol";
+import {MasterGenesisSetupTest} from "../../MasterGenesisSetup.sol";
 
 import {console2} from "forge-std/console2.sol";
 
@@ -29,7 +29,7 @@ import {SigVerifierBlsBn254Simple} from
     "../../../src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol";
 import {IVaultManager} from "../../../src/interfaces/base/IVaultManager.sol";
 
-contract SettlementTest is MasterGenesisSetup {
+contract SettlementTest is MasterGenesisSetupTest {
     using KeyTags for uint8;
     using KeyBlsBn254 for BN254.G1Point;
     using BN254 for BN254.G1Point;
@@ -46,10 +46,6 @@ contract SettlementTest is MasterGenesisSetup {
 
     function setUp() public override {
         super.setUp();
-
-        vm.warp(initSetupParams.zeroTimestamp + 1);
-
-        setGenesis();
     }
 
     // function test_commitValSetHeader() public {
@@ -172,7 +168,6 @@ contract SettlementRawTest is Test {
 
             initParams.ozEip712InitParams = eip712;
             initParams.networkManagerInitParams = netInit;
-            initParams.requiredKeyTag = 7;
             initParams.sigVerifier = address(new SigVerifierMock());
         }
 
