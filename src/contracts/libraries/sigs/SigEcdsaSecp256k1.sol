@@ -20,7 +20,6 @@ library SigEcdsaSecp256k1 {
             return false;
         }
 
-        address signer = ECDSA.recover(abi.decode(message, (bytes32)), signature);
-        return signer != address(0) && signer == key.unwrap();
+        return ECDSA.recover(abi.decode(message, (bytes32)), signature) == key.unwrap();
     }
 }
