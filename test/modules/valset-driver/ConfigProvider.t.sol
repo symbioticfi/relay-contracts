@@ -46,6 +46,8 @@ contract ConfigProviderTest is Test {
 
         uint8[] memory requiredKeyTags = new uint8[](1);
         requiredKeyTags[0] = 0x2A;
+        IConfigProvider.QuorumThreshold[] memory quorumThresholds = new IConfigProvider.QuorumThreshold[](1);
+        quorumThresholds[0] = IConfigProvider.QuorumThreshold({keyTag: 0x2A, quorumThreshold: uint248(10 ** 18)});
         IConfigProvider.ConfigProviderInitParams memory initParams = IConfigProvider.ConfigProviderInitParams({
             votingPowerProviders: vpps,
             keysProvider: keysProv,
@@ -55,7 +57,8 @@ contract ConfigProviderTest is Test {
             minInclusionVotingPower: 0,
             maxValidatorsCount: 100,
             requiredKeyTags: requiredKeyTags,
-            requiredHeaderKeyTag: requiredKeyTags[0]
+            requiredHeaderKeyTag: requiredKeyTags[0],
+            quorumThresholds: quorumThresholds
         });
 
         testMCP.initialize(initParams, owner);
@@ -125,7 +128,7 @@ contract ConfigProviderTest is Test {
         testMCP.addVotingPowerProvider(newVPP);
 
         vm.prank(owner);
-        vm.expectRevert(IConfigProvider.ConfigProvider_AlreadyAdded.selector);
+        vm.expectRevert(IConfigProvider.ConfigProvider_ChainAlreadyAdded.selector);
         testMCP.addVotingPowerProvider(newVPP);
 
         IConfigProvider.CrossChainAddress[] memory vpps = testMCP.getVotingPowerProviders();
@@ -200,7 +203,7 @@ contract ConfigProviderTest is Test {
         assertEq(reps[1].addr, address(0xBB02));
 
         vm.prank(owner);
-        vm.expectRevert(IConfigProvider.ConfigProvider_AlreadyAdded.selector);
+        vm.expectRevert(IConfigProvider.ConfigProvider_ChainAlreadyAdded.selector);
         testMCP.addReplica(rep2);
 
         reps = testMCP.getReplicasAt(uint48(vm.getBlockTimestamp()));

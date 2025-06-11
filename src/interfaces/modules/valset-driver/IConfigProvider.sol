@@ -5,13 +5,17 @@ import {PersistentSet} from "../../../contracts/libraries/structs/PersistentSet.
 import {Checkpoints} from "../../../contracts/libraries/structs/Checkpoints.sol";
 
 interface IConfigProvider {
-    error ConfigProvider_AlreadyAdded();
     error ConfigProvider_NotAdded();
+    error ConfigProvider_ChainAlreadyAdded();
+    error ConfigProvider_KeyTagAlreadyAdded();
+    error ConfigProvider_InvalidQuorumThreshold();
 
     /// @custom:storage-location erc7201:symbiotic.storage.ConfigProvider
     struct ConfigProviderStorage {
+        mapping(uint64 => bool) _isVotingPowerProviderChainAdded;
         PersistentSet.Bytes32Set _votingPowerProviders;
         Checkpoints.Trace256 _keysProvider;
+        mapping(uint64 => bool) _isReplicaChainAdded;
         PersistentSet.Bytes32Set _replicas;
         Checkpoints.Trace208 _verificationType;
         Checkpoints.Trace256 _maxVotingPower;
@@ -19,6 +23,8 @@ interface IConfigProvider {
         Checkpoints.Trace208 _maxValidatorsCount;
         Checkpoints.Trace208 _requiredKeyTags;
         Checkpoints.Trace208 _requiredHeaderKeyTag;
+        mapping(uint8 => bool) _isQuorumThresholdKeyTagAdded;
+        PersistentSet.Bytes32Set _quorumThresholds;
     }
 
     struct ConfigProviderInitParams {
@@ -31,11 +37,17 @@ interface IConfigProvider {
         uint208 maxValidatorsCount;
         uint8[] requiredKeyTags;
         uint8 requiredHeaderKeyTag;
+        QuorumThreshold[] quorumThresholds;
     }
 
     struct CrossChainAddress {
         address addr;
         uint64 chainId;
+    }
+
+    struct QuorumThreshold {
+        uint8 keyTag;
+        uint248 quorumThreshold;
     }
 
     struct Config {
@@ -48,6 +60,7 @@ interface IConfigProvider {
         uint208 maxValidatorsCount;
         uint8[] requiredKeyTags;
         uint8 requiredHeaderKeyTag;
+        QuorumThreshold[] quorumThresholds;
     }
 
     event AddVotingPowerProvider(CrossChainAddress votingPowerProvider);
@@ -71,6 +84,12 @@ interface IConfigProvider {
     event SetRequiredKeyTags(uint8[] requiredKeyTags);
 
     event SetRequiredHeaderKeyTag(uint8 requiredHeaderKeyTag);
+
+    event AddQuorumThreshold(QuorumThreshold quorumThreshold);
+
+    event RemoveQuorumThreshold(QuorumThreshold quorumThreshold);
+
+    function MAX_QUORUM_THRESHOLD() external view returns (uint248);
 
     function isVotingPowerProviderRegisteredAt(
         CrossChainAddress memory votingPowerProvider,
@@ -141,6 +160,12 @@ interface IConfigProvider {
 
     function getRequiredHeaderKeyTag() external view returns (uint8);
 
+    function getQuorumThresholdsAt(
+        uint48 timestamp
+    ) external view returns (QuorumThreshold[] memory);
+
+    function getQuorumThresholds() external view returns (QuorumThreshold[] memory);
+
     function getConfigAt(
         uint48 timestamp
     ) external view returns (Config memory);
@@ -189,5 +214,13 @@ interface IConfigProvider {
 
     function setRequiredHeaderKeyTag(
         uint8 requiredHeaderKeyTag
+    ) external;
+
+    function addQuorumThreshold(
+        QuorumThreshold memory quorumThreshold
+    ) external;
+
+    function removeQuorumThreshold(
+        QuorumThreshold memory quorumThreshold
     ) external;
 }

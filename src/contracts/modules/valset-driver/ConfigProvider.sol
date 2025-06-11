@@ -19,6 +19,12 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     using PersistentSet for PersistentSet.Bytes32Set;
     using KeyTags for uint128;
     using KeyTags for uint8[];
+    using KeyTags for uint8;
+
+    /**
+     * @inheritdoc IConfigProvider
+     */
+    uint248 public constant MAX_QUORUM_THRESHOLD = 10 ** 18;
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.ConfigProvider")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant ConfigProviderStorageLocation =
@@ -46,6 +52,10 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
         _setMinInclusionVotingPower(configProviderInitParams.minInclusionVotingPower);
         _setMaxValidatorsCount(configProviderInitParams.maxValidatorsCount);
         _setRequiredKeyTags(configProviderInitParams.requiredKeyTags);
+        _setRequiredHeaderKeyTag(configProviderInitParams.requiredHeaderKeyTag);
+        for (uint256 i; i < configProviderInitParams.quorumThresholds.length; ++i) {
+            _addQuorumThreshold(configProviderInitParams.quorumThresholds[i]);
+        }
     }
 
     /**
@@ -254,6 +264,30 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     /**
      * @inheritdoc IConfigProvider
      */
+    function getQuorumThresholdsAt(
+        uint48 timestamp
+    ) public view virtual returns (QuorumThreshold[] memory quorumThresholds) {
+        bytes32[] memory quorumThresholdsRaw = _getConfigProviderStorage()._quorumThresholds.valuesAt(timestamp);
+        quorumThresholds = new QuorumThreshold[](quorumThresholdsRaw.length);
+        for (uint256 i; i < quorumThresholdsRaw.length; ++i) {
+            quorumThresholds[i] = _deserializeQuorumThreshold(quorumThresholdsRaw[i]);
+        }
+    }
+
+    /**
+     * @inheritdoc IConfigProvider
+     */
+    function getQuorumThresholds() public view virtual returns (QuorumThreshold[] memory quorumThresholds) {
+        bytes32[] memory quorumThresholdsRaw = _getConfigProviderStorage()._quorumThresholds.values();
+        quorumThresholds = new QuorumThreshold[](quorumThresholdsRaw.length);
+        for (uint256 i; i < quorumThresholdsRaw.length; ++i) {
+            quorumThresholds[i] = _deserializeQuorumThreshold(quorumThresholdsRaw[i]);
+        }
+    }
+
+    /**
+     * @inheritdoc IConfigProvider
+     */
     function getConfigAt(
         uint48 timestamp
     ) public view virtual returns (Config memory) {
@@ -266,7 +300,8 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
             minInclusionVotingPower: getMinInclusionVotingPowerAt(timestamp),
             maxValidatorsCount: getMaxValidatorsCountAt(timestamp),
             requiredKeyTags: getRequiredKeyTagsAt(timestamp),
-            requiredHeaderKeyTag: getRequiredHeaderKeyTagAt(timestamp)
+            requiredHeaderKeyTag: getRequiredHeaderKeyTagAt(timestamp),
+            quorumThresholds: getQuorumThresholdsAt(timestamp)
         });
     }
 
@@ -283,7 +318,8 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
             minInclusionVotingPower: getMinInclusionVotingPower(),
             maxValidatorsCount: getMaxValidatorsCount(),
             requiredKeyTags: getRequiredKeyTags(),
-            requiredHeaderKeyTag: getRequiredHeaderKeyTag()
+            requiredHeaderKeyTag: getRequiredHeaderKeyTag(),
+            quorumThresholds: getQuorumThresholds()
         });
     }
 
@@ -386,29 +422,44 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
         _setRequiredHeaderKeyTag(requiredHeaderKeyTag);
     }
 
+    /**
+     * @inheritdoc IConfigProvider
+     */
+    function addQuorumThreshold(
+        QuorumThreshold memory quorumThreshold
+    ) public virtual checkPermission {
+        _addQuorumThreshold(quorumThreshold);
+    }
+
+    /**
+     * @inheritdoc IConfigProvider
+     */
+    function removeQuorumThreshold(
+        QuorumThreshold memory quorumThreshold
+    ) public virtual checkPermission {
+        _removeQuorumThreshold(quorumThreshold);
+    }
+
     function _addVotingPowerProvider(
         CrossChainAddress memory votingPowerProvider
     ) internal virtual {
-        if (
-            !_getConfigProviderStorage()._votingPowerProviders.add(
-                Time.timestamp(), _serializeCrossChainAddress(votingPowerProvider)
-            )
-        ) {
-            revert ConfigProvider_AlreadyAdded();
+        ConfigProviderStorage storage $ = _getConfigProviderStorage();
+        if ($._isVotingPowerProviderChainAdded[votingPowerProvider.chainId]) {
+            revert ConfigProvider_ChainAlreadyAdded();
         }
+        $._isVotingPowerProviderChainAdded[votingPowerProvider.chainId] = true;
+        $._votingPowerProviders.add(Time.timestamp(), _serializeCrossChainAddress(votingPowerProvider));
         emit AddVotingPowerProvider(votingPowerProvider);
     }
 
     function _removeVotingPowerProvider(
         CrossChainAddress memory votingPowerProvider
     ) internal virtual {
-        if (
-            !_getConfigProviderStorage()._votingPowerProviders.remove(
-                Time.timestamp(), _serializeCrossChainAddress(votingPowerProvider)
-            )
-        ) {
+        ConfigProviderStorage storage $ = _getConfigProviderStorage();
+        if (!$._votingPowerProviders.remove(Time.timestamp(), _serializeCrossChainAddress(votingPowerProvider))) {
             revert ConfigProvider_NotAdded();
         }
+        $._isVotingPowerProviderChainAdded[votingPowerProvider.chainId] = false;
         emit RemoveVotingPowerProvider(votingPowerProvider);
     }
 
@@ -424,18 +475,23 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     function _addReplica(
         CrossChainAddress memory replica
     ) internal virtual {
-        if (!_getConfigProviderStorage()._replicas.add(Time.timestamp(), _serializeCrossChainAddress(replica))) {
-            revert ConfigProvider_AlreadyAdded();
+        ConfigProviderStorage storage $ = _getConfigProviderStorage();
+        if ($._isReplicaChainAdded[replica.chainId]) {
+            revert ConfigProvider_ChainAlreadyAdded();
         }
+        $._isReplicaChainAdded[replica.chainId] = true;
+        $._replicas.add(Time.timestamp(), _serializeCrossChainAddress(replica));
         emit AddReplica(replica);
     }
 
     function _removeReplica(
         CrossChainAddress memory replica
     ) internal virtual {
-        if (!_getConfigProviderStorage()._replicas.remove(Time.timestamp(), _serializeCrossChainAddress(replica))) {
+        ConfigProviderStorage storage $ = _getConfigProviderStorage();
+        if (!$._replicas.remove(Time.timestamp(), _serializeCrossChainAddress(replica))) {
             revert ConfigProvider_NotAdded();
         }
+        $._isReplicaChainAdded[replica.chainId] = false;
         emit RemoveReplica(replica);
     }
 
@@ -481,6 +537,39 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
         emit SetRequiredHeaderKeyTag(requiredHeaderKeyTag);
     }
 
+    function _addQuorumThreshold(
+        QuorumThreshold memory quorumThreshold
+    ) internal virtual {
+        ConfigProviderStorage storage $ = _getConfigProviderStorage();
+        quorumThreshold.keyTag.validateKeyTag();
+        if (quorumThreshold.quorumThreshold > MAX_QUORUM_THRESHOLD) {
+            revert ConfigProvider_InvalidQuorumThreshold();
+        }
+        if ($._isQuorumThresholdKeyTagAdded[quorumThreshold.keyTag]) {
+            revert ConfigProvider_KeyTagAlreadyAdded();
+        }
+        $._isQuorumThresholdKeyTagAdded[quorumThreshold.keyTag] = true;
+        $._quorumThresholds.add(Time.timestamp(), _serializeQuorumThreshold(quorumThreshold));
+        emit AddQuorumThreshold(quorumThreshold);
+    }
+
+    function _removeQuorumThreshold(
+        QuorumThreshold memory quorumThreshold
+    ) internal virtual {
+        ConfigProviderStorage storage $ = _getConfigProviderStorage();
+        if (!$._quorumThresholds.remove(Time.timestamp(), _serializeQuorumThreshold(quorumThreshold))) {
+            revert ConfigProvider_NotAdded();
+        }
+        $._isQuorumThresholdKeyTagAdded[quorumThreshold.keyTag] = false;
+        emit RemoveQuorumThreshold(quorumThreshold);
+    }
+
+    function _serializeCrossChainAddress(
+        CrossChainAddress memory crossChainAddress
+    ) internal pure virtual returns (bytes32) {
+        return bytes32(uint256(crossChainAddress.chainId) << 160 | uint256(uint160(crossChainAddress.addr)));
+    }
+
     function _deserializeCrossChainAddress(
         bytes32 compressedAddress
     ) internal pure virtual returns (CrossChainAddress memory) {
@@ -490,9 +579,18 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
         });
     }
 
-    function _serializeCrossChainAddress(
-        CrossChainAddress memory crossChainAddress
+    function _serializeQuorumThreshold(
+        QuorumThreshold memory quorumThreshold
     ) internal pure virtual returns (bytes32) {
-        return bytes32(uint256(crossChainAddress.chainId) << 160 | uint256(uint160(crossChainAddress.addr)));
+        return bytes32(uint256(quorumThreshold.keyTag) << 248 | uint256(quorumThreshold.quorumThreshold));
+    }
+
+    function _deserializeQuorumThreshold(
+        bytes32 compressedQuorumThreshold
+    ) internal pure virtual returns (QuorumThreshold memory) {
+        return QuorumThreshold({
+            keyTag: uint8(uint256(compressedQuorumThreshold) >> 248),
+            quorumThreshold: uint248(uint256(compressedQuorumThreshold))
+        });
     }
 }

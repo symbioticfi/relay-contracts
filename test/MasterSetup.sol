@@ -39,6 +39,7 @@ contract MasterSetupTest is InitSetupTest {
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
     using KeyEcdsaSecp256k1 for KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1;
     using SymbioticSubnetwork for address;
+    using Math for uint256;
 
     struct MasterSetupParams {
         address keyRegistry;
@@ -61,6 +62,7 @@ contract MasterSetupTest is InitSetupTest {
         IConfigProvider.CrossChainAddress[] replicas;
         IConfigProvider.CrossChainAddress keysProvider;
         address sigVerifier;
+        IConfigProvider.QuorumThreshold[] quorumThresholds;
     }
 
     uint256 public EPOCH_DURATION = 300;
@@ -186,6 +188,14 @@ contract MasterSetupTest is InitSetupTest {
                 chainId: uint64(initSetupParams.masterChain.chainId)
             });
 
+            localVars.quorumThresholds = new IConfigProvider.QuorumThreshold[](localVars.requiredKeyTags.length);
+            for (uint256 i; i < localVars.requiredKeyTags.length; ++i) {
+                localVars.quorumThresholds[i] = IConfigProvider.QuorumThreshold({
+                    keyTag: localVars.requiredKeyTags[i],
+                    quorumThreshold: uint248(uint256(2).mulDiv(1e18, 3, Math.Rounding.Ceil))
+                });
+            }
+
             masterSetupParams.valSetDriver.initialize(
                 IValSetDriver.ValSetDriverInitParams({
                     epochManagerInitParams: IEpochManager.EpochManagerInitParams({
@@ -201,7 +211,8 @@ contract MasterSetupTest is InitSetupTest {
                         minInclusionVotingPower: 0,
                         maxValidatorsCount: 99_999_999,
                         requiredKeyTags: localVars.requiredKeyTags,
-                        requiredHeaderKeyTag: localVars.requiredKeyTags[0]
+                        requiredHeaderKeyTag: localVars.requiredKeyTags[0],
+                        quorumThresholds: localVars.quorumThresholds
                     })
                 }),
                 vars.deployer.addr
