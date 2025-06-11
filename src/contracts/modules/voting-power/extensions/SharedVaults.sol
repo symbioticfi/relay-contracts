@@ -5,11 +5,6 @@ import {ISharedVaults} from "../../../../interfaces/modules/voting-power/extensi
 import {VotingPowerProvider} from "../VotingPowerProvider.sol";
 
 abstract contract SharedVaults is VotingPowerProvider, ISharedVaults {
-    /**
-     * @inheritdoc ISharedVaults
-     */
-    uint64 public constant SharedVaults_VERSION = 1;
-
     function __SharedVaults_init() internal virtual onlyInitializing {}
 
     /**

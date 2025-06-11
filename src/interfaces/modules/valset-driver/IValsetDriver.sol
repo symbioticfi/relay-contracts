@@ -9,6 +9,4 @@ interface IValSetDriver {
         IEpochManager.EpochManagerInitParams epochManagerInitParams;
         IConfigProvider.ConfigProviderInitParams configProviderInitParams;
     }
-
-    function ValSetDriver_VERSION() external view returns (uint64);
 }

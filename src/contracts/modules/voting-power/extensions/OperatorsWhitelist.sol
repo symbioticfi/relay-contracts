@@ -6,11 +6,6 @@ import {VotingPowerProvider} from "../VotingPowerProvider.sol";
 import {IOperatorsWhitelist} from "../../../../interfaces/modules/voting-power/extensions/IOperatorsWhitelist.sol";
 
 abstract contract OperatorsWhitelist is VotingPowerProvider, IOperatorsWhitelist {
-    /**
-     * @inheritdoc IOperatorsWhitelist
-     */
-    uint64 public constant OperatorsWhitelist_VERSION = 1;
-
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OperatorsWhitelist")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant OperatorsWhitelistStorageLocation =
         0x3fa7d7e58a4c604e915cc85c236f89892f2e36ec13dff506efa6b5ea5fafeb00;

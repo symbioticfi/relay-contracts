@@ -20,14 +20,6 @@ contract NoPermissionManagerTest is Test {
         noPermManager.initialize();
     }
 
-    function test_PermissionManagerVersion() public {
-        assertEq(noPermManager.PermissionManager_VERSION(), 1, "PermissionManager_VERSION mismatch");
-    }
-
-    function test_NoPermissionManagerVersion() public {
-        assertEq(noPermManager.NoPermissionManager_VERSION(), 1, "NoPermissionManager_VERSION mismatch");
-    }
-
     function test_NoPermissionCheck() public {
         address randomUser = address(0x12345);
         vm.startPrank(randomUser);

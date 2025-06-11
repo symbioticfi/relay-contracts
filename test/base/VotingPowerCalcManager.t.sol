@@ -37,10 +37,6 @@ contract VotingPowerCalcManagerTest is Test {
         manager.initialize();
     }
 
-    function testVersion() public {
-        assertEq(manager.VotingPowerCalcManager_VERSION(), 1, "Version mismatch");
-    }
-
     function testReInitializeReverts() public {
         vm.expectRevert();
         manager.initialize();

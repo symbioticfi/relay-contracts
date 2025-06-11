@@ -20,11 +20,6 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     using KeyTags for uint128;
     using KeyTags for uint8[];
 
-    /**
-     * @inheritdoc IConfigProvider
-     */
-    uint64 public constant ConfigProvider_VERSION = 1;
-
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.ConfigProvider")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant ConfigProviderStorageLocation =
         0x69cc2103f98d9422293b17af4701294142032f76ec5b84d4141038932799fa00;

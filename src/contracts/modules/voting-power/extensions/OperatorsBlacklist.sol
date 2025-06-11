@@ -6,11 +6,6 @@ import {VotingPowerProvider} from "../VotingPowerProvider.sol";
 import {IOperatorsBlacklist} from "../../../../interfaces/modules/voting-power/extensions/IOperatorsBlacklist.sol";
 
 abstract contract OperatorsBlacklist is VotingPowerProvider, IOperatorsBlacklist {
-    /**
-     * @inheritdoc IOperatorsBlacklist
-     */
-    uint64 public constant OperatorsBlacklist_VERSION = 1;
-
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OperatorsBlacklist")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant OperatorsBlacklistStorageLocation =
         0x23ffaefb5f6b29c7a77ac2a8c6e8b7a8cb63a59ee84629217d13308576dcc800;

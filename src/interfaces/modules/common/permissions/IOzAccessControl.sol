@@ -8,8 +8,6 @@ import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol"
 interface IOzAccessControl {
     event SetSelectorRole(bytes4 indexed selector, bytes32 indexed role);
 
-    function OzAccessControl_VERSION() external view returns (uint64);
-
     function getRole(
         bytes4 selector
     ) external view returns (bytes32);

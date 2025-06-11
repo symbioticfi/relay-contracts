@@ -21,8 +21,6 @@ interface IVotingPowerProvider {
 
     event InvalidateOldSignatures(address operator);
 
-    function VotingPowerProvider_VERSION() external view returns (uint64);
-
     function registerOperator() external;
 
     function registerOperatorWithSignature(address operator, bytes memory signature) external;

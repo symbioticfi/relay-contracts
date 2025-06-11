@@ -9,11 +9,6 @@ import {IERC5267} from "@openzeppelin/contracts/interfaces/IERC5267.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
 abstract contract OzEIP712 is EIP712Upgradeable, IOzEIP712 {
-    /**
-     * @inheritdoc IOzEIP712
-     */
-    uint64 public constant OzEIP712_VERSION = 1;
-
     bytes32 private constant CROSS_CHAIN_TYPE_HASH = keccak256("EIP712Domain(string name,string version)");
 
     function __OzEIP712_init(

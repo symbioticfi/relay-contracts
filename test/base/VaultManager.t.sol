@@ -160,10 +160,6 @@ contract VaultManagerTest is InitSetupTest {
         _registerOperator_SymbioticCore(symbioticCore, validOperator);
     }
 
-    function test_Version() public {
-        assertEq(vaultManager.VaultManager_VERSION(), 1, "Version mismatch");
-    }
-
     function test_RegisterOperatorValid() public {
         vaultManager.registerOperator(validOperator);
 

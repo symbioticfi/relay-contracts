@@ -19,11 +19,6 @@ abstract contract VotingPowerProvider is
     NoncesUpgradeable,
     IVotingPowerProvider
 {
-    /**
-     * @inheritdoc IVotingPowerProvider
-     */
-    uint64 public constant VotingPowerProvider_VERSION = 1;
-
     bytes32 private constant REGISTER_OPERATOR_TYPEHASH = keccak256("RegisterOperator(address operator,uint256 nonce)");
     bytes32 private constant UNREGISTER_OPERATOR_TYPEHASH =
         keccak256("UnregisterOperator(address operator,uint256 nonce)");

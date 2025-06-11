@@ -48,8 +48,6 @@ interface IBaseSlashing {
         address indexed slasher, uint256 indexed slashIndex, bool indexed success, uint256 slashedAmount
     );
 
-    function BaseSlashing_VERSION() external view returns (uint64);
-
     function getSlasher() external view returns (address);
 
     function setSlasher(

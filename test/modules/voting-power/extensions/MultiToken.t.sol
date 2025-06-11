@@ -47,10 +47,6 @@ contract MultiTokenTest is InitSetupTest {
         tokens.initialize(netInit, vaultInit);
     }
 
-    function test_Version() public {
-        assertEq(tokens.MultiToken_VERSION(), 1, "MultiToken_VERSION mismatch");
-    }
-
     function test_RegisterToken_OnlyOwnerCanCall() public {
         tokens.registerToken(address(1));
     }

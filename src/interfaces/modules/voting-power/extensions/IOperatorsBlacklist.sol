@@ -18,8 +18,6 @@ interface IOperatorsBlacklist {
 
     event UnblacklistOperator(address indexed operator);
 
-    function OperatorsBlacklist_VERSION() external view returns (uint64);
-
     function isOperatorBlacklisted(
         address operator
     ) external view returns (bool);

@@ -72,8 +72,6 @@ interface IConfigProvider {
 
     event SetRequiredHeaderKeyTag(uint8 requiredHeaderKeyTag);
 
-    function ConfigProvider_VERSION() external view returns (uint64);
-
     function isVotingPowerProviderRegisteredAt(
         CrossChainAddress memory votingPowerProvider,
         uint48 timestamp

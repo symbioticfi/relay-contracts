@@ -51,8 +51,6 @@ interface IKeyManager {
 
     event SetKey(address indexed operator, uint8 indexed tag, bytes indexed key, bytes extraData);
 
-    function KeyManager_VERSION() external view returns (uint64);
-
     function getKeysAt(
         address operator,
         uint48 timestamp,

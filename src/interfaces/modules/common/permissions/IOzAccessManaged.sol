@@ -9,6 +9,4 @@ interface IOzAccessManaged {
     struct OzAccessManagedInitParams {
         address authority;
     }
-
-    function OzAccessManaged_VERSION() external view returns (uint64);
 }

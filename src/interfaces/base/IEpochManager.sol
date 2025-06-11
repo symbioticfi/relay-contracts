@@ -24,8 +24,6 @@ interface IEpochManager {
 
     event SetEpochDuration(uint48 epochDuration);
 
-    function EpochManager_VERSION() external view returns (uint64);
-
     function getCurrentEpoch() external view returns (uint48);
 
     function getCurrentEpochDuration() external view returns (uint48);

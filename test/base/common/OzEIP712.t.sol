@@ -42,10 +42,6 @@ contract OzEIP712Test is Test {
         assertEq(extensions.length, 0, "Extensions should be empty");
     }
 
-    function test_OzEIP712Version() public {
-        assertEq(testEIP712.OzEIP712_VERSION(), uint64(1));
-    }
-
     function test_Location() public {
         bytes32 location =
             keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OzEIP712")) - 1)) & ~bytes32(uint256(0xff));

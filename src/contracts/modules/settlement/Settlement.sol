@@ -18,11 +18,6 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
     /**
      * @inheritdoc ISettlement
      */
-    uint64 public constant Settlement_VERSION = 1;
-
-    /**
-     * @inheritdoc ISettlement
-     */
     uint8 public constant VALIDATOR_SET_VERSION = 1;
 
     bytes32 private constant VALSET_HEADER_COMMIT_TYPEHASH =

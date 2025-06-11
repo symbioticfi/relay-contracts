@@ -5,11 +5,6 @@ import {IOperatorVaults} from "../../../../interfaces/modules/voting-power/exten
 import {VotingPowerProvider} from "../VotingPowerProvider.sol";
 
 abstract contract OperatorVaults is VotingPowerProvider, IOperatorVaults {
-    /**
-     * @inheritdoc IOperatorVaults
-     */
-    uint64 public constant OperatorVaults_VERSION = 1;
-
     function __OperatorVaults_init() internal virtual onlyInitializing {}
 
     /**

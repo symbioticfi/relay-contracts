@@ -6,11 +6,6 @@ import {KeyManager} from "../../base/KeyManager.sol";
 import {IKeyRegistry} from "../../../interfaces/modules/key-registry/IKeyRegistry.sol";
 
 contract KeyRegistry is KeyManager, IKeyRegistry {
-    /**
-     * @inheritdoc IKeyRegistry
-     */
-    uint64 public constant KeyRegistry_VERSION = 1;
-
     function __KeyRegistry_init(
         KeyRegistryInitParams memory keyRegistryInitParams
     ) public virtual onlyInitializing {

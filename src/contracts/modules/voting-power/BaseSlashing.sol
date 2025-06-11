@@ -23,11 +23,6 @@ import {VotingPowerProvider} from "./VotingPowerProvider.sol";
 import {BaseSlashingLogic} from "./logic/BaseSlashingLogic.sol";
 
 abstract contract BaseSlashing is VotingPowerProvider, IBaseSlashing {
-    /**
-     * @inheritdoc IBaseSlashing
-     */
-    uint64 public constant BaseSlashing_VERSION = 1;
-
     modifier onlySlasher() {
         if (msg.sender != getSlasher()) {
             revert BaseSlashing_NotSlasher();

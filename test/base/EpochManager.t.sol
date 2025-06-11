@@ -98,8 +98,6 @@ contract EpochManagerTest is Test {
         assertEq(epochManager.getNextEpochStart(), startTime + 100);
         assertEq(epochManager.getNextEpochDuration(), 100);
 
-        assertEq(epochManager.EpochManager_VERSION(), 1, "Version mismatch");
-
         bytes32 location =
             keccak256(abi.encode(uint256(keccak256("symbiotic.storage.EpochManager")) - 1)) & ~bytes32(uint256(0xff));
         assertEq(location, 0xab930e9b836b4d72502da14061937ab080936446173403910135ea983863d400);

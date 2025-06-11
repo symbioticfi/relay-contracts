@@ -61,10 +61,6 @@ contract ConfigProviderTest is Test {
         testMCP.initialize(initParams, owner);
     }
 
-    function test_Version() public {
-        assertEq(testMCP.ConfigProvider_VERSION(), 1, "Version mismatch");
-    }
-
     function test_InitialConfig() public {
         assertEq(testMCP.getMaxVotingPower(), 1e36, "maxVotingPower mismatch");
         assertEq(testMCP.getMinInclusionVotingPower(), 0, "minInclusion mismatch");

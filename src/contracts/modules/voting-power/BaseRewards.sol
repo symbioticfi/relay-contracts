@@ -10,11 +10,6 @@ import {VotingPowerProvider} from "./VotingPowerProvider.sol";
 import {BaseRewardsLogic} from "./logic/BaseRewardsLogic.sol";
 
 abstract contract BaseRewards is VotingPowerProvider, IBaseRewards {
-    /**
-     * @inheritdoc IBaseRewards
-     */
-    uint64 public constant BaseRewards_VERSION = 1;
-
     modifier onlyRewarder() {
         if (msg.sender != getRewarder()) {
             revert BaseRewards_NotRewarder();

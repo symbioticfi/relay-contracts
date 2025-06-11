@@ -11,11 +11,6 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 abstract contract EpochManager is PermissionManager, IEpochManager {
     using Checkpoints for Checkpoints.Trace208;
 
-    /**
-     * @inheritdoc IEpochManager
-     */
-    uint64 public constant EpochManager_VERSION = 1;
-
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.EpochManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant EpochManagerStorageLocation =
         0xab930e9b836b4d72502da14061937ab080936446173403910135ea983863d400;

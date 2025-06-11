@@ -29,10 +29,6 @@ contract PermissionManagerTest is Test {
         permissionManager.initialize(address(this));
     }
 
-    function test_Version() public {
-        assertEq(permissionManager.PermissionManager_VERSION(), 1, "Version mismatch");
-    }
-
     function test_ProtectedAction_SucceedsForOwner() public {
         permissionManager.protectedAction();
     }

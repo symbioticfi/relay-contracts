@@ -63,10 +63,6 @@ contract SharedVaultsTest is InitSetupTest {
         sharedVaults.initialize(votingPowerProviderInit);
     }
 
-    function test_Version() public {
-        assertEq(sharedVaults.SharedVaults_VERSION(), 1, "SharedVaults_VERSION mismatch");
-    }
-
     function test_RegisterSharedVault_OnlyOwnerCanCall() public {
         // sharedVaults.registerToken(initSetupParams.masterChain.tokens[0]);
 

@@ -61,10 +61,6 @@ contract VotingPowerProviderTest is InitSetupTest {
         // votingPowerProvider.registerToken(initSetupParams.masterChain.tokens[0]);
     }
 
-    function test_Version() public {
-        assertEq(votingPowerProvider.VotingPowerProvider_VERSION(), 1, "VotingPowerProvider_VERSION mismatch");
-    }
-
     function test_RegisterOperator() public {
         address vault = _getVault_SymbioticCore(
             VaultParams({

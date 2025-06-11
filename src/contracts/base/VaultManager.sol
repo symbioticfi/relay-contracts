@@ -29,13 +29,6 @@ abstract contract VaultManager is NetworkManager, VotingPowerCalcManager, IVault
     /**
      * @inheritdoc IVaultManager
      */
-    function VaultManager_VERSION() public pure returns (uint64) {
-        return VaultManagerLogic.VaultManager_VERSION;
-    }
-
-    /**
-     * @inheritdoc IVaultManager
-     */
     address public immutable OPERATOR_REGISTRY;
 
     /**

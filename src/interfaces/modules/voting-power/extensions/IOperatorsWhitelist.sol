@@ -24,8 +24,6 @@ interface IOperatorsWhitelist {
 
     event UnwhitelistOperator(address indexed operator);
 
-    function OperatorsWhitelist_VERSION() external view returns (uint64);
-
     function isWhitelistEnabled() external view returns (bool);
 
     function isOperatorWhitelisted(

@@ -7,6 +7,4 @@ interface IOzOwnable {
     struct OzOwnableInitParams {
         address owner;
     }
-
-    function OzOwnable_VERSION() external view returns (uint64);
 }

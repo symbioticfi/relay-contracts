@@ -45,10 +45,6 @@ contract OzAccessManagedTest is Test {
         ozAccessManaged.initialize(address(authority));
     }
 
-    function testVersion() public {
-        assertEq(ozAccessManaged.OzAccessManaged_VERSION(), 1, "Version mismatch");
-    }
-
     function testProtectedAction_SucceedsForAdmin() public {
         vm.startPrank(admin);
         ozAccessManaged.protectedAction();

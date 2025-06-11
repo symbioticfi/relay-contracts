@@ -38,8 +38,6 @@ interface IOpNetVaultAutoDeploy {
 
     event SetSetMaxNetworkLimitHookStatus(bool status);
 
-    function OpNetVaultAutoDeploy_VERSION() external view returns (uint64);
-
     function VAULT_CONFIGURATOR() external view returns (address);
 
     function isAutoDeployEnabled() external view returns (bool);

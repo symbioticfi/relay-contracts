@@ -8,11 +8,6 @@ import {IOzOwnable} from "../../../../interfaces/modules/common/permissions/IOzO
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 abstract contract OzOwnable is PermissionManager, OwnableUpgradeable, IOzOwnable {
-    /**
-     * @inheritdoc IOzOwnable
-     */
-    uint64 public constant OzOwnable_VERSION = 1;
-
     function __OzOwnable_init(
         OzOwnableInitParams memory initParams
     ) internal virtual onlyInitializing {

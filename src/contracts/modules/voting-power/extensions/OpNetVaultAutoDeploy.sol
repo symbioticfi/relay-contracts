@@ -15,13 +15,6 @@ abstract contract OpNetVaultAutoDeploy is VotingPowerProvider, IOpNetVaultAutoDe
     /**
      * @inheritdoc IOpNetVaultAutoDeploy
      */
-    function OpNetVaultAutoDeploy_VERSION() public pure returns (uint64) {
-        return OpNetVaultAutoDeployLogic.OpNetVaultAutoDeploy_VERSION;
-    }
-
-    /**
-     * @inheritdoc IOpNetVaultAutoDeploy
-     */
     address public immutable VAULT_CONFIGURATOR;
 
     constructor(

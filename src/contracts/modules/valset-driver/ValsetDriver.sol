@@ -8,11 +8,6 @@ import {IValSetDriver} from "../../../interfaces/modules/valset-driver/IValSetDr
 import {MulticallUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
 
 abstract contract ValSetDriver is EpochManager, ConfigProvider, MulticallUpgradeable, IValSetDriver {
-    /**
-     * @inheritdoc IValSetDriver
-     */
-    uint64 public constant ValSetDriver_VERSION = 1;
-
     function __ValSetDriver_init(
         ValSetDriverInitParams memory valSetDriverInitParams
     ) internal virtual onlyInitializing {

@@ -26,10 +26,6 @@ contract OzOwnableTest is Test {
         testOwnable.initialize(owner);
     }
 
-    function testVersion() public {
-        assertEq(testOwnable.OzOwnable_VERSION(), 1, "OzOwnable_VERSION mismatch");
-    }
-
     function testProtectedAction_SucceedsForOwner() public {
         vm.startPrank(owner);
         testOwnable.protectedAction();

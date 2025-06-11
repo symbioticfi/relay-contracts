@@ -7,11 +7,6 @@ import {IEqualStakeVPCalc} from "../../../../interfaces/modules/voting-power/ext
 import {IVotingPowerCalcManager} from "../../../../interfaces/base/IVotingPowerCalcManager.sol";
 
 abstract contract EqualStakeVPCalc is VotingPowerCalcManager, IEqualStakeVPCalc {
-    /**
-     * @inheritdoc IEqualStakeVPCalc
-     */
-    uint64 public constant EqualStakeVPCalc_VERSION = 1;
-
     function __EqualStakeVPCalc_init() internal virtual onlyInitializing {}
 
     /**

@@ -8,8 +8,6 @@ interface IKeyRegistry {
         IOzEIP712.OzEIP712InitParams ozEip712InitParams;
     }
 
-    function KeyRegistry_VERSION() external view returns (uint64);
-
     function getOperatorsLength() external view returns (uint256);
 
     function getOperatorsAt(

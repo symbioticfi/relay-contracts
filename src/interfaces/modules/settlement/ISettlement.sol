@@ -60,8 +60,6 @@ interface ISettlement {
 
     event CommitValSetHeader(ValSetHeader valSetHeader, ExtraData[] extraData);
 
-    function Settlement_VERSION() external view returns (uint64);
-
     function VALIDATOR_SET_VERSION() external view returns (uint8);
 
     function getSigVerifierAt(uint48 epoch, bytes memory hint) external view returns (address);

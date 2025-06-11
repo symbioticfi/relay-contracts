@@ -8,11 +8,6 @@ import {IOzAccessManaged} from "../../../../interfaces/modules/common/permission
 import {AccessManagedUpgradeable} from "@openzeppelin/contracts-upgradeable/access/manager/AccessManagedUpgradeable.sol";
 
 abstract contract OzAccessManaged is PermissionManager, AccessManagedUpgradeable, IOzAccessManaged {
-    /**
-     * @inheritdoc IOzAccessManaged
-     */
-    uint64 public constant OzAccessManaged_VERSION = 1;
-
     function __OzAccessManaged_init(
         OzAccessManagedInitParams memory initParams
     ) internal virtual onlyInitializing {

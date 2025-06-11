@@ -90,8 +90,6 @@ interface IVaultManager {
 
     event UnregisterOperatorVault(address indexed operator, address indexed vault);
 
-    function VaultManager_VERSION() external view returns (uint64);
-
     function OPERATOR_REGISTRY() external view returns (address);
 
     function VAULT_FACTORY() external view returns (address);

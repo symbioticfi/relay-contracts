@@ -34,10 +34,6 @@ contract OzAccessControlTest is Test {
         testAccessControl.initialize();
     }
 
-    function testVersion() public {
-        assertEq(testAccessControl.OzAccessControl_VERSION(), 1, "OzAccessControl_VERSION mismatch");
-    }
-
     function test_Location() public {
         bytes32 location =
             keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OzAccessControl")) - 1)) & ~bytes32(uint256(0xff));

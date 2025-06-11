@@ -115,10 +115,6 @@ contract OperatorsWhitelistTest is Test, InitSetupTest {
         );
     }
 
-    function test_Version() public {
-        assertEq(whitelistOps.OperatorsWhitelist_VERSION(), 1, "Whitelist version mismatch");
-    }
-
     function test_WhitelistEnabledByDefault() public {
         assertTrue(whitelistOps.isWhitelistEnabled());
     }

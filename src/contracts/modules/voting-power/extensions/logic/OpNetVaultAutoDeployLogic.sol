@@ -20,8 +20,6 @@ uint64 constant BASE_VAULT_VERSION = 1;
 uint64 constant TOKENIZED_VAULT_VERSION = 2;
 
 library OpNetVaultAutoDeployLogic {
-    uint64 internal constant OpNetVaultAutoDeploy_VERSION = 1;
-
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OpNetVaultAutoDeploy")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant OpNetVaultAutoDeployStorageLocation =
         0x85a64baaaf23c04aec63d80adaee49297f70e3944d69ec004fa7cee8ee6e8b00;

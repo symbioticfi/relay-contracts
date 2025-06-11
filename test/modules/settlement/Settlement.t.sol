@@ -186,7 +186,6 @@ contract SettlementRawTest is Test {
     }
 
     function testVersion() public {
-        assertEq(testSettle.Settlement_VERSION(), 1, "Settlement_VERSION mismatch");
         assertEq(testSettle.VALIDATOR_SET_VERSION(), 1, "VALIDATOR_SET_VERSION mismatch");
     }
 

@@ -9,11 +9,6 @@ abstract contract VotingPowerCalcManager is Initializable, IVotingPowerCalcManag
     /**
      * @inheritdoc IVotingPowerCalcManager
      */
-    uint64 public constant VotingPowerCalcManager_VERSION = 1;
-
-    /**
-     * @inheritdoc IVotingPowerCalcManager
-     */
     function stakeToVotingPowerAt(
         address vault,
         uint256 stake,

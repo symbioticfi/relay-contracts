@@ -22,8 +22,6 @@ interface IBaseRewards {
         address indexed operatorRewards, address indexed token, uint256 amount, bytes32 root
     );
 
-    function BaseRewards_VERSION() external view returns (uint64);
-
     function getRewarder() external view returns (address);
 
     function setRewarder(

@@ -386,8 +386,4 @@ contract KeyManagerTest is Test {
             keccak256(abi.encode(uint256(keccak256("symbiotic.storage.KeyManager")) - 1)) & ~bytes32(uint256(0xff));
         assertEq(location, 0x6521690ca2d70b23823c69a92a4a0089d4c270c9c885205eafdf0ae297a8bf00, "Location mismatch");
     }
-
-    function test_KeyTypes() public {
-        assertEq(keyManager.KeyManager_VERSION(), 1);
-    }
 }

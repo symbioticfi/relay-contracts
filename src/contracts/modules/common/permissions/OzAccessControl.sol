@@ -8,11 +8,6 @@ import {IOzAccessControl} from "../../../../interfaces/modules/common/permission
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
 abstract contract OzAccessControl is PermissionManager, AccessControlUpgradeable, IOzAccessControl {
-    /**
-     * @inheritdoc IOzAccessControl
-     */
-    uint64 public constant OzAccessControl_VERSION = 1;
-
     /// @custom:storage-location erc7201:symbiotic.storage.OzAccessControl
     struct OzAccessControlStorage {
         mapping(bytes4 selector => bytes32 role) _selectorRoles;

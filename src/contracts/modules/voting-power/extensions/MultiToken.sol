@@ -7,11 +7,6 @@ import {PermissionManager} from "../../../base/PermissionManager.sol";
 import {IMultiToken} from "../../../../interfaces/modules/voting-power/extensions/IMultiToken.sol";
 
 abstract contract MultiToken is VaultManager, PermissionManager, IMultiToken {
-    /**
-     * @inheritdoc IMultiToken
-     */
-    uint64 public constant MultiToken_VERSION = 1;
-
     function __MultiToken_init() internal virtual onlyInitializing {}
 
     /**

@@ -25,10 +25,6 @@ contract NetworkManagerTest is Test {
         nm = new TestNetworkManager();
     }
 
-    function test_Version() public {
-        assertEq(nm.NetworkManager_VERSION(), 1, "Version mismatch");
-    }
-
     function test_InitializeAndCheckGetters() public {
         nm.initialize(testNetwork, testSubnetworkID);
 
