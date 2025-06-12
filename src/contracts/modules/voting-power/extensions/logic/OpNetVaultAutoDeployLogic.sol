@@ -140,6 +140,9 @@ library OpNetVaultAutoDeployLogic {
         if (config.collateral == address(0)) {
             revert IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidCollateral();
         }
+        if (config.epochDuration == 0) {
+            revert IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidEpochDuration();
+        }
         uint48 slashingWindow = IVaultManager(address(this)).getSlashingWindow();
         if (config.epochDuration < slashingWindow) {
             revert IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidEpochDuration();

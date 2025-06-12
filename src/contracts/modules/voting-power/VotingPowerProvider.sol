@@ -10,7 +10,6 @@ import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/Signa
 import {IVotingPowerProvider} from "../../../interfaces/modules/voting-power/IVotingPowerProvider.sol";
 
 import {NoncesUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/NoncesUpgradeable.sol";
-import {VaultManager} from "../../base/VaultManager.sol";
 
 abstract contract VotingPowerProvider is
     VaultManager,
@@ -72,7 +71,6 @@ abstract contract VotingPowerProvider is
      */
     function invalidateOldSignatures() public virtual {
         _useNonce(msg.sender);
-        emit InvalidateOldSignatures(msg.sender);
     }
 
     function _registerOperatorImpl(
