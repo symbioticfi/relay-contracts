@@ -8,13 +8,12 @@ import "../../../InitSetup.sol";
 
 import {OperatorsWhitelist} from "../../../../src/contracts/modules/voting-power/extensions/OperatorsWhitelist.sol";
 import {NoPermissionManager} from "../../../../test/mocks/NoPermissionManager.sol";
-import {EqualStakeVPCalc} from "../../../../src/contracts/modules/voting-power/extensions/EqualStakeVPCalc.sol";
-import {VaultManager} from "../../../../src/contracts/base/VaultManager.sol";
-import {INetworkManager} from "../../../../src/interfaces/base/INetworkManager.sol";
-import {IVaultManager} from "../../../../src/interfaces/base/IVaultManager.sol";
+import {EqualStakeVPCalc} from
+    "../../../../src/contracts/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol";
+import {INetworkManager} from "../../../../src/interfaces/modules/base/INetworkManager.sol";
 import {IVotingPowerProvider} from "../../../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
 import {MultiToken} from "../../../../src/contracts/modules/voting-power/extensions/MultiToken.sol";
-import {IOzEIP712} from "../../../../src/interfaces/base/common/IOzEIP712.sol";
+import {IOzEIP712} from "../../../../src/interfaces/modules/base/IOzEIP712.sol";
 import {VotingPowerProvider} from "../../../../src/contracts/modules/voting-power/VotingPowerProvider.sol";
 import {OperatorVaults} from "../../../../src/contracts/modules/voting-power/extensions/OperatorVaults.sol";
 
@@ -61,16 +60,15 @@ contract OperatorsWhitelistTest is Test, InitSetupTest {
 
         INetworkManager.NetworkManagerInitParams memory netInit =
             INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkID: IDENTIFIER});
-        IVaultManager.VaultManagerInitParams memory vaultInit =
-            IVaultManager.VaultManagerInitParams({slashingWindow: 100, token: initSetupParams.masterChain.tokens[0]});
         IOperatorsWhitelist.OperatorsWhitelistInitParams memory wlInit =
             IOperatorsWhitelist.OperatorsWhitelistInitParams({isWhitelistEnabled: true});
 
         IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
             .VotingPowerProviderInitParams({
             networkManagerInitParams: netInit,
-            vaultManagerInitParams: vaultInit,
-            ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"})
+            ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
+            slashingWindow: 100,
+            token: initSetupParams.masterChain.tokens[0]
         });
 
         whitelistOps.initialize(votingPowerProviderInit, wlInit);

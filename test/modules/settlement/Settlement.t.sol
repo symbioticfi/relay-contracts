@@ -22,12 +22,11 @@ import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {Settlement} from "../../../src/contracts/modules/settlement/Settlement.sol";
 
-import {IOzEIP712} from "../../../src/interfaces/base/common/IOzEIP712.sol";
-import {INetworkManager} from "../../../src/interfaces/base/INetworkManager.sol";
+import {IOzEIP712} from "../../../src/interfaces/modules/base/IOzEIP712.sol";
+import {INetworkManager} from "../../../src/interfaces/modules/base/INetworkManager.sol";
 import {SigVerifierMock} from "../../mocks/SigVerifierMock.sol";
 import {SigVerifierBlsBn254Simple} from
     "../../../src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol";
-import {IVaultManager} from "../../../src/interfaces/base/IVaultManager.sol";
 
 contract SettlementTest is MasterGenesisSetupTest {
     using KeyTags for uint8;
@@ -109,7 +108,7 @@ contract SettlementTest is MasterGenesisSetupTest {
     //     bytes memory commitments = Bytes.slice(zkProof, 260, 324);
     //     bytes memory commitmentPok = Bytes.slice(zkProof, 324, 388);
 
-    //     IVaultManager.OperatorVotingPower[] memory votingPowers =
+    //     IVotingPowerProvider.OperatorVotingPower[] memory votingPowers =
     //         masterSetupParams.votingPowerProvider.getVotingPowers(new bytes[](0));
     //     uint256 signersVotingPower = 0;
     //     for (uint256 i; i < votingPowers.length; ++i) {

@@ -16,9 +16,9 @@ import {MyNetwork} from "../../examples/MyNetwork.sol";
 import {MyValSetDriver} from "../../examples/MyValSetDriver.sol";
 import {KeyEcdsaSecp256k1} from "../../src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol";
 import {KeyBlsBn254, BN254} from "../../src/contracts/libraries/keys/KeyBlsBn254.sol";
-import {KEY_TYPE_BLS_BN254, KEY_TYPE_ECDSA_SECP256K1} from "../../src/contracts/base/KeyManager.sol";
+import {KEY_TYPE_BLS_BN254, KEY_TYPE_ECDSA_SECP256K1} from "../../src/contracts/modules/key-registry/KeyRegistry.sol";
 import {BN254G2} from "../../test/helpers/BN254G2.sol";
-import {IOzEIP712} from "../../src/interfaces/base/common/IOzEIP712.sol";
+import {IOzEIP712} from "../../src/interfaces/modules/base/IOzEIP712.sol";
 import {IKeyRegistry} from "../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
 
 // forge script script/test/InitSetup.s.sol:InitSetupScript 25235 --sig "run(uint256)"

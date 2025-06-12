@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {ISigVerifier} from "../../../../interfaces/base/ISigVerifier.sol";
+import {ISigVerifier} from "./ISigVerifier.sol";
 
 interface ISigVerifierBlsBn254ZK is ISigVerifier {
     error SigVerifierBlsBn254ZK_InvalidLength();

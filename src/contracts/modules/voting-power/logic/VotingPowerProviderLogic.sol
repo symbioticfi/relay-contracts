@@ -20,15 +20,15 @@ import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
-import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
-import {PersistentSet} from "../../libraries/structs/PersistentSet.sol";
-import {InputNormalizer} from "../../libraries/utils/InputNormalizer.sol";
+import {Checkpoints} from "../../../libraries/structs/Checkpoints.sol";
+import {PersistentSet} from "../../../libraries/structs/PersistentSet.sol";
+import {InputNormalizer} from "../../../libraries/utils/InputNormalizer.sol";
 
-import {IVaultManager} from "../../../interfaces/base/IVaultManager.sol";
-import {IVotingPowerCalcManager} from "../../../interfaces/base/IVotingPowerCalcManager.sol";
-import {INetworkManager} from "../../../interfaces/base/INetworkManager.sol";
+import {IVotingPowerProvider} from "../../../../interfaces/modules/voting-power/IVotingPowerProvider.sol";
+import {IVotingPowerCalcManager} from "../../../../interfaces/modules/voting-power/base/IVotingPowerCalcManager.sol";
+import {INetworkManager} from "../../../../interfaces/modules/base/INetworkManager.sol";
 
-library VaultManagerLogic {
+library VotingPowerProviderLogic {
     using EnumerableMap for EnumerableMap.AddressToUintMap;
     using EnumerableMap for EnumerableMap.AddressToAddressMap;
     using EnumerableSet for EnumerableSet.AddressSet;
@@ -38,100 +38,104 @@ library VaultManagerLogic {
     using PersistentSet for PersistentSet.AddressSet;
     using InputNormalizer for bytes[];
 
-    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.VaultManager")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant VaultManagerStorageLocation =
-        0x485f0695561726d087d0cb5cf546efed37ef61dfced21455f1ba7eb5e5b3db00;
+    // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.VotingPowerProvider")) - 1)) & ~bytes32(uint256(0xff))
+    bytes32 private constant VotingPowerProviderStorageLocation =
+        0x3671387af6738df83002b4d17260f89ef208ae15fe22fab69d817f0195c74800;
 
-    function _getVaultManagerStorage() internal pure returns (IVaultManager.VaultManagerStorage storage $) {
+    function _getVotingPowerProviderStorage()
+        internal
+        pure
+        returns (IVotingPowerProvider.VotingPowerProviderStorage storage $)
+    {
         assembly {
-            $.slot := VaultManagerStorageLocation
+            $.slot := VotingPowerProviderStorageLocation
         }
     }
 
     function initialize(
-        IVaultManager.VaultManagerInitParams memory initParams
+        IVotingPowerProvider.VotingPowerProviderInitParams memory initParams
     ) public {
-        _getVaultManagerStorage()._slashingWindow = initParams.slashingWindow;
-        emit IVaultManager.SetSlashingWindow(initParams.slashingWindow);
+        _getVotingPowerProviderStorage()._slashingWindow = initParams.slashingWindow;
+        emit IVotingPowerProvider.SetSlashingWindow(initParams.slashingWindow);
         if (initParams.token != address(0)) {
             registerToken(initParams.token);
         }
     }
 
     function getSlashingWindow() public view returns (uint48) {
-        return _getVaultManagerStorage()._slashingWindow;
+        return _getVotingPowerProviderStorage()._slashingWindow;
     }
 
     function isTokenRegisteredAt(address token, uint48 timestamp, bytes memory hint) public view returns (bool) {
-        return _getVaultManagerStorage()._tokens.containsAt(timestamp, token, hint);
+        return _getVotingPowerProviderStorage()._tokens.containsAt(timestamp, token, hint);
     }
 
     function isTokenRegistered(
         address token
     ) public view returns (bool) {
-        return _getVaultManagerStorage()._tokens.contains(token);
+        return _getVotingPowerProviderStorage()._tokens.contains(token);
     }
 
     function getTokensAt(
         uint48 timestamp
     ) public view returns (address[] memory) {
-        return _getVaultManagerStorage()._tokens.valuesAt(timestamp);
+        return _getVotingPowerProviderStorage()._tokens.valuesAt(timestamp);
     }
 
     function getTokens() public view returns (address[] memory) {
-        return _getVaultManagerStorage()._tokens.values();
+        return _getVotingPowerProviderStorage()._tokens.values();
     }
 
     function getTokensLength() public view returns (uint256) {
-        return _getVaultManagerStorage()._tokens.length();
+        return _getVotingPowerProviderStorage()._tokens.length();
     }
 
     function isOperatorRegisteredAt(address operator, uint48 timestamp, bytes memory hint) public view returns (bool) {
-        return _getVaultManagerStorage()._operators.containsAt(timestamp, operator, hint);
+        return _getVotingPowerProviderStorage()._operators.containsAt(timestamp, operator, hint);
     }
 
     function isOperatorRegistered(
         address operator
     ) public view returns (bool) {
-        return _getVaultManagerStorage()._operators.contains(operator);
+        return _getVotingPowerProviderStorage()._operators.contains(operator);
     }
 
     function getOperatorsAt(
         uint48 timestamp
     ) public view returns (address[] memory) {
-        return _getVaultManagerStorage()._operators.valuesAt(timestamp);
+        return _getVotingPowerProviderStorage()._operators.valuesAt(timestamp);
     }
 
     function getOperators() public view returns (address[] memory) {
-        return _getVaultManagerStorage()._operators.values();
+        return _getVotingPowerProviderStorage()._operators.values();
     }
 
     function getOperatorsLength() public view returns (uint256) {
-        return _getVaultManagerStorage()._operators.length();
+        return _getVotingPowerProviderStorage()._operators.length();
     }
 
     function isSharedVaultRegisteredAt(address vault, uint48 timestamp, bytes memory hint) public view returns (bool) {
-        return _getVaultManagerStorage()._sharedVaults.containsAt(timestamp, vault, hint);
+        return _getVotingPowerProviderStorage()._sharedVaults.containsAt(timestamp, vault, hint);
     }
 
     function isSharedVaultRegistered(
         address vault
     ) public view returns (bool) {
-        return _getVaultManagerStorage()._sharedVaults.contains(vault);
+        return _getVotingPowerProviderStorage()._sharedVaults.contains(vault);
     }
 
     function getSharedVaultsAt(
         uint48 timestamp
     ) public view returns (address[] memory) {
-        return _getVaultManagerStorage()._sharedVaults.valuesAt(timestamp);
+        return _getVotingPowerProviderStorage()._sharedVaults.valuesAt(timestamp);
     }
 
     function getSharedVaults() public view returns (address[] memory) {
-        return _getVaultManagerStorage()._sharedVaults.values();
+        return _getVotingPowerProviderStorage()._sharedVaults.values();
     }
 
     function getSharedVaultsLength() public view returns (uint256) {
-        return _getVaultManagerStorage()._sharedVaults.length();
+        return _getVotingPowerProviderStorage()._sharedVaults.length();
     }
 
     function isOperatorVaultRegisteredAt(
@@ -139,13 +143,13 @@ library VaultManagerLogic {
         uint48 timestamp,
         bytes memory hint
     ) public view returns (bool) {
-        return _getVaultManagerStorage()._allOperatorVaults.containsAt(timestamp, vault, hint);
+        return _getVotingPowerProviderStorage()._allOperatorVaults.containsAt(timestamp, vault, hint);
     }
 
     function isOperatorVaultRegistered(
         address vault
     ) public view returns (bool) {
-        return _getVaultManagerStorage()._allOperatorVaults.contains(vault);
+        return _getVotingPowerProviderStorage()._allOperatorVaults.contains(vault);
     }
 
     function isOperatorVaultRegisteredAt(
@@ -154,27 +158,27 @@ library VaultManagerLogic {
         uint48 timestamp,
         bytes memory hint
     ) public view returns (bool) {
-        return _getVaultManagerStorage()._operatorVaults[operator].containsAt(timestamp, vault, hint);
+        return _getVotingPowerProviderStorage()._operatorVaults[operator].containsAt(timestamp, vault, hint);
     }
 
     function isOperatorVaultRegistered(address operator, address vault) public view returns (bool) {
-        return _getVaultManagerStorage()._operatorVaults[operator].contains(vault);
+        return _getVotingPowerProviderStorage()._operatorVaults[operator].contains(vault);
     }
 
     function getOperatorVaultsAt(address operator, uint48 timestamp) public view returns (address[] memory) {
-        return _getVaultManagerStorage()._operatorVaults[operator].valuesAt(timestamp);
+        return _getVotingPowerProviderStorage()._operatorVaults[operator].valuesAt(timestamp);
     }
 
     function getOperatorVaults(
         address operator
     ) public view returns (address[] memory) {
-        return _getVaultManagerStorage()._operatorVaults[operator].values();
+        return _getVotingPowerProviderStorage()._operatorVaults[operator].values();
     }
 
     function getOperatorVaultsLength(
         address operator
     ) public view returns (uint256) {
-        return _getVaultManagerStorage()._operatorVaults[operator].length();
+        return _getVotingPowerProviderStorage()._operatorVaults[operator].length();
     }
 
     function getOperatorStakeAt(
@@ -199,9 +203,9 @@ library VaultManagerLogic {
         uint48 timestamp,
         bytes memory hints
     ) public view returns (uint256) {
-        IVaultManager.OperatorVaultVotingPowerHints memory operatorVaultVotingPowerHints;
+        IVotingPowerProvider.OperatorVaultVotingPowerHints memory operatorVaultVotingPowerHints;
         if (hints.length > 0) {
-            operatorVaultVotingPowerHints = abi.decode(hints, (IVaultManager.OperatorVaultVotingPowerHints));
+            operatorVaultVotingPowerHints = abi.decode(hints, (IVotingPowerProvider.OperatorVaultVotingPowerHints));
         }
 
         if (
@@ -236,16 +240,16 @@ library VaultManagerLogic {
         address operator,
         bytes memory extraData,
         uint48 timestamp
-    ) public view returns (IVaultManager.VaultVotingPower[] memory vaultVotingPowers) {
-        IVaultManager.OperatorVotingPowersExtraData memory operatorVotingPowersExtraData;
+    ) public view returns (IVotingPowerProvider.VaultVotingPower[] memory vaultVotingPowers) {
+        IVotingPowerProvider.OperatorVotingPowersExtraData memory operatorVotingPowersExtraData;
         if (extraData.length > 0) {
-            operatorVotingPowersExtraData = abi.decode(extraData, (IVaultManager.OperatorVotingPowersExtraData));
+            operatorVotingPowersExtraData = abi.decode(extraData, (IVotingPowerProvider.OperatorVotingPowersExtraData));
         }
 
         uint256 length;
         address[] memory sharedVaults = getSharedVaultsAt(timestamp);
         address[] memory operatorVaults = getOperatorVaultsAt(operator, timestamp);
-        vaultVotingPowers = new IVaultManager.VaultVotingPower[](sharedVaults.length + operatorVaults.length);
+        vaultVotingPowers = new IVotingPowerProvider.VaultVotingPower[](sharedVaults.length + operatorVaults.length);
         operatorVotingPowersExtraData.sharedVaultsExtraData =
             operatorVotingPowersExtraData.sharedVaultsExtraData.normalize(sharedVaults.length);
         for (uint256 i; i < sharedVaults.length; ++i) {
@@ -258,7 +262,7 @@ library VaultManagerLogic {
             );
             if (votingPower_ > 0) {
                 vaultVotingPowers[length++] =
-                    IVaultManager.VaultVotingPower({vault: sharedVaults[i], votingPower: votingPower_});
+                    IVotingPowerProvider.VaultVotingPower({vault: sharedVaults[i], votingPower: votingPower_});
             }
         }
         operatorVotingPowersExtraData.operatorVaultsExtraData =
@@ -273,7 +277,7 @@ library VaultManagerLogic {
             );
             if (votingPower_ > 0) {
                 vaultVotingPowers[length++] =
-                    IVaultManager.VaultVotingPower({vault: operatorVaults[i], votingPower: votingPower_});
+                    IVotingPowerProvider.VaultVotingPower({vault: operatorVaults[i], votingPower: votingPower_});
             }
         }
 
@@ -285,16 +289,16 @@ library VaultManagerLogic {
     function getOperatorVotingPowers(
         address operator,
         bytes memory extraData
-    ) public view returns (IVaultManager.VaultVotingPower[] memory vaultVotingPowers) {
-        IVaultManager.OperatorVotingPowersExtraData memory operatorVotingPowersExtraData;
+    ) public view returns (IVotingPowerProvider.VaultVotingPower[] memory vaultVotingPowers) {
+        IVotingPowerProvider.OperatorVotingPowersExtraData memory operatorVotingPowersExtraData;
         if (extraData.length > 0) {
-            operatorVotingPowersExtraData = abi.decode(extraData, (IVaultManager.OperatorVotingPowersExtraData));
+            operatorVotingPowersExtraData = abi.decode(extraData, (IVotingPowerProvider.OperatorVotingPowersExtraData));
         }
 
         uint256 length;
         address[] memory sharedVaults = getSharedVaults();
         address[] memory operatorVaults = getOperatorVaults(operator);
-        vaultVotingPowers = new IVaultManager.VaultVotingPower[](sharedVaults.length + operatorVaults.length);
+        vaultVotingPowers = new IVotingPowerProvider.VaultVotingPower[](sharedVaults.length + operatorVaults.length);
         operatorVotingPowersExtraData.sharedVaultsExtraData =
             operatorVotingPowersExtraData.sharedVaultsExtraData.normalize(sharedVaults.length);
         for (uint256 i; i < sharedVaults.length; ++i) {
@@ -303,7 +307,7 @@ library VaultManagerLogic {
             );
             if (votingPower_ > 0) {
                 vaultVotingPowers[length++] =
-                    IVaultManager.VaultVotingPower({vault: sharedVaults[i], votingPower: votingPower_});
+                    IVotingPowerProvider.VaultVotingPower({vault: sharedVaults[i], votingPower: votingPower_});
             }
         }
         operatorVotingPowersExtraData.operatorVaultsExtraData =
@@ -314,7 +318,7 @@ library VaultManagerLogic {
             );
             if (votingPower_ > 0) {
                 vaultVotingPowers[length++] =
-                    IVaultManager.VaultVotingPower({vault: operatorVaults[i], votingPower: votingPower_});
+                    IVotingPowerProvider.VaultVotingPower({vault: operatorVaults[i], votingPower: votingPower_});
             }
         }
 
@@ -326,17 +330,17 @@ library VaultManagerLogic {
     function getVotingPowersAt(
         bytes[] memory extraData,
         uint48 timestamp
-    ) public view returns (IVaultManager.OperatorVotingPower[] memory operatorVotingPowers) {
+    ) public view returns (IVotingPowerProvider.OperatorVotingPower[] memory operatorVotingPowers) {
         uint256 length;
         address[] memory operators = getOperatorsAt(timestamp);
-        operatorVotingPowers = new IVaultManager.OperatorVotingPower[](operators.length);
+        operatorVotingPowers = new IVotingPowerProvider.OperatorVotingPower[](operators.length);
         extraData = extraData.normalize(operators.length);
         for (uint256 i; i < operators.length; ++i) {
-            IVaultManager.VaultVotingPower[] memory votingPowers =
+            IVotingPowerProvider.VaultVotingPower[] memory votingPowers =
                 getOperatorVotingPowersAt(operators[i], extraData[i], timestamp);
             if (votingPowers.length > 0) {
                 operatorVotingPowers[length++] =
-                    IVaultManager.OperatorVotingPower({operator: operators[i], vaults: votingPowers});
+                    IVotingPowerProvider.OperatorVotingPower({operator: operators[i], vaults: votingPowers});
             }
         }
         assembly ("memory-safe") {
@@ -346,16 +350,17 @@ library VaultManagerLogic {
 
     function getVotingPowers(
         bytes[] memory extraData
-    ) public view returns (IVaultManager.OperatorVotingPower[] memory operatorVotingPowers) {
+    ) public view returns (IVotingPowerProvider.OperatorVotingPower[] memory operatorVotingPowers) {
         uint256 length;
         address[] memory operators = getOperators();
-        operatorVotingPowers = new IVaultManager.OperatorVotingPower[](operators.length);
+        operatorVotingPowers = new IVotingPowerProvider.OperatorVotingPower[](operators.length);
         extraData = extraData.normalize(operators.length);
         for (uint256 i; i < operators.length; ++i) {
-            IVaultManager.VaultVotingPower[] memory votingPowers = getOperatorVotingPowers(operators[i], extraData[i]);
+            IVotingPowerProvider.VaultVotingPower[] memory votingPowers =
+                getOperatorVotingPowers(operators[i], extraData[i]);
             if (votingPowers.length > 0) {
                 operatorVotingPowers[length++] =
-                    IVaultManager.OperatorVotingPower({operator: operators[i], vaults: votingPowers});
+                    IVotingPowerProvider.OperatorVotingPower({operator: operators[i], vaults: votingPowers});
             }
         }
         assembly ("memory-safe") {
@@ -367,126 +372,126 @@ library VaultManagerLogic {
         uint48 slashingWindow
     ) public {
         if (slashingWindow >= getSlashingWindow()) {
-            revert IVaultManager.VaultManager_SlashingWindowTooLarge();
+            revert IVotingPowerProvider.VotingPowerProvider_SlashingWindowTooLarge();
         }
-        _getVaultManagerStorage()._slashingWindow = slashingWindow;
+        _getVotingPowerProviderStorage()._slashingWindow = slashingWindow;
 
-        emit IVaultManager.SetSlashingWindow(slashingWindow);
+        emit IVotingPowerProvider.SetSlashingWindow(slashingWindow);
     }
 
     function registerToken(
         address token
     ) public {
         if (token == address(0)) {
-            revert IVaultManager.VaultManager_InvalidToken();
+            revert IVotingPowerProvider.VotingPowerProvider_InvalidToken();
         }
-        if (!_getVaultManagerStorage()._tokens.add(Time.timestamp(), token)) {
-            revert IVaultManager.VaultManager_TokenAlreadyIsRegistered();
+        if (!_getVotingPowerProviderStorage()._tokens.add(Time.timestamp(), token)) {
+            revert IVotingPowerProvider.VotingPowerProvider_TokenAlreadyIsRegistered();
         }
 
-        emit IVaultManager.RegisterToken(token);
+        emit IVotingPowerProvider.RegisterToken(token);
     }
 
     function unregisterToken(
         address token
     ) public {
-        if (!_getVaultManagerStorage()._tokens.remove(Time.timestamp(), token)) {
-            revert IVaultManager.VaultManager_TokenNotRegistered();
+        if (!_getVotingPowerProviderStorage()._tokens.remove(Time.timestamp(), token)) {
+            revert IVotingPowerProvider.VotingPowerProvider_TokenNotRegistered();
         }
 
-        emit IVaultManager.UnregisterToken(token);
+        emit IVotingPowerProvider.UnregisterToken(token);
     }
 
     function registerOperator(
         address operator
     ) public {
         if (!_validateOperator(operator)) {
-            revert IVaultManager.VaultManager_InvalidOperator();
+            revert IVotingPowerProvider.VotingPowerProvider_InvalidOperator();
         }
 
-        if (!_getVaultManagerStorage()._operators.add(Time.timestamp(), operator)) {
-            revert IVaultManager.VaultManager_OperatorAlreadyRegistered();
+        if (!_getVotingPowerProviderStorage()._operators.add(Time.timestamp(), operator)) {
+            revert IVotingPowerProvider.VotingPowerProvider_OperatorAlreadyRegistered();
         }
 
-        emit IVaultManager.RegisterOperator(operator);
+        emit IVotingPowerProvider.RegisterOperator(operator);
     }
 
     function unregisterOperator(
         address operator
     ) public {
-        if (!_getVaultManagerStorage()._operators.remove(Time.timestamp(), operator)) {
-            revert IVaultManager.VaultManager_OperatorNotRegistered();
+        if (!_getVotingPowerProviderStorage()._operators.remove(Time.timestamp(), operator)) {
+            revert IVotingPowerProvider.VotingPowerProvider_OperatorNotRegistered();
         }
 
-        emit IVaultManager.UnregisterOperator(operator);
+        emit IVotingPowerProvider.UnregisterOperator(operator);
     }
 
     function registerSharedVault(
         address vault
     ) public {
-        IVaultManager.VaultManagerStorage storage $ = _getVaultManagerStorage();
+        IVotingPowerProvider.VotingPowerProviderStorage storage $ = _getVotingPowerProviderStorage();
         if (!_validateVault(vault)) {
-            revert IVaultManager.VaultManager_InvalidVault();
+            revert IVotingPowerProvider.VotingPowerProvider_InvalidVault();
         }
         if (!_validateSharedVault(vault)) {
-            revert IVaultManager.VaultManager_InvalidSharedVault();
+            revert IVotingPowerProvider.VotingPowerProvider_InvalidSharedVault();
         }
         if ($._allOperatorVaults.contains(vault)) {
-            revert IVaultManager.VaultManager_OperatorVaultAlreadyIsRegistered();
+            revert IVotingPowerProvider.VotingPowerProvider_OperatorVaultAlreadyIsRegistered();
         }
         if (!$._sharedVaults.add(Time.timestamp(), vault)) {
-            revert IVaultManager.VaultManager_SharedVaultAlreadyIsRegistered();
+            revert IVotingPowerProvider.VotingPowerProvider_SharedVaultAlreadyIsRegistered();
         }
 
-        emit IVaultManager.RegisterSharedVault(vault);
+        emit IVotingPowerProvider.RegisterSharedVault(vault);
     }
 
     function registerOperatorVault(address operator, address vault) public {
-        IVaultManager.VaultManagerStorage storage $ = _getVaultManagerStorage();
+        IVotingPowerProvider.VotingPowerProviderStorage storage $ = _getVotingPowerProviderStorage();
         if (!_validateVault(vault)) {
-            revert IVaultManager.VaultManager_InvalidVault();
+            revert IVotingPowerProvider.VotingPowerProvider_InvalidVault();
         }
         if (!_validateOperatorVault(operator, vault)) {
-            revert IVaultManager.VaultManager_InvalidOperatorVault();
+            revert IVotingPowerProvider.VotingPowerProvider_InvalidOperatorVault();
         }
         if (!isOperatorRegistered(operator)) {
-            revert IVaultManager.VaultManager_OperatorNotRegistered();
+            revert IVotingPowerProvider.VotingPowerProvider_OperatorNotRegistered();
         }
         if ($._sharedVaults.contains(vault)) {
-            revert IVaultManager.VaultManager_SharedVaultAlreadyIsRegistered();
+            revert IVotingPowerProvider.VotingPowerProvider_SharedVaultAlreadyIsRegistered();
         }
         if (!$._allOperatorVaults.add(Time.timestamp(), vault)) {
-            revert IVaultManager.VaultManager_OperatorVaultAlreadyIsRegistered();
+            revert IVotingPowerProvider.VotingPowerProvider_OperatorVaultAlreadyIsRegistered();
         }
         $._operatorVaults[operator].add(Time.timestamp(), vault);
 
-        emit IVaultManager.RegisterOperatorVault(operator, vault);
+        emit IVotingPowerProvider.RegisterOperatorVault(operator, vault);
     }
 
     function unregisterSharedVault(
         address vault
     ) public {
-        if (!_getVaultManagerStorage()._sharedVaults.remove(Time.timestamp(), vault)) {
-            revert IVaultManager.VaultManager_SharedVaultNotRegistered();
+        if (!_getVotingPowerProviderStorage()._sharedVaults.remove(Time.timestamp(), vault)) {
+            revert IVotingPowerProvider.VotingPowerProvider_SharedVaultNotRegistered();
         }
 
-        emit IVaultManager.UnregisterSharedVault(vault);
+        emit IVotingPowerProvider.UnregisterSharedVault(vault);
     }
 
     function unregisterOperatorVault(address operator, address vault) public {
-        IVaultManager.VaultManagerStorage storage $ = _getVaultManagerStorage();
+        IVotingPowerProvider.VotingPowerProviderStorage storage $ = _getVotingPowerProviderStorage();
         if (!$._operatorVaults[operator].remove(Time.timestamp(), vault)) {
-            revert IVaultManager.VaultManager_OperatorVaultNotRegistered();
+            revert IVotingPowerProvider.VotingPowerProvider_OperatorVaultNotRegistered();
         }
         $._allOperatorVaults.remove(Time.timestamp(), vault);
 
-        emit IVaultManager.UnregisterOperatorVault(operator, vault);
+        emit IVotingPowerProvider.UnregisterOperatorVault(operator, vault);
     }
 
     function _validateOperator(
         address operator
     ) public view returns (bool) {
-        if (!IRegistry(IVaultManager(address(this)).OPERATOR_REGISTRY()).isEntity(operator)) {
+        if (!IRegistry(IVotingPowerProvider(address(this)).OPERATOR_REGISTRY()).isEntity(operator)) {
             return false;
         }
         return true;
@@ -495,7 +500,7 @@ library VaultManagerLogic {
     function _validateVault(
         address vault
     ) public view returns (bool) {
-        if (!IRegistry(IVaultManager(address(this)).VAULT_FACTORY()).isEntity(vault)) {
+        if (!IRegistry(IVotingPowerProvider(address(this)).VAULT_FACTORY()).isEntity(vault)) {
             return false;
         }
 
@@ -521,8 +526,8 @@ library VaultManagerLogic {
         uint64 delegatorType = IEntity(delegator).TYPE();
         if (
             (
-                delegatorType != uint64(IVaultManager.DelegatorType.FULL_RESTAKE)
-                    && delegatorType != uint64(IVaultManager.DelegatorType.NETWORK_RESTAKE)
+                delegatorType != uint64(IVotingPowerProvider.DelegatorType.FULL_RESTAKE)
+                    && delegatorType != uint64(IVotingPowerProvider.DelegatorType.NETWORK_RESTAKE)
             )
         ) {
             return false;
@@ -536,15 +541,15 @@ library VaultManagerLogic {
         uint64 delegatorType = IEntity(delegator).TYPE();
         if (
             (
-                delegatorType != uint64(IVaultManager.DelegatorType.OPERATOR_SPECIFIC)
-                    && delegatorType != uint64(IVaultManager.DelegatorType.OPERATOR_NETWORK_SPECIFIC)
+                delegatorType != uint64(IVotingPowerProvider.DelegatorType.OPERATOR_SPECIFIC)
+                    && delegatorType != uint64(IVotingPowerProvider.DelegatorType.OPERATOR_NETWORK_SPECIFIC)
             ) || IOperatorSpecificDelegator(delegator).operator() != operator
         ) {
             return false;
         }
 
         if (
-            delegatorType == uint64(IVaultManager.DelegatorType.OPERATOR_NETWORK_SPECIFIC)
+            delegatorType == uint64(IVotingPowerProvider.DelegatorType.OPERATOR_NETWORK_SPECIFIC)
                 && IOperatorNetworkSpecificDelegator(delegator).network() != INetworkManager(address(this)).NETWORK()
         ) {
             return false;
@@ -562,9 +567,9 @@ library VaultManagerLogic {
 
         if (slasher != address(0)) {
             uint64 slasherType = IEntity(slasher).TYPE();
-            if (slasherType == uint64(IVaultManager.SlasherType.VETO)) {
+            if (slasherType == uint64(IVotingPowerProvider.SlasherType.VETO)) {
                 vaultEpochDuration -= IVetoSlasher(slasher).vetoDuration();
-            } else if (slasherType > uint64(IVaultManager.SlasherType.VETO)) {
+            } else if (slasherType > uint64(IVotingPowerProvider.SlasherType.VETO)) {
                 return false;
             }
 

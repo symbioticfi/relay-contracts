@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {PermissionManager} from "./PermissionManager.sol";
-import {Checkpoints} from "../libraries/structs/Checkpoints.sol";
+import {PermissionManager} from "../base/PermissionManager.sol";
+import {Checkpoints} from "../../../contracts/libraries/structs/Checkpoints.sol";
 
-import {IEpochManager} from "../../interfaces/base/IEpochManager.sol";
+import {IEpochManager} from "../../../interfaces/modules/valset-driver/IEpochManager.sol";
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 

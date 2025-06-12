@@ -12,11 +12,11 @@ import {IOperatorSpecificDelegator} from "@symbioticfi/core/src/interfaces/deleg
 import {IOperatorNetworkSpecificDelegator} from
     "@symbioticfi/core/src/interfaces/delegator/IOperatorNetworkSpecificDelegator.sol";
 
-import {IBaseSlashing} from "../../../../interfaces/modules/voting-power/IBaseSlashing.sol";
-import {VotingPowerProvider} from "../VotingPowerProvider.sol";
+import {IBaseSlashing} from "../../../../../interfaces/modules/voting-power/extensions/IBaseSlashing.sol";
+import {VotingPowerProvider} from "../../VotingPowerProvider.sol";
 
-import {IVaultManager} from "../../../../interfaces/base/IVaultManager.sol";
-import {INetworkManager} from "../../../../interfaces/base/INetworkManager.sol";
+import {IVotingPowerProvider} from "../../../../../interfaces/modules/voting-power/IVotingPowerProvider.sol";
+import {INetworkManager} from "../../../../../interfaces/modules/base/INetworkManager.sol";
 
 library BaseSlashingLogic {
     function slashVault(
@@ -32,7 +32,7 @@ library BaseSlashingLogic {
         }
 
         if (
-            !IVaultManager(address(this)).isOperatorRegisteredAt(
+            !IVotingPowerProvider(address(this)).isOperatorRegisteredAt(
                 operator, timestamp, slashVaultHints.operatorRegisteredHint
             )
         ) {
@@ -40,10 +40,10 @@ library BaseSlashingLogic {
         }
 
         if (
-            !IVaultManager(address(this)).isOperatorVaultRegisteredAt(
+            !IVotingPowerProvider(address(this)).isOperatorVaultRegisteredAt(
                 operator, vault, timestamp, slashVaultHints.operatorVaultRegisteredHint
             )
-                && !IVaultManager(address(this)).isSharedVaultRegisteredAt(
+                && !IVotingPowerProvider(address(this)).isSharedVaultRegisteredAt(
                     vault, timestamp, slashVaultHints.sharedVaultRegisteredHint
                 )
         ) {
@@ -66,7 +66,7 @@ library BaseSlashingLogic {
         bytes memory hints
     ) public returns (bool success, bytes memory response) {
         uint64 slasherType = IEntity(slasher).TYPE();
-        if (slasherType == uint64(IVaultManager.SlasherType.INSTANT)) {
+        if (slasherType == uint64(IVotingPowerProvider.SlasherType.INSTANT)) {
             (success, response) = slasher.call(
                 abi.encodeCall(
                     IInstantSlasher.slash,
@@ -74,7 +74,7 @@ library BaseSlashingLogic {
                 )
             );
             emit IBaseSlashing.InstantSlash(slasher, operator, success, success ? abi.decode(response, (uint256)) : 0);
-        } else if (slasherType == uint64(IVaultManager.SlasherType.VETO)) {
+        } else if (slasherType == uint64(IVotingPowerProvider.SlasherType.VETO)) {
             (success, response) = slasher.call(
                 abi.encodeCall(
                     IVetoSlasher.requestSlash,
@@ -106,7 +106,7 @@ library BaseSlashingLogic {
         bytes memory hints
     ) public returns (bool success, uint256 slashedAmount) {
         uint64 slasherType = IEntity(slasher).TYPE();
-        if (slasherType == uint64(IVaultManager.SlasherType.VETO)) {
+        if (slasherType == uint64(IVotingPowerProvider.SlasherType.VETO)) {
             bytes memory response;
             (success, response) = slasher.call(abi.encodeCall(IVetoSlasher.executeSlash, (slashIndex, hints)));
             slashedAmount = success ? abi.decode(response, (uint256)) : 0;

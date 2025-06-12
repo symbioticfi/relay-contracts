@@ -6,16 +6,15 @@ import "forge-std/Test.sol";
 import {OperatorsBlacklist} from "../../../../src/contracts/modules/voting-power/extensions/OperatorsBlacklist.sol";
 import {VotingPowerProvider} from "../../../../src/contracts/modules/voting-power/VotingPowerProvider.sol";
 import {NoPermissionManager} from "../../../../test/mocks/NoPermissionManager.sol";
-import {EqualStakeVPCalc} from "../../../../src/contracts/modules/voting-power/extensions/EqualStakeVPCalc.sol";
+import {EqualStakeVPCalc} from
+    "../../../../src/contracts/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol";
 
-import {INetworkManager} from "../../../../src/interfaces/base/INetworkManager.sol";
-import {IVaultManager} from "../../../../src/interfaces/base/IVaultManager.sol";
+import {INetworkManager} from "../../../../src/interfaces/modules/base/INetworkManager.sol";
 import {IOperatorsBlacklist} from "../../../../src/interfaces/modules/voting-power/extensions/IOperatorsBlacklist.sol";
 import {InitSetupTest} from "../../../InitSetup.sol";
-import {VaultManager} from "../../../../src/contracts/base/VaultManager.sol";
 import {MultiToken} from "../../../../src/contracts/modules/voting-power/extensions/MultiToken.sol";
 import {IVotingPowerProvider} from "../../../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
-import {IOzEIP712} from "../../../../src/interfaces/base/common/IOzEIP712.sol";
+import {IOzEIP712} from "../../../../src/interfaces/modules/base/IOzEIP712.sol";
 import {OperatorVaults} from "../../../../src/contracts/modules/voting-power/extensions/OperatorVaults.sol";
 
 contract TestOperatorsBlacklist is
@@ -59,14 +58,13 @@ contract OperatorsBlacklistTest is InitSetupTest {
 
         INetworkManager.NetworkManagerInitParams memory netInit =
             INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkID: IDENTIFIER});
-        IVaultManager.VaultManagerInitParams memory vaultInit =
-            IVaultManager.VaultManagerInitParams({slashingWindow: 100, token: initSetupParams.masterChain.tokens[0]});
 
         IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
             .VotingPowerProviderInitParams({
             networkManagerInitParams: netInit,
-            vaultManagerInitParams: vaultInit,
-            ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"})
+            ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
+            slashingWindow: 100,
+            token: initSetupParams.masterChain.tokens[0]
         });
 
         blacklistOps.initialize(votingPowerProviderInit);

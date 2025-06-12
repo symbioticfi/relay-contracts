@@ -5,10 +5,10 @@ import {SigBlsBn254} from "../../../libraries/sigs/SigBlsBn254.sol";
 import {BN254} from "../../../libraries/utils/BN254.sol";
 import {KeyBlsBn254} from "../../../libraries/keys/KeyBlsBn254.sol";
 import {ExtraDataStorageHelper} from "./libraries/ExtraDataStorageHelper.sol";
-import {KEY_TYPE_BLS_BN254} from "../../../base/KeyManager.sol";
+import {KEY_TYPE_BLS_BN254} from "../../../modules/key-registry/KeyRegistry.sol";
 import {KeyTags} from "../../../libraries/utils/KeyTags.sol";
 
-import {ISigVerifier} from "../../../../interfaces/base/ISigVerifier.sol";
+import {ISigVerifier} from "../../../../interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol";
 import {ISettlement} from "../../../../interfaces/modules/settlement/ISettlement.sol";
 import {ISigVerifierBlsBn254Simple} from
     "../../../../interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254Simple.sol";

@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import {BN254} from "../../../../contracts/libraries/utils/BN254.sol";
 
-import {ISigVerifier} from "../../../../interfaces/base/ISigVerifier.sol";
+import {ISigVerifier} from "./ISigVerifier.sol";
 
 interface ISigVerifierBlsBn254Simple is ISigVerifier {
     error SigVerifierBlsBn254Simple_UnsupportedKeyTag();

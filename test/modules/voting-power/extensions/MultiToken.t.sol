@@ -4,25 +4,27 @@ pragma solidity ^0.8.25;
 import "forge-std/Test.sol";
 
 import {MultiToken} from "../../../../src/contracts/modules/voting-power/extensions/MultiToken.sol";
-import {VaultManagerLogic} from "../../../../src/contracts/base/logic/VaultManagerLogic.sol";
 import {IMultiToken} from "../../../../src/interfaces/modules/voting-power/extensions/IMultiToken.sol";
-import {INetworkManager} from "../../../../src/interfaces/base/INetworkManager.sol";
-import {IVaultManager} from "../../../../src/interfaces/base/IVaultManager.sol";
+import {INetworkManager} from "../../../../src/interfaces/modules/base/INetworkManager.sol";
 import {NoPermissionManager} from "../../../../test/mocks/NoPermissionManager.sol";
-import {VaultManager} from "../../../../src/contracts/base/VaultManager.sol";
-import {EqualStakeVPCalc} from "../../../../src/contracts/modules/voting-power/extensions/EqualStakeVPCalc.sol";
+import {EqualStakeVPCalc} from
+    "../../../../src/contracts/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol";
+import {IVotingPowerProvider} from "../../../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
+import {IOzEIP712} from "../../../../src/interfaces/modules/base/IOzEIP712.sol";
+import {VotingPowerProvider} from "../../../../src/contracts/modules/voting-power/VotingPowerProvider.sol";
+import {OperatorVaults} from "../../../../src/contracts/modules/voting-power/extensions/OperatorVaults.sol";
 
 import "../../../InitSetup.sol";
 
-contract TestMultiToken is MultiToken, NoPermissionManager, EqualStakeVPCalc {
-    constructor(address operatorRegistry, address vaultFactory) VaultManager(operatorRegistry, vaultFactory) {}
+contract TestMultiToken is NoPermissionManager, EqualStakeVPCalc, MultiToken {
+    constructor(address operatorRegistry, address vaultFactory) VotingPowerProvider(operatorRegistry, vaultFactory) {}
 
     function initialize(
-        INetworkManager.NetworkManagerInitParams memory netInit,
-        IVaultManager.VaultManagerInitParams memory vaultInit
+        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit
     ) external initializer {
-        __NetworkManager_init(netInit);
-        __VaultManager_init(vaultInit);
+        __VotingPowerProvider_init(votingPowerProviderInit);
+
+        __MultiToken_init();
     }
 }
 
@@ -41,10 +43,16 @@ contract MultiTokenTest is InitSetupTest {
 
         INetworkManager.NetworkManagerInitParams memory netInit =
             INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkID: IDENTIFIER});
-        IVaultManager.VaultManagerInitParams memory vaultInit =
-            IVaultManager.VaultManagerInitParams({slashingWindow: 100, token: initSetupParams.masterChain.tokens[0]});
 
-        tokens.initialize(netInit, vaultInit);
+        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
+            .VotingPowerProviderInitParams({
+            networkManagerInitParams: netInit,
+            ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
+            slashingWindow: 100,
+            token: initSetupParams.masterChain.tokens[0]
+        });
+
+        tokens.initialize(votingPowerProviderInit);
     }
 
     function test_RegisterToken_OnlyOwnerCanCall() public {

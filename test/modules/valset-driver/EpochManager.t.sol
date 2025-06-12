@@ -2,10 +2,10 @@
 pragma solidity ^0.8.25;
 
 import "forge-std/Test.sol";
-import {NoPermissionManager} from "../mocks/NoPermissionManager.sol";
-import {EpochManager} from "../../src/contracts/base/EpochManager.sol";
-import {IEpochManager} from "../../src/interfaces/base/IEpochManager.sol";
-import {Checkpoints} from "../../src/contracts/libraries/structs/Checkpoints.sol";
+import {NoPermissionManager} from "../../mocks/NoPermissionManager.sol";
+import {EpochManager} from "../../../src/contracts/modules/valset-driver/EpochManager.sol";
+import {IEpochManager} from "../../../src/interfaces/modules/valset-driver/IEpochManager.sol";
+import {Checkpoints} from "../../../src/contracts/libraries/structs/Checkpoints.sol";
 
 contract TestEpochManager is EpochManager, NoPermissionManager {
     using Checkpoints for Checkpoints.Trace208;

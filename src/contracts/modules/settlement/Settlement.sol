@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {NetworkManager} from "../../base/NetworkManager.sol";
+import {NetworkManager} from "../base/NetworkManager.sol";
 
 import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
 
-import {ISigVerifier} from "../../../interfaces/base/ISigVerifier.sol";
+import {ISigVerifier} from "../../../interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol";
 import {ISettlement} from "../../../interfaces/modules/settlement/ISettlement.sol";
-import {OzEIP712} from "../../base/common/OzEIP712.sol";
-import {PermissionManager} from "../../base/PermissionManager.sol";
+import {OzEIP712} from "../base/OzEIP712.sol";
+import {PermissionManager} from "../base/PermissionManager.sol";
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 

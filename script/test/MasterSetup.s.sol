@@ -5,12 +5,10 @@ import {Script, console2} from "forge-std/Script.sol";
 
 import {ISettlement} from "../../src/interfaces/modules/settlement/ISettlement.sol";
 import {IOzOwnable} from "../../src/interfaces/modules/common/permissions/IOzOwnable.sol";
-import {INetworkManager} from "../../src/interfaces/base/INetworkManager.sol";
-import {IEpochManager} from "../../src/interfaces/base/IEpochManager.sol";
-import {IOzEIP712} from "../../src/interfaces/base/common/IOzEIP712.sol";
-import {IVaultManager} from "../../src/interfaces/base/IVaultManager.sol";
+import {INetworkManager} from "../../src/interfaces/modules/base/INetworkManager.sol";
+import {IEpochManager} from "../../src/interfaces/modules/valset-driver/IEpochManager.sol";
+import {IOzEIP712} from "../../src/interfaces/modules/base/IOzEIP712.sol";
 import {IValSetDriver} from "../../src/interfaces/modules/valset-driver/IValSetDriver.sol";
-import {IConfigProvider} from "../../src/interfaces/modules/valset-driver/IConfigProvider.sol";
 import {IOperatorsWhitelist} from "../../src/interfaces/modules/voting-power/extensions/IOperatorsWhitelist.sol";
 import {IVotingPowerProvider} from "../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
 
@@ -60,11 +58,11 @@ contract MasterSetupScript is InitSetupScript {
 
     struct LocalVars {
         uint8[] requiredKeyTags;
-        IConfigProvider.CrossChainAddress[] votingPowerProviders;
-        IConfigProvider.CrossChainAddress[] replicas;
-        IConfigProvider.CrossChainAddress keysProvider;
+        IValSetDriver.CrossChainAddress[] votingPowerProviders;
+        IValSetDriver.CrossChainAddress[] replicas;
+        IValSetDriver.CrossChainAddress keysProvider;
         address sigVerifier;
-        IConfigProvider.QuorumThreshold[] quorumThresholds;
+        IValSetDriver.QuorumThreshold[] quorumThresholds;
     }
 
     function run(
@@ -101,11 +99,9 @@ contract MasterSetupScript is InitSetupScript {
                     network: vars.network.addr,
                     subnetworkID: networkSetupParams.SUBNETWORK_ID
                 }),
-                vaultManagerInitParams: IVaultManager.VaultManagerInitParams({
-                    slashingWindow: networkSetupParams.SLASHING_WINDOW,
-                    token: initSetupParams.masterChain.tokens[0]
-                }),
-                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "VotingPowerProvider", version: "1"})
+                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "VotingPowerProvider", version: "1"}),
+                slashingWindow: networkSetupParams.SLASHING_WINDOW,
+                token: initSetupParams.masterChain.tokens[0]
             }),
             IOzOwnable.OzOwnableInitParams({owner: vars.network.addr}),
             IOperatorsWhitelist.OperatorsWhitelistInitParams({isWhitelistEnabled: false})
@@ -180,25 +176,25 @@ contract MasterSetupScript is InitSetupScript {
             localVars.requiredKeyTags = new uint8[](1);
             localVars.requiredKeyTags[0] = KEY_TYPE_BLS_BN254.getKeyTag(15);
 
-            localVars.votingPowerProviders = new IConfigProvider.CrossChainAddress[](1);
-            localVars.votingPowerProviders[0] = IConfigProvider.CrossChainAddress({
+            localVars.votingPowerProviders = new IValSetDriver.CrossChainAddress[](1);
+            localVars.votingPowerProviders[0] = IValSetDriver.CrossChainAddress({
                 addr: address(masterSetupParams.votingPowerProvider),
                 chainId: uint64(initSetupParams.masterChain.chainId)
             });
 
-            localVars.keysProvider = IConfigProvider.CrossChainAddress({
+            localVars.keysProvider = IValSetDriver.CrossChainAddress({
                 addr: address(masterSetupParams.keyRegistry),
                 chainId: uint64(initSetupParams.masterChain.chainId)
             });
-            localVars.replicas = new IConfigProvider.CrossChainAddress[](1);
-            localVars.replicas[0] = IConfigProvider.CrossChainAddress({
+            localVars.replicas = new IValSetDriver.CrossChainAddress[](1);
+            localVars.replicas[0] = IValSetDriver.CrossChainAddress({
                 addr: address(masterSetupParams.settlement),
                 chainId: uint64(initSetupParams.masterChain.chainId)
             });
 
-            localVars.quorumThresholds = new IConfigProvider.QuorumThreshold[](localVars.requiredKeyTags.length);
+            localVars.quorumThresholds = new IValSetDriver.QuorumThreshold[](localVars.requiredKeyTags.length);
             for (uint256 i; i < localVars.requiredKeyTags.length; ++i) {
-                localVars.quorumThresholds[i] = IConfigProvider.QuorumThreshold({
+                localVars.quorumThresholds[i] = IValSetDriver.QuorumThreshold({
                     keyTag: localVars.requiredKeyTags[i],
                     quorumThreshold: uint248(uint256(2).mulDiv(1e18, 3, Math.Rounding.Ceil))
                 });
@@ -206,26 +202,24 @@ contract MasterSetupScript is InitSetupScript {
 
             masterSetupParams.valSetDriver.initialize(
                 IValSetDriver.ValSetDriverInitParams({
+                    networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
+                        network: vars.network.addr,
+                        subnetworkID: networkSetupParams.SUBNETWORK_ID
+                    }),
                     epochManagerInitParams: IEpochManager.EpochManagerInitParams({
                         epochDuration: networkSetupParams.EPOCH_DURATION,
                         epochDurationTimestamp: uint48(vm.getBlockTimestamp() + vm.envOr("DEPLOYMENT_BUFFER", uint256(600)))
                     }),
-                    configProviderInitParams: IConfigProvider.ConfigProviderInitParams({
-                        votingPowerProviders: localVars.votingPowerProviders,
-                        keysProvider: localVars.keysProvider,
-                        replicas: localVars.replicas,
-                        verificationType: networkSetupParams.VERIFICATION_TYPE,
-                        maxVotingPower: 1e36,
-                        minInclusionVotingPower: 0,
-                        maxValidatorsCount: 99_999_999,
-                        requiredKeyTags: localVars.requiredKeyTags,
-                        requiredHeaderKeyTag: localVars.requiredKeyTags[0],
-                        quorumThresholds: localVars.quorumThresholds
-                    }),
-                    networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
-                        network: vars.network.addr,
-                        subnetworkID: networkSetupParams.SUBNETWORK_ID
-                    })
+                    votingPowerProviders: localVars.votingPowerProviders,
+                    keysProvider: localVars.keysProvider,
+                    replicas: localVars.replicas,
+                    verificationType: networkSetupParams.VERIFICATION_TYPE,
+                    maxVotingPower: 1e36,
+                    minInclusionVotingPower: 0,
+                    maxValidatorsCount: 99_999_999,
+                    requiredKeyTags: localVars.requiredKeyTags,
+                    requiredHeaderKeyTag: localVars.requiredKeyTags[0],
+                    quorumThresholds: localVars.quorumThresholds
                 }),
                 vars.deployer.addr
             );
@@ -259,7 +253,7 @@ contract MasterSetupScript is InitSetupScript {
         for (uint256 i; i < networkSetupParams.OPERATORS_TO_REGISTER; ++i) {
             Vm.Wallet memory operator = getOperator(i);
             uint256 operatorVotingPower;
-            IVaultManager.VaultVotingPower[] memory operatorVotingPowers =
+            IVotingPowerProvider.VaultVotingPower[] memory operatorVotingPowers =
                 masterSetupParams.votingPowerProvider.getOperatorVotingPowers(operator.addr, new bytes(0));
             for (uint256 j; j < operatorVotingPowers.length; ++j) {
                 operatorVotingPower += operatorVotingPowers[j].votingPower;

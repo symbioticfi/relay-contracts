@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {IOzEIP712} from "../../../interfaces/base/common/IOzEIP712.sol";
+import {IOzEIP712} from "../../../interfaces/modules/base/IOzEIP712.sol";
 
 import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
 import {IERC5267} from "@openzeppelin/contracts/interfaces/IERC5267.sol";

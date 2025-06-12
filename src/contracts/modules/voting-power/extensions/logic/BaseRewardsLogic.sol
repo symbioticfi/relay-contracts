@@ -5,8 +5,8 @@ import {IStakerRewards} from "@symbioticfi/rewards/src/interfaces/stakerRewards/
 import {IDefaultOperatorRewards} from
     "@symbioticfi/rewards/src/interfaces/defaultOperatorRewards/IDefaultOperatorRewards.sol";
 
-import {IBaseRewards} from "../../../../interfaces/modules/voting-power/IBaseRewards.sol";
-import {INetworkManager} from "../../../../interfaces/base/INetworkManager.sol";
+import {IBaseRewards} from "../../../../../interfaces/modules/voting-power/extensions/IBaseRewards.sol";
+import {INetworkManager} from "../../../../../interfaces/modules/base/INetworkManager.sol";
 
 import {SafeERC20, IERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 

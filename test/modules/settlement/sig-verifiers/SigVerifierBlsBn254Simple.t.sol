@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {IConfigProvider} from "../../../../src/interfaces/modules/valset-driver/IConfigProvider.sol";
-
 import {KeyTags} from "../../../../src/contracts/libraries/utils/KeyTags.sol";
 import {KeyEcdsaSecp256k1} from "../../../../src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol";
 import {KeyBlsBn254, BN254} from "../../../../src/contracts/libraries/keys/KeyBlsBn254.sol";
 import {SigBlsBn254} from "../../../../src/contracts/libraries/sigs/SigBlsBn254.sol";
-import {KEY_TYPE_BLS_BN254, KEY_TYPE_ECDSA_SECP256K1} from "../../../../src/contracts/base/KeyManager.sol";
+import {
+    KEY_TYPE_BLS_BN254,
+    KEY_TYPE_ECDSA_SECP256K1
+} from "../../../../src/contracts/modules/key-registry/KeyRegistry.sol";
 import {ExtraDataStorageHelper} from
     "../../../../src/contracts/modules/settlement/sig-verifiers/libraries/ExtraDataStorageHelper.sol";
 
@@ -15,11 +16,10 @@ import {BN254G2} from "../../../helpers/BN254G2.sol";
 
 import {ISettlement} from "../../../../src/interfaces/modules/settlement/ISettlement.sol";
 import {IOzOwnable} from "../../../../src/interfaces/modules/common/permissions/IOzOwnable.sol";
-import {INetworkManager} from "../../../../src/interfaces/base/INetworkManager.sol";
-import {IEpochManager} from "../../../../src/interfaces/base/IEpochManager.sol";
+import {INetworkManager} from "../../../../src/interfaces/modules/base/INetworkManager.sol";
+import {IEpochManager} from "../../../../src/interfaces/modules/valset-driver/IEpochManager.sol";
 import {IOperatorsWhitelist} from "../../../../src/interfaces/modules/voting-power/extensions/IOperatorsWhitelist.sol";
-import {IOzEIP712} from "../../../../src/interfaces/base/common/IOzEIP712.sol";
-import {IVaultManager} from "../../../../src/interfaces/base/IVaultManager.sol";
+import {IOzEIP712} from "../../../../src/interfaces/modules/base/IOzEIP712.sol";
 import {ISigVerifierBlsBn254Simple} from
     "../../../../src/interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254Simple.sol";
 import {IVotingPowerProvider} from "../../../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
@@ -35,7 +35,7 @@ import {SigVerifierBlsBn254Simple} from
     "../../../../src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol";
 import "../../../InitSetup.sol";
 
-import {ISigVerifier} from "../../../../src/interfaces/base/ISigVerifier.sol";
+import {ISigVerifier} from "../../../../src/interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol";
 
 import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
@@ -127,7 +127,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
             abi.encode(aggSigG1), abi.encode(aggKeyG2), abi.encode(validatorsData), abi.encode(nonSigners)
         );
 
-        IVaultManager.OperatorVotingPower[] memory votingPowers =
+        IVotingPowerProvider.OperatorVotingPower[] memory votingPowers =
             masterSetupParams.votingPowerProvider.getVotingPowers(new bytes[](0));
         uint256 totalVotingPower = 0;
         for (uint256 i; i < votingPowers.length; ++i) {
@@ -184,7 +184,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
         public
         returns (ISettlement.ValSetHeader memory valSetHeader, ISettlement.ExtraData[] memory extraData)
     {
-        IVaultManager.OperatorVotingPower[] memory votingPowers =
+        IVotingPowerProvider.OperatorVotingPower[] memory votingPowers =
             masterSetupParams.votingPowerProvider.getVotingPowers(new bytes[](0));
         uint256 totalVotingPower = 0;
         for (uint256 i; i < votingPowers.length; ++i) {
@@ -240,7 +240,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
         validatorsData = new ISigVerifierBlsBn254Simple.ValidatorData[](networkSetupParams.OPERATORS_TO_REGISTER);
         for (uint256 i; i < networkSetupParams.OPERATORS_TO_REGISTER; ++i) {
             BN254.G1Point memory keyG1 = BN254.generatorG1().scalar_mul(getOperator(i).privateKey);
-            IVaultManager.VaultVotingPower[] memory votingPowers =
+            IVotingPowerProvider.VaultVotingPower[] memory votingPowers =
                 masterSetupParams.votingPowerProvider.getOperatorVotingPowers(getOperator(i).addr, new bytes(0));
             uint256 operatorVotingPower;
             for (uint256 j; j < votingPowers.length; ++j) {

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {ISigVerifier} from "../../src/interfaces/base/ISigVerifier.sol";
+import {ISigVerifier} from "../../src/interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol";
 
 contract SigVerifierMock is ISigVerifier {
     /**

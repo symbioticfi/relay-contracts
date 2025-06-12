@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {PermissionManager} from "../../../base/PermissionManager.sol";
+import {PermissionManager} from "../../base/PermissionManager.sol";
 
 import {IOzAccessManaged} from "../../../../interfaces/modules/common/permissions/IOzAccessManaged.sol";
 

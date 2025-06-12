@@ -13,8 +13,8 @@ import {IVetoSlasher} from "@symbioticfi/core/src/interfaces/slasher/IVetoSlashe
 
 import {IOpNetVaultAutoDeploy} from
     "../../../../../interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol";
-import {INetworkManager} from "../../../../../interfaces/base/INetworkManager.sol";
-import {IVaultManager} from "../../../../../interfaces/base/IVaultManager.sol";
+import {INetworkManager} from "../../../../../interfaces/modules/base/INetworkManager.sol";
+import {IVotingPowerProvider} from "../../../../../interfaces/modules/voting-power/IVotingPowerProvider.sol";
 
 uint64 constant BASE_VAULT_VERSION = 1;
 uint64 constant TOKENIZED_VAULT_VERSION = 2;
@@ -143,7 +143,7 @@ library OpNetVaultAutoDeployLogic {
         if (config.epochDuration == 0) {
             revert IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidEpochDuration();
         }
-        uint48 slashingWindow = IVaultManager(address(this)).getSlashingWindow();
+        uint48 slashingWindow = IVotingPowerProvider(address(this)).getSlashingWindow();
         if (config.epochDuration < slashingWindow) {
             revert IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidEpochDuration();
         }
@@ -181,7 +181,7 @@ library OpNetVaultAutoDeployLogic {
         address hookSetRoleHolder
     ) public view returns (uint64, bytes memory) {
         return (
-            uint64(IVaultManager.DelegatorType.OPERATOR_NETWORK_SPECIFIC),
+            uint64(IVotingPowerProvider.DelegatorType.OPERATOR_NETWORK_SPECIFIC),
             abi.encode(
                 IOperatorNetworkSpecificDelegator.InitParams({
                     baseParams: IBaseDelegator.BaseParams({
@@ -200,7 +200,7 @@ library OpNetVaultAutoDeployLogic {
         bool isBurnerHook
     ) public view returns (uint64, bytes memory) {
         return (
-            uint64(IVaultManager.SlasherType.INSTANT),
+            uint64(IVotingPowerProvider.SlasherType.INSTANT),
             abi.encode(ISlasher.InitParams({baseParams: IBaseSlasher.BaseParams({isBurnerHook: isBurnerHook})}))
         );
     }
@@ -211,7 +211,7 @@ library OpNetVaultAutoDeployLogic {
         uint256 resolverSetEpochsDelay
     ) public view returns (uint64, bytes memory) {
         return (
-            uint64(IVaultManager.SlasherType.VETO),
+            uint64(IVotingPowerProvider.SlasherType.VETO),
             abi.encode(
                 IVetoSlasher.InitParams({
                     baseParams: IBaseSlasher.BaseParams({isBurnerHook: isBurnerHook}),

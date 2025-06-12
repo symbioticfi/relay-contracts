@@ -3,16 +3,16 @@ pragma solidity ^0.8.25;
 
 import {VotingPowerProvider} from "../../src/contracts/modules/voting-power/VotingPowerProvider.sol";
 import {OzOwnable} from "../../src/contracts/modules/common/permissions/OzOwnable.sol";
-import {EqualStakeVPCalc} from "../../src/contracts/modules/voting-power/extensions/EqualStakeVPCalc.sol";
+import {EqualStakeVPCalc} from "../../src/contracts/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol";
 import {SharedVaults} from "../../src/contracts/modules/voting-power/extensions/SharedVaults.sol";
 import {OperatorsBlacklist} from "../../src/contracts/modules/voting-power/extensions/OperatorsBlacklist.sol";
 import {OperatorsWhitelist} from "../../src/contracts/modules/voting-power/extensions/OperatorsWhitelist.sol";
-import {NetworkManager} from "../../src/contracts/base/NetworkManager.sol";
+import {NetworkManager} from "../../src/contracts/modules/base/NetworkManager.sol";
 import {OpNetVaultAutoDeploy} from "../../src/contracts/modules/voting-power/extensions/OpNetVaultAutoDeploy.sol";
 import {OperatorVaults} from "../../src/contracts/modules/voting-power/extensions/OperatorVaults.sol";
-import {BaseSlashing} from "../../src/contracts/modules/voting-power/BaseSlashing.sol";
-import {BaseRewards} from "../../src/contracts/modules/voting-power/BaseRewards.sol";
-import {IBaseRewards} from "../../src/interfaces/modules/voting-power/IBaseRewards.sol";
+import {BaseSlashing} from "../../src/contracts/modules/voting-power/extensions/BaseSlashing.sol";
+import {BaseRewards} from "../../src/contracts/modules/voting-power/extensions/BaseRewards.sol";
+import {IBaseRewards} from "../../src/interfaces/modules/voting-power/extensions/IBaseRewards.sol";
 
 contract VotingPowerProviderFull is
     OzOwnable,

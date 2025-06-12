@@ -7,10 +7,9 @@ import {MyVotingPowerProvider} from "../../examples/MyVotingPowerProvider.sol";
 
 import {InitSetupTest} from "../InitSetup.sol";
 
-import {INetworkManager} from "../../src/interfaces/base/INetworkManager.sol";
-import {IVaultManager} from "../../src/interfaces/base/IVaultManager.sol";
+import {INetworkManager} from "../../src/interfaces/modules/base/INetworkManager.sol";
 import {IOperatorsWhitelist} from "../../src/interfaces/modules/voting-power/extensions/IOperatorsWhitelist.sol";
-import {IOzEIP712} from "../../src/interfaces/base/common/IOzEIP712.sol";
+import {IOzEIP712} from "../../src/interfaces/modules/base/IOzEIP712.sol";
 import {IOzOwnable} from "../../src/interfaces/modules/common/permissions/IOzOwnable.sol";
 import {IVotingPowerProvider} from "../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
 
@@ -33,15 +32,14 @@ contract MyVotingPowerProviderTest is InitSetupTest {
 
         INetworkManager.NetworkManagerInitParams memory netInit =
             INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkID: IDENTIFIER});
-        IVaultManager.VaultManagerInitParams memory vaultInit =
-            IVaultManager.VaultManagerInitParams({slashingWindow: 100, token: initSetupParams.masterChain.tokens[0]});
         IOzEIP712.OzEIP712InitParams memory eip712Init =
             IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"});
         IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
             .VotingPowerProviderInitParams({
             networkManagerInitParams: netInit,
-            vaultManagerInitParams: vaultInit,
-            ozEip712InitParams: eip712Init
+            ozEip712InitParams: eip712Init,
+            slashingWindow: 100,
+            token: initSetupParams.masterChain.tokens[0]
         });
         IOzOwnable.OzOwnableInitParams memory ownableInit = IOzOwnable.OzOwnableInitParams({owner: owner});
 

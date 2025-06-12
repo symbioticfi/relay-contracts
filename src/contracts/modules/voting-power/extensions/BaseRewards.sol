@@ -5,8 +5,8 @@ import {IStakerRewards} from "@symbioticfi/rewards/src/interfaces/stakerRewards/
 import {IDefaultOperatorRewards} from
     "@symbioticfi/rewards/src/interfaces/defaultOperatorRewards/IDefaultOperatorRewards.sol";
 
-import {IBaseRewards} from "../../../interfaces/modules/voting-power/IBaseRewards.sol";
-import {VotingPowerProvider} from "./VotingPowerProvider.sol";
+import {IBaseRewards} from "../../../../interfaces/modules/voting-power/extensions/IBaseRewards.sol";
+import {VotingPowerProvider} from "../VotingPowerProvider.sol";
 import {BaseRewardsLogic} from "./logic/BaseRewardsLogic.sol";
 
 abstract contract BaseRewards is VotingPowerProvider, IBaseRewards {

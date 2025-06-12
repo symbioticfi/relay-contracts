@@ -3,17 +3,17 @@ pragma solidity ^0.8.25;
 
 import "forge-std/Test.sol";
 
-import {ConfigProvider} from "../../../src/contracts/modules/valset-driver/ConfigProvider.sol";
-import {IConfigProvider} from "../../../src/interfaces/modules/valset-driver/IConfigProvider.sol";
+import {ValSetDriver} from "../../../src/contracts/modules/valset-driver/ValSetDriver.sol";
+import {IValSetDriver} from "../../../src/interfaces/modules/valset-driver/IValSetDriver.sol";
 
-contract TestConfigProvider is ConfigProvider {
+import {INetworkManager} from "../../../src/interfaces/modules/base/INetworkManager.sol";
+import {IEpochManager} from "../../../src/interfaces/modules/valset-driver/IEpochManager.sol";
+
+contract TestValSetDriver is ValSetDriver {
     address public owner;
 
-    function initialize(
-        IConfigProvider.ConfigProviderInitParams memory initParams,
-        address _owner
-    ) external initializer {
-        __ConfigProvider_init(initParams);
+    function initialize(IValSetDriver.ValSetDriverInitParams memory initParams, address _owner) external initializer {
+        __ValSetDriver_init(initParams);
         owner = _owner;
     }
 
@@ -22,33 +22,38 @@ contract TestConfigProvider is ConfigProvider {
     }
 }
 
-contract ConfigProviderTest is Test {
-    TestConfigProvider private testMCP;
+contract ValSetDriverTest is Test {
+    TestValSetDriver private testMCP;
 
     address private owner = address(this);
     address private nonOwner = address(0x1111);
 
-    function cca(address _addr, uint64 _chainId) internal pure returns (IConfigProvider.CrossChainAddress memory) {
-        return IConfigProvider.CrossChainAddress({addr: _addr, chainId: _chainId});
+    function cca(address _addr, uint64 _chainId) internal pure returns (IValSetDriver.CrossChainAddress memory) {
+        return IValSetDriver.CrossChainAddress({addr: _addr, chainId: _chainId});
     }
 
     function setUp() public {
-        testMCP = new TestConfigProvider();
+        testMCP = new TestValSetDriver();
 
-        IConfigProvider.CrossChainAddress[] memory vpps = new IConfigProvider.CrossChainAddress[](2);
+        IValSetDriver.CrossChainAddress[] memory vpps = new IValSetDriver.CrossChainAddress[](2);
         vpps[0] = cca(address(0xAA01), 101);
         vpps[1] = cca(address(0xAA02), 102);
 
-        IConfigProvider.CrossChainAddress memory keysProv = cca(address(444), 222);
+        IValSetDriver.CrossChainAddress memory keysProv = cca(address(444), 222);
 
-        IConfigProvider.CrossChainAddress[] memory reps = new IConfigProvider.CrossChainAddress[](1);
+        IValSetDriver.CrossChainAddress[] memory reps = new IValSetDriver.CrossChainAddress[](1);
         reps[0] = cca(address(0xBB01), 303);
 
         uint8[] memory requiredKeyTags = new uint8[](1);
         requiredKeyTags[0] = 0x2A;
-        IConfigProvider.QuorumThreshold[] memory quorumThresholds = new IConfigProvider.QuorumThreshold[](1);
-        quorumThresholds[0] = IConfigProvider.QuorumThreshold({keyTag: 0x2A, quorumThreshold: uint248(10 ** 18)});
-        IConfigProvider.ConfigProviderInitParams memory initParams = IConfigProvider.ConfigProviderInitParams({
+        IValSetDriver.QuorumThreshold[] memory quorumThresholds = new IValSetDriver.QuorumThreshold[](1);
+        quorumThresholds[0] = IValSetDriver.QuorumThreshold({keyTag: 0x2A, quorumThreshold: uint248(10 ** 18)});
+        IValSetDriver.ValSetDriverInitParams memory initParams = IValSetDriver.ValSetDriverInitParams({
+            networkManagerInitParams: INetworkManager.NetworkManagerInitParams({network: address(1), subnetworkID: 0}),
+            epochManagerInitParams: IEpochManager.EpochManagerInitParams({
+                epochDuration: 100,
+                epochDurationTimestamp: uint48(vm.getBlockTimestamp())
+            }),
             votingPowerProviders: vpps,
             keysProvider: keysProv,
             replicas: reps,
@@ -73,7 +78,7 @@ contract ConfigProviderTest is Test {
         assertEq(reqTags.length, 1, "Should have 1 required keyTag");
         assertEq(reqTags[0], 0x2A, "KeyTag mismatch");
 
-        IConfigProvider.CrossChainAddress[] memory vpps = testMCP.getVotingPowerProviders();
+        IValSetDriver.CrossChainAddress[] memory vpps = testMCP.getVotingPowerProviders();
         assertEq(vpps.length, 2, "Should have 2 votingPowerProviders");
         assertEq(vpps[0].addr, address(0xAA01));
         assertEq(vpps[0].chainId, 101);
@@ -84,7 +89,7 @@ contract ConfigProviderTest is Test {
         assertEq(testMCP.isVotingPowerProviderRegistered(vpps[1]), true);
         assertEq(testMCP.isVotingPowerProviderRegistered(cca(address(0xAA03), 103)), false);
 
-        IConfigProvider.CrossChainAddress[] memory registeredVpps =
+        IValSetDriver.CrossChainAddress[] memory registeredVpps =
             testMCP.getVotingPowerProvidersAt(uint48(vm.getBlockTimestamp()));
         assertEq(registeredVpps.length, 2, "Should have 2 registered votingPowerProviders");
         assertEq(registeredVpps[0].addr, address(0xAA01));
@@ -98,11 +103,11 @@ contract ConfigProviderTest is Test {
             testMCP.isVotingPowerProviderRegisteredAt(cca(address(0xAA03), 103), uint48(vm.getBlockTimestamp())), false
         );
 
-        IConfigProvider.CrossChainAddress memory keysP = testMCP.getKeysProvider();
+        IValSetDriver.CrossChainAddress memory keysP = testMCP.getKeysProvider();
         assertEq(keysP.addr, address(444), "keysProvider addr mismatch");
         assertEq(keysP.chainId, 222, "keysProvider chainId mismatch");
 
-        IConfigProvider.CrossChainAddress[] memory reps = testMCP.getReplicas();
+        IValSetDriver.CrossChainAddress[] memory reps = testMCP.getReplicas();
         assertEq(reps.length, 1, "Should have 1 replica");
         assertEq(reps[0].addr, address(0xBB01));
         assertEq(reps[0].chainId, 303);
@@ -110,7 +115,7 @@ contract ConfigProviderTest is Test {
         uint32 vt = testMCP.getVerificationType();
         assertEq(vt, 7, "verificationType mismatch");
 
-        IConfigProvider.Config memory mc = testMCP.getConfig();
+        IValSetDriver.Config memory mc = testMCP.getConfig();
         assertEq(mc.votingPowerProviders.length, 2);
         assertEq(mc.votingPowerProviders[0].addr, address(0xAA01));
         assertEq(mc.keysProvider.addr, address(444));
@@ -119,7 +124,7 @@ contract ConfigProviderTest is Test {
     }
 
     function test_PermissionChecks() public {
-        IConfigProvider.CrossChainAddress memory newVPP = cca(address(0xAA03), 103);
+        IValSetDriver.CrossChainAddress memory newVPP = cca(address(0xAA03), 103);
         vm.prank(nonOwner);
         vm.expectRevert("Not authorized");
         testMCP.addVotingPowerProvider(newVPP);
@@ -128,10 +133,10 @@ contract ConfigProviderTest is Test {
         testMCP.addVotingPowerProvider(newVPP);
 
         vm.prank(owner);
-        vm.expectRevert(IConfigProvider.ConfigProvider_ChainAlreadyAdded.selector);
+        vm.expectRevert(IValSetDriver.ValSetDriver_ChainAlreadyAdded.selector);
         testMCP.addVotingPowerProvider(newVPP);
 
-        IConfigProvider.CrossChainAddress[] memory vpps = testMCP.getVotingPowerProviders();
+        IValSetDriver.CrossChainAddress[] memory vpps = testMCP.getVotingPowerProviders();
         assertEq(vpps.length, 3, "Now have 3 vpps");
 
         vm.prank(nonOwner);
@@ -145,7 +150,7 @@ contract ConfigProviderTest is Test {
     }
 
     function test_AddRemoveVotingPowerProvider() public {
-        IConfigProvider.CrossChainAddress memory vpp4 = cca(address(0xAA04), 104);
+        IValSetDriver.CrossChainAddress memory vpp4 = cca(address(0xAA04), 104);
 
         vm.prank(nonOwner);
         vm.expectRevert("Not authorized");
@@ -153,7 +158,7 @@ contract ConfigProviderTest is Test {
 
         vm.prank(owner);
         testMCP.addVotingPowerProvider(vpp4);
-        IConfigProvider.CrossChainAddress[] memory vpps = testMCP.getVotingPowerProviders();
+        IValSetDriver.CrossChainAddress[] memory vpps = testMCP.getVotingPowerProviders();
         assertEq(vpps.length, 3, "Should have 3 after adding vpp4");
 
         vm.prank(nonOwner);
@@ -166,12 +171,12 @@ contract ConfigProviderTest is Test {
         assertEq(vpps.length, 2);
 
         vm.prank(owner);
-        vm.expectRevert(IConfigProvider.ConfigProvider_NotAdded.selector);
+        vm.expectRevert(IValSetDriver.ValSetDriver_NotAdded.selector);
         testMCP.removeVotingPowerProvider(vpp4);
     }
 
     function test_SetKeysProvider() public {
-        IConfigProvider.CrossChainAddress memory newKeys = cca(address(4444), 555);
+        IValSetDriver.CrossChainAddress memory newKeys = cca(address(4444), 555);
 
         vm.prank(nonOwner);
         vm.expectRevert("Not authorized");
@@ -180,7 +185,7 @@ contract ConfigProviderTest is Test {
         vm.prank(owner);
         testMCP.setKeysProvider(newKeys);
 
-        IConfigProvider.CrossChainAddress memory got = testMCP.getKeysProvider();
+        IValSetDriver.CrossChainAddress memory got = testMCP.getKeysProvider();
         assertEq(got.addr, address(4444));
         assertEq(got.chainId, 555);
 
@@ -190,7 +195,7 @@ contract ConfigProviderTest is Test {
     }
 
     function test_AddRemoveReplica() public {
-        IConfigProvider.CrossChainAddress memory rep2 = cca(address(0xBB02), 304);
+        IValSetDriver.CrossChainAddress memory rep2 = cca(address(0xBB02), 304);
 
         vm.prank(nonOwner);
         vm.expectRevert("Not authorized");
@@ -198,12 +203,12 @@ contract ConfigProviderTest is Test {
 
         vm.prank(owner);
         testMCP.addReplica(rep2);
-        IConfigProvider.CrossChainAddress[] memory reps = testMCP.getReplicas();
+        IValSetDriver.CrossChainAddress[] memory reps = testMCP.getReplicas();
         assertEq(reps.length, 2, "Should have 2 replicas now");
         assertEq(reps[1].addr, address(0xBB02));
 
         vm.prank(owner);
-        vm.expectRevert(IConfigProvider.ConfigProvider_ChainAlreadyAdded.selector);
+        vm.expectRevert(IValSetDriver.ValSetDriver_ChainAlreadyAdded.selector);
         testMCP.addReplica(rep2);
 
         reps = testMCP.getReplicasAt(uint48(vm.getBlockTimestamp()));
@@ -224,7 +229,7 @@ contract ConfigProviderTest is Test {
         assertEq(reps.length, 1);
 
         vm.prank(owner);
-        vm.expectRevert(IConfigProvider.ConfigProvider_NotAdded.selector);
+        vm.expectRevert(IValSetDriver.ValSetDriver_NotAdded.selector);
         testMCP.removeReplica(rep2);
     }
 
@@ -252,17 +257,17 @@ contract ConfigProviderTest is Test {
         uint32 newVT = testMCP.getVerificationTypeAt(uint48(vm.getBlockTimestamp()));
         assertEq(newVT, 777);
 
-        IConfigProvider.Config memory mcOld = testMCP.getConfigAt(uint48(vm.getBlockTimestamp() - 1));
+        IValSetDriver.Config memory mcOld = testMCP.getConfigAt(uint48(vm.getBlockTimestamp() - 1));
         assertEq(mcOld.verificationType, 7);
 
-        IConfigProvider.Config memory mcNew = testMCP.getConfigAt(uint48(vm.getBlockTimestamp()));
+        IValSetDriver.Config memory mcNew = testMCP.getConfigAt(uint48(vm.getBlockTimestamp()));
         assertEq(mcNew.verificationType, 777);
     }
 
     function test_Location() public {
         bytes32 location =
-            keccak256(abi.encode(uint256(keccak256("symbiotic.storage.ConfigProvider")) - 1)) & ~bytes32(uint256(0xff));
-        assertEq(location, 0x69cc2103f98d9422293b17af4701294142032f76ec5b84d4141038932799fa00, "location mismatch");
+            keccak256(abi.encode(uint256(keccak256("symbiotic.storage.ValSetDriver")) - 1)) & ~bytes32(uint256(0xff));
+        assertEq(location, 0x1bdf637a86d66983203bb31f20408fc8a4c8b9248a23572df8a2016148669f00, "location mismatch");
     }
 
     function test_UpdateAllConfigs() public {
@@ -323,7 +328,7 @@ contract ConfigProviderTest is Test {
         assertEq(testMCP.getRequiredHeaderKeyTag(), 4);
         assertEq(testMCP.getRequiredHeaderKeyTagAt(uint48(vm.getBlockTimestamp())), 4);
 
-        IConfigProvider.Config memory cfg = testMCP.getConfigAt(uint48(vm.getBlockTimestamp()));
+        IValSetDriver.Config memory cfg = testMCP.getConfigAt(uint48(vm.getBlockTimestamp()));
         assertEq(cfg.maxVotingPower, 999);
         assertEq(cfg.minInclusionVotingPower, 124);
         assertEq(cfg.maxValidatorsCount, 778);
@@ -346,7 +351,7 @@ contract ConfigProviderTest is Test {
     }
 
     function test_GetValSetConfig() public {
-        IConfigProvider.Config memory cfg = testMCP.getConfig();
+        IValSetDriver.Config memory cfg = testMCP.getConfig();
         assertEq(cfg.maxVotingPower, 1e36, "maxVotingPower mismatch");
         assertEq(cfg.minInclusionVotingPower, 0, "minInclusion mismatch");
         assertEq(cfg.maxValidatorsCount, 100, "maxValidators mismatch");

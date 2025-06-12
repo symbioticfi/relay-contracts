@@ -55,7 +55,7 @@ contract MasterCommitScript is MasterGenesisSetupScript {
         console2.log("messageHash");
         console2.logBytes32(messageHash);
 
-        IVaultManager.OperatorVotingPower[] memory votingPowers =
+        IVotingPowerProvider.OperatorVotingPower[] memory votingPowers =
             masterSetupParams.votingPowerProvider.getVotingPowers(new bytes[](0));
         uint256 signersVotingPower;
         for (uint256 i; i < votingPowers.length; ++i) {
