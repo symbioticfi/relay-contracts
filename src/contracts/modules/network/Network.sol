@@ -306,4 +306,16 @@ contract Network is TimelockControllerUpgradeable, INetwork {
         }
         return data.slice(4);
     }
+
+    /**
+     * @inheritdoc TimelockControllerUpgradeable
+     */
+    function initialize(
+        uint256, /* minDelay */
+        address[] memory, /* proposers */
+        address[] memory, /* executors */
+        address /* admin */
+    ) public virtual override {
+        revert();
+    }
 }
