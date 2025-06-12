@@ -18,7 +18,9 @@ import {
 import {IOzEIP712} from "../../../src/interfaces/modules/base/IOzEIP712.sol";
 import {KeyTags} from "../../../src/contracts/libraries/utils/KeyTags.sol";
 
-contract TestKeyRegistry is KeyRegistry {
+import {KeyRegistryWithKey64, KEY_TYPE_KEY64} from "../../mocks/KeyRegistryWithKey64.sol";
+
+contract TestKeyRegistry is KeyRegistryWithKey64 {
     function initialize(string memory name_, string memory version_) external initializer {
         __KeyRegistry_init(
             IKeyRegistry.KeyRegistryInitParams({
@@ -341,6 +343,12 @@ contract KeyRegistryTest is Test {
 
         IKeyRegistry.Key[] memory keysAtT1 = keyRegistry.getKeysAt(ecdsaUser, t1, "");
         assertEq(keysAtT1.length, 1, "Should have only 1 key at time t1");
+        IKeyRegistry.Key[] memory keysAtT1_ = keyRegistry.getKeysAt(
+            ecdsaUser,
+            t1,
+            abi.encode(IKeyRegistry.OperatorKeysHints({keyHints: new bytes[](0), keyTagsHint: new bytes(0)}))
+        );
+        assertEq(abi.encode(keysAtT1), abi.encode(keysAtT1_));
 
         IKeyRegistry.Key[] memory keysNow = keyRegistry.getKeys(ecdsaUser);
         assertEq(keysNow.length, 2, "Should have 2 keys in the latest state");
@@ -372,6 +380,37 @@ contract KeyRegistryTest is Test {
         vm.startPrank(operator);
         keyRegistry.setKey(ecdsaKeyTag, keyBytes, sig, new bytes(0));
         vm.stopPrank();
+    }
+
+    function test_SetKey64() public {
+        vm.startPrank(ecdsaUser);
+        bytes memory key1Bytes = abi.encode(bytes32(uint256(1)), bytes32(uint256(2)));
+        keyRegistry.setKey(KEY_TYPE_KEY64.getKeyTag(0), key1Bytes, new bytes(0), new bytes(0));
+        vm.stopPrank();
+
+        address operator = keyRegistry.getOperator(key1Bytes);
+        assertEq(operator, ecdsaUser, "Operator mismatch for KEY64 key");
+
+        bytes memory storedKey = keyRegistry.getKey(ecdsaUser, KEY_TYPE_KEY64.getKeyTag(0));
+        assertEq(storedKey, key1Bytes, "KEY64 Key mismatch");
+
+        bytes memory storedKey2 =
+            keyRegistry.getKeyAt(ecdsaUser, KEY_TYPE_KEY64.getKeyTag(0), uint48(vm.getBlockTimestamp()), new bytes(0));
+        assertEq(storedKey2, key1Bytes, "KEY64 Key mismatch");
+
+        vm.expectRevert(IKeyRegistry.KeyRegistry_InvalidKeyType.selector);
+        keyRegistry.getKey(ecdsaUser, uint8(7).getKeyTag(0));
+
+        vm.expectRevert(IKeyRegistry.KeyRegistry_InvalidKeyType.selector);
+        keyRegistry.getKeyAt(ecdsaUser, uint8(7).getKeyTag(0), uint48(vm.getBlockTimestamp()), new bytes(0));
+
+        uint8[] memory keyTags = keyRegistry.getKeyTags(ecdsaUser);
+        assertEq(keyTags.length, 1, "Should have 1 key tag");
+        assertEq(keyTags[0], KEY_TYPE_KEY64.getKeyTag(0), "Key tag mismatch");
+
+        uint8[] memory keyTagsAt = keyRegistry.getKeyTagsAt(ecdsaUser, uint48(vm.getBlockTimestamp()), new bytes(0));
+        assertEq(keyTagsAt.length, 1, "Should have 1 key tag");
+        assertEq(keyTagsAt[0], KEY_TYPE_KEY64.getKeyTag(0), "Key tag mismatch");
     }
 
     function test_Location() public {

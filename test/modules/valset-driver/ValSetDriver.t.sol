@@ -32,6 +32,13 @@ contract ValSetDriverTest is Test {
         return IValSetDriver.CrossChainAddress({addr: _addr, chainId: _chainId});
     }
 
+    function qth(
+        uint8 _keyTag,
+        uint248 _quorumThreshold
+    ) internal pure returns (IValSetDriver.QuorumThreshold memory) {
+        return IValSetDriver.QuorumThreshold({keyTag: _keyTag, quorumThreshold: _quorumThreshold});
+    }
+
     function setUp() public {
         testMCP = new TestValSetDriver();
 
@@ -210,6 +217,10 @@ contract ValSetDriverTest is Test {
         vm.prank(owner);
         vm.expectRevert(IValSetDriver.ValSetDriver_ChainAlreadyAdded.selector);
         testMCP.addReplica(rep2);
+        vm.expectRevert(IValSetDriver.ValSetDriver_InvalidCrossChainAddress.selector);
+        testMCP.addReplica(cca(address(0), 304));
+        vm.expectRevert(IValSetDriver.ValSetDriver_InvalidCrossChainAddress.selector);
+        testMCP.addReplica(cca(address(1), 0));
 
         reps = testMCP.getReplicasAt(uint48(vm.getBlockTimestamp()));
         assertEq(reps.length, 2, "Should have 2 replicas now");
@@ -231,6 +242,51 @@ contract ValSetDriverTest is Test {
         vm.prank(owner);
         vm.expectRevert(IValSetDriver.ValSetDriver_NotAdded.selector);
         testMCP.removeReplica(rep2);
+    }
+
+    function test_AddRemoveQuorumThreshold() public {
+        IValSetDriver.QuorumThreshold memory qth2 = qth(0x2B, 304);
+
+        vm.prank(nonOwner);
+        vm.expectRevert("Not authorized");
+        testMCP.addQuorumThreshold(qth2);
+
+        vm.prank(owner);
+        vm.expectRevert(IValSetDriver.ValSetDriver_InvalidQuorumThreshold.selector);
+        testMCP.addQuorumThreshold(qth(0x2A, 1e18 + 1));
+
+        vm.prank(owner);
+        testMCP.addQuorumThreshold(qth2);
+        IValSetDriver.QuorumThreshold[] memory qths = testMCP.getQuorumThresholds();
+        assertEq(qths.length, 2, "Should have 2 quorumThresholds now");
+        assertEq(qths[1].keyTag, 0x2B);
+        assertEq(qths[1].quorumThreshold, 304);
+
+        vm.prank(owner);
+        vm.expectRevert(IValSetDriver.ValSetDriver_KeyTagAlreadyAdded.selector);
+        testMCP.addQuorumThreshold(qth2);
+
+        qths = testMCP.getQuorumThresholdsAt(uint48(vm.getBlockTimestamp()));
+        assertEq(qths.length, 2, "Should have 2 quorumThresholds now");
+        assertEq(qths[1].keyTag, 0x2B);
+        assertEq(qths[1].quorumThreshold, 304);
+
+        assertEq(testMCP.isQuorumThresholdRegistered(qth2), true);
+        assertEq(testMCP.isQuorumThresholdRegisteredAt(qth2, uint48(vm.getBlockTimestamp())), true);
+        assertEq(testMCP.isQuorumThresholdRegistered(qth(0x2C, 305)), false);
+
+        vm.prank(nonOwner);
+        vm.expectRevert("Not authorized");
+        testMCP.removeQuorumThreshold(qth2);
+
+        vm.prank(owner);
+        testMCP.removeQuorumThreshold(qth2);
+        qths = testMCP.getQuorumThresholds();
+        assertEq(qths.length, 1);
+
+        vm.prank(owner);
+        vm.expectRevert(IValSetDriver.ValSetDriver_NotAdded.selector);
+        testMCP.removeQuorumThreshold(qth2);
     }
 
     function test_SetVerificationType() public {
@@ -280,6 +336,7 @@ contract ValSetDriverTest is Test {
         newTags[1] = 2;
         testMCP.setRequiredKeyTags(newTags);
         testMCP.setRequiredHeaderKeyTag(3);
+
         vm.stopPrank();
 
         assertEq(testMCP.getMaxVotingPower(), 5000);
@@ -303,6 +360,8 @@ contract ValSetDriverTest is Test {
         vm.startPrank(owner);
         testMCP.setMaxVotingPower(999);
         testMCP.setMinInclusionVotingPower(124);
+        vm.expectRevert(IValSetDriver.ValSetDriver_InvalidMaxValidatorsCount.selector);
+        testMCP.setMaxValidatorsCount(0);
         testMCP.setMaxValidatorsCount(778);
         uint8[] memory newTags2 = new uint8[](1);
         newTags2[0] = 3;

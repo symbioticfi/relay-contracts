@@ -194,7 +194,7 @@ contract PersistentSetTest is Test {
         assertEq(registeredValues[0], y);
     }
 
-    function testLargeAddressSetExceed256Elements() public {
+    function test_LargeAddressSetExceed256Elements() public {
         uint256 totalItems = 300;
         uint48 keyAdd = 1;
 
@@ -269,5 +269,17 @@ contract PersistentSetTest is Test {
             }
         }
         assertEq(valuesAtKey2Again[valuesAtKey2Again.length - 1], address(uint160(0x100000 + 11_111)));
+    }
+
+    function remove(uint48 key, address value) public {
+        addressSet.remove(key, value);
+    }
+
+    function test_RevertPersistentSet_InvalidKey() public {
+        addressSet.add(100, address(0x123));
+        vm.expectRevert(PersistentSet.PersistentSet_InvalidKey.selector);
+        this.remove(99, address(0x123));
+
+        this.remove(100, address(0x123));
     }
 }

@@ -268,6 +268,27 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /**
      * @inheritdoc IValSetDriver
      */
+    function isQuorumThresholdRegisteredAt(
+        QuorumThreshold memory quorumThreshold,
+        uint48 timestamp
+    ) public view virtual returns (bool) {
+        return _getValSetDriverStorage()._quorumThresholds.containsAt(
+            timestamp, _serializeQuorumThreshold(quorumThreshold)
+        );
+    }
+
+    /**
+     * @inheritdoc IValSetDriver
+     */
+    function isQuorumThresholdRegistered(
+        QuorumThreshold memory quorumThreshold
+    ) public view virtual returns (bool) {
+        return _getValSetDriverStorage()._quorumThresholds.contains(_serializeQuorumThreshold(quorumThreshold));
+    }
+
+    /**
+     * @inheritdoc IValSetDriver
+     */
     function getQuorumThresholdsAt(
         uint48 timestamp
     ) public view virtual returns (QuorumThreshold[] memory quorumThresholds) {

@@ -53,4 +53,11 @@ contract NetworkManagerTest is Test {
             keccak256(abi.encode(uint256(keccak256("symbiotic.storage.NetworkManager")) - 1)) & ~bytes32(uint256(0xff));
         assertEq(location, 0x779150488f5e984d1f840ba606e388ada6c73b44f261274c3595c61a30023e00, "Location mismatch");
     }
+
+    function test_RevertNetworkManager_InvalidNetwork() public {
+        vm.expectRevert(INetworkManager.NetworkManager_InvalidNetwork.selector);
+        nm.initialize(address(0), 9999);
+
+        nm.initialize(address(1), 9999);
+    }
 }

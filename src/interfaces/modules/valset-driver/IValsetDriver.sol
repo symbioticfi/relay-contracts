@@ -48,8 +48,8 @@ interface IValSetDriver {
     }
 
     struct CrossChainAddress {
-        address addr;
         uint64 chainId;
+        address addr;
     }
 
     struct QuorumThreshold {
@@ -166,6 +166,15 @@ interface IValSetDriver {
     ) external view returns (uint8);
 
     function getRequiredHeaderKeyTag() external view returns (uint8);
+
+    function isQuorumThresholdRegisteredAt(
+        QuorumThreshold memory quorumThreshold,
+        uint48 timestamp
+    ) external view returns (bool);
+
+    function isQuorumThresholdRegistered(
+        QuorumThreshold memory quorumThreshold
+    ) external view returns (bool);
 
     function getQuorumThresholdsAt(
         uint48 timestamp
