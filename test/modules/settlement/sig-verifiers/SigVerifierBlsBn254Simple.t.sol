@@ -209,13 +209,13 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
             ISigVerifierBlsBn254Simple.ValidatorData[] memory validatorsData = getValidatorsData();
             bytes32 validatorSetHash = keccak256(abi.encode(validatorsData));
             extraData[0] = ISettlement.ExtraData({
-                key: uint32(1).getKey(15, sigVerifier.VALIDATOR_SET_HASH_KECCAK256()),
+                key: uint32(1).getKey(15, sigVerifier.VALIDATOR_SET_HASH_KECCAK256_HASH()),
                 value: validatorSetHash
             });
         }
         {
             extraData[1] = ISettlement.ExtraData({
-                key: uint32(1).getKey(sigVerifier.TOTAL_VOTING_POWER()),
+                key: uint32(1).getKey(sigVerifier.TOTAL_VOTING_POWER_HASH()),
                 value: bytes32(totalVotingPower)
             });
         }
@@ -228,7 +228,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
             bytes32 aggPublicKeyG1 = abi.decode(aggPublicKeyG1Raw.wrap().serialize(), (bytes32));
 
             extraData[2] = ISettlement.ExtraData({
-                key: uint32(1).getKey(15, sigVerifier.AGGREGATED_PUBLIC_KEY_G1()),
+                key: uint32(1).getKey(15, sigVerifier.AGGREGATED_PUBLIC_KEY_G1_HASH()),
                 value: aggPublicKeyG1
             });
         }

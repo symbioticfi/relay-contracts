@@ -10,9 +10,9 @@ interface ISigVerifierBlsBn254ZK is ISigVerifier {
     error SigVerifierBlsBn254ZK_UnsupportedKeyTag();
     error SigVerifierBlsBn254ZK_InvalidVerifier();
 
-    function TOTAL_ACTIVE_VALIDATORS() external view returns (string memory);
+    function TOTAL_ACTIVE_VALIDATORS_HASH() external view returns (bytes32);
 
-    function VALIDATOR_SET_HASH_MIMC() external view returns (string memory);
+    function VALIDATOR_SET_HASH_MIMC_HASH() external view returns (bytes32);
 
     function verifiers(
         uint256 index

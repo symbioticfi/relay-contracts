@@ -6,22 +6,23 @@ library ExtraDataStorageHelper {
 
     string public constant KEY_TAG_PREFIX = "keyTag.";
 
-    function getKey(uint32 verificationType, string memory name) internal pure returns (bytes32) {
-        return keccak256(abi.encode(GLOBAL_KEY_PREFIX, verificationType, name));
+    function getKey(uint32 verificationType, bytes32 nameHash) internal pure returns (bytes32) {
+        return keccak256(abi.encode(GLOBAL_KEY_PREFIX, verificationType, nameHash));
     }
 
-    function getKey(uint32 verificationType, uint8 keyTag, string memory name) internal pure returns (bytes32) {
-        return keccak256(abi.encode(GLOBAL_KEY_PREFIX, verificationType, KEY_TAG_PREFIX, keyTag, name));
+    function getKey(uint32 verificationType, uint8 keyTag, bytes32 nameHash) internal pure returns (bytes32) {
+        return keccak256(abi.encode(GLOBAL_KEY_PREFIX, verificationType, KEY_TAG_PREFIX, keyTag, nameHash));
     }
 
     function getKey(
         uint32 verificationType,
         uint8 keyTag,
-        string memory name,
+        bytes32 nameHash,
         uint256 index
     ) internal pure returns (bytes32) {
         return bytes32(
-            uint256(keccak256(abi.encode(GLOBAL_KEY_PREFIX, verificationType, KEY_TAG_PREFIX, keyTag, name))) + index
+            uint256(keccak256(abi.encode(GLOBAL_KEY_PREFIX, verificationType, KEY_TAG_PREFIX, keyTag, nameHash)))
+                + index
         );
     }
 }

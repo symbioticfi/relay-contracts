@@ -21,9 +21,9 @@ interface ISigVerifierBlsBn254Simple is ISigVerifier {
         bool[] isNonSigners;
     }
 
-    function VALIDATOR_SET_HASH_KECCAK256() external view returns (string memory);
+    function VALIDATOR_SET_HASH_KECCAK256_HASH() external view returns (bytes32);
 
-    function TOTAL_VOTING_POWER() external view returns (string memory);
+    function TOTAL_VOTING_POWER_HASH() external view returns (bytes32);
 
-    function AGGREGATED_PUBLIC_KEY_G1() external view returns (string memory);
+    function AGGREGATED_PUBLIC_KEY_G1_HASH() external view returns (bytes32);
 }

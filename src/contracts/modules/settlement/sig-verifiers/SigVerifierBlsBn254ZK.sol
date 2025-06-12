@@ -26,12 +26,12 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
     /**
      * @inheritdoc ISigVerifierBlsBn254ZK
      */
-    string public constant TOTAL_ACTIVE_VALIDATORS = "totalActiveValidators";
+    bytes32 public constant TOTAL_ACTIVE_VALIDATORS_HASH = keccak256("totalActiveValidators");
 
     /**
      * @inheritdoc ISigVerifierBlsBn254ZK
      */
-    string public constant VALIDATOR_SET_HASH_MIMC = "validatorSetHashMimc";
+    bytes32 public constant VALIDATOR_SET_HASH_MIMC_HASH = keccak256("validatorSetHashMimc");
 
     /**
      * @inheritdoc ISigVerifierBlsBn254ZK
@@ -104,8 +104,9 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
 
         uint256 inputHash;
         {
-            bytes32 validatorSetHash =
-                ISettlement(settlement).getExtraDataAt(epoch, VERIFICATION_TYPE.getKey(keyTag, VALIDATOR_SET_HASH_MIMC));
+            bytes32 validatorSetHash = ISettlement(settlement).getExtraDataAt(
+                epoch, VERIFICATION_TYPE.getKey(keyTag, VALIDATOR_SET_HASH_MIMC_HASH)
+            );
             BN254.G1Point memory messageG1 = BN254.hashToG1(abi.decode(message, (bytes32)));
 
             inputHash =
@@ -113,8 +114,9 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
             inputHash &= 0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
         }
 
-        uint256 totalActiveValidators =
-            uint256(ISettlement(settlement).getExtraDataAt(epoch, VERIFICATION_TYPE.getKey(TOTAL_ACTIVE_VALIDATORS)));
+        uint256 totalActiveValidators = uint256(
+            ISettlement(settlement).getExtraDataAt(epoch, VERIFICATION_TYPE.getKey(TOTAL_ACTIVE_VALIDATORS_HASH))
+        );
         try IVerifier(_getVerifier(totalActiveValidators)).verifyProof(zkProof, commitments, commitmentPok, [inputHash])
         {
             return true;

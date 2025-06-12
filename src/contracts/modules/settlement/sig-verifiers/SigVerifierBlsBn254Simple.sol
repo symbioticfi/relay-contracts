@@ -30,17 +30,17 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
     /**
      * @inheritdoc ISigVerifierBlsBn254Simple
      */
-    string public constant VALIDATOR_SET_HASH_KECCAK256 = "validatorSetHashKeccak256";
+    bytes32 public constant VALIDATOR_SET_HASH_KECCAK256_HASH = keccak256("validatorSetHashKeccak256");
 
     /**
      * @inheritdoc ISigVerifierBlsBn254Simple
      */
-    string public constant TOTAL_VOTING_POWER = "totalVotingPower";
+    bytes32 public constant TOTAL_VOTING_POWER_HASH = keccak256("totalVotingPower");
 
     /**
      * @inheritdoc ISigVerifierBlsBn254Simple
      */
-    string public constant AGGREGATED_PUBLIC_KEY_G1 = "aggPublicKeyG1";
+    bytes32 public constant AGGREGATED_PUBLIC_KEY_G1_HASH = keccak256("aggPublicKeyG1");
 
     /**
      * @inheritdoc ISigVerifier
@@ -76,7 +76,7 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
             if (
                 keccak256(proof[192:nonSignersOffset])
                     != ISettlement(settlement).getExtraDataAt(
-                        epoch, VERIFICATION_TYPE.getKey(keyTag, VALIDATOR_SET_HASH_KECCAK256)
+                        epoch, VERIFICATION_TYPE.getKey(keyTag, VALIDATOR_SET_HASH_KECCAK256_HASH)
                     )
             ) {
                 return false;
@@ -97,15 +97,18 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
 
             if (
                 quorumThreshold
-                    > uint256(ISettlement(settlement).getExtraDataAt(epoch, VERIFICATION_TYPE.getKey(TOTAL_VOTING_POWER)))
-                        - nonSignersVotingPower
+                    > uint256(
+                        ISettlement(settlement).getExtraDataAt(epoch, VERIFICATION_TYPE.getKey(TOTAL_VOTING_POWER_HASH))
+                    ) - nonSignersVotingPower
             ) {
                 return false;
             }
         }
 
         bytes memory aggPublicKeyG1Serialized = abi.encode(
-            ISettlement(settlement).getExtraDataAt(epoch, VERIFICATION_TYPE.getKey(keyTag, AGGREGATED_PUBLIC_KEY_G1))
+            ISettlement(settlement).getExtraDataAt(
+                epoch, VERIFICATION_TYPE.getKey(keyTag, AGGREGATED_PUBLIC_KEY_G1_HASH)
+            )
         );
         bytes memory signersPublicKeyG1Bytes =
             aggPublicKeyG1Serialized.deserialize().unwrap().plus(nonSignersPublicKeyG1.negate()).wrap().toBytes();
