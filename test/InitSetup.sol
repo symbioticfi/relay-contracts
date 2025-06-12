@@ -95,6 +95,7 @@ contract InitSetupTest is SymbioticCoreInit {
 
         console2.log("Initializing core");
         _initCore_SymbioticCore(false);
+        initSetupParams.masterChain.chainId = block.chainid;
         initSetupParams.masterChain.core = symbioticCore;
         console2.log("Core initialized");
 

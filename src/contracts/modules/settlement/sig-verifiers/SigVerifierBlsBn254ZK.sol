@@ -52,6 +52,9 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
             if (maxValidators_[i] == 0) {
                 revert SigVerifierBlsBn254ZK_InvalidMaxValidators();
             }
+            if (verifiers_[i] == address(0)) {
+                revert SigVerifierBlsBn254ZK_InvalidVerifier();
+            }
             if (i > 0 && maxValidators_[i - 1] >= maxValidators_[i]) {
                 revert SigVerifierBlsBn254ZK_InvalidMaxValidators();
             }

@@ -23,6 +23,9 @@ abstract contract NetworkManager is Initializable, StaticDelegateCallable, INetw
     function __NetworkManager_init(
         NetworkManagerInitParams memory initParams
     ) internal virtual onlyInitializing {
+        if (initParams.network == address(0)) {
+            revert NetworkManager_InvalidNetwork();
+        }
         INetworkManager.NetworkManagerStorage storage $ = _getNetworkManagerStorage();
         $._network = initParams.network;
         $._subnetworkID = initParams.subnetworkID;

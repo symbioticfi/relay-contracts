@@ -444,6 +444,7 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
         CrossChainAddress memory votingPowerProvider
     ) internal virtual {
         ConfigProviderStorage storage $ = _getConfigProviderStorage();
+        _validateCrossChainAddress(votingPowerProvider);
         if ($._isVotingPowerProviderChainAdded[votingPowerProvider.chainId]) {
             revert ConfigProvider_ChainAlreadyAdded();
         }
@@ -466,6 +467,7 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     function _setKeysProvider(
         CrossChainAddress memory keysProvider
     ) internal virtual {
+        _validateCrossChainAddress(keysProvider);
         _getConfigProviderStorage()._keysProvider.push(
             Time.timestamp(), uint256(_serializeCrossChainAddress(keysProvider))
         );
@@ -476,6 +478,7 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
         CrossChainAddress memory replica
     ) internal virtual {
         ConfigProviderStorage storage $ = _getConfigProviderStorage();
+        _validateCrossChainAddress(replica);
         if ($._isReplicaChainAdded[replica.chainId]) {
             revert ConfigProvider_ChainAlreadyAdded();
         }
@@ -519,6 +522,9 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     function _setMaxValidatorsCount(
         uint208 maxValidatorsCount
     ) internal virtual {
+        if (maxValidatorsCount == 0) {
+            revert ConfigProvider_InvalidMaxValidatorsCount();
+        }
         _getConfigProviderStorage()._maxValidatorsCount.push(Time.timestamp(), maxValidatorsCount);
         emit SetMaxValidatorsCount(maxValidatorsCount);
     }
@@ -533,6 +539,7 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
     function _setRequiredHeaderKeyTag(
         uint8 requiredHeaderKeyTag
     ) internal virtual {
+        requiredHeaderKeyTag.validateKeyTag();
         _getConfigProviderStorage()._requiredHeaderKeyTag.push(Time.timestamp(), requiredHeaderKeyTag);
         emit SetRequiredHeaderKeyTag(requiredHeaderKeyTag);
     }
@@ -562,6 +569,14 @@ abstract contract ConfigProvider is PermissionManager, IConfigProvider {
         }
         $._isQuorumThresholdKeyTagAdded[quorumThreshold.keyTag] = false;
         emit RemoveQuorumThreshold(quorumThreshold);
+    }
+
+    function _validateCrossChainAddress(
+        CrossChainAddress memory crossChainAddress
+    ) internal pure virtual {
+        if (crossChainAddress.chainId == 0 || crossChainAddress.addr == address(0)) {
+            revert ConfigProvider_InvalidCrossChainAddress();
+        }
     }
 
     function _serializeCrossChainAddress(

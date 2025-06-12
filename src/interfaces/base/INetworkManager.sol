@@ -2,6 +2,8 @@
 pragma solidity ^0.8.0;
 
 interface INetworkManager {
+    error NetworkManager_InvalidNetwork();
+
     /// @custom:storage-location erc7201:symbiotic.storage.NetworkManager
     struct NetworkManagerStorage {
         address _network;

@@ -9,6 +9,8 @@ interface IConfigProvider {
     error ConfigProvider_ChainAlreadyAdded();
     error ConfigProvider_KeyTagAlreadyAdded();
     error ConfigProvider_InvalidQuorumThreshold();
+    error ConfigProvider_InvalidCrossChainAddress();
+    error ConfigProvider_InvalidMaxValidatorsCount();
 
     /// @custom:storage-location erc7201:symbiotic.storage.ConfigProvider
     struct ConfigProviderStorage {
