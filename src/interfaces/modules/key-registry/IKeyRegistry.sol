@@ -6,6 +6,9 @@ import {PersistentSet} from "../../../contracts/libraries/structs/PersistentSet.
 
 import {IOzEIP712} from "../../modules/base/IOzEIP712.sol";
 
+uint8 constant KEY_TYPE_BLS_BN254 = 0;
+uint8 constant KEY_TYPE_ECDSA_SECP256K1 = 1;
+
 interface IKeyRegistry {
     error KeyRegistry_InvalidKeyType();
     error KeyRegistry_Duplicate();

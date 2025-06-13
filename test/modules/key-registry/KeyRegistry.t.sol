@@ -13,7 +13,7 @@ import {BN254G2} from "../../helpers/BN254G2.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {
     KEY_TYPE_BLS_BN254, KEY_TYPE_ECDSA_SECP256K1
-} from "../../../src/contracts/modules/key-registry/KeyRegistry.sol";
+} from "../../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
 
 import {IOzEIP712} from "../../../src/interfaces/modules/base/IOzEIP712.sol";
 import {KeyTags} from "../../../src/contracts/libraries/utils/KeyTags.sol";

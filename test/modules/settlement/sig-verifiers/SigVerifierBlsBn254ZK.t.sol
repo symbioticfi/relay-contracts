@@ -5,7 +5,10 @@ import {KeyTags} from "../../../../src/contracts/libraries/utils/KeyTags.sol";
 import {KeyEcdsaSecp256k1} from "../../../../src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol";
 import {KeyBlsBn254, BN254} from "../../../../src/contracts/libraries/keys/KeyBlsBn254.sol";
 import {SigBlsBn254} from "../../../../src/contracts/libraries/sigs/SigBlsBn254.sol";
-import {KEY_TYPE_BLS_BN254, KEY_TYPE_ECDSA_SECP256K1} from "../../../../src/contracts/base/KeyManager.sol";
+import {
+    KEY_TYPE_BLS_BN254,
+    KEY_TYPE_ECDSA_SECP256K1
+} from "../../../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
 
 import {BN254G2} from "../../../helpers/BN254G2.sol";
 
@@ -21,8 +24,8 @@ import {Verifier as Verifier_1000} from "../../../../script/test/data/zk/Verifie
 import {SigVerifierBlsBn254ZK} from
     "../../../../src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol";
 
-import {ISigVerifier} from "../../../../src/interfaces/base/ISigVerifier.sol";
-import {IVaultManager} from "../../../../src/interfaces/base/IVaultManager.sol";
+import {ISigVerifier} from "../../../../src/interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol";
+import {IVotingPowerProvider} from "../../../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
 
 import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
@@ -47,7 +50,7 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetupTest {
 
     function test_verifyQuorumSig() public {
         bytes32 messageHash = 0xcca0534ef01f2606de9b6c90df9f0a2e1a18fb5ce4d1f9cf1f94d35b398ebce4;
-        IVaultManager.OperatorVotingPower[] memory votingPowers =
+        IVotingPowerProvider.OperatorVotingPower[] memory votingPowers =
             masterSetupParams.votingPowerProvider.getVotingPowers(new bytes[](0));
         uint256 totalVotingPower = 0;
         for (uint256 i; i < votingPowers.length; ++i) {

@@ -8,7 +8,7 @@ import {SigBlsBn254} from "../../../../src/contracts/libraries/sigs/SigBlsBn254.
 import {
     KEY_TYPE_BLS_BN254,
     KEY_TYPE_ECDSA_SECP256K1
-} from "../../../../src/contracts/modules/key-registry/KeyRegistry.sol";
+} from "../../../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
 import {ExtraDataStorageHelper} from
     "../../../../src/contracts/modules/settlement/sig-verifiers/libraries/ExtraDataStorageHelper.sol";
 

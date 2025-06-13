@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {IKeyRegistry} from "../../../interfaces/modules/key-registry/IKeyRegistry.sol";
+import {
+    IKeyRegistry,
+    KEY_TYPE_BLS_BN254,
+    KEY_TYPE_ECDSA_SECP256K1
+} from "../../../interfaces/modules/key-registry/IKeyRegistry.sol";
 
 import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {MulticallUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
@@ -18,9 +22,6 @@ import {KeyEcdsaSecp256k1} from "../../libraries/keys/KeyEcdsaSecp256k1.sol";
 
 import {SigBlsBn254} from "../../libraries/sigs/SigBlsBn254.sol";
 import {SigEcdsaSecp256k1} from "../../libraries/sigs/SigEcdsaSecp256k1.sol";
-
-uint8 constant KEY_TYPE_BLS_BN254 = 0;
-uint8 constant KEY_TYPE_ECDSA_SECP256K1 = 1;
 
 contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
     using KeyTags for uint8;
