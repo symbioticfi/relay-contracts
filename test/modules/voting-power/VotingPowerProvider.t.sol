@@ -351,6 +351,9 @@ contract VotingPowerProviderTest is InitSetupTest {
 
         registeredSharedVaults = votingPowerProvider.getSharedVaults();
         assertEq(registeredSharedVaults.length, 0);
+
+        vm.expectRevert(IVotingPowerProvider.VotingPowerProvider_SharedVaultNotRegistered.selector);
+        votingPowerProvider.unregisterSharedVault(initSetupParams.masterChain.vaults[0]);
     }
 
     function test_RegisterSharedVault_RevertIfInvalidVault() public {
@@ -508,6 +511,29 @@ contract VotingPowerProviderTest is InitSetupTest {
         vm.expectRevert(ERR_INVALID_VAULT);
         votingPowerProvider.registerOperatorVault(getOperator(0).addr, newVault);
 
+        address newNetwork = address(3535);
+        _networkRegister_SymbioticCore(newNetwork);
+
+        newVault = _getVault_SymbioticCore(
+            VaultParams({
+                owner: getOperator(0).addr,
+                collateral: initSetupParams.masterChain.tokens[0],
+                burner: 0x000000000000000000000000000000000000dEaD,
+                epochDuration: votingPowerProvider.getSlashingWindow(),
+                whitelistedDepositors: new address[](0),
+                depositLimit: 0,
+                delegatorIndex: 3,
+                hook: address(0),
+                network: newNetwork,
+                withSlasher: true,
+                slasherIndex: 0,
+                vetoDuration: 0
+            })
+        );
+
+        vm.expectRevert(ERR_INVALID_OPERATOR_VAULT);
+        votingPowerProvider.registerOperatorVault(getOperator(0).addr, newVault);
+
         newVault = _getVault_SymbioticCore(
             VaultParams({
                 owner: getOperator(0).addr,
@@ -528,6 +554,29 @@ contract VotingPowerProviderTest is InitSetupTest {
         votingPowerProvider.registerOperatorVault(getOperator(0).addr, newVault);
 
         vm.expectRevert(ERR_OPERATOR_VAULT_ALREADY_registered);
+        votingPowerProvider.registerOperatorVault(getOperator(0).addr, newVault);
+
+        newVault = ISymbioticVaultFactory(symbioticCore.vaultFactory).create(
+            1,
+            address(0),
+            abi.encode(
+                ISymbioticVault.InitParams({
+                    collateral: initSetupParams.masterChain.tokens[0],
+                    burner: 0x000000000000000000000000000000000000dEaD,
+                    epochDuration: votingPowerProvider.getSlashingWindow(),
+                    depositWhitelist: false,
+                    isDepositLimit: false,
+                    depositLimit: 0,
+                    defaultAdminRoleHolder: address(0),
+                    depositWhitelistSetRoleHolder: address(0),
+                    depositorWhitelistRoleHolder: address(0),
+                    isDepositLimitSetRoleHolder: address(0),
+                    depositLimitSetRoleHolder: address(0)
+                })
+            )
+        );
+
+        vm.expectRevert(ERR_INVALID_VAULT);
         votingPowerProvider.registerOperatorVault(getOperator(0).addr, newVault);
     }
 

@@ -569,7 +569,7 @@ library VotingPowerProviderLogic {
             uint64 slasherType = IEntity(slasher).TYPE();
             if (slasherType == uint64(IVotingPowerProvider.SlasherType.VETO)) {
                 vaultEpochDuration -= IVetoSlasher(slasher).vetoDuration();
-            } else if (slasherType > uint64(IVotingPowerProvider.SlasherType.VETO)) {
+            } else if (slasherType > uint64(type(IVotingPowerProvider.SlasherType).max)) {
                 return false;
             }
 

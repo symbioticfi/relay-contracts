@@ -10,7 +10,7 @@ import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 abstract contract OperatorsJail is VotingPowerProvider, IOperatorsJail {
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OperatorsJail")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant OperatorsJailStorageLocation =
-        0x23ffaefb5f6b29c7a77ac2a8c6e8b7a8cb63a59ee84629217d13308576dcc800;
+        0xcf19420dad377ef849f2ba5fafa7311a71756e09aee8adb231516efd3d2b7b00;
 
     function _getOperatorsJailStorage() internal pure returns (OperatorsJailStorage storage $) {
         bytes32 location = OperatorsJailStorageLocation;

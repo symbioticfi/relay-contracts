@@ -335,8 +335,6 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
             symbioticCore.vaultFactory.whitelist(vaultImpl);
             vm.stopPrank();
 
-            console2.log(address(vaultImpl));
-
             address vaultTokenizedImpl = deployCode(
                 string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/VaultTokenized.sol/VaultTokenized.json"),
                 abi.encode(
@@ -366,8 +364,6 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
             symbioticCore.delegatorFactory.whitelist(networkRestakeDelegatorImpl);
             vm.stopPrank();
 
-            console2.log(address(networkRestakeDelegatorImpl));
-
             address fullRestakeDelegatorImpl = deployCode(
                 string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/FullRestakeDelegator.sol/FullRestakeDelegator.json"),
                 abi.encode(
@@ -382,8 +378,6 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
             vm.startPrank(msgSender);
             symbioticCore.delegatorFactory.whitelist(fullRestakeDelegatorImpl);
             vm.stopPrank();
-
-            console2.log(address(fullRestakeDelegatorImpl));
 
             address operatorSpecificDelegatorImpl = deployCode(
                 string.concat(
@@ -403,7 +397,24 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
             symbioticCore.delegatorFactory.whitelist(operatorSpecificDelegatorImpl);
             vm.stopPrank();
 
-            console2.log(address(operatorSpecificDelegatorImpl));
+            address operatorNetworkSpecificDelegatorImpl = deployCode(
+                string.concat(
+                    SYMBIOTIC_CORE_PROJECT_ROOT,
+                    "out/OperatorNetworkSpecificDelegator.sol/OperatorNetworkSpecificDelegator.json"
+                ),
+                abi.encode(
+                    address(symbioticCore.operatorRegistry),
+                    address(symbioticCore.networkRegistry),
+                    address(symbioticCore.vaultFactory),
+                    address(symbioticCore.operatorVaultOptInService),
+                    address(symbioticCore.operatorNetworkOptInService),
+                    address(symbioticCore.delegatorFactory),
+                    symbioticCore.delegatorFactory.totalTypes()
+                )
+            );
+            vm.startPrank(msgSender);
+            symbioticCore.delegatorFactory.whitelist(operatorNetworkSpecificDelegatorImpl);
+            vm.stopPrank();
 
             address slasherImpl = deployCode(
                 string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/Slasher.sol/Slasher.json"),
@@ -417,8 +428,6 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
             vm.startPrank(msgSender);
             symbioticCore.slasherFactory.whitelist(slasherImpl);
             vm.stopPrank();
-
-            console2.log(address(slasherImpl));
 
             address vetoSlasherImpl = deployCode(
                 string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/VetoSlasher.sol/VetoSlasher.json"),
@@ -434,8 +443,6 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
             symbioticCore.slasherFactory.whitelist(vetoSlasherImpl);
             vm.stopPrank();
 
-            console2.log(address(vetoSlasherImpl));
-
             symbioticCore.vaultConfigurator = ISymbioticVaultConfigurator(
                 deployCode(
                     string.concat(SYMBIOTIC_CORE_PROJECT_ROOT, "out/VaultConfigurator.sol/VaultConfigurator.json"),
@@ -446,8 +453,6 @@ contract SymbioticCoreInit is SymbioticInit, SymbioticCoreBindings {
                     )
                 )
             );
-
-            console2.log(address(symbioticCore.vaultConfigurator));
         }
     }
 

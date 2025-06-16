@@ -68,9 +68,8 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
         // 192 : 224+validatorsData.length*96 - encoded data of all active validators for a given `keyTag`
         //     192 : 224 - number of validators
         //     224 : 224+validatorsData.length*96 - ValidatorData[]
-        // 224+validatorsData.length*96 (nonSignersOffset) : 256+nonSigners.length*32 - encoded array of non-signers indices (from validatorsData)
-        //     nonSignersOffset+32 : nonSignersOffset+64 - number of non-signers
-        //     nonSignersOffset+64 : 256+nonSigners.length*32 - bool[]
+        // 224+validatorsData.length*96 (nonSignersOffset) : nonSignersOffset+nonSigners.length*32 - encoded array of non-signers indices (from validatorsData)
+        //     nonSignersOffset : nonSignersOffset+nonSigners.length*32 - bool[]
 
         unchecked {
             uint256 nonSignersVotingPower;
