@@ -9,6 +9,7 @@ interface ISigVerifierBlsBn254ZK is ISigVerifier {
     error SigVerifierBlsBn254ZK_InvalidTotalActiveValidators();
     error SigVerifierBlsBn254ZK_UnsupportedKeyTag();
     error SigVerifierBlsBn254ZK_InvalidVerifier();
+    error SigVerifierBlsBn254ZK_InvalidMaxValidatorsOrder();
 
     function TOTAL_ACTIVE_VALIDATORS_HASH() external view returns (bytes32);
 

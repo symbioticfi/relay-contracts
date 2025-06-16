@@ -28,9 +28,6 @@ import {MasterSetupTest} from "../../../MasterSetup.sol";
 
 import {console2} from "forge-std/console2.sol";
 
-import {Verifier as Verifier_10} from "../../../../script/test/data/zk/Verifier_10.sol";
-import {Verifier as Verifier_100} from "../../../../script/test/data/zk/Verifier_100.sol";
-import {Verifier as Verifier_1000} from "../../../../script/test/data/zk/Verifier_1000.sol";
 import {SigVerifierBlsBn254Simple} from
     "../../../../src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol";
 import "../../../InitSetup.sol";
@@ -113,23 +110,26 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
         }
 
         ISigVerifierBlsBn254Simple.ValidatorData[] memory validatorsData = getValidatorsData();
-        uint256[] memory nonSigners = new uint256[](validatorsData.length);
-        uint256 nonSignersLength;
-        for (uint256 i; i < validatorsData.length; ++i) {
+        bytes memory nonSigners = new bytes((validatorsData.length + 5) / 6 * 2);
+        for (uint8 i; i < validatorsData.length; ++i) {
             if (i % 6 == 0) {
-                nonSigners[nonSignersLength++] = i;
+                assembly ("memory-safe") {
+                    mstore(add(add(nonSigners, 32), mul(div(i, 6), 2)), shl(240, i))
+                }
             }
         }
-        assembly ("memory-safe") {
-            mstore(nonSigners, nonSignersLength)
-        }
         bytes memory fullProof = abi.encodePacked(
-            abi.encode(aggSigG1), abi.encode(aggKeyG2), abi.encode(validatorsData), abi.encode(nonSigners)
+            abi.encode(aggSigG1),
+            abi.encode(aggKeyG2),
+            Bytes.slice(abi.encode(validatorsData), 32),
+            abi.encodePacked(nonSigners)
         );
+        console2.log("nonSigners");
+        console2.logBytes(fullProof);
 
         IVotingPowerProvider.OperatorVotingPower[] memory votingPowers =
             masterSetupParams.votingPowerProvider.getVotingPowers(new bytes[](0));
-        uint256 totalVotingPower = 0;
+        uint256 totalVotingPower;
         for (uint256 i; i < votingPowers.length; ++i) {
             for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
                 totalVotingPower += votingPowers[i].vaults[j].votingPower;
@@ -165,19 +165,246 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
         (success, result) = address(masterSetupParams.settlement).call(data);
         assertTrue(success);
         assertTrue(abi.decode(result, (bool)));
-        // assertTrue(
-        //     masterSetupParams.master.verifyQuorumSig(
-        //         masterSetupParams.master.getCurrentValSetEpoch(),
-        //         abi.encode(messageHash),
-        //         KEY_TYPE_BLS_BN254.getKeyTag(15),
-        //         Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(
-        //             masterSetupParams.votingPowerProvider.getTotalVotingPower(new bytes[](0)), 1e18
-        //         ) + 1,
-        //         fullProof,
-        //         new bytes(0)
-        //     )
-        // );
         vm.stopPrank();
+    }
+
+    function test_RevertUnsupportedKeyTag() public {
+        uint8 badTag = KEY_TYPE_ECDSA_SECP256K1.getKeyTag(15);
+        bytes memory dummyProof = "";
+        bytes memory dummyMessage = abi.encode(uint256(0));
+        uint256 dummyThreshold = 0;
+
+        SigVerifierBlsBn254Simple sigVerifier = SigVerifierBlsBn254Simple(masterSetupParams.settlement.getSigVerifier());
+
+        vm.prank(vars.deployer.addr);
+        vm.expectRevert(ISigVerifierBlsBn254Simple.SigVerifierBlsBn254Simple_UnsupportedKeyTag.selector);
+        masterSetupParams.settlement.verifyQuorumSig(dummyMessage, badTag, dummyThreshold, dummyProof);
+    }
+
+    function test_FalseValidatorSet() public {
+        bytes32 messageHash = 0x204e0c470c62e2f8426b236c004b581084dd3aaa935ed3afe24dc37e0d040823;
+
+        BN254.G2Point memory aggKeyG2;
+        BN254.G1Point memory aggSigG1;
+
+        for (uint256 i; i < networkSetupParams.OPERATORS_TO_REGISTER; ++i) {
+            BN254.G2Point memory keyG2 = getG2Key(getOperator(i).privateKey);
+            BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash);
+            BN254.G1Point memory sigG1 = messageG1.scalar_mul(getOperator(i).privateKey);
+
+            if (i % 6 != 0) {
+                aggSigG1 = aggSigG1.plus(sigG1);
+
+                if (aggKeyG2.X[0] == 0 && aggKeyG2.X[1] == 0 && aggKeyG2.Y[0] == 0 && aggKeyG2.Y[1] == 0) {
+                    aggKeyG2 = keyG2;
+                } else {
+                    (uint256 x1, uint256 x2, uint256 y1, uint256 y2) = BN254G2.ECTwistAdd(
+                        aggKeyG2.X[1],
+                        aggKeyG2.X[0],
+                        aggKeyG2.Y[1],
+                        aggKeyG2.Y[0],
+                        keyG2.X[1],
+                        keyG2.X[0],
+                        keyG2.Y[1],
+                        keyG2.Y[0]
+                    );
+                    aggKeyG2 = BN254.G2Point([x2, x1], [y2, y1]);
+                }
+            }
+        }
+
+        ISigVerifierBlsBn254Simple.ValidatorData[] memory validatorsData = getValidatorsData();
+        bytes memory nonSigners = new bytes((validatorsData.length + 5) / 6 * 2);
+        for (uint8 i; i < validatorsData.length; ++i) {
+            if (i % 6 == 0) {
+                assembly ("memory-safe") {
+                    mstore(add(add(nonSigners, 32), mul(div(i, 6), 2)), shl(240, i))
+                }
+            }
+        }
+
+        validatorsData[0].votingPower = type(uint256).max;
+
+        bytes memory fullProof = abi.encodePacked(
+            abi.encode(aggSigG1),
+            abi.encode(aggKeyG2),
+            Bytes.slice(abi.encode(validatorsData), 32),
+            abi.encodePacked(nonSigners)
+        );
+
+        IVotingPowerProvider.OperatorVotingPower[] memory votingPowers =
+            masterSetupParams.votingPowerProvider.getVotingPowers(new bytes[](0));
+        uint256 totalVotingPower;
+        for (uint256 i; i < votingPowers.length; ++i) {
+            for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
+                totalVotingPower += votingPowers[i].vaults[j].votingPower;
+            }
+        }
+
+        assertFalse(
+            ISigVerifier(masterSetupParams.settlement.getSigVerifier()).verifyQuorumSig(
+                address(masterSetupParams.settlement),
+                masterSetupParams.settlement.getLastCommittedHeaderEpoch(),
+                abi.encode(messageHash),
+                KEY_TYPE_BLS_BN254.getKeyTag(15),
+                Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
+                fullProof
+            )
+        );
+    }
+
+    function test_Revert_InvalidNonSignersOrder() public {
+        bytes32 messageHash = 0x204e0c470c62e2f8426b236c004b581084dd3aaa935ed3afe24dc37e0d040823;
+
+        BN254.G2Point memory aggKeyG2;
+        BN254.G1Point memory aggSigG1;
+
+        for (uint256 i; i < networkSetupParams.OPERATORS_TO_REGISTER; ++i) {
+            BN254.G2Point memory keyG2 = getG2Key(getOperator(i).privateKey);
+            BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash);
+            BN254.G1Point memory sigG1 = messageG1.scalar_mul(getOperator(i).privateKey);
+
+            if (i % 6 != 0) {
+                aggSigG1 = aggSigG1.plus(sigG1);
+
+                if (aggKeyG2.X[0] == 0 && aggKeyG2.X[1] == 0 && aggKeyG2.Y[0] == 0 && aggKeyG2.Y[1] == 0) {
+                    aggKeyG2 = keyG2;
+                } else {
+                    (uint256 x1, uint256 x2, uint256 y1, uint256 y2) = BN254G2.ECTwistAdd(
+                        aggKeyG2.X[1],
+                        aggKeyG2.X[0],
+                        aggKeyG2.Y[1],
+                        aggKeyG2.Y[0],
+                        keyG2.X[1],
+                        keyG2.X[0],
+                        keyG2.Y[1],
+                        keyG2.Y[0]
+                    );
+                    aggKeyG2 = BN254.G2Point([x2, x1], [y2, y1]);
+                }
+            }
+        }
+
+        ISigVerifierBlsBn254Simple.ValidatorData[] memory validatorsData = getValidatorsData();
+        uint256[] memory nonSigners = new uint256[](validatorsData.length);
+        uint256 nonSignersLength;
+        for (uint256 i; i < validatorsData.length; ++i) {
+            if (i % 6 == 0) {
+                nonSigners[nonSignersLength++] = i;
+            }
+        }
+        assembly ("memory-safe") {
+            mstore(nonSigners, nonSignersLength)
+        }
+
+        (nonSigners[0], nonSigners[1]) = (nonSigners[1], nonSigners[0]);
+
+        bytes memory fullProof = abi.encodePacked(
+            abi.encode(aggSigG1),
+            abi.encode(aggKeyG2),
+            Bytes.slice(abi.encode(validatorsData), 32),
+            abi.encodePacked(nonSigners)
+        );
+
+        IVotingPowerProvider.OperatorVotingPower[] memory votingPowers =
+            masterSetupParams.votingPowerProvider.getVotingPowers(new bytes[](0));
+        uint256 totalVotingPower;
+        for (uint256 i; i < votingPowers.length; ++i) {
+            for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
+                totalVotingPower += votingPowers[i].vaults[j].votingPower;
+            }
+        }
+
+        address sigVerifier = masterSetupParams.settlement.getSigVerifier();
+        uint48 epoch = masterSetupParams.settlement.getLastCommittedHeaderEpoch();
+        vm.expectRevert(ISigVerifierBlsBn254Simple.SigVerifierBlsBn254Simple_InvalidNonSignersOrder.selector);
+        ISigVerifier(sigVerifier).verifyQuorumSig(
+            address(masterSetupParams.settlement),
+            epoch,
+            abi.encode(messageHash),
+            KEY_TYPE_BLS_BN254.getKeyTag(15),
+            Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
+            fullProof
+        );
+    }
+
+    function test_FalseQuorumThreshold() public {
+        bytes32 messageHash = 0x204e0c470c62e2f8426b236c004b581084dd3aaa935ed3afe24dc37e0d040823;
+
+        BN254.G2Point memory aggKeyG2;
+        BN254.G1Point memory aggSigG1;
+
+        for (uint256 i; i < networkSetupParams.OPERATORS_TO_REGISTER; ++i) {
+            BN254.G2Point memory keyG2 = getG2Key(getOperator(i).privateKey);
+            BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash);
+            BN254.G1Point memory sigG1 = messageG1.scalar_mul(getOperator(i).privateKey);
+
+            if (i % 3 != 0) {
+                aggSigG1 = aggSigG1.plus(sigG1);
+
+                if (aggKeyG2.X[0] == 0 && aggKeyG2.X[1] == 0 && aggKeyG2.Y[0] == 0 && aggKeyG2.Y[1] == 0) {
+                    aggKeyG2 = keyG2;
+                } else {
+                    (uint256 x1, uint256 x2, uint256 y1, uint256 y2) = BN254G2.ECTwistAdd(
+                        aggKeyG2.X[1],
+                        aggKeyG2.X[0],
+                        aggKeyG2.Y[1],
+                        aggKeyG2.Y[0],
+                        keyG2.X[1],
+                        keyG2.X[0],
+                        keyG2.Y[1],
+                        keyG2.Y[0]
+                    );
+                    aggKeyG2 = BN254.G2Point([x2, x1], [y2, y1]);
+                }
+            }
+        }
+
+        ISigVerifierBlsBn254Simple.ValidatorData[] memory validatorsData = getValidatorsData();
+        bytes memory nonSigners = new bytes((validatorsData.length + 2) / 3 * 2);
+        for (uint8 i; i < validatorsData.length; ++i) {
+            if (i % 3 == 0) {
+                assembly ("memory-safe") {
+                    mstore(add(add(nonSigners, 32), mul(div(i, 3), 2)), shl(240, i))
+                }
+            }
+        }
+
+        bytes memory fullProof = abi.encodePacked(
+            abi.encode(aggSigG1),
+            abi.encode(aggKeyG2),
+            Bytes.slice(abi.encode(validatorsData), 32),
+            abi.encodePacked(nonSigners)
+        );
+
+        IVotingPowerProvider.OperatorVotingPower[] memory votingPowers =
+            masterSetupParams.votingPowerProvider.getVotingPowers(new bytes[](0));
+        uint256 totalVotingPower;
+        for (uint256 i; i < votingPowers.length; ++i) {
+            for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
+                totalVotingPower += votingPowers[i].vaults[j].votingPower;
+            }
+        }
+        uint256 nonSignersPower;
+        for (uint256 i; i < nonSigners.length; ++i) {
+            uint256 currentNonSignerIndex;
+            assembly ("memory-safe") {
+                currentNonSignerIndex := mload(shr(240, calldataload(add(add(nonSigners, 32), mul(div(i, 6), 2)))))
+            }
+            for (uint256 j; j < votingPowers[currentNonSignerIndex].vaults.length; ++j) {
+                nonSignersPower += votingPowers[currentNonSignerIndex].vaults[j].votingPower;
+            }
+        }
+        assertFalse(
+            ISigVerifier(masterSetupParams.settlement.getSigVerifier()).verifyQuorumSig(
+                address(masterSetupParams.settlement),
+                masterSetupParams.settlement.getLastCommittedHeaderEpoch(),
+                abi.encode(messageHash),
+                KEY_TYPE_BLS_BN254.getKeyTag(15),
+                Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
+                fullProof
+            )
+        );
     }
 
     function loadGenesisSimple()
@@ -186,7 +413,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
     {
         IVotingPowerProvider.OperatorVotingPower[] memory votingPowers =
             masterSetupParams.votingPowerProvider.getVotingPowers(new bytes[](0));
-        uint256 totalVotingPower = 0;
+        uint256 totalVotingPower;
         for (uint256 i; i < votingPowers.length; ++i) {
             for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
                 totalVotingPower += votingPowers[i].vaults[j].votingPower;
@@ -207,7 +434,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
 
         {
             ISigVerifierBlsBn254Simple.ValidatorData[] memory validatorsData = getValidatorsData();
-            bytes32 validatorSetHash = keccak256(abi.encode(validatorsData));
+            bytes32 validatorSetHash = keccak256(Bytes.slice(abi.encode(validatorsData), 32));
             extraData[0] = ISettlement.ExtraData({
                 key: uint32(1).getKey(15, sigVerifier.VALIDATOR_SET_HASH_KECCAK256_HASH()),
                 value: validatorSetHash

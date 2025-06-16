@@ -43,6 +43,11 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
     bytes32 public constant AGGREGATED_PUBLIC_KEY_G1_HASH = keccak256("aggPublicKeyG1");
 
     /**
+     * @inheritdoc ISigVerifierBlsBn254Simple
+     */
+    uint256 public constant MAX_VALIDATORS = 65_535;
+
+    /**
      * @inheritdoc ISigVerifier
      */
     function verifyQuorumSig(
@@ -57,42 +62,72 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
             revert SigVerifierBlsBn254Simple_UnsupportedKeyTag();
         }
 
-        // proof structure
+        // Proof Structure
         // 0 : 64 - G1 aggregated signature
         // 64 : 192 - G2 aggregated public key
-        // 192 : 256+validatorsData.length*96 - encoded data of all active validators for a given `keyTag`
-        //     192 : 224 - offset
-        //     224 : 256 - length
-        //     256 : 256+validatorsData.length*96 - ValidatorData[]
-        // 256+validatorsData.length*96 (nonSignersOffset) : 320+nonSigners.length*32 - encoded array of non-signers indices (from validatorsData)
-        //     nonSignersOffset : nonSignersOffset + 32 - offset
-        //     nonSignersOffset + 32 : nonSignersOffset + 64 - length
-        //     nonSignersOffset + 64 : 320+nonSigners.length*32 - bool[]
+        // 192 : 224+validatorsData.length*96 - encoded data of all active validators for a given `keyTag`
+        //     192 : 224 - number of validators
+        //     224 : 224+validatorsData.length*96 - ValidatorData[]
+        // 224+validatorsData.length*96 (nonSignersOffset) : 256+nonSigners.length*32 - encoded array of non-signers indices (from validatorsData)
+        //     nonSignersOffset+32 : nonSignersOffset+64 - number of non-signers
+        //     nonSignersOffset+64 : 256+nonSigners.length*32 - bool[]
 
-        BN254.G1Point memory nonSignersPublicKeyG1;
-        {
-            ValidatorData[] memory validatorsData = abi.decode(proof[192:], (ValidatorData[]));
-            uint256 nonSignersOffset = 256 + validatorsData.length * 96;
-            if (
-                keccak256(proof[192:nonSignersOffset])
-                    != ISettlement(settlement).getExtraDataAt(
-                        epoch, VERIFICATION_TYPE.getKey(keyTag, VALIDATOR_SET_HASH_KECCAK256_HASH)
-                    )
-            ) {
-                return false;
-            }
-            uint256[] memory nonSigners = abi.decode(proof[nonSignersOffset:], (uint256[]));
-
-            uint256 nonSignersLength = nonSigners.length;
+        unchecked {
             uint256 nonSignersVotingPower;
-            for (uint256 i; i < nonSignersLength; ++i) {
-                unchecked {
-                    if (i > 0 && nonSigners[i - 1] >= nonSigners[i]) {
+            BN254.G1Point memory nonSignersPublicKeyG1;
+            {
+                uint256 validatorsDataLength;
+                assembly ("memory-safe") {
+                    validatorsDataLength := calldataload(add(proof.offset, 192))
+                }
+                if (validatorsDataLength > MAX_VALIDATORS) {
+                    revert SigVerifierBlsBn254Simple_TooManyValidators();
+                }
+                uint256 nonSignersOffset = 224 + validatorsDataLength * 96;
+                if (
+                    keccak256(proof[192:nonSignersOffset])
+                        != ISettlement(settlement).getExtraDataAt(
+                            epoch, VERIFICATION_TYPE.getKey(keyTag, VALIDATOR_SET_HASH_KECCAK256_HASH)
+                        )
+                ) {
+                    return false;
+                }
+
+                uint256 nonSignersLength = (proof.length - nonSignersOffset) >> 1;
+
+                uint256 prevNonSignerIndex;
+                for (uint256 i; i < nonSignersLength; ++i) {
+                    uint256 currentNonSignerIndex;
+                    assembly ("memory-safe") {
+                        currentNonSignerIndex := shr(240, calldataload(add(proof.offset, nonSignersOffset)))
+                    }
+                    if (currentNonSignerIndex >= validatorsDataLength) {
+                        revert SigVerifierBlsBn254Simple_InvalidNonSignerIndex();
+                    }
+                    if (i > 0 && prevNonSignerIndex >= currentNonSignerIndex) {
                         revert SigVerifierBlsBn254Simple_InvalidNonSignersOrder();
                     }
+                    uint256 indexOffset;
+                    assembly {
+                        indexOffset := add(add(proof.offset, 224), mul(currentNonSignerIndex, 96))
+                    }
+                    {
+                        BN254.G1Point calldata keyG1;
+                        assembly {
+                            keyG1 := indexOffset
+                        }
+                        nonSignersPublicKeyG1 = nonSignersPublicKeyG1.plus(keyG1);
+                    }
+                    {
+                        uint256 votingPower;
+                        assembly {
+                            votingPower := calldataload(add(indexOffset, 64))
+                        }
+                        nonSignersVotingPower += votingPower;
+                    }
+                    prevNonSignerIndex = currentNonSignerIndex;
+                    nonSignersOffset += 2;
                 }
-                nonSignersPublicKeyG1 = nonSignersPublicKeyG1.plus(validatorsData[nonSigners[i]].publicKey);
-                nonSignersVotingPower += validatorsData[nonSigners[i]].votingPower;
             }
 
             if (
@@ -103,17 +138,28 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
             ) {
                 return false;
             }
-        }
 
-        bytes memory aggPublicKeyG1Serialized = abi.encode(
-            ISettlement(settlement).getExtraDataAt(
-                epoch, VERIFICATION_TYPE.getKey(keyTag, AGGREGATED_PUBLIC_KEY_G1_HASH)
-            )
-        );
-        bytes memory signersPublicKeyG1Bytes =
-            aggPublicKeyG1Serialized.deserialize().unwrap().plus(nonSignersPublicKeyG1.negate()).wrap().toBytes();
-        bytes calldata signature = proof[0:64];
-        bytes calldata aggPublicKeyG2 = proof[64:192];
-        return SigBlsBn254.verify(signersPublicKeyG1Bytes, message, signature, aggPublicKeyG2);
+            {
+                bytes memory aggPublicKeyG1Serialized = abi.encode(
+                    ISettlement(settlement).getExtraDataAt(
+                        epoch, VERIFICATION_TYPE.getKey(keyTag, AGGREGATED_PUBLIC_KEY_G1_HASH)
+                    )
+                );
+                BN254.G1Point calldata signatureG1;
+                bytes32 messageHash;
+                BN254.G2Point calldata aggKeyG2;
+                assembly ("memory-safe") {
+                    signatureG1 := proof.offset
+                    messageHash := mload(add(message, 32))
+                    aggKeyG2 := add(proof.offset, 64)
+                }
+                return SigBlsBn254.verify(
+                    aggPublicKeyG1Serialized.deserialize().unwrap().plus(nonSignersPublicKeyG1.negate()),
+                    messageHash,
+                    signatureG1,
+                    aggKeyG2
+                );
+            }
+        }
     }
 }

@@ -22,4 +22,12 @@ library SigEcdsaSecp256k1 {
 
         return ECDSA.recover(abi.decode(message, (bytes32)), signature) == key.unwrap();
     }
+
+    function verify(address key, bytes32 message, bytes memory signature) internal view returns (bool) {
+        if (key == address(0)) {
+            return false;
+        }
+
+        return ECDSA.recover(message, signature) == key;
+    }
 }

@@ -27,3 +27,5 @@ Thumbs.db
 cache/
 out/
 /broadcast/
+
+lcov.info

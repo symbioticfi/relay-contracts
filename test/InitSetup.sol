@@ -33,7 +33,7 @@ contract InitSetupTest is SymbioticCoreInit {
     uint256 public OPERATOR_PRIVATE_KEY_OFFSET = 1e18;
     uint256 public STAKER_PRIVATE_KEY_OFFSET = 2e18;
     uint256 public SYMBIOTIC_CORE_NUMBER_OF_VAULTS = 3;
-    uint256 public SYMBIOTIC_CORE_NUMBER_OF_OPERATORS = 5;
+    uint256 public SYMBIOTIC_CORE_NUMBER_OF_OPERATORS = 20;
     uint256 public SYMBIOTIC_CORE_NUMBER_OF_STAKERS = 1;
 
     uint96 public constant IDENTIFIER = 0;

@@ -40,4 +40,30 @@ library SigBlsBn254 {
         );
         return success && result;
     }
+
+    function verify(
+        BN254.G1Point memory keyG1,
+        bytes32 messageHash,
+        BN254.G1Point memory signatureG1,
+        BN254.G2Point memory keyG2
+    ) internal view returns (bool) {
+        if (keyG1.X == 0 && keyG1.Y == 0) {
+            return false;
+        }
+
+        BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash);
+
+        uint256 alpha = uint256(
+            keccak256(abi.encodePacked(messageHash, keyG1.X, keyG1.Y, keyG2.X, keyG2.Y, signatureG1.X, signatureG1.Y))
+        ) % BN254.FR_MODULUS;
+
+        (bool success, bool result) = BN254.safePairing(
+            signatureG1.plus(keyG1.scalar_mul(alpha)),
+            BN254.negGeneratorG2(),
+            messageG1.plus(BN254.generatorG1().scalar_mul(alpha)),
+            keyG2,
+            PAIRING_CHECK_GAS_LIMIT
+        );
+        return success && result;
+    }
 }

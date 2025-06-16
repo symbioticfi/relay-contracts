@@ -102,10 +102,9 @@ library BN254G2 {
     }
 
     function _FQ2Mul(uint256 xx, uint256 xy, uint256 yx, uint256 yy) internal pure returns (uint256, uint256) {
-        return (
-            submod(mulmod(xx, yx, FIELD_MODULUS), mulmod(xy, yy, FIELD_MODULUS), FIELD_MODULUS),
-            addmod(mulmod(xx, yy, FIELD_MODULUS), mulmod(xy, yx, FIELD_MODULUS), FIELD_MODULUS)
-        );
+        uint256 result1 = submod(mulmod(xx, yx, FIELD_MODULUS), mulmod(xy, yy, FIELD_MODULUS), FIELD_MODULUS);
+        uint256 result2 = addmod(mulmod(xx, yy, FIELD_MODULUS), mulmod(xy, yx, FIELD_MODULUS), FIELD_MODULUS);
+        return (result1, result2);
     }
 
     function _FQ2Muc(uint256 xx, uint256 xy, uint256 c) internal pure returns (uint256, uint256) {
@@ -146,7 +145,7 @@ library BN254G2 {
 
     function _modInv(uint256 a, uint256 n) internal view returns (uint256 result) {
         bool success;
-        assembly {
+        assembly ("memory-safe") {
             let freemem := mload(0x40)
             mstore(freemem, 0x20)
             mstore(add(freemem, 0x20), 0x20)

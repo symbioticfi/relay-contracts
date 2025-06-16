@@ -56,7 +56,7 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
                 revert SigVerifierBlsBn254ZK_InvalidVerifier();
             }
             if (i > 0 && maxValidators_[i - 1] >= maxValidators_[i]) {
-                revert SigVerifierBlsBn254ZK_InvalidMaxValidators();
+                revert SigVerifierBlsBn254ZK_InvalidMaxValidatorsOrder();
             }
         }
 
@@ -79,7 +79,7 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
             revert SigVerifierBlsBn254ZK_UnsupportedKeyTag();
         }
 
-        // proof structure
+        // Proof Structure
         // 0 : 256 - ZK proof (uint256[8])
         // 256 : 320 - commitments (uint256[2])
         // 320 : 384 - commitmentPok (uint256[2])

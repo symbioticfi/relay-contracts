@@ -429,7 +429,7 @@ contract VotingPowerProviderTest is InitSetupTest {
                 owner: vars.deployer.addr,
                 collateral: initSetupParams.masterChain.tokens[0],
                 burner: 0x000000000000000000000000000000000000dEaD,
-                epochDuration: votingPowerProvider.getSlashingWindow() - 1,
+                epochDuration: votingPowerProvider.getSlashingWindow(),
                 whitelistedDepositors: new address[](0),
                 depositLimit: 0,
                 delegatorIndex: 0,
@@ -443,6 +443,92 @@ contract VotingPowerProviderTest is InitSetupTest {
 
         vm.expectRevert(ERR_INVALID_VAULT);
         votingPowerProvider.registerSharedVault(newVault);
+
+        vm.startPrank(getOperator(0).addr);
+        votingPowerProvider.registerOperator();
+        vm.stopPrank();
+
+        newVault = _getVault_SymbioticCore(
+            VaultParams({
+                owner: getOperator(0).addr,
+                collateral: initSetupParams.masterChain.tokens[0],
+                burner: 0x000000000000000000000000000000000000dEaD,
+                epochDuration: votingPowerProvider.getSlashingWindow(),
+                whitelistedDepositors: new address[](0),
+                depositLimit: 0,
+                delegatorIndex: 2,
+                hook: address(0),
+                network: address(0),
+                withSlasher: true,
+                slasherIndex: 0,
+                vetoDuration: 0
+            })
+        );
+
+        vm.expectRevert(ERR_INVALID_SHARED_VAULT);
+        votingPowerProvider.registerSharedVault(newVault);
+
+        newVault = _getVault_SymbioticCore(
+            VaultParams({
+                owner: getOperator(0).addr,
+                collateral: initSetupParams.masterChain.tokens[0],
+                burner: 0x000000000000000000000000000000000000dEaD,
+                epochDuration: votingPowerProvider.getSlashingWindow(),
+                whitelistedDepositors: new address[](0),
+                depositLimit: 0,
+                delegatorIndex: 0,
+                hook: address(0),
+                network: address(0),
+                withSlasher: true,
+                slasherIndex: 0,
+                vetoDuration: 0
+            })
+        );
+
+        vm.expectRevert(ERR_INVALID_OPERATOR_VAULT);
+        votingPowerProvider.registerOperatorVault(getOperator(0).addr, newVault);
+
+        newVault = _getVault_SymbioticCore(
+            VaultParams({
+                owner: getOperator(0).addr,
+                collateral: initSetupParams.masterChain.tokens[0],
+                burner: 0x000000000000000000000000000000000000dEaD,
+                epochDuration: votingPowerProvider.getSlashingWindow() - 1,
+                whitelistedDepositors: new address[](0),
+                depositLimit: 0,
+                delegatorIndex: 2,
+                hook: address(0),
+                network: address(0),
+                withSlasher: true,
+                slasherIndex: 0,
+                vetoDuration: 0
+            })
+        );
+
+        vm.expectRevert(ERR_INVALID_VAULT);
+        votingPowerProvider.registerOperatorVault(getOperator(0).addr, newVault);
+
+        newVault = _getVault_SymbioticCore(
+            VaultParams({
+                owner: getOperator(0).addr,
+                collateral: initSetupParams.masterChain.tokens[0],
+                burner: 0x000000000000000000000000000000000000dEaD,
+                epochDuration: votingPowerProvider.getSlashingWindow(),
+                whitelistedDepositors: new address[](0),
+                depositLimit: 0,
+                delegatorIndex: 2,
+                hook: address(0),
+                network: address(0),
+                withSlasher: true,
+                slasherIndex: 0,
+                vetoDuration: 0
+            })
+        );
+
+        votingPowerProvider.registerOperatorVault(getOperator(0).addr, newVault);
+
+        vm.expectRevert(ERR_OPERATOR_VAULT_ALREADY_registered);
+        votingPowerProvider.registerOperatorVault(getOperator(0).addr, newVault);
     }
 
     function test_RegisterOperatorVault() public {
@@ -621,18 +707,89 @@ contract VotingPowerProviderTest is InitSetupTest {
             vm.stopPrank();
         }
 
+        for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
+            Vm.Wallet memory operator = getOperator(i);
+            address operatorVault = _getVault_SymbioticCore(
+                VaultParams({
+                    owner: operator.addr,
+                    collateral: initSetupParams.masterChain.tokens[0],
+                    burner: 0x000000000000000000000000000000000000dEaD,
+                    epochDuration: votingPowerProvider.getSlashingWindow() * 2,
+                    whitelistedDepositors: new address[](0),
+                    depositLimit: 0,
+                    delegatorIndex: 2,
+                    hook: address(0),
+                    network: address(0),
+                    withSlasher: true,
+                    slasherIndex: 0,
+                    vetoDuration: 1
+                })
+            );
+
+            _operatorOptIn_SymbioticCore(operator.addr, operatorVault);
+            _networkSetMaxNetworkLimit_SymbioticCore(
+                votingPowerProvider.NETWORK(),
+                operatorVault,
+                votingPowerProvider.SUBNETWORK_IDENTIFIER(),
+                type(uint256).max
+            );
+            _curatorSetNetworkLimit_SymbioticCore(
+                operator.addr, operatorVault, votingPowerProvider.SUBNETWORK(), type(uint256).max
+            );
+            _stakerDeposit_SymbioticCore(getStaker(0).addr, operatorVault, 1000 + i);
+            vm.startPrank(vars.network.addr);
+            votingPowerProvider.registerOperatorVault(operator.addr, operatorVault);
+            vm.stopPrank();
+        }
+
         IVotingPowerProvider.OperatorVotingPower[] memory operatorVotingPowers1 =
             votingPowerProvider.getVotingPowers(new bytes[](0));
-        IVotingPowerProvider.OperatorVotingPower[] memory operatorVotingPowers2 =
-            votingPowerProvider.getVotingPowersAt(new bytes[](0), uint48(vm.getBlockTimestamp()));
+        assertEq(
+            abi.encode(operatorVotingPowers1),
+            abi.encode(votingPowerProvider.getVotingPowersAt(new bytes[](0), uint48(vm.getBlockTimestamp())))
+        );
 
         uint256 totalStake;
         for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
             Vm.Wallet memory operator = getOperator(i);
             IVotingPowerProvider.VaultVotingPower[] memory vaultVotingPowers1 =
                 votingPowerProvider.getOperatorVotingPowers(operator.addr, "");
-            IVotingPowerProvider.VaultVotingPower[] memory vaultVotingPowers2 =
-                votingPowerProvider.getOperatorVotingPowersAt(operator.addr, "", uint48(vm.getBlockTimestamp()));
+            assertEq(
+                abi.encode(vaultVotingPowers1),
+                abi.encode(
+                    votingPowerProvider.getOperatorVotingPowersAt(operator.addr, "", uint48(vm.getBlockTimestamp()))
+                )
+            );
+            assertEq(
+                abi.encode(vaultVotingPowers1),
+                abi.encode(
+                    votingPowerProvider.getOperatorVotingPowersAt(
+                        operator.addr,
+                        abi.encode(
+                            IVotingPowerProvider.OperatorVotingPowersExtraData({
+                                sharedVaultsExtraData: new bytes[](0),
+                                operatorVaultsExtraData: new bytes[](0)
+                            })
+                        ),
+                        uint48(vm.getBlockTimestamp())
+                    )
+                )
+            );
+            assertEq(
+                abi.encode(vaultVotingPowers1),
+                abi.encode(
+                    votingPowerProvider.getOperatorVotingPowers(
+                        operator.addr,
+                        abi.encode(
+                            IVotingPowerProvider.OperatorVotingPowersExtraData({
+                                sharedVaultsExtraData: new bytes[](0),
+                                operatorVaultsExtraData: new bytes[](0)
+                            })
+                        )
+                    )
+                )
+            );
+
             uint256 operatorStake;
             for (uint256 j; j < initSetupParams.masterChain.vaults.length; ++j) {
                 uint256 operatorVaultStake = (
@@ -652,10 +809,27 @@ contract VotingPowerProviderTest is InitSetupTest {
                     operatorVaultStake
                 );
 
+                address vault = _getVault_SymbioticCore(
+                    VaultParams({
+                        owner: getOperator(0).addr,
+                        collateral: address(1),
+                        burner: 0x000000000000000000000000000000000000dEaD,
+                        epochDuration: votingPowerProvider.getSlashingWindow() * 2,
+                        whitelistedDepositors: new address[](0),
+                        depositLimit: 0,
+                        delegatorIndex: 2,
+                        hook: address(0),
+                        network: address(0),
+                        withSlasher: true,
+                        slasherIndex: 0,
+                        vetoDuration: 1
+                    })
+                );
                 assertEq(
                     votingPowerProvider.getOperatorVotingPower(operator.addr, initSetupParams.masterChain.vaults[j], ""),
                     operatorVaultStake
                 );
+                assertEq(votingPowerProvider.getOperatorVotingPower(operator.addr, vault, ""), 0);
 
                 assertEq(
                     votingPowerProvider.getOperatorVotingPowerAt(
@@ -663,21 +837,39 @@ contract VotingPowerProviderTest is InitSetupTest {
                     ),
                     operatorVaultStake
                 );
+
+                assertEq(
+                    votingPowerProvider.getOperatorVotingPowerAt(
+                        operator.addr,
+                        initSetupParams.masterChain.vaults[j],
+                        "",
+                        uint48(vm.getBlockTimestamp()),
+                        abi.encode(
+                            IVotingPowerProvider.OperatorVaultVotingPowerHints({
+                                isTokenRegisteredHint: new bytes(0),
+                                stakeHints: new bytes(0)
+                            })
+                        )
+                    ),
+                    operatorVaultStake
+                );
+                assertEq(
+                    votingPowerProvider.getOperatorVotingPowerAt(
+                        operator.addr, vault, "", uint48(vm.getBlockTimestamp()), new bytes(0)
+                    ),
+                    0
+                );
                 assertEq(vaultVotingPowers1[j].vault, initSetupParams.masterChain.vaults[j]);
                 assertEq(vaultVotingPowers1[j].votingPower, operatorVaultStake);
-                assertEq(vaultVotingPowers2[j].vault, initSetupParams.masterChain.vaults[j]);
-                assertEq(vaultVotingPowers2[j].votingPower, operatorVaultStake);
                 assertEq(operatorVotingPowers1[i].operator, operator.addr);
                 assertEq(operatorVotingPowers1[i].vaults[j].vault, initSetupParams.masterChain.vaults[j]);
                 assertEq(operatorVotingPowers1[i].vaults[j].votingPower, operatorVaultStake);
-                assertEq(operatorVotingPowers2[i].operator, operator.addr);
-                assertEq(operatorVotingPowers2[i].vaults[j].vault, initSetupParams.masterChain.vaults[j]);
-                assertEq(operatorVotingPowers2[i].vaults[j].votingPower, operatorVaultStake);
                 operatorStake += operatorVaultStake;
             }
 
             totalStake += operatorStake;
         }
+        assertGt(totalStake, 0);
     }
 
     function test_RegisterOperator() public {

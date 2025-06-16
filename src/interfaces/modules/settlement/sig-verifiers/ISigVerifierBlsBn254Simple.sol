@@ -8,6 +8,8 @@ import {ISigVerifier} from "./ISigVerifier.sol";
 interface ISigVerifierBlsBn254Simple is ISigVerifier {
     error SigVerifierBlsBn254Simple_UnsupportedKeyTag();
     error SigVerifierBlsBn254Simple_InvalidNonSignersOrder();
+    error SigVerifierBlsBn254Simple_TooManyValidators();
+    error SigVerifierBlsBn254Simple_InvalidNonSignerIndex();
 
     struct ValidatorData {
         BN254.G1Point publicKey;
@@ -26,4 +28,6 @@ interface ISigVerifierBlsBn254Simple is ISigVerifier {
     function TOTAL_VOTING_POWER_HASH() external view returns (bytes32);
 
     function AGGREGATED_PUBLIC_KEY_G1_HASH() external view returns (bytes32);
+
+    function MAX_VALIDATORS() external view returns (uint256);
 }

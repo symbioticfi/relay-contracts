@@ -27,6 +27,7 @@ import {INetworkManager} from "../../../src/interfaces/modules/base/INetworkMana
 import {SigVerifierMock} from "../../mocks/SigVerifierMock.sol";
 import {SigVerifierBlsBn254Simple} from
     "../../../src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol";
+import {SigVerifierFalseMock} from "../../mocks/SigVerifierFalseMock.sol";
 
 contract SettlementTest is MasterGenesisSetupTest {
     using KeyTags for uint8;
@@ -156,6 +157,9 @@ contract SettlementRawTest is Test {
 
         testSettle = new TestSettlement();
 
+        vm.expectRevert(ISettlement.Settlement_NoCheckpoint.selector);
+        testSettle.getSigVerifier();
+
         {
             IOzEIP712.OzEIP712InitParams memory eip712;
             eip712.name = "Settlement";
@@ -167,9 +171,12 @@ contract SettlementRawTest is Test {
 
             initParams.ozEip712InitParams = eip712;
             initParams.networkManagerInitParams = netInit;
-            initParams.sigVerifier = address(new SigVerifierMock());
         }
 
+        vm.expectRevert(ISettlement.Settlement_InvalidSigVerifier.selector);
+        testSettle.initialize(initParams, owner);
+
+        initParams.sigVerifier = address(new SigVerifierMock());
         testSettle.initialize(initParams, owner);
 
         sampleHeader = ISettlement.ValSetHeader({
@@ -269,9 +276,19 @@ contract SettlementRawTest is Test {
             someExtra[0].value,
             "Extra data mismatch after setGenesis"
         );
+        assertEq(testSettle.getValSetHeaderHash(), keccak256(abi.encode(sampleHeader)), "ValSet header hash mismatch");
+        assertEq(
+            testSettle.getValSetHeaderHashAt(sampleHeader.epoch),
+            keccak256(abi.encode(sampleHeader)),
+            "ValSet header hash mismatch"
+        );
     }
 
-    function testSetGenesis_InFailPhase() public {
+    function testSetGenesis_Revert_ValSetHeaderAlreadySubmitted() public {
+        vm.prank(owner);
+        testSettle.setGenesis(sampleHeader, someExtra);
+
+        vm.expectRevert(ISettlement.Settlement_ValSetHeaderAlreadySubmitted.selector);
         vm.prank(owner);
         testSettle.setGenesis(sampleHeader, someExtra);
 
@@ -324,8 +341,25 @@ contract SettlementRawTest is Test {
         vm.warp(vm.getBlockTimestamp() + 130);
 
         ISettlement.ValSetHeader memory header = sampleHeader;
+        header.version = 2;
         header.epoch = 1;
-        header.captureTimestamp = uint48(vm.getBlockTimestamp() - 10);
+        header.captureTimestamp = uint48(vm.getBlockTimestamp() - 1);
+        header.previousHeaderHash = testSettle.getValSetHeaderHash();
+
+        vm.expectRevert(ISettlement.Settlement_InvalidVersion.selector);
+        testSettle.commitValSetHeader(header, someExtra, bytes(""));
+
+        header.version = 1;
+        testSettle.commitValSetHeader(header, someExtra, bytes(""));
+
+        assertTrue(testSettle.isValSetHeaderCommittedAt(header.epoch - 1));
+        assertTrue(testSettle.isValSetHeaderCommittedAt(header.epoch));
+        assertFalse(testSettle.isValSetHeaderCommittedAt(header.epoch + 1));
+
+        vm.warp(vm.getBlockTimestamp() + 1);
+
+        header.epoch = 2;
+        header.captureTimestamp = uint48(vm.getBlockTimestamp() - 1);
         header.previousHeaderHash = testSettle.getValSetHeaderHash();
 
         testSettle.commitValSetHeader(header, someExtra, bytes(""));
@@ -333,18 +367,69 @@ contract SettlementRawTest is Test {
         vm.expectRevert(ISettlement.Settlement_InvalidEpoch.selector);
         testSettle.commitValSetHeader(header, someExtra, bytes(""));
 
-        assertTrue(testSettle.isValSetHeaderCommittedAt(header.epoch - 1));
-        assertTrue(testSettle.isValSetHeaderCommittedAt(header.epoch));
-        assertFalse(testSettle.isValSetHeaderCommittedAt(header.epoch + 1));
+        header.epoch = 3;
+        vm.expectRevert(ISettlement.Settlement_InvalidCaptureTimestamp.selector);
+        testSettle.commitValSetHeader(header, someExtra, bytes(""));
 
-        vm.warp(vm.getBlockTimestamp() + 50);
+        vm.warp(vm.getBlockTimestamp() + 1);
 
-        vm.warp(vm.getBlockTimestamp() + 60);
+        header.captureTimestamp = uint48(vm.getBlockTimestamp() - 1);
+
+        vm.expectRevert(ISettlement.Settlement_InvalidPreviousHeaderHash.selector);
+        testSettle.commitValSetHeader(header, someExtra, bytes(""));
+
+        header.previousHeaderHash = testSettle.getValSetHeaderHash();
+
+        testSettle.commitValSetHeader(header, someExtra, bytes(""));
+    }
+
+    function test_setSigVerifier() public {
+        address newSigVerifier = address(new SigVerifierMock());
+        vm.prank(owner);
+        testSettle.setSigVerifier(newSigVerifier);
+
+        assertEq(testSettle.getSigVerifier(), initParams.sigVerifier, "Sig verifier mismatch");
+        assertEq(
+            testSettle.getSigVerifierAt(testSettle.getLastCommittedHeaderEpoch(), new bytes(0)),
+            initParams.sigVerifier,
+            "Sig verifier mismatch"
+        );
+        assertEq(
+            testSettle.getSigVerifierAt(testSettle.getLastCommittedHeaderEpoch() + 1, new bytes(0)),
+            newSigVerifier,
+            "Sig verifier mismatch"
+        );
+    }
+
+    function test_setSigVerifier_Revert_InvalidSigVerifier() public {
+        vm.prank(owner);
+        vm.expectRevert(ISettlement.Settlement_InvalidSigVerifier.selector);
+        testSettle.setSigVerifier(address(0));
+    }
+
+    function test_commitValSetHeader_VerificationFailed() public {
+        vm.prank(owner);
+        testSettle.setGenesis(sampleHeader, someExtra);
+
+        vm.startPrank(owner);
+        testSettle.setSigVerifier(address(new SigVerifierFalseMock()));
+        vm.stopPrank();
+
+        vm.warp(vm.getBlockTimestamp() + 1);
+
+        ISettlement.ValSetHeader memory header = sampleHeader;
+
+        header.epoch = 1;
+        header.captureTimestamp = uint48(vm.getBlockTimestamp() - 1);
+        header.previousHeaderHash = testSettle.getValSetHeaderHash();
+        testSettle.commitValSetHeader(header, someExtra, bytes(""));
+
+        vm.warp(vm.getBlockTimestamp() + 1);
 
         header.epoch = 2;
-        header.captureTimestamp = uint48(vm.getBlockTimestamp()) - 1;
-
-        vm.expectRevert();
+        header.captureTimestamp = uint48(vm.getBlockTimestamp() - 1);
+        header.previousHeaderHash = testSettle.getValSetHeaderHash();
+        vm.expectRevert(ISettlement.Settlement_VerificationFailed.selector);
         testSettle.commitValSetHeader(header, someExtra, bytes(""));
     }
 }

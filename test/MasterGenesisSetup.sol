@@ -3,7 +3,11 @@ pragma solidity ^0.8.25;
 
 import "./MasterSetup.sol";
 
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+
 contract MasterGenesisSetupTest is MasterSetupTest {
+    using Math for uint256;
+
     struct Genesis {
         ExtraDataStruct[] extraData;
         ValSetHeaderStruct header;
@@ -32,6 +36,31 @@ contract MasterGenesisSetupTest is MasterSetupTest {
 
         vm.startBroadcast(vars.deployer.privateKey);
         (ISettlement.ValSetHeader memory valSetHeader, ISettlement.ExtraData[] memory extraData) = loadGenesis();
+        valSetHeader.captureTimestamp = masterSetupParams.valSetDriver.getCurrentEpochStart();
+        valSetHeader.epoch = masterSetupParams.valSetDriver.getCurrentEpoch();
+        valSetHeader.previousHeaderHash = masterSetupParams.settlement.getValSetHeaderHash();
+        valSetHeader.requiredKeyTag = masterSetupParams.valSetDriver.getRequiredHeaderKeyTag();
+        valSetHeader.version = masterSetupParams.settlement.VALIDATOR_SET_VERSION();
+
+        IVotingPowerProvider.OperatorVotingPower[] memory votingPowers =
+            masterSetupParams.votingPowerProvider.getVotingPowers(new bytes[](0));
+        uint256 totalVotingPower;
+        for (uint256 i; i < votingPowers.length; ++i) {
+            for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
+                totalVotingPower += votingPowers[i].vaults[j].votingPower;
+            }
+        }
+        uint256 quorumThreshold;
+        IValSetDriver.QuorumThreshold[] memory quorumThresholds = masterSetupParams.valSetDriver.getQuorumThresholds();
+        for (uint256 i; i < quorumThresholds.length; ++i) {
+            if (quorumThresholds[i].keyTag == valSetHeader.requiredKeyTag) {
+                quorumThreshold = quorumThresholds[i].quorumThreshold;
+                break;
+            }
+        }
+        valSetHeader.quorumThreshold =
+            quorumThreshold.mulDiv(totalVotingPower, masterSetupParams.valSetDriver.MAX_QUORUM_THRESHOLD()) + 1;
+
         masterSetupParams.settlement.setGenesis(valSetHeader, extraData);
         vm.stopBroadcast();
     }
