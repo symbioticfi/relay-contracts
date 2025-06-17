@@ -28,9 +28,9 @@ import "./InitSetup.sol";
 import {SigVerifierBlsBn254ZK} from "../src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol";
 import {SigVerifierBlsBn254Simple} from
     "../src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol";
-import {Verifier as Verifier_10} from "../script/test/data/zk/Verifier_10.sol";
-import {Verifier as Verifier_100} from "../script/test/data/zk/Verifier_100.sol";
-import {Verifier as Verifier_1000} from "../script/test/data/zk/Verifier_1000.sol";
+import {Verifier as Verifier_10} from "./data/zk/Verifier_10.sol";
+import {Verifier as Verifier_100} from "./data/zk/Verifier_100.sol";
+import {Verifier as Verifier_1000} from "./data/zk/Verifier_1000.sol";
 
 contract MasterSetupTest is InitSetupTest {
     using KeyTags for uint8;

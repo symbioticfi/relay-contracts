@@ -14,13 +14,9 @@ import {BN254G2} from "../../../helpers/BN254G2.sol";
 
 import {ISettlement} from "../../../../src/interfaces/modules/settlement/ISettlement.sol";
 
-import {MasterGenesisSetupTest} from "../../../MasterGenesisSetup.sol";
+import "../../../MasterGenesisSetup.sol";
 
 import {console2} from "forge-std/console2.sol";
-
-import {Verifier as Verifier_10} from "../../../../script/test/data/zk/Verifier_10.sol";
-import {Verifier as Verifier_100} from "../../../../script/test/data/zk/Verifier_100.sol";
-import {Verifier as Verifier_1000} from "../../../../script/test/data/zk/Verifier_1000.sol";
 import {SigVerifierBlsBn254ZK} from
     "../../../../src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol";
 
@@ -28,6 +24,9 @@ import {ISigVerifier} from "../../../../src/interfaces/modules/settlement/sig-ve
 import {IVotingPowerProvider} from "../../../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
 import {ISigVerifierBlsBn254ZK} from
     "../../../../src/interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254ZK.sol";
+
+import {ExtraDataStorageHelper} from
+    "../../../../src/contracts/modules/settlement/sig-verifiers/libraries/ExtraDataStorageHelper.sol";
 
 import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
@@ -39,6 +38,7 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetupTest {
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
     using KeyEcdsaSecp256k1 for KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1;
     using Math for uint256;
+    using ExtraDataStorageHelper for uint32;
 
     struct ZkProof {
         uint256[] input;
@@ -46,8 +46,50 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetupTest {
     }
 
     function setUp() public override {
-        VERIFICATION_TYPE;
-        MasterGenesisSetupTest.setUp();
+        SYMBIOTIC_CORE_NUMBER_OF_OPERATORS = 20;
+        VERIFICATION_TYPE = 0;
+
+        SYMBIOTIC_CORE_PROJECT_ROOT = "lib/core/";
+        MasterSetupTest.setUp();
+
+        vm.warp(masterSetupParams.valSetDriver.getEpochStart(0, new bytes(0)) + 1);
+
+        vm.startBroadcast(vars.deployer.privateKey);
+        (ISettlement.ValSetHeader memory valSetHeader, ISettlement.ExtraData[] memory extraData) = loadGenesis();
+        valSetHeader.captureTimestamp = masterSetupParams.valSetDriver.getCurrentEpochStart();
+        valSetHeader.epoch = masterSetupParams.valSetDriver.getCurrentEpoch();
+        valSetHeader.previousHeaderHash = masterSetupParams.settlement.getValSetHeaderHash();
+        valSetHeader.requiredKeyTag = masterSetupParams.valSetDriver.getRequiredHeaderKeyTag();
+        valSetHeader.version = masterSetupParams.settlement.VALIDATOR_SET_VERSION();
+
+        SigVerifierBlsBn254ZK sigVerifier = SigVerifierBlsBn254ZK(masterSetupParams.settlement.getSigVerifier());
+        extraData = new ISettlement.ExtraData[](2);
+        extraData[0].key = uint32(VERIFICATION_TYPE).getKey(sigVerifier.TOTAL_ACTIVE_VALIDATORS_HASH());
+        extraData[0].value = bytes32(SYMBIOTIC_CORE_NUMBER_OF_OPERATORS);
+        extraData[1].key = uint32(VERIFICATION_TYPE).getKey(15, sigVerifier.VALIDATOR_SET_HASH_MIMC_HASH());
+        extraData[1].value = bytes32(0x221e349ac65d42e4884601fd0ddba2b964bb5055bd96f431458652333ede252a);
+
+        IVotingPowerProvider.OperatorVotingPower[] memory votingPowers =
+            masterSetupParams.votingPowerProvider.getVotingPowers(new bytes[](0));
+        uint256 totalVotingPower;
+        for (uint256 i; i < votingPowers.length; ++i) {
+            for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
+                totalVotingPower += votingPowers[i].vaults[j].votingPower;
+            }
+        }
+        uint256 quorumThreshold;
+        IValSetDriver.QuorumThreshold[] memory quorumThresholds = masterSetupParams.valSetDriver.getQuorumThresholds();
+        for (uint256 i; i < quorumThresholds.length; ++i) {
+            if (quorumThresholds[i].keyTag == valSetHeader.requiredKeyTag) {
+                quorumThreshold = quorumThresholds[i].quorumThreshold;
+                break;
+            }
+        }
+        valSetHeader.quorumThreshold =
+            quorumThreshold.mulDiv(totalVotingPower, masterSetupParams.valSetDriver.MAX_QUORUM_THRESHOLD()) + 1;
+
+        masterSetupParams.settlement.setGenesis(valSetHeader, extraData);
+        vm.stopBroadcast();
     }
 
     function test_Create() public {
@@ -148,10 +190,17 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetupTest {
                 totalVotingPower += votingPowers[i].vaults[j].votingPower;
             }
         }
-        uint256 signersVotingPower = Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18);
+        uint256 signersVotingPower;
+        for (uint256 i; i < votingPowers.length; ++i) {
+            if (i % 6 != 0) {
+                for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
+                    signersVotingPower += votingPowers[i].vaults[j].votingPower;
+                }
+            }
+        }
 
         bytes memory zkProof =
-            hex"0c9d92bd8aac8588329e85aade26354a7b9206e170f0df0ee891c3927e5a58522adf6d35c9649dbf628cfe567bc31647d52cf5ae023c88984cecbf01fb477d492761b1f57ca217b83d1851f3e9276e3a758fe92b0f7022d9610ed51e1d7da1521458461ac568a806eb566e1f177baba0bee7c49bbb225347da8d236def25eb3829f4a51eecc66d28b5c973a943d752aa383cbab591b59406da361cbeac1dfcc22afdfa764b84685fabc31a3e5367ca30c2eaa3480ec44a9f847f952da34df4ca0ec698607fb631abd2939ea85d57c69e097b8cdba0734b21154479dc7c39d2a11d2dec162d71b5fad118e59a9dd6917335f251384a3cb16ed48af9f3dbed8266000000011199b925c505c27fe05e9f75e2a0965aea4b6cdb945a4a481c6bc06bd080da701cd2629a69c1946bcd2695c369de10999ce9ec4f0c51d1f8d265460b4f2646d923e00d2fa0a29d4760394d8da2af4f7545377705157c75b86a20044f792a50b30068fdfeaa3eb3be8444c454fdf3629d902034c84714a652394c35da7fa2fb6f";
+            hex"2ce60b7028d29f8482ca3eb21c39d8269c920676556046e80ccb1f8efc73386319f7fa6ef743de05daf24c0733284a713fedc1136901b4ba882b0955f3447d001119b7e150e3190a3d87170629eb75b3d43dab819a8b0e073e6512a76820d3ad00236488a4ec497168b2d17cbcfde398b50d91b13674df6820af5ed0ce1d14992a8a32ff8cb3841c937e83a6c80e87fec3fe17450e974f71834398da48b6fca109ac7e9eb86007969c9c0fef2bc42dca8cd86be979500effebd4d609220dbfac1bc9339dbb2f5c770a4df722cd0b56d45d5a5f04a67b28366b627883e23c68f72e115e704b729d0de112b5fc5132a629370c2d67bde95bf605bbb08aeada9e0c000000011c0e70276724727ba9c0ca9ea64bd5b26518a80c88d15927a7bf0111c0b841a20e812945aaa2a2a647f01162d4de79c6350094eb5b1d230de77452c181eb881523af7e3f865d504e68b5d37ad3ab7400fe468885f08859eb32bcc4768d839da515f3dc2f45ece1d56f43da62125c0ee9bcbff7909f8540ef79cd3390262befb9";
 
         bytes memory fullProof;
 
@@ -182,14 +231,14 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetupTest {
                 masterSetupParams.settlement.getLastCommittedHeaderEpoch(),
                 abi.encode(messageHash),
                 KEY_TYPE_BLS_BN254.getKeyTag(15),
-                Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
+                totalVotingPower + 1,
                 fullProof
             )
         );
     }
 
     function test_verifyQuorumSig() public {
-        bytes32 messageHash = 0xcca0534ef01f2606de9b6c90df9f0a2e1a18fb5ce4d1f9cf1f94d35b398ebce4;
+        bytes32 messageHash = 0x658bc250cfe17f8ad77a5f5d92afb6e9316088b5c89c6df2db63785116b22948;
         IVotingPowerProvider.OperatorVotingPower[] memory votingPowers =
             masterSetupParams.votingPowerProvider.getVotingPowers(new bytes[](0));
         uint256 totalVotingPower;
@@ -200,13 +249,15 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetupTest {
         }
         uint256 signersVotingPower;
         for (uint256 i; i < votingPowers.length; ++i) {
-            for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
-                signersVotingPower += votingPowers[i].vaults[j].votingPower;
+            if (i % 6 != 0) {
+                for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
+                    signersVotingPower += votingPowers[i].vaults[j].votingPower;
+                }
             }
         }
 
         bytes memory zkProof =
-            hex"0c9d92bd8aac8588329e85aade26354a7b9206e170f0df0ee891c3927e5a58522adf6d35c9649dbf628cfe567bc31647d52cf5ae023c88984cecbf01fb477d492761b1f57ca217b83d1851f3e9276e3a758fe92b0f7022d9610ed51e1d7da1521458461ac568a806eb566e1f177baba0bee7c49bbb225347da8d236def25eb3829f4a51eecc66d28b5c973a943d752aa383cbab591b59406da361cbeac1dfcc22afdfa764b84685fabc31a3e5367ca30c2eaa3480ec44a9f847f952da34df4ca0ec698607fb631abd2939ea85d57c69e097b8cdba0734b21154479dc7c39d2a11d2dec162d71b5fad118e59a9dd6917335f251384a3cb16ed48af9f3dbed8266000000011199b925c505c27fe05e9f75e2a0965aea4b6cdb945a4a481c6bc06bd080da701cd2629a69c1946bcd2695c369de10999ce9ec4f0c51d1f8d265460b4f2646d923e00d2fa0a29d4760394d8da2af4f7545377705157c75b86a20044f792a50b30068fdfeaa3eb3be8444c454fdf3629d902034c84714a652394c35da7fa2fb6f";
+            hex"2ce60b7028d29f8482ca3eb21c39d8269c920676556046e80ccb1f8efc73386319f7fa6ef743de05daf24c0733284a713fedc1136901b4ba882b0955f3447d001119b7e150e3190a3d87170629eb75b3d43dab819a8b0e073e6512a76820d3ad00236488a4ec497168b2d17cbcfde398b50d91b13674df6820af5ed0ce1d14992a8a32ff8cb3841c937e83a6c80e87fec3fe17450e974f71834398da48b6fca109ac7e9eb86007969c9c0fef2bc42dca8cd86be979500effebd4d609220dbfac1bc9339dbb2f5c770a4df722cd0b56d45d5a5f04a67b28366b627883e23c68f72e115e704b729d0de112b5fc5132a629370c2d67bde95bf605bbb08aeada9e0c000000011c0e70276724727ba9c0ca9ea64bd5b26518a80c88d15927a7bf0111c0b841a20e812945aaa2a2a647f01162d4de79c6350094eb5b1d230de77452c181eb881523af7e3f865d504e68b5d37ad3ab7400fe468885f08859eb32bcc4768d839da515f3dc2f45ece1d56f43da62125c0ee9bcbff7909f8540ef79cd3390262befb9";
 
         bytes memory fullProof;
 
