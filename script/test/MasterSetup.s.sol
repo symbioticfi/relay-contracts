@@ -115,7 +115,8 @@ contract MasterSetupScript is InitSetupScript {
 
         _networkSetMiddleware_SymbioticCore(vars.network.addr, address(masterSetupParams.votingPowerProvider));
 
-        for (uint256 i; i < initSetupParams.masterChain.tokens.length; ++i) {
+        // token[0] is already registered above
+        for (uint256 i = 1; i < initSetupParams.masterChain.tokens.length; ++i) {
             vm.startBroadcast(vars.deployer.privateKey);
             masterSetupParams.votingPowerProvider.registerToken(initSetupParams.masterChain.tokens[i]);
             vm.stopBroadcast();
