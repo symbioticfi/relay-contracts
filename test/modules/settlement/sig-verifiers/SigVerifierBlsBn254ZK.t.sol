@@ -300,4 +300,68 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetupTest {
         assertTrue(abi.decode(ret, (bool)));
         vm.stopPrank();
     }
+
+    function test_verifyQuorumSig_FalseZkProof() public {
+        bytes32 messageHash = 0x658bc250cfe17f8ad77a5f5d92afb6e9316088b5c89c6df2db63785116b22948;
+        IVotingPowerProvider.OperatorVotingPower[] memory votingPowers =
+            masterSetupParams.votingPowerProvider.getVotingPowers(new bytes[](0));
+        uint256 totalVotingPower;
+        for (uint256 i; i < votingPowers.length; ++i) {
+            for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
+                totalVotingPower += votingPowers[i].vaults[j].votingPower;
+            }
+        }
+        uint256 signersVotingPower;
+        for (uint256 i; i < votingPowers.length; ++i) {
+            if (i % 6 != 0) {
+                for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
+                    signersVotingPower += votingPowers[i].vaults[j].votingPower;
+                }
+            }
+        }
+
+        bytes memory zkProof =
+            hex"2ce60b7028d29f8482ca3eb21c39d8269c920676566046e80ccb1f8efc73386319f7fa6ef743de05daf24c0733284a713fedc1136901b4ba882b0955f3447d001119b7e150e3190a3d87170629eb75b3d43dab819a8b0e073e6512a76820d3ad00236488a4ec497168b2d17cbcfde398b50d91b13674df6820af5ed0ce1d14992a8a32ff8cb3841c937e83a6c80e87fec3fe17450e974f71834398da48b6fca109ac7e9eb86007969c9c0fef2bc42dca8cd86be979500effebd4d609220dbfac1bc9339dbb2f5c770a4df722cd0b56d45d5a5f04a67b28366b627883e23c68f72e115e704b729d0de112b5fc5132a629370c2d67bde95bf605bbb08aeada9e0c000000011c0e70276724727ba9c0ca9ea64bd5b26518a80c88d15927a7bf0111c0b841a20e812945aaa2a2a647f01162d4de79c6350094eb5b1d230de77452c181eb881523af7e3f865d504e68b5d37ad3ab7400fe468885f08859eb32bcc4768d839da515f3dc2f45ece1d56f43da62125c0ee9bcbff7909f8540ef79cd3390262befb9";
+
+        bytes memory fullProof;
+
+        {
+            bytes memory proof_ = Bytes.slice(zkProof, 0, 256);
+            bytes memory commitments = Bytes.slice(zkProof, 260, 324);
+            bytes memory commitmentPok = Bytes.slice(zkProof, 324, 388);
+
+            fullProof = abi.encodePacked(proof_, commitments, commitmentPok, signersVotingPower);
+        }
+
+        SigVerifierBlsBn254ZK sigVerifier;
+        {
+            address[] memory verifiers = new address[](3);
+            verifiers[0] = address(new Verifier_10());
+            verifiers[1] = address(new Verifier_100());
+            verifiers[2] = address(new Verifier_1000());
+            uint256[] memory maxValidators = new uint256[](verifiers.length);
+            maxValidators[0] = 10;
+            maxValidators[1] = 100;
+            maxValidators[2] = 1000;
+            sigVerifier = new SigVerifierBlsBn254ZK(verifiers, maxValidators);
+        }
+
+        bytes memory data = abi.encodeCall(
+            ISigVerifier.verifyQuorumSig,
+            (
+                address(masterSetupParams.settlement),
+                masterSetupParams.settlement.getLastCommittedHeaderEpoch(),
+                abi.encode(messageHash),
+                KEY_TYPE_BLS_BN254.getKeyTag(15),
+                Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
+                fullProof
+            )
+        );
+        vm.startPrank(vars.deployer.addr);
+        (bool success, bytes memory ret) = address(sigVerifier).call(data);
+
+        assertTrue(success);
+        assertFalse(abi.decode(ret, (bool)));
+        vm.stopPrank();
+    }
 }
