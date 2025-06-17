@@ -11,6 +11,7 @@ interface ISigVerifierBlsBn254Simple is ISigVerifier {
     error SigVerifierBlsBn254Simple_TooManyValidators();
     error SigVerifierBlsBn254Simple_InvalidNonSignerIndex();
     error SigVerifierBlsBn254Simple_InvalidProofOffset();
+    error SigVerifierBlsBn254Simple_InvalidProofLength();
 
     struct ValidatorData {
         bytes32 keySerialized;

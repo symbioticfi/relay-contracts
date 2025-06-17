@@ -59,7 +59,7 @@ library KeyBlsBn254 {
         uint256 X = uint256(compressedKey) >> 1;
         (, uint256 derivedY) = BN254.findYFromX(X);
         key.value = BN254.G1Point({X: X, Y: derivedY});
-        if ((uint256(compressedKey) & 1) == 1) {
+        if ((uint256(compressedKey) & 1) > 0) {
             key.value = BN254.negate(key.value);
         }
     }
