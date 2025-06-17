@@ -124,8 +124,6 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
             Bytes.slice(abi.encode(validatorsData), 32),
             abi.encodePacked(nonSigners)
         );
-        console2.log("nonSigners");
-        console2.logBytes(fullProof);
 
         IVotingPowerProvider.OperatorVotingPower[] memory votingPowers =
             masterSetupParams.votingPowerProvider.getVotingPowers(new bytes[](0));
@@ -473,8 +471,10 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
             for (uint256 j; j < votingPowers.length; ++j) {
                 operatorVotingPower += votingPowers[j].votingPower;
             }
-            validatorsData[i] =
-                ISigVerifierBlsBn254Simple.ValidatorData({publicKey: keyG1, votingPower: operatorVotingPower});
+            validatorsData[i] = ISigVerifierBlsBn254Simple.ValidatorData({
+                keySerialized: abi.decode(keyG1.wrap().serialize(), (bytes32)),
+                votingPower: operatorVotingPower
+            });
         }
     }
 }

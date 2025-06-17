@@ -65,13 +65,22 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
         // Proof Structure
         // 0 : 64 - G1 aggregated signature
         // 64 : 192 - G2 aggregated public key
-        // 192 : 224+validatorsData.length*96 - encoded data of all active validators for a given `keyTag`
+        // 192 : 224+validatorsData.length*64 - encoded data of all active validators for a given `keyTag`
         //     192 : 224 - number of validators
-        //     224 : 224+validatorsData.length*96 - ValidatorData[]
-        // 224+validatorsData.length*96 (nonSignersOffset) : nonSignersOffset+nonSigners.length*32 - encoded array of non-signers indices (from validatorsData)
+        //     224 : 224+validatorsData.length*64 - ValidatorData[]
+        // 224+validatorsData.length*64 (nonSignersOffset) : nonSignersOffset+nonSigners.length*32 - encoded array of non-signers indices (from validatorsData)
         //     nonSignersOffset : nonSignersOffset+nonSigners.length*32 - bool[]
 
         unchecked {
+            {
+                uint256 proofOffset;
+                assembly {
+                    proofOffset := proof.offset
+                }
+                if (proofOffset > type(uint128).max) {
+                    revert SigVerifierBlsBn254Simple_InvalidProofOffset();
+                }
+            }
             uint256 nonSignersVotingPower;
             BN254.G1Point memory nonSignersPublicKeyG1;
             {
@@ -82,7 +91,7 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
                 if (validatorsDataLength > MAX_VALIDATORS) {
                     revert SigVerifierBlsBn254Simple_TooManyValidators();
                 }
-                uint256 nonSignersOffset = 224 + validatorsDataLength * 96;
+                uint256 nonSignersOffset = 224 + validatorsDataLength * 64;
                 if (
                     keccak256(proof[192:nonSignersOffset])
                         != ISettlement(settlement).getExtraDataAt(
@@ -108,19 +117,19 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
                     }
                     uint256 indexOffset;
                     assembly {
-                        indexOffset := add(add(proof.offset, 224), mul(currentNonSignerIndex, 96))
+                        indexOffset := add(add(proof.offset, 224), mul(currentNonSignerIndex, 64))
                     }
                     {
                         BN254.G1Point calldata keyG1;
                         assembly {
                             keyG1 := indexOffset
                         }
-                        nonSignersPublicKeyG1 = nonSignersPublicKeyG1.plus(keyG1);
+                        nonSignersPublicKeyG1 = nonSignersPublicKeyG1.plus(abi.encode(keyG1).deserialize().unwrap());
                     }
                     {
                         uint256 votingPower;
                         assembly {
-                            votingPower := calldataload(add(indexOffset, 64))
+                            votingPower := calldataload(add(indexOffset, 32))
                         }
                         nonSignersVotingPower += votingPower;
                     }

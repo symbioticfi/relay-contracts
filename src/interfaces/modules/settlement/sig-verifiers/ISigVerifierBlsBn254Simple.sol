@@ -10,9 +10,10 @@ interface ISigVerifierBlsBn254Simple is ISigVerifier {
     error SigVerifierBlsBn254Simple_InvalidNonSignersOrder();
     error SigVerifierBlsBn254Simple_TooManyValidators();
     error SigVerifierBlsBn254Simple_InvalidNonSignerIndex();
+    error SigVerifierBlsBn254Simple_InvalidProofOffset();
 
     struct ValidatorData {
-        BN254.G1Point publicKey;
+        bytes32 keySerialized;
         uint256 votingPower;
     }
 
