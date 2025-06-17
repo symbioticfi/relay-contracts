@@ -75,6 +75,15 @@ contract Network is TimelockControllerUpgradeable, INetwork {
         _updateName(initParams.name);
         _updateMetadataURI(initParams.metadataURI);
 
+        for (uint256 i; i < initParams.delayParams.length; ++i) {
+            _updateDelay(
+                initParams.delayParams[i].target,
+                initParams.delayParams[i].selector,
+                true,
+                initParams.delayParams[i].delay
+            );
+        }
+
         if (initParams.defaultAdminRoleHolder != address(0)) {
             _grantRole(DEFAULT_ADMIN_ROLE, initParams.defaultAdminRoleHolder);
         }
@@ -83,15 +92,6 @@ contract Network is TimelockControllerUpgradeable, INetwork {
         }
         if (initParams.metadataURIUpdateRoleHolder != address(0)) {
             _grantRole(METADATA_URI_UPDATE_ROLE, initParams.metadataURIUpdateRoleHolder);
-        }
-
-        for (uint256 i; i < initParams.delayParams.length; ++i) {
-            _updateDelay(
-                initParams.delayParams[i].target,
-                initParams.delayParams[i].selector,
-                true,
-                initParams.delayParams[i].delay
-            );
         }
     }
 
