@@ -9,6 +9,7 @@ import {TimelockControllerUpgradeable} from
 import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 
 import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
+import {INetworkRegistry} from "@symbioticfi/core/src/interfaces/INetworkRegistry.sol";
 import {INetworkMiddlewareService} from "@symbioticfi/core/src/interfaces/service/INetworkMiddlewareService.sol";
 
 contract Network is TimelockControllerUpgradeable, INetwork {
@@ -30,6 +31,11 @@ contract Network is TimelockControllerUpgradeable, INetwork {
     /**
      * @inheritdoc INetwork
      */
+    address public immutable NETWORK_REGISTRY;
+
+    /**
+     * @inheritdoc INetwork
+     */
     address public immutable NETWORK_MIDDLEWARE_SERVICE;
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.Network")) - 1)) & ~bytes32(uint256(0xff))
@@ -39,9 +45,8 @@ contract Network is TimelockControllerUpgradeable, INetwork {
     bytes32 private constant TimelockControllerStorageLocation =
         0x9a37c2aa9d186a0969ff8a8267bf4e07e864c2f2768f5040949e28a624fb3600;
 
-    constructor(
-        address networkMiddlewareService
-    ) {
+    constructor(address networkRegistry, address networkMiddlewareService) {
+        NETWORK_REGISTRY = networkRegistry;
         NETWORK_MIDDLEWARE_SERVICE = networkMiddlewareService;
     }
 
@@ -60,10 +65,12 @@ contract Network is TimelockControllerUpgradeable, INetwork {
 
     function __Network_init(
         NetworkInitParams memory initParams
-    ) public virtual initializer {
+    ) public virtual onlyInitializing {
         __TimelockController_init(
             initParams.globalMinDelay, initParams.proposers, initParams.executors, initParams.defaultAdminRoleHolder
         );
+
+        INetworkRegistry(NETWORK_REGISTRY).registerNetwork();
 
         if (initParams.defaultAdminRoleHolder != address(0)) {
             _grantRole(DEFAULT_ADMIN_ROLE, initParams.defaultAdminRoleHolder);

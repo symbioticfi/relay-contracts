@@ -52,6 +52,8 @@ interface INetwork is ISetMaxNetworkLimitHook {
 
     function METADATA_URI_UPDATE_ROLE() external view returns (bytes32);
 
+    function NETWORK_REGISTRY() external view returns (address);
+
     function NETWORK_MIDDLEWARE_SERVICE() external view returns (address);
 
     function getMinDelay(address target, bytes memory data) external view returns (uint256 delay);

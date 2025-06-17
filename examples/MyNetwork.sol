@@ -5,8 +5,9 @@ import {Network} from "../src/contracts/modules/network/Network.sol";
 
 contract MyNetwork is Network {
     constructor(
+        address networkRegistry,
         address networkMiddlewareService
-    ) Network(networkMiddlewareService) {}
+    ) Network(networkRegistry, networkMiddlewareService) {}
 
     function initialize(
         NetworkInitParams memory networkInitParams

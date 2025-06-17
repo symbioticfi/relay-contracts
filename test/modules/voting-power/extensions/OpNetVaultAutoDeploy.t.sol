@@ -16,6 +16,13 @@ import {IOpNetVaultAutoDeploy} from
 import {IVotingPowerProvider} from "../../../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
 import {IOzEIP712} from "../../../../src/interfaces/modules/base/IOzEIP712.sol";
 import {InitSetupTest} from "../../../InitSetup.sol";
+import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
+import {IBaseSlasher} from "@symbioticfi/core/src/interfaces/slasher/IBaseSlasher.sol";
+import {INetworkMiddlewareService} from "@symbioticfi/core/src/interfaces/service/INetworkMiddlewareService.sol";
+import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
+
+import {MyNetwork} from "../../../../examples/MyNetwork.sol";
+import {INetwork} from "../../../../src/interfaces/modules/network/INetwork.sol";
 
 contract TestOpNetVaultAutoDeploy is
     OpNetVaultAutoDeploy,
@@ -66,8 +73,28 @@ contract OpNetVaultAutoDeployTest is Test, InitSetupTest {
             address(symbioticCore.vaultConfigurator)
         );
 
+        MyNetwork network =
+            new MyNetwork(address(symbioticCore.networkRegistry), address(symbioticCore.networkMiddlewareService));
+        address[] memory proposers = new address[](1);
+        proposers[0] = address(this);
+        address[] memory executors = new address[](1);
+        executors[0] = address(this);
+        network.initialize(
+            INetwork.NetworkInitParams({
+                globalMinDelay: 0,
+                delayParams: new INetwork.DelayParams[](0),
+                proposers: proposers,
+                executors: executors,
+                name: "MyNetwork",
+                metadataURI: "",
+                defaultAdminRoleHolder: address(this),
+                nameUpdateRoleHolder: address(this),
+                metadataURIUpdateRoleHolder: address(this)
+            })
+        );
+
         INetworkManager.NetworkManagerInitParams memory netInit =
-            INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkID: IDENTIFIER});
+            INetworkManager.NetworkManagerInitParams({network: address(network), subnetworkID: IDENTIFIER});
         IVotingPowerProvider.VotingPowerProviderInitParams memory vpInit = IVotingPowerProvider
             .VotingPowerProviderInitParams({
             networkManagerInitParams: netInit,
@@ -80,7 +107,7 @@ contract OpNetVaultAutoDeployTest is Test, InitSetupTest {
             burner: address(0x1),
             epochDuration: slashingWindow,
             withSlasher: true,
-            isBurnerHook: false
+            isBurnerHook: true
         });
         IOpNetVaultAutoDeploy.OpNetVaultAutoDeployInitParams memory autoInit = IOpNetVaultAutoDeploy
             .OpNetVaultAutoDeployInitParams({
@@ -90,6 +117,22 @@ contract OpNetVaultAutoDeployTest is Test, InitSetupTest {
         });
         deployer.initialize(vpInit, autoInit);
         operator1 = getOperator(0).addr;
+
+        network.schedule(
+            address(symbioticCore.networkMiddlewareService),
+            0,
+            abi.encodeCall(INetworkMiddlewareService.setMiddleware, (address(deployer))),
+            0,
+            bytes32(0),
+            0
+        );
+        network.execute(
+            address(symbioticCore.networkMiddlewareService),
+            0,
+            abi.encodeCall(INetworkMiddlewareService.setMiddleware, (address(deployer))),
+            0,
+            bytes32(0)
+        );
     }
 
     function test_BasicFlags() public {
@@ -151,6 +194,48 @@ contract OpNetVaultAutoDeployTest is Test, InitSetupTest {
         address[] memory vaults = deployer.getOperatorVaults(operator1);
         assertEq(vaults.length, 1);
         assertEq(v, vaults[0]);
+        assertEq(IVault(v).epochDuration(), validConfig.epochDuration);
+        assertEq(IVault(v).collateral(), validConfig.collateral);
+        assertEq(IVault(v).burner(), validConfig.burner);
+        assertTrue(IVault(v).slasher() != address(0));
+        assertEq(IBaseSlasher(IVault(v).slasher()).isBurnerHook(), validConfig.isBurnerHook);
+
+        vm.startPrank(operator1);
+        deployer.unregisterOperator();
+        deployer.registerOperator();
+        vm.stopPrank();
+        address v2 = deployer.getAutoDeployedVault(operator1);
+        assertEq(v, v2);
+        assertEq(vaults.length, 1);
+    }
+
+    function test_AutoDeployOnRegister_WithoutSlasher() public {
+        deployer.setSlashingWindow(0);
+        validConfig.withSlasher = false;
+        validConfig.isBurnerHook = false;
+        deployer.setAutoDeployConfig(validConfig);
+        deployer.setAutoDeployStatus(true);
+        vm.startPrank(operator1);
+        deployer.registerOperator();
+        vm.stopPrank();
+        address v = deployer.getAutoDeployedVault(operator1);
+        address[] memory vaults = deployer.getOperatorVaults(operator1);
+        assertEq(vaults.length, 1);
+        assertEq(v, vaults[0]);
+        assertEq(IVault(v).epochDuration(), validConfig.epochDuration);
+        assertEq(IVault(v).collateral(), validConfig.collateral);
+        assertEq(IVault(v).burner(), validConfig.burner);
+        assertTrue(IVault(v).slasher() == address(0));
+    }
+
+    function test_AutoDeployOnRegister_SetMaxNetworkLimitHook() public {
+        deployer.setSetMaxNetworkLimitHookStatus(true);
+        deployer.setAutoDeployStatus(true);
+        vm.startPrank(operator1);
+        deployer.registerOperator();
+        vm.stopPrank();
+        address v = deployer.getAutoDeployedVault(operator1);
+        assertEq(IBaseDelegator(IVault(v).delegator()).maxNetworkLimit(deployer.SUBNETWORK()), type(uint256).max);
     }
 
     function test_Location() public {
