@@ -72,6 +72,18 @@ contract Network is TimelockControllerUpgradeable, INetwork {
 
         INetworkRegistry(NETWORK_REGISTRY).registerNetwork();
 
+        _updateName(initParams.name);
+        _updateMetadataURI(initParams.metadataURI);
+
+        for (uint256 i; i < initParams.delayParams.length; ++i) {
+            _updateDelay(
+                initParams.delayParams[i].target,
+                initParams.delayParams[i].selector,
+                true,
+                initParams.delayParams[i].delay
+            );
+        }
+
         if (initParams.defaultAdminRoleHolder != address(0)) {
             _grantRole(DEFAULT_ADMIN_ROLE, initParams.defaultAdminRoleHolder);
         }
@@ -80,15 +92,6 @@ contract Network is TimelockControllerUpgradeable, INetwork {
         }
         if (initParams.metadataURIUpdateRoleHolder != address(0)) {
             _grantRole(METADATA_URI_UPDATE_ROLE, initParams.metadataURIUpdateRoleHolder);
-        }
-
-        for (uint256 i; i < initParams.delayParams.length; ++i) {
-            updateDelay(
-                initParams.delayParams[i].target,
-                initParams.delayParams[i].selector,
-                true,
-                initParams.delayParams[i].delay
-            );
         }
     }
 
@@ -115,7 +118,7 @@ contract Network is TimelockControllerUpgradeable, INetwork {
     /**
      * @inheritdoc INetwork
      */
-    function metadataURI() public view virtual returns (bytes memory) {
+    function metadataURI() public view virtual returns (string memory) {
         return _getNetworkStorage()._metadataURI;
     }
 
@@ -123,18 +126,11 @@ contract Network is TimelockControllerUpgradeable, INetwork {
      * @inheritdoc INetwork
      */
     function updateDelay(address target, bytes4 selector, bool enabled, uint256 newDelay) public virtual {
-        NetworkStorage storage $ = _getNetworkStorage();
         address sender = _msgSender();
         if (sender != address(this)) {
             revert TimelockUnauthorizedCaller(sender);
         }
-        if (!enabled && newDelay != 0) {
-            revert InvalidNewDelay();
-        }
-        bytes32 id = _getId(target, selector);
-        emit MinDelayChange(target, selector, $._isMinDelayEnabled[id], $._minDelays[id], enabled, newDelay);
-        $._isMinDelayEnabled[id] = enabled;
-        $._minDelays[id] = newDelay;
+        _updateDelay(target, selector, enabled, newDelay);
     }
 
     /**
@@ -195,7 +191,7 @@ contract Network is TimelockControllerUpgradeable, INetwork {
      * @inheritdoc INetwork
      */
     function updateName(
-        string calldata name_
+        string memory name_
     ) public virtual onlyRole(NAME_UPDATE_ROLE) {
         _updateName(name_);
     }
@@ -204,7 +200,7 @@ contract Network is TimelockControllerUpgradeable, INetwork {
      * @inheritdoc INetwork
      */
     function updateMetadataURI(
-        bytes calldata metadataURI_
+        string memory metadataURI_
     ) public virtual onlyRole(METADATA_URI_UPDATE_ROLE) {
         _updateMetadataURI(metadataURI_);
     }
@@ -221,10 +217,6 @@ contract Network is TimelockControllerUpgradeable, INetwork {
 
     function _updateDelay(address target, bytes4 selector, bool enabled, uint256 newDelay) internal virtual {
         NetworkStorage storage $ = _getNetworkStorage();
-        address sender = _msgSender();
-        if (sender != address(this)) {
-            revert TimelockUnauthorizedCaller(sender);
-        }
         if (!enabled && newDelay != 0) {
             revert InvalidNewDelay();
         }
@@ -243,14 +235,14 @@ contract Network is TimelockControllerUpgradeable, INetwork {
     }
 
     function _updateName(
-        string calldata name_
+        string memory name_
     ) internal virtual {
         _getNetworkStorage()._name = name_;
         emit NameSet(name_);
     }
 
     function _updateMetadataURI(
-        bytes calldata metadataURI_
+        string memory metadataURI_
     ) internal virtual {
         _getNetworkStorage()._metadataURI = metadataURI_;
         emit MetadataURISet(metadataURI_);

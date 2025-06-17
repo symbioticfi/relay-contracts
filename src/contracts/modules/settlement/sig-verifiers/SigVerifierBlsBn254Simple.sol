@@ -68,8 +68,8 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
         // 192 : 224+validatorsData.length*64 - encoded data of all active validators for a given `keyTag`
         //     192 : 224 - number of validators
         //     224 : 224+validatorsData.length*64 - ValidatorData[]
-        // 224+validatorsData.length*64 (nonSignersOffset) : nonSignersOffset+nonSigners.length*32 - encoded array of non-signers indices (from validatorsData)
-        //     nonSignersOffset : nonSignersOffset+nonSigners.length*32 - bool[]
+        // 224+validatorsData.length*64 (nonSignersOffset) : nonSignersOffset+nonSigners.length*2 - encoded array of 2 bytes non-signer indices (from validatorsData)
+        //     nonSignersOffset : nonSignersOffset+nonSigners.length*2 - uint16[]
 
         unchecked {
             {
@@ -77,8 +77,11 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
                 assembly {
                     proofOffset := proof.offset
                 }
-                if (proofOffset > type(uint128).max) {
+                if (proofOffset > msg.data.length) {
                     revert SigVerifierBlsBn254Simple_InvalidProofOffset();
+                }
+                if (proof.length < 224) {
+                    revert SigVerifierBlsBn254Simple_InvalidProofLength();
                 }
             }
             uint256 nonSignersVotingPower;
@@ -87,6 +90,9 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
                 uint256 validatorsDataLength;
                 assembly ("memory-safe") {
                     validatorsDataLength := calldataload(add(proof.offset, 192))
+                }
+                if (validatorsDataLength == 0) {
+                    return false;
                 }
                 if (validatorsDataLength > MAX_VALIDATORS) {
                     revert SigVerifierBlsBn254Simple_TooManyValidators();
@@ -102,6 +108,10 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
                 }
 
                 uint256 nonSignersLength = (proof.length - nonSignersOffset) >> 1;
+
+                if (proof.length != nonSignersOffset + nonSignersLength * 2) {
+                    revert SigVerifierBlsBn254Simple_InvalidProofLength();
+                }
 
                 uint256 prevNonSignerIndex;
                 for (uint256 i; i < nonSignersLength; ++i) {
@@ -153,12 +163,12 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
                         epoch, VERIFICATION_TYPE.getKey(keyTag, AGGREGATED_PUBLIC_KEY_G1_HASH)
                     )
                 );
-                BN254.G1Point calldata signatureG1;
                 bytes32 messageHash;
+                BN254.G1Point calldata signatureG1;
                 BN254.G2Point calldata aggKeyG2;
                 assembly ("memory-safe") {
-                    signatureG1 := proof.offset
                     messageHash := mload(add(message, 32))
+                    signatureG1 := proof.offset
                     aggKeyG2 := add(proof.offset, 64)
                 }
                 return SigBlsBn254.verify(

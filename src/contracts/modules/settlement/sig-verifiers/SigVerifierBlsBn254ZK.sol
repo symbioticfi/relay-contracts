@@ -85,6 +85,13 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
         // 320 : 384 - commitmentPok (uint256[2])
         // 384 : 416 - voting power of signers (uint256)
 
+        uint256 totalActiveValidators = uint256(
+            ISettlement(settlement).getExtraDataAt(epoch, VERIFICATION_TYPE.getKey(TOTAL_ACTIVE_VALIDATORS_HASH))
+        );
+        if (totalActiveValidators == 0) {
+            return false;
+        }
+
         uint256 signersVotingPower;
         assembly {
             signersVotingPower := calldataload(add(proof.offset, 384))
@@ -114,9 +121,6 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
             inputHash &= 0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
         }
 
-        uint256 totalActiveValidators = uint256(
-            ISettlement(settlement).getExtraDataAt(epoch, VERIFICATION_TYPE.getKey(TOTAL_ACTIVE_VALIDATORS_HASH))
-        );
         try IVerifier(_getVerifier(totalActiveValidators)).verifyProof(zkProof, commitments, commitmentPok, [inputHash])
         {
             return true;

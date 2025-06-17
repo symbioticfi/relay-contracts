@@ -14,7 +14,7 @@ interface INetwork is ISetMaxNetworkLimitHook {
         mapping(bytes32 => uint256) _minDelays;
         mapping(bytes32 => bool) _isMinDelayEnabled;
         string _name;
-        bytes _metadataURI;
+        string _metadataURI;
     }
 
     struct DelayParams {
@@ -29,7 +29,7 @@ interface INetwork is ISetMaxNetworkLimitHook {
         address[] proposers;
         address[] executors;
         string name;
-        bytes metadataURI;
+        string metadataURI;
         address defaultAdminRoleHolder;
         address nameUpdateRoleHolder;
         address metadataURIUpdateRoleHolder;
@@ -46,7 +46,7 @@ interface INetwork is ISetMaxNetworkLimitHook {
 
     event NameSet(string name);
 
-    event MetadataURISet(bytes metadataURI);
+    event MetadataURISet(string metadataURI);
 
     function NAME_UPDATE_ROLE() external view returns (bytes32);
 
@@ -60,16 +60,16 @@ interface INetwork is ISetMaxNetworkLimitHook {
 
     function name() external view returns (string memory);
 
-    function metadataURI() external view returns (bytes memory);
+    function metadataURI() external view returns (string memory);
 
     function updateDelay(address target, bytes4 selector, bool enabled, uint256 newDelay) external;
 
     function updateName(
-        string calldata name
+        string memory name
     ) external;
 
     function updateMetadataURI(
-        bytes calldata metadataURI
+        string memory metadataURI
     ) external;
 
     function setMaxNetworkLimit(address delegator, uint96 subnetworkID, uint256 maxNetworkLimit) external;
