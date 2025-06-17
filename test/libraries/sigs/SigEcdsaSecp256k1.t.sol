@@ -25,6 +25,9 @@ contract SigEcdsaSecp256k1Test is Test {
 
         bool verified = SigEcdsaSecp256k1.verify(keyBytes, abi.encode(hashed), signature, "");
         assertTrue(verified);
+
+        verified = SigEcdsaSecp256k1.verify(signer, hashed, signature);
+        assertTrue(verified);
     }
 
     function test_IncorrectSignature() public {
@@ -42,8 +45,14 @@ contract SigEcdsaSecp256k1Test is Test {
         bool result = SigEcdsaSecp256k1.verify(wrongKeyBytes, abi.encode(hashed), signature, "");
         assertFalse(result);
 
+        result = SigEcdsaSecp256k1.verify(wrongSigner, hashed, signature);
+        assertFalse(result);
+
         bytes memory badSig = abi.encodePacked(r, bytes32(uint256(s) + 1), v);
         result = SigEcdsaSecp256k1.verify(keyBytes, abi.encode(hashed), badSig, "");
+        assertFalse(result);
+
+        result = SigEcdsaSecp256k1.verify(signer, hashed, badSig);
         assertFalse(result);
     }
 
@@ -63,6 +72,9 @@ contract SigEcdsaSecp256k1Test is Test {
 
         bool result = SigEcdsaSecp256k1.verify(keyBytes, abi.encode(hashed), signature, "");
         assertTrue(result);
+
+        result = SigEcdsaSecp256k1.verify(signer, hashed, signature);
+        assertTrue(result);
     }
 
     function test_ZeroKey() public {
@@ -71,6 +83,9 @@ contract SigEcdsaSecp256k1Test is Test {
         bytes32 hashed = keccak256(message);
         bytes memory signature = new bytes(65);
         bool result = SigEcdsaSecp256k1.verify(keyBytes, abi.encode(hashed), signature, "");
+        assertFalse(result);
+
+        result = SigEcdsaSecp256k1.verify(address(0), hashed, signature);
         assertFalse(result);
     }
 }

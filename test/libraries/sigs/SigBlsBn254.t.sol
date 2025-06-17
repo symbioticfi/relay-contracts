@@ -35,6 +35,8 @@ contract SigBlsBn254Test is Test {
                 KeyBlsBn254.wrap(keyG1).toBytes(), abi.encode(messageHash), abi.encode(sigG1), abi.encode(keyG2)
             )
         );
+
+        assertTrue(SigBlsBn254.verify(keyG1, messageHash, sigG1, keyG2));
     }
 
     function test_BLSRegisterOperatorInvalid() public {
@@ -52,6 +54,8 @@ contract SigBlsBn254Test is Test {
                 KeyBlsBn254.wrap(keyG1).toBytes(), abi.encode(messageHash), abi.encode(invalidSigG1), abi.encode(keyG2)
             )
         );
+
+        assertFalse(SigBlsBn254.verify(keyG1, messageHash, invalidSigG1, keyG2));
     }
 
     function test_ZeroKey() public {
@@ -60,6 +64,14 @@ contract SigBlsBn254Test is Test {
         bytes32 hashed = keccak256(message);
         bytes memory signature = new bytes(65);
         bool result = SigBlsBn254.verify(keyBytes, abi.encode(hashed), signature, "");
+        assertFalse(result);
+
+        result = SigBlsBn254.verify(
+            BN254.G1Point(0, 0),
+            hashed,
+            BN254.G1Point(0, 0),
+            BN254.G2Point([uint256(0), uint256(0)], [uint256(0), uint256(0)])
+        );
         assertFalse(result);
     }
 }
