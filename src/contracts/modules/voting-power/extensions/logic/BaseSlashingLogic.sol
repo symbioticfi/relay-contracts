@@ -50,12 +50,22 @@ library BaseSlashingLogic {
             revert IBaseSlashing.BaseSlashing_UnregisteredVaultSlash();
         }
 
+        return slashVaultUnsafe(timestamp, vault, operator, amount, slashVaultHints.slashHints);
+    }
+
+    function slashVaultUnsafe(
+        uint48 timestamp,
+        address vault,
+        address operator,
+        uint256 amount,
+        bytes memory hints
+    ) public returns (bool success, bytes memory response) {
         address slasher = IVault(vault).slasher();
         if (slasher == address(0)) {
             revert IBaseSlashing.BaseSlashing_NoSlasher();
         }
 
-        return slash(timestamp, slasher, operator, amount, slashVaultHints.slashHints);
+        return slash(timestamp, slasher, operator, amount, hints);
     }
 
     function slash(

@@ -11,6 +11,8 @@ import {OperatorsWhitelist} from "../../src/contracts/modules/voting-power/exten
 import {NetworkManager} from "../../src/contracts/modules/base/NetworkManager.sol";
 import {OpNetVaultAutoDeploy} from "../../src/contracts/modules/voting-power/extensions/OpNetVaultAutoDeploy.sol";
 import {OperatorVaults} from "../../src/contracts/modules/voting-power/extensions/OperatorVaults.sol";
+import {BaseSlashing} from "../../src/contracts/modules/voting-power/extensions/BaseSlashing.sol";
+import {BaseRewards} from "../../src/contracts/modules/voting-power/extensions/BaseRewards.sol";
 
 contract VotingPowerProviderSemiFull is
     OzOwnable,
@@ -19,14 +21,18 @@ contract VotingPowerProviderSemiFull is
     SharedVaults,
     MultiToken,
     OperatorsBlacklist,
-    OperatorsWhitelist
+    OperatorsWhitelist,
+    BaseSlashing,
+    BaseRewards
 {
     constructor(address operatorRegistry, address vaultFactory) VotingPowerProvider(operatorRegistry, vaultFactory) {}
 
     function initialize(
         VotingPowerProviderInitParams memory votingPowerProviderInitParams,
         OzOwnableInitParams memory ozOwnableInitParams,
-        OperatorsWhitelistInitParams memory operatorsWhitelistInitParams
+        OperatorsWhitelistInitParams memory operatorsWhitelistInitParams,
+        BaseSlashingInitParams memory baseSlashingInitParams,
+        BaseRewardsInitParams memory baseRewardsInitParams
     ) public virtual initializer {
         __VotingPowerProvider_init(votingPowerProviderInitParams);
         __OzOwnable_init(ozOwnableInitParams);
@@ -35,6 +41,8 @@ contract VotingPowerProviderSemiFull is
         __SharedVaults_init();
         __OperatorsBlacklist_init();
         __OperatorsWhitelist_init(operatorsWhitelistInitParams);
+        __BaseSlashing_init(baseSlashingInitParams);
+        __BaseRewards_init(baseRewardsInitParams);
     }
 
     function _registerOperatorImpl(

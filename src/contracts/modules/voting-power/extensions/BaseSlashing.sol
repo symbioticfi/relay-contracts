@@ -46,6 +46,9 @@ abstract contract BaseSlashing is VotingPowerProvider, IBaseSlashing {
         _setSlasher(slasher);
     }
 
+    /**
+     * @inheritdoc IBaseSlashing
+     */
     function slashVault(
         uint48 timestamp,
         address vault,
@@ -56,6 +59,22 @@ abstract contract BaseSlashing is VotingPowerProvider, IBaseSlashing {
         return BaseSlashingLogic.slashVault(timestamp, vault, operator, amount, hints);
     }
 
+    /**
+     * @inheritdoc IBaseSlashing
+     */
+    function slashVaultUnsafe(
+        uint48 timestamp,
+        address vault,
+        address operator,
+        uint256 amount,
+        bytes memory hints
+    ) public virtual onlySlasher returns (bool success, bytes memory response) {
+        return BaseSlashingLogic.slashVaultUnsafe(timestamp, vault, operator, amount, hints);
+    }
+
+    /**
+     * @inheritdoc IBaseSlashing
+     */
     function executeSlashVault(
         address vault,
         uint256 slashIndex,

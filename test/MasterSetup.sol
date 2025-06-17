@@ -11,6 +11,8 @@ import {IOzEIP712} from "../src/interfaces/modules/base/IOzEIP712.sol";
 import {IValSetDriver} from "../src/interfaces/modules/valset-driver/IValSetDriver.sol";
 import {IOperatorsWhitelist} from "../src/interfaces/modules/voting-power/extensions/IOperatorsWhitelist.sol";
 import {IVotingPowerProvider} from "../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
+import {IBaseSlashing} from "../src/interfaces/modules/voting-power/extensions/IBaseSlashing.sol";
+import {IBaseRewards} from "../src/interfaces/modules/voting-power/extensions/IBaseRewards.sol";
 
 import {KeyTags} from "../src/contracts/libraries/utils/KeyTags.sol";
 
@@ -99,7 +101,9 @@ contract MasterSetupTest is InitSetupTest {
                 token: initSetupParams.masterChain.tokens[0]
             }),
             IOzOwnable.OzOwnableInitParams({owner: vars.network.addr}),
-            IOperatorsWhitelist.OperatorsWhitelistInitParams({isWhitelistEnabled: false})
+            IOperatorsWhitelist.OperatorsWhitelistInitParams({isWhitelistEnabled: false}),
+            IBaseSlashing.BaseSlashingInitParams({slasher: address(1)}),
+            IBaseRewards.BaseRewardsInitParams({rewarder: address(1)})
         );
         vm.stopPrank();
 

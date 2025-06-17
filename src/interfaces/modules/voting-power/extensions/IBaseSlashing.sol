@@ -62,6 +62,14 @@ interface IBaseSlashing {
         bytes memory hints
     ) external returns (bool success, bytes memory response);
 
+    function slashVaultUnsafe(
+        uint48 timestamp,
+        address vault,
+        address operator,
+        uint256 amount,
+        bytes memory hints
+    ) external returns (bool success, bytes memory response);
+
     function executeSlashVault(
         address vault,
         uint256 slashIndex,
