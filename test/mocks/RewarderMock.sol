@@ -4,7 +4,7 @@ pragma solidity ^0.8.25;
 import {IBaseRewards} from "../../src/interfaces/modules/voting-power/extensions/IBaseRewards.sol";
 
 contract RewarderMock {
-    function slashVault(
+    function distributeStakerRewards(
         address middleware,
         address stakerRewards,
         address token,

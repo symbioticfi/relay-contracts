@@ -5,7 +5,7 @@ interface IBaseSlashing {
     error BaseSlashing_UnregisteredOperatorSlash();
     error BaseSlashing_UnregisteredVaultSlash();
     error BaseSlashing_UnknownSlasherType();
-    error BaseSlashing_NonVetoSlasher();
+    error BaseSlashing_NotVetoSlasher();
     error BaseSlashing_NoSlasher();
     error BaseSlashing_InvalidSharedVault();
     error BaseSlashing_InvalidVault();
@@ -21,6 +21,7 @@ interface IBaseSlashing {
     error BaseSlashing_SlashingWindowTooLarge();
     error BaseSlashing_NotSlasher();
     error BaseSlashing_InvalidSlasher();
+    error BaseSlashing_UnregisteredTokenSlash();
 
     /// @custom:storage-location erc7201:symbiotic.storage.BaseSlashing
     struct BaseSlashingStorage {
@@ -35,6 +36,7 @@ interface IBaseSlashing {
         bytes operatorRegisteredHint;
         bytes operatorVaultRegisteredHint;
         bytes sharedVaultRegisteredHint;
+        bytes isTokenRegisteredHint;
         bytes slashHints;
     }
 

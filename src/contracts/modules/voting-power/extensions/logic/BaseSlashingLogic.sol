@@ -50,6 +50,14 @@ library BaseSlashingLogic {
             revert IBaseSlashing.BaseSlashing_UnregisteredVaultSlash();
         }
 
+        if (
+            !IVotingPowerProvider(address(this)).isTokenRegisteredAt(
+                IVault(vault).collateral(), timestamp, slashVaultHints.isTokenRegisteredHint
+            )
+        ) {
+            revert IBaseSlashing.BaseSlashing_UnregisteredTokenSlash();
+        }
+
         return slashVaultUnsafe(timestamp, vault, operator, amount, slashVaultHints.slashHints);
     }
 
@@ -122,7 +130,7 @@ library BaseSlashingLogic {
             slashedAmount = success ? abi.decode(response, (uint256)) : 0;
             emit IBaseSlashing.ExecuteSlash(slasher, slashIndex, success, slashedAmount);
         } else {
-            revert IBaseSlashing.BaseSlashing_NonVetoSlasher();
+            revert IBaseSlashing.BaseSlashing_NotVetoSlasher();
         }
     }
 }

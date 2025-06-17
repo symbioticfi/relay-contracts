@@ -64,6 +64,46 @@ contract BaseSlashingTest is MasterSetupTest {
         assertEq(response, abi.encode(uint256(100)));
     }
 
+    function test_SlashVault_WithHints() public {
+        vm.warp(vm.getBlockTimestamp() + 1);
+
+        SlasherMock slasher = new SlasherMock();
+
+        assertEq(masterSetupParams.votingPowerProvider.getSlasher(), address(1));
+
+        vm.prank(vars.deployer.addr);
+        vm.expectRevert(abi.encodeWithSelector(IBaseSlashing.BaseSlashing_InvalidSlasher.selector));
+        masterSetupParams.votingPowerProvider.setSlasher(address(0));
+
+        vm.prank(vars.deployer.addr);
+        masterSetupParams.votingPowerProvider.setSlasher(address(slasher));
+
+        assertEq(masterSetupParams.votingPowerProvider.getSlasher(), address(slasher));
+
+        address operator = getOperator(0).addr;
+        address[] memory vaults = masterSetupParams.votingPowerProvider.getSharedVaults();
+
+        (bool success, bytes memory response) = slasher.slashVault(
+            address(masterSetupParams.votingPowerProvider),
+            uint48(vm.getBlockTimestamp() - 1),
+            vaults[0],
+            operator,
+            100,
+            abi.encode(
+                IBaseSlashing.SlashVaultHints({
+                    operatorRegisteredHint: new bytes(0),
+                    operatorVaultRegisteredHint: new bytes(0),
+                    sharedVaultRegisteredHint: new bytes(0),
+                    isTokenRegisteredHint: new bytes(0),
+                    slashHints: new bytes(0)
+                })
+            )
+        );
+
+        assertTrue(success, "Slashing should be successful");
+        assertEq(response, abi.encode(uint256(100)));
+    }
+
     function test_SlashVaultUnsafe() public {
         vm.warp(vm.getBlockTimestamp() + 1);
 
@@ -86,6 +126,33 @@ contract BaseSlashingTest is MasterSetupTest {
 
         assertTrue(success, "Slashing should be successful");
         assertEq(response, abi.encode(uint256(100)));
+
+        address vault = _getVault_SymbioticCore(
+            VaultParams({
+                owner: operator,
+                collateral: initSetupParams.masterChain.tokens[0],
+                burner: 0x000000000000000000000000000000000000dEaD,
+                epochDuration: masterSetupParams.votingPowerProvider.getSlashingWindow() + 1,
+                whitelistedDepositors: new address[](0),
+                depositLimit: 0,
+                delegatorIndex: 0,
+                hook: address(0),
+                network: address(0),
+                withSlasher: false,
+                slasherIndex: 0,
+                vetoDuration: 0
+            })
+        );
+
+        vm.expectRevert(abi.encodeWithSelector(IBaseSlashing.BaseSlashing_NoSlasher.selector));
+        slasher.slashVaultUnsafe(
+            address(masterSetupParams.votingPowerProvider),
+            uint48(vm.getBlockTimestamp() - 1),
+            vault,
+            operator,
+            100,
+            new bytes(0)
+        );
     }
 
     function test_SlashVault_UnregisteredOperatorSlash() public {
@@ -130,6 +197,32 @@ contract BaseSlashingTest is MasterSetupTest {
         masterSetupParams.votingPowerProvider.setSlasher(address(slasher));
 
         vm.expectRevert(abi.encodeWithSelector(IBaseSlashing.BaseSlashing_UnregisteredVaultSlash.selector));
+        slasher.slashVault(
+            address(masterSetupParams.votingPowerProvider),
+            uint48(vm.getBlockTimestamp() - 1),
+            vaults[0],
+            operator,
+            100,
+            new bytes(0)
+        );
+    }
+
+    function test_SlashVault_UnregisteredTokenSlash() public {
+        address operator = getOperator(0).addr;
+        address[] memory vaults = masterSetupParams.votingPowerProvider.getSharedVaults();
+
+        vm.startPrank(vars.deployer.addr);
+        masterSetupParams.votingPowerProvider.unregisterToken(initSetupParams.masterChain.tokens[0]);
+        vm.stopPrank();
+
+        vm.warp(vm.getBlockTimestamp() + 1);
+
+        SlasherMock slasher = new SlasherMock();
+
+        vm.prank(vars.deployer.addr);
+        masterSetupParams.votingPowerProvider.setSlasher(address(slasher));
+
+        vm.expectRevert(abi.encodeWithSelector(IBaseSlashing.BaseSlashing_UnregisteredTokenSlash.selector));
         slasher.slashVault(
             address(masterSetupParams.votingPowerProvider),
             uint48(vm.getBlockTimestamp() - 1),
@@ -217,5 +310,26 @@ contract BaseSlashingTest is MasterSetupTest {
 
         assertTrue(success, "Slashing should be successful");
         assertEq(slashedAmount, 100);
+    }
+
+    function test_ExecuteSlashVaul_NotVetoSlasher() public {
+        vm.warp(vm.getBlockTimestamp() + 1);
+
+        SlasherMock slasher = new SlasherMock();
+
+        vm.prank(vars.deployer.addr);
+        masterSetupParams.votingPowerProvider.setSlasher(address(slasher));
+
+        address[] memory vaults = masterSetupParams.votingPowerProvider.getSharedVaults();
+
+        vm.expectRevert(abi.encodeWithSelector(IBaseSlashing.BaseSlashing_NotVetoSlasher.selector));
+
+        slasher.executeSlashVault(address(masterSetupParams.votingPowerProvider), vaults[0], 0, new bytes(0));
+    }
+
+    function test_Location() public {
+        bytes32 location =
+            keccak256(abi.encode(uint256(keccak256("symbiotic.storage.BaseSlashing")) - 1)) & ~bytes32(uint256(0xff));
+        assertEq(location, 0xcd08f9337bf45f7ebac10e65ed25c2483d3efb012be3dbf2b4de227af3bf9400);
     }
 }
