@@ -235,6 +235,9 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
         uint48 epoch,
         bytes memory hint
     ) public view virtual returns (bool) {
+        if (!isValSetHeaderCommittedAt(epoch)) {
+            return false;
+        }
         return ISigVerifier(getSigVerifierAt(epoch, hint)).verifyQuorumSig(
             address(this), epoch, message, keyTag, quorumThreshold, proof
         );
@@ -249,8 +252,12 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
         uint256 quorumThreshold,
         bytes calldata proof
     ) public view virtual returns (bool) {
+        uint48 lastCommittedHeaderEpoch = getLastCommittedHeaderEpoch();
+        if (!isValSetHeaderCommittedAt(lastCommittedHeaderEpoch)) {
+            return false;
+        }
         return ISigVerifier(getSigVerifier()).verifyQuorumSig(
-            address(this), getLastCommittedHeaderEpoch(), message, keyTag, quorumThreshold, proof
+            address(this), lastCommittedHeaderEpoch, message, keyTag, quorumThreshold, proof
         );
     }
 
@@ -327,7 +334,7 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
                 revert Settlement_InvalidEpoch();
             }
         } else if (header.epoch == 0 && isValSetHeaderCommittedAt(0)) {
-            revert Settlement_ValSetHeaderAlreadySubmitted();
+            revert Settlement_ValSetHeaderAlreadyCommitted();
         }
 
         if (

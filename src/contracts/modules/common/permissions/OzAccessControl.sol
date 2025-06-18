@@ -8,11 +8,6 @@ import {IOzAccessControl} from "../../../../interfaces/modules/common/permission
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
 abstract contract OzAccessControl is PermissionManager, AccessControlUpgradeable, IOzAccessControl {
-    /// @custom:storage-location erc7201:symbiotic.storage.OzAccessControl
-    struct OzAccessControlStorage {
-        mapping(bytes4 selector => bytes32 role) _selectorRoles;
-    }
-
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OzAccessControl")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant OzAccessControlStorageLocation =
         0xbe09a78a256419d2b885312b60a13e8082d8ab3c36c463fff4fbb086f1e96f00;
@@ -23,9 +18,6 @@ abstract contract OzAccessControl is PermissionManager, AccessControlUpgradeable
         }
     }
 
-    /**
-     * @notice Initializes the contract
-     */
     function __OzAccessControl_init() internal virtual onlyInitializing {
         __AccessControl_init();
     }

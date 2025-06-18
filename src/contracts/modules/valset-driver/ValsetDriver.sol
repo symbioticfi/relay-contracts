@@ -547,9 +547,6 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     function _setMaxValidatorsCount(
         uint208 maxValidatorsCount
     ) internal virtual {
-        if (maxValidatorsCount == 0) {
-            revert ValSetDriver_InvalidMaxValidatorsCount();
-        }
         _getValSetDriverStorage()._maxValidatorsCount.push(Time.timestamp(), maxValidatorsCount);
         emit SetMaxValidatorsCount(maxValidatorsCount);
     }

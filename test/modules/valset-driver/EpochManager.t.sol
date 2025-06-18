@@ -72,7 +72,6 @@ contract EpochManagerTest is Test {
     bytes4 private ERR_INVALID_EPOCH_DURATION = IEpochManager.EpochManager_InvalidEpochDuration.selector;
     bytes4 private ERR_INVALID_EPOCH_DURATION_TIMESTAMP =
         IEpochManager.EpochManager_InvalidEpochDurationTimestamp.selector;
-    bytes4 private ERR_INVALID_EPOCH_DURATION_INDEX = IEpochManager.EpochManager_InvalidEpochDurationIndex.selector;
 
     function setUp() public {
         epochManager = new TestEpochManager();

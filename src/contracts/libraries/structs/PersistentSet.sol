@@ -4,6 +4,11 @@ pragma solidity ^0.8.20;
 import {Checkpoints} from "../structs/Checkpoints.sol";
 import {InputNormalizer} from "../utils/InputNormalizer.sol";
 
+/**
+ * @title PersistentSet
+ * @notice This library implements a persistent set using Checkpoints.
+ * @dev The first addition of an element to the set is optimized by using 0 as an "included" status and 1 otherwise.
+ */
 library PersistentSet {
     using Checkpoints for Checkpoints.Trace208;
     using InputNormalizer for bytes[];

@@ -129,12 +129,6 @@ contract VotingPowerProviderTest is InitSetupTest {
     bytes4 private ERR_INVALID_OPERATOR_VAULT = IVotingPowerProvider.VotingPowerProvider_InvalidOperatorVault.selector;
     bytes4 private ERR_OPERATOR_NOT_REGISTERED = IVotingPowerProvider.VotingPowerProvider_OperatorNotRegistered.selector;
 
-    bytes4 private ERR_INregistered_OPERATOR_SLASH =
-        IVotingPowerProvider.VotingPowerProvider_UnregisteredOperatorSlash.selector;
-    bytes4 private ERR_INregistered_VAULT_SLASH =
-        IVotingPowerProvider.VotingPowerProvider_UnregisteredVaultSlash.selector;
-    bytes4 private ERR_NO_SLASHER = IVotingPowerProvider.VotingPowerProvider_NoSlasher.selector;
-
     function setUp() public override {
         InitSetupTest.setUp();
 

@@ -7,6 +7,7 @@ import {KeyBlsBn254} from "../../../libraries/keys/KeyBlsBn254.sol";
 import {ExtraDataStorageHelper} from "./libraries/ExtraDataStorageHelper.sol";
 import {KEY_TYPE_BLS_BN254} from "../../../../interfaces/modules/key-registry/IKeyRegistry.sol";
 import {KeyTags} from "../../../libraries/utils/KeyTags.sol";
+import {console2} from "forge-std/console2.sol";
 
 import {ISigVerifier} from "../../../../interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol";
 import {ISettlement} from "../../../../interfaces/modules/settlement/ISettlement.sol";
@@ -45,7 +46,7 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
     /**
      * @inheritdoc ISigVerifierBlsBn254Simple
      */
-    uint256 public constant MAX_VALIDATORS = 65_535;
+    uint256 public constant MAX_VALIDATORS = 65_536;
 
     /**
      * @inheritdoc ISigVerifier
@@ -62,12 +63,14 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
             revert SigVerifierBlsBn254Simple_UnsupportedKeyTag();
         }
 
+        console2.logBytes(msg.data);
+
         // Proof Structure
         // 0 : 64 - G1 aggregated signature
         // 64 : 192 - G2 aggregated public key
         // 192 : 224+validatorsData.length*64 - encoded data of all active validators for a given `keyTag`
         //     192 : 224 - number of validators
-        //     224 : 224+validatorsData.length*64 - ValidatorData[]
+        //     224 : 224+validatorsData.length*64 - (bytes32 keySerialized,uint256 votingPower)[]
         // 224+validatorsData.length*64 (nonSignersOffset) : nonSignersOffset+nonSigners.length*2 - encoded array of 2 bytes non-signer indices (from validatorsData)
         //     nonSignersOffset : nonSignersOffset+nonSigners.length*2 - uint16[]
 
@@ -77,7 +80,7 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
                 assembly {
                     proofOffset := proof.offset
                 }
-                if (proofOffset > msg.data.length) {
+                if (proofOffset >= msg.data.length) {
                     revert SigVerifierBlsBn254Simple_InvalidProofOffset();
                 }
                 if (proof.length < 224) {
@@ -141,6 +144,9 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
                         assembly {
                             votingPower := calldataload(add(indexOffset, 32))
                         }
+                        // assuming that the validator set, and, hence, total voting power, were properly committed,
+                        // so that the sum of the non-signers' voting powers cannot be greater than the total voting power,
+                        // and, hence, cannot overflow
                         nonSignersVotingPower += votingPower;
                     }
                     prevNonSignerIndex = currentNonSignerIndex;

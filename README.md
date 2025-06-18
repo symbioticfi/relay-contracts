@@ -2,7 +2,7 @@
 
 ## Overview
 
-Symbiotic Relay is a peer-to-peer side-network designed to collect and aggregate signatures from validators, maintain validator sets (valsets) on the settlement contract.
+Symbiotic Relay is a peer-to-peer side-network designed to collect and aggregate signatures from validators, maintain validator sets on the settlement contract.
 
 To achieve that, Symbiotic provides a set of predefined smart contracts, in general, representing the following modules:
 

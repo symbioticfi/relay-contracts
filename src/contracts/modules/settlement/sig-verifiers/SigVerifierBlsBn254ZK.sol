@@ -88,6 +88,18 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
         // 320 : 384 - commitmentPok (uint256[2])
         // 384 : 416 - voting power of signers (uint256)
 
+        {
+            uint256 proofOffset;
+            assembly {
+                proofOffset := proof.offset
+            }
+            if (proofOffset >= msg.data.length) {
+                revert SigVerifierBlsBn254ZK_InvalidProofOffset();
+            }
+            if (proof.length < 224) {
+                revert SigVerifierBlsBn254ZK_InvalidProofLength();
+            }
+        }
         uint256 totalActiveValidators = uint256(
             ISettlement(settlement).getExtraDataAt(epoch, VERIFICATION_TYPE.getKey(TOTAL_ACTIVE_VALIDATORS_HASH))
         );

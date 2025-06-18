@@ -288,7 +288,7 @@ contract SettlementRawTest is Test {
         vm.prank(owner);
         testSettle.setGenesis(sampleHeader, someExtra);
 
-        vm.expectRevert(ISettlement.Settlement_ValSetHeaderAlreadySubmitted.selector);
+        vm.expectRevert(ISettlement.Settlement_ValSetHeaderAlreadyCommitted.selector);
         vm.prank(owner);
         testSettle.setGenesis(sampleHeader, someExtra);
 

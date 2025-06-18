@@ -192,6 +192,35 @@ contract NetworkTest is MasterSetupTest {
         );
     }
 
+    function test_UpdateDelayThroughTimelock_ZeroAddress() public {
+        uint256 newDelay = 7 days;
+        bytes memory callData = abi.encodeWithSelector(
+            bytes4(keccak256("updateDelay(address,bytes4,bool,uint256)")), address(0), FOO_SEL, true, newDelay
+        );
+
+        vm.prank(proposer);
+        myNetwork.schedule(address(myNetwork), 0, callData, bytes32(0), bytes32("salt42"), GLOBAL_MIN_DELAY);
+
+        vm.prank(proposer);
+        vm.expectRevert();
+        myNetwork.schedule(address(myNetwork), 0, callData, bytes32(0), bytes32("salt42"), GLOBAL_MIN_DELAY);
+
+        vm.warp(vm.getBlockTimestamp() + GLOBAL_MIN_DELAY);
+        vm.prank(executor);
+        myNetwork.execute(address(myNetwork), 0, callData, bytes32(0), bytes32("salt42"));
+
+        assertEq(myNetwork.getMinDelay(address(this), abi.encodeWithSelector(FOO_SEL)), newDelay);
+        assertEq(
+            myNetwork.getMinDelay(
+                address(myNetwork),
+                abi.encodeWithSelector(
+                    bytes4(keccak256("updateDelay(address,bytes4,bool,uint256)")), address(this), FOO_SEL, false, 0
+                )
+            ),
+            newDelay
+        );
+    }
+
     function test_UpdateDelayThroughTimelock_RevertInvalidNewDelay() public {
         uint256 newDelay = 5 days;
         bytes memory callData = abi.encodeWithSelector(

@@ -103,8 +103,10 @@ contract Network is TimelockControllerUpgradeable, INetwork {
         if (target == address(this) && selector == CUSTOM_UPDATE_DELAY_SELECTOR) {
             (address underlyingTarget, bytes4 underlyingSelector,,) =
                 abi.decode(_getPayload(data), (address, bytes4, bool, uint256));
+            _validateUpdateDelayTargetAndSelector(underlyingTarget, underlyingSelector);
             return _getMinDelay(underlyingTarget, underlyingSelector);
         }
+        _validateTargetAndSelector(target, selector);
         return _getMinDelay(target, selector);
     }
 
@@ -257,8 +259,6 @@ contract Network is TimelockControllerUpgradeable, INetwork {
     }
 
     function _getMinDelay(address target, bytes4 selector) internal view virtual returns (uint256) {
-        _validateTargetAndSelector(target, selector);
-
         (bool enabled, uint256 minDelay) = _getMinDelay(_getId(target, selector));
         if (enabled) {
             return minDelay;
@@ -278,8 +278,15 @@ contract Network is TimelockControllerUpgradeable, INetwork {
     }
 
     function _validateTargetAndSelector(address target, bytes4 selector) internal view virtual {
+        if (target == address(0) || selector == bytes4(0)) {
+            revert InvalidTargetAndSelector();
+        }
+        _validateUpdateDelayTargetAndSelector(target, selector);
+    }
+
+    function _validateUpdateDelayTargetAndSelector(address target, bytes4 selector) internal view virtual {
         if (
-            target == address(0) || selector == bytes4(0)
+            (target == address(0) && selector == bytes4(0))
                 || (target == address(this) && selector == CUSTOM_UPDATE_DELAY_SELECTOR)
         ) {
             revert InvalidTargetAndSelector();

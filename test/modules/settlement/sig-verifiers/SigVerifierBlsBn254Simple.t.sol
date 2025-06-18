@@ -109,7 +109,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
             }
         }
 
-        ISigVerifierBlsBn254Simple.ValidatorData[] memory validatorsData = getValidatorsData();
+        ValidatorData[] memory validatorsData = getValidatorsData();
         bytes memory nonSigners = new bytes((validatorsData.length + 5) / 6 * 2);
         for (uint8 i; i < validatorsData.length; ++i) {
             if (i % 6 == 0) {
@@ -211,7 +211,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
             }
         }
 
-        ISigVerifierBlsBn254Simple.ValidatorData[] memory validatorsData = getValidatorsData();
+        ValidatorData[] memory validatorsData = getValidatorsData();
         bytes memory nonSigners = new bytes((validatorsData.length + 5) / 6 * 2);
         for (uint8 i; i < validatorsData.length; ++i) {
             if (i % 6 == 0) {
@@ -283,7 +283,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
             }
         }
 
-        ISigVerifierBlsBn254Simple.ValidatorData[] memory validatorsData = getValidatorsData();
+        ValidatorData[] memory validatorsData = getValidatorsData();
         uint256[] memory nonSigners = new uint256[](validatorsData.length);
         uint256 nonSignersLength;
         for (uint256 i; i < validatorsData.length; ++i) {
@@ -358,7 +358,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
             }
         }
 
-        ISigVerifierBlsBn254Simple.ValidatorData[] memory validatorsData = getValidatorsData();
+        ValidatorData[] memory validatorsData = getValidatorsData();
         bytes memory nonSigners = new bytes((validatorsData.length + 2) / 3 * 2);
         for (uint8 i; i < validatorsData.length; ++i) {
             if (i % 3 == 0) {
@@ -431,7 +431,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
         SigVerifierBlsBn254Simple sigVerifier = SigVerifierBlsBn254Simple(masterSetupParams.settlement.getSigVerifier());
 
         {
-            ISigVerifierBlsBn254Simple.ValidatorData[] memory validatorsData = getValidatorsData();
+            ValidatorData[] memory validatorsData = getValidatorsData();
             bytes32 validatorSetHash = keccak256(Bytes.slice(abi.encode(validatorsData), 32));
             extraData[0] = ISettlement.ExtraData({
                 key: uint32(1).getKey(15, sigVerifier.VALIDATOR_SET_HASH_KECCAK256_HASH()),
@@ -459,10 +459,15 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
         }
     }
 
-    function getValidatorsData() public returns (ISigVerifierBlsBn254Simple.ValidatorData[] memory validatorsData) {
+    struct ValidatorData {
+        bytes32 keySerialized;
+        uint256 votingPower;
+    }
+
+    function getValidatorsData() public returns (ValidatorData[] memory validatorsData) {
         console2.log("getValidatorsData");
         console2.log(networkSetupParams.OPERATORS_TO_REGISTER);
-        validatorsData = new ISigVerifierBlsBn254Simple.ValidatorData[](networkSetupParams.OPERATORS_TO_REGISTER);
+        validatorsData = new ValidatorData[](networkSetupParams.OPERATORS_TO_REGISTER);
         for (uint256 i; i < networkSetupParams.OPERATORS_TO_REGISTER; ++i) {
             BN254.G1Point memory keyG1 = BN254.generatorG1().scalar_mul(getOperator(i).privateKey);
             IVotingPowerProvider.VaultVotingPower[] memory votingPowers =
@@ -471,7 +476,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
             for (uint256 j; j < votingPowers.length; ++j) {
                 operatorVotingPower += votingPowers[j].votingPower;
             }
-            validatorsData[i] = ISigVerifierBlsBn254Simple.ValidatorData({
+            validatorsData[i] = ValidatorData({
                 keySerialized: abi.decode(keyG1.wrap().serialize(), (bytes32)),
                 votingPower: operatorVotingPower
             });
