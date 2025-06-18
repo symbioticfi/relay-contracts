@@ -33,7 +33,7 @@ Security audits can be found [here](./audits).
 Clone the repo:
 
 ```bash
-git clone --recurse-submodules https://github.com/symbioticfi/middleware-sdk-mirror.git
+git clone --recurse-submodules https://github.com/symbioticfi/middleware-sdk.git
 ```
 
 ## Create env configuration
@@ -72,8 +72,6 @@ Use the right `generate_genesis` file depending on your system [here](./script/t
 ```bash
 docker run --rm -it --env-file .env --network host symbiotic-anvil yarn deploy:network
 ```
-
-- Need to adjust `VALSET_DRIVER` in `.env` if its code has changed.
 
 This command will execute a list of transactions to set up network contracts.
 
