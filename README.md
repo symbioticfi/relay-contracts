@@ -1,220 +1,100 @@
-# Middleware Development Guide
+# Symbiotic Relay Smart Contracts
 
-**Warning: The SDK is a work in progress and is currently under audits. Breaking changes may occur in SDK updates as well as backward compatibility is not guaranteed. Use with caution.**
+## Overview
 
-This repository provides a framework for developing middleware in a modular and extensible way. It leverages various base contracts and extensions to handle key functionalities such as operator management, access control, key storage, timestamp capturing and stake to power calculation.
+Symbiotic Relay is a peer-to-peer side-network designed to collect and aggregate signatures from validators, maintain validator sets on the settlement contract.
 
-## Key Components:
+To achieve that, Symbiotic provides a set of predefined smart contracts, in general, representing the following modules:
 
-![Middleware Architecture](img/middleware.png)
+- [VotingPowerProvider](./src/contracts/modules/voting-power/) - provides the basic data regarding operators, vaults and their voting power, it allows constructing various onboarding schemes such as:
+  - [OperatorsWhitelist](./src/contracts/modules/voting-power/extensions/OperatorsWhitelist.sol) - only whitelisted operators can register
+  - [OperatorsBlacklist](./src/contracts/modules/voting-power/extensions/OperatorsBlacklist.sol) - blacklisted operators are unregistered and are forbidden to return back
+  - [OperatorsJail](./src/contracts/modules/voting-power/extensions/OperatorsJail.sol) - operators can be jailed for some amount of time and register back after that
+  - [SharedVaults](./src/contracts/modules/voting-power/extensions/SharedVaults.sol) - shared (with other networks) vaults (like the ones with NetworkRestakeDelegator) can be added
+  - [OperatorVaults](./src/contracts/modules/voting-power/extensions/OperatorVaults.sol) - vaults that are attached to a single operator can be added
+  - [MultiToken](./src/contracts/modules/voting-power/extensions/MultiToken.sol) - possible to add new supported tokens on the go
+  - [OpNetVaultAutoDeploy](./src/contracts/modules/voting-power/extensions/OpNetVaultAutoDeploy.sol) - enable auto-creation of the configured by you vault on each operator registration
+  - Also, there are ready bindings for [slashing](./src/contracts/modules/voting-power/extensions/BaseSlashing.sol) and [rewards](./src/contracts/modules/voting-power/extensions/BaseRewards.sol)
+- [KeyRegistry](./src/contracts/modules/key-registry/) - verifies and manages operators' keys; currently, these key types are supported:
+  - [BlsBn254](./src/contracts/libraries/keys/KeyBlsBn254.sol) ([signature verification](./src/contracts/libraries/sigs/SigBlsBn254.sol))
+  - [EcdsaSecp256k1](./src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol) ([signature verification](./src/contracts/libraries/sigs/SigEcdsaSecp256k1.sol))
+- [ValSetDriver](./src/contracts/modules/valset-driver/) - is used by the off-chain part of the Symbiotic Relay for validator set deriving and maintenance
+- [Settlement](./src/contracts/modules/settlement/) - requires a compressed validator set (header) to be committed each epoch, but allows verifying signatures made by the validator set; currently, it supports the following verification mechanics:
+  - [SimpleVerifier](./src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol) - requires the whole validator set to be inputted on the verification, but in a compressed and efficient way, so that it is the best choice to use up to around 125 validators
+  - [ZKVerifier](./src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol) - uses ZK verification made with [gnark](https://github.com/Consensys/gnark), allowing larger validator sets with an almost constant verification gas cost
+- [Network](./src/contracts/modules/network/) - a standard contract that can be used as a "network" address across the Symbiotic ecosystem, it enables verifiability of delays for different actions (e.g., change of the middleware or change of the resolver)
 
-- **BaseMiddleware**: The foundational contract that combines core manager functionalities from `VaultManager`, `OperatorManager`, `PermissionManager`, and `KeyManager`.
+## Examples
 
-- **Extensions**: Modular contracts that provide additional functionalities. Key extensions include:
+Can be found [here](./examples/).
 
-  - **Operators**: Manages operator registration and operator's vault.
+## Security
 
-  - **KeyManager**: Manages operator keys. Variants include `KeyManagerAddress`, `KeyManager256`, `KeyManagerBytes`, and `NoKeyManager`.
+Security audits can be found [here](./audits).
 
-  - **PermissionManager**: Controls access to restricted functions. Implementations include `OzOwnable`, `OzAccessControl`, `OzAccessManaged`, and `NoPermissionManager`.
+## Repo init
 
-  - **CaptureTimestamp**: Captures the active state at specific timestamps. Options are `EpochCapture` and `TimestampCapture`.
+Clone the repo:
 
-  - **Signature Verification**: Verifies operator signatures. Implementations include `ECDSASig` and `EdDSASig`.
-
-  - **StakePower**: Calculates operator power based on stake. Implementations include `EqualStakePower` for 1:1 stake-to-power ratio, and can be extended for custom power calculations.
-
-  - **SharedVaults**: Manages vaults shared between all operators.
-
-  - **Subnetworks**: Manages subnetworks.
-
-## Middleware Examples
-
-Below are examples of middleware implementations using different combinations of the extensions.
-
-#### SimplePosMiddleware
-
-```solidity
-contract SimplePosMiddleware is SharedVaults, Operators, KeyManager256, OzOwnable, EpochCapture, EqualStakePower {
-    // Implementation details...
-}
+```bash
+git clone --recurse-submodules https://github.com/symbioticfi/middleware-sdk.git
 ```
 
-Features:
+## Create env configuration
 
-- Manages operator keys and stakes.
-- Retrieves validator sets and total stakes.
-- Implements slashing logic based on epochs.
-
-#### SqrtTaskMiddleware
-
-```solidity
-contract SqrtTaskMiddleware is SharedVaults, Operators, NoKeyManager, EIP712, OzOwnable, TimestampCapture, EqualStakePower {
-    // Implementation details...
-}
+```bash
+cp .env.example .env
 ```
 
-Features:
+Key parameters:
 
-- Allows creation of computational tasks.
-- Verifies task completion using signatures.
-- Implements slashing for incorrect task completion.
+- `OPERATORS` - number of operators in network
+- `VERIFICATION_TYPE` - signatures aggregation type, (0 for ZK, 1 for simple)
 
-#### SelfRegisterMiddleware
+## On-chain setup
 
-```solidity
-contract SelfRegisterMiddleware is SharedVaults, SelfRegisterOperators, KeyManagerAddress, ECDSASig, NoPermissionManager, TimestampCapture, EqualStakePower {
-    // Implementation details...
-}
+Before running off-chain nodes need to set up on-chain contract.
+
+To simplify local development, we've prepared a Docker image with an Anvil node and deployed Symbiotic contracts.
+
+### Build Docker image
+
+```bash
+docker build -t symbiotic-anvil .
 ```
 
-Features:
+### Run anvil node
 
-- Operators can self-register using ECDSA signatures.
-- Manages operator keys and vault associations.
-- No access restrictions on functions.
-
-#### SelfRegisterEd25519Middleware
-
-```solidity
-contract SelfRegisterEd25519Middleware is SharedVaults, SelfRegisterOperators, KeyManager256, EdDSASig, NoPermissionManager, TimestampCapture {
-    // Implementation details...
-}
+```bash
+docker run --rm -d -p 8545:8545 --env-file .env --name symbiotic-node symbiotic-anvil
 ```
 
-Features:
+### Configure network
 
-- Similar to `SelfRegisterMiddleware` but uses Ed25519 keys and EdDSA signatures.
+Use the right `generate_genesis` file depending on your system [here](./script/test/utils/).
 
-#### SelfRegisterSqrtTaskMiddleware
-
-```solidity
-contract SelfRegisterSqrtTaskMiddleware is SharedVaults, SelfRegisterOperators, KeyManagerAddress, ECDSASig, OzOwnable, TimestampCapture, EqualStakePower {
-    // Implementation details...
-}
+```bash
+docker run --rm -it --env-file .env --network host symbiotic-anvil yarn deploy:network
 ```
 
-Features:
+This command will execute a list of transactions to set up network contracts.
 
-- Similar to `SqrtTaskMiddleware` but allows self-registration of operators, permissionless shared vaults management and uses ECDSA signatures and keys.
+In execution logs, you can see the deployed configuration and contract addresses.
 
-## Getting Started
+### Stop anvil node
 
-To develop your middleware:
-
-1. **Choose Extensions**: Based on your requirements, include extensions for operator management, key storage, access control, and timestamp capturing.
-
-2. **Initialize Properly**: Ensure all inherited contracts are properly initialized:
-
-   - Write an initialization function with the `initializer` modifier
-   - Call `_disableInitializers()` in the constructor for upgradeable contracts
-   - Initialize `BaseMiddleware` and extensions in the correct order
-   - Pass required parameters to each contract's initialization function
-   - Follow initialization order from most base to most derived contract
-   - Note: If your contract is not upgradeable, initialization can be done directly in the constructor:
-     ```solidity
-     constructor(
-         address network,
-         uint48 slashingWindow,
-         address vaultRegistry,
-         address operatorRegistry,
-         address operatorNetOptIn,
-         address readHelper,
-         address admin
-     ) {
-         initialize(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn, readHelper, admin);
-     }
-     ```
-   - Example initialization pattern:
-     ```solidity
-     function initialize(
-         address network,
-         uint48 slashingWindow,
-         address vaultRegistry,
-         address operatorRegistry,
-         address operatorNetOptIn,
-         address readHelper,
-         address admin
-     ) public initializer {
-         __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptIn, readHelper);
-         __OzAccessManaged_init(admin);
-         __AdditionalExtension_init();
-     }
-     ```
-
-3. **Custom Logic** (Optional): Override manager functions to implement custom logic without using extensions (e.g. `StakePower` manager). Additionally, implement your own functions to extend the middleware's capabilities.
-
-## Example: Creating a Custom Middleware
-
-```solidity
-contract MyCustomMiddleware is BaseMiddleware, Operators, KeyStorage256, OzOwnable {
-    uint64 public constant MyCustomMiddleware_VERSION = 1;
-
-    /**
-     * @notice Override getCaptureTimestamp to provide custom timestamp logic
-     * @return timestamp The current block timestamp
-     */
-    function getCaptureTimestamp() public view override returns (uint48 timestamp) {
-        return uint48(block.timestamp);
-    }
-
-    /**
-     * @notice Custom function to calculate the square of a given number
-     * @param number The number to be squared
-     * @return result The square of the given number
-     */
-    function calculateSquare(uint256 number) public pure returns (uint256 result) {
-        return number * number;
-    }
-}
+```bash
+docker stop symbiotic-node
 ```
 
-4. **Configure Access Control** (Optional): When using access control extensions, set up roles and permissions:
+## Tests
 
-   ```solidity
-   // Define role identifiers as constants
-   bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
-   bytes32 public constant VAULT_ROLE = keccak256("VAULT_ROLE");
-   bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
+```
+forge test
+```
 
-   function initialize(...) public initializer {
-       // Initialize base contracts
-       __BaseMiddleware_init(...);
-       __OzAccessControl_init(admin);
+## Coverage
 
-       // Set up role hierarchy
-       _setRoleAdmin(OPERATOR_ROLE, MANAGER_ROLE); // Manager role can grant/revoke operator role
-       _setRoleAdmin(VAULT_ROLE, MANAGER_ROLE); // Manager role can grant/revoke vault role
-       _setRoleAdmin(MANAGER_ROLE, DEFAULT_ADMIN_ROLE); // Default admin can grant/revoke manager role
-
-       // Assign roles to function selectors
-       _setSelectorRole(this.registerOperator.selector, OPERATOR_ROLE);
-       _setSelectorRole(this.registerVault.selector, VAULT_ROLE);
-       _setSelectorRole(this.updateParameters.selector, MANAGER_ROLE);
-
-       // Grant initial roles
-       _grantRole(MANAGER_ROLE, admin);
-   }
-   ```
-
-## Notes
-
-- **Storage Slots**: When creating extensions, ensure you follow the ERC-7201 standard for storage slot allocation to prevent conflicts.
-
-- **Versioning**: Include a public constant variable for versioning in your contracts (e.g., `uint64 public constant MyExtension_VERSION = 1;`).
-
-- **Access Control**: Choose an appropriate `PermissionManager` based on your needs:
-  - `NoPermissionManager`: Allows unrestricted access to all functions
-  - `OzOwnable`: Restricts access to a single owner address
-  - `OzAccessControl`: Implements OpenZeppelin-style role-based access control where different roles can be assigned to specific function selectors. Roles can be granted and revoked by role admins, with a default admin role that can manage all other roles. Roles can be set up by:
-    1. Granting roles to addresses using `grantRole(bytes32 role, address account)`
-    2. Setting role admins with `_setRoleAdmin(bytes32 role, bytes32 adminRole)`
-    3. Assigning roles to function selectors via `_setSelectorRole(bytes4 selector, bytes32 role)`
-  - `OzAccessManaged`: Wraps OpenZeppelin's AccessManaged contract to integrate with external access control systems. This allows for more complex access control scenarios where permissions are managed externally, providing flexibility and scalability in managing roles and permissions.
-- **Key Manager**: Choose a `KeyManager` implementation that suits your key management needs. Use `KeyManagerAddress` for managing address keys, `KeyManager256` for managing 256-bit keys, `KeyManagerBytes` for handling arbitrary-length keys, or `NoKeyManager` if key management is not required.
-
-This framework provides flexibility in building middleware by allowing you to mix and match various extensions based on your requirements. By following the modular approach and best practices outlined, you can develop robust middleware solutions that integrate seamlessly with the network.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+```
+forge coverage
+```

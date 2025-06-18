@@ -1,0 +1,32 @@
+#!/bin/bash
+
+set -e
+
+PLATFORM=$(uname)
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+DATA_DIR=$(realpath "${SCRIPT_DIR}/../data")
+DRIVER_ADDRESS=$(cat ${DATA_DIR}/master_setup_params.json | jq -r .valSetDriver)
+BINARY_PATH="${SCRIPT_DIR}/generate_genesis_linux_amd64"
+MAX_RETRIES=5
+DELAY=5  # seconds between retries
+
+if [[ "$PLATFORM" == "Darwin" ]]; then
+  echo "Running macOS binary..."
+  BINARY_PATH="${SCRIPT_DIR}/generate_genesis_darwin_arm64"
+fi
+
+
+for ((i=1; i<=MAX_RETRIES; i++)); do
+    echo "Trying to generate genesis, attempt $i..."
+    
+    ${BINARY_PATH} --driver-address ${DRIVER_ADDRESS} --rpc-url $ETH_RPC_URL_MASTER -o ${DATA_DIR}/genesis_header.json && break  # Replace with your actual command
+
+    if [[ $i -lt $MAX_RETRIES ]]; then
+        echo "Retrying in $DELAY seconds..."
+        sleep $DELAY
+    else
+        echo "All $MAX_RETRIES attempts failed."
+        echo "Please check the logs and try to run full setup again."
+        exit 1
+    fi
+done

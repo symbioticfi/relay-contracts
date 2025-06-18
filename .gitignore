@@ -1,16 +1,30 @@
-# Compiler files
-cache/
-out/
+# Ignore node_modules and dependencies
+node_modules
+*.log
+yarn-error.log
 
-# Ignores development broadcast logs
-!/broadcast
-/broadcast/*/31337/
-/broadcast/**/dry-run/
+# Ignore build outputs
+dist
+out
 
-# Docs
-docs/
-
-# Dotenv file
+# Ignore environment files
 .env
 
-node_modules/
+# Ignore version control files
+.git
+.gitignore
+
+# Ignore editor and OS-specific files
+*.swp
+*.DS_Store
+Thumbs.db
+
+# Ignore IDE-specific files
+.idea/
+.vscode/
+
+cache/
+out/
+/broadcast/
+
+lcov.info

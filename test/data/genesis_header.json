@@ -1,0 +1,21 @@
+{
+  "header": {
+    "version": 1,
+    "validatorsSszMRoot": "0xa1d1e9127339816cd3cc49c40d1b188a4c5056b0cff77137bcf992b070b935d9",
+    "epoch": 0,
+    "requiredKeyTag": 15,
+    "captureTimestamp": 1746024875,
+    "quorumThreshold": 20000000000001,
+    "previousHeaderHash": "0x868e09d528a16744c1f38ea3c10cc2251e01a456434f91172247695087d129b7"
+  },
+  "extraData": [
+    {
+      "key": "0x7f6185ad9469ee6a9c05e14b4e03be396fc9beb5e6626c77957d25b5b62d83ab",
+      "value": "0x0000000000000000000000000000000000000000000000000000000000000014"
+    },
+    {
+      "key": "0xd07277185a3cf0575b363bbe652653f46b583ea129748f095887313569ff44b4",
+      "value": "0x221e349ac65d42e4884601fd0ddba2b964bb5055bd96f431458652333ede252a"
+    }
+  ]
+}
