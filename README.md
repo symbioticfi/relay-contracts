@@ -1,31 +1,68 @@
-# Middleware SDK
+# Symbiotic Relay (on-chain)
 
-## Example Env
+## Overview
 
-```
-PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-ETH_RPC_URL_MASTER=http://127.0.0.1:8545
-EPOCH_DURATION=60
-DEPLOYMENT_BUFFER=600
-SLASHING_WINDOW=1200
-BLOCK_TIME=0.1
-OPERATORS=3
-VERIFICATION_TYPE=1
-```
+Symbiotic Relay is a peer-to-peer side-network designed to collect and aggregate signatures from validators, maintain validator sets (valsets) on settlement contract.
 
-## Local Environment
+To achieve that, Symbiotic provides a set of predefined smart contracts, in general, representing the following modules:
 
-```
-yarn install
+-
+
+## Repo init
+
+Clone the repo:
+
+```bash
+git clone --recurse-submodules https://github.com/symbioticfi/middleware-sdk-mirror.git
 ```
 
+## Create env configuration
+
+```bash
+cp .env.example .env
 ```
-yarn deploy
+
+Key parameters:
+
+- `OPERATORS` - num of operators in network
+- `VERIFICATION_TYPE` - signatures aggregation type, (0 for ZK, 1 for simple)
+
+## On-chain setup
+
+Before running off-chain nodes need to setup on-chain contract.
+
+To simplify local development we've prepared docker image with anvil node and deployed Symbiotic contracts.
+
+### Build docker image
+
+```bash
+docker build -t symbiotic-anvil .
 ```
 
-You'll get `http://127.0.0.1:8545` and `http://127.0.0.1:8546` RPC URLs
-Also, you can go to [this folder](./script/deploy/data/) to get all the available data
+### Run anvil node
 
-## License
+```bash
+docker run --rm -d -p 8545:8545 --env-file .env --name symbiotic-node symbiotic-anvil
+```
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+### Configure network
+
+```bash
+docker run --rm -it --env-file .env --network host symbiotic-anvil yarn deploy:network
+```
+
+This command will execute list of transactions to setup network contracts.
+
+In execution logs you can see deployed configuration and contract addresses.
+
+## Tests
+
+```
+forge test
+```
+
+## Coverage
+
+```
+forge coverage
+```

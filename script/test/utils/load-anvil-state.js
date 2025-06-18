@@ -21,16 +21,10 @@ function parseCli() {
 async function main() {
   dotenv.config()
 
-  const { stateFile, rpcEnv } = parseCli()
-  if (!stateFile || !rpcEnv) {
+  const { stateFile, rpcUrl } = parseCli()
+  if (!stateFile || !rpcUrl) {
     console.error(`Usage:
-    node load-anvil-state.js --stateFile script/deploy/data/anvil_master.txt --rpcEnv ETH_RPC_URL_MASTER`)
-    process.exit(1)
-  }
-
-  const rpcUrl = process.env[rpcEnv]
-  if (!rpcUrl) {
-    console.error(`❌  Environment variable "${rpcEnv}" is not set`)
+    node load-anvil-state.js --stateFile script/deploy/data/anvil_master.txt --rpcUrl ETH_RPC_URL_MASTER`)
     process.exit(1)
   }
 

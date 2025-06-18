@@ -9,7 +9,6 @@ out
 
 # Ignore environment files
 .env
-.env.*
 
 # Ignore version control files
 .git

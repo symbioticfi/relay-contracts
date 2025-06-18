@@ -48,6 +48,9 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
         if (length != maxValidators_.length) {
             revert SigVerifierBlsBn254ZK_InvalidLength();
         }
+        if (length == 0) {
+            revert SigVerifierBlsBn254ZK_InvalidLength();
+        }
         for (uint256 i; i < length; ++i) {
             if (maxValidators_[i] == 0) {
                 revert SigVerifierBlsBn254ZK_InvalidMaxValidators();
