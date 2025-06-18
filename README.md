@@ -1,4 +1,4 @@
-# Symbiotic Relay (on-chain)
+# Symbiotic Relay Smart Contracts
 
 ## Overview
 
