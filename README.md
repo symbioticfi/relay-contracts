@@ -24,6 +24,10 @@ To achieve that, Symbiotic provides a set of predefined smart contracts, in gene
   - [ZKVerifier](./src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol) - uses ZK verification made with [gnark](https://github.com/Consensys/gnark), allowing larger validator sets with an almost constant verification gas cost
 - [Network](./src/contracts/modules/network/) - a standard contract that can be used as a "network" address across the Symbiotic ecosystem, it enables verifiability of delays for different actions (e.g., change of the middleware or change of the resolver)
 
+## Security
+
+Security audits can be found [here](./audits).
+
 ## Repo init
 
 Clone the repo:
