@@ -12,26 +12,21 @@ import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/Signa
 import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 import {SharedVaults} from "../../extensions/SharedVaults.sol";
 
-import {OwnableAccessManager} from "../../extensions/managers/access/OwnableAccessManager.sol";
+import {OzOwnable} from "../../extensions/managers/permissions/OzOwnable.sol";
 import {NoKeyManager} from "../../extensions/managers/keys/NoKeyManager.sol";
 import {TimestampCapture} from "../../extensions/managers/capture-timestamps/TimestampCapture.sol";
 import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
 
 // WARING: this is a simple example, it's not secure and should not be used in production
-contract SqrtTaskMiddleware is
-    SharedVaults,
-    NoKeyManager,
-    EIP712,
-    OwnableAccessManager,
-    TimestampCapture,
-    EqualStakePower
-{
+contract SqrtTaskMiddleware is SharedVaults, NoKeyManager, EIP712, OzOwnable, TimestampCapture, EqualStakePower {
     using Subnetwork for address;
     using Math for uint256;
 
     error InvalidHints();
     error InvalidSignature();
     error TaskCompleted();
+    error SlashFailed();
+    error InvalidVault();
 
     event CreateTask(uint256 indexed taskIndex, address indexed operator);
     event CompleteTask(uint256 indexed taskIndex, bool isValidAnswer);
@@ -69,7 +64,7 @@ contract SqrtTaskMiddleware is
         address owner
     ) internal initializer {
         __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader);
-        __OwnableAccessManager_init(owner);
+        __OzOwnable_init(owner);
     }
 
     function createTask(uint256 value, address operator) external returns (uint256 taskIndex) {
@@ -97,7 +92,7 @@ contract SqrtTaskMiddleware is
         emit CompleteTask(taskIndex, isValidAnswer);
     }
 
-    function _verify(uint256 taskIndex, uint256 answer, bytes calldata signature) private view returns (bool) {
+    function _verify(uint256 taskIndex, uint256 answer, bytes calldata signature) internal view returns (bool) {
         if (tasks[taskIndex].completed) {
             revert TaskCompleted();
         }
@@ -105,7 +100,7 @@ contract SqrtTaskMiddleware is
         return _verifyAnswer(taskIndex, answer);
     }
 
-    function _verifySignature(uint256 taskIndex, uint256 answer, bytes calldata signature) private view {
+    function _verifySignature(uint256 taskIndex, uint256 answer, bytes calldata signature) internal view {
         Task storage task = tasks[taskIndex];
 
         bytes32 hash_ = _hashTypedDataV4(keccak256(abi.encode(COMPLETE_TASK_TYPEHASH, taskIndex, answer)));
@@ -115,7 +110,7 @@ contract SqrtTaskMiddleware is
         }
     }
 
-    function _verifyAnswer(uint256 taskIndex, uint256 answer) private view returns (bool) {
+    function _verifyAnswer(uint256 taskIndex, uint256 answer) internal view returns (bool) {
         uint256 value = tasks[taskIndex].value;
         uint256 square = answer ** 2;
         if (square == value) {
@@ -141,7 +136,7 @@ contract SqrtTaskMiddleware is
         return false;
     }
 
-    function _slash(uint256 taskIndex, bytes[] calldata stakeHints, bytes[] calldata slashHints) private {
+    function _slash(uint256 taskIndex, bytes[] calldata stakeHints, bytes[] calldata slashHints) internal {
         Task storage task = tasks[taskIndex];
         address[] memory vaults = _activeVaultsAt(task.captureTimestamp, task.operator);
         uint256 vaultsLength = vaults.length;
@@ -165,7 +160,24 @@ contract SqrtTaskMiddleware is
         }
     }
 
-    function executeSlash(address vault, uint256 slashIndex, bytes memory hints) external checkAccess {
-        _executeSlash(vault, slashIndex, hints);
+    function executeSlash(
+        address vault,
+        uint256 slashIndex,
+        bytes memory hints
+    ) external checkAccess returns (uint256) {
+        (bool success, uint256 slashedAmount) = _executeSlash(vault, slashIndex, hints);
+        if (!success) {
+            revert SlashFailed();
+        }
+        return slashedAmount;
+    }
+
+    function _validateVault(
+        address vault
+    ) internal view override {
+        if (IVault(vault).slasher() == address(0)) {
+            revert InvalidVault();
+        }
+        super._validateVault(vault);
     }
 }

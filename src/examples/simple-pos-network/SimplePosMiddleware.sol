@@ -12,25 +12,19 @@ import {VaultManager} from "../../managers/VaultManager.sol";
 import {SharedVaults} from "../../extensions/SharedVaults.sol";
 import {Operators} from "../../extensions/operators/Operators.sol";
 
-import {OwnableAccessManager} from "../../extensions/managers/access/OwnableAccessManager.sol";
+import {OzOwnable} from "../../extensions/managers/permissions/OzOwnable.sol";
 import {EpochCapture} from "../../extensions/managers/capture-timestamps/EpochCapture.sol";
 import {KeyManager256} from "../../extensions/managers/keys/KeyManager256.sol";
 import {EqualStakePower} from "../../extensions/managers/stake-powers/EqualStakePower.sol";
 
-contract SimplePosMiddleware is
-    SharedVaults,
-    Operators,
-    KeyManager256,
-    OwnableAccessManager,
-    EpochCapture,
-    EqualStakePower
-{
+contract SimplePosMiddleware is SharedVaults, Operators, KeyManager256, OzOwnable, EpochCapture, EqualStakePower {
     using Subnetwork for address;
 
     error InactiveKeySlash(); // Error thrown when trying to slash an inactive key
-    error InactiveOperatorSlash(); // Error thrown when trying to slash an inactive operator
     error NotExistKeySlash(); // Error thrown when the key does not exist for slashing
     error InvalidHints(); // Error thrown for invalid hints provided
+    error SlashFailed(); // Error thrown when the slash fails
+    error InvalidVault(); // Error thrown when the vault is invalid
 
     struct ValidatorData {
         uint256 power; // Power of the validator
@@ -82,7 +76,7 @@ contract SimplePosMiddleware is
         uint48 epochDuration
     ) internal initializer {
         __BaseMiddleware_init(network, slashingWindow, vaultRegistry, operatorRegistry, operatorNetOptin, reader);
-        __OwnableAccessManager_init(owner);
+        __OzOwnable_init(owner);
         __EpochCapture_init(epochDuration);
     }
 
@@ -178,8 +172,16 @@ contract SimplePosMiddleware is
         }
     }
 
-    function executeSlash(address vault, uint256 slashIndex, bytes memory hints) external checkAccess {
-        _executeSlash(vault, slashIndex, hints);
+    function executeSlash(
+        address vault,
+        uint256 slashIndex,
+        bytes memory hints
+    ) external checkAccess returns (uint256) {
+        (bool success, uint256 slashedAmount) = _executeSlash(vault, slashIndex, hints);
+        if (!success) {
+            revert SlashFailed();
+        }
+        return slashedAmount;
     }
 
     function _checkCanSlash(uint48 epochStart, bytes32 key, address operator) internal view {
@@ -190,9 +192,14 @@ contract SimplePosMiddleware is
         if (!keyWasActiveAt(epochStart, abi.encode(key))) {
             revert InactiveKeySlash(); // Revert if the key is inactive
         }
+    }
 
-        if (!_operatorWasActiveAt(epochStart, operator)) {
-            revert InactiveOperatorSlash(); // Revert if the operator wasn't active
+    function _validateVault(
+        address vault
+    ) internal view override {
+        if (IVault(vault).slasher() == address(0)) {
+            revert InvalidVault();
         }
+        super._validateVault(vault);
     }
 }

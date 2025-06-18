@@ -9,65 +9,30 @@ import {IVetoSlasher} from "@symbiotic/interfaces/slasher/IVetoSlasher.sol";
 import {Subnetwork} from "@symbiotic/contracts/libraries/Subnetwork.sol";
 import {ISlasher} from "@symbiotic/interfaces/slasher/ISlasher.sol";
 import {IOperatorSpecificDelegator} from "@symbiotic/interfaces/delegator/IOperatorSpecificDelegator.sol";
+import {IOperatorNetworkSpecificDelegator} from "@symbiotic/interfaces/delegator/IOperatorNetworkSpecificDelegator.sol";
 
 import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 
-import {StakePowerManager} from "./extendable/StakePowerManager.sol";
-import {CaptureTimestampManager} from "./extendable/CaptureTimestampManager.sol";
+import {OperatorManager} from "./OperatorManager.sol";
 
-import {NetworkStorage} from "./storages/NetworkStorage.sol";
-import {SlashingWindowStorage} from "./storages/SlashingWindowStorage.sol";
+import {StakePowerManager} from "./extendable/StakePowerManager.sol";
 
 import {PauseableEnumerableSet} from "../libraries/PauseableEnumerableSet.sol";
+
+import {IVaultManager} from "../interfaces/managers/IVaultManager.sol";
 
 /**
  * @title VaultManager
  * @notice Abstract contract for managing vaults and their relationships with operators and subnetworks
  * @dev Extends BaseManager and provides functionality for registering, pausing, and managing vaults
  */
-abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, CaptureTimestampManager, StakePowerManager {
+abstract contract VaultManager is OperatorManager, StakePowerManager, IVaultManager {
     using EnumerableMap for EnumerableMap.AddressToUintMap;
     using EnumerableMap for EnumerableMap.AddressToAddressMap;
     using PauseableEnumerableSet for PauseableEnumerableSet.AddressSet;
     using PauseableEnumerableSet for PauseableEnumerableSet.Uint160Set;
     using Subnetwork for address;
-
-    error NotVault();
-    error NotOperatorVault();
-    error VaultNotInitialized();
-    error VaultAlreadyRegistered();
-    error VaultEpochTooShort();
-    error InactiveVaultSlash();
-    error UnknownSlasherType();
-    error NonVetoSlasher();
-    error NoSlasher();
-    error TooOldTimestampSlash();
-    error NotOperatorSpecificVault();
-
-    /// @custom:storage-location erc7201:symbiotic.storage.VaultManager
-    struct VaultManagerStorage {
-        address _vaultRegistry;
-        PauseableEnumerableSet.Uint160Set _subnetworks;
-        PauseableEnumerableSet.AddressSet _sharedVaults;
-        mapping(address => PauseableEnumerableSet.AddressSet) _operatorVaults;
-        EnumerableMap.AddressToAddressMap _vaultOperator;
-    }
-
-    event InstantSlash(address vault, bytes32 subnetwork, uint256 amount);
-    event VetoSlash(address vault, bytes32 subnetwork, uint256 index);
-
-    enum SlasherType {
-        INSTANT, // Instant slasher type
-        VETO // Veto slasher type
-
-    }
-
-    enum DelegatorType {
-        NETWORK_RESTAKE,
-        FULL_RESTAKE,
-        OPERATOR_SPECIFIC,
-        OPERATOR_NETWORK_SPECIFIC
-    }
+    using Subnetwork for bytes32;
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.VaultManager")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant VaultManagerStorageLocation =
@@ -379,7 +344,7 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
         address operator,
         address vault,
         uint96 subnetwork
-    ) private view returns (uint256) {
+    ) internal view returns (uint256) {
         bytes32 subnetworkId = _NETWORK().subnetwork(subnetwork);
         return IBaseDelegator(IVault(vault).delegator()).stakeAt(subnetworkId, operator, timestamp, "");
     }
@@ -402,6 +367,7 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
      * @param vault The vault address
      * @param subnetwork The subnetwork identifier
      * @return uint256 The power amount at the timestamp
+     * @dev Doesn't consider active statuses.
      */
     function _getOperatorPowerAt(
         uint48 timestamp,
@@ -500,6 +466,8 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
     ) internal {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         $._subnetworks.register(_now(), uint160(subnetwork));
+
+        emit RegisterSubnetwork(subnetwork);
     }
 
     /**
@@ -511,6 +479,8 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
     ) internal {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         $._subnetworks.pause(_now(), uint160(subnetwork));
+
+        emit PauseSubnetwork(subnetwork);
     }
 
     /**
@@ -522,6 +492,8 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
     ) internal {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         $._subnetworks.unpause(_now(), _SLASHING_WINDOW(), uint160(subnetwork));
+
+        emit UnpauseSubnetwork(subnetwork);
     }
 
     /**
@@ -533,6 +505,8 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
     ) internal {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         $._subnetworks.unregister(_now(), _SLASHING_WINDOW(), uint160(subnetwork));
+
+        emit UnregisterSubnetwork(subnetwork);
     }
 
     /**
@@ -544,7 +518,10 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
     ) internal {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         _validateVault(vault);
+        _validateSharedVault(vault);
         $._sharedVaults.register(_now(), vault);
+
+        emit RegisterSharedVault(vault);
     }
 
     /**
@@ -559,6 +536,8 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
 
         $._operatorVaults[operator].register(_now(), vault);
         $._vaultOperator.set(vault, operator);
+
+        emit RegisterOperatorVault(operator, vault);
     }
 
     /**
@@ -570,6 +549,8 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
     ) internal {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         $._sharedVaults.pause(_now(), vault);
+
+        emit PauseSharedVault(vault);
     }
 
     /**
@@ -581,6 +562,8 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
     ) internal {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         $._sharedVaults.unpause(_now(), _SLASHING_WINDOW(), vault);
+
+        emit UnpauseSharedVault(vault);
     }
 
     /**
@@ -591,6 +574,8 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
     function _pauseOperatorVault(address operator, address vault) internal {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         $._operatorVaults[operator].pause(_now(), vault);
+
+        emit PauseOperatorVault(operator, vault);
     }
 
     /**
@@ -601,6 +586,8 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
     function _unpauseOperatorVault(address operator, address vault) internal {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         $._operatorVaults[operator].unpause(_now(), _SLASHING_WINDOW(), vault);
+
+        emit UnpauseOperatorVault(operator, vault);
     }
 
     /**
@@ -612,6 +599,8 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
     ) internal {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         $._sharedVaults.unregister(_now(), _SLASHING_WINDOW(), vault);
+
+        emit UnregisterSharedVault(vault);
     }
 
     /**
@@ -623,6 +612,8 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         $._operatorVaults[operator].unregister(_now(), _SLASHING_WINDOW(), vault);
         $._vaultOperator.remove(vault);
+
+        emit UnregisterOperatorVault(operator, vault);
     }
 
     /**
@@ -633,6 +624,7 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
      * @param operator The operator to slash
      * @param amount The amount to slash
      * @param hints Additional data for the slasher
+     * @return success True if the slash was executed successfully, false otherwise
      * @return response index for veto slashing or amount for instant slashing
      */
     function _slashVault(
@@ -642,14 +634,17 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
         address operator,
         uint256 amount,
         bytes memory hints
-    ) internal returns (uint256 response) {
-        VaultManagerStorage storage $ = _getVaultManagerStorage();
-        if (!($._sharedVaults.contains(vault) || $._operatorVaults[operator].contains(vault))) {
-            revert NotOperatorVault();
+    ) internal virtual returns (bool success, bytes memory response) {
+        if (!_operatorWasActiveAt(timestamp, operator)) {
+            revert InactiveOperatorSlash();
         }
 
         if (!_vaultWasActiveAt(timestamp, operator, vault)) {
             revert InactiveVaultSlash();
+        }
+
+        if (!_subnetworkWasActiveAt(timestamp, subnetwork.identifier())) {
+            revert InactiveSubnetworkSlash();
         }
 
         if (timestamp + _SLASHING_WINDOW() < _now()) {
@@ -663,11 +658,26 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
 
         uint64 slasherType = IEntity(slasher).TYPE();
         if (slasherType == uint64(SlasherType.INSTANT)) {
-            response = ISlasher(slasher).slash(subnetwork, operator, amount, timestamp, hints);
-            emit InstantSlash(vault, subnetwork, response);
+            try ISlasher(slasher).slash(subnetwork, operator, amount, timestamp, hints) returns (uint256 slashedAmount)
+            {
+                success = true;
+                response = abi.encode(slashedAmount);
+
+                emit InstantSlash(vault, subnetwork, slashedAmount);
+            } catch {
+                success = false;
+            }
         } else if (slasherType == uint64(SlasherType.VETO)) {
-            response = IVetoSlasher(slasher).requestSlash(subnetwork, operator, amount, timestamp, hints);
-            emit VetoSlash(vault, subnetwork, response);
+            try IVetoSlasher(slasher).requestSlash(subnetwork, operator, amount, timestamp, hints) returns (
+                uint256 slashIndex
+            ) {
+                success = true;
+                response = abi.encode(slashIndex);
+
+                emit VetoSlash(vault, subnetwork, slashIndex);
+            } catch {
+                success = false;
+            }
         } else {
             revert UnknownSlasherType();
         }
@@ -678,20 +688,28 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
      * @param vault The vault address
      * @param slashIndex The index of the slash to execute
      * @param hints Additional data for the veto slasher
+     * @return success True if the slash was executed successfully, false otherwise
      * @return slashedAmount The amount that was slashed
      */
     function _executeSlash(
         address vault,
         uint256 slashIndex,
         bytes memory hints
-    ) internal returns (uint256 slashedAmount) {
+    ) internal virtual returns (bool success, uint256 slashedAmount) {
         address slasher = IVault(vault).slasher();
         uint64 slasherType = IEntity(slasher).TYPE();
         if (slasherType != uint64(SlasherType.VETO)) {
             revert NonVetoSlasher();
         }
 
-        return IVetoSlasher(slasher).executeSlash(slashIndex, hints);
+        try IVetoSlasher(slasher).executeSlash(slashIndex, hints) returns (uint256 slashedAmount_) {
+            success = true;
+            slashedAmount = slashedAmount_;
+
+            emit ExecuteSlash(vault, slashIndex, slashedAmount_);
+        } catch {
+            success = false;
+        }
     }
 
     /**
@@ -700,7 +718,7 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
      */
     function _validateVault(
         address vault
-    ) private view {
+    ) internal view virtual {
         VaultManagerStorage storage $ = _getVaultManagerStorage();
         if (!IRegistry(_VAULT_REGISTRY()).isEntity(vault)) {
             revert NotVault();
@@ -731,7 +749,22 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
         }
     }
 
-    function _validateOperatorVault(address operator, address vault) internal view {
+    function _validateSharedVault(
+        address vault
+    ) internal view virtual {
+        address delegator = IVault(vault).delegator();
+        uint64 delegatorType = IEntity(delegator).TYPE();
+        if (
+            (
+                delegatorType != uint64(DelegatorType.FULL_RESTAKE)
+                    && delegatorType != uint64(DelegatorType.NETWORK_RESTAKE)
+            )
+        ) {
+            revert NotSharedVault();
+        }
+    }
+
+    function _validateOperatorVault(address operator, address vault) internal view virtual {
         address delegator = IVault(vault).delegator();
         uint64 delegatorType = IEntity(delegator).TYPE();
         if (
@@ -741,6 +774,13 @@ abstract contract VaultManager is NetworkStorage, SlashingWindowStorage, Capture
             ) || IOperatorSpecificDelegator(delegator).operator() != operator
         ) {
             revert NotOperatorSpecificVault();
+        }
+
+        if (
+            delegatorType == uint64(DelegatorType.OPERATOR_NETWORK_SPECIFIC)
+                && IOperatorNetworkSpecificDelegator(delegator).network() != _NETWORK()
+        ) {
+            revert InvalidOperatorNetwork();
         }
     }
 }

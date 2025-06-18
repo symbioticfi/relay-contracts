@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.0;
+
+import {ISelfRegisterOperators} from "./ISelfRegisterOperators.sol";
 
 /**
  * @title IForcePauseSelfRegisterOperators
@@ -8,6 +10,18 @@ pragma solidity ^0.8.25;
 interface IForcePauseSelfRegisterOperators {
     error OperatorForcePaused();
     error OperatorVaultForcePaused();
+
+    struct ForcePauseSelfRegisterOperatorsStorage {
+        mapping(address => bool) forcePaused;
+        mapping(address => mapping(address => bool)) forcePausedVault;
+    }
+
+    event ForcePauseOperator(address operator);
+    event ForceUnpauseOperator(address operator);
+    event ForcePauseOperatorVault(address operator, address vault);
+    event ForceUnpauseOperatorVault(address operator, address vault);
+
+    function ForcePauseSelfRegisterOperators_VERSION() external view returns (uint64);
 
     /**
      * @notice Forces an operator to be paused

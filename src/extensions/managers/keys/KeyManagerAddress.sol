@@ -4,24 +4,21 @@ pragma solidity ^0.8.25;
 import {KeyManager} from "../../../managers/extendable/KeyManager.sol";
 import {PauseableEnumerableSet} from "../../../libraries/PauseableEnumerableSet.sol";
 
+import {IKeyManagerAddress} from "../../../interfaces/extensions/managers/keys/IKeyManagerAddress.sol";
+import {IKeyManager} from "../../../interfaces/managers/extendable/IKeyManager.sol";
+
 /**
  * @title KeyManagerAddress
  * @notice Manages storage and validation of operator keys using address values
  * @dev Extends KeyManager to provide key management functionality
  */
-abstract contract KeyManagerAddress is KeyManager {
-    uint64 public constant KeyManagerAddress_VERSION = 1;
-
+abstract contract KeyManagerAddress is KeyManager, IKeyManagerAddress {
     using PauseableEnumerableSet for PauseableEnumerableSet.Status;
 
-    error DuplicateKey();
-    error PreviousKeySlashable();
-
-    struct KeyManagerAddressStorage {
-        mapping(address => address) _key;
-        mapping(address => address) _prevKey;
-        mapping(address => PauseableEnumerableSet.InnerAddress) _keyData;
-    }
+    /**
+     * @inheritdoc IKeyManagerAddress
+     */
+    uint64 public constant KeyManagerAddress_VERSION = 1;
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.KeyManagerAddress")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant KeyManagerAddressStorageLocation =
@@ -35,9 +32,7 @@ abstract contract KeyManagerAddress is KeyManager {
     }
 
     /**
-     * @notice Gets the operator address associated with a key
-     * @param key The key to lookup
-     * @return The operator address that owns the key, or zero address if none
+     * @inheritdoc IKeyManager
      */
     function operatorByKey(
         bytes memory key
@@ -47,9 +42,7 @@ abstract contract KeyManagerAddress is KeyManager {
     }
 
     /**
-     * @notice Gets an operator's active key at the current capture timestamp
-     * @param operator The operator address to lookup
-     * @return The operator's active key encoded as bytes, or encoded zero bytes if none
+     * @inheritdoc IKeyManager
      */
     function operatorKey(
         address operator
@@ -68,10 +61,7 @@ abstract contract KeyManagerAddress is KeyManager {
     }
 
     /**
-     * @notice Checks if a key was active at a specific timestamp
-     * @param timestamp The timestamp to check
-     * @param key_ The key to check
-     * @return True if the key was active at the timestamp, false otherwise
+     * @inheritdoc IKeyManager
      */
     function keyWasActiveAt(uint48 timestamp, bytes memory key_) public view override returns (bool) {
         KeyManagerAddressStorage storage $ = _getKeyManagerAddressStorage();
@@ -80,10 +70,7 @@ abstract contract KeyManagerAddress is KeyManager {
     }
 
     /**
-     * @notice Updates an operator's key
-     * @dev Handles key rotation by disabling old key and registering new one
-     * @param operator The operator address to update
-     * @param key_ The new key to register, encoded as bytes
+     * @inheritdoc KeyManager
      */
     function _updateKey(address operator, bytes memory key_) internal override {
         KeyManagerAddressStorage storage $ = _getKeyManagerAddressStorage();
@@ -114,5 +101,7 @@ abstract contract KeyManagerAddress is KeyManager {
             $._keyData[key].value = operator;
             $._keyData[key].status.set(timestamp);
         }
+
+        emit UpdateKey(operator, key_);
     }
 }

@@ -3,14 +3,14 @@ pragma solidity ^0.8.25;
 
 import {BaseMiddleware} from "../../middleware/BaseMiddleware.sol";
 
+import {IBaseOperators} from "../../interfaces/extensions/operators/IBaseOperators.sol";
+
 /**
  * @title BaseOperators
  * @notice Base contract for managing operator registration, keys, and vault relationships
  * @dev Provides core operator management functionality with hooks for customization
  */
-abstract contract BaseOperators is BaseMiddleware {
-    error OperatorNotRegistered();
-
+abstract contract BaseOperators is BaseMiddleware, IBaseOperators {
     /**
      * @notice Internal implementation for registering an operator
      * @param operator The operator address to register

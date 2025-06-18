@@ -111,7 +111,7 @@ contract FullMerkle {
 
     function _updatePath(
         uint256 currentPos
-    ) private {
+    ) internal {
         for (uint256 depth = 0; depth < DEPTH; depth++) {
             uint256 leftPos = (currentPos / 2) * 2;
             uint256 rightPos = leftPos + 1;

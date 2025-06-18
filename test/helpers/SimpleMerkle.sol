@@ -6,7 +6,7 @@ import "../../src/libraries/Merkle.sol";
 contract SimpleMerkle {
     using MerkleLib for MerkleLib.Tree;
 
-    MerkleLib.Tree private tree;
+    MerkleLib.Tree internal tree;
 
     function insert(
         bytes32 _node

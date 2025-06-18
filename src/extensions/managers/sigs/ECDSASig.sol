@@ -2,8 +2,10 @@
 pragma solidity ^0.8.25;
 
 import {SigManager} from "../../../managers/extendable/SigManager.sol";
-import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+
 import {IECDSASig} from "../../../interfaces/extensions/managers/sigs/IECDSASig.sol";
+
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 /**
  * @title ECDSASig
@@ -12,16 +14,15 @@ import {IECDSASig} from "../../../interfaces/extensions/managers/sigs/IECDSASig.
  *      this implementation uses Ethereum addresses derived from the public keys as operator keys.
  */
 abstract contract ECDSASig is SigManager, IECDSASig {
-    uint64 public constant ECDSASig_VERSION = 1;
-
     using ECDSA for bytes32;
 
     /**
-     * @notice Verifies that a signature was created by the owner of a key
-     * @param operator The address of the operator that owns the key
-     * @param key_ The address derived from the public key, encoded as bytes
-     * @param signature The ECDSA signature to verify
-     * @return True if the signature was created by the key owner, false otherwise
+     * @inheritdoc IECDSASig
+     */
+    uint64 public constant ECDSASig_VERSION = 1;
+
+    /**
+     * @inheritdoc SigManager
      * @dev The key is expected to be a bytes32 that can be converted to an Ethereum address
      */
     function _verifyKeySignature(
@@ -30,15 +31,15 @@ abstract contract ECDSASig is SigManager, IECDSASig {
         bytes memory signature
     ) internal pure override returns (bool) {
         address key = abi.decode(key_, (address));
-        bytes32 hash = keccak256(abi.encodePacked(operator, key));
-        address signer = recover(hash, signature);
+        bytes32 messageHash = keccak256(abi.encode(operator, key));
+        address signer = recover(messageHash, signature);
         return signer == key && signer != address(0);
     }
 
     /**
      * @inheritdoc IECDSASig
      */
-    function recover(bytes32 hash, bytes memory signature) public pure returns (address) {
-        return hash.recover(signature);
+    function recover(bytes32 messageHash, bytes memory signature) public pure returns (address) {
+        return messageHash.recover(signature);
     }
 }

@@ -1,11 +1,15 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.0;
+
+import {IBaseMiddleware} from "../middleware/IBaseMiddleware.sol";
 
 /**
  * @title ISubnetworks
  * @notice Interface for managing subnetworks that can be registered and controlled
  */
 interface ISubnetworks {
+    function Subnetworks_VERSION() external view returns (uint64);
+
     /**
      * @notice Registers a new subnetwork
      * @param subnetwork The ID of the subnetwork to register

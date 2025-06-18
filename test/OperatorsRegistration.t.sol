@@ -4,7 +4,8 @@ pragma solidity ^0.8.25;
 import {POCBaseTest} from "@symbiotic-test/POCBase.t.sol";
 
 import {SimplePosMiddleware} from "../src/examples/simple-pos-network/SimplePosMiddleware.sol";
-import {IBaseMiddlewareReader} from "../src/interfaces/IBaseMiddlewareReader.sol";
+import {IBaseMiddlewareReader} from "../src/interfaces/middleware/IBaseMiddlewareReader.sol";
+import {ICaptureTimestampManager} from "../src/interfaces/managers/extendable/ICaptureTimestampManager.sol";
 
 //import {IVault} from "@symbiotic/interfaces/vault/IVault.sol";
 //import {IBaseDelegator} from "@symbiotic/interfaces/delegator/IBaseDelegator.sol";
@@ -141,6 +142,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
         vm.expectRevert();
         middleware.unregisterOperator(operator);
         skipEpoch();
+        skipOneSecond();
         middleware.unregisterOperator(operator);
 
         operatorsLength = IBaseMiddlewareReader(address(middleware)).operatorsLength();
@@ -196,7 +198,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
         assertEq(activeOps.length, 2, "Should have 2 active operators after unpause");
 
         // Test operator was active at specific timestamps
-        uint48 currentTimestamp = IBaseMiddlewareReader(address(middleware)).getCaptureTimestamp();
+        uint48 currentTimestamp = ICaptureTimestampManager(address(middleware)).getCaptureTimestamp();
         assertTrue(
             IBaseMiddlewareReader(address(middleware)).operatorWasActiveAt(currentTimestamp, operators[0]),
             "Operator 0 should be active"
@@ -270,7 +272,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
         );
         assertTrue(
             IBaseMiddlewareReader(address(middleware)).operatorWasActiveAt(
-                IBaseMiddlewareReader(address(middleware)).getCaptureTimestamp(), operator
+                ICaptureTimestampManager(address(middleware)).getCaptureTimestamp(), operator
             ),
             "Operator should be active after reregistration"
         );
@@ -314,6 +316,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
 
         // Should work exactly at slashing window
         vm.warp(pauseTime + slashingWindow);
+        skipOneSecond();
         middleware.unpauseOperator(operator);
 
         // Test capture timestamp interactions
@@ -413,7 +416,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
         assertEq(activeOps.length, 2, "Should have 2 active operators again");
 
         // Test historical activity
-        uint48 timestamp = IBaseMiddlewareReader(address(middleware)).getCaptureTimestamp();
+        uint48 timestamp = ICaptureTimestampManager(address(middleware)).getCaptureTimestamp();
         assertTrue(IBaseMiddlewareReader(address(middleware)).operatorWasActiveAt(timestamp, operator1));
         assertTrue(IBaseMiddlewareReader(address(middleware)).operatorWasActiveAt(timestamp, operator2));
 
@@ -421,6 +424,7 @@ contract OperatorsRegistrationTest is POCBaseTest {
         middleware.pauseOperator(operator1);
         middleware.pauseOperator(operator2);
         skipImmutablePeriod();
+        skipOneSecond();
 
         middleware.unregisterOperator(operator1);
         vm.expectRevert(); // Can't register same operator again
@@ -435,11 +439,15 @@ contract OperatorsRegistrationTest is POCBaseTest {
         assertEq(activeOps.length, 0, "Should have no active operators");
     }
 
-    function skipEpoch() private {
+    function skipEpoch() internal {
         vm.warp(block.timestamp + epochDuration);
     }
 
-    function skipImmutablePeriod() private {
+    function skipImmutablePeriod() internal {
         vm.warp(block.timestamp + slashingWindow);
+    }
+
+    function skipOneSecond() internal {
+        vm.warp(block.timestamp + 1);
     }
 }

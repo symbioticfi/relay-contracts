@@ -66,8 +66,8 @@ library PauseableEnumerableSet {
      * @param immutablePeriod The required waiting period after disabling
      */
     function enable(Status storage self, uint48 timestamp, uint48 immutablePeriod) internal {
-        if (self.enabled != 0) revert AlreadyEnabled();
-        if (self.disabled + immutablePeriod > timestamp) revert ImmutablePeriodNotPassed();
+        if (wasActiveAt(self, timestamp + 1)) revert AlreadyEnabled();
+        if (self.disabled + immutablePeriod >= timestamp) revert ImmutablePeriodNotPassed();
 
         self.enabled = timestamp;
         self.disabled = 0;
@@ -80,7 +80,6 @@ library PauseableEnumerableSet {
      */
     function disable(Status storage self, uint48 timestamp) internal {
         if (self.disabled != 0) revert NotEnabled();
-        self.enabled = 0;
         self.disabled = timestamp;
     }
 
@@ -91,8 +90,8 @@ library PauseableEnumerableSet {
      * @param immutablePeriod The required waiting period after disabling
      */
     function validateUnregister(Status storage self, uint48 timestamp, uint48 immutablePeriod) internal view {
-        if (self.enabled != 0 || self.disabled == 0) revert Enabled();
-        if (self.disabled + immutablePeriod > timestamp) revert ImmutablePeriodNotPassed();
+        if (wasActiveAt(self, timestamp + 1)) revert Enabled();
+        if (self.disabled + immutablePeriod >= timestamp) revert ImmutablePeriodNotPassed();
     }
 
     /**
@@ -107,7 +106,7 @@ library PauseableEnumerableSet {
         uint48 timestamp,
         uint48 immutablePeriod
     ) internal view returns (bool) {
-        return self.enabled == 0 && self.disabled != 0 && self.disabled + immutablePeriod <= timestamp;
+        return !wasActiveAt(self, timestamp + 1) && self.disabled + immutablePeriod < timestamp;
     }
 
     /**
@@ -117,7 +116,7 @@ library PauseableEnumerableSet {
      * @return bool Whether the value was active
      */
     function wasActiveAt(Status storage self, uint48 timestamp) internal view returns (bool) {
-        return self.enabled < timestamp && (self.disabled == 0 || self.disabled >= timestamp);
+        return self.enabled != 0 && self.enabled < timestamp && (self.disabled == 0 || self.disabled >= timestamp);
     }
 
     // AddressSet functions

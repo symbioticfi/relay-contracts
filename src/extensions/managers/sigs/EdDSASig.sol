@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {EdDSA} from "../../../libraries/EdDSA.sol";
 import {SigManager} from "../../../managers/extendable/SigManager.sol";
+
+import {EdDSA} from "../../../libraries/EdDSA.sol";
+
 import {IEdDSASig} from "../../../interfaces/extensions/managers/sigs/IEdDSASig.sol";
 
 /**
@@ -11,14 +13,15 @@ import {IEdDSASig} from "../../../interfaces/extensions/managers/sigs/IEdDSASig.
  * @dev Implements SigManager interface using EdDSA signature verification
  */
 abstract contract EdDSASig is SigManager, IEdDSASig {
+    using EdDSA for bytes32;
+
+    /**
+     * @inheritdoc IEdDSASig
+     */
     uint64 public constant EdDSASig_VERSION = 1;
 
     /**
-     * @notice Verifies that a signature was created by the owner of a key
-     * @param operator The address of the operator that owns the key
-     * @param key_ The public key to verify against
-     * @param signature The Ed25519 signature to verify
-     * @return True if the signature was created by the key owner, false otherwise
+     * @inheritdoc SigManager
      * @dev The key must be a valid Ed25519 public key point compressed to 32 bytes
      *      The signature must be 64 bytes containing r and s components encoded as uint256
      */
@@ -28,7 +31,7 @@ abstract contract EdDSASig is SigManager, IEdDSASig {
         bytes memory signature
     ) internal override returns (bool) {
         bytes32 key = abi.decode(key_, (bytes32));
-        bytes memory message = abi.encode(keccak256(abi.encodePacked(operator, key)));
+        bytes memory message = abi.encode(keccak256(abi.encode(operator, key)));
         return verify(message, signature, key);
     }
 

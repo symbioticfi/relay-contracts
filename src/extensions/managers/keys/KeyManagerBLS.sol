@@ -2,10 +2,15 @@
 pragma solidity ^0.8.25;
 
 import {KeyManager} from "../../../managers/extendable/KeyManager.sol";
+import {BLSSig} from "../sigs/BLSSig.sol";
+
 import {PauseableEnumerableSet} from "../../../libraries/PauseableEnumerableSet.sol";
 import {BN254} from "../../../libraries/BN254.sol";
-import {BLSSig} from "../sigs/BLSSig.sol";
 import {MerkleLib} from "../../../libraries/Merkle.sol";
+
+import {IKeyManagerBLS} from "../../../interfaces/extensions/managers/keys/IKeyManagerBLS.sol";
+import {IKeyManager} from "../../../interfaces/managers/extendable/IKeyManager.sol";
+
 import {Checkpoints} from "@symbiotic/contracts/libraries/Checkpoints.sol";
 
 /**
@@ -13,27 +18,19 @@ import {Checkpoints} from "@symbiotic/contracts/libraries/Checkpoints.sol";
  * @notice Manages storage and validation of operator keys using BLS G1 points
  * @dev Extends KeyManager to provide key management functionality
  */
-abstract contract KeyManagerBLS is KeyManager, BLSSig {
+abstract contract KeyManagerBLS is KeyManager, BLSSig, IKeyManagerBLS {
     using BN254 for BN254.G1Point;
     using PauseableEnumerableSet for PauseableEnumerableSet.Status;
     using MerkleLib for MerkleLib.Tree;
     using Checkpoints for Checkpoints.Trace256;
 
+    /**
+     * @inheritdoc IKeyManagerBLS
+     */
     uint64 public constant KeyManagerBLS_VERSION = 1;
+
     // must be same as TREE_DEPTH in MerkleLib.sol
     uint256 private constant _TREE_DEPTH = 16;
-
-    error DuplicateKey();
-    error PreviousKeySlashable();
-
-    struct KeyManagerBLSStorage {
-        mapping(address => BN254.G1Point) _key;
-        mapping(address => BN254.G1Point) _prevKey;
-        mapping(uint256 => PauseableEnumerableSet.InnerAddress) _keyData;
-        Checkpoints.Trace256 _aggregatedKey;
-        MerkleLib.Tree _keyMerkle;
-        Checkpoints.Trace256 _keyMerkleRoot;
-    }
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.KeyManagerBLS")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant KeyManagerBLSStorageLocation =
@@ -46,6 +43,9 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
         }
     }
 
+    /**
+     * @inheritdoc IKeyManagerBLS
+     */
     function verifyAggregate(
         uint48 timestamp,
         BN254.G1Point memory aggregateG1Key,
@@ -83,9 +83,7 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
     }
 
     /**
-     * @notice Gets the operator address associated with a key
-     * @param key The key to lookup
-     * @return The operator address that owns the key, or zero address if none
+     * @inheritdoc IKeyManager
      */
     function operatorByKey(
         bytes memory key
@@ -96,9 +94,7 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
     }
 
     /**
-     * @notice Gets an operator's active key at the current capture timestamp
-     * @param operator The operator address to lookup
-     * @return The operator's active key encoded as bytes, or encoded zero bytes if none
+     * @inheritdoc IKeyManager
      */
     function operatorKey(
         address operator
@@ -117,10 +113,7 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
     }
 
     /**
-     * @notice Checks if a key was active at a specific timestamp
-     * @param timestamp The timestamp to check
-     * @param key_ The key to check
-     * @return True if the key was active at the timestamp, false otherwise
+     * @inheritdoc IKeyManager
      */
     function keyWasActiveAt(uint48 timestamp, bytes memory key_) public view override returns (bool) {
         KeyManagerBLSStorage storage $ = _getKeyManagerBLSStorage();
@@ -129,20 +122,21 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
     }
 
     /**
-     * @notice Updates an operator's key
-     * @dev Handles key rotation by disabling old key and registering new one
-     * @param operator The operator address to update
-     * @param key_ The new key to register, encoded as bytes
+     * @inheritdoc KeyManager
      */
     function _updateKey(address operator, bytes memory key_) internal override {
         KeyManagerBLSStorage storage $ = _getKeyManagerBLSStorage();
         uint48 timestamp = _now();
-        uint256 x = $._aggregatedKey.latest();
-        uint256 y = 0;
-        if (x != 0) {
-            (, y) = BN254.findYFromX(x);
+        uint256 compressedKey = $._aggregatedKey.latest();
+        BN254.G1Point memory aggregatedKey;
+        uint256 derivedY;
+        if (compressedKey != 0) {
+            uint256 X = uint256(compressedKey) >> 1;
+            (derivedY,) = BN254.findYFromX(X);
+            aggregatedKey = (compressedKey & 1) == 1
+                ? BN254.negate(BN254.G1Point({X: X, Y: derivedY}))
+                : BN254.G1Point({X: X, Y: derivedY});
         }
-        BN254.G1Point memory aggregatedKey = BN254.G1Point(x, y);
         BN254.G1Point memory prevKey = $._prevKey[operator];
         BN254.G1Point memory currentKey = $._key[operator];
         BN254.G1Point memory key = abi.decode(key_, (BN254.G1Point));
@@ -161,6 +155,11 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
 
         $._prevKey[operator] = currentKey;
         $._key[operator] = key;
+
+        if (currentKey.X != 0 || currentKey.Y != 0) {
+            $._keyData[currentKey.X].status.disable(timestamp);
+        }
+
         if (key.X != 0 || key.Y != 0) {
             $._keyData[key.X].value = operator;
             $._keyData[key.X].status.set(timestamp);
@@ -170,15 +169,14 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
             aggregatedKey = aggregatedKey.plus(key);
             $._keyMerkle.insert(bytes32(key.X));
             $._keyMerkleRoot.push(_now(), uint256($._keyMerkle.root()));
-            $._aggregatedKey.push(_now(), key.X);
+            $._aggregatedKey.push(_now(), (aggregatedKey.X << 1) | (derivedY == aggregatedKey.Y ? 0 : 1));
             return;
         }
-
         bytes32[16] memory proof;
         uint256 index;
         assembly {
-            proof := add(key_, 64)
-            index := add(key_, 576) // 64 + 32 * 16
+            proof := add(key_, 96)
+            index := mload(add(key_, 608)) // 32 + 64 + (16 * 32)
         }
 
         // remove current key from merkle tree and aggregated key when new key is zero else update
@@ -187,10 +185,12 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig {
             $._keyMerkle.remove(bytes32(currentKey.X), proof, index);
         } else {
             aggregatedKey = aggregatedKey.plus(key);
-            $._keyMerkle.update(bytes32(key.X), bytes32(prevKey.X), proof, index, false);
+            $._keyMerkle.update(bytes32(key.X), bytes32(currentKey.X), proof, index, false);
         }
 
         $._aggregatedKey.push(_now(), aggregatedKey.X);
         $._keyMerkleRoot.push(_now(), uint256($._keyMerkle.root()));
+
+        emit UpdateKey(operator, key_);
     }
 }

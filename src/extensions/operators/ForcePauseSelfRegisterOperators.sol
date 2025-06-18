@@ -2,6 +2,7 @@
 pragma solidity ^0.8.25;
 
 import {SelfRegisterOperators} from "./SelfRegisterOperators.sol";
+
 import {IForcePauseSelfRegisterOperators} from
     "../../interfaces/extensions/operators/IForcePauseSelfRegisterOperators.sol";
 import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
@@ -14,12 +15,10 @@ import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap
 abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IForcePauseSelfRegisterOperators {
     using EnumerableMap for EnumerableMap.AddressToAddressMap;
 
+    /**
+     * @inheritdoc IForcePauseSelfRegisterOperators
+     */
     uint64 public constant ForcePauseSelfRegisterOperators_VERSION = 1;
-
-    struct ForcePauseSelfRegisterOperatorsStorage {
-        mapping(address => bool) forcePaused;
-        mapping(address => mapping(address => bool)) forcePausedVault;
-    }
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.ForcePauseSelfRegisterOperators")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant ForcePauseSelfRegisterOperatorsStorageLocation =
@@ -42,6 +41,8 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
         if (_operatorWasActiveAt(_now() + 1, operator)) {
             _pauseOperatorImpl(operator);
         }
+
+        emit ForcePauseOperator(operator);
     }
 
     /**
@@ -55,6 +56,8 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
             return;
         }
         _unpauseOperatorImpl(operator);
+
+        emit ForceUnpauseOperator(operator);
     }
 
     /**
@@ -74,6 +77,8 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
         if (_operatorVaultWasActiveAt(_now() + 1, operator, vault)) {
             _pauseOperatorVaultImpl(operator, vault);
         }
+
+        emit ForcePauseOperatorVault(operator, vault);
     }
 
     /**
@@ -85,6 +90,8 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
             return;
         }
         _unpauseOperatorVaultImpl(operator, vault);
+
+        emit ForceUnpauseOperatorVault(operator, vault);
     }
 
     /**
@@ -138,11 +145,11 @@ abstract contract ForcePauseSelfRegisterOperators is SelfRegisterOperators, IFor
 
     function _operatorForcePaused(
         address operator
-    ) private view returns (bool) {
+    ) internal view returns (bool) {
         return _getForcePauseStorage().forcePaused[operator];
     }
 
-    function _operatorVaultForcePaused(address operator, address vault) private view returns (bool) {
+    function _operatorVaultForcePaused(address operator, address vault) internal view returns (bool) {
         return _getForcePauseStorage().forcePausedVault[operator][vault];
     }
 }
