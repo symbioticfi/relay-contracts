@@ -5,7 +5,7 @@ WORKDIR /app
 # Install Foundry and curl
 RUN apt-get update && apt-get install -y curl jq && \
     curl -L https://foundry.paradigm.xyz | bash && \
-    /root/.foundry/bin/foundryup && \
+    /root/.foundry/bin/foundryup --install v1.1.0 && \
     ln -s /root/.foundry/bin/* /usr/local/bin/
 
 COPY package.json yarn.lock ./

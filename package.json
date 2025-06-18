@@ -1,6 +1,6 @@
 {
   "name": "@symbioticfi/relay-onchain",
-  "version": "0.1.0",
+  "version": "1.0.0-alpha.0",
   "description": "Symbiotic Relay smart contracts allowing construction of validator set using various mechanics, verification and management of operators' keys of various types, aggregated signatures verification, and validator set's running.",
   "homepage": "https://symbiotic.fi/relay",
   "bugs": "https://github.com/symbioticfi/middleware-sdk/issues",
@@ -27,14 +27,15 @@
   "scripts": {
     "deploy:anvil": "anvil --host 0.0.0.0 --port 8545 --mnemonic \"test test test test test test test test test test test junk\" --auto-impersonate --no-request-size-limit --chain-id 111 --block-time $BLOCK_TIME --slots-in-an-epoch 4 --hardfork prague",
     "deploy:anvil_wait_buffer": "cast rpc evm_increaseTime $DEPLOYMENT_BUFFER --rpc-url $ETH_RPC_URL_MASTER",
+    "sleep": "sleep 5",
     "deploy:initSetup": "forge script script/test/InitSetup.s.sol:InitSetupScript 25235 --sig \"run(uint256)\" --rpc-url $ETH_RPC_URL_MASTER --broadcast --legacy  --gas-estimate-multiplier 200 -vv",
-    "deploy:masterSetup": "forge script script/test/MasterSetup.s.sol:MasterSetupScript 25235 --sig \"run(uint256)\" --rpc-url $ETH_RPC_URL_MASTER --broadcast --legacy --gas-estimate-multiplier 200 ",
-    "deploy:generateGenesis": "chmod +x script/test/utils/generate_genesis && script/test/utils/generate_genesis --master-address $MASTER_CONTRACT --rpc-url $ETH_RPC_URL_MASTER -o script/test/data/genesis_header.json",
+    "deploy:masterSetup": "forge script script/test/MasterSetup.s.sol:MasterSetupScript 25235 --sig \"run(uint256)\" --rpc-url $ETH_RPC_URL_MASTER --broadcast --legacy --gas-estimate-multiplier 200",
+    "deploy:generateGenesis": "chmod +x script/test/utils/generate_genesis && script/test/utils/generate_genesis --driver-address $VALSET_DRIVER --rpc-url $ETH_RPC_URL_MASTER -o script/test/data/genesis_header.json",
     "deploy:genesisSetup": "forge script script/test/MasterGenesisSetup.s.sol:MasterGenesisSetupScript 25235 --sig \"run(uint256)\" --rpc-url $ETH_RPC_URL_MASTER --broadcast --legacy --slow --gas-estimate-multiplier 200 -vv",
     "deploy:genesis": "npm-run-all -s deploy:generateGenesis deploy:genesisSetup",
     "deploy:full": "npm-run-all -s deploy:initSetup deploy:masterSetup deploy:anvil_wait_buffer deploy:generateGenesis deploy:genesisSetup",
     "deploy:init_snapshot": "npm-run-all -s deploy:initSetup anvil:dump",
-    "deploy:network": "npm-run-all -s anvil:bump deploy:masterSetup deploy:anvil_wait_buffer deploy:generateGenesis deploy:genesisSetup",
+    "deploy:network": "npm-run-all -s anvil:bump deploy:masterSetup deploy:anvil_wait_buffer sleep deploy:generateGenesis deploy:genesisSetup",
     "anvil:dump": "cast rpc anvil_dumpState --rpc-url $ETH_RPC_URL_MASTER > script/test/data/anvil_master.txt",
     "anvil:bump": "node script/test/utils/load-anvil-state.js --stateFile script/test/data/anvil_master.txt --rpcUrl $ETH_RPC_URL_MASTER"
   },
