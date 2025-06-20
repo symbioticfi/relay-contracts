@@ -1,0 +1,1 @@
+## EqualStakeVPCalc Specification
