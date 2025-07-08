@@ -271,7 +271,7 @@ contract MasterSetupScript is InitSetupScript {
         console2.log("Total voting power: ", totalVotingPower);
         console2.log("-----------------------------------------------------------------------------------------------");
 
-        vm.writeJson(finalJson, "script/test/data/master_setup_params.json");
+        vm.writeJson(finalJson, string.concat(vm.projectRoot(), "/script/test/data/master_setup_params.json"));
     }
 
     function loadMasterSetupParams() public returns (MasterSetupParams memory masterSetupParams) {

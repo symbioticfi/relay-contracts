@@ -19,7 +19,7 @@ fi
 for ((i=1; i<=MAX_RETRIES; i++)); do
     echo "Trying to generate genesis, attempt $i..."
     
-    ${BINARY_PATH} --driver-address ${DRIVER_ADDRESS} --rpc-url $ETH_RPC_URL_MASTER -o ${DATA_DIR}/genesis_header.json && break  # Replace with your actual command
+    ${BINARY_PATH} network generate-genesis --driver-address ${DRIVER_ADDRESS} --rpc-url $ETH_RPC_URL_MASTER -o ${DATA_DIR}/genesis_header.json && break  # Replace with your actual command
 
     if [[ $i -lt $MAX_RETRIES ]]; then
         echo "Retrying in $DELAY seconds..."
