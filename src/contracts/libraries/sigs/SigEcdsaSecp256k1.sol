@@ -15,19 +15,20 @@ library SigEcdsaSecp256k1 {
         bytes memory signature,
         bytes memory /* extraData */
     ) internal view returns (bool) {
-        KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1 memory key = KeyEcdsaSecp256k1.fromBytes(keyBytes);
-        if (key.equal(KeyEcdsaSecp256k1.zeroKey())) {
-            return false;
-        }
+        address keyAddress = KeyEcdsaSecp256k1.fromBytes(keyBytes).unwrap();
+        bytes32 messageHash = abi.decode(message, (bytes32));
 
-        return ECDSA.recover(abi.decode(message, (bytes32)), signature) == key.unwrap();
+        return verify(keyAddress, messageHash, signature);
     }
 
     function verify(address key, bytes32 message, bytes memory signature) internal view returns (bool) {
         if (key == address(0)) {
             return false;
         }
-
-        return ECDSA.recover(message, signature) == key;
+        (address recovered, ECDSA.RecoverError error,) = ECDSA.tryRecover(message, signature);
+        if (error != ECDSA.RecoverError.NoError) {
+            return false;
+        }
+        return recovered == key;
     }
 }
