@@ -200,17 +200,10 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
         uint48 currentTimepoint
     ) internal view virtual returns (uint208) {
         uint256 length = trace.length();
-        if (length == 0) {
-            revert EpochManager_NoCheckpoint();
-        }
         Checkpoints.Checkpoint208 memory checkpoint = trace.at(uint32(length - 1));
         if (checkpoint._key <= currentTimepoint) {
             return checkpoint._value;
         }
-        if (length == 1) {
-            revert EpochManager_NoCheckpoint();
-        }
-        checkpoint = trace.at(uint32(length - 2));
-        return checkpoint._value;
+        return trace.at(uint32(length - 2))._value;
     }
 }

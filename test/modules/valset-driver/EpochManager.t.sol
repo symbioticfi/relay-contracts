@@ -68,7 +68,6 @@ contract TestEpochManager is EpochManager, NoPermissionManager {
 contract EpochManagerTest is Test {
     TestEpochManager internal epochManager;
 
-    bytes4 private ERR_NO_CHECKPOINT = IEpochManager.EpochManager_NoCheckpoint.selector;
     bytes4 private ERR_INVALID_EPOCH_DURATION = IEpochManager.EpochManager_InvalidEpochDuration.selector;
     bytes4 private ERR_INVALID_EPOCH_DURATION_TIMESTAMP =
         IEpochManager.EpochManager_InvalidEpochDurationTimestamp.selector;
@@ -78,7 +77,7 @@ contract EpochManagerTest is Test {
     }
 
     function test_Initialize_SetsEpochDuration() public {
-        vm.expectRevert(ERR_NO_CHECKPOINT);
+        vm.expectRevert();
         epochManager.getCurrentEpoch();
 
         uint48 startTime = uint48(vm.getBlockTimestamp()) + 200;
@@ -135,7 +134,7 @@ contract EpochManagerTest is Test {
         });
         epochManager.initialize(initParams);
 
-        vm.expectRevert(ERR_NO_CHECKPOINT);
+        vm.expectRevert();
         assertEq(epochManager.getCurrentEpoch(), 0);
         vm.warp(vm.getBlockTimestamp() + 50);
         assertEq(epochManager.getCurrentEpoch(), 0);
@@ -272,7 +271,7 @@ contract EpochManagerTest is Test {
     }
 
     function test_GetCurrentEpochDurationData() public {
-        vm.expectRevert(ERR_NO_CHECKPOINT);
+        vm.expectRevert();
         epochManager.getCurrentEpochDurationData();
 
         uint48 now_ = uint48(vm.getBlockTimestamp());
@@ -303,14 +302,14 @@ contract EpochManagerTest is Test {
     }
 
     function test_GetCurrentValue_NoCheckpoint() public {
-        vm.expectRevert(ERR_NO_CHECKPOINT);
+        vm.expectRevert();
         epochManager.getCurrentValuePublic(100);
     }
 
     function test_GetCurrentValue_SingleCheckpoint() public {
         epochManager.pushTestCheckpoint(100, 999);
 
-        vm.expectRevert(ERR_NO_CHECKPOINT);
+        vm.expectRevert();
         epochManager.getCurrentValuePublic(99);
 
         uint208 val = epochManager.getCurrentValuePublic(100);

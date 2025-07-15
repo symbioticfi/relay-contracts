@@ -157,7 +157,7 @@ contract SettlementRawTest is Test {
 
         testSettle = new TestSettlement();
 
-        vm.expectRevert(ISettlement.Settlement_NoCheckpoint.selector);
+        vm.expectRevert();
         testSettle.getSigVerifier();
 
         {

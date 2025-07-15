@@ -40,10 +40,6 @@ contract VotingPowerProviderFull is
     ) public virtual initializer {
         __VotingPowerProvider_init(votingPowerProviderInitParams);
         __OzOwnable_init(ozOwnableInitParams);
-        __EqualStakeVPCalc_init();
-        __OperatorVaults_init();
-        __SharedVaults_init();
-        __OperatorsBlacklist_init();
         __OperatorsWhitelist_init(operatorsWhitelistInitParams);
         __OpNetVaultAutoDeploy_init(opNetVaultAutoDeployInitParams);
         __BaseSlashing_init(BaseSlashingInitParams({slasher: address(this)}));

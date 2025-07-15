@@ -20,11 +20,6 @@ interface IEpochManager {
     error EpochManager_TooOldTimestamp();
 
     /**
-     * @notice Reverts when the checkpoint is not found for the current time point.
-     */
-    error EpochManager_NoCheckpoint();
-
-    /**
      * @notice The storage of the EpochManager contract.
      * @param _epochDurationDataByTimestamp The epoch duration data checkpointed by timestamps.
      * @param _epochDurationDataByIndex The epoch duration data checkpointed by epoch indexes.
