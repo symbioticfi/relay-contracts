@@ -54,6 +54,13 @@ abstract contract VotingPowerProvider is
     /**
      * @inheritdoc IVotingPowerProvider
      */
+    function getSlashingWindowAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint48) {
+        return VotingPowerProviderLogic.getSlashingWindowAt(timestamp, hint);
+    }
+
+    /**
+     * @inheritdoc IVotingPowerProvider
+     */
     function getSlashingWindow() public view virtual returns (uint48) {
         return VotingPowerProviderLogic.getSlashingWindow();
     }
