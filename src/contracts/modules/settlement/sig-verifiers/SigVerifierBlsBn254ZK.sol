@@ -96,7 +96,7 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
             if (proofOffset >= msg.data.length) {
                 revert SigVerifierBlsBn254ZK_InvalidProofOffset();
             }
-            if (proof.length < 224) {
+            if (proof.length != 416) {
                 revert SigVerifierBlsBn254ZK_InvalidProofLength();
             }
         }
