@@ -5,7 +5,6 @@ import {VotingPowerProvider} from "../VotingPowerProvider.sol";
 
 import {IOperatorsJail} from "../../../../interfaces/modules/voting-power/extensions/IOperatorsJail.sol";
 
-import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 abstract contract OperatorsJail is VotingPowerProvider, IOperatorsJail {
@@ -28,7 +27,7 @@ abstract contract OperatorsJail is VotingPowerProvider, IOperatorsJail {
     function isOperatorJailed(
         address operator
     ) public view virtual returns (bool) {
-        return getOperatorJailedUntil(operator) > Time.timestamp();
+        return getOperatorJailedUntil(operator) > block.timestamp;
     }
 
     /**
@@ -48,7 +47,7 @@ abstract contract OperatorsJail is VotingPowerProvider, IOperatorsJail {
             revert OperatorsJail_InvalidDuration();
         }
         _getOperatorsJailStorage()._jailedUntil[operator] =
-            uint48(Math.max(getOperatorJailedUntil(operator), Time.timestamp() + duration));
+            uint48(Math.max(getOperatorJailedUntil(operator), block.timestamp + duration));
         if (isOperatorRegistered(operator)) {
             _unregisterOperator(operator);
         }

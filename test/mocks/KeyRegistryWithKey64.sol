@@ -5,7 +5,6 @@ import {KeyRegistry} from "../../src/contracts/modules/key-registry/KeyRegistry.
 
 import {IKeyRegistry} from "../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
 
-import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {MulticallUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
 
 import {OzEIP712} from "../../src/contracts/modules/base/OzEIP712.sol";

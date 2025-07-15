@@ -18,7 +18,6 @@ import {IDefaultOperatorRewards} from
 
 import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 
 import {Checkpoints} from "../../../libraries/structs/Checkpoints.sol";
 import {PersistentSet} from "../../../libraries/structs/PersistentSet.sol";
@@ -383,7 +382,7 @@ library VotingPowerProviderLogic {
     function setSlashingWindowInternal(
         uint48 slashingWindow
     ) public {
-        _getVotingPowerProviderStorage()._slashingWindow.push(Time.timestamp(), slashingWindow);
+        _getVotingPowerProviderStorage()._slashingWindow.push(uint48(block.timestamp), slashingWindow);
 
         emit IVotingPowerProvider.SetSlashingWindow(slashingWindow);
     }
@@ -394,7 +393,7 @@ library VotingPowerProviderLogic {
         if (token == address(0)) {
             revert IVotingPowerProvider.VotingPowerProvider_InvalidToken();
         }
-        if (!_getVotingPowerProviderStorage()._tokens.add(Time.timestamp(), token)) {
+        if (!_getVotingPowerProviderStorage()._tokens.add(uint48(block.timestamp), token)) {
             revert IVotingPowerProvider.VotingPowerProvider_TokenAlreadyIsRegistered();
         }
 
@@ -404,7 +403,7 @@ library VotingPowerProviderLogic {
     function unregisterToken(
         address token
     ) public {
-        if (!_getVotingPowerProviderStorage()._tokens.remove(Time.timestamp(), token)) {
+        if (!_getVotingPowerProviderStorage()._tokens.remove(uint48(block.timestamp), token)) {
             revert IVotingPowerProvider.VotingPowerProvider_TokenNotRegistered();
         }
 
@@ -418,7 +417,7 @@ library VotingPowerProviderLogic {
             revert IVotingPowerProvider.VotingPowerProvider_InvalidOperator();
         }
 
-        if (!_getVotingPowerProviderStorage()._operators.add(Time.timestamp(), operator)) {
+        if (!_getVotingPowerProviderStorage()._operators.add(uint48(block.timestamp), operator)) {
             revert IVotingPowerProvider.VotingPowerProvider_OperatorAlreadyRegistered();
         }
 
@@ -428,7 +427,7 @@ library VotingPowerProviderLogic {
     function unregisterOperator(
         address operator
     ) public {
-        if (!_getVotingPowerProviderStorage()._operators.remove(Time.timestamp(), operator)) {
+        if (!_getVotingPowerProviderStorage()._operators.remove(uint48(block.timestamp), operator)) {
             revert IVotingPowerProvider.VotingPowerProvider_OperatorNotRegistered();
         }
 
@@ -448,7 +447,7 @@ library VotingPowerProviderLogic {
         if ($._allOperatorVaults.contains(vault)) {
             revert IVotingPowerProvider.VotingPowerProvider_OperatorVaultAlreadyIsRegistered();
         }
-        if (!$._sharedVaults.add(Time.timestamp(), vault)) {
+        if (!$._sharedVaults.add(uint48(block.timestamp), vault)) {
             revert IVotingPowerProvider.VotingPowerProvider_SharedVaultAlreadyIsRegistered();
         }
 
@@ -469,10 +468,10 @@ library VotingPowerProviderLogic {
         if ($._sharedVaults.contains(vault)) {
             revert IVotingPowerProvider.VotingPowerProvider_SharedVaultAlreadyIsRegistered();
         }
-        if (!$._allOperatorVaults.add(Time.timestamp(), vault)) {
+        if (!$._allOperatorVaults.add(uint48(block.timestamp), vault)) {
             revert IVotingPowerProvider.VotingPowerProvider_OperatorVaultAlreadyIsRegistered();
         }
-        $._operatorVaults[operator].add(Time.timestamp(), vault);
+        $._operatorVaults[operator].add(uint48(block.timestamp), vault);
 
         emit IVotingPowerProvider.RegisterOperatorVault(operator, vault);
     }
@@ -480,7 +479,7 @@ library VotingPowerProviderLogic {
     function unregisterSharedVault(
         address vault
     ) public {
-        if (!_getVotingPowerProviderStorage()._sharedVaults.remove(Time.timestamp(), vault)) {
+        if (!_getVotingPowerProviderStorage()._sharedVaults.remove(uint48(block.timestamp), vault)) {
             revert IVotingPowerProvider.VotingPowerProvider_SharedVaultNotRegistered();
         }
 
@@ -489,10 +488,10 @@ library VotingPowerProviderLogic {
 
     function unregisterOperatorVault(address operator, address vault) public {
         IVotingPowerProvider.VotingPowerProviderStorage storage $ = _getVotingPowerProviderStorage();
-        if (!$._operatorVaults[operator].remove(Time.timestamp(), vault)) {
+        if (!$._operatorVaults[operator].remove(uint48(block.timestamp), vault)) {
             revert IVotingPowerProvider.VotingPowerProvider_OperatorVaultNotRegistered();
         }
-        $._allOperatorVaults.remove(Time.timestamp(), vault);
+        $._allOperatorVaults.remove(uint48(block.timestamp), vault);
 
         emit IVotingPowerProvider.UnregisterOperatorVault(operator, vault);
     }

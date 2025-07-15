@@ -6,8 +6,6 @@ import {Checkpoints} from "../../../contracts/libraries/structs/Checkpoints.sol"
 
 import {IEpochManager} from "../../../interfaces/modules/valset-driver/IEpochManager.sol";
 
-import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
-
 abstract contract EpochManager is PermissionManager, IEpochManager {
     using Checkpoints for Checkpoints.Trace208;
 
@@ -25,7 +23,7 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
     function __EpochManager_init(
         EpochManagerInitParams memory initParams
     ) internal virtual onlyInitializing {
-        if (initParams.epochDurationTimestamp < Time.timestamp()) {
+        if (initParams.epochDurationTimestamp < block.timestamp) {
             revert EpochManager_InvalidEpochDurationTimestamp();
         }
         _setEpochDuration(initParams.epochDuration, initParams.epochDurationTimestamp, 0);
@@ -38,7 +36,7 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
     function getCurrentEpoch() public view virtual returns (uint48) {
         (uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex) =
             _getCurrentEpochDurationData();
-        return epochDurationIndex + (Time.timestamp() - epochDurationTimestamp) / epochDuration;
+        return epochDurationIndex + (uint48(block.timestamp) - epochDurationTimestamp) / epochDuration;
     }
 
     /**
@@ -62,7 +60,7 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
      */
     function getNextEpoch() public view virtual returns (uint48) {
         (, uint48 epochDurationTimestamp,) = _getFirstEpochDurationData();
-        if (Time.timestamp() < epochDurationTimestamp) {
+        if (block.timestamp < epochDurationTimestamp) {
             return 0;
         }
         return getCurrentEpoch() + 1;
@@ -73,7 +71,7 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
      */
     function getNextEpochDuration() public view virtual returns (uint48) {
         (uint48 epochDuration, uint48 epochDurationTimestamp,) = _getFirstEpochDurationData();
-        if (Time.timestamp() < epochDurationTimestamp) {
+        if (block.timestamp < epochDurationTimestamp) {
             return epochDuration;
         }
         (epochDuration,,) =
@@ -86,7 +84,7 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
      */
     function getNextEpochStart() public view virtual returns (uint48) {
         (, uint48 epochDurationTimestamp,) = _getFirstEpochDurationData();
-        if (Time.timestamp() < epochDurationTimestamp) {
+        if (block.timestamp < epochDurationTimestamp) {
             return epochDurationTimestamp;
         }
         return getCurrentEpochStart() + getCurrentEpochDuration();
@@ -173,7 +171,7 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
 
     function _getCurrentEpochDurationData() internal view virtual returns (uint48, uint48, uint48) {
         return _deserializeEpochDurationData(
-            _getCurrentValue(_getEpochManagerStorage()._epochDurationDataByTimestamp, Time.timestamp())
+            _getCurrentValue(_getEpochManagerStorage()._epochDurationDataByTimestamp, uint48(block.timestamp))
         );
     }
 

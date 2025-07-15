@@ -7,7 +7,6 @@ import {
     KEY_TYPE_ECDSA_SECP256K1
 } from "../../../interfaces/modules/key-registry/IKeyRegistry.sol";
 
-import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
 import {MulticallUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
 
 import {OzEIP712} from "../base/OzEIP712.sol";
@@ -245,8 +244,10 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
         $._operatorByTypeAndKeyHash[type_][keyHash] = operator;
         $._operatorByTagAndKeyHash[tag][keyHash] = operator;
 
-        $._operators.add(Time.timestamp(), operator);
-        $._operatorKeyTags[operator].push(Time.timestamp(), uint128($._operatorKeyTags[operator].latest()).add(tag));
+        $._operators.add(uint48(block.timestamp), operator);
+        $._operatorKeyTags[operator].push(
+            uint48(block.timestamp), uint128($._operatorKeyTags[operator].latest()).add(tag)
+        );
         _setKey(operator, tag, key);
 
         emit IKeyRegistry.SetKey(operator, tag, key, extraData);
@@ -267,13 +268,13 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
 
     function _setKey32(address operator, uint8 tag, bytes memory key) internal {
         bytes32 compressedKey = abi.decode(key, (bytes32));
-        _getKeyRegistryStorage()._keys32[operator][tag].push(Time.timestamp(), uint256(compressedKey));
+        _getKeyRegistryStorage()._keys32[operator][tag].push(uint48(block.timestamp), uint256(compressedKey));
     }
 
     function _setKey64(address operator, uint8 tag, bytes memory key) internal {
         (bytes32 compressedKey1, bytes32 compressedKey2) = abi.decode(key, (bytes32, bytes32));
         _getKeyRegistryStorage()._keys64[operator][tag].push(
-            Time.timestamp(), [uint256(compressedKey1), uint256(compressedKey2)]
+            uint48(block.timestamp), [uint256(compressedKey1), uint256(compressedKey2)]
         );
     }
 

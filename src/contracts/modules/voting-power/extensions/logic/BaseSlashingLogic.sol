@@ -19,8 +19,6 @@ import {VotingPowerProviderLogic} from "../../logic/VotingPowerProviderLogic.sol
 import {IVotingPowerProvider} from "../../../../../interfaces/modules/voting-power/IVotingPowerProvider.sol";
 import {INetworkManager} from "../../../../../interfaces/modules/base/INetworkManager.sol";
 
-import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
-
 library BaseSlashingLogic {
     function slashVault(
         uint48 timestamp,
@@ -92,7 +90,7 @@ library BaseSlashingLogic {
         }
 
         uint48 slashingWindow = VotingPowerProviderLogic.getSlashingWindowAt(timestamp, slashHints.slashingWindowHint);
-        if (Time.timestamp() - timestamp > slashingWindow) {
+        if (block.timestamp - timestamp > slashingWindow) {
             return (false, new bytes(0));
         }
 
@@ -158,7 +156,7 @@ library BaseSlashingLogic {
             (,,, uint48 timestamp,,) = IVetoSlasher(slasher).slashRequests(slashIndex);
             uint48 slashingWindow =
                 VotingPowerProviderLogic.getSlashingWindowAt(timestamp, executeSlashHints.slashingWindowHint);
-            if (Time.timestamp() - timestamp > slashingWindow) {
+            if (block.timestamp - timestamp > slashingWindow) {
                 return (false, 0);
             }
 

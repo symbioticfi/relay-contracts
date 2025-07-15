@@ -10,8 +10,6 @@ import {ISettlement} from "../../../interfaces/modules/settlement/ISettlement.so
 import {OzEIP712} from "../base/OzEIP712.sol";
 import {PermissionManager} from "../base/PermissionManager.sol";
 
-import {Time} from "@openzeppelin/contracts/utils/types/Time.sol";
-
 abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISettlement {
     using Checkpoints for Checkpoints.Trace208;
 
@@ -339,7 +337,7 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
 
         if (
             header.captureTimestamp <= getCaptureTimestampFromValSetHeaderAt(lastCommittedHeaderEpoch)
-                || header.captureTimestamp >= Time.timestamp()
+                || header.captureTimestamp >= block.timestamp
         ) {
             revert Settlement_InvalidCaptureTimestamp();
         }
