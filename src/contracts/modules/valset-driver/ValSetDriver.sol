@@ -238,14 +238,14 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
      */
     function getRequiredKeyTagsAt(
         uint48 timestamp
-    ) public view returns (uint8[] memory requiredKeyTags) {
+    ) public view virtual returns (uint8[] memory requiredKeyTags) {
         return uint128(_getValSetDriverStorage()._requiredKeyTags.upperLookupRecent(timestamp)).deserialize();
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function getRequiredKeyTags() public view returns (uint8[] memory requiredKeyTags) {
+    function getRequiredKeyTags() public view virtual returns (uint8[] memory requiredKeyTags) {
         return uint128(_getValSetDriverStorage()._requiredKeyTags.latest()).deserialize();
     }
 
