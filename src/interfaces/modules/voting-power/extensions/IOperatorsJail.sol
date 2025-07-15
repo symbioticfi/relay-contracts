@@ -5,6 +5,11 @@ import {IVotingPowerProvider} from "../IVotingPowerProvider.sol";
 
 interface IOperatorsJail {
     /**
+     * @notice The error thrown when the duration is invalid.
+     */
+    error OperatorsJail_InvalidDuration();
+
+    /**
      * @notice The error thrown when the operator is not jailed.
      */
     error OperatorsJail_OperatorNotJailed();

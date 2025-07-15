@@ -44,6 +44,9 @@ abstract contract OperatorsJail is VotingPowerProvider, IOperatorsJail {
      * @inheritdoc IOperatorsJail
      */
     function jailOperator(address operator, uint48 duration) public virtual checkPermission {
+        if (duration == 0) {
+            revert OperatorsJail_InvalidDuration();
+        }
         _getOperatorsJailStorage()._jailedUntil[operator] =
             uint48(Math.max(getOperatorJailedUntil(operator), Time.timestamp() + duration));
         if (isOperatorRegistered(operator)) {
