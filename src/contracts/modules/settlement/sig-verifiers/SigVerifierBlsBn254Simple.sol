@@ -7,7 +7,6 @@ import {KeyBlsBn254} from "../../../libraries/keys/KeyBlsBn254.sol";
 import {ExtraDataStorageHelper} from "./libraries/ExtraDataStorageHelper.sol";
 import {KEY_TYPE_BLS_BN254} from "../../../../interfaces/modules/key-registry/IKeyRegistry.sol";
 import {KeyTags} from "../../../libraries/utils/KeyTags.sol";
-import {console2} from "forge-std/console2.sol";
 
 import {ISigVerifier} from "../../../../interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol";
 import {ISettlement} from "../../../../interfaces/modules/settlement/ISettlement.sol";
@@ -62,8 +61,6 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
         if (keyTag.getType() != KEY_TYPE_BLS_BN254) {
             revert SigVerifierBlsBn254Simple_UnsupportedKeyTag();
         }
-
-        console2.logBytes(msg.data);
 
         // Proof Structure
         // 0 : 64 - G1 aggregated signature
