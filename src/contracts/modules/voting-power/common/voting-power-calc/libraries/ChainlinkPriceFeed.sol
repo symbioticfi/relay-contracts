@@ -31,42 +31,54 @@ library ChainlinkPriceFeed {
     function getPriceAt(
         address[2] memory aggregators,
         uint48 timestamp,
-        bool[2] memory inverts
+        bool[2] memory inverts,
+        uint48[2] memory stalenessDurations
     ) public view returns (uint256) {
-        return getPriceAt(toDynamicArray(aggregators), timestamp, toDynamicArray(inverts));
+        (address[] memory dynamicAggregators, bool[] memory dynamicInverts, uint48[] memory dynamicStalenessDurations) =
+            toDynamicArrays(aggregators, inverts, stalenessDurations);
+        return getPriceAt(dynamicAggregators, timestamp, dynamicInverts, dynamicStalenessDurations);
     }
 
     function getPriceAt(
         address[] memory aggregators,
         uint48 timestamp,
-        bool[] memory inverts
+        bool[] memory inverts,
+        uint48[] memory stalenessDurations
     ) public view returns (uint256) {
         uint256 length = aggregators.length;
         if (length == 0) {
             revert ZeroLength();
         }
-        if (length != inverts.length) {
+        if (length != inverts.length || length != stalenessDurations.length) {
             revert NotEqualLength();
         }
         uint256 price = 10 ** BASE_DECIMALS;
         for (uint256 i; i < length; ++i) {
-            price = price.mulDiv(getPriceAt(aggregators[i], timestamp, inverts[i]), 10 ** BASE_DECIMALS);
+            price = price.mulDiv(
+                getPriceAt(aggregators[i], timestamp, inverts[i], stalenessDurations[i]), 10 ** BASE_DECIMALS
+            );
         }
         return price;
     }
 
-    function getPriceAt(address aggregator, uint48 timestamp, bool invert) public view returns (uint256) {
-        (bool success, RoundData memory roundData) = getPriceDataAt(aggregator, timestamp, invert);
+    function getPriceAt(
+        address aggregator,
+        uint48 timestamp,
+        bool invert,
+        uint48 stalenessDuration
+    ) public view returns (uint256) {
+        (bool success, RoundData memory roundData) = getPriceDataAt(aggregator, timestamp, invert, stalenessDuration);
         return success ? roundData.answer : 0;
     }
 
     function getPriceDataAt(
         address aggregator,
         uint48 timestamp,
-        bool invert
+        bool invert,
+        uint48 stalenessDuration
     ) public view returns (bool success, RoundData memory roundData) {
         (success, roundData) = getRoundDataAt(aggregator, timestamp);
-        if (!success || isStale(roundData)) {
+        if (!success || isStale(timestamp, roundData, stalenessDuration)) {
             return (false, roundData);
         }
         roundData.answer = roundData.answer.scale(AggregatorV3Interface(aggregator).decimals(), BASE_DECIMALS);
@@ -151,36 +163,47 @@ library ChainlinkPriceFeed {
         } catch {}
     }
 
-    function getLatestPrice(address[2] memory aggregators, bool[2] memory inverts) public view returns (uint256) {
-        return getLatestPrice(toDynamicArray(aggregators), toDynamicArray(inverts));
+    function getLatestPrice(
+        address[2] memory aggregators,
+        bool[2] memory inverts,
+        uint48[2] memory stalenessDurations
+    ) public view returns (uint256) {
+        (address[] memory dynamicAggregators, bool[] memory dynamicInverts, uint48[] memory dynamicStalenessDurations) =
+            toDynamicArrays(aggregators, inverts, stalenessDurations);
+        return getLatestPrice(dynamicAggregators, dynamicInverts, dynamicStalenessDurations);
     }
 
-    function getLatestPrice(address[] memory aggregators, bool[] memory inverts) public view returns (uint256) {
+    function getLatestPrice(
+        address[] memory aggregators,
+        bool[] memory inverts,
+        uint48[] memory stalenessDurations
+    ) public view returns (uint256) {
         uint256 length = aggregators.length;
         if (length == 0) {
             revert ZeroLength();
         }
-        if (length != inverts.length) {
+        if (length != inverts.length || length != stalenessDurations.length) {
             revert NotEqualLength();
         }
         uint256 price = 10 ** BASE_DECIMALS;
         for (uint256 i; i < length; ++i) {
-            price = price.mulDiv(getLatestPrice(aggregators[i], inverts[i]), 10 ** BASE_DECIMALS);
+            price = price.mulDiv(getLatestPrice(aggregators[i], inverts[i], stalenessDurations[i]), 10 ** BASE_DECIMALS);
         }
         return price;
     }
 
-    function getLatestPrice(address aggregator, bool invert) public view returns (uint256) {
-        (bool success, RoundData memory roundData) = getLatestPriceData(aggregator, invert);
+    function getLatestPrice(address aggregator, bool invert, uint48 stalenessDuration) public view returns (uint256) {
+        (bool success, RoundData memory roundData) = getLatestPriceData(aggregator, invert, stalenessDuration);
         return success ? roundData.answer : 0;
     }
 
     function getLatestPriceData(
         address aggregator,
-        bool invert
+        bool invert,
+        uint48 stalenessDuration
     ) public view returns (bool success, RoundData memory roundData) {
         (success, roundData) = getLatestRoundData(aggregator);
-        if (!success || isStale(roundData)) {
+        if (!success || isStale(uint48(block.timestamp), roundData, stalenessDuration)) {
             return (false, roundData);
         }
         roundData.answer = roundData.answer.scale(AggregatorV3Interface(aggregator).decimals(), BASE_DECIMALS);
@@ -207,9 +230,12 @@ library ChainlinkPriceFeed {
     }
 
     function isStale(
-        RoundData memory roundData
+        uint48 timestamp,
+        RoundData memory roundData,
+        uint48 stalenessDuration
     ) public pure returns (bool) {
-        return roundData.answer == 0 || roundData.answer >= (1 << 255) || roundData.answeredInRound < roundData.roundId;
+        return roundData.answer == 0 || roundData.answer >= (1 << 255) || roundData.answeredInRound < roundData.roundId
+            || roundData.updatedAt + stalenessDuration < timestamp;
     }
 
     function serializeIds(uint16 phase, uint64 originalId) public pure returns (uint80) {
@@ -222,19 +248,35 @@ library ChainlinkPriceFeed {
         return (uint16(roundId >> PHASE_OFFSET), uint64(roundId));
     }
 
-    function toDynamicArray(
-        address[2] memory array
-    ) public pure returns (address[] memory dynamicArray) {
-        dynamicArray = new address[](2);
-        dynamicArray[0] = array[0];
-        dynamicArray[1] = array[1];
-    }
-
-    function toDynamicArray(
-        bool[2] memory array
-    ) public pure returns (bool[] memory dynamicArray) {
-        dynamicArray = new bool[](2);
-        dynamicArray[0] = array[0];
-        dynamicArray[1] = array[1];
+    function toDynamicArrays(
+        address[2] memory aggregators,
+        bool[2] memory inverts,
+        uint48[2] memory stalenessDurations
+    )
+        public
+        pure
+        returns (
+            address[] memory dynamicAggregators,
+            bool[] memory dynamicInverts,
+            uint48[] memory dynamicStalenessDurations
+        )
+    {
+        dynamicAggregators = new address[](2);
+        dynamicInverts = new bool[](2);
+        dynamicStalenessDurations = new uint48[](2);
+        uint256 length;
+        for (uint256 i; i < 2; ++i) {
+            if (aggregators[i] != address(0)) {
+                dynamicAggregators[length] = aggregators[i];
+                dynamicInverts[length] = inverts[i];
+                dynamicStalenessDurations[length] = stalenessDurations[i];
+                ++length;
+            }
+        }
+        assembly ("memory-safe") {
+            mstore(dynamicAggregators, length)
+            mstore(dynamicInverts, length)
+            mstore(dynamicStalenessDurations, length)
+        }
     }
 }

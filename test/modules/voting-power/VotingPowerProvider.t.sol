@@ -782,6 +782,10 @@ contract VotingPowerProviderTest is InitSetupTest {
             vm.startPrank(vars.network.addr);
             votingPowerProvider.registerOperatorVault(operator.addr, operatorVault);
             vm.stopPrank();
+
+            console.log(
+                "operatorVotingPowers1", votingPowerProvider.getOperatorStake(operatorVault, getOperator(0).addr)
+            );
         }
 
         IVotingPowerProvider.OperatorVotingPower[] memory operatorVotingPowers1 =

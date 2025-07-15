@@ -40,7 +40,7 @@ abstract contract PricedTokensChainlinkVPCalc is
     function getTokenHopsAt(
         address token,
         uint48 timestamp
-    ) public view virtual override returns (address[2] memory, bool[2] memory) {
+    ) public view virtual override returns (address[2] memory, bool[2] memory, uint48[2] memory) {
         return _deserializeHops(_getPricedTokensChainlinkVPCalcStorage()._tokenHops[token].upperLookupRecent(timestamp));
     }
 
@@ -49,7 +49,7 @@ abstract contract PricedTokensChainlinkVPCalc is
      */
     function getTokenHops(
         address token
-    ) public view virtual override returns (address[2] memory, bool[2] memory) {
+    ) public view virtual override returns (address[2] memory, bool[2] memory, uint48[2] memory) {
         return _deserializeHops(_getPricedTokensChainlinkVPCalcStorage()._tokenHops[token].latest());
     }
 
@@ -57,8 +57,9 @@ abstract contract PricedTokensChainlinkVPCalc is
      * @inheritdoc IPricedTokensChainlinkVPCalc
      */
     function getTokenPriceAt(address token, uint48 timestamp) public view virtual override returns (uint256) {
-        (address[2] memory aggregators, bool[2] memory inverts) = getTokenHopsAt(token, timestamp);
-        return ChainlinkPriceFeed.getPriceAt(aggregators, timestamp, inverts);
+        (address[2] memory aggregators, bool[2] memory inverts, uint48[2] memory stalenessDurations) =
+            getTokenHopsAt(token, timestamp);
+        return ChainlinkPriceFeed.getPriceAt(aggregators, timestamp, inverts, stalenessDurations);
     }
 
     /**
@@ -67,8 +68,9 @@ abstract contract PricedTokensChainlinkVPCalc is
     function getTokenPrice(
         address token
     ) public view virtual override returns (uint256) {
-        (address[2] memory aggregators, bool[2] memory inverts) = getTokenHops(token);
-        return ChainlinkPriceFeed.getLatestPrice(aggregators, inverts);
+        (address[2] memory aggregators, bool[2] memory inverts, uint48[2] memory stalenessDurations) =
+            getTokenHops(token);
+        return ChainlinkPriceFeed.getLatestPrice(aggregators, inverts, stalenessDurations);
     }
 
     /**
@@ -101,45 +103,61 @@ abstract contract PricedTokensChainlinkVPCalc is
     function setTokenHops(
         address token,
         address[2] memory aggregators,
-        bool[2] memory inverts
+        bool[2] memory inverts,
+        uint48[2] memory stalenessDurations
     ) public virtual checkPermission {
-        _setTokenHops(token, aggregators, inverts);
+        _setTokenHops(token, aggregators, inverts, stalenessDurations);
     }
 
-    function _setTokenHops(address token, address[2] memory aggregators, bool[2] memory inverts) internal virtual {
+    function _setTokenHops(
+        address token,
+        address[2] memory aggregators,
+        bool[2] memory inverts,
+        uint48[2] memory stalenessDurations
+    ) internal virtual {
         _getPricedTokensChainlinkVPCalcStorage()._tokenHops[token].push(
-            uint48(block.timestamp), _serializeHops(aggregators, inverts)
+            uint48(block.timestamp), _serializeHops(aggregators, inverts, stalenessDurations)
         );
-        emit SetTokenHops(token, aggregators, inverts);
+        emit SetTokenHops(token, aggregators, inverts, stalenessDurations);
     }
 
-    function _serializeHop(address aggregator, bool invert) internal pure virtual returns (uint256) {
-        return uint256(uint160(aggregator)) << 1 | (invert ? 1 : 0);
+    function _serializeHop(
+        address aggregator,
+        bool invert,
+        uint48 stalenessDuration
+    ) internal pure virtual returns (uint256) {
+        return uint256(uint160(aggregator)) << 49 | uint256(stalenessDuration) << 1 | (invert ? 1 : 0);
     }
 
     function _serializeHops(
         address[2] memory aggregators,
-        bool[2] memory inverts
+        bool[2] memory inverts,
+        uint48[2] memory stalenessDurations
     ) internal pure virtual returns (uint256[2] memory hops) {
         if (aggregators[0] == address(0)) {
             revert InvalidAggregator();
         }
-        hops[0] = _serializeHop(aggregators[0], inverts[0]);
+        hops[0] = _serializeHop(aggregators[0], inverts[0], stalenessDurations[0]);
         if (aggregators[1] != address(0)) {
-            hops[1] = _serializeHop(aggregators[1], inverts[1]);
+            hops[1] = _serializeHop(aggregators[1], inverts[1], stalenessDurations[1]);
         }
     }
 
     function _deserializeHop(
         uint256 hop
-    ) internal pure virtual returns (address aggregator, bool invert) {
-        return (address(uint160(hop >> 1)), hop & 1 > 0);
+    ) internal pure virtual returns (address aggregator, bool invert, uint48 stalenessDuration) {
+        return (address(uint160(hop >> 49)), hop & 1 > 0, uint48(hop >> 1));
     }
 
     function _deserializeHops(
         uint256[2] memory hops
-    ) internal pure virtual returns (address[2] memory aggregators, bool[2] memory inverts) {
-        (aggregators[0], inverts[0]) = _deserializeHop(hops[0]);
-        (aggregators[1], inverts[1]) = _deserializeHop(hops[1]);
+    )
+        internal
+        pure
+        virtual
+        returns (address[2] memory aggregators, bool[2] memory inverts, uint48[2] memory stalenessDurations)
+    {
+        (aggregators[0], inverts[0], stalenessDurations[0]) = _deserializeHop(hops[0]);
+        (aggregators[1], inverts[1], stalenessDurations[1]) = _deserializeHop(hops[1]);
     }
 }
