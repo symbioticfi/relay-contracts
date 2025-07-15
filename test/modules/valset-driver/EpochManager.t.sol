@@ -118,6 +118,7 @@ contract EpochManagerTest is Test {
     }
 
     function test_Initialize_RevertOnPastTimestamp() public {
+        vm.warp(100);
         IEpochManager.EpochManagerInitParams memory initParams = IEpochManager.EpochManagerInitParams({
             epochDuration: 100,
             epochDurationTimestamp: uint48(vm.getBlockTimestamp() - 1)
