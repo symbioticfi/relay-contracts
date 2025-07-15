@@ -58,20 +58,6 @@ abstract contract BaseSlashing is VotingPowerProvider, IBaseSlashing {
     /**
      * @inheritdoc IBaseSlashing
      */
-    function slashVaultUnsafe(
-        uint48 timestamp,
-        address vault,
-        address operator,
-        uint256 amount,
-        bytes memory hints
-    ) public virtual returns (bool success, bytes memory response) {
-        _checkSlasher();
-        return BaseSlashingLogic.slashVaultUnsafe(timestamp, vault, operator, amount, hints);
-    }
-
-    /**
-     * @inheritdoc IBaseSlashing
-     */
     function executeSlashVault(
         address vault,
         uint256 slashIndex,

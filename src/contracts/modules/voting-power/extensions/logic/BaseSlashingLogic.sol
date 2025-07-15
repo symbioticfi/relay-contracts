@@ -27,48 +27,6 @@ library BaseSlashingLogic {
         uint256 amount,
         bytes memory hints
     ) public returns (bool success, bytes memory response) {
-        IBaseSlashing.SlashVaultHints memory slashVaultHints;
-        if (hints.length > 0) {
-            slashVaultHints = abi.decode(hints, (IBaseSlashing.SlashVaultHints));
-        }
-
-        if (
-            !IVotingPowerProvider(address(this)).isOperatorRegisteredAt(
-                operator, timestamp, slashVaultHints.operatorRegisteredHint
-            )
-        ) {
-            revert IBaseSlashing.BaseSlashing_UnregisteredOperatorSlash();
-        }
-
-        if (
-            !IVotingPowerProvider(address(this)).isOperatorVaultRegisteredAt(
-                operator, vault, timestamp, slashVaultHints.operatorVaultRegisteredHint
-            )
-                && !IVotingPowerProvider(address(this)).isSharedVaultRegisteredAt(
-                    vault, timestamp, slashVaultHints.sharedVaultRegisteredHint
-                )
-        ) {
-            revert IBaseSlashing.BaseSlashing_UnregisteredVaultSlash();
-        }
-
-        if (
-            !IVotingPowerProvider(address(this)).isTokenRegisteredAt(
-                IVault(vault).collateral(), timestamp, slashVaultHints.isTokenRegisteredHint
-            )
-        ) {
-            revert IBaseSlashing.BaseSlashing_UnregisteredTokenSlash();
-        }
-
-        return slashVaultUnsafe(timestamp, vault, operator, amount, slashVaultHints.slashHints);
-    }
-
-    function slashVaultUnsafe(
-        uint48 timestamp,
-        address vault,
-        address operator,
-        uint256 amount,
-        bytes memory hints
-    ) public returns (bool success, bytes memory response) {
         address slasher = IVault(vault).slasher();
         if (slasher == address(0)) {
             revert IBaseSlashing.BaseSlashing_NoSlasher();

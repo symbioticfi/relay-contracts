@@ -154,28 +154,9 @@ interface IBaseSlashing {
      * @param hints The hints to optimize the vault slashing.
      * @return success The success of the slash.
      * @return response The response of the slash.
-     * @dev The function checks the registration statuses of the operator, the vault, and the vault's collateral.
-     */
-    function slashVault(
-        uint48 timestamp,
-        address vault,
-        address operator,
-        uint256 amount,
-        bytes memory hints
-    ) external returns (bool success, bytes memory response);
-
-    /**
-     * @notice Slashes the vault.
-     * @param timestamp The capture timestamp for the slash.
-     * @param vault The address of the vault.
-     * @param operator The address of the operator.
-     * @param amount The amount of the tokens to be slashed.
-     * @param hints The hints to optimize the vault slashing.
-     * @return success The success of the slash.
-     * @return response The response of the slash.
      * @dev The function doesn't check the registration statuses.
      */
-    function slashVaultUnsafe(
+    function slashVault(
         uint48 timestamp,
         address vault,
         address operator,
