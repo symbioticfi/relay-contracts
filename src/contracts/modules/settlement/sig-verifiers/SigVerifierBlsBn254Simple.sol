@@ -133,11 +133,12 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
                         indexOffset := add(add(proof.offset, 224), mul(currentNonSignerIndex, 64))
                     }
                     {
-                        BN254.G1Point calldata keyG1;
+                        bytes32 keySerialized;
                         assembly {
-                            keyG1 := indexOffset
+                            keySerialized := calldataload(indexOffset)
                         }
-                        nonSignersPublicKeyG1 = nonSignersPublicKeyG1.plus(abi.encode(keyG1).deserialize().unwrap());
+                        nonSignersPublicKeyG1 =
+                            nonSignersPublicKeyG1.plus(abi.encode(keySerialized).deserialize().unwrap());
                     }
                     {
                         uint256 votingPower;
