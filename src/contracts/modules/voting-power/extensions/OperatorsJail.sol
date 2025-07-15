@@ -62,9 +62,6 @@ abstract contract OperatorsJail is VotingPowerProvider, IOperatorsJail {
     function unjailOperator(
         address operator
     ) public virtual checkPermission {
-        if (!isOperatorJailed(operator)) {
-            revert OperatorsJail_OperatorNotJailed();
-        }
         _getOperatorsJailStorage()._jailedUntil[operator] = 0;
 
         emit UnjailOperator(operator);

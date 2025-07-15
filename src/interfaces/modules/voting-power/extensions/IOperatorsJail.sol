@@ -10,11 +10,6 @@ interface IOperatorsJail {
     error OperatorsJail_InvalidDuration();
 
     /**
-     * @notice The error thrown when the operator is not jailed.
-     */
-    error OperatorsJail_OperatorNotJailed();
-
-    /**
      * @notice The error thrown when the operator is jailed.
      */
     error OperatorsJail_OperatorJailed();
