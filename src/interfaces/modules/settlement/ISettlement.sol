@@ -8,6 +8,11 @@ import {Checkpoints} from "../../../contracts/libraries/structs/Checkpoints.sol"
 
 interface ISettlement {
     /**
+     * @notice Reverts when the extra data key is duplicated.
+     */
+    error Settlement_DuplicateExtraDataKey();
+
+    /**
      * @notice Reverts when the version to be committed is not the same as the version inside the contract.
      * @dev Can be triggered during the upgrades.
      */
