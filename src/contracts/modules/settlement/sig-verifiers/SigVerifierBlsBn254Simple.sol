@@ -61,6 +61,9 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
         if (keyTag.getType() != KEY_TYPE_BLS_BN254) {
             revert SigVerifierBlsBn254Simple_UnsupportedKeyTag();
         }
+        if (message.length != 32) {
+            revert SigVerifierBlsBn254Simple_InvalidMessageLength();
+        }
 
         // Proof Structure
         // 0 : 64 - G1 aggregated signature

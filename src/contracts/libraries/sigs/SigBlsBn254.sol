@@ -8,6 +8,8 @@ library SigBlsBn254 {
     using BN254 for BN254.G1Point;
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
 
+    error SigBlsBn254_InvalidMessageLength();
+
     uint256 internal constant PAIRING_CHECK_GAS_LIMIT = 120_000;
 
     function verify(
@@ -16,6 +18,10 @@ library SigBlsBn254 {
         bytes memory signature,
         bytes memory extraData
     ) internal view returns (bool) {
+        if (message.length != 32) {
+            revert SigBlsBn254_InvalidMessageLength();
+        }
+
         BN254.G1Point memory keyG1 = KeyBlsBn254.fromBytes(keyBytes).unwrap();
         BN254.G2Point memory keyG2 = abi.decode(extraData, (BN254.G2Point));
         BN254.G1Point memory signatureG1 = abi.decode(signature, (BN254.G1Point));

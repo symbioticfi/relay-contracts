@@ -81,6 +81,9 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
         if (keyTag.getType() != KEY_TYPE_BLS_BN254) {
             revert SigVerifierBlsBn254ZK_UnsupportedKeyTag();
         }
+        if (message.length != 32) {
+            revert SigVerifierBlsBn254ZK_InvalidMessageLength();
+        }
 
         // Proof Structure
         // 0 : 256 - ZK proof (uint256[8])

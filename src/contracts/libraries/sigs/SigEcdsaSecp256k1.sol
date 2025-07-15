@@ -9,12 +9,18 @@ library SigEcdsaSecp256k1 {
     using ECDSA for bytes32;
     using KeyEcdsaSecp256k1 for KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1;
 
+    error SigEcdsaSecp256k1_InvalidMessageLength();
+
     function verify(
         bytes memory keyBytes,
         bytes memory message,
         bytes memory signature,
         bytes memory /* extraData */
     ) internal view returns (bool) {
+        if (message.length != 32) {
+            revert SigEcdsaSecp256k1_InvalidMessageLength();
+        }
+
         address keyAddress = KeyEcdsaSecp256k1.fromBytes(keyBytes).unwrap();
         bytes32 messageHash = abi.decode(message, (bytes32));
 
