@@ -61,6 +61,10 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
      * @inheritdoc IEpochManager
      */
     function getNextEpoch() public view virtual returns (uint48) {
+        (, uint48 epochDurationTimestamp,) = _getFirstEpochDurationData();
+        if (Time.timestamp() < epochDurationTimestamp) {
+            return 0;
+        }
         return getCurrentEpoch() + 1;
     }
 
@@ -68,7 +72,11 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
      * @inheritdoc IEpochManager
      */
     function getNextEpochDuration() public view virtual returns (uint48) {
-        (uint48 epochDuration,,) =
+        (uint48 epochDuration, uint48 epochDurationTimestamp,) = _getFirstEpochDurationData();
+        if (Time.timestamp() < epochDurationTimestamp) {
+            return epochDuration;
+        }
+        (epochDuration,,) =
             _deserializeEpochDurationData(_getEpochManagerStorage()._epochDurationDataByTimestamp.latest());
         return epochDuration;
     }
@@ -77,6 +85,10 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
      * @inheritdoc IEpochManager
      */
     function getNextEpochStart() public view virtual returns (uint48) {
+        (, uint48 epochDurationTimestamp,) = _getFirstEpochDurationData();
+        if (Time.timestamp() < epochDurationTimestamp) {
+            return epochDurationTimestamp;
+        }
         return getCurrentEpochStart() + getCurrentEpochDuration();
     }
 
@@ -163,6 +175,10 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
         return _deserializeEpochDurationData(
             _getCurrentValue(_getEpochManagerStorage()._epochDurationDataByTimestamp, Time.timestamp())
         );
+    }
+
+    function _getFirstEpochDurationData() internal view virtual returns (uint48, uint48, uint48) {
+        return _deserializeEpochDurationData(_getEpochManagerStorage()._epochDurationDataByTimestamp.at(0)._value);
     }
 
     function _serializeEpochDurationData(
