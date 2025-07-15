@@ -573,16 +573,16 @@ library VotingPowerProviderLogic {
         uint48 slashingWindow = getSlashingWindow();
         address slasher = IVault(vault).slasher();
 
-        if (slasher != address(0)) {
-            uint64 slasherType = IEntity(slasher).TYPE();
-            if (slasherType == uint64(IVotingPowerProvider.SlasherType.VETO)) {
-                vaultEpochDuration -= IVetoSlasher(slasher).vetoDuration();
-            } else if (slasherType > uint64(type(IVotingPowerProvider.SlasherType).max)) {
-                return false;
-            }
-
-            return slashingWindow <= vaultEpochDuration;
+        if (slasher == address(0)) {
+            return slashingWindow == 0;
         }
-        return slashingWindow == 0;
+
+        uint64 slasherType = IEntity(slasher).TYPE();
+        if (slasherType == uint64(IVotingPowerProvider.SlasherType.VETO)) {
+            vaultEpochDuration -= IVetoSlasher(slasher).vetoDuration();
+        } else if (slasherType > uint64(type(IVotingPowerProvider.SlasherType).max)) {
+            return false;
+        }
+        return slashingWindow <= vaultEpochDuration;
     }
 }
