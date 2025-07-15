@@ -82,7 +82,7 @@ interface ISettlement {
      * @param requiredKeyTag The required key tag for the validator set header using which the next header will be committed.
      * @param epoch The epoch of the validator set.
      * @param captureTimestamp The capture timestamp of the validator set.
-     * @param quorumThreshold The quorum threshold of the validator set header which will need to be surpassed to commit the next header.
+     * @param quorumThreshold The quorum threshold of the validator set header which will need to be reached to commit the next header.
      * @param validatorsSszMRoot The validator set SSZ root.
      * @param previousHeaderHash The previous header hash.
      */
