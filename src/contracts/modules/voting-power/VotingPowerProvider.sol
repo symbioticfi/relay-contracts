@@ -446,6 +446,14 @@ abstract contract VotingPowerProvider is
         _useNonce(operator);
     }
 
+    function _registerOperatorVaultImpl(address operator, address vault) internal virtual {
+        _registerOperatorVault(operator, vault);
+    }
+
+    function _unregisterOperatorVaultImpl(address operator, address vault) internal virtual {
+        _unregisterOperatorVault(operator, vault);
+    }
+
     function _verifyEIP712(address operator, bytes32 structHash, bytes memory signature) internal view {
         if (!SignatureChecker.isValidSignatureNow(operator, hashTypedDataV4(structHash), signature)) {
             revert VotingPowerProvider_InvalidSignature();
