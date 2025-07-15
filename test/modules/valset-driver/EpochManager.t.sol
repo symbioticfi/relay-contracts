@@ -19,17 +19,15 @@ contract TestEpochManager is EpochManager, NoPermissionManager {
     }
 
     function getEpochDurationDataByTimestamp(
-        uint48 timestamp,
-        bytes memory hint
+        uint48 timestamp
     ) public view returns (uint48, uint48, uint48) {
-        return _getEpochDurationDataByTimestamp(timestamp, hint);
+        return _getEpochDurationDataByTimestamp(timestamp);
     }
 
     function getEpochDurationDataByIndex(
-        uint48 index,
-        bytes memory hint
+        uint48 index
     ) public view returns (uint48, uint48, uint48) {
-        return _getEpochDurationDataByIndex(index, hint);
+        return _getEpochDurationDataByIndex(index);
     }
 
     function getCurrentEpochDurationData() public view returns (uint48, uint48, uint48) {
@@ -187,7 +185,7 @@ contract EpochManagerTest is Test {
 
         uint48 someFuture = initParams.epochDurationTimestamp + 130;
 
-        uint48 epochIndex = epochManager.getEpochIndex(someFuture, "");
+        uint48 epochIndex = epochManager.getEpochIndex(someFuture);
         assertEq(epochIndex, 2, "Should be epoch #2 for that timestamp");
     }
 
@@ -216,16 +214,16 @@ contract EpochManagerTest is Test {
 
         epochManager.setEpochDuration(100);
 
-        uint48 dur2 = epochManager.getEpochDuration(2, "");
+        uint48 dur2 = epochManager.getEpochDuration(2);
         assertEq(dur2, 50, "epoch #2 is still 50s");
 
-        uint48 dur3 = epochManager.getEpochDuration(3, "");
+        uint48 dur3 = epochManager.getEpochDuration(3);
         assertEq(dur3, 100, "epoch #3 must be 100s now");
 
-        uint48 start2 = epochManager.getEpochStart(2, "");
+        uint48 start2 = epochManager.getEpochStart(2);
         assertEq(start2, startTime + 2 * 50, "Start of epoch #2 mismatch");
 
-        uint48 start3 = epochManager.getEpochStart(3, "");
+        uint48 start3 = epochManager.getEpochStart(3);
         assertEq(start3, startTime + 150, "Start of epoch #3 mismatch");
     }
 
@@ -252,7 +250,7 @@ contract EpochManagerTest is Test {
 
         uint48 midTimestamp = now_ + 50;
         (uint48 duration, uint48 durationTimestamp, uint48 durationIndex) =
-            epochManager.getEpochDurationDataByTimestamp(midTimestamp, "");
+            epochManager.getEpochDurationDataByTimestamp(midTimestamp);
 
         assertEq(duration, 100, "duration mismatch");
         assertEq(durationTimestamp, now_ + 10, "timestamp mismatch");
@@ -265,7 +263,7 @@ contract EpochManagerTest is Test {
             IEpochManager.EpochManagerInitParams({epochDuration: 200, epochDurationTimestamp: now_ + 100});
         epochManager.initialize(initParams);
 
-        (uint48 dur, uint48 durTS, uint48 durIndex) = epochManager.getEpochDurationDataByIndex(0, "");
+        (uint48 dur, uint48 durTS, uint48 durIndex) = epochManager.getEpochDurationDataByIndex(0);
         assertEq(dur, 200);
         assertEq(durTS, now_ + 100);
         assertEq(durIndex, 0);
@@ -296,7 +294,7 @@ contract EpochManagerTest is Test {
 
         epochManager.setEpochDuration(75, now_ + 200, 3);
 
-        (uint48 dur, uint48 durTS, uint48 durIdx) = epochManager.getEpochDurationDataByIndex(3, "");
+        (uint48 dur, uint48 durTS, uint48 durIdx) = epochManager.getEpochDurationDataByIndex(3);
         assertEq(dur, 75, "Updated duration mismatch");
         assertEq(durTS, now_ + 200, "Updated timestamp mismatch");
         assertEq(durIdx, 3, "Updated index mismatch");

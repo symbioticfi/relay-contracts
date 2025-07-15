@@ -70,7 +70,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
 
         (ISettlement.ValSetHeader memory valSetHeader, ISettlement.ExtraData[] memory extraData) = loadGenesisSimple();
 
-        vm.warp(masterSetupParams.valSetDriver.getEpochStart(0, new bytes(0)) + 1);
+        vm.warp(masterSetupParams.valSetDriver.getEpochStart(0) + 1);
 
         vm.startPrank(vars.deployer.addr);
         masterSetupParams.settlement.setGenesis(valSetHeader, extraData);
@@ -421,7 +421,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
             version: 1,
             requiredKeyTag: 15,
             epoch: 0,
-            captureTimestamp: masterSetupParams.valSetDriver.getEpochStart(0, new bytes(0)),
+            captureTimestamp: masterSetupParams.valSetDriver.getEpochStart(0),
             quorumThreshold: uint256(2).mulDiv(1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
             validatorsSszMRoot: 0x0000000000000000000000000000000000000000000000000000000000000000,
             previousHeaderHash: 0x868e09d528a16744c1f38ea3c10cc2251e01a456434f91172247695087d129b7

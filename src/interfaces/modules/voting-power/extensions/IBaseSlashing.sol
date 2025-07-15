@@ -60,22 +60,6 @@ interface IBaseSlashing {
     }
 
     /**
-     * @notice The hints to optimize the vault slashing.
-     * @param operatorRegisteredHint The hint to optimize the operator registration status fetching.
-     * @param operatorVaultRegisteredHint The hint to optimize the operator vault registration status fetching.
-     * @param sharedVaultRegisteredHint The hint to optimize the shared vault registration status fetching.
-     * @param isTokenRegisteredHint The hint to optimize the token registration status fetching.
-     * @param slashHints The hints to optimize the slash.
-     */
-    struct SlashVaultHints {
-        bytes operatorRegisteredHint;
-        bytes operatorVaultRegisteredHint;
-        bytes sharedVaultRegisteredHint;
-        bytes isTokenRegisteredHint;
-        bytes slashHints;
-    }
-
-    /**
      * @notice The hints to optimize the base slashing.
      * @param slashingWindowHint The hint to optimize the slashing window fetching.
      * @param slashCoreHints The hints to optimize the slash core.

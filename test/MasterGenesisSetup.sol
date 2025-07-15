@@ -32,7 +32,7 @@ contract MasterGenesisSetupTest is MasterSetupTest {
         SYMBIOTIC_CORE_PROJECT_ROOT = "lib/core/";
         MasterSetupTest.setUp();
 
-        vm.warp(masterSetupParams.valSetDriver.getEpochStart(0, new bytes(0)) + 1);
+        vm.warp(masterSetupParams.valSetDriver.getEpochStart(0) + 1);
 
         vm.startBroadcast(vars.deployer.privateKey);
         (ISettlement.ValSetHeader memory valSetHeader, ISettlement.ExtraData[] memory extraData) = loadGenesis();

@@ -68,12 +68,8 @@ abstract contract VotingPowerProvider is
     /**
      * @inheritdoc IVotingPowerProvider
      */
-    function isTokenRegisteredAt(
-        address token,
-        uint48 timestamp,
-        bytes memory hint
-    ) public view virtual returns (bool) {
-        return VotingPowerProviderLogic.isTokenRegisteredAt(token, timestamp, hint);
+    function isTokenRegisteredAt(address token, uint48 timestamp) public view virtual returns (bool) {
+        return VotingPowerProviderLogic.isTokenRegisteredAt(token, timestamp);
     }
 
     /**
@@ -111,12 +107,8 @@ abstract contract VotingPowerProvider is
     /**
      * @inheritdoc IVotingPowerProvider
      */
-    function isOperatorRegisteredAt(
-        address operator,
-        uint48 timestamp,
-        bytes memory hint
-    ) public view virtual returns (bool) {
-        return VotingPowerProviderLogic.isOperatorRegisteredAt(operator, timestamp, hint);
+    function isOperatorRegisteredAt(address operator, uint48 timestamp) public view virtual returns (bool) {
+        return VotingPowerProviderLogic.isOperatorRegisteredAt(operator, timestamp);
     }
 
     /**
@@ -154,12 +146,8 @@ abstract contract VotingPowerProvider is
     /**
      * @inheritdoc IVotingPowerProvider
      */
-    function isSharedVaultRegisteredAt(
-        address vault,
-        uint48 timestamp,
-        bytes memory hint
-    ) public view virtual returns (bool) {
-        return VotingPowerProviderLogic.isSharedVaultRegisteredAt(vault, timestamp, hint);
+    function isSharedVaultRegisteredAt(address vault, uint48 timestamp) public view virtual returns (bool) {
+        return VotingPowerProviderLogic.isSharedVaultRegisteredAt(vault, timestamp);
     }
 
     /**
@@ -197,12 +185,8 @@ abstract contract VotingPowerProvider is
     /**
      * @inheritdoc IVotingPowerProvider
      */
-    function isOperatorVaultRegisteredAt(
-        address vault,
-        uint48 timestamp,
-        bytes memory hint
-    ) public view virtual returns (bool) {
-        return VotingPowerProviderLogic.isOperatorVaultRegisteredAt(vault, timestamp, hint);
+    function isOperatorVaultRegisteredAt(address vault, uint48 timestamp) public view virtual returns (bool) {
+        return VotingPowerProviderLogic.isOperatorVaultRegisteredAt(vault, timestamp);
     }
 
     /**
@@ -220,10 +204,9 @@ abstract contract VotingPowerProvider is
     function isOperatorVaultRegisteredAt(
         address operator,
         address vault,
-        uint48 timestamp,
-        bytes memory hint
+        uint48 timestamp
     ) public view virtual returns (bool) {
-        return VotingPowerProviderLogic.isOperatorVaultRegisteredAt(operator, vault, timestamp, hint);
+        return VotingPowerProviderLogic.isOperatorVaultRegisteredAt(operator, vault, timestamp);
     }
 
     /**
@@ -264,10 +247,9 @@ abstract contract VotingPowerProvider is
     function getOperatorStakeAt(
         address vault,
         address operator,
-        uint48 timestamp,
-        bytes memory hints
+        uint48 timestamp
     ) public view virtual returns (uint256) {
-        return VotingPowerProviderLogic.getOperatorStakeAt(vault, operator, timestamp, hints);
+        return VotingPowerProviderLogic.getOperatorStakeAt(vault, operator, timestamp);
     }
 
     /**
@@ -284,10 +266,9 @@ abstract contract VotingPowerProvider is
         address operator,
         address vault,
         bytes memory extraData,
-        uint48 timestamp,
-        bytes memory hints
+        uint48 timestamp
     ) public view virtual returns (uint256) {
-        return VotingPowerProviderLogic.getOperatorVotingPowerAt(operator, vault, extraData, timestamp, hints);
+        return VotingPowerProviderLogic.getOperatorVotingPowerAt(operator, vault, extraData, timestamp);
     }
 
     /**

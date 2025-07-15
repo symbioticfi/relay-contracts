@@ -89,15 +89,7 @@ contract BaseSlashingTest is MasterSetupTest {
             vaults[0],
             operator,
             100,
-            abi.encode(
-                IBaseSlashing.SlashVaultHints({
-                    operatorRegisteredHint: new bytes(0),
-                    operatorVaultRegisteredHint: new bytes(0),
-                    sharedVaultRegisteredHint: new bytes(0),
-                    isTokenRegisteredHint: new bytes(0),
-                    slashHints: new bytes(0)
-                })
-            )
+            new bytes(0)
         );
 
         assertTrue(success, "Slashing should be successful");

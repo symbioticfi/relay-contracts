@@ -95,9 +95,11 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
     /**
      * @inheritdoc IEpochManager
      */
-    function getEpochIndex(uint48 timestamp, bytes memory hint) public view virtual returns (uint48) {
+    function getEpochIndex(
+        uint48 timestamp
+    ) public view virtual returns (uint48) {
         (uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex) =
-            _getEpochDurationDataByTimestamp(timestamp, hint);
+            _getEpochDurationDataByTimestamp(timestamp);
         if (epochDuration == 0) {
             revert EpochManager_TooOldTimestamp();
         }
@@ -107,16 +109,20 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
     /**
      * @inheritdoc IEpochManager
      */
-    function getEpochDuration(uint48 epoch, bytes memory hint) public view virtual returns (uint48 epochDuration) {
-        (epochDuration,,) = _getEpochDurationDataByIndex(epoch, hint);
+    function getEpochDuration(
+        uint48 epoch
+    ) public view virtual returns (uint48 epochDuration) {
+        (epochDuration,,) = _getEpochDurationDataByIndex(epoch);
     }
 
     /**
      * @inheritdoc IEpochManager
      */
-    function getEpochStart(uint48 epoch, bytes memory hint) public view virtual returns (uint48) {
+    function getEpochStart(
+        uint48 epoch
+    ) public view virtual returns (uint48) {
         (uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex) =
-            _getEpochDurationDataByIndex(epoch, hint);
+            _getEpochDurationDataByIndex(epoch);
         return epochDurationTimestamp + (epoch - epochDurationIndex) * epochDuration;
     }
 
@@ -154,21 +160,18 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
     }
 
     function _getEpochDurationDataByTimestamp(
-        uint48 timestamp,
-        bytes memory hint
+        uint48 timestamp
     ) internal view virtual returns (uint48, uint48, uint48) {
         return _deserializeEpochDurationData(
-            _getEpochManagerStorage()._epochDurationDataByTimestamp.upperLookupRecent(timestamp, hint)
+            _getEpochManagerStorage()._epochDurationDataByTimestamp.upperLookupRecent(timestamp)
         );
     }
 
     function _getEpochDurationDataByIndex(
-        uint48 index,
-        bytes memory hint
+        uint48 index
     ) internal view virtual returns (uint48, uint48, uint48) {
-        return _deserializeEpochDurationData(
-            _getEpochManagerStorage()._epochDurationDataByIndex.upperLookupRecent(index, hint)
-        );
+        return
+            _deserializeEpochDurationData(_getEpochManagerStorage()._epochDurationDataByIndex.upperLookupRecent(index));
     }
 
     function _getCurrentEpochDurationData() internal view virtual returns (uint48, uint48, uint48) {

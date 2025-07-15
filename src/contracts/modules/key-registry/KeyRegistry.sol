@@ -54,18 +54,13 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
     /**
      * @inheritdoc IKeyRegistry
      */
-    function getKeyAt(
-        address operator,
-        uint8 tag,
-        uint48 timestamp,
-        bytes memory hint
-    ) public view virtual returns (bytes memory) {
+    function getKeyAt(address operator, uint8 tag, uint48 timestamp) public view virtual returns (bytes memory) {
         uint8 keyType = tag.getType();
         if (keyType == KEY_TYPE_BLS_BN254) {
-            return KeyBlsBn254.deserialize(_getKey32At(operator, tag, timestamp, hint)).toBytes();
+            return KeyBlsBn254.deserialize(_getKey32At(operator, tag, timestamp)).toBytes();
         }
         if (keyType == KEY_TYPE_ECDSA_SECP256K1) {
-            return KeyEcdsaSecp256k1.deserialize(_getKey32At(operator, tag, timestamp, hint)).toBytes();
+            return KeyEcdsaSecp256k1.deserialize(_getKey32At(operator, tag, timestamp)).toBytes();
         }
         revert IKeyRegistry.KeyRegistry_InvalidKeyType();
     }
@@ -96,24 +91,11 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
     /**
      * @inheritdoc IKeyRegistry
      */
-    function getKeysAt(
-        address operator,
-        uint48 timestamp,
-        bytes memory hints
-    ) public view virtual returns (Key[] memory keys) {
-        IKeyRegistry.OperatorKeysHints memory operatorKeysHints;
-        if (hints.length > 0) {
-            operatorKeysHints = abi.decode(hints, (IKeyRegistry.OperatorKeysHints));
-        }
-
-        uint8[] memory keyTags = _getKeyTagsAt(operator, timestamp, operatorKeysHints.keyTagsHint);
+    function getKeysAt(address operator, uint48 timestamp) public view virtual returns (Key[] memory keys) {
+        uint8[] memory keyTags = _getKeyTagsAt(operator, timestamp);
         keys = new Key[](keyTags.length);
-        operatorKeysHints.keyHints = operatorKeysHints.keyHints.normalize(keyTags.length);
         for (uint256 i; i < keyTags.length; ++i) {
-            keys[i] = Key({
-                tag: keyTags[i],
-                payload: getKeyAt(operator, keyTags[i], timestamp, operatorKeysHints.keyHints[i])
-            });
+            keys[i] = Key({tag: keyTags[i], payload: getKeyAt(operator, keyTags[i], timestamp)});
         }
     }
 
@@ -140,7 +122,7 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
         operatorsKeys = new IKeyRegistry.OperatorWithKeys[](operators.length);
         for (uint256 i; i < operators.length; ++i) {
             operatorsKeys[i].operator = operators[i];
-            operatorsKeys[i].keys = getKeysAt(operators[i], timestamp, new bytes(0));
+            operatorsKeys[i].keys = getKeysAt(operators[i], timestamp);
         }
     }
 
@@ -179,13 +161,8 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
         return _getKeyRegistryStorage()._operators.values();
     }
 
-    function _getKeyTagsAt(
-        address operator,
-        uint48 timestamp,
-        bytes memory hint
-    ) internal view virtual returns (uint8[] memory) {
-        return uint128(_getKeyRegistryStorage()._operatorKeyTags[operator].upperLookupRecent(timestamp, hint))
-            .deserialize();
+    function _getKeyTagsAt(address operator, uint48 timestamp) internal view virtual returns (uint8[] memory) {
+        return uint128(_getKeyRegistryStorage()._operatorKeyTags[operator].upperLookupRecent(timestamp)).deserialize();
     }
 
     function _getKeyTags(
@@ -295,13 +272,8 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
         revert IKeyRegistry.KeyRegistry_InvalidKeyType();
     }
 
-    function _getKey32At(
-        address operator,
-        uint8 tag,
-        uint48 timestamp,
-        bytes memory hint
-    ) internal view returns (bytes memory) {
-        uint256 compressedKey = _getKeyRegistryStorage()._keys32[operator][tag].upperLookupRecent(timestamp, hint);
+    function _getKey32At(address operator, uint8 tag, uint48 timestamp) internal view returns (bytes memory) {
+        uint256 compressedKey = _getKeyRegistryStorage()._keys32[operator][tag].upperLookupRecent(timestamp);
         return abi.encode(compressedKey);
     }
 
@@ -310,14 +282,8 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
         return abi.encode(compressedKey);
     }
 
-    function _getKey64At(
-        address operator,
-        uint8 tag,
-        uint48 timestamp,
-        bytes memory hint
-    ) internal view returns (bytes memory) {
-        uint256[2] memory compressedKeys =
-            _getKeyRegistryStorage()._keys64[operator][tag].upperLookupRecent(timestamp, hint);
+    function _getKey64At(address operator, uint8 tag, uint48 timestamp) internal view returns (bytes memory) {
+        uint256[2] memory compressedKeys = _getKeyRegistryStorage()._keys64[operator][tag].upperLookupRecent(timestamp);
         return abi.encode(compressedKeys[0], compressedKeys[1]);
     }
 
