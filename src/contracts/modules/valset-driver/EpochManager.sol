@@ -86,7 +86,9 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
     function getEpochIndex(uint48 timestamp, bytes memory hint) public view virtual returns (uint48) {
         (uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex) =
             _getEpochDurationDataByTimestamp(timestamp, hint);
-
+        if (epochDuration == 0) {
+            revert EpochManager_TooOldTimestamp();
+        }
         return epochDurationIndex + (timestamp - epochDurationTimestamp) / epochDuration;
     }
 
