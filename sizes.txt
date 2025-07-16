@@ -1,4 +1,552 @@
-No files changed, compilation skipped
+Compiling 40 files with Solc 0.8.28
+Solc 0.8.28 finished in 30.43s
+Compiler run successful with warnings:
+Warning (9302): Return value of low-level calls not used.
+   --> script/integration/SymbioticInit.sol:111:9:
+    |
+111 |         to.call{value: give}("");
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^
+
+Warning (6321): Unnamed return variable can remain unassigned. Add an explicit return with value to all non-reverting code paths or name the variable.
+   --> src/contracts/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:151:84:
+    |
+151 |     function getRoundData(address aggregator, uint80 roundId) public view returns (bool, RoundData memory roundData) {
+    |                                                                                    ^^^^
+
+Warning (6321): Unnamed return variable can remain unassigned. Add an explicit return with value to all non-reverting code paths or name the variable.
+   --> src/contracts/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:217:28:
+    |
+217 |     ) public view returns (bool, RoundData memory roundData) {
+    |                            ^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> script/integration/SymbioticCoreBindings.sol:243:33:
+    |
+243 |     ) internal virtual returns (uint256 depositedAmount, uint256 mintedShares) {
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> script/integration/SymbioticCoreBindings.sol:243:58:
+    |
+243 |     ) internal virtual returns (uint256 depositedAmount, uint256 mintedShares) {
+    |                                                          ^^^^^^^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> script/integration/SymbioticCoreBindings.sol:262:33:
+    |
+262 |     ) internal virtual returns (uint256 burnedShares, uint256 mintedShares) {
+    |                                 ^^^^^^^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> script/integration/SymbioticCoreBindings.sol:262:55:
+    |
+262 |     ) internal virtual returns (uint256 burnedShares, uint256 mintedShares) {
+    |                                                       ^^^^^^^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> script/integration/SymbioticCoreBindings.sol:281:33:
+    |
+281 |     ) internal virtual returns (uint256 withdrawnAssets, uint256 mintedShares) {
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> script/integration/SymbioticCoreBindings.sol:281:58:
+    |
+281 |     ) internal virtual returns (uint256 withdrawnAssets, uint256 mintedShares) {
+    |                                                          ^^^^^^^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> script/integration/SymbioticCoreBindings.sol:300:33:
+    |
+300 |     ) internal virtual returns (uint256 amount) {
+    |                                 ^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> script/integration/SymbioticCoreBindings.sol:319:33:
+    |
+319 |     ) internal virtual returns (uint256 amount) {
+    |                                 ^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> test/integration/SymbioticCoreBindings.sol:240:33:
+    |
+240 |     ) internal virtual returns (uint256 depositedAmount, uint256 mintedShares) {
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> test/integration/SymbioticCoreBindings.sol:240:58:
+    |
+240 |     ) internal virtual returns (uint256 depositedAmount, uint256 mintedShares) {
+    |                                                          ^^^^^^^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> test/integration/SymbioticCoreBindings.sol:259:33:
+    |
+259 |     ) internal virtual returns (uint256 burnedShares, uint256 mintedShares) {
+    |                                 ^^^^^^^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> test/integration/SymbioticCoreBindings.sol:259:55:
+    |
+259 |     ) internal virtual returns (uint256 burnedShares, uint256 mintedShares) {
+    |                                                       ^^^^^^^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> test/integration/SymbioticCoreBindings.sol:278:33:
+    |
+278 |     ) internal virtual returns (uint256 withdrawnAssets, uint256 mintedShares) {
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> test/integration/SymbioticCoreBindings.sol:278:58:
+    |
+278 |     ) internal virtual returns (uint256 withdrawnAssets, uint256 mintedShares) {
+    |                                                          ^^^^^^^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> test/integration/SymbioticCoreBindings.sol:297:33:
+    |
+297 |     ) internal virtual returns (uint256 amount) {
+    |                                 ^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> test/integration/SymbioticCoreBindings.sol:316:33:
+    |
+316 |     ) internal virtual returns (uint256 amount) {
+    |                                 ^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/libraries/keys/KeyBlsBn254.t.sol:178:9:
+    |
+178 |         KeyBlsBn254.KEY_BLS_BN254 memory wrapped = mock.wrap(pt);
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/key-registry/KeyRegistry.t.sol:177:9:
+    |
+177 |         bytes memory differentOperatorKey = KeyEcdsaSecp256k1.wrap(differentOperator).toBytes();
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.t.sol:175:9:
+    |
+175 |         SigVerifierBlsBn254Simple sigVerifier = SigVerifierBlsBn254Simple(masterSetupParams.settlement.getSigVerifier());
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+    --> test/modules/voting-power/VotingPowerProvider.t.sol:1043:9:
+     |
+1043 |         uint256 operatorPk = getOperator(0).privateKey;
+     |         ^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+    --> test/modules/voting-power/VotingPowerProvider.t.sol:1046:9:
+     |
+1046 |         address someVault = _getVault_SymbioticCore(
+     |         ^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.t.sol:476:16:
+    |
+476 |             (, int256 wethAnswer,,,) = wethFeed.latestRoundData();
+    |                ^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.t.sol:481:16:
+    |
+481 |             (, int256 wbtcAnswer,,,) = wbtcFeed.latestRoundData();
+    |                ^^^^^^^^^^^^^^^^^
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/contracts/libraries/keys/KeyBlsBn254.sol:37:5:
+   |
+37 |     function unwrap(
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/contracts/libraries/keys/KeyBlsBn254.sol:68:5:
+   |
+68 |     function toBytes(
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/contracts/libraries/keys/KeyBlsBn254.sol:83:5:
+   |
+83 |     function zeroKey() internal view returns (KEY_BLS_BN254 memory key) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/contracts/libraries/keys/KeyBlsBn254.sol:87:5:
+   |
+87 |     function equal(KEY_BLS_BN254 memory key1, KEY_BLS_BN254 memory key2) internal view returns (bool) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol:23:5:
+   |
+23 |     function unwrap(
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol:29:5:
+   |
+29 |     function serialize(
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol:35:5:
+   |
+35 |     function deserialize(
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol:41:5:
+   |
+41 |     function toBytes(
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol:56:5:
+   |
+56 |     function zeroKey() internal view returns (KEY_ECDSA_SECP256K1 memory key) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol:60:5:
+   |
+60 |     function equal(KEY_ECDSA_SECP256K1 memory key1, KEY_ECDSA_SECP256K1 memory key2) internal view returns (bool) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/contracts/libraries/sigs/SigEcdsaSecp256k1.sol:30:5:
+   |
+30 |     function verify(address key, bytes32 message, bytes memory signature) internal view returns (bool) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> test/integration/SymbioticCoreConstants.sol:442:5:
+    |
+442 |     function allTokens() internal view returns (string[] memory result) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/contracts/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:164:5:
+    |
+164 |     function getVaultParams(
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/contracts/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:170:5:
+    |
+170 |     function getVaultTokenizedParams(
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/contracts/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:203:5:
+    |
+203 |     function getSlasherParams(
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/contracts/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:212:5:
+    |
+212 |     function getVetoSlasherParams(
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> test/mocks/SigVerifierMock.sol:15:5:
+   |
+15 |     function verifyQuorumSig(
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> script/test/MasterSetup.s.sol:277:5:
+    |
+277 |     function loadMasterSetupParams() public returns (MasterSetupParams memory masterSetupParams) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> script/test/MasterGenesisSetup.s.sol:44:5:
+   |
+44 |     function loadGenesis()
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> script/test/MasterCommit.s.sol:152:5:
+    |
+152 |     function loadZkProof() internal returns (ZkProof memory) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/MasterGenesisSetup.sol:68:5:
+   |
+68 |     function loadGenesis()
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/libraries/keys/KeyBlsBn254.t.sol:21:5:
+   |
+21 |     function test_WrapUnwrapIdentity() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/libraries/keys/KeyBlsBn254.t.sol:29:5:
+   |
+29 |     function test_WrapUnwrapNonZero() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/libraries/keys/KeyBlsBn254.t.sol:42:5:
+   |
+42 |     function test_SerializeDeserializeIdentity() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/libraries/keys/KeyBlsBn254.t.sol:52:5:
+   |
+52 |     function test_SerializeDeserializeNonZero() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/libraries/keys/KeyBlsBn254.t.sol:67:5:
+   |
+67 |     function test_SerializeDeserializeNonZeroNegate() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/libraries/keys/KeyBlsBn254.t.sol:82:5:
+   |
+82 |     function test_ToBytesFromBytesIdentity() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/libraries/keys/KeyBlsBn254.t.sol:92:5:
+   |
+92 |     function test_ToBytesFromBytesNonZero() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> test/libraries/keys/KeyBlsBn254.t.sol:107:5:
+    |
+107 |     function test_FuzzWrapUnwrap(
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> test/libraries/keys/KeyBlsBn254.t.sol:122:5:
+    |
+122 |     function test_FuzzSerializeDeserialize(
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> test/libraries/keys/KeyBlsBn254.t.sol:139:5:
+    |
+139 |     function test_FuzzSerializeDeserializeNonZeroNegate(
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> test/libraries/keys/KeyBlsBn254.t.sol:156:5:
+    |
+156 |     function test_FuzzToBytesFromBytes(
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> test/libraries/keys/KeyBlsBn254.t.sol:181:5:
+    |
+181 |     function test_DeserializeEmptyBytesIsIdentity() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> test/libraries/keys/KeyBlsBn254.t.sol:219:5:
+    |
+219 |     function test_ZeroKey() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> test/libraries/keys/KeyBlsBn254.t.sol:225:5:
+    |
+225 |     function test_Equal() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> test/libraries/keys/KeyBlsBn254.t.sol:231:5:
+    |
+231 |     function test_EqualFalse() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/libraries/keys/KeyEcdsaSecp256k1.t.sol:43:5:
+   |
+43 |     function test_FuzzWrapUnwrap(
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/libraries/keys/KeyEcdsaSecp256k1.t.sol:51:5:
+   |
+51 |     function test_FuzzSerializeDeserialize(
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/libraries/keys/KeyEcdsaSecp256k1.t.sol:60:5:
+   |
+60 |     function test_FuzzToBytesFromBytes(
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/libraries/keys/KeyEcdsaSecp256k1.t.sol:88:5:
+   |
+88 |     function test_ZeroKey() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/libraries/sigs/SigBlsBn254.t.sol:24:5:
+   |
+24 |     function test_BLSRegisterOperator() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/libraries/sigs/SigBlsBn254.t.sol:42:5:
+   |
+42 |     function test_BLSRegisterOperatorInvalid() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/libraries/sigs/SigBlsBn254.t.sol:61:5:
+   |
+61 |     function test_ZeroKey() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/libraries/sigs/SigEcdsaSecp256k1.t.sol:14:5:
+   |
+14 |     function test_CorrectSignature() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/libraries/sigs/SigEcdsaSecp256k1.t.sol:33:5:
+   |
+33 |     function test_IncorrectSignature() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/libraries/sigs/SigEcdsaSecp256k1.t.sol:59:5:
+   |
+59 |     function test_FuzzVerification(uint256 privKey, bytes memory msgData) public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/libraries/sigs/SigEcdsaSecp256k1.t.sol:80:5:
+   |
+80 |     function test_ZeroKey() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> test/mocks/SigVerifierFalseMock.sol:15:5:
+   |
+15 |     function verifyQuorumSig(
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> test/modules/key-registry/KeyRegistry.t.sol:275:5:
+    |
+275 |     function test_GetOperator_UnknownKey() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> test/modules/key-registry/KeyRegistry.t.sol:404:5:
+    |
+404 |     function test_Location() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/modules/network/Network.t.sol:78:5:
+   |
+78 |     function test_Init() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> test/modules/network/Network.t.sol:143:5:
+    |
+143 |     function test_PerSelectorDelayOverridesGlobal() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> test/modules/settlement/Settlement.t.sol:194:5:
+    |
+194 |     function testVersion() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> test/modules/settlement/Settlement.t.sol:198:5:
+    |
+198 |     function testInitParams() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> test/modules/voting-power/VotingPowerProvider.t.sol:709:5:
+    |
+709 |     function test_Location() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> test/modules/voting-power/extensions/BaseRewards.t.sol:164:5:
+    |
+164 |     function test_Location() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> test/modules/voting-power/extensions/BaseSlashing.t.sol:244:5:
+    |
+244 |     function test_Location() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> test/modules/voting-power/extensions/OpNetVaultAutoDeploy.t.sol:145:5:
+    |
+145 |     function test_BasicFlags() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> test/modules/voting-power/extensions/OpNetVaultAutoDeploy.t.sol:257:5:
+    |
+257 |     function test_Location() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/modules/voting-power/extensions/OperatorsBlacklist.t.sol:92:5:
+   |
+92 |     function test_BasicEnvironment() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> test/modules/voting-power/extensions/OperatorsBlacklist.t.sol:128:5:
+    |
+128 |     function test_Location() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/modules/voting-power/extensions/OperatorsJail.t.sol:64:5:
+   |
+64 |     function test_BasicEnvironment() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> test/modules/voting-power/extensions/OperatorsJail.t.sol:122:5:
+    |
+122 |     function test_Location() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> test/modules/voting-power/extensions/OperatorsWhitelist.t.sol:116:5:
+    |
+116 |     function test_WhitelistEnabledByDefault() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> test/modules/voting-power/extensions/OperatorsWhitelist.t.sol:172:5:
+    |
+172 |     function test_Location() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
 
 ╭------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------╮
 | Contract                                                                                                         | Runtime Size (B) | Initcode Size (B) | Runtime Margin (B) | Initcode Margin (B) |
@@ -133,7 +681,7 @@ No files changed, compilation skipped
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | TestOperatorsBlacklist                                                                                           | 13,303           | 13,471            | 11,273             | 35,681              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestOperatorsJail                                                                                                | 13,581           | 13,749            | 10,995             | 35,403              |
+| TestOperatorsJail                                                                                                | 13,511           | 13,679            | 11,065             | 35,473              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | TestOperatorsWhitelist                                                                                           | 13,701           | 13,869            | 10,875             | 35,283              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
