@@ -128,25 +128,6 @@ contract WeightedTokensVPCalcTest is InitSetupTest {
     address validOperator = address(0x1111);
     address invalidOperator = address(0x2222);
 
-    bytes4 private ERR_INVALID_OPERATOR = IVotingPowerProvider.VotingPowerProvider_InvalidOperator.selector;
-    bytes4 private ERR_ALREADY_REGISTERED = IVotingPowerProvider.VotingPowerProvider_OperatorAlreadyRegistered.selector;
-    bytes4 private ERR_NOT_REGISTERED = IVotingPowerProvider.VotingPowerProvider_OperatorNotRegistered.selector;
-
-    bytes4 private ERR_TOKEN_ALREADY_registered =
-        IVotingPowerProvider.VotingPowerProvider_TokenAlreadyIsRegistered.selector;
-    bytes4 private ERR_TOKEN_NOT_registered = IVotingPowerProvider.VotingPowerProvider_TokenNotRegistered.selector;
-    bytes4 private ERR_INVALID_TOKEN = IVotingPowerProvider.VotingPowerProvider_InvalidToken.selector;
-
-    bytes4 private ERR_SHARED_VAULT_ALREADY_registered =
-        IVotingPowerProvider.VotingPowerProvider_SharedVaultAlreadyIsRegistered.selector;
-    bytes4 private ERR_OPERATOR_VAULT_ALREADY_registered =
-        IVotingPowerProvider.VotingPowerProvider_OperatorVaultAlreadyIsRegistered.selector;
-    bytes4 private ERR_INVALID_VAULT = IVotingPowerProvider.VotingPowerProvider_InvalidVault.selector;
-
-    bytes4 private ERR_INVALID_SHARED_VAULT = IVotingPowerProvider.VotingPowerProvider_InvalidSharedVault.selector;
-    bytes4 private ERR_INVALID_OPERATOR_VAULT = IVotingPowerProvider.VotingPowerProvider_InvalidOperatorVault.selector;
-    bytes4 private ERR_OPERATOR_NOT_REGISTERED = IVotingPowerProvider.VotingPowerProvider_OperatorNotRegistered.selector;
-
     function setUp() public override {
         InitSetupTest.setUp();
 
