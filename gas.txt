@@ -1,170 +1,20 @@
-Compiling 2 files with Solc 0.8.28
-Solc 0.8.28 finished in 2.27s
-Compiler run successful with warnings:
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> test/integration/SymbioticCoreBindings.sol:240:33:
-    |
-240 |     ) internal virtual returns (uint256 depositedAmount, uint256 mintedShares) {
-    |                                 ^^^^^^^^^^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> test/integration/SymbioticCoreBindings.sol:240:58:
-    |
-240 |     ) internal virtual returns (uint256 depositedAmount, uint256 mintedShares) {
-    |                                                          ^^^^^^^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> test/integration/SymbioticCoreBindings.sol:259:33:
-    |
-259 |     ) internal virtual returns (uint256 burnedShares, uint256 mintedShares) {
-    |                                 ^^^^^^^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> test/integration/SymbioticCoreBindings.sol:259:55:
-    |
-259 |     ) internal virtual returns (uint256 burnedShares, uint256 mintedShares) {
-    |                                                       ^^^^^^^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> test/integration/SymbioticCoreBindings.sol:278:33:
-    |
-278 |     ) internal virtual returns (uint256 withdrawnAssets, uint256 mintedShares) {
-    |                                 ^^^^^^^^^^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> test/integration/SymbioticCoreBindings.sol:278:58:
-    |
-278 |     ) internal virtual returns (uint256 withdrawnAssets, uint256 mintedShares) {
-    |                                                          ^^^^^^^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> test/integration/SymbioticCoreBindings.sol:297:33:
-    |
-297 |     ) internal virtual returns (uint256 amount) {
-    |                                 ^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> test/integration/SymbioticCoreBindings.sol:316:33:
-    |
-316 |     ) internal virtual returns (uint256 amount) {
-    |                                 ^^^^^^^^^^^^^^
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyBlsBn254.sol:37:5:
-   |
-37 |     function unwrap(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyBlsBn254.sol:68:5:
-   |
-68 |     function toBytes(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyBlsBn254.sol:83:5:
-   |
-83 |     function zeroKey() internal view returns (KEY_BLS_BN254 memory key) {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyBlsBn254.sol:87:5:
-   |
-87 |     function equal(KEY_BLS_BN254 memory key1, KEY_BLS_BN254 memory key2) internal view returns (bool) {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol:23:5:
-   |
-23 |     function unwrap(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol:29:5:
-   |
-29 |     function serialize(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol:35:5:
-   |
-35 |     function deserialize(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol:41:5:
-   |
-41 |     function toBytes(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol:56:5:
-   |
-56 |     function zeroKey() internal view returns (KEY_ECDSA_SECP256K1 memory key) {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol:60:5:
-   |
-60 |     function equal(KEY_ECDSA_SECP256K1 memory key1, KEY_ECDSA_SECP256K1 memory key2) internal view returns (bool) {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/contracts/libraries/sigs/SigEcdsaSecp256k1.sol:30:5:
-   |
-30 |     function verify(address key, bytes32 message, bytes memory signature) internal view returns (bool) {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/contracts/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:164:5:
-    |
-164 |     function getVaultParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/contracts/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:170:5:
-    |
-170 |     function getVaultTokenizedParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/contracts/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:203:5:
-    |
-203 |     function getSlasherParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/contracts/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:212:5:
-    |
-212 |     function getVetoSlasherParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> test/integration/SymbioticCoreConstants.sol:442:5:
-    |
-442 |     function allTokens() internal view returns (string[] memory result) {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/modules/voting-power/extensions/OperatorsJail.t.sol:64:5:
-   |
-64 |     function test_BasicEnvironment() public {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> test/modules/voting-power/extensions/OperatorsJail.t.sol:122:5:
-    |
-122 |     function test_Location() public {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-
-Ran 1 test for test/modules/voting-power/extensions/EqualStakeVPCalc.t.sol:EqualStakeVPCalcTest
-[PASS] test_create() (gas: 143)
-Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 406.54µs (47.92µs CPU time)
+No files changed, compilation skipped
 
 Ran 1 test for test/modules/common/permissions/NoPermissionManager.t.sol:NoPermissionManagerTest
 [PASS] test_NoPermissionCheck() (gas: 29620)
-Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 1.21ms (35.21µs CPU time)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 534.92µs (111.96µs CPU time)
+
+Ran 5 tests for test/modules/base/NetworkManager.t.sol:NetworkManagerTest
+[PASS] test_DefaultsBeforeInit() (gas: 24190)
+[PASS] test_InitializeAndCheckGetters() (gas: 104276)
+[PASS] test_Location() (gas: 3589)
+[PASS] test_ReinitializeReverts() (gas: 104712)
+[PASS] test_RevertNetworkManager_InvalidNetwork() (gas: 123081)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 1.01ms (172.50µs CPU time)
+
+Ran 1 test for test/modules/voting-power/extensions/EqualStakeVPCalc.t.sol:EqualStakeVPCalcTest
+[PASS] test_create() (gas: 143)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 504.50µs (8.04µs CPU time)
 
 Ran 12 tests for test/libraries/utils/KeyTag.t.sol:KeyTagTest
 [PASS] test_AddMultiple() (gas: 6532)
@@ -179,24 +29,7 @@ Ran 12 tests for test/libraries/utils/KeyTag.t.sol:KeyTagTest
 [PASS] test_GetTypeRevertWhenTooLarge() (gas: 4081)
 [PASS] test_SerializeRevertOnDuplicate() (gas: 6095)
 [PASS] test_SerializeUniqueKeyTags() (gas: 8498)
-Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 1.36ms (371.58µs CPU time)
-
-Ran 5 tests for test/modules/base/NetworkManager.t.sol:NetworkManagerTest
-[PASS] test_DefaultsBeforeInit() (gas: 24190)
-[PASS] test_InitializeAndCheckGetters() (gas: 104276)
-[PASS] test_Location() (gas: 3589)
-[PASS] test_ReinitializeReverts() (gas: 104712)
-[PASS] test_RevertNetworkManager_InvalidNetwork() (gas: 123081)
-Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 1.75ms (609.46µs CPU time)
-
-Ran 6 tests for test/libraries/utils/InputNormalizer.t.sol:InputNormalizerTest
-[PASS] test_normalizeDoubleDimEmpty() (gas: 6971)
-[PASS] test_normalizeDoubleDimExact() (gas: 8790)
-[PASS] test_normalizeDoubleDimMismatchRevert() (gas: 10039)
-[PASS] test_normalizeSingleDimEmpty() (gas: 7871)
-[PASS] test_normalizeSingleDimExact() (gas: 7476)
-[PASS] test_normalizeSingleDimMismatchRevert() (gas: 9196)
-Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 1.64ms (1.26ms CPU time)
+Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 2.81ms (2.25ms CPU time)
 
 Ran 16 tests for test/modules/valset-driver/EpochManager.t.sol:EpochManagerTest
 [PASS] test_AdvanceTimeAndCheckEpoch() (gas: 219852)
@@ -215,111 +48,55 @@ Ran 16 tests for test/modules/valset-driver/EpochManager.t.sol:EpochManagerTest
 [PASS] test_SerializeDeserializeEpochDurationData() (gas: 14084)
 [PASS] test_SetEpochDuration_RevertIfIndexLessThanCurrent() (gas: 303306)
 [PASS] test_SetEpochDuration_RevertOnZeroDuration() (gas: 180262)
-Suite result: ok. 16 passed; 0 failed; 0 skipped; finished in 4.82ms (4.06ms CPU time)
-
-Ran 12 tests for test/modules/key-registry/KeyRegistry.t.sol:KeyRegistryTest
-[PASS] test_GetKeysAt_TimeCheckpoints() (gas: 853442)
-[PASS] test_GetKeysOperators_MultipleOperators() (gas: 1053371)
-[PASS] test_GetOperator_UnknownKey() (gas: 11763)
-[PASS] test_Location() (gas: 3729)
-[PASS] test_SetBLSKey() (gas: 865797)
-[PASS] test_SetECDSAKey() (gas: 492185)
-[PASS] test_SetECDSAKey_RevertOnInvalidSignature() (gas: 59279)
-[PASS] test_SetKey64() (gas: 496782)
-[PASS] test_SetKey_AlreadyUsedKeyDifferentOperator() (gas: 396051)
-[PASS] test_SetKey_RevertOnInvalidKeyType() (gas: 40960)
-[PASS] test_SetKey_SameOperatorDifferentTags() (gas: 621123)
-[PASS] test_SetKey_SameOperatorSameTag_Overwrite() (gas: 500820)
-Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 21.32ms (18.28ms CPU time)
+Suite result: ok. 16 passed; 0 failed; 0 skipped; finished in 3.16ms (2.58ms CPU time)
 
 Ran 4 tests for test/modules/settlement/sig-verifiers/libraries/ExtraDataStorageHelper.t.sol:ExtraDataStorageHelperTest
-[PASS] testFuzz_Uniqueness(uint32,uint32,uint8,uint8,bytes32,bytes32,uint256,uint256) (runs: 4096, μ: 9627, ~: 9698)
+[PASS] testFuzz_Uniqueness(uint32,uint32,uint8,uint8,bytes32,bytes32,uint256,uint256) (runs: 4096, μ: 9622, ~: 9698)
 [PASS] test_BaseKey() (gas: 4247)
 [PASS] test_IndexedKey() (gas: 12216)
 [PASS] test_TaggedKey() (gas: 5281)
-Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 147.87ms (146.89ms CPU time)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 81.61ms (81.19ms CPU time)
 
-Ran 12 tests for test/modules/valset-driver/ValSetDriver.t.sol:ValSetDriverTest
-[PASS] test_AddRemoveQuorumThreshold() (gas: 451246)
-[PASS] test_AddRemoveReplica() (gas: 475881)
-[PASS] test_AddRemoveVotingPowerProvider() (gas: 350109)
-[PASS] test_GetValSetConfig() (gas: 127050)
-[PASS] test_InitialConfig() (gas: 371287)
-[PASS] test_Location() (gas: 3685)
-[PASS] test_PermissionChecks() (gas: 279599)
-[PASS] test_SetKeysProvider() (gas: 101352)
-[PASS] test_SetVerificationType() (gas: 78596)
-[PASS] test_TimeBasedConfig() (gas: 120262)
-[PASS] test_TimeBasedQueries() (gas: 349992)
-[PASS] test_UpdateAllConfigs() (gas: 1040332)
-Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 7.47ms (6.87ms CPU time)
+Ran 6 tests for test/libraries/utils/InputNormalizer.t.sol:InputNormalizerTest
+[PASS] test_normalizeDoubleDimEmpty() (gas: 6971)
+[PASS] test_normalizeDoubleDimExact() (gas: 8790)
+[PASS] test_normalizeDoubleDimMismatchRevert() (gas: 10039)
+[PASS] test_normalizeSingleDimEmpty() (gas: 7871)
+[PASS] test_normalizeSingleDimExact() (gas: 7476)
+[PASS] test_normalizeSingleDimMismatchRevert() (gas: 9196)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 381.63µs (135.54µs CPU time)
 
-Ran 2 tests for test/modules/voting-power/extensions/SharedVaults.t.sol:SharedVaultsTest
-[PASS] test_RegisterSharedVault_OnlyOwnerCanCall() (gas: 180051)
-[PASS] test_RegisterUnregisterSharedVault_VaultManagerSide() (gas: 283236)
-Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 166.31ms (388.50µs CPU time)
+Ran 4 tests for test/modules/voting-power/extensions/OperatorsJail.t.sol:OperatorsJailTest
+[PASS] test_BasicEnvironment() (gas: 13088)
+[PASS] test_JailOperator() (gas: 501721)
+[PASS] test_Location() (gas: 3390)
+[PASS] test_UnjailOperator() (gas: 282393)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 157.83ms (1.03ms CPU time)
 
-Ran 5 tests for test/libraries/utils/ValSetVerifier.t.sol:ValSetVerifierDataTest
-[PASS] test_VerifyIsActive() (gas: 369697)
-[PASS] test_VerifyKey() (gas: 388099)
-[PASS] test_VerifyOperator() (gas: 368449)
-[PASS] test_VerifyVault() (gas: 486065)
-[PASS] test_VerifyVotingPower() (gas: 368450)
-Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 13.33ms (13.01ms CPU time)
-
-Ran 4 tests for test/modules/base/VotingPowerCalcManager.t.sol:VotingPowerCalcManagerTest
-[PASS] testReInitializeReverts() (gas: 31727)
-[PASS] testStakeToVotingPower() (gas: 9445)
-[PASS] testStakeToVotingPowerAt() (gas: 12460)
-[PASS] testWithExtraData() (gas: 9650)
-Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 1.10ms (63.83µs CPU time)
-
-Ran 11 tests for test/modules/voting-power/extensions/OpNetVaultAutoDeploy.t.sol:OpNetVaultAutoDeployTest
-[PASS] test_AutoDeployOnRegister() (gas: 1780749)
-[PASS] test_AutoDeployOnRegister_SetMaxNetworkLimitHook() (gas: 1525079)
-[PASS] test_AutoDeployOnRegister_WithoutSlasher() (gas: 1319653)
-[PASS] test_BasicFlags() (gas: 42661)
-[PASS] test_Location() (gas: 3433)
-[PASS] test_SetAutoDeployConfig_InvalidBurnerHook() (gas: 83415)
-[PASS] test_SetAutoDeployConfig_InvalidCollateral() (gas: 39656)
-[PASS] test_SetAutoDeployConfig_InvalidEpochDurationLessThanWindow() (gas: 50753)
-[PASS] test_SetAutoDeployConfig_InvalidEpochDurationZero() (gas: 39958)
-[PASS] test_SetAutoDeployConfig_InvalidWithSlasher() (gas: 48539)
-[PASS] test_SetAutoDeployStatus() (gas: 62276)
-Suite result: ok. 11 passed; 0 failed; 0 skipped; finished in 169.85ms (21.74ms CPU time)
+Ran 17 tests for test/modules/network/Network.t.sol:NetworkTest
+[PASS] testInitializeCantBeCalledTwice() (gas: 38445)
+[PASS] test_DirectUpdateDelayReverts() (gas: 31616)
+[PASS] test_GetMinDelayInvalidSelectorReverts() (gas: 9417)
+[PASS] test_Init() (gas: 126092)
+[PASS] test_PerSelectorDelayOverridesGlobal() (gas: 19263)
+[PASS] test_ScheduleBatchAndExecute() (gas: 223953)
+[PASS] test_ScheduleBatchLengthMismatchReverts() (gas: 39548)
+[PASS] test_ScheduleBatchRevertsIfDelayTooShort() (gas: 59938)
+[PASS] test_ScheduleRevertsIfDelayTooShort() (gas: 46875)
+[PASS] test_SetMaxNetworkLimitOnlyMiddleware() (gas: 142135)
+[PASS] test_SetMaxNetworkLimitWrongCallerReverts() (gas: 38015)
+[PASS] test_UpdateDelayThroughTimelock() (gas: 241182)
+[PASS] test_UpdateDelayThroughTimelock_RevertInvalidNewDelay() (gas: 115349)
+[PASS] test_UpdateDelayThroughTimelock_ZeroAddress() (gas: 197731)
+[PASS] test_UpdateMetadataURI() (gas: 49715)
+[PASS] test_UpdateNameByRoleHolder() (gas: 49719)
+[PASS] test_UpdateNameWithoutRoleReverts() (gas: 32963)
+Suite result: ok. 17 passed; 0 failed; 0 skipped; finished in 186.03ms (4.64ms CPU time)
 
 Ran 2 tests for test/modules/voting-power/extensions/MultiToken.t.sol:MultiTokenTest
 [PASS] test_RegisterToken_OnlyOwnerCanCall() (gas: 86062)
-[PASS] test_RegisterUnregisterToken_VaultManagerSide() (gas: 193545)
-Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 184.14ms (399.88µs CPU time)
-
-Ran 3 tests for test/modules/voting-power/extensions/BaseRewards.t.sol:BaseRewardsTest
-[PASS] test_Location() (gas: 3390)
-[PASS] test_OperatorRewards() (gas: 980813)
-[PASS] test_StakerRewards() (gas: 1269732)
-Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 190.94ms (1.66ms CPU time)
-
-Ran 3 tests for test/libraries/sigs/SigBlsBn254.t.sol:SigBlsBn254Test
-[PASS] test_BLSRegisterOperator() (gas: 1127697)
-[PASS] test_BLSRegisterOperatorInvalid() (gas: 1127807)
-[PASS] test_ZeroKey() (gas: 8408)
-Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 27.03ms (26.78ms CPU time)
-
-Ran 6 tests for test/modules/voting-power/extensions/BaseSlashing.t.sol:BaseSlashingTest
-[PASS] test_ExecuteSlashVaul_NotVetoSlasher() (gas: 499012)
-[PASS] test_Location() (gas: 3455)
-[PASS] test_SlashVault() (gas: 914262)
-[PASS] test_SlashVaultUnsafe() (gas: 1857425)
-[PASS] test_SlashVault_VetoSlasher() (gas: 3535221)
-[PASS] test_SlashVault_WithHints() (gas: 883766)
-Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 207.19ms (3.79ms CPU time)
-
-Ran 4 tests for test/modules/voting-power/extensions/OperatorsJail.t.sol:OperatorsJailTest
-[PASS] test_BasicEnvironment() (gas: 13022)
-[PASS] test_JailOperator() (gas: 501654)
-[PASS] test_Location() (gas: 3390)
-[PASS] test_UnjailOperator() (gas: 282416)
-Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 214.49ms (894.88µs CPU time)
+[PASS] test_RegisterUnregisterToken_VaultManagerSide() (gas: 193389)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 190.53ms (422.96µs CPU time)
 
 Ran 12 tests for test/libraries/keys/KeyEcdsaSecp256k1.t.sol:KeyEcdsaSecp256k1Test
 [PASS] test_DeserializeRevertsIfNot20Bytes() (gas: 10144)
@@ -334,52 +111,70 @@ Ran 12 tests for test/libraries/keys/KeyEcdsaSecp256k1.t.sol:KeyEcdsaSecp256k1Te
 [PASS] test_ToBytesFromBytes() (gas: 5664)
 [PASS] test_WrapUnwrap() (gas: 4682)
 [PASS] test_ZeroKey() (gas: 8738)
-Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 234.24ms (233.73ms CPU time)
+Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 204.05ms (203.48ms CPU time)
 
-Ran 3 tests for test/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.t.sol:NormalizedTokenDecimalsVPCalcTest
-[PASS] test_CheckStakes_18() (gas: 54478825)
-[PASS] test_CheckStakes_24() (gas: 54468925)
-[PASS] test_CheckStakes_28() (gas: 54478408)
-Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 307.72ms (149.98ms CPU time)
+Ran 12 tests for test/modules/key-registry/KeyRegistry.t.sol:KeyRegistryTest
+[PASS] test_GetKeysAt_TimeCheckpoints() (gas: 853442)
+[PASS] test_GetKeysOperators_MultipleOperators() (gas: 1053371)
+[PASS] test_GetOperator_UnknownKey() (gas: 11763)
+[PASS] test_Location() (gas: 3729)
+[PASS] test_SetBLSKey() (gas: 865797)
+[PASS] test_SetECDSAKey() (gas: 492185)
+[PASS] test_SetECDSAKey_RevertOnInvalidSignature() (gas: 59279)
+[PASS] test_SetKey64() (gas: 496782)
+[PASS] test_SetKey_AlreadyUsedKeyDifferentOperator() (gas: 396051)
+[PASS] test_SetKey_RevertOnInvalidKeyType() (gas: 40960)
+[PASS] test_SetKey_SameOperatorDifferentTags() (gas: 621123)
+[PASS] test_SetKey_SameOperatorSameTag_Overwrite() (gas: 500820)
+Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 8.52ms (7.96ms CPU time)
+
+Ran 6 tests for test/modules/voting-power/extensions/BaseSlashing.t.sol:BaseSlashingTest
+[PASS] test_ExecuteSlashVaul_NotVetoSlasher() (gas: 499013)
+[PASS] test_Location() (gas: 3455)
+[PASS] test_SlashVault() (gas: 913978)
+[PASS] test_SlashVaultUnsafe() (gas: 1857338)
+[PASS] test_SlashVault_VetoSlasher() (gas: 3535002)
+[PASS] test_SlashVault_WithHints() (gas: 883504)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 206.49ms (8.56ms CPU time)
+
+Ran 11 tests for test/modules/voting-power/extensions/OpNetVaultAutoDeploy.t.sol:OpNetVaultAutoDeployTest
+[PASS] test_AutoDeployOnRegister() (gas: 1780657)
+[PASS] test_AutoDeployOnRegister_SetMaxNetworkLimitHook() (gas: 1525165)
+[PASS] test_AutoDeployOnRegister_WithoutSlasher() (gas: 1319739)
+[PASS] test_BasicFlags() (gas: 42661)
+[PASS] test_Location() (gas: 3433)
+[PASS] test_SetAutoDeployConfig_InvalidBurnerHook() (gas: 83459)
+[PASS] test_SetAutoDeployConfig_InvalidCollateral() (gas: 39656)
+[PASS] test_SetAutoDeployConfig_InvalidEpochDurationLessThanWindow() (gas: 50731)
+[PASS] test_SetAutoDeployConfig_InvalidEpochDurationZero() (gas: 39958)
+[PASS] test_SetAutoDeployConfig_InvalidWithSlasher() (gas: 48517)
+[PASS] test_SetAutoDeployStatus() (gas: 62296)
+Suite result: ok. 11 passed; 0 failed; 0 skipped; finished in 208.70ms (12.13ms CPU time)
 
 Ran 4 tests for test/modules/voting-power/extensions/OperatorsBlacklist.t.sol:OperatorsBlacklistTest
-[PASS] test_BasicEnvironment() (gas: 12951)
-[PASS] test_BlacklistOperator() (gas: 321141)
+[PASS] test_BasicEnvironment() (gas: 12950)
+[PASS] test_BlacklistOperator() (gas: 321008)
 [PASS] test_Location() (gas: 3443)
-[PASS] test_UnblacklistOperator() (gas: 256598)
-Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 176.45ms (867.75µs CPU time)
+[PASS] test_UnblacklistOperator() (gas: 256529)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 219.48ms (912.71µs CPU time)
 
-Ran 17 tests for test/modules/network/Network.t.sol:NetworkTest
-[PASS] testInitializeCantBeCalledTwice() (gas: 38445)
-[PASS] test_DirectUpdateDelayReverts() (gas: 31616)
-[PASS] test_GetMinDelayInvalidSelectorReverts() (gas: 9417)
-[PASS] test_Init() (gas: 126092)
-[PASS] test_PerSelectorDelayOverridesGlobal() (gas: 19263)
-[PASS] test_ScheduleBatchAndExecute() (gas: 223953)
-[PASS] test_ScheduleBatchLengthMismatchReverts() (gas: 39548)
-[PASS] test_ScheduleBatchRevertsIfDelayTooShort() (gas: 59938)
-[PASS] test_ScheduleRevertsIfDelayTooShort() (gas: 46875)
-[PASS] test_SetMaxNetworkLimitOnlyMiddleware() (gas: 142091)
-[PASS] test_SetMaxNetworkLimitWrongCallerReverts() (gas: 38015)
-[PASS] test_UpdateDelayThroughTimelock() (gas: 241182)
-[PASS] test_UpdateDelayThroughTimelock_RevertInvalidNewDelay() (gas: 115349)
-[PASS] test_UpdateDelayThroughTimelock_ZeroAddress() (gas: 197731)
-[PASS] test_UpdateMetadataURI() (gas: 49715)
-[PASS] test_UpdateNameByRoleHolder() (gas: 49719)
-[PASS] test_UpdateNameWithoutRoleReverts() (gas: 32963)
-Suite result: ok. 17 passed; 0 failed; 0 skipped; finished in 207.62ms (4.68ms CPU time)
+Ran 3 tests for test/modules/voting-power/extensions/BaseRewards.t.sol:BaseRewardsTest
+[PASS] test_Location() (gas: 3390)
+[PASS] test_OperatorRewards() (gas: 980769)
+[PASS] test_StakerRewards() (gas: 1269688)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 232.95ms (1.63ms CPU time)
 
 Ran 4 tests for test/modules/common/permissions/OzOwnable.t.sol:OzOwnableTest
 [PASS] testProtectedAction_RevertsForNonOwner() (gas: 34449)
 [PASS] testProtectedAction_SucceedsForOwner() (gas: 34018)
 [PASS] testReinitializeReverts() (gas: 34172)
 [PASS] testTransferOwnership() (gas: 91026)
-Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 373.33µs (89.88µs CPU time)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 350.21µs (86.83µs CPU time)
 
 Ran 2 tests for test/modules/base/PermissionManager.t.sol:PermissionManagerTest
 [PASS] test_ProtectedAction_RevertIfNotOwner() (gas: 32491)
 [PASS] test_ProtectedAction_SucceedsForOwner() (gas: 28627)
-Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 308.88µs (36.75µs CPU time)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 269.71µs (33.21µs CPU time)
 
 Ran 8 tests for test/libraries/structs/PersistentSet.t.sol:PersistentSetTest
 [PASS] test_AddressSetAddRemoveAndContains() (gas: 222032)
@@ -390,89 +185,7 @@ Ran 8 tests for test/libraries/structs/PersistentSet.t.sol:PersistentSetTest
 [PASS] test_Bytes32SetValuesAt() (gas: 253136)
 [PASS] test_LargeAddressSetExceed256Elements() (gas: 17443160)
 [PASS] test_RevertPersistentSet_InvalidKey() (gas: 184360)
-Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 16.27ms (15.94ms CPU time)
-
-Ran 7 tests for test/modules/voting-power/extensions/OperatorsWhitelist.t.sol:OperatorsWhitelistTest
-[PASS] test_DisableWhitelistAndRegister() (gas: 191753)
-[PASS] test_DisableWhitelistAndRegisterOperatorVault() (gas: 474408)
-[PASS] test_Location() (gas: 3443)
-[PASS] test_RegisterOperator_RevertIfNotWhitelisted() (gas: 36731)
-[PASS] test_UnwhitelistOperator_RegisteredOperatorGetsUnregistered() (gas: 314898)
-[PASS] test_WhitelistEnabledByDefault() (gas: 10579)
-[PASS] test_WhitelistOperatorAndRegister() (gas: 223772)
-Suite result: ok. 7 passed; 0 failed; 0 skipped; finished in 234.94ms (1.38ms CPU time)
-
-Ran 6 tests for test/modules/common/permissions/OzAccessControl.t.sol:OzAccessControlTest
-[PASS] testChangeRoleForProtectedFunction() (gas: 137363)
-[PASS] testGetRoleForFunctionSelector() (gas: 71010)
-[PASS] testProtectedFunction_RevertIfCallerDoesNotHaveRole() (gas: 36888)
-[PASS] testSetNoRoleForSelector() (gas: 92562)
-[PASS] test_Location() (gas: 3303)
-[PASS] test_ProtectedFunction_DefaultAdminCanCall() (gas: 31147)
-Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 409.13µs (145.71µs CPU time)
-
-Ran 3 tests for test/modules/common/permissions/OzAccessManaged.t.sol:OzAccessManagedTest
-[PASS] testCannotChangeAuthority() (gas: 32035)
-[PASS] testProtectedAction_RevertsForNonAdmin() (gas: 40741)
-[PASS] testProtectedAction_SucceedsForAdmin() (gas: 40297)
-Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 318.00µs (60.17µs CPU time)
-
-Ran 5 tests for test/modules/base/OzEIP712.t.sol:OzEIP712Test
-[PASS] test_HashTypedDataV4() (gas: 128150)
-[PASS] test_InitializeSetsDomain() (gas: 128129)
-[PASS] test_Location() (gas: 3382)
-[PASS] test_ReInitialize() (gas: 133734)
-[PASS] test_SignatureRecovery() (gas: 122476)
-Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 578.33µs (325.21µs CPU time)
-
-Ran 1 test for test/modules/voting-power/common/voting-power-calc/WeightedTokensVPCalc.t.sol:WeightedTokensVPCalcTest
-[PASS] test_CheckStakesTokenWeight() (gas: 57393199)
-Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 225.82ms (31.48ms CPU time)
-
-Ran 31 tests for test/modules/voting-power/VotingPowerProvider.t.sol:VotingPowerProviderTest
-[PASS] testGetOperatorsAt_withTime() (gas: 456085)
-[PASS] test_CheckStakes() (gas: 189967337)
-[PASS] test_DistributeRewards() (gas: 207)
-[PASS] test_IncreaseNonce() (gas: 67805)
-[PASS] test_IsOperatorRegisteredAt_withTime() (gas: 177983)
-[PASS] test_Location() (gas: 3729)
-[PASS] test_RegisterOperator() (gas: 1853838)
-[PASS] test_RegisterOperatorValid() (gas: 140902)
-[PASS] test_RegisterOperatorVault() (gas: 2003434)
-[PASS] test_RegisterOperatorVaultExternal() (gas: 1897383)
-[PASS] test_RegisterOperatorVault_RevertIfOperatorNotRegistered() (gas: 1455855)
-[PASS] test_RegisterOperator_RevertIfAlreadyRegistered() (gas: 169950)
-[PASS] test_RegisterOperator_RevertIfNotEntity() (gas: 41482)
-[PASS] test_RegisterSharedVault() (gas: 619617)
-[PASS] test_RegisterSharedVault_RevertIfInvalidVault() (gas: 41358)
-[PASS] test_RegisterSharedVault_RevertIfTokenNotRegistered() (gas: 11994667)
-[PASS] test_RegisterToken() (gas: 533740)
-[PASS] test_RegisterToken_RevertOnZeroAddress() (gas: 35174)
-[PASS] test_SetSlashingWindow_RevertIfLarger() (gas: 37659)
-[PASS] test_SlashVault_InstantSlasher() (gas: 274)
-[PASS] test_SlashVault_RevertIfNoSlasher() (gas: 251)
-[PASS] test_SlashVault_VetoSlasherFlow() (gas: 277)
-[PASS] test_SlashingWindow() (gas: 87887)
-[PASS] test_UnregisterOperator() (gas: 269701)
-[PASS] test_UnregisterOperator_RevertIfNotRegistered() (gas: 39802)
-[PASS] test_UnregisterToken() (gas: 233285)
-[PASS] test_ValidateVault() (gas: 1320653)
-[PASS] test_ValidateVaultEpochDurationFailsIfLessThanSlashingWindow() (gas: 1296970)
-[PASS] test_registerOperatorWithSignature() (gas: 1762061)
-[PASS] test_registerOperatorWithSignature_RevertIfInvalidSig() (gas: 1212620)
-[PASS] test_unregisterOperatorWithSignature() (gas: 291196)
-Suite result: ok. 31 passed; 0 failed; 0 skipped; finished in 404.86ms (204.49ms CPU time)
-
-Ran 1 test for test/modules/voting-power/common/voting-power-calc/WeightedVaultsVPCalc.t.sol:WeightedVaultsVPCalcTest
-[PASS] test_CheckStakesVaultWeight() (gas: 54761941)
-Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 212.29ms (39.81ms CPU time)
-
-Ran 4 tests for test/libraries/sigs/SigEcdsaSecp256k1.t.sol:SigEcdsaSecp256k1Test
-[PASS] test_CorrectSignature() (gas: 18826)
-[PASS] test_FuzzVerification(uint256,bytes) (runs: 4096, μ: 22642, ~: 22616)
-[PASS] test_IncorrectSignature() (gas: 34486)
-[PASS] test_ZeroKey() (gas: 5374)
-Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 1.75s (1.75s CPU time)
+Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 6.34ms (6.09ms CPU time)
 
 Ran 8 tests for test/modules/settlement/Settlement.t.sol:SettlementRawTest
 [PASS] testCommitValSetHeader_Basic() (gas: 1047669)
@@ -483,19 +196,156 @@ Ran 8 tests for test/modules/settlement/Settlement.t.sol:SettlementRawTest
 [PASS] test_commitValSetHeader_VerificationFailed() (gas: 755826)
 [PASS] test_setSigVerifier() (gas: 339819)
 [PASS] test_setSigVerifier_Revert_InvalidSigVerifier() (gas: 34353)
-Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 1.37ms (873.29µs CPU time)
+Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 1.38ms (870.04µs CPU time)
+
+Ran 7 tests for test/modules/voting-power/extensions/OperatorsWhitelist.t.sol:OperatorsWhitelistTest
+[PASS] test_DisableWhitelistAndRegister() (gas: 191687)
+[PASS] test_DisableWhitelistAndRegisterOperatorVault() (gas: 474497)
+[PASS] test_Location() (gas: 3443)
+[PASS] test_RegisterOperator_RevertIfNotWhitelisted() (gas: 36731)
+[PASS] test_UnwhitelistOperator_RegisteredOperatorGetsUnregistered() (gas: 314788)
+[PASS] test_WhitelistEnabledByDefault() (gas: 10557)
+[PASS] test_WhitelistOperatorAndRegister() (gas: 223750)
+Suite result: ok. 7 passed; 0 failed; 0 skipped; finished in 211.45ms (1.41ms CPU time)
+
+Ran 6 tests for test/modules/common/permissions/OzAccessControl.t.sol:OzAccessControlTest
+[PASS] testChangeRoleForProtectedFunction() (gas: 137363)
+[PASS] testGetRoleForFunctionSelector() (gas: 71010)
+[PASS] testProtectedFunction_RevertIfCallerDoesNotHaveRole() (gas: 36888)
+[PASS] testSetNoRoleForSelector() (gas: 92562)
+[PASS] test_Location() (gas: 3303)
+[PASS] test_ProtectedFunction_DefaultAdminCanCall() (gas: 31147)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 422.25µs (149.75µs CPU time)
+
+Ran 3 tests for test/modules/common/permissions/OzAccessManaged.t.sol:OzAccessManagedTest
+[PASS] testCannotChangeAuthority() (gas: 32035)
+[PASS] testProtectedAction_RevertsForNonAdmin() (gas: 40741)
+[PASS] testProtectedAction_SucceedsForAdmin() (gas: 40297)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 322.17µs (60.96µs CPU time)
+
+Ran 5 tests for test/modules/base/OzEIP712.t.sol:OzEIP712Test
+[PASS] test_HashTypedDataV4() (gas: 128150)
+[PASS] test_InitializeSetsDomain() (gas: 128129)
+[PASS] test_Location() (gas: 3382)
+[PASS] test_ReInitialize() (gas: 133734)
+[PASS] test_SignatureRecovery() (gas: 122476)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 599.75µs (343.38µs CPU time)
+
+Ran 3 tests for test/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.t.sol:NormalizedTokenDecimalsVPCalcTest
+[PASS] test_CheckStakes_18() (gas: 54556040)
+[PASS] test_CheckStakes_24() (gas: 54546140)
+[PASS] test_CheckStakes_28() (gas: 54555623)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 377.85ms (123.25ms CPU time)
+
+Ran 2 tests for test/modules/voting-power/extensions/SharedVaults.t.sol:SharedVaultsTest
+[PASS] test_RegisterSharedVault_OnlyOwnerCanCall() (gas: 180073)
+[PASS] test_RegisterUnregisterSharedVault_VaultManagerSide() (gas: 283190)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 206.20ms (542.83µs CPU time)
+
+Ran 3 tests for test/libraries/sigs/SigBlsBn254.t.sol:SigBlsBn254Test
+[PASS] test_BLSRegisterOperator() (gas: 1127697)
+[PASS] test_BLSRegisterOperatorInvalid() (gas: 1127807)
+[PASS] test_ZeroKey() (gas: 8408)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 17.85ms (17.59ms CPU time)
+
+Ran 12 tests for test/modules/valset-driver/ValSetDriver.t.sol:ValSetDriverTest
+[PASS] test_AddRemoveQuorumThreshold() (gas: 451246)
+[PASS] test_AddRemoveReplica() (gas: 475881)
+[PASS] test_AddRemoveVotingPowerProvider() (gas: 350109)
+[PASS] test_GetValSetConfig() (gas: 127050)
+[PASS] test_InitialConfig() (gas: 371287)
+[PASS] test_Location() (gas: 3685)
+[PASS] test_PermissionChecks() (gas: 279599)
+[PASS] test_SetKeysProvider() (gas: 101352)
+[PASS] test_SetVerificationType() (gas: 78596)
+[PASS] test_TimeBasedConfig() (gas: 120262)
+[PASS] test_TimeBasedQueries() (gas: 349992)
+[PASS] test_UpdateAllConfigs() (gas: 1040332)
+Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 3.09ms (2.33ms CPU time)
+
+Ran 5 tests for test/libraries/utils/ValSetVerifier.t.sol:ValSetVerifierDataTest
+[PASS] test_VerifyIsActive() (gas: 369697)
+[PASS] test_VerifyKey() (gas: 388099)
+[PASS] test_VerifyOperator() (gas: 368449)
+[PASS] test_VerifyVault() (gas: 486065)
+[PASS] test_VerifyVotingPower() (gas: 368450)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 1.75ms (1.43ms CPU time)
+
+Ran 4 tests for test/modules/base/VotingPowerCalcManager.t.sol:VotingPowerCalcManagerTest
+[PASS] testReInitializeReverts() (gas: 31727)
+[PASS] testStakeToVotingPower() (gas: 9445)
+[PASS] testStakeToVotingPowerAt() (gas: 12460)
+[PASS] testWithExtraData() (gas: 9650)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 321.54µs (61.58µs CPU time)
+
+Ran 31 tests for test/modules/voting-power/VotingPowerProvider.t.sol:VotingPowerProviderTest
+[PASS] testGetOperatorsAt_withTime() (gas: 456023)
+[PASS] test_CheckStakes() (gas: 202863238)
+[PASS] test_DistributeRewards() (gas: 207)
+[PASS] test_IncreaseNonce() (gas: 67739)
+[PASS] test_IsOperatorRegisteredAt_withTime() (gas: 177896)
+[PASS] test_Location() (gas: 3729)
+[PASS] test_RegisterOperator() (gas: 1853998)
+[PASS] test_RegisterOperatorValid() (gas: 140881)
+[PASS] test_RegisterOperatorVault() (gas: 2003477)
+[PASS] test_RegisterOperatorVaultExternal() (gas: 1897565)
+[PASS] test_RegisterOperatorVault_RevertIfOperatorNotRegistered() (gas: 1455855)
+[PASS] test_RegisterOperator_RevertIfAlreadyRegistered() (gas: 170040)
+[PASS] test_RegisterOperator_RevertIfNotEntity() (gas: 41527)
+[PASS] test_RegisterSharedVault() (gas: 619784)
+[PASS] test_RegisterSharedVault_RevertIfInvalidVault() (gas: 41380)
+[PASS] test_RegisterSharedVault_RevertIfTokenNotRegistered() (gas: 11994823)
+[PASS] test_RegisterToken() (gas: 533934)
+[PASS] test_RegisterToken_RevertOnZeroAddress() (gas: 35174)
+[PASS] test_SetSlashingWindow_RevertIfLarger() (gas: 37637)
+[PASS] test_SlashVault_InstantSlasher() (gas: 274)
+[PASS] test_SlashVault_RevertIfNoSlasher() (gas: 251)
+[PASS] test_SlashVault_VetoSlasherFlow() (gas: 277)
+[PASS] test_SlashingWindow() (gas: 87821)
+[PASS] test_UnregisterOperator() (gas: 269582)
+[PASS] test_UnregisterOperator_RevertIfNotRegistered() (gas: 39802)
+[PASS] test_UnregisterToken() (gas: 233153)
+[PASS] test_ValidateVault() (gas: 1320609)
+[PASS] test_ValidateVaultEpochDurationFailsIfLessThanSlashingWindow() (gas: 1296948)
+[PASS] test_registerOperatorWithSignature() (gas: 1762019)
+[PASS] test_registerOperatorWithSignature_RevertIfInvalidSig() (gas: 1212487)
+[PASS] test_unregisterOperatorWithSignature() (gas: 291176)
+Suite result: ok. 31 passed; 0 failed; 0 skipped; finished in 299.87ms (182.66ms CPU time)
+
+Ran 1 test for test/modules/voting-power/common/voting-power-calc/WeightedTokensVPCalc.t.sol:WeightedTokensVPCalcTest
+[PASS] test_CheckStakesTokenWeight() (gas: 57470608)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 188.69ms (23.75ms CPU time)
+
+Ran 1 test for test/modules/voting-power/common/voting-power-calc/WeightedVaultsVPCalc.t.sol:WeightedVaultsVPCalcTest
+[PASS] test_CheckStakesVaultWeight() (gas: 54833529)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 219.31ms (18.91ms CPU time)
+
+Ran 4 tests for test/libraries/sigs/SigEcdsaSecp256k1.t.sol:SigEcdsaSecp256k1Test
+[PASS] test_CorrectSignature() (gas: 18826)
+[PASS] test_FuzzVerification(uint256,bytes) (runs: 4096, μ: 22645, ~: 22616)
+[PASS] test_IncorrectSignature() (gas: 34486)
+[PASS] test_ZeroKey() (gas: 5374)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 1.66s (1.66s CPU time)
+
+Ran 5 tests for test/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.t.sol:SigVerifierBlsBn254SimpleTest
+[PASS] test_FalseQuorumThreshold() (gas: 24440164)
+[PASS] test_FalseValidatorSet() (gas: 24460929)
+[PASS] test_RevertUnsupportedKeyTag() (gas: 36913)
+[PASS] test_Revert_InvalidNonSignersOrder() (gas: 24466972)
+[PASS] test_verifyQuorumSig() (gas: 24897291)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 425.83ms (282.66ms CPU time)
 
 Ran 9 tests for test/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.t.sol:SigVerifierBlsBn254ZKTest
 [PASS] test_Create() (gas: 5332138)
-[PASS] test_FalseQuorumThreshold() (gas: 7902866)
+[PASS] test_FalseQuorumThreshold() (gas: 7901546)
 [PASS] test_Revert_InvalidLength() (gas: 4650914)
 [PASS] test_Revert_InvalidMaxValidators() (gas: 4651297)
 [PASS] test_Revert_InvalidMaxValidatorsOrder() (gas: 4651369)
 [PASS] test_Revert_InvalidVerifier() (gas: 3173735)
 [PASS] test_Revert_UnsupportedKeyTag() (gas: 5349689)
-[PASS] test_verifyQuorumSig() (gas: 8267222)
-[PASS] test_verifyQuorumSig_FalseZkProof() (gas: 17595493375392720479)
-Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 10.19s (28.49ms CPU time)
+[PASS] test_verifyQuorumSig() (gas: 8265902)
+[PASS] test_verifyQuorumSig_FalseZkProof() (gas: 17595493375392720418)
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 189.76ms (20.03ms CPU time)
 
 Ran 21 tests for test/libraries/keys/KeyBlsBn254.t.sol:KeyBlsBn254Test
 [PASS] test_DeserializeEmptyBytesIsIdentity() (gas: 4076)
@@ -504,10 +354,10 @@ Ran 21 tests for test/libraries/keys/KeyBlsBn254.t.sol:KeyBlsBn254Test
 [PASS] test_EqualFalse() (gas: 21818)
 [PASS] test_FromBytesRevertsInvalidBytes() (gas: 13169)
 [PASS] test_FromBytesRevertsInvalidLength() (gas: 10245)
-[PASS] test_FuzzSerializeDeserialize(uint256) (runs: 4096, μ: 7275, ~: 11504)
-[PASS] test_FuzzSerializeDeserializeNonZeroNegate(uint256) (runs: 4096, μ: 7775, ~: 12304)
-[PASS] test_FuzzToBytesFromBytes(uint256) (runs: 4096, μ: 5475, ~: 8177)
-[PASS] test_FuzzWrapUnwrap(uint256) (runs: 4096, μ: 4712, ~: 6623)
+[PASS] test_FuzzSerializeDeserialize(uint256) (runs: 4096, μ: 7229, ~: 11504)
+[PASS] test_FuzzSerializeDeserializeNonZeroNegate(uint256) (runs: 4096, μ: 7616, ~: 12304)
+[PASS] test_FuzzToBytesFromBytes(uint256) (runs: 4096, μ: 5494, ~: 8177)
+[PASS] test_FuzzWrapUnwrap(uint256) (runs: 4096, μ: 4699, ~: 6623)
 [PASS] test_OutOfBounds() (gas: 27162)
 [PASS] test_SerializeDeserializeIdentity() (gas: 4582)
 [PASS] test_SerializeDeserializeNonZero() (gas: 11338)
@@ -519,61 +369,53 @@ Ran 21 tests for test/libraries/keys/KeyBlsBn254.t.sol:KeyBlsBn254Test
 [PASS] test_WrapUnwrapIdentity() (gas: 4022)
 [PASS] test_WrapUnwrapNonZero() (gas: 6414)
 [PASS] test_ZeroKey() (gas: 9392)
-Suite result: ok. 21 passed; 0 failed; 0 skipped; finished in 36.27s (1.22s CPU time)
+Suite result: ok. 21 passed; 0 failed; 0 skipped; finished in 10.01s (997.54ms CPU time)
 
 Ran 4 tests for test/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.t.sol:PricedTokensChainlinkVPCalcTest
-[PASS] test_ChainlinkCalcTracksRealPrice() (gas: 302920468)
-[PASS] test_ChainlinkCalcTracksRealPriceHistorical() (gas: 159656577)
-[PASS] test_ChainlinkCalcTracksRealPriceStale() (gas: 302434543)
-[PASS] test_ChainlinkCalcTracksRealPriceWithInvert() (gas: 302643687)
-Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 38.72s (19.17s CPU time)
+[PASS] test_ChainlinkCalcTracksRealPrice() (gas: 303065828)
+[PASS] test_ChainlinkCalcTracksRealPriceHistorical() (gas: 159729977)
+[PASS] test_ChainlinkCalcTracksRealPriceStale() (gas: 302579903)
+[PASS] test_ChainlinkCalcTracksRealPriceWithInvert() (gas: 302789047)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 21.53s (22.27s CPU time)
 
 Ran 10 tests for test/libraries/structs/Checkpoints.t.sol:CheckpointsTrace256Test
-[PASS] testAt(uint48[],uint256[],uint32) (runs: 4096, μ: 8389508, ~: 8885215)
-[PASS] testLatest(uint48[],uint256[]) (runs: 4096, μ: 8228475, ~: 8694373)
-[PASS] testLatestCheckpoint(uint48[],uint256[]) (runs: 4096, μ: 8388926, ~: 8940992)
-[PASS] testLength(uint48[],uint256[]) (runs: 4096, μ: 8148026, ~: 8676270)
-[PASS] testLookup(uint48[],uint256[],uint48) (runs: 4096, μ: 8085504, ~: 8534767)
-[PASS] testPop(uint48[],uint256[]) (runs: 4096, μ: 7994471, ~: 8483294)
-[PASS] testPush(uint48[],uint256[],uint48) (runs: 4096, μ: 9091029, ~: 9623869)
-[PASS] testUpperLookupRecentCheckpoint(uint48[],uint256[],uint48) (runs: 4096, μ: 8328534, ~: 8825273)
-[PASS] testUpperLookupRecentCheckpointWithHint(uint48[],uint256[],uint48,uint32) (runs: 4096, μ: 8102261, ~: 8512507)
-[PASS] testUpperLookupRecentWithHint(uint48[],uint256[],uint48,uint32) (runs: 4096, μ: 8045175, ~: 8502587)
-Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 39.13s (157.16s CPU time)
+[PASS] testAt(uint48[],uint256[],uint32) (runs: 4096, μ: 8413703, ~: 8835785)
+[PASS] testLatest(uint48[],uint256[]) (runs: 4096, μ: 8311271, ~: 8847202)
+[PASS] testLatestCheckpoint(uint48[],uint256[]) (runs: 4096, μ: 8459413, ~: 8973293)
+[PASS] testLength(uint48[],uint256[]) (runs: 4096, μ: 8147439, ~: 8721845)
+[PASS] testLookup(uint48[],uint256[],uint48) (runs: 4096, μ: 8129876, ~: 8562656)
+[PASS] testPop(uint48[],uint256[]) (runs: 4096, μ: 8020908, ~: 8449036)
+[PASS] testPush(uint48[],uint256[],uint48) (runs: 4096, μ: 9102268, ~: 9674824)
+[PASS] testUpperLookupRecentCheckpoint(uint48[],uint256[],uint48) (runs: 4096, μ: 8358767, ~: 8913748)
+[PASS] testUpperLookupRecentCheckpointWithHint(uint48[],uint256[],uint48,uint32) (runs: 4096, μ: 8073255, ~: 8558854)
+[PASS] testUpperLookupRecentWithHint(uint48[],uint256[],uint48,uint32) (runs: 4096, μ: 8072875, ~: 8540925)
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 36.37s (144.52s CPU time)
 
 Ran 10 tests for test/libraries/structs/Checkpoints.t.sol:CheckpointsTrace208Test
-[PASS] testAt(uint48[],uint208[],uint32) (runs: 4096, μ: 4395089, ~: 4615179)
-[PASS] testLatest(uint48[],uint208[]) (runs: 4096, μ: 4417239, ~: 4692547)
-[PASS] testLatestCheckpoint(uint48[],uint208[]) (runs: 4096, μ: 4546080, ~: 4837556)
-[PASS] testLength(uint48[],uint208[]) (runs: 4096, μ: 4395457, ~: 4682166)
-[PASS] testLookup(uint48[],uint208[],uint48) (runs: 4096, μ: 4280901, ~: 4556094)
-[PASS] testPop(uint48[],uint208[]) (runs: 4096, μ: 4228266, ~: 4486188)
-[PASS] testPush(uint48[],uint208[],uint48) (runs: 4096, μ: 5137749, ~: 5445038)
-[PASS] testUpperLookupRecentCheckpoint(uint48[],uint208[],uint48) (runs: 4096, μ: 4504003, ~: 4772701)
-[PASS] testUpperLookupRecentCheckpointWithHint(uint48[],uint208[],uint48,uint32) (runs: 4096, μ: 4237921, ~: 4481771)
-[PASS] testUpperLookupRecentWithHint(uint48[],uint208[],uint48,uint32) (runs: 4096, μ: 4309319, ~: 4587375)
-Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 46.72s (118.36s CPU time)
+[PASS] testAt(uint48[],uint208[],uint32) (runs: 4096, μ: 4417190, ~: 4685241)
+[PASS] testLatest(uint48[],uint208[]) (runs: 4096, μ: 4399755, ~: 4703551)
+[PASS] testLatestCheckpoint(uint48[],uint208[]) (runs: 4096, μ: 4554927, ~: 4810055)
+[PASS] testLength(uint48[],uint208[]) (runs: 4096, μ: 4382009, ~: 4630069)
+[PASS] testLookup(uint48[],uint208[],uint48) (runs: 4096, μ: 4233876, ~: 4485880)
+[PASS] testPop(uint48[],uint208[]) (runs: 4096, μ: 4206210, ~: 4474761)
+[PASS] testPush(uint48[],uint208[],uint48) (runs: 4096, μ: 5153071, ~: 5465580)
+[PASS] testUpperLookupRecentCheckpoint(uint48[],uint208[],uint48) (runs: 4096, μ: 4502040, ~: 4784715)
+[PASS] testUpperLookupRecentCheckpointWithHint(uint48[],uint208[],uint48,uint32) (runs: 4096, μ: 4198193, ~: 4462708)
+[PASS] testUpperLookupRecentWithHint(uint48[],uint208[],uint48,uint32) (runs: 4096, μ: 4239968, ~: 4490447)
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 36.37s (110.99s CPU time)
 
 Ran 10 tests for test/libraries/structs/Checkpoints.t.sol:CheckpointsTrace512Test
-[PASS] testAt512(uint48[],uint256[],uint32) (runs: 4096, μ: 12382348, ~: 13086173)
-[PASS] testLatest512(uint48[],uint256[]) (runs: 4096, μ: 12239702, ~: 12985393)
-[PASS] testLatestCheckpoint512(uint48[],uint256[]) (runs: 4096, μ: 12351571, ~: 12995233)
-[PASS] testLength512(uint48[],uint256[]) (runs: 4096, μ: 11891668, ~: 12487625)
-[PASS] testLookup512(uint48[],uint256[],uint48) (runs: 4096, μ: 11752243, ~: 12558262)
-[PASS] testPop512(uint48[],uint256[]) (runs: 4096, μ: 11821078, ~: 12418980)
-[PASS] testPush512(uint48[],uint256[],uint48) (runs: 4096, μ: 13777492, ~: 14616183)
-[PASS] testUpperLookupRecentCheckpoint512(uint48[],uint256[],uint48) (runs: 4096, μ: 12089381, ~: 12701312)
-[PASS] testUpperLookupRecentCheckpointWithHint512(uint48[],uint256[],uint48,uint32) (runs: 4096, μ: 11813303, ~: 12432009)
-[PASS] testUpperLookupRecentWithHint512(uint48[],uint256[],uint48,uint32) (runs: 4096, μ: 11891171, ~: 12595827)
-Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 45.86s (185.37s CPU time)
-
-Ran 5 tests for test/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.t.sol:SigVerifierBlsBn254SimpleTest
-[PASS] test_FalseQuorumThreshold() (gas: 24442784)
-[PASS] test_FalseValidatorSet() (gas: 24463549)
-[PASS] test_RevertUnsupportedKeyTag() (gas: 36913)
-[PASS] test_Revert_InvalidNonSignersOrder() (gas: 24469592)
-[PASS] test_verifyQuorumSig() (gas: 24899911)
-Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CPU time)
+[PASS] testAt512(uint48[],uint256[],uint32) (runs: 4096, μ: 12340393, ~: 13081098)
+[PASS] testLatest512(uint48[],uint256[]) (runs: 4096, μ: 12346735, ~: 13140161)
+[PASS] testLatestCheckpoint512(uint48[],uint256[]) (runs: 4096, μ: 12507722, ~: 13312051)
+[PASS] testLength512(uint48[],uint256[]) (runs: 4096, μ: 11912532, ~: 12551313)
+[PASS] testLookup512(uint48[],uint256[],uint48) (runs: 4096, μ: 11867105, ~: 12632598)
+[PASS] testPop512(uint48[],uint256[]) (runs: 4096, μ: 11711042, ~: 12438195)
+[PASS] testPush512(uint48[],uint256[],uint48) (runs: 4096, μ: 13740235, ~: 14607572)
+[PASS] testUpperLookupRecentCheckpoint512(uint48[],uint256[],uint48) (runs: 4096, μ: 12072354, ~: 12840854)
+[PASS] testUpperLookupRecentCheckpointWithHint512(uint48[],uint256[],uint48,uint32) (runs: 4096, μ: 11897810, ~: 12610181)
+[PASS] testUpperLookupRecentWithHint512(uint48[],uint256[],uint48,uint32) (runs: 4096, μ: 11790787, ~: 12455583)
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 51.58s (172.47s CPU time)
 
 ╭---------------------------------------------------+-----------------+--------+--------+--------+---------╮
 | examples/MyKeyRegistry.sol:MyKeyRegistry Contract |                 |        |        |        |         |
@@ -760,7 +602,7 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 |---------------------------------------------------------------------------------------------------------+-----------------+---------------------+--------+----------------------+---------|
 | VALIDATOR_SET_HASH_MIMC_HASH                                                                            | 227             | 227                 | 227    | 227                  | 9       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------------------+--------+----------------------+---------|
-| verifyQuorumSig                                                                                         | 1281            | 4398873343846299109 | 187291 | 17595493375384820573 | 4       |
+| verifyQuorumSig                                                                                         | 1281            | 4398873343846299424 | 187291 | 17595493375384821832 | 4       |
 ╰---------------------------------------------------------------------------------------------------------+-----------------+---------------------+--------+----------------------+---------╯
 
 ╭--------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╮
@@ -790,9 +632,9 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 |----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | Function Name                                                                                      | Min             | Avg    | Median | Max    | # Calls |
 |----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| distributeOperatorRewards                                                                          | 147166          | 147166 | 147166 | 147166 | 1       |
+| distributeOperatorRewards                                                                          | 147144          | 147144 | 147144 | 147144 | 1       |
 |----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| distributeStakerRewards                                                                            | 215710          | 215710 | 215710 | 215710 | 1       |
+| distributeStakerRewards                                                                            | 215688          | 215688 | 215688 | 215688 | 1       |
 ╰----------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
 
 ╭------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╮
@@ -808,7 +650,7 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 |------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | executeSlashVault                                                                                    | 18191           | 203309 | 203309 | 388428 | 2       |
 |------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| slashVault                                                                                           | 12199           | 242664 | 311364 | 372112 | 6       |
+| slashVault                                                                                           | 12199           | 242645 | 311342 | 372090 | 6       |
 ╰------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
 
 ╭----------------------------------------------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╮
@@ -840,7 +682,7 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 +===================================================================================================================================================================+
 | Deployment Cost                                                                                         | Deployment Size |         |         |         |         |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| 2918616                                                                                                 | 14629           |         |         |         |         |
+| 3119264                                                                                                 | 15631           |         |         |         |         |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 |                                                                                                         |                 |         |         |         |         |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
@@ -848,31 +690,35 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | _validateVault                                                                                          | 35419           | 39953   | 39953   | 44488   | 2       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getOperatorStake                                                                                        | 29279           | 65555   | 77115   | 77115   | 80      |
+| getOperatorStake                                                                                        | 29321           | 65597   | 77157   | 77157   | 80      |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getOperatorStakeAt                                                                                      | 84025           | 84025   | 84025   | 84025   | 60      |
+| getOperatorStakeAt                                                                                      | 84134           | 84134   | 84134   | 84134   | 60      |
+|---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getOperatorStakes                                                                                       | 282571          | 282571  | 282571  | 282571  | 20      |
+|---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getOperatorStakesAt                                                                                     | 311336          | 311336  | 311336  | 311336  | 20      |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | getOperatorVaults                                                                                       | 10485           | 10498   | 10485   | 12316   | 267     |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | getOperatorVaultsAt                                                                                     | 11133           | 11133   | 11133   | 11133   | 1       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getOperatorVaultsLength                                                                                 | 2760            | 2760    | 2760    | 2760    | 1       |
+| getOperatorVaultsLength                                                                                 | 2716            | 2716    | 2716    | 2716    | 1       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getOperatorVotingPower                                                                                  | 14712           | 94976   | 88077   | 146897  | 380     |
+| getOperatorVotingPower                                                                                  | 14712           | 94985   | 88141   | 146875  | 380     |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getOperatorVotingPowerAt                                                                                | 14994           | 110895  | 95825   | 489021  | 200     |
+| getOperatorVotingPowerAt                                                                                | 14994           | 110971  | 95955   | 488999  | 200     |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getOperatorVotingPowers                                                                                 | 252413          | 254859  | 252413  | 315429  | 1020    |
+| getOperatorVotingPowers                                                                                 | 252370          | 254828  | 252370  | 315708  | 1020    |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getOperatorVotingPowersAt                                                                               | 345822          | 346456  | 346456  | 347090  | 40      |
+| getOperatorVotingPowersAt                                                                               | 346342          | 346976  | 346976  | 347610  | 40      |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | getOperators                                                                                            | 10192           | 12492   | 11107   | 17561   | 4       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | getOperatorsAt                                                                                          | 15920           | 17418   | 17418   | 18917   | 2       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getOperatorsLength                                                                                      | 2534            | 2534    | 2534    | 2534    | 3       |
+| getOperatorsLength                                                                                      | 2424            | 2424    | 2424    | 2424    | 3       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getSharedVaults                                                                                         | 10147           | 21429   | 24885   | 24885   | 8       |
+| getSharedVaults                                                                                         | 10169           | 21451   | 24907   | 24907   | 8       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | getSharedVaultsAt                                                                                       | 10958           | 10958   | 10958   | 10958   | 1       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
@@ -882,41 +728,41 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | getSlashingWindowAt                                                                                     | 6166            | 6166    | 6166    | 6166    | 6       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getTokens                                                                                               | 19341           | 19341   | 19341   | 19341   | 1       |
+| getTokens                                                                                               | 19363           | 19363   | 19363   | 19363   | 1       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | getTokensAt                                                                                             | 7978            | 14781   | 14943   | 21259   | 4       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getTokensLength                                                                                         | 2484            | 2484    | 2484    | 2484    | 3       |
+| getTokensLength                                                                                         | 2506            | 2506    | 2506    | 2506    | 3       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getVotingPowers                                                                                         | 2406056         | 2460104 | 2406056 | 3595113 | 22      |
+| getVotingPowers                                                                                         | 2404714         | 2459054 | 2404714 | 3600211 | 22      |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getVotingPowersAt                                                                                       | 4237480         | 4237480 | 4237480 | 4237480 | 1       |
+| getVotingPowersAt                                                                                       | 4247967         | 4247967 | 4247967 | 4247967 | 1       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| isOperatorRegistered                                                                                    | 2804            | 5498    | 5117    | 7413    | 24      |
+| isOperatorRegistered                                                                                    | 2760            | 5454    | 5073    | 7369    | 24      |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| isOperatorRegisteredAt                                                                                  | 3234            | 4922    | 5766    | 5766    | 3       |
+| isOperatorRegisteredAt                                                                                  | 3212            | 4900    | 5744    | 5744    | 3       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | isOperatorVaultRegistered(address)                                                                      | 5119            | 5501    | 5119    | 7415    | 6       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| isOperatorVaultRegistered(address,address)                                                              | 5270            | 5598    | 5270    | 7566    | 7       |
+| isOperatorVaultRegistered(address,address)                                                              | 5293            | 5621    | 5293    | 7589    | 7       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| isOperatorVaultRegisteredAt(address,address,uint48)                                                     | 6021            | 6021    | 6021    | 6021    | 1       |
+| isOperatorVaultRegisteredAt(address,address,uint48)                                                     | 5933            | 5933    | 5933    | 5933    | 1       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| isOperatorVaultRegisteredAt(address,uint48)                                                             | 5786            | 5786    | 5786    | 5786    | 1       |
+| isOperatorVaultRegisteredAt(address,uint48)                                                             | 5764            | 5764    | 5764    | 5764    | 1       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | isSharedVaultRegistered                                                                                 | 5140            | 5905    | 5140    | 7436    | 3       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| isSharedVaultRegisteredAt                                                                               | 5742            | 5742    | 5742    | 5742    | 1       |
+| isSharedVaultRegisteredAt                                                                               | 5787            | 5787    | 5787    | 5787    | 1       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | isTokenRegistered                                                                                       | 5068            | 5833    | 5068    | 7364    | 3       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| isTokenRegisteredAt                                                                                     | 8571            | 8571    | 8571    | 8571    | 1       |
+| isTokenRegisteredAt                                                                                     | 8594            | 8594    | 8594    | 8594    | 1       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| registerOperator                                                                                        | 6545            | 64749   | 62503   | 96748   | 1087    |
+| registerOperator                                                                                        | 6612            | 64736   | 62481   | 96769   | 1087    |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| registerOperatorVault                                                                                   | 17100           | 207490  | 209084  | 243306  | 276     |
+| registerOperatorVault                                                                                   | 17100           | 207505  | 209106  | 243328  | 276     |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| registerSharedVault                                                                                     | 6619            | 118129  | 111545  | 145789  | 135     |
+| registerSharedVault                                                                                     | 6619            | 118109  | 111523  | 145767  | 135     |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | registerToken                                                                                           | 426             | 73164   | 90548   | 90548   | 16      |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
@@ -924,11 +770,11 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | unregisterOperator                                                                                      | 2897            | 46495   | 52438   | 54438   | 8       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| unregisterOperatorVault                                                                                 | 107825          | 107825  | 107825  | 107825  | 3       |
+| unregisterOperatorVault                                                                                 | 107847          | 107847  | 107847  | 107847  | 3       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | unregisterSharedVault                                                                                   | 7484            | 38772   | 54416   | 54416   | 3       |
 |---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| unregisterToken                                                                                         | 7543            | 42742   | 54475   | 54475   | 4       |
+| unregisterToken                                                                                         | 7499            | 42698   | 54431   | 54431   | 4       |
 ╰---------------------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------╯
 
 ╭-------------------------------------------------+-----------------+---------------------+---------------------+----------------------+---------╮
@@ -942,7 +788,7 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 |-------------------------------------------------+-----------------+---------------------+---------------------+----------------------+---------|
 | Function Name                                   | Min             | Avg                 | Median              | Max                  | # Calls |
 |-------------------------------------------------+-----------------+---------------------+---------------------+----------------------+---------|
-| verifyProof                                     | 309915          | 8797746687692536570 | 8797746687692536570 | 17595493375384763225 | 2       |
+| verifyProof                                     | 309915          | 8797746687692537199 | 8797746687692537199 | 17595493375384764484 | 2       |
 ╰-------------------------------------------------+-----------------+---------------------+---------------------+----------------------+---------╯
 
 ╭---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╮
@@ -956,7 +802,7 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 |---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
 | Function Name                                                             | Min             | Avg   | Median | Max   | # Calls |
 |---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
-| push                                                                      | 26412           | 26534 | 26484  | 26736 | 256     |
+| push                                                                      | 26400           | 26525 | 26472  | 26736 | 256     |
 ╰---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╯
 
 ╭---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╮
@@ -970,7 +816,7 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 |---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
 | Function Name                                                             | Min             | Avg   | Median | Max   | # Calls |
 |---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
-| push                                                                      | 29755           | 29893 | 29821  | 30151 | 256     |
+| push                                                                      | 29755           | 29900 | 29833  | 30151 | 256     |
 ╰---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╯
 
 ╭---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╮
@@ -984,7 +830,7 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 |---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
 | Function Name                                                             | Min             | Avg   | Median | Max   | # Calls |
 |---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
-| push512                                                                   | 32796           | 32817 | 32820  | 32820 | 256     |
+| push512                                                                   | 32796           | 32816 | 32820  | 32820 | 256     |
 ╰---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╯
 
 ╭-----------------------------------------------------------------------+-----------------+-------+--------+-------+---------╮
@@ -1114,9 +960,9 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 |---------------------------------------------------+-----------------+--------+--------+--------+---------|
 | Function Name                                     | Min             | Avg    | Median | Max    | # Calls |
 |---------------------------------------------------+-----------------+--------+--------+--------+---------|
-| distributeOperatorRewards                         | 154080          | 154080 | 154080 | 154080 | 1       |
+| distributeOperatorRewards                         | 154058          | 154058 | 154058 | 154058 | 1       |
 |---------------------------------------------------+-----------------+--------+--------+--------+---------|
-| distributeStakerRewards                           | 222574          | 222574 | 222574 | 222574 | 1       |
+| distributeStakerRewards                           | 222530          | 222530 | 222530 | 222530 | 1       |
 ╰---------------------------------------------------+-----------------+--------+--------+--------+---------╯
 
 ╭-------------------------------------------------------------------+-----------------+------+--------+------+---------╮
@@ -1160,7 +1006,7 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 |-------------------------------------------------+-----------------+--------+--------+--------+---------|
 | executeSlashVault                               | 50362           | 231601 | 231601 | 412841 | 2       |
 |-------------------------------------------------+-----------------+--------+--------+--------+---------|
-| slashVault                                      | 45378           | 272688 | 340758 | 398706 | 6       |
+| slashVault                                      | 45356           | 272648 | 340714 | 398662 | 6       |
 ╰-------------------------------------------------+-----------------+--------+--------+--------+---------╯
 
 ╭---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------╮
@@ -1168,47 +1014,47 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 +===========================================================================================================================================+
 | Deployment Cost                                                                 | Deployment Size |         |         |         |         |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| 3726668                                                                         | 17205           |         |         |         |         |
+| 3496718                                                                         | 16142           |         |         |         |         |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 |                                                                                 |                 |         |         |         |         |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | Function Name                                                                   | Min             | Avg     | Median  | Max     | # Calls |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| NETWORK                                                                         | 2487            | 2487    | 2487    | 2487    | 6       |
+| NETWORK                                                                         | 2465            | 2465    | 2465    | 2465    | 6       |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| OPERATOR_REGISTRY                                                               | 305             | 305     | 305     | 305     | 800     |
+| OPERATOR_REGISTRY                                                               | 283             | 283     | 283     | 283     | 800     |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| SUBNETWORK                                                                      | 677             | 1156    | 677     | 2677    | 4207    |
+| SUBNETWORK                                                                      | 655             | 1134    | 655     | 2655    | 4207    |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| VAULT_FACTORY                                                                   | 328             | 328     | 328     | 328     | 121     |
+| VAULT_FACTORY                                                                   | 284             | 284     | 284     | 284     | 121     |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | distributeOperatorRewards                                                       | 24872           | 24872   | 24872   | 24872   | 1       |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | distributeStakerRewards                                                         | 27110           | 27110   | 27110   | 27110   | 1       |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getOperatorVotingPowers                                                         | 258474          | 258474  | 258474  | 258474  | 980     |
+| getOperatorVotingPowers                                                         | 258409          | 258409  | 258409  | 258409  | 980     |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | getRewarder                                                                     | 2454            | 2454    | 2454    | 2454    | 4       |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getSharedVaults                                                                 | 29336           | 29336   | 29336   | 29336   | 6       |
+| getSharedVaults                                                                 | 29380           | 29380   | 29380   | 29380   | 6       |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getSlasher                                                                      | 2519            | 2519    | 2519    | 2519    | 4       |
+| getSlasher                                                                      | 2431            | 2431    | 2431    | 2431    | 4       |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getSlashingWindow                                                               | 8118            | 8118    | 8118    | 8118    | 2       |
+| getSlashingWindow                                                               | 8096            | 8096    | 8096    | 8096    | 2       |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getVotingPowers                                                                 | 2463288         | 2463288 | 2463288 | 2463288 | 21      |
+| getVotingPowers                                                                 | 2461968         | 2461968 | 2461968 | 2461968 | 21      |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| initialize                                                                      | 345053          | 345053  | 345053  | 345053  | 40      |
+| initialize                                                                      | 345075          | 345075  | 345075  | 345075  | 40      |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| registerOperator                                                                | 113480          | 115190  | 113480  | 147680  | 800     |
+| registerOperator                                                                | 113458          | 115168  | 113458  | 147658  | 800     |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | registerSharedVault                                                             | 138511          | 149845  | 138511  | 172711  | 121     |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | setRewarder                                                                     | 23957           | 27125   | 27125   | 30293   | 4       |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| setSlasher                                                                      | 23912           | 28445   | 30259   | 30259   | 7       |
+| setSlasher                                                                      | 23869           | 28402   | 30216   | 30216   | 7       |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| slashVault                                                                      | 25716           | 25716   | 25716   | 25716   | 1       |
+| slashVault                                                                      | 25694           | 25694   | 25694   | 25694   | 1       |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | stakeToVotingPower                                                              | 915             | 915     | 915     | 915     | 4200    |
 ╰---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------╯
@@ -1634,123 +1480,127 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 +================================================================================================================================================+
 | Deployment Cost                                                                      | Deployment Size |         |         |         |         |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| 2990538                                                                              | 13801           |         |         |         |         |
+| 3062335                                                                              | 14133           |         |         |         |         |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 |                                                                                      |                 |         |         |         |         |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | Function Name                                                                        | Min             | Avg     | Median  | Max     | # Calls |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| NETWORK                                                                              | 2471            | 2471    | 2471    | 2471    | 21      |
+| NETWORK                                                                              | 2449            | 2449    | 2449    | 2449    | 21      |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| OPERATOR_REGISTRY                                                                    | 283             | 283     | 283     | 283     | 34      |
+| OPERATOR_REGISTRY                                                                    | 350             | 350     | 350     | 350     | 34      |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| SUBNETWORK                                                                           | 663             | 1692    | 2663    | 2663    | 820     |
+| SUBNETWORK                                                                           | 727             | 1669    | 727     | 2727    | 980     |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| SUBNETWORK_IDENTIFIER                                                                | 2502            | 2502    | 2502    | 2502    | 20      |
+| SUBNETWORK_IDENTIFIER                                                                | 2524            | 2524    | 2524    | 2524    | 20      |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| VAULT_FACTORY                                                                        | 328             | 328     | 328     | 328     | 46      |
+| VAULT_FACTORY                                                                        | 306             | 306     | 306     | 306     | 46      |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getOperatorStake                                                                     | 32762           | 69038   | 80598   | 80598   | 80      |
+| getOperatorStake                                                                     | 32870           | 69146   | 80706   | 80706   | 80      |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getOperatorStakeAt                                                                   | 87571           | 87571   | 87571   | 87571   | 60      |
+| getOperatorStakeAt                                                                   | 87751           | 87751   | 87751   | 87751   | 60      |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getOperatorVaults                                                                    | 14656           | 15442   | 15442   | 16229   | 2       |
+| getOperatorStakes                                                                    | 288435          | 288435  | 288435  | 288435  | 20      |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getOperatorVaultsAt                                                                  | 15392           | 15392   | 15392   | 15392   | 1       |
+| getOperatorStakesAt                                                                  | 317289          | 317289  | 317289  | 317289  | 20      |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getOperatorVaultsLength                                                              | 6109            | 6109    | 6109    | 6109    | 1       |
+| getOperatorVaults                                                                    | 14634           | 15420   | 15420   | 16207   | 2       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getOperatorVotingPower                                                               | 18796           | 55478   | 55478   | 92161   | 120     |
+| getOperatorVaultsAt                                                                  | 15459           | 15459   | 15459   | 15459   | 1       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getOperatorVotingPowerAt                                                             | 19198           | 73085   | 100029  | 100029  | 180     |
+| getOperatorVaultsLength                                                              | 6082            | 6082    | 6082    | 6082    | 1       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getOperatorVotingPowers                                                              | 320670          | 321327  | 321327  | 321984  | 40      |
+| getOperatorVotingPower                                                               | 18910           | 55624   | 55624   | 92339   | 120     |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getOperatorVotingPowersAt                                                            | 352469          | 353126  | 353126  | 353783  | 40      |
+| getOperatorVotingPowerAt                                                             | 19319           | 73293   | 100280  | 100280  | 180     |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getOperators                                                                         | 14173           | 16473   | 14959   | 21800   | 4       |
+| getOperatorVotingPowers                                                              | 320927          | 321584  | 321584  | 322241  | 40      |
+|--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getOperatorVotingPowersAt                                                            | 352967          | 353624  | 353624  | 354281  | 40      |
+|--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
+| getOperators                                                                         | 14151           | 16451   | 14937   | 21778   | 4       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | getOperatorsAt                                                                       | 20077           | 21704   | 21704   | 23332   | 2       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getOperatorsLength                                                                   | 5651            | 5651    | 5651    | 5651    | 3       |
+| getOperatorsLength                                                                   | 5597            | 5597    | 5597    | 5597    | 3       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getSharedVaults                                                                      | 14105           | 14891   | 14891   | 15678   | 2       |
+| getSharedVaults                                                                      | 14149           | 14935   | 14935   | 15722   | 2       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getSharedVaultsAt                                                                    | 15071           | 15071   | 15071   | 15071   | 1       |
+| getSharedVaultsAt                                                                    | 15049           | 15049   | 15049   | 15049   | 1       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getSharedVaultsLength                                                                | 5589            | 5589    | 5589    | 5589    | 1       |
+| getSharedVaultsLength                                                                | 5623            | 5623    | 5623    | 5623    | 1       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getSlashingWindow                                                                    | 8118            | 8118    | 8118    | 8118    | 99      |
+| getSlashingWindow                                                                    | 8096            | 8096    | 8096    | 8096    | 99      |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getTokens                                                                            | 23276           | 23276   | 23276   | 23276   | 1       |
+| getTokens                                                                            | 23320           | 23320   | 23320   | 23320   | 1       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getTokensAt                                                                          | 11812           | 18873   | 19164   | 25351   | 4       |
+| getTokensAt                                                                          | 11878           | 18939   | 19230   | 25417   | 4       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getTokensLength                                                                      | 5644            | 5644    | 5644    | 5644    | 3       |
+| getTokensLength                                                                      | 5635            | 5635    | 5635    | 5635    | 3       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getVotingPowers                                                                      | 3662108         | 3662108 | 3662108 | 3662108 | 1       |
+| getVotingPowers                                                                      | 3667228         | 3667228 | 3667228 | 3667228 | 1       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getVotingPowersAt                                                                    | 4304591         | 4304591 | 4304591 | 4304591 | 1       |
+| getVotingPowersAt                                                                    | 4315056         | 4315056 | 4315056 | 4315056 | 1       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| hashTypedDataV4                                                                      | 6809            | 6809    | 6809    | 6809    | 3       |
+| hashTypedDataV4                                                                      | 6787            | 6787    | 6787    | 6787    | 3       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | initialize                                                                           | 177778          | 180605  | 177778  | 268251  | 32      |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| invalidateOldSignatures                                                              | 43532           | 43532   | 43532   | 43532   | 1       |
+| invalidateOldSignatures                                                              | 43510           | 43510   | 43510   | 43510   | 1       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| isOperatorRegistered                                                                 | 8507            | 9272    | 8507    | 10803   | 9       |
+| isOperatorRegistered                                                                 | 8441            | 9206    | 8441    | 10737   | 9       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| isOperatorRegisteredAt                                                               | 6794            | 8482    | 9326    | 9326    | 3       |
+| isOperatorRegisteredAt                                                               | 6750            | 8438    | 9282    | 9282    | 3       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| isOperatorVaultRegistered(address)                                                   | 8478            | 8937    | 8478    | 10774   | 5       |
+| isOperatorVaultRegistered(address)                                                   | 8456            | 8915    | 8456    | 10752   | 5       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| isOperatorVaultRegistered(address,address)                                           | 8731            | 9113    | 8731    | 11027   | 6       |
+| isOperatorVaultRegistered(address,address)                                           | 8821            | 9203    | 8821    | 11117   | 6       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| isOperatorVaultRegisteredAt(address,address,uint48)                                  | 9650            | 9650    | 9650    | 9650    | 1       |
+| isOperatorVaultRegisteredAt(address,address,uint48)                                  | 9496            | 9496    | 9496    | 9496    | 1       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | isOperatorVaultRegisteredAt(address,uint48)                                          | 9278            | 9278    | 9278    | 9278    | 1       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | isSharedVaultRegistered                                                              | 8509            | 8509    | 8509    | 8509    | 1       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| isSharedVaultRegisteredAt                                                            | 9279            | 9279    | 9279    | 9279    | 1       |
+| isSharedVaultRegisteredAt                                                            | 9346            | 9346    | 9346    | 9346    | 1       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| isTokenRegistered                                                                    | 8460            | 8460    | 8460    | 8460    | 1       |
+| isTokenRegistered                                                                    | 8438            | 8438    | 8438    | 8438    | 1       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| isTokenRegisteredAt                                                                  | 12086           | 12086   | 12086   | 12086   | 1       |
+| isTokenRegisteredAt                                                                  | 12087           | 12087   | 12087   | 12087   | 1       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| nonces                                                                               | 2664            | 2664    | 2664    | 2664    | 5       |
+| nonces                                                                               | 2642            | 2642    | 2642    | 2642    | 5       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| registerOperator()                                                                   | 143126          | 143126  | 143126  | 143126  | 4       |
+| registerOperator()                                                                   | 143260          | 143260  | 143260  | 143260  | 4       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| registerOperator(address)                                                            | 31060           | 91718   | 87227   | 121427  | 29      |
+| registerOperator(address)                                                            | 31105           | 91763   | 87272   | 121472  | 29      |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| registerOperatorVault                                                                | 42271           | 206349  | 234296  | 268496  | 32      |
+| registerOperatorVault                                                                | 42293           | 206371  | 234318  | 268518  | 32      |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| registerOperatorWithSignature                                                        | 39159           | 99066   | 99066   | 158974  | 2       |
+| registerOperatorWithSignature                                                        | 39092           | 99033   | 99033   | 158974  | 2       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| registerSharedVault                                                                  | 31087           | 90295   | 72460   | 170468  | 12      |
+| registerSharedVault                                                                  | 31109           | 90317   | 72482   | 170490  | 12      |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | registerToken                                                                        | 24886           | 100246  | 115263  | 115263  | 14      |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| setSlashingWindow                                                                    | 29439           | 43023   | 43023   | 56607   | 2       |
+| setSlashingWindow                                                                    | 29417           | 43001   | 43001   | 56585   | 2       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | stakeToVotingPower                                                                   | 893             | 893     | 893     | 893     | 300     |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| stakeToVotingPowerAt                                                                 | 961             | 961     | 961     | 961     | 360     |
+| stakeToVotingPowerAt                                                                 | 1027            | 1027    | 1027    | 1027    | 360     |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| unregisterOperator()                                                                 | 78982           | 78982   | 78982   | 78982   | 1       |
+| unregisterOperator()                                                                 | 79004           | 79004   | 79004   | 79004   | 1       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | unregisterOperator(address)                                                          | 27368           | 50746   | 50746   | 74124   | 2       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| unregisterOperatorVault                                                              | 123253          | 123361  | 123361  | 123469  | 2       |
+| unregisterOperatorVault                                                              | 123297          | 123405  | 123405  | 123513  | 2       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| unregisterOperatorWithSignature                                                      | 94798           | 94798   | 94798   | 94798   | 1       |
+| unregisterOperatorWithSignature                                                      | 94820           | 94820   | 94820   | 94820   | 1       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| unregisterSharedVault                                                                | 32216           | 53289   | 53289   | 74363   | 2       |
+| unregisterSharedVault                                                                | 32194           | 53267   | 53267   | 74341   | 2       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| unregisterToken                                                                      | 32253           | 61879   | 74400   | 78984   | 3       |
+| unregisterToken                                                                      | 32187           | 61813   | 74334   | 78918   | 3       |
 |--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| validateVault                                                                        | 38788           | 43322   | 43322   | 47857   | 2       |
+| validateVault                                                                        | 38766           | 43300   | 43300   | 47835   | 2       |
 ╰--------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------╯
 
 ╭-----------------------------------------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╮
@@ -1778,33 +1628,33 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 +================================================================================================================================================================================+
 | Deployment Cost                                                                                                         | Deployment Size |        |        |        |         |
 |-------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| 3142816                                                                                                                 | 14505           |        |        |        |         |
+| 3214601                                                                                                                 | 14837           |        |        |        |         |
 |-------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 |                                                                                                                         |                 |        |        |        |         |
 |-------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | Function Name                                                                                                           | Min             | Avg    | Median | Max    | # Calls |
 |-------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| NETWORK                                                                                                                 | 2471            | 2471   | 2471   | 2471   | 60      |
+| NETWORK                                                                                                                 | 2449            | 2449   | 2449   | 2449   | 60      |
 |-------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| OPERATOR_REGISTRY                                                                                                       | 283             | 283    | 283    | 283    | 60      |
+| OPERATOR_REGISTRY                                                                                                       | 350             | 350    | 350    | 350    | 60      |
 |-------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| SUBNETWORK                                                                                                              | 2663            | 2663   | 2663   | 2663   | 120     |
+| SUBNETWORK                                                                                                              | 2727            | 2727   | 2727   | 2727   | 120     |
 |-------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| SUBNETWORK_IDENTIFIER                                                                                                   | 2502            | 2502   | 2502   | 2502   | 60      |
+| SUBNETWORK_IDENTIFIER                                                                                                   | 2524            | 2524   | 2524   | 2524   | 60      |
 |-------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| VAULT_FACTORY                                                                                                           | 328             | 328    | 328    | 328    | 60      |
+| VAULT_FACTORY                                                                                                           | 306             | 306    | 306    | 306    | 60      |
 |-------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| getOperatorVaults                                                                                                       | 14656           | 14656  | 14656  | 14656  | 60      |
+| getOperatorVaults                                                                                                       | 14634           | 14634  | 14634  | 14634  | 60      |
 |-------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| getOperatorVotingPower                                                                                                  | 81944           | 82216  | 82349  | 82355  | 60      |
+| getOperatorVotingPower                                                                                                  | 82126           | 82398  | 82531  | 82537  | 60      |
 |-------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| getSlashingWindow                                                                                                       | 8118            | 8118   | 8118   | 8118   | 60      |
+| getSlashingWindow                                                                                                       | 8096            | 8096   | 8096   | 8096   | 60      |
 |-------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | initialize                                                                                                              | 177778          | 223014 | 223014 | 268251 | 6       |
 |-------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| registerOperator                                                                                                        | 87227           | 88937  | 87227  | 121427 | 60      |
+| registerOperator                                                                                                        | 87272           | 88982  | 87272  | 121472 | 60      |
 |-------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| registerOperatorVault                                                                                                   | 234296          | 236006 | 234296 | 268496 | 60      |
+| registerOperatorVault                                                                                                   | 234318          | 236028 | 234318 | 268518 | 60      |
 |-------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | stakeToVotingPower                                                                                                      | 6535            | 6807   | 6940   | 6946   | 60      |
 ╰-------------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
@@ -1814,41 +1664,41 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 +==============================================================================================================================================================================+
 | Deployment Cost                                                                                                       | Deployment Size |        |        |        |         |
 |-----------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| 3941242                                                                                                               | 18197           |        |        |        |         |
+| 4013071                                                                                                               | 18529           |        |        |        |         |
 |-----------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 |                                                                                                                       |                 |        |        |        |         |
 |-----------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | Function Name                                                                                                         | Min             | Avg    | Median | Max    | # Calls |
 |-----------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| NETWORK                                                                                                               | 2449            | 2449   | 2449   | 2449   | 140     |
+| NETWORK                                                                                                               | 2427            | 2427   | 2427   | 2427   | 140     |
 |-----------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| OPERATOR_REGISTRY                                                                                                     | 350             | 350    | 350    | 350    | 140     |
+| OPERATOR_REGISTRY                                                                                                     | 328             | 328    | 328    | 328    | 140     |
 |-----------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| SUBNETWORK                                                                                                            | 2749            | 2749   | 2749   | 2749   | 300     |
+| SUBNETWORK                                                                                                            | 2727            | 2727   | 2727   | 2727   | 300     |
 |-----------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| SUBNETWORK_IDENTIFIER                                                                                                 | 2502            | 2502   | 2502   | 2502   | 140     |
+| SUBNETWORK_IDENTIFIER                                                                                                 | 2524            | 2524   | 2524   | 2524   | 140     |
 |-----------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | VAULT_FACTORY                                                                                                         | 306             | 306    | 306    | 306    | 140     |
 |-----------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | getOperatorVaults                                                                                                     | 14634           | 14634  | 14634  | 14634  | 140     |
 |-----------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| getOperatorVotingPower                                                                                                | 146511          | 149571 | 150609 | 151076 | 140     |
+| getOperatorVotingPower                                                                                                | 146542          | 149602 | 150640 | 151107 | 140     |
 |-----------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| getOperatorVotingPowerAt                                                                                              | 493296          | 493296 | 493296 | 493296 | 20      |
+| getOperatorVotingPowerAt                                                                                              | 493332          | 493332 | 493332 | 493332 | 20      |
 |-----------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | getSlashingWindow                                                                                                     | 8096            | 8096   | 8096   | 8096   | 140     |
 |-----------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| getTokenHops                                                                                                          | 11443           | 11443  | 11443  | 11443  | 7       |
+| getTokenHops                                                                                                          | 11465           | 11465  | 11465  | 11465  | 7       |
 |-----------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | getTokenHopsAt                                                                                                        | 12138           | 12138  | 12138  | 12138  | 7       |
 |-----------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| initialize                                                                                                            | 268273          | 268273 | 268273 | 268273 | 7       |
+| initialize                                                                                                            | 268251          | 268251 | 268251 | 268251 | 7       |
 |-----------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| registerOperator                                                                                                      | 87294           | 89004  | 87294  | 121494 | 140     |
+| registerOperator                                                                                                      | 87272           | 88982  | 87272  | 121472 | 140     |
 |-----------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| registerOperatorVault                                                                                                 | 234274          | 235984 | 234274 | 268474 | 140     |
+| registerOperatorVault                                                                                                 | 234318          | 236028 | 234318 | 268518 | 140     |
 |-----------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| setTokenHops                                                                                                          | 99021           | 109207 | 109185 | 119409 | 14      |
+| setTokenHops                                                                                                          | 99109           | 109295 | 109273 | 119497 | 14      |
 |-----------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | stakeToVotingPower                                                                                                    | 70925           | 73985  | 75023  | 75490  | 140     |
 |-----------------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
@@ -1880,35 +1730,35 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 +=======================================================================================================================================================================+
 | Deployment Cost                                                                                                | Deployment Size |        |        |        |         |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| 3539786                                                                                                        | 16341           |        |        |        |         |
+| 3611564                                                                                                        | 16673           |        |        |        |         |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 |                                                                                                                |                 |        |        |        |         |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | Function Name                                                                                                  | Min             | Avg    | Median | Max    | # Calls |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| NETWORK                                                                                                        | 2471            | 2471   | 2471   | 2471   | 20      |
+| NETWORK                                                                                                        | 2449            | 2449   | 2449   | 2449   | 20      |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| OPERATOR_REGISTRY                                                                                              | 283             | 283    | 283    | 283    | 20      |
+| OPERATOR_REGISTRY                                                                                              | 350             | 350    | 350    | 350    | 20      |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| SUBNETWORK                                                                                                     | 2749            | 2749   | 2749   | 2749   | 60      |
+| SUBNETWORK                                                                                                     | 2727            | 2727   | 2727   | 2727   | 60      |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| SUBNETWORK_IDENTIFIER                                                                                          | 2524            | 2524   | 2524   | 2524   | 20      |
+| SUBNETWORK_IDENTIFIER                                                                                          | 2546            | 2546   | 2546   | 2546   | 20      |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | VAULT_FACTORY                                                                                                  | 306             | 306    | 306    | 306    | 20      |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | getOperatorVaults                                                                                              | 14634           | 14634  | 14634  | 14634  | 40      |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| getOperatorVotingPower                                                                                         | 87471           | 88616  | 88616  | 89762  | 40      |
+| getOperatorVotingPower                                                                                         | 87589           | 88734  | 88734  | 89880  | 40      |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| getSlashingWindow                                                                                              | 8118            | 8118   | 8118   | 8118   | 20      |
+| getSlashingWindow                                                                                              | 8096            | 8096   | 8096   | 8096   | 20      |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| initialize                                                                                                     | 177800          | 223036 | 223036 | 268273 | 2       |
+| initialize                                                                                                     | 177778          | 223014 | 223014 | 268251 | 2       |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| registerOperator                                                                                               | 87227           | 88937  | 87227  | 121427 | 20      |
+| registerOperator                                                                                               | 87294           | 89004  | 87294  | 121494 | 20      |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| registerOperatorVault                                                                                          | 234296          | 236006 | 234296 | 268496 | 20      |
+| registerOperatorVault                                                                                          | 234318          | 236028 | 234318 | 268518 | 20      |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| setTokenWeight                                                                                                 | 68441           | 68441  | 68441  | 68441  | 1       |
+| setTokenWeight                                                                                                 | 68419           | 68419  | 68419  | 68419  | 1       |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | stakeToVotingPower                                                                                             | 11976           | 13121  | 13121  | 14267  | 40      |
 ╰----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
@@ -1936,35 +1786,35 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 +=======================================================================================================================================================================+
 | Deployment Cost                                                                                                | Deployment Size |        |        |        |         |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| 3395721                                                                                                        | 15675           |        |        |        |         |
+| 3467558                                                                                                        | 16007           |        |        |        |         |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 |                                                                                                                |                 |        |        |        |         |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | Function Name                                                                                                  | Min             | Avg    | Median | Max    | # Calls |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| NETWORK                                                                                                        | 2471            | 2471   | 2471   | 2471   | 20      |
+| NETWORK                                                                                                        | 2449            | 2449   | 2449   | 2449   | 20      |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| OPERATOR_REGISTRY                                                                                              | 350             | 350    | 350    | 350    | 20      |
+| OPERATOR_REGISTRY                                                                                              | 328             | 328    | 328    | 328    | 20      |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| SUBNETWORK                                                                                                     | 2749            | 2749   | 2749   | 2749   | 40      |
+| SUBNETWORK                                                                                                     | 2727            | 2727   | 2727   | 2727   | 40      |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| SUBNETWORK_IDENTIFIER                                                                                          | 2502            | 2502   | 2502   | 2502   | 20      |
+| SUBNETWORK_IDENTIFIER                                                                                          | 2524            | 2524   | 2524   | 2524   | 20      |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | VAULT_FACTORY                                                                                                  | 306             | 306    | 306    | 306    | 20      |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | getOperatorVaults                                                                                              | 14634           | 14634  | 14634  | 14634  | 21      |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| getOperatorVotingPower                                                                                         | 79034           | 79148  | 79034  | 81319  | 20      |
+| getOperatorVotingPower                                                                                         | 79065           | 79179  | 79065  | 81350  | 20      |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| getSlashingWindow                                                                                              | 8118            | 8118   | 8118   | 8118   | 20      |
+| getSlashingWindow                                                                                              | 8096            | 8096   | 8096   | 8096   | 20      |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| initialize                                                                                                     | 177800          | 223036 | 223036 | 268273 | 2       |
+| initialize                                                                                                     | 177778          | 223014 | 223014 | 268251 | 2       |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| registerOperator                                                                                               | 87272           | 88982  | 87272  | 121472 | 20      |
+| registerOperator                                                                                               | 87250           | 88960  | 87250  | 121450 | 20      |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| registerOperatorVault                                                                                          | 234296          | 236006 | 234296 | 268496 | 20      |
+| registerOperatorVault                                                                                          | 234318          | 236028 | 234318 | 268518 | 20      |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| setVaultWeight                                                                                                 | 68419           | 68419  | 68419  | 68419  | 1       |
+| setVaultWeight                                                                                                 | 68397           | 68397  | 68397  | 68397  | 1       |
 |----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | stakeToVotingPower                                                                                             | 3474            | 3588   | 3474   | 5759   | 20      |
 ╰----------------------------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
@@ -1974,19 +1824,19 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 +======================================================================================================================================+
 | Deployment Cost                                                               | Deployment Size |        |        |        |         |
 |-------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| 2752975                                                                       | 12703           |        |        |        |         |
+| 2510160                                                                       | 11580           |        |        |        |         |
 |-------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 |                                                                               |                 |        |        |        |         |
 |-------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | Function Name                                                                 | Min             | Avg    | Median | Max    | # Calls |
 |-------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| initialize                                                                    | 268339          | 268339 | 268339 | 268339 | 2       |
+| initialize                                                                    | 268206          | 268206 | 268206 | 268206 | 2       |
 |-------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| isTokenRegistered                                                             | 8460            | 9608   | 9608   | 10756  | 2       |
+| isTokenRegistered                                                             | 8415            | 9563   | 9563   | 10711  | 2       |
 |-------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | registerToken                                                                 | 80812           | 80812  | 80812  | 80812  | 2       |
 |-------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| unregisterToken                                                               | 78949           | 78949  | 78949  | 78949  | 1       |
+| unregisterToken                                                               | 78883           | 78883  | 78883  | 78883  | 1       |
 ╰-------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
 
 ╭---------------------------------------------------------------------------------------------------+-----------------+--------+---------+---------+---------╮
@@ -1994,7 +1844,7 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 +============================================================================================================================================================+
 | Deployment Cost                                                                                   | Deployment Size |        |         |         |         |
 |---------------------------------------------------------------------------------------------------+-----------------+--------+---------+---------+---------|
-| 3319439                                                                                           | 15391           |        |         |         |         |
+| 3089484                                                                                           | 14328           |        |         |         |         |
 |---------------------------------------------------------------------------------------------------+-----------------+--------+---------+---------+---------|
 |                                                                                                   |                 |        |         |         |         |
 |---------------------------------------------------------------------------------------------------+-----------------+--------+---------+---------+---------|
@@ -2002,41 +1852,41 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 |---------------------------------------------------------------------------------------------------+-----------------+--------+---------+---------+---------|
 | NETWORK                                                                                           | 413             | 1413   | 1413    | 2413    | 6       |
 |---------------------------------------------------------------------------------------------------+-----------------+--------+---------+---------+---------|
-| OPERATOR_REGISTRY                                                                                 | 328             | 328    | 328     | 328     | 4       |
+| OPERATOR_REGISTRY                                                                                 | 306             | 306    | 306     | 306     | 4       |
 |---------------------------------------------------------------------------------------------------+-----------------+--------+---------+---------+---------|
-| SUBNETWORK                                                                                        | 2667            | 2667   | 2667    | 2667    | 1       |
+| SUBNETWORK                                                                                        | 2645            | 2645   | 2645    | 2645    | 1       |
 |---------------------------------------------------------------------------------------------------+-----------------+--------+---------+---------+---------|
-| VAULT_CONFIGURATOR                                                                                | 283             | 283    | 283     | 283     | 3       |
+| VAULT_CONFIGURATOR                                                                                | 327             | 327    | 327     | 327     | 3       |
 |---------------------------------------------------------------------------------------------------+-----------------+--------+---------+---------+---------|
-| VAULT_FACTORY                                                                                     | 306             | 306    | 306     | 306     | 3       |
+| VAULT_FACTORY                                                                                     | 284             | 284    | 284     | 284     | 3       |
 |---------------------------------------------------------------------------------------------------+-----------------+--------+---------+---------+---------|
-| getAutoDeployConfig                                                                               | 9096            | 9096   | 9096    | 9096    | 1       |
+| getAutoDeployConfig                                                                               | 9118            | 9118   | 9118    | 9118    | 1       |
 |---------------------------------------------------------------------------------------------------+-----------------+--------+---------+---------+---------|
 | getAutoDeployedVault                                                                              | 5979            | 5979   | 5979    | 5979    | 5       |
 |---------------------------------------------------------------------------------------------------+-----------------+--------+---------+---------+---------|
-| getOperatorVaults                                                                                 | 14634           | 15027  | 14634   | 16207   | 4       |
+| getOperatorVaults                                                                                 | 14612           | 15005  | 14612   | 16185   | 4       |
 |---------------------------------------------------------------------------------------------------+-----------------+--------+---------+---------+---------|
-| getSlashingWindow                                                                                 | 1641            | 3374   | 1641    | 8141    | 15      |
+| getSlashingWindow                                                                                 | 1619            | 3352   | 1619    | 8119    | 15      |
 |---------------------------------------------------------------------------------------------------+-----------------+--------+---------+---------+---------|
-| initialize                                                                                        | 328630          | 328630 | 328630  | 328630  | 11      |
+| initialize                                                                                        | 328519          | 328519 | 328519  | 328519  | 11      |
 |---------------------------------------------------------------------------------------------------+-----------------+--------+---------+---------+---------|
-| isAutoDeployEnabled                                                                               | 5611            | 5611   | 5611    | 5611    | 2       |
+| isAutoDeployEnabled                                                                               | 5567            | 5567   | 5567    | 5567    | 2       |
 |---------------------------------------------------------------------------------------------------+-----------------+--------+---------+---------+---------|
-| isSetMaxNetworkLimitHookEnabled                                                                   | 5633            | 5633   | 5633    | 5633    | 1       |
+| isSetMaxNetworkLimitHookEnabled                                                                   | 5655            | 5655   | 5655    | 5655    | 1       |
 |---------------------------------------------------------------------------------------------------+-----------------+--------+---------+---------+---------|
-| registerOperator                                                                                  | 78638           | 958641 | 1179135 | 1397656 | 4       |
+| registerOperator                                                                                  | 78594           | 958630 | 1179135 | 1397656 | 4       |
 |---------------------------------------------------------------------------------------------------+-----------------+--------+---------+---------+---------|
-| setAutoDeployConfig                                                                               | 26842           | 34478  | 35743   | 45602   | 6       |
+| setAutoDeployConfig                                                                               | 26842           | 34463  | 35721   | 45580   | 6       |
 |---------------------------------------------------------------------------------------------------+-----------------+--------+---------+---------+---------|
-| setAutoDeployStatus                                                                               | 30925           | 43750  | 48025   | 48025   | 4       |
+| setAutoDeployStatus                                                                               | 30989           | 43814  | 48089   | 48089   | 4       |
 |---------------------------------------------------------------------------------------------------+-----------------+--------+---------+---------+---------|
-| setSetMaxNetworkLimitHookStatus                                                                   | 48039           | 48039  | 48039   | 48039   | 1       |
+| setSetMaxNetworkLimitHookStatus                                                                   | 48083           | 48083  | 48083   | 48083   | 1       |
 |---------------------------------------------------------------------------------------------------+-----------------+--------+---------+---------+---------|
-| setSlashingWindow                                                                                 | 34307           | 34307  | 34307   | 34307   | 2       |
+| setSlashingWindow                                                                                 | 34373           | 34373  | 34373   | 34373   | 2       |
 |---------------------------------------------------------------------------------------------------+-----------------+--------+---------+---------+---------|
-| unregisterOperator                                                                                | 79049           | 79049  | 79049   | 79049   | 1       |
+| unregisterOperator                                                                                | 79026           | 79026  | 79026   | 79026   | 1       |
 |---------------------------------------------------------------------------------------------------+-----------------+--------+---------+---------+---------|
-| unregisterOperatorVault                                                                           | 128435          | 128435 | 128435  | 128435  | 1       |
+| unregisterOperatorVault                                                                           | 128412          | 128412 | 128412  | 128412  | 1       |
 ╰---------------------------------------------------------------------------------------------------+-----------------+--------+---------+---------+---------╯
 
 ╭-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╮
@@ -2044,27 +1894,27 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 +======================================================================================================================================================+
 | Deployment Cost                                                                               | Deployment Size |        |        |        |         |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| 2932936                                                                                       | 13535           |        |        |        |         |
+| 2690021                                                                                       | 12412           |        |        |        |         |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 |                                                                                               |                 |        |        |        |         |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | Function Name                                                                                 | Min             | Avg    | Median | Max    | # Calls |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| OPERATOR_REGISTRY                                                                             | 328             | 328    | 328    | 328    | 2       |
+| OPERATOR_REGISTRY                                                                             | 283             | 283    | 283    | 283    | 2       |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| blacklistOperator                                                                             | 50948           | 75123  | 75123  | 99298  | 2       |
+| blacklistOperator                                                                             | 50903           | 75078  | 75078  | 99253  | 2       |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | getSlashingWindow                                                                             | 8074            | 8074   | 8074   | 8074   | 4       |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | initialize                                                                                    | 268251          | 268251 | 268251 | 268251 | 4       |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| isOperatorBlacklisted                                                                         | 2642            | 2642   | 2642   | 2642   | 4       |
+| isOperatorBlacklisted                                                                         | 2641            | 2641   | 2641   | 2641   | 4       |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| isOperatorRegistered                                                                          | 8530            | 9295   | 8530   | 10826  | 3       |
+| isOperatorRegistered                                                                          | 8464            | 9229   | 8464   | 10760  | 3       |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| registerOperator                                                                              | 23590           | 104842 | 145468 | 145468 | 3       |
+| registerOperator                                                                              | 23635           | 104857 | 145468 | 145468 | 3       |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| unblacklistOperator                                                                           | 23283           | 23283  | 23283  | 23283  | 1       |
+| unblacklistOperator                                                                           | 23327           | 23327  | 23327  | 23327  | 1       |
 ╰-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
 
 ╭-------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╮
@@ -2072,27 +1922,27 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 +============================================================================================================================================+
 | Deployment Cost                                                                     | Deployment Size |        |        |        |         |
 |-------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| 2977919                                                                             | 13743           |        |        |        |         |
+| 2738256                                                                             | 12635           |        |        |        |         |
 |-------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 |                                                                                     |                 |        |        |        |         |
 |-------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | Function Name                                                                       | Min             | Avg    | Median | Max    | # Calls |
 |-------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| OPERATOR_REGISTRY                                                                   | 283             | 283    | 283    | 283    | 3       |
+| OPERATOR_REGISTRY                                                                   | 305             | 305    | 305    | 305    | 3       |
 |-------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| getOperatorJailedUntil                                                              | 2688            | 2688   | 2688   | 2688   | 5       |
+| getOperatorJailedUntil                                                              | 2621            | 2621   | 2621   | 2621   | 5       |
 |-------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| initialize                                                                          | 268317          | 268317 | 268317 | 268317 | 4       |
+| initialize                                                                          | 268229          | 268229 | 268229 | 268229 | 4       |
 |-------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| isOperatorJailed                                                                    | 2669            | 2669   | 2669   | 2669   | 6       |
+| isOperatorJailed                                                                    | 2735            | 2735   | 2735   | 2735   | 6       |
 |-------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| isOperatorRegistered                                                                | 8463            | 9228   | 8463   | 10759  | 3       |
+| isOperatorRegistered                                                                | 8419            | 9184   | 8419   | 10715  | 3       |
 |-------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| jailOperator                                                                        | 51611           | 75786  | 75786  | 99961  | 2       |
+| jailOperator                                                                        | 51545           | 75720  | 75720  | 99895  | 2       |
 |-------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| registerOperator                                                                    | 23640           | 86572  | 94635  | 145473 | 5       |
+| registerOperator                                                                    | 23685           | 86630  | 94702  | 145540 | 5       |
 |-------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| unjailOperator                                                                      | 23306           | 23306  | 23306  | 23306  | 1       |
+| unjailOperator                                                                      | 23328           | 23328  | 23328  | 23328  | 1       |
 ╰-------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
 
 ╭-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╮
@@ -2100,37 +1950,37 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 +======================================================================================================================================================+
 | Deployment Cost                                                                               | Deployment Size |        |        |        |         |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| 3018909                                                                                       | 13933           |        |        |        |         |
+| 2782607                                                                                       | 12840           |        |        |        |         |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 |                                                                                               |                 |        |        |        |         |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | Function Name                                                                                 | Min             | Avg    | Median | Max    | # Calls |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| OPERATOR_REGISTRY                                                                             | 349             | 349    | 349    | 349    | 4       |
+| OPERATOR_REGISTRY                                                                             | 371             | 371    | 371    | 371    | 4       |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | VAULT_FACTORY                                                                                 | 328             | 328    | 328    | 328    | 1       |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| getSlashingWindow                                                                             | 8118            | 8118   | 8118   | 8118   | 14      |
+| getSlashingWindow                                                                             | 8096            | 8096   | 8096   | 8096   | 14      |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| initialize                                                                                    | 292158          | 292158 | 292158 | 292158 | 7       |
+| initialize                                                                                    | 292091          | 292091 | 292091 | 292091 | 7       |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| isOperatorRegistered                                                                          | 8536            | 9110   | 8536   | 10832  | 4       |
+| isOperatorRegistered                                                                          | 8492            | 9066   | 8492   | 10788  | 4       |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | isOperatorVaultRegistered(address)                                                            | 8507            | 8507   | 8507   | 8507   | 1       |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| isOperatorVaultRegistered(address,address)                                                    | 8760            | 8760   | 8760   | 8760   | 1       |
+| isOperatorVaultRegistered(address,address)                                                    | 8783            | 8783   | 8783   | 8783   | 1       |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | isOperatorWhitelisted                                                                         | 2664            | 2664   | 2664   | 2664   | 2       |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| isWhitelistEnabled                                                                            | 2423            | 2423   | 2423   | 2423   | 2       |
+| isWhitelistEnabled                                                                            | 2401            | 2401   | 2401   | 2401   | 2       |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| registerOperator                                                                              | 25775           | 122403 | 145447 | 147674 | 5       |
+| registerOperator                                                                              | 25775           | 122421 | 145469 | 147696 | 5       |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| registerOperatorVault                                                                         | 268540          | 268540 | 268540 | 268540 | 1       |
+| registerOperatorVault                                                                         | 268606          | 268606 | 268606 | 268606 | 1       |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| setWhitelistStatus                                                                            | 22965           | 22965  | 22965  | 22965  | 2       |
+| setWhitelistStatus                                                                            | 22943           | 22943  | 22943  | 22943  | 2       |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| unwhitelistOperator                                                                           | 79645           | 79645  | 79645  | 79645  | 1       |
+| unwhitelistOperator                                                                           | 79601           | 79601  | 79601  | 79601  | 1       |
 |-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | whitelistOperator                                                                             | 45146           | 45146  | 45146  | 45146  | 2       |
 ╰-----------------------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
@@ -2140,22 +1990,22 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 46.27s (391.30ms CP
 +==========================================================================================================================================+
 | Deployment Cost                                                                   | Deployment Size |        |        |        |         |
 |-----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| 2778549                                                                           | 12821           |        |        |        |         |
+| 2532402                                                                           | 11683           |        |        |        |         |
 |-----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 |                                                                                   |                 |        |        |        |         |
 |-----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
 | Function Name                                                                     | Min             | Avg    | Median | Max    | # Calls |
 |-----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| VAULT_FACTORY                                                                     | 372             | 372    | 372    | 372    | 2       |
+| VAULT_FACTORY                                                                     | 328             | 328    | 328    | 328    | 2       |
 |-----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| initialize                                                                        | 268317          | 268317 | 268317 | 268317 | 2       |
+| initialize                                                                        | 268206          | 268206 | 268206 | 268206 | 2       |
 |-----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| isSharedVaultRegistered                                                           | 8531            | 9679   | 9679   | 10827  | 2       |
+| isSharedVaultRegistered                                                           | 8508            | 9656   | 9656   | 10804  | 2       |
 |-----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| registerSharedVault                                                               | 170512          | 170512 | 170512 | 170512 | 2       |
+| registerSharedVault                                                               | 170534          | 170534 | 170534 | 170534 | 2       |
 |-----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------|
-| unregisterSharedVault                                                             | 74318           | 74318  | 74318  | 74318  | 1       |
+| unregisterSharedVault                                                             | 74296           | 74296  | 74296  | 74296  | 1       |
 ╰-----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
 
 
-Ran 41 test suites in 47.50s (268.30s CPU time): 294 tests passed, 0 failed, 0 skipped (294 total tests)
+Ran 41 test suites in 52.33s (161.38s CPU time): 294 tests passed, 0 failed, 0 skipped (294 total tests)

@@ -47,7 +47,7 @@ contract MasterGenesisSetupTest is MasterSetupTest {
         uint256 totalVotingPower;
         for (uint256 i; i < votingPowers.length; ++i) {
             for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
-                totalVotingPower += votingPowers[i].vaults[j].votingPower;
+                totalVotingPower += votingPowers[i].vaults[j].value;
             }
         }
         uint256 quorumThreshold;

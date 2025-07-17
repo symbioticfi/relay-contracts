@@ -27,6 +27,49 @@ contract TestVotingPowerProvider is VotingPowerProvider, PricedTokensChainlinkVP
         __VotingPowerProvider_init(votingPowerProviderInit);
     }
 
+    function getTokensLength() external view returns (uint256) {
+        return _getTokensLength();
+    }
+
+    function getOperatorsLength() external view returns (uint256) {
+        return _getOperatorsLength();
+    }
+
+    function getSharedVaultsLength() external view returns (uint256) {
+        return _getSharedVaultsLength();
+    }
+
+    function getOperatorVaultsLength(
+        address operator
+    ) external view returns (uint256) {
+        return _getOperatorVaultsLength(operator);
+    }
+
+    function getOperatorStakeAt(address operator, address vault, uint48 timestamp) external view returns (uint256) {
+        return _getOperatorStakeAt(operator, vault, timestamp);
+    }
+
+    function getOperatorStake(address operator, address vault) external view returns (uint256) {
+        return _getOperatorStake(operator, vault);
+    }
+
+    function getOperatorVotingPowerAt(
+        address operator,
+        address vault,
+        bytes memory extraData,
+        uint48 timestamp
+    ) external view returns (uint256) {
+        return _getOperatorVotingPowerAt(operator, vault, extraData, timestamp);
+    }
+
+    function getOperatorVotingPower(
+        address operator,
+        address vault,
+        bytes memory extraData
+    ) external view returns (uint256) {
+        return _getOperatorVotingPower(operator, vault, extraData);
+    }
+
     function registerOperator(
         address operator
     ) external {

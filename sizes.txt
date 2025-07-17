@@ -1,5 +1,5 @@
-Compiling 40 files with Solc 0.8.28
-Solc 0.8.28 finished in 30.43s
+Compiling 46 files with Solc 0.8.28
+Solc 0.8.28 finished in 30.05s
 Compiler run successful with warnings:
 Warning (9302): Return value of low-level calls not used.
    --> script/integration/SymbioticInit.sol:111:9:
@@ -116,45 +116,33 @@ Warning (5667): Unused function parameter. Remove or comment out the variable na
     |                                 ^^^^^^^^^^^^^^
 
 Warning (2072): Unused local variable.
-   --> test/libraries/keys/KeyBlsBn254.t.sol:178:9:
-    |
-178 |         KeyBlsBn254.KEY_BLS_BN254 memory wrapped = mock.wrap(pt);
-    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-   --> test/modules/key-registry/KeyRegistry.t.sol:177:9:
-    |
-177 |         bytes memory differentOperatorKey = KeyEcdsaSecp256k1.wrap(differentOperator).toBytes();
-    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
    --> test/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.t.sol:175:9:
     |
 175 |         SigVerifierBlsBn254Simple sigVerifier = SigVerifierBlsBn254Simple(masterSetupParams.settlement.getSigVerifier());
     |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Warning (2072): Unused local variable.
-    --> test/modules/voting-power/VotingPowerProvider.t.sol:1043:9:
+    --> test/modules/voting-power/VotingPowerProvider.t.sol:1094:9:
      |
-1043 |         uint256 operatorPk = getOperator(0).privateKey;
+1094 |         uint256 operatorPk = getOperator(0).privateKey;
      |         ^^^^^^^^^^^^^^^^^^
 
 Warning (2072): Unused local variable.
-    --> test/modules/voting-power/VotingPowerProvider.t.sol:1046:9:
+    --> test/modules/voting-power/VotingPowerProvider.t.sol:1097:9:
      |
-1046 |         address someVault = _getVault_SymbioticCore(
+1097 |         address someVault = _getVault_SymbioticCore(
      |         ^^^^^^^^^^^^^^^^^
 
 Warning (2072): Unused local variable.
-   --> test/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.t.sol:476:16:
+   --> test/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.t.sol:519:16:
     |
-476 |             (, int256 wethAnswer,,,) = wethFeed.latestRoundData();
+519 |             (, int256 wethAnswer,,,) = wethFeed.latestRoundData();
     |                ^^^^^^^^^^^^^^^^^
 
 Warning (2072): Unused local variable.
-   --> test/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.t.sol:481:16:
+   --> test/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.t.sol:524:16:
     |
-481 |             (, int256 wbtcAnswer,,,) = wbtcFeed.latestRoundData();
+524 |             (, int256 wbtcAnswer,,,) = wbtcFeed.latestRoundData();
     |                ^^^^^^^^^^^^^^^^^
 
 Warning (2018): Function state mutability can be restricted to pure
@@ -283,179 +271,11 @@ Warning (2018): Function state mutability can be restricted to view
 68 |     function loadGenesis()
    |     ^ (Relevant source part starts here and spans across multiple lines).
 
-Warning (2018): Function state mutability can be restricted to view
-  --> test/libraries/keys/KeyBlsBn254.t.sol:21:5:
-   |
-21 |     function test_WrapUnwrapIdentity() public {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/libraries/keys/KeyBlsBn254.t.sol:29:5:
-   |
-29 |     function test_WrapUnwrapNonZero() public {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/libraries/keys/KeyBlsBn254.t.sol:42:5:
-   |
-42 |     function test_SerializeDeserializeIdentity() public {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/libraries/keys/KeyBlsBn254.t.sol:52:5:
-   |
-52 |     function test_SerializeDeserializeNonZero() public {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/libraries/keys/KeyBlsBn254.t.sol:67:5:
-   |
-67 |     function test_SerializeDeserializeNonZeroNegate() public {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/libraries/keys/KeyBlsBn254.t.sol:82:5:
-   |
-82 |     function test_ToBytesFromBytesIdentity() public {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/libraries/keys/KeyBlsBn254.t.sol:92:5:
-   |
-92 |     function test_ToBytesFromBytesNonZero() public {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-   --> test/libraries/keys/KeyBlsBn254.t.sol:107:5:
-    |
-107 |     function test_FuzzWrapUnwrap(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-   --> test/libraries/keys/KeyBlsBn254.t.sol:122:5:
-    |
-122 |     function test_FuzzSerializeDeserialize(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-   --> test/libraries/keys/KeyBlsBn254.t.sol:139:5:
-    |
-139 |     function test_FuzzSerializeDeserializeNonZeroNegate(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-   --> test/libraries/keys/KeyBlsBn254.t.sol:156:5:
-    |
-156 |     function test_FuzzToBytesFromBytes(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-   --> test/libraries/keys/KeyBlsBn254.t.sol:181:5:
-    |
-181 |     function test_DeserializeEmptyBytesIsIdentity() public {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-   --> test/libraries/keys/KeyBlsBn254.t.sol:219:5:
-    |
-219 |     function test_ZeroKey() public {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-   --> test/libraries/keys/KeyBlsBn254.t.sol:225:5:
-    |
-225 |     function test_Equal() public {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-   --> test/libraries/keys/KeyBlsBn254.t.sol:231:5:
-    |
-231 |     function test_EqualFalse() public {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/libraries/keys/KeyEcdsaSecp256k1.t.sol:43:5:
-   |
-43 |     function test_FuzzWrapUnwrap(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/libraries/keys/KeyEcdsaSecp256k1.t.sol:51:5:
-   |
-51 |     function test_FuzzSerializeDeserialize(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/libraries/keys/KeyEcdsaSecp256k1.t.sol:60:5:
-   |
-60 |     function test_FuzzToBytesFromBytes(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/libraries/keys/KeyEcdsaSecp256k1.t.sol:88:5:
-   |
-88 |     function test_ZeroKey() public {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/libraries/sigs/SigBlsBn254.t.sol:24:5:
-   |
-24 |     function test_BLSRegisterOperator() public {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/libraries/sigs/SigBlsBn254.t.sol:42:5:
-   |
-42 |     function test_BLSRegisterOperatorInvalid() public {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/libraries/sigs/SigBlsBn254.t.sol:61:5:
-   |
-61 |     function test_ZeroKey() public {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/libraries/sigs/SigEcdsaSecp256k1.t.sol:14:5:
-   |
-14 |     function test_CorrectSignature() public {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/libraries/sigs/SigEcdsaSecp256k1.t.sol:33:5:
-   |
-33 |     function test_IncorrectSignature() public {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/libraries/sigs/SigEcdsaSecp256k1.t.sol:59:5:
-   |
-59 |     function test_FuzzVerification(uint256 privKey, bytes memory msgData) public {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/libraries/sigs/SigEcdsaSecp256k1.t.sol:80:5:
-   |
-80 |     function test_ZeroKey() public {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
 Warning (2018): Function state mutability can be restricted to pure
   --> test/mocks/SigVerifierFalseMock.sol:15:5:
    |
 15 |     function verifyQuorumSig(
    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-   --> test/modules/key-registry/KeyRegistry.t.sol:275:5:
-    |
-275 |     function test_GetOperator_UnknownKey() public {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> test/modules/key-registry/KeyRegistry.t.sol:404:5:
-    |
-404 |     function test_Location() public {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to view
   --> test/modules/network/Network.t.sol:78:5:
@@ -482,9 +302,9 @@ Warning (2018): Function state mutability can be restricted to view
     |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-   --> test/modules/voting-power/VotingPowerProvider.t.sol:709:5:
+   --> test/modules/voting-power/VotingPowerProvider.t.sol:752:5:
     |
-709 |     function test_Location() public {
+752 |     function test_Location() public {
     |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
@@ -623,7 +443,7 @@ Warning (2018): Function state mutability can be restricted to pure
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | MyValSetDriver                                                                                                   | 18,205           | 18,233            | 6,371              | 30,919              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| MyVotingPowerProvider                                                                                            | 13,214           | 13,382            | 11,362             | 35,770              |
+| MyVotingPowerProvider                                                                                            | 12,061           | 12,229            | 12,515             | 36,923              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Network                                                                                                          | 12,138           | 12,330            | 12,438             | 36,822              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -671,19 +491,19 @@ Warning (2018): Function state mutability can be restricted to pure
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | TestKeyRegistry                                                                                                  | 17,108           | 17,136            | 7,468              | 32,016              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestMultiToken                                                                                                   | 12,471           | 12,639            | 12,105             | 36,513              |
+| TestMultiToken                                                                                                   | 11,348           | 11,516            | 13,228             | 37,636              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | TestNetworkManager                                                                                               | 1,397            | 1,425             | 23,179             | 47,727              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | TestNoPermissionManager                                                                                          | 375              | 403               | 24,201             | 48,749              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestOpNetVaultAutoDeploy                                                                                         | 15,087           | 15,295            | 9,489              | 33,857              |
+| TestOpNetVaultAutoDeploy                                                                                         | 14,024           | 14,232            | 10,552             | 34,920              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestOperatorsBlacklist                                                                                           | 13,303           | 13,471            | 11,273             | 35,681              |
+| TestOperatorsBlacklist                                                                                           | 12,180           | 12,348            | 12,396             | 36,804              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestOperatorsJail                                                                                                | 13,511           | 13,679            | 11,065             | 35,473              |
+| TestOperatorsJail                                                                                                | 12,403           | 12,571            | 12,173             | 36,581              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestOperatorsWhitelist                                                                                           | 13,701           | 13,869            | 10,875             | 35,283              |
+| TestOperatorsWhitelist                                                                                           | 12,608           | 12,776            | 11,968             | 36,376              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | TestOzAccessControl                                                                                              | 1,776            | 1,804             | 22,800             | 47,348              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -697,21 +517,21 @@ Warning (2018): Function state mutability can be restricted to pure
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | TestSettlement                                                                                                   | 10,833           | 10,861            | 13,743             | 38,291              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestSharedVaults                                                                                                 | 12,589           | 12,757            | 11,987             | 36,395              |
+| TestSharedVaults                                                                                                 | 11,451           | 11,619            | 13,125             | 37,533              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | TestValSetDriver                                                                                                 | 16,017           | 16,045            | 8,559              | 33,107              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | TestVotingPowerCalcManager                                                                                       | 952              | 980               | 23,624             | 48,172              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestVotingPowerProvider (test/modules/voting-power/VotingPowerProvider.t.sol)                                    | 13,569           | 13,737            | 11,007             | 35,415              |
+| TestVotingPowerProvider (test/modules/voting-power/VotingPowerProvider.t.sol)                                    | 13,901           | 14,069            | 10,675             | 35,083              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestVotingPowerProvider (test/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.t.sol) | 14,273           | 14,441            | 10,303             | 34,711              |
+| TestVotingPowerProvider (test/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.t.sol) | 14,605           | 14,773            | 9,971              | 34,379              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestVotingPowerProvider (test/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.t.sol)   | 17,965           | 18,133            | 6,611              | 31,019              |
+| TestVotingPowerProvider (test/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.t.sol)   | 18,297           | 18,465            | 6,279              | 30,687              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestVotingPowerProvider (test/modules/voting-power/common/voting-power-calc/WeightedTokensVPCalc.t.sol)          | 16,109           | 16,277            | 8,467              | 32,875              |
+| TestVotingPowerProvider (test/modules/voting-power/common/voting-power-calc/WeightedTokensVPCalc.t.sol)          | 16,441           | 16,609            | 8,135              | 32,543              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestVotingPowerProvider (test/modules/voting-power/common/voting-power-calc/WeightedVaultsVPCalc.t.sol)          | 15,443           | 15,611            | 9,133              | 33,541              |
+| TestVotingPowerProvider (test/modules/voting-power/common/voting-power-calc/WeightedVaultsVPCalc.t.sol)          | 15,775           | 15,943            | 8,801              | 33,209              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Time                                                                                                             | 85               | 135               | 24,491             | 49,017              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -737,12 +557,12 @@ Warning (2018): Function state mutability can be restricted to pure
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Verifier (test/data/zk/Verifier_1000.sol)                                                                        | 6,432            | 6,460             | 18,144             | 42,692              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| VotingPowerProviderFull                                                                                          | 24,497           | 24,705            | 79                 | 24,447              |
+| VotingPowerProviderFull                                                                                          | 23,431           | 23,639            | 1,145              | 25,513              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| VotingPowerProviderLogic                                                                                         | 14,577           | 14,629            | 9,999              | 34,523              |
+| VotingPowerProviderLogic                                                                                         | 15,579           | 15,631            | 8,997              | 33,521              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| VotingPowerProviderSemiFull                                                                                      | 16,973           | 17,141            | 7,603              | 32,011              |
+| VotingPowerProviderSemiFull                                                                                      | 15,910           | 16,078            | 8,666              | 33,074              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| VotingPowerProviderSharedVaults                                                                                  | 13,077           | 13,245            | 11,499             | 35,907              |
+| VotingPowerProviderSharedVaults                                                                                  | 11,924           | 12,092            | 12,652             | 37,060              |
 ╰------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------╯
 

@@ -135,13 +135,13 @@ interface IVotingPowerProvider {
     }
 
     /**
-     * @notice The voting power of the vault.
+     * @notice The value of the vault.
      * @param vault The address of the vault.
-     * @param votingPower The voting power.
+     * @param value The value (voting power or stake).
      */
-    struct VaultVotingPower {
+    struct VaultValue {
         address vault;
-        uint256 votingPower;
+        uint256 value;
     }
 
     /**
@@ -151,7 +151,7 @@ interface IVotingPowerProvider {
      */
     struct OperatorVotingPower {
         address operator;
-        VaultVotingPower[] vaults;
+        VaultValue[] vaults;
     }
 
     /**
@@ -278,12 +278,6 @@ interface IVotingPowerProvider {
     function getTokens() external view returns (address[] memory);
 
     /**
-     * @notice Returns the length of the tokens.
-     * @return The length of the tokens.
-     */
-    function getTokensLength() external view returns (uint256);
-
-    /**
      * @notice Returns the status of the operator registration.
      * @param operator The operator.
      * @return The status of the operator registration.
@@ -316,12 +310,6 @@ interface IVotingPowerProvider {
     function getOperators() external view returns (address[] memory);
 
     /**
-     * @notice Returns the length of the operators.
-     * @return The length of the operators.
-     */
-    function getOperatorsLength() external view returns (uint256);
-
-    /**
      * @notice Returns the status of the shared vault registration.
      * @param vault The shared vault.
      * @return The status of the shared vault registration.
@@ -352,12 +340,6 @@ interface IVotingPowerProvider {
      * @return The shared vaults.
      */
     function getSharedVaults() external view returns (address[] memory);
-
-    /**
-     * @notice Returns the length of the shared vaults.
-     * @return The length of the shared vaults.
-     */
-    function getSharedVaultsLength() external view returns (uint256);
 
     /**
      * @notice Returns the status of the operator vault registration.
@@ -414,88 +396,51 @@ interface IVotingPowerProvider {
     ) external view returns (address[] memory);
 
     /**
-     * @notice Returns the length of the operator vaults.
+     * @notice Returns the vaults with stakes of the operator at a specific timestamp.
      * @param operator The operator.
-     * @return The length of the operator vaults.
+     * @param timestamp The timestamp.
+     * @return The vaults with stakes of the operator.
      */
-    function getOperatorVaultsLength(
+    function getOperatorStakesAt(address operator, uint48 timestamp) external view returns (VaultValue[] memory);
+
+    /**
+     * @notice Returns the vaults with stakes of the operator.
+     * @param operator The operator.
+     * @return The vaults with stakes of the operator.
+     */
+    function getOperatorStakes(
         address operator
-    ) external view returns (uint256);
+    ) external view returns (VaultValue[] memory);
 
     /**
-     * @notice Returns the stake of the operator at a specific timestamp.
-     * @param vault The vault.
-     * @param operator The operator.
-     * @param timestamp The timestamp.
-     * @return The stake of the operator.
-     */
-    function getOperatorStakeAt(address vault, address operator, uint48 timestamp) external view returns (uint256);
-
-    /**
-     * @notice Returns the stake of the operator.
-     * @param vault The vault.
-     * @param operator The operator.
-     * @return The stake of the operator.
-     */
-    function getOperatorStake(address vault, address operator) external view returns (uint256);
-
-    /**
-     * @notice Returns the voting power of the operator at a specific timestamp.
-     * @param operator The operator.
-     * @param vault The vault.
-     * @param extraData The extra data.
-     * @param timestamp The timestamp.
-     * @return The voting power of the operator.
-     */
-    function getOperatorVotingPowerAt(
-        address operator,
-        address vault,
-        bytes memory extraData,
-        uint48 timestamp
-    ) external view returns (uint256);
-
-    /**
-     * @notice Returns the voting power of the operator.
-     * @param operator The operator.
-     * @param vault The vault.
-     * @param extraData The extra data.
-     * @return The voting power of the operator.
-     */
-    function getOperatorVotingPower(
-        address operator,
-        address vault,
-        bytes memory extraData
-    ) external view returns (uint256);
-
-    /**
-     * @notice Returns the voting power of the operator at a specific timestamp.
+     * @notice Returns the vaults with voting powers of the operator at a specific timestamp.
      * @param operator The operator.
      * @param extraData The extra data.
      * @param timestamp The timestamp.
-     * @return The voting power of the operator.
+     * @return The vaults with voting powers of the operator.
      */
     function getOperatorVotingPowersAt(
         address operator,
         bytes memory extraData,
         uint48 timestamp
-    ) external view returns (VaultVotingPower[] memory);
+    ) external view returns (VaultValue[] memory);
 
     /**
-     * @notice Returns the voting power of the operator.
+     * @notice Returns the vaults with voting powers of the operator.
      * @param operator The operator.
      * @param extraData The extra data.
-     * @return The voting power of the operator.
+     * @return The vaults with voting powers of the operator.
      */
     function getOperatorVotingPowers(
         address operator,
         bytes memory extraData
-    ) external view returns (VaultVotingPower[] memory);
+    ) external view returns (VaultValue[] memory);
 
     /**
-     * @notice Returns the voting power of the operator at a specific timestamp.
+     * @notice Returns operators and their vaults with voting powers at a specific timestamp.
      * @param extraData The extra data.
      * @param timestamp The timestamp.
-     * @return The voting power of the operator.
+     * @return The operators and their vaults with voting powers.
      */
     function getVotingPowersAt(
         bytes[] memory extraData,
@@ -503,9 +448,9 @@ interface IVotingPowerProvider {
     ) external view returns (OperatorVotingPower[] memory);
 
     /**
-     * @notice Returns the voting power of the operator.
+     * @notice Returns operators and their vaults with voting powers.
      * @param extraData The extra data.
-     * @return The voting power of the operator.
+     * @return The operators and their vaults with voting powers.
      */
     function getVotingPowers(
         bytes[] memory extraData

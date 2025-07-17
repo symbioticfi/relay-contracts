@@ -178,14 +178,65 @@ library VotingPowerProviderLogic {
         return _getVotingPowerProviderStorage()._operatorVaults[operator].length();
     }
 
-    function getOperatorStakeAt(address vault, address operator, uint48 timestamp) public view returns (uint256) {
+    function getOperatorStakeAt(address operator, address vault, uint48 timestamp) public view returns (uint256) {
         return IBaseDelegator(IVault(vault).delegator()).stakeAt(
             INetworkManager(address(this)).SUBNETWORK(), operator, timestamp, new bytes(0)
         );
     }
 
-    function getOperatorStake(address vault, address operator) public view returns (uint256) {
+    function getOperatorStake(address operator, address vault) public view returns (uint256) {
         return IBaseDelegator(IVault(vault).delegator()).stake(INetworkManager(address(this)).SUBNETWORK(), operator);
+    }
+
+    function getOperatorStakesAt(
+        address operator,
+        uint48 timestamp
+    ) public view returns (IVotingPowerProvider.VaultValue[] memory vaultStakes) {
+        uint256 length;
+        address[] memory sharedVaults = getSharedVaultsAt(timestamp);
+        address[] memory operatorVaults = getOperatorVaultsAt(operator, timestamp);
+        vaultStakes = new IVotingPowerProvider.VaultValue[](sharedVaults.length + operatorVaults.length);
+        for (uint256 i; i < sharedVaults.length; ++i) {
+            uint256 stake = getOperatorStakeAt(operator, sharedVaults[i], timestamp);
+            if (stake > 0) {
+                vaultStakes[length++] = IVotingPowerProvider.VaultValue({vault: sharedVaults[i], value: stake});
+            }
+        }
+        for (uint256 i; i < operatorVaults.length; ++i) {
+            uint256 stake = getOperatorStakeAt(operator, operatorVaults[i], timestamp);
+            if (stake > 0) {
+                vaultStakes[length++] = IVotingPowerProvider.VaultValue({vault: operatorVaults[i], value: stake});
+            }
+        }
+
+        assembly ("memory-safe") {
+            mstore(vaultStakes, length)
+        }
+    }
+
+    function getOperatorStakes(
+        address operator
+    ) public view returns (IVotingPowerProvider.VaultValue[] memory vaultStakes) {
+        uint256 length;
+        address[] memory sharedVaults = getSharedVaults();
+        address[] memory operatorVaults = getOperatorVaults(operator);
+        vaultStakes = new IVotingPowerProvider.VaultValue[](sharedVaults.length + operatorVaults.length);
+        for (uint256 i; i < sharedVaults.length; ++i) {
+            uint256 stake = getOperatorStake(operator, sharedVaults[i]);
+            if (stake > 0) {
+                vaultStakes[length++] = IVotingPowerProvider.VaultValue({vault: sharedVaults[i], value: stake});
+            }
+        }
+        for (uint256 i; i < operatorVaults.length; ++i) {
+            uint256 stake = getOperatorStake(operator, operatorVaults[i]);
+            if (stake > 0) {
+                vaultStakes[length++] = IVotingPowerProvider.VaultValue({vault: operatorVaults[i], value: stake});
+            }
+        }
+
+        assembly ("memory-safe") {
+            mstore(vaultStakes, length)
+        }
     }
 
     function getOperatorVotingPowerAt(
@@ -198,7 +249,7 @@ library VotingPowerProviderLogic {
             return 0;
         }
         return IVotingPowerCalcManager(address(this)).stakeToVotingPowerAt(
-            vault, getOperatorStakeAt(vault, operator, timestamp), extraData, timestamp
+            vault, getOperatorStakeAt(operator, vault, timestamp), extraData, timestamp
         );
     }
 
@@ -211,7 +262,7 @@ library VotingPowerProviderLogic {
             return 0;
         }
         return IVotingPowerCalcManager(address(this)).stakeToVotingPower(
-            vault, getOperatorStake(vault, operator), extraData
+            vault, getOperatorStake(operator, vault), extraData
         );
     }
 
@@ -219,7 +270,7 @@ library VotingPowerProviderLogic {
         address operator,
         bytes memory extraData,
         uint48 timestamp
-    ) public view returns (IVotingPowerProvider.VaultVotingPower[] memory vaultVotingPowers) {
+    ) public view returns (IVotingPowerProvider.VaultValue[] memory vaultVotingPowers) {
         IVotingPowerProvider.OperatorVotingPowersExtraData memory operatorVotingPowersExtraData;
         if (extraData.length > 0) {
             operatorVotingPowersExtraData = abi.decode(extraData, (IVotingPowerProvider.OperatorVotingPowersExtraData));
@@ -228,27 +279,27 @@ library VotingPowerProviderLogic {
         uint256 length;
         address[] memory sharedVaults = getSharedVaultsAt(timestamp);
         address[] memory operatorVaults = getOperatorVaultsAt(operator, timestamp);
-        vaultVotingPowers = new IVotingPowerProvider.VaultVotingPower[](sharedVaults.length + operatorVaults.length);
+        vaultVotingPowers = new IVotingPowerProvider.VaultValue[](sharedVaults.length + operatorVaults.length);
         operatorVotingPowersExtraData.sharedVaultsExtraData =
             operatorVotingPowersExtraData.sharedVaultsExtraData.normalize(sharedVaults.length);
         for (uint256 i; i < sharedVaults.length; ++i) {
-            uint256 votingPower_ = getOperatorVotingPowerAt(
+            uint256 votingPower = getOperatorVotingPowerAt(
                 operator, sharedVaults[i], operatorVotingPowersExtraData.sharedVaultsExtraData[i], timestamp
             );
-            if (votingPower_ > 0) {
+            if (votingPower > 0) {
                 vaultVotingPowers[length++] =
-                    IVotingPowerProvider.VaultVotingPower({vault: sharedVaults[i], votingPower: votingPower_});
+                    IVotingPowerProvider.VaultValue({vault: sharedVaults[i], value: votingPower});
             }
         }
         operatorVotingPowersExtraData.operatorVaultsExtraData =
             operatorVotingPowersExtraData.operatorVaultsExtraData.normalize(operatorVaults.length);
         for (uint256 i; i < operatorVaults.length; ++i) {
-            uint256 votingPower_ = getOperatorVotingPowerAt(
+            uint256 votingPower = getOperatorVotingPowerAt(
                 operator, operatorVaults[i], operatorVotingPowersExtraData.operatorVaultsExtraData[i], timestamp
             );
-            if (votingPower_ > 0) {
+            if (votingPower > 0) {
                 vaultVotingPowers[length++] =
-                    IVotingPowerProvider.VaultVotingPower({vault: operatorVaults[i], votingPower: votingPower_});
+                    IVotingPowerProvider.VaultValue({vault: operatorVaults[i], value: votingPower});
             }
         }
 
@@ -260,7 +311,7 @@ library VotingPowerProviderLogic {
     function getOperatorVotingPowers(
         address operator,
         bytes memory extraData
-    ) public view returns (IVotingPowerProvider.VaultVotingPower[] memory vaultVotingPowers) {
+    ) public view returns (IVotingPowerProvider.VaultValue[] memory vaultVotingPowers) {
         IVotingPowerProvider.OperatorVotingPowersExtraData memory operatorVotingPowersExtraData;
         if (extraData.length > 0) {
             operatorVotingPowersExtraData = abi.decode(extraData, (IVotingPowerProvider.OperatorVotingPowersExtraData));
@@ -269,27 +320,27 @@ library VotingPowerProviderLogic {
         uint256 length;
         address[] memory sharedVaults = getSharedVaults();
         address[] memory operatorVaults = getOperatorVaults(operator);
-        vaultVotingPowers = new IVotingPowerProvider.VaultVotingPower[](sharedVaults.length + operatorVaults.length);
+        vaultVotingPowers = new IVotingPowerProvider.VaultValue[](sharedVaults.length + operatorVaults.length);
         operatorVotingPowersExtraData.sharedVaultsExtraData =
             operatorVotingPowersExtraData.sharedVaultsExtraData.normalize(sharedVaults.length);
         for (uint256 i; i < sharedVaults.length; ++i) {
-            uint256 votingPower_ = getOperatorVotingPower(
+            uint256 votingPower = getOperatorVotingPower(
                 operator, sharedVaults[i], operatorVotingPowersExtraData.sharedVaultsExtraData[i]
             );
-            if (votingPower_ > 0) {
+            if (votingPower > 0) {
                 vaultVotingPowers[length++] =
-                    IVotingPowerProvider.VaultVotingPower({vault: sharedVaults[i], votingPower: votingPower_});
+                    IVotingPowerProvider.VaultValue({vault: sharedVaults[i], value: votingPower});
             }
         }
         operatorVotingPowersExtraData.operatorVaultsExtraData =
             operatorVotingPowersExtraData.operatorVaultsExtraData.normalize(operatorVaults.length);
         for (uint256 i; i < operatorVaults.length; ++i) {
-            uint256 votingPower_ = getOperatorVotingPower(
+            uint256 votingPower = getOperatorVotingPower(
                 operator, operatorVaults[i], operatorVotingPowersExtraData.operatorVaultsExtraData[i]
             );
-            if (votingPower_ > 0) {
+            if (votingPower > 0) {
                 vaultVotingPowers[length++] =
-                    IVotingPowerProvider.VaultVotingPower({vault: operatorVaults[i], votingPower: votingPower_});
+                    IVotingPowerProvider.VaultValue({vault: operatorVaults[i], value: votingPower});
             }
         }
 
@@ -307,7 +358,7 @@ library VotingPowerProviderLogic {
         operatorVotingPowers = new IVotingPowerProvider.OperatorVotingPower[](operators.length);
         extraData = extraData.normalize(operators.length);
         for (uint256 i; i < operators.length; ++i) {
-            IVotingPowerProvider.VaultVotingPower[] memory votingPowers =
+            IVotingPowerProvider.VaultValue[] memory votingPowers =
                 getOperatorVotingPowersAt(operators[i], extraData[i], timestamp);
             if (votingPowers.length > 0) {
                 operatorVotingPowers[length++] =
@@ -327,8 +378,7 @@ library VotingPowerProviderLogic {
         operatorVotingPowers = new IVotingPowerProvider.OperatorVotingPower[](operators.length);
         extraData = extraData.normalize(operators.length);
         for (uint256 i; i < operators.length; ++i) {
-            IVotingPowerProvider.VaultVotingPower[] memory votingPowers =
-                getOperatorVotingPowers(operators[i], extraData[i]);
+            IVotingPowerProvider.VaultValue[] memory votingPowers = getOperatorVotingPowers(operators[i], extraData[i]);
             if (votingPowers.length > 0) {
                 operatorVotingPowers[length++] =
                     IVotingPowerProvider.OperatorVotingPower({operator: operators[i], vaults: votingPowers});

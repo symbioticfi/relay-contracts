@@ -74,7 +74,7 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetupTest {
         uint256 totalVotingPower;
         for (uint256 i; i < votingPowers.length; ++i) {
             for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
-                totalVotingPower += votingPowers[i].vaults[j].votingPower;
+                totalVotingPower += votingPowers[i].vaults[j].value;
             }
         }
         uint256 quorumThreshold;
@@ -187,14 +187,14 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetupTest {
         uint256 totalVotingPower;
         for (uint256 i; i < votingPowers.length; ++i) {
             for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
-                totalVotingPower += votingPowers[i].vaults[j].votingPower;
+                totalVotingPower += votingPowers[i].vaults[j].value;
             }
         }
         uint256 signersVotingPower;
         for (uint256 i; i < votingPowers.length; ++i) {
             if (i % 6 != 0) {
                 for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
-                    signersVotingPower += votingPowers[i].vaults[j].votingPower;
+                    signersVotingPower += votingPowers[i].vaults[j].value;
                 }
             }
         }
@@ -244,14 +244,14 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetupTest {
         uint256 totalVotingPower;
         for (uint256 i; i < votingPowers.length; ++i) {
             for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
-                totalVotingPower += votingPowers[i].vaults[j].votingPower;
+                totalVotingPower += votingPowers[i].vaults[j].value;
             }
         }
         uint256 signersVotingPower;
         for (uint256 i; i < votingPowers.length; ++i) {
             if (i % 6 != 0) {
                 for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
-                    signersVotingPower += votingPowers[i].vaults[j].votingPower;
+                    signersVotingPower += votingPowers[i].vaults[j].value;
                 }
             }
         }
@@ -308,14 +308,14 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetupTest {
         uint256 totalVotingPower;
         for (uint256 i; i < votingPowers.length; ++i) {
             for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
-                totalVotingPower += votingPowers[i].vaults[j].votingPower;
+                totalVotingPower += votingPowers[i].vaults[j].value;
             }
         }
         uint256 signersVotingPower;
         for (uint256 i; i < votingPowers.length; ++i) {
             if (i % 6 != 0) {
                 for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
-                    signersVotingPower += votingPowers[i].vaults[j].votingPower;
+                    signersVotingPower += votingPowers[i].vaults[j].value;
                 }
             }
         }
