@@ -2,7 +2,7 @@
 pragma solidity ^0.8.25;
 
 import "forge-std/Test.sol";
-import {KeyTags} from "../../../src/contracts/libraries/utils/KeyTags.sol";
+import {KeyTags} from "../../../src/libraries/utils/KeyTags.sol";
 
 contract KeyTagTest is Test {
     using KeyTags for uint128;

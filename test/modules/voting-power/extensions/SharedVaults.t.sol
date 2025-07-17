@@ -3,15 +3,14 @@ pragma solidity ^0.8.25;
 
 import "forge-std/Test.sol";
 
-import {SharedVaults} from "../../../../src/contracts/modules/voting-power/extensions/SharedVaults.sol";
+import {SharedVaults} from "../../../../src/modules/voting-power/extensions/SharedVaults.sol";
 import {ISharedVaults} from "../../../../src/interfaces/modules/voting-power/extensions/ISharedVaults.sol";
 import {INetworkManager} from "../../../../src/interfaces/modules/base/INetworkManager.sol";
 import {NoPermissionManager} from "../../../../test/mocks/NoPermissionManager.sol";
-import {EqualStakeVPCalc} from
-    "../../../../src/contracts/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol";
+import {EqualStakeVPCalc} from "../../../../src/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol";
 import {IVotingPowerProvider} from "../../../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
 import {IOzEIP712} from "../../../../src/interfaces/modules/base/IOzEIP712.sol";
-import {VotingPowerProvider} from "../../../../src/contracts/modules/voting-power/VotingPowerProvider.sol";
+import {VotingPowerProvider} from "../../../../src/modules/voting-power/VotingPowerProvider.sol";
 
 import "../../../InitSetup.sol";
 

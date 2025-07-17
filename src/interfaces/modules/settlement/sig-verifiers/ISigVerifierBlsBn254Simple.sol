@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {BN254} from "../../../../contracts/libraries/utils/BN254.sol";
+import {BN254} from "../../../../libraries/utils/BN254.sol";
 
 import {ISigVerifier} from "./ISigVerifier.sol";
 

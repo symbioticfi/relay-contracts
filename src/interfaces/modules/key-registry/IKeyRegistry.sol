@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {Checkpoints} from "../../../contracts/libraries/structs/Checkpoints.sol";
-import {PersistentSet} from "../../../contracts/libraries/structs/PersistentSet.sol";
+import {Checkpoints} from "../../../libraries/structs/Checkpoints.sol";
+import {PersistentSet} from "../../../libraries/structs/PersistentSet.sol";
 
 import {IOzEIP712} from "../../modules/base/IOzEIP712.sol";
 

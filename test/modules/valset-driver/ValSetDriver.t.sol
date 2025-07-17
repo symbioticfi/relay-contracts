@@ -3,7 +3,7 @@ pragma solidity ^0.8.25;
 
 import "forge-std/Test.sol";
 
-import {ValSetDriver} from "../../../src/contracts/modules/valset-driver/ValSetDriver.sol";
+import {ValSetDriver} from "../../../src/modules/valset-driver/ValSetDriver.sol";
 import {IValSetDriver} from "../../../src/interfaces/modules/valset-driver/IValSetDriver.sol";
 
 import {INetworkManager} from "../../../src/interfaces/modules/base/INetworkManager.sol";

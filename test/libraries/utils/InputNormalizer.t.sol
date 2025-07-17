@@ -2,7 +2,7 @@
 pragma solidity ^0.8.25;
 
 import "forge-std/Test.sol";
-import {InputNormalizer} from "../../../src/contracts/libraries/utils/InputNormalizer.sol";
+import {InputNormalizer} from "../../../src/libraries/utils/InputNormalizer.sol";
 
 contract InputNormalizerTest is Test {
     function normalizeSingleDim(bytes[] memory arr, uint256 length) public pure returns (bytes[] memory) {

@@ -14,20 +14,19 @@ import {IVotingPowerProvider} from "../../src/interfaces/modules/voting-power/IV
 import {IBaseSlashing} from "../../src/interfaces/modules/voting-power/extensions/IBaseSlashing.sol";
 import {IBaseRewards} from "../../src/interfaces/modules/voting-power/extensions/IBaseRewards.sol";
 
-import {KeyTags} from "../../src/contracts/libraries/utils/KeyTags.sol";
+import {KeyTags} from "../../src/libraries/utils/KeyTags.sol";
 
 import {SigVerifierMock} from "../../test/mocks/SigVerifierMock.sol";
 
-import {KeyTags} from "../../src/contracts/libraries/utils/KeyTags.sol";
-import {KeyEcdsaSecp256k1} from "../../src/contracts/libraries/keys/KeyEcdsaSecp256k1.sol";
-import {KeyBlsBn254, BN254} from "../../src/contracts/libraries/keys/KeyBlsBn254.sol";
+import {KeyTags} from "../../src/libraries/utils/KeyTags.sol";
+import {KeyEcdsaSecp256k1} from "../../src/libraries/keys/KeyEcdsaSecp256k1.sol";
+import {KeyBlsBn254, BN254} from "../../src/libraries/keys/KeyBlsBn254.sol";
 
 import {BN254G2} from "../../test/helpers/BN254G2.sol";
 import "./InitSetup.s.sol";
 
-import {SigVerifierBlsBn254ZK} from "../../src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol";
-import {SigVerifierBlsBn254Simple} from
-    "../../src/contracts/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol";
+import {SigVerifierBlsBn254ZK} from "../../src/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol";
+import {SigVerifierBlsBn254Simple} from "../../src/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol";
 import {Verifier as Verifier_10} from "./data/zk/Verifier_10.sol";
 import {Verifier as Verifier_100} from "./data/zk/Verifier_100.sol";
 import {Verifier as Verifier_1000} from "./data/zk/Verifier_1000.sol";

@@ -3,7 +3,7 @@ pragma solidity ^0.8.25;
 
 import "forge-std/Test.sol";
 
-import {NetworkManager} from "../../../src/contracts/modules/base/NetworkManager.sol";
+import {NetworkManager} from "../../../src/modules/base/NetworkManager.sol";
 import {INetworkManager} from "../../../src/interfaces/modules/base/INetworkManager.sol";
 
 import {Subnetwork} from "@symbioticfi/core/src/contracts/libraries/Subnetwork.sol";
