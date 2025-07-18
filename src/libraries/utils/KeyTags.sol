@@ -4,9 +4,9 @@ pragma solidity ^0.8.25;
 library KeyTags {
     using KeyTags for uint128;
 
-    error KeyTags_InvalidKeyType();
-    error KeyTags_InvalidKeyTag();
-    error KeyTags_Duplicate();
+    error InvalidKeyType();
+    error InvalidKeyTag();
+    error Duplicate();
 
     // 3 bits for type, 4 bits for tag
     uint256 internal constant TOTAL_KEY_TAGS = 128;
@@ -19,7 +19,7 @@ library KeyTags {
         uint8 keyTag
     ) internal pure {
         if (keyTag >= TOTAL_KEY_TAGS) {
-            revert KeyTags_InvalidKeyTag();
+            revert InvalidKeyTag();
         }
     }
 
@@ -27,7 +27,7 @@ library KeyTags {
         uint8 type_
     ) internal pure {
         if (type_ > MAX_KEY_TYPE) {
-            revert KeyTags_InvalidKeyType();
+            revert InvalidKeyType();
         }
     }
 
@@ -35,7 +35,7 @@ library KeyTags {
         uint8 tag
     ) internal pure {
         if (tag > MAX_KEY_TAG) {
-            revert KeyTags_InvalidKeyTag();
+            revert InvalidKeyTag();
         }
     }
 
@@ -82,7 +82,7 @@ library KeyTags {
                 uint128 oldKeyTagsSerialized = keyTagsSerialized;
                 keyTagsSerialized = keyTagsSerialized.add(keyTags[i]);
                 if (oldKeyTagsSerialized == keyTagsSerialized) {
-                    revert KeyTags_Duplicate();
+                    revert Duplicate();
                 }
             }
         }

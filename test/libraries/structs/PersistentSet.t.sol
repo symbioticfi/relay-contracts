@@ -277,7 +277,7 @@ contract PersistentSetTest is Test {
 
     function test_RevertPersistentSet_InvalidKey() public {
         addressSet.add(100, address(0x123));
-        vm.expectRevert(PersistentSet.PersistentSet_InvalidKey.selector);
+        vm.expectRevert(PersistentSet.InvalidKey.selector);
         this.remove(99, address(0x123));
 
         this.remove(100, address(0x123));

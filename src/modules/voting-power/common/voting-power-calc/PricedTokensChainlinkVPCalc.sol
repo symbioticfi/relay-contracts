@@ -136,7 +136,7 @@ abstract contract PricedTokensChainlinkVPCalc is
         uint48[2] memory stalenessDurations
     ) internal pure virtual returns (uint256[2] memory hops) {
         if (aggregators[0] == address(0)) {
-            revert InvalidAggregator();
+            revert PricedTokensChainlinkVPCalc_InvalidAggregator();
         }
         hops[0] = _serializeHop(aggregators[0], inverts[0], stalenessDurations[0]);
         if (aggregators[1] != address(0)) {

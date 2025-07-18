@@ -7,8 +7,8 @@ library KeyBlsBn254 {
     using KeyBlsBn254 for KEY_BLS_BN254;
     using KeyBlsBn254 for BN254.G1Point;
 
-    error KeyBlsBn254_InvalidKey();
     error KeyBlsBn254_InvalidBytes();
+    error KeyBlsBn254_InvalidKey();
 
     struct KEY_BLS_BN254 {
         BN254.G1Point value;

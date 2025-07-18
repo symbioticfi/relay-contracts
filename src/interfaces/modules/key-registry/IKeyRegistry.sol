@@ -11,9 +11,9 @@ uint8 constant KEY_TYPE_ECDSA_SECP256K1 = 1;
 
 interface IKeyRegistry {
     /**
-     * @notice Reverts when the key type is not supported.
+     * @notice Reverts when the key is already used by another operator or with another tag.
      */
-    error KeyRegistry_InvalidKeyType();
+    error KeyRegistry_AlreadyUsed();
 
     /**
      * @notice Reverts when the key ownership signature is invalid.
@@ -21,9 +21,9 @@ interface IKeyRegistry {
     error KeyRegistry_InvalidKeySignature();
 
     /**
-     * @notice Reverts when the key is already used by another operator or with another tag.
+     * @notice Reverts when the key type is not supported.
      */
-    error KeyRegistry_AlreadyUsed();
+    error KeyRegistry_InvalidKeyType();
 
     /**
      * @notice The storage of the KeyRegistry contract.

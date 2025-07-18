@@ -46,7 +46,7 @@ contract InputNormalizerTest is Test {
         uint256 desiredLength = 2;
         bytes[] memory input = new bytes[](desiredLength + 1);
 
-        vm.expectRevert(InputNormalizer.InvalidLength_InvalidLength.selector);
+        vm.expectRevert(InputNormalizer.InvalidLength.selector);
         this.normalizeSingleDim(input, desiredLength);
     }
 
@@ -89,7 +89,7 @@ contract InputNormalizerTest is Test {
         uint256 desiredLength = 3;
         bytes[][] memory input = new bytes[][](desiredLength + 1);
 
-        vm.expectRevert(InputNormalizer.InvalidLength_InvalidLength.selector);
+        vm.expectRevert(InputNormalizer.InvalidLength.selector);
         this.normalizeDoubleDim(input, desiredLength);
     }
 }

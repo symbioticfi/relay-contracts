@@ -2,14 +2,14 @@
 pragma solidity ^0.8.25;
 
 library InputNormalizer {
-    error InvalidLength_InvalidLength();
+    error InvalidLength();
 
     function normalize(bytes[] memory arr, uint256 length) internal pure returns (bytes[] memory) {
         if (arr.length == 0) {
             return new bytes[](length);
         }
         if (arr.length != length) {
-            revert InvalidLength_InvalidLength();
+            revert InvalidLength();
         }
         return arr;
     }
@@ -19,7 +19,7 @@ library InputNormalizer {
             return new bytes[][](length);
         }
         if (arr.length != length) {
-            revert InvalidLength_InvalidLength();
+            revert InvalidLength();
         }
         return arr;
     }

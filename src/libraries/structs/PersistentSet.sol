@@ -11,7 +11,7 @@ import {Checkpoints} from "../structs/Checkpoints.sol";
 library PersistentSet {
     using Checkpoints for Checkpoints.Trace208;
 
-    error PersistentSet_InvalidKey();
+    error InvalidKey();
 
     struct Status {
         bool isAdded;
@@ -48,7 +48,7 @@ library PersistentSet {
                 return false;
             }
             if (key < set._statuses[value].addedAt) {
-                revert PersistentSet_InvalidKey();
+                revert InvalidKey();
             }
             set._statuses[value].isRemoved.push(key, 1);
             set._length -= 1;

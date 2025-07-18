@@ -4,9 +4,7 @@ pragma solidity ^0.8.0;
 import {Checkpoints} from "../../../../../libraries/structs/Checkpoints.sol";
 
 interface IPricedTokensChainlinkVPCalc {
-    error InvalidAggregator();
-    error InvalidHops();
-    error NotEqualLength();
+    error PricedTokensChainlinkVPCalc_InvalidAggregator();
 
     struct PricedTokensChainlinkVPCalcStorage {
         mapping(address token => Checkpoints.Trace512 hops) _tokenHops;
