@@ -4,11 +4,12 @@ pragma solidity ^0.8.25;
 import {NormalizedTokenDecimalsVPCalc} from "./NormalizedTokenDecimalsVPCalc.sol";
 import {PermissionManager} from "../../../base/PermissionManager.sol";
 
+import {ChainlinkPriceFeed} from "./libraries/ChainlinkPriceFeed.sol";
+import {Checkpoints} from "../../../../libraries/structs/Checkpoints.sol";
+
 import {IPricedTokensChainlinkVPCalc} from
     "../../../../interfaces/modules/voting-power/common/voting-power-calc/IPricedTokensChainlinkVPCalc.sol";
 import {IVotingPowerCalcManager} from "../../../../interfaces/modules/voting-power/base/IVotingPowerCalcManager.sol";
-import {Checkpoints} from "../../../../libraries/structs/Checkpoints.sol";
-import {ChainlinkPriceFeed} from "./libraries/ChainlinkPriceFeed.sol";
 
 abstract contract PricedTokensChainlinkVPCalc is
     NormalizedTokenDecimalsVPCalc,

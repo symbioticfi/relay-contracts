@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import {IOzEIP712} from "../../modules/base/IOzEIP712.sol";
+
 import {Checkpoints} from "../../../libraries/structs/Checkpoints.sol";
 import {PersistentSet} from "../../../libraries/structs/PersistentSet.sol";
-
-import {IOzEIP712} from "../../modules/base/IOzEIP712.sol";
 
 uint8 constant KEY_TYPE_BLS_BN254 = 0;
 uint8 constant KEY_TYPE_ECDSA_SECP256K1 = 1;

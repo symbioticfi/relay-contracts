@@ -3,11 +3,10 @@ pragma solidity ^0.8.25;
 
 import {VotingPowerProvider} from "../VotingPowerProvider.sol";
 
-import {IOpNetVaultAutoDeploy} from "../../../interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol";
-
-import {ISetMaxNetworkLimitHook} from "../../../interfaces/modules/network/ISetMaxNetworkLimitHook.sol";
-
 import {OpNetVaultAutoDeployLogic} from "./logic/OpNetVaultAutoDeployLogic.sol";
+
+import {IOpNetVaultAutoDeploy} from "../../../interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol";
+import {ISetMaxNetworkLimitHook} from "../../../interfaces/modules/network/ISetMaxNetworkLimitHook.sol";
 
 abstract contract OpNetVaultAutoDeploy is VotingPowerProvider, IOpNetVaultAutoDeploy {
     /**

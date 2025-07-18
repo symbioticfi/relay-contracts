@@ -4,11 +4,11 @@ pragma solidity ^0.8.25;
 import {NormalizedTokenDecimalsVPCalc} from "./NormalizedTokenDecimalsVPCalc.sol";
 import {PermissionManager} from "../../../base/PermissionManager.sol";
 
+import {Checkpoints} from "../../../../libraries/structs/Checkpoints.sol";
+
+import {IVotingPowerCalcManager} from "../../../../interfaces/modules/voting-power/base/IVotingPowerCalcManager.sol";
 import {IWeightedTokensVPCalc} from
     "../../../../interfaces/modules/voting-power/common/voting-power-calc/IWeightedTokensVPCalc.sol";
-import {IVotingPowerCalcManager} from "../../../../interfaces/modules/voting-power/base/IVotingPowerCalcManager.sol";
-
-import {Checkpoints} from "../../../../libraries/structs/Checkpoints.sol";
 
 abstract contract WeightedTokensVPCalc is NormalizedTokenDecimalsVPCalc, PermissionManager, IWeightedTokensVPCalc {
     using Checkpoints for Checkpoints.Trace208;

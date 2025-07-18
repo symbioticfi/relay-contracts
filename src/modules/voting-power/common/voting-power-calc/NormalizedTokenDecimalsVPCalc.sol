@@ -2,6 +2,7 @@
 pragma solidity ^0.8.25;
 
 import {EqualStakeVPCalc} from "./EqualStakeVPCalc.sol";
+
 import {Scaler} from "../../../../libraries/utils/Scaler.sol";
 
 import {INormalizedTokenDecimalsVPCalc} from
@@ -9,6 +10,7 @@ import {INormalizedTokenDecimalsVPCalc} from
 import {IVotingPowerCalcManager} from "../../../../interfaces/modules/voting-power/base/IVotingPowerCalcManager.sol";
 
 import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
+
 import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
 abstract contract NormalizedTokenDecimalsVPCalc is EqualStakeVPCalc, INormalizedTokenDecimalsVPCalc {

@@ -4,17 +4,15 @@ pragma solidity ^0.8.25;
 import {EpochManager} from "./EpochManager.sol";
 import {NetworkManager} from "../base/NetworkManager.sol";
 
-import {PersistentSet} from "../../libraries/structs/PersistentSet.sol";
 import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
 import {KeyTags} from "../../libraries/utils/KeyTags.sol";
-
-import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {PersistentSet} from "../../libraries/structs/PersistentSet.sol";
 
 import {IValSetDriver} from "../../interfaces/modules/valset-driver/IValSetDriver.sol";
+
 import {MulticallUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
 
 abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgradeable, IValSetDriver {
-    using EnumerableSet for EnumerableSet.Bytes32Set;
     using Checkpoints for Checkpoints.Trace256;
     using Checkpoints for Checkpoints.Trace208;
     using PersistentSet for PersistentSet.Bytes32Set;

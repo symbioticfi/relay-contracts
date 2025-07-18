@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {IOperatorVaults} from "../../../interfaces/modules/voting-power/extensions/IOperatorVaults.sol";
 import {VotingPowerProvider} from "../VotingPowerProvider.sol";
+
+import {IOperatorVaults} from "../../../interfaces/modules/voting-power/extensions/IOperatorVaults.sol";
 
 abstract contract OperatorVaults is VotingPowerProvider, IOperatorVaults {
     function __OperatorVaults_init() internal virtual onlyInitializing {}

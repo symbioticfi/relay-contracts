@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
-import {IEntity} from "@symbioticfi/core/src/interfaces/common/IEntity.sol";
-import {IVetoSlasher} from "@symbioticfi/core/src/interfaces/slasher/IVetoSlasher.sol";
-import {ISlasher as IInstantSlasher} from "@symbioticfi/core/src/interfaces/slasher/ISlasher.sol";
-
-import {IBaseSlashing} from "../../../../interfaces/modules/voting-power/extensions/IBaseSlashing.sol";
 import {VotingPowerProviderLogic} from "../../logic/VotingPowerProviderLogic.sol";
 
-import {IVotingPowerProvider} from "../../../../interfaces/modules/voting-power/IVotingPowerProvider.sol";
+import {IBaseSlashing} from "../../../../interfaces/modules/voting-power/extensions/IBaseSlashing.sol";
 import {INetworkManager} from "../../../../interfaces/modules/base/INetworkManager.sol";
+import {IVotingPowerProvider} from "../../../../interfaces/modules/voting-power/IVotingPowerProvider.sol";
+
+import {IEntity} from "@symbioticfi/core/src/interfaces/common/IEntity.sol";
+import {ISlasher as IInstantSlasher} from "@symbioticfi/core/src/interfaces/slasher/ISlasher.sol";
+import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
+import {IVetoSlasher} from "@symbioticfi/core/src/interfaces/slasher/IVetoSlasher.sol";
 
 library BaseSlashingLogic {
     function slashVault(

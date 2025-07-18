@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {SigBlsBn254} from "../../../libraries/sigs/SigBlsBn254.sol";
 import {BN254} from "../../../libraries/utils/BN254.sol";
-import {KeyBlsBn254} from "../../../libraries/keys/KeyBlsBn254.sol";
 import {ExtraDataStorageHelper} from "./libraries/ExtraDataStorageHelper.sol";
-import {KEY_TYPE_BLS_BN254} from "../../../interfaces/modules/key-registry/IKeyRegistry.sol";
+import {KeyBlsBn254} from "../../../libraries/keys/KeyBlsBn254.sol";
 import {KeyTags} from "../../../libraries/utils/KeyTags.sol";
+import {SigBlsBn254} from "../../../libraries/sigs/SigBlsBn254.sol";
 
-import {ISigVerifier} from "../../../interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol";
 import {ISettlement} from "../../../interfaces/modules/settlement/ISettlement.sol";
 import {ISigVerifierBlsBn254Simple} from
     "../../../interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254Simple.sol";
+import {ISigVerifier} from "../../../interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol";
+import {KEY_TYPE_BLS_BN254} from "../../../interfaces/modules/key-registry/IKeyRegistry.sol";
 
 contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
     using KeyBlsBn254 for bytes;

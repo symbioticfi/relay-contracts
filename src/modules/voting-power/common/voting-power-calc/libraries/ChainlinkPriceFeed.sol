@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {InputNormalizer} from "../../../../../libraries/utils/InputNormalizer.sol";
 import {Scaler} from "../../../../../libraries/utils/Scaler.sol";
 
 import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
@@ -10,7 +9,6 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 library ChainlinkPriceFeed {
     using Math for uint256;
-    using InputNormalizer for bytes[];
     using Scaler for uint256;
 
     error ZeroLength();

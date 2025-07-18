@@ -4,13 +4,13 @@ pragma solidity ^0.8.25;
 import {INetwork} from "../../interfaces/modules/network/INetwork.sol";
 import {ISetMaxNetworkLimitHook} from "../../interfaces/modules/network/ISetMaxNetworkLimitHook.sol";
 
+import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
+import {INetworkMiddlewareService} from "@symbioticfi/core/src/interfaces/service/INetworkMiddlewareService.sol";
+import {INetworkRegistry} from "@symbioticfi/core/src/interfaces/INetworkRegistry.sol";
+
+import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 import {TimelockControllerUpgradeable} from
     "@openzeppelin/contracts-upgradeable/governance/TimelockControllerUpgradeable.sol";
-import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
-
-import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
-import {INetworkRegistry} from "@symbioticfi/core/src/interfaces/INetworkRegistry.sol";
-import {INetworkMiddlewareService} from "@symbioticfi/core/src/interfaces/service/INetworkMiddlewareService.sol";
 
 contract Network is TimelockControllerUpgradeable, INetwork {
     using Bytes for bytes;

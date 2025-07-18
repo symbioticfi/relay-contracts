@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {IVaultConfigurator} from "@symbioticfi/core/src/interfaces/IVaultConfigurator.sol";
-import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
-import {IVaultTokenized} from "@symbioticfi/core/src/interfaces/vault/IVaultTokenized.sol";
-import {IOperatorNetworkSpecificDelegator} from
-    "@symbioticfi/core/src/interfaces/delegator/IOperatorNetworkSpecificDelegator.sol";
+import {INetworkManager} from "../../../../interfaces/modules/base/INetworkManager.sol";
+import {IOpNetVaultAutoDeploy} from "../../../../interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol";
+import {IVotingPowerProvider} from "../../../../interfaces/modules/voting-power/IVotingPowerProvider.sol";
+
 import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
 import {IBaseSlasher} from "@symbioticfi/core/src/interfaces/slasher/IBaseSlasher.sol";
+import {IOperatorNetworkSpecificDelegator} from
+    "@symbioticfi/core/src/interfaces/delegator/IOperatorNetworkSpecificDelegator.sol";
 import {ISlasher} from "@symbioticfi/core/src/interfaces/slasher/ISlasher.sol";
+import {IVaultConfigurator} from "@symbioticfi/core/src/interfaces/IVaultConfigurator.sol";
+import {IVaultTokenized} from "@symbioticfi/core/src/interfaces/vault/IVaultTokenized.sol";
+import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
 import {IVetoSlasher} from "@symbioticfi/core/src/interfaces/slasher/IVetoSlasher.sol";
-
-import {IOpNetVaultAutoDeploy} from "../../../../interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol";
-import {INetworkManager} from "../../../../interfaces/modules/base/INetworkManager.sol";
-import {IVotingPowerProvider} from "../../../../interfaces/modules/voting-power/IVotingPowerProvider.sol";
 
 uint64 constant BASE_VAULT_VERSION = 1;
 uint64 constant TOKENIZED_VAULT_VERSION = 2;

@@ -1,5 +1,5 @@
 Compiling 6 files with Solc 0.8.28
-Solc 0.8.28 finished in 5.36s
+Solc 0.8.28 finished in 5.41s
 Compiler run successful with warnings:
 Warning (9302): Return value of low-level calls not used.
    --> script/integration/SymbioticInit.sol:111:9:
@@ -8,15 +8,15 @@ Warning (9302): Return value of low-level calls not used.
     |         ^^^^^^^^^^^^^^^^^^^^^^^^
 
 Warning (6321): Unnamed return variable can remain unassigned. Add an explicit return with value to all non-reverting code paths or name the variable.
-   --> src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:151:84:
+   --> src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:149:84:
     |
-151 |     function getRoundData(address aggregator, uint80 roundId) public view returns (bool, RoundData memory roundData) {
+149 |     function getRoundData(address aggregator, uint80 roundId) public view returns (bool, RoundData memory roundData) {
     |                                                                                    ^^^^
 
 Warning (6321): Unnamed return variable can remain unassigned. Add an explicit return with value to all non-reverting code paths or name the variable.
-   --> src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:217:28:
+   --> src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:215:28:
     |
-217 |     ) public view returns (bool, RoundData memory roundData) {
+215 |     ) public view returns (bool, RoundData memory roundData) {
     |                            ^^^^
 
 Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
@@ -216,8 +216,6 @@ Warning (2018): Function state mutability can be restricted to view
 | ECDSA                                                                                                            | 85               | 135               | 24,491             | 49,017              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | ERC4626Math                                                                                                      | 85               | 135               | 24,491             | 49,017              |
-|------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| EnumerableMap                                                                                                    | 85               | 135               | 24,491             | 49,017              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | EnumerableSet                                                                                                    | 85               | 135               | 24,491             | 49,017              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|

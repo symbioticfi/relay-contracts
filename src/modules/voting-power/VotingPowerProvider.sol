@@ -1,20 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {PermissionManager} from "../base/PermissionManager.sol";
+import {NetworkManager} from "../base/NetworkManager.sol";
 import {OzEIP712} from "../base/OzEIP712.sol";
+import {PermissionManager} from "../base/PermissionManager.sol";
+import {VotingPowerCalcManager} from "./base/VotingPowerCalcManager.sol";
 
-import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
+import {VotingPowerProviderLogic} from "./logic/VotingPowerProviderLogic.sol";
 
 import {IVotingPowerProvider} from "../../interfaces/modules/voting-power/IVotingPowerProvider.sol";
 
 import {NoncesUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/NoncesUpgradeable.sol";
-
-import {NetworkManager} from "../base/NetworkManager.sol";
-
-import {VotingPowerCalcManager} from "./base/VotingPowerCalcManager.sol";
-
-import {VotingPowerProviderLogic} from "./logic/VotingPowerProviderLogic.sol";
+import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
 abstract contract VotingPowerProvider is
     NetworkManager,

@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {IBaseSlashing} from "../../../interfaces/modules/voting-power/extensions/IBaseSlashing.sol";
 import {VotingPowerProvider} from "../VotingPowerProvider.sol";
+
 import {BaseSlashingLogic} from "./logic/BaseSlashingLogic.sol";
+
+import {IBaseSlashing} from "../../../interfaces/modules/voting-power/extensions/IBaseSlashing.sol";
 
 abstract contract BaseSlashing is VotingPowerProvider, IBaseSlashing {
     modifier onlySlasher() {

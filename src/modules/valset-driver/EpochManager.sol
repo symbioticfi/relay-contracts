@@ -2,6 +2,7 @@
 pragma solidity ^0.8.25;
 
 import {PermissionManager} from "../base/PermissionManager.sol";
+
 import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
 
 import {IEpochManager} from "../../interfaces/modules/valset-driver/IEpochManager.sol";

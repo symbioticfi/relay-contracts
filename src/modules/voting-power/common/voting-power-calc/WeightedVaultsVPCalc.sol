@@ -4,11 +4,11 @@ pragma solidity ^0.8.25;
 import {EqualStakeVPCalc} from "./EqualStakeVPCalc.sol";
 import {PermissionManager} from "../../../base/PermissionManager.sol";
 
+import {Checkpoints} from "../../../../libraries/structs/Checkpoints.sol";
+
+import {IVotingPowerCalcManager} from "../../../../interfaces/modules/voting-power/base/IVotingPowerCalcManager.sol";
 import {IWeightedVaultsVPCalc} from
     "../../../../interfaces/modules/voting-power/common/voting-power-calc/IWeightedVaultsVPCalc.sol";
-import {IVotingPowerCalcManager} from "../../../../interfaces/modules/voting-power/base/IVotingPowerCalcManager.sol";
-
-import {Checkpoints} from "../../../../libraries/structs/Checkpoints.sol";
 
 abstract contract WeightedVaultsVPCalc is EqualStakeVPCalc, PermissionManager, IWeightedVaultsVPCalc {
     using Checkpoints for Checkpoints.Trace208;

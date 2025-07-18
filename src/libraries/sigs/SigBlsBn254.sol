@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {KeyBlsBn254} from "../keys/KeyBlsBn254.sol";
 import {BN254} from "../utils/BN254.sol";
+import {KeyBlsBn254} from "../keys/KeyBlsBn254.sol";
 
 library SigBlsBn254 {
     using BN254 for BN254.G1Point;

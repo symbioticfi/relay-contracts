@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {IBaseRewards} from "../../../interfaces/modules/voting-power/extensions/IBaseRewards.sol";
 import {VotingPowerProvider} from "../VotingPowerProvider.sol";
+
 import {BaseRewardsLogic} from "./logic/BaseRewardsLogic.sol";
+
+import {IBaseRewards} from "../../../interfaces/modules/voting-power/extensions/IBaseRewards.sol";
 
 abstract contract BaseRewards is VotingPowerProvider, IBaseRewards {
     modifier onlyRewarder() {

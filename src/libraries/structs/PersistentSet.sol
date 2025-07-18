@@ -2,7 +2,6 @@
 pragma solidity ^0.8.20;
 
 import {Checkpoints} from "../structs/Checkpoints.sol";
-import {InputNormalizer} from "../utils/InputNormalizer.sol";
 
 /**
  * @title PersistentSet
@@ -11,7 +10,6 @@ import {InputNormalizer} from "../utils/InputNormalizer.sol";
  */
 library PersistentSet {
     using Checkpoints for Checkpoints.Trace208;
-    using InputNormalizer for bytes[];
 
     error PersistentSet_InvalidKey();
 

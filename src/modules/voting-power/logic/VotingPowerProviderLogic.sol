@@ -1,33 +1,24 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
+import {Checkpoints} from "../../../libraries/structs/Checkpoints.sol";
+import {InputNormalizer} from "../../../libraries/utils/InputNormalizer.sol";
+import {PersistentSet} from "../../../libraries/structs/PersistentSet.sol";
+
+import {INetworkManager} from "../../../interfaces/modules/base/INetworkManager.sol";
+import {IVotingPowerCalcManager} from "../../../interfaces/modules/voting-power/base/IVotingPowerCalcManager.sol";
+import {IVotingPowerProvider} from "../../../interfaces/modules/voting-power/IVotingPowerProvider.sol";
+
 import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
-import {IRegistry} from "@symbioticfi/core/src/interfaces/common/IRegistry.sol";
 import {IEntity} from "@symbioticfi/core/src/interfaces/common/IEntity.sol";
-import {IVetoSlasher} from "@symbioticfi/core/src/interfaces/slasher/IVetoSlasher.sol";
-import {Subnetwork} from "@symbioticfi/core/src/contracts/libraries/Subnetwork.sol";
-import {IOperatorSpecificDelegator} from "@symbioticfi/core/src/interfaces/delegator/IOperatorSpecificDelegator.sol";
 import {IOperatorNetworkSpecificDelegator} from
     "@symbioticfi/core/src/interfaces/delegator/IOperatorNetworkSpecificDelegator.sol";
-
-import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
-import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-
-import {Checkpoints} from "../../../libraries/structs/Checkpoints.sol";
-import {PersistentSet} from "../../../libraries/structs/PersistentSet.sol";
-import {InputNormalizer} from "../../../libraries/utils/InputNormalizer.sol";
-
-import {IVotingPowerProvider} from "../../../interfaces/modules/voting-power/IVotingPowerProvider.sol";
-import {IVotingPowerCalcManager} from "../../../interfaces/modules/voting-power/base/IVotingPowerCalcManager.sol";
-import {INetworkManager} from "../../../interfaces/modules/base/INetworkManager.sol";
+import {IOperatorSpecificDelegator} from "@symbioticfi/core/src/interfaces/delegator/IOperatorSpecificDelegator.sol";
+import {IRegistry} from "@symbioticfi/core/src/interfaces/common/IRegistry.sol";
+import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
+import {IVetoSlasher} from "@symbioticfi/core/src/interfaces/slasher/IVetoSlasher.sol";
 
 library VotingPowerProviderLogic {
-    using EnumerableMap for EnumerableMap.AddressToUintMap;
-    using EnumerableMap for EnumerableMap.AddressToAddressMap;
-    using EnumerableSet for EnumerableSet.AddressSet;
-    using Subnetwork for address;
-    using Subnetwork for bytes32;
     using Checkpoints for Checkpoints.Trace208;
     using PersistentSet for PersistentSet.AddressSet;
     using InputNormalizer for bytes[];

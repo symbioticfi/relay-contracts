@@ -1,6 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
+import {OzEIP712} from "../base/OzEIP712.sol";
+
+import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
+import {KeyBlsBn254} from "../../libraries/keys/KeyBlsBn254.sol";
+import {KeyEcdsaSecp256k1} from "../../libraries/keys/KeyEcdsaSecp256k1.sol";
+import {KeyTags} from "../../libraries/utils/KeyTags.sol";
+import {PersistentSet} from "../../libraries/structs/PersistentSet.sol";
+import {SigBlsBn254} from "../../libraries/sigs/SigBlsBn254.sol";
+import {SigEcdsaSecp256k1} from "../../libraries/sigs/SigEcdsaSecp256k1.sol";
+
 import {
     IKeyRegistry,
     KEY_TYPE_BLS_BN254,
@@ -8,19 +18,6 @@ import {
 } from "../../interfaces/modules/key-registry/IKeyRegistry.sol";
 
 import {MulticallUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
-
-import {OzEIP712} from "../base/OzEIP712.sol";
-
-import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
-import {InputNormalizer} from "../../libraries/utils/InputNormalizer.sol";
-import {PersistentSet} from "../../libraries/structs/PersistentSet.sol";
-
-import {KeyTags} from "../../libraries/utils/KeyTags.sol";
-import {KeyBlsBn254} from "../../libraries/keys/KeyBlsBn254.sol";
-import {KeyEcdsaSecp256k1} from "../../libraries/keys/KeyEcdsaSecp256k1.sol";
-
-import {SigBlsBn254} from "../../libraries/sigs/SigBlsBn254.sol";
-import {SigEcdsaSecp256k1} from "../../libraries/sigs/SigEcdsaSecp256k1.sol";
 
 contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
     using KeyTags for uint8;
@@ -30,8 +27,6 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
     using Checkpoints for Checkpoints.Trace512;
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
     using KeyEcdsaSecp256k1 for KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1;
-    using InputNormalizer for bytes[];
-    using InputNormalizer for bytes[][];
     using PersistentSet for PersistentSet.AddressSet;
 
     bytes32 internal constant KEY_OWNERSHIP_TYPEHASH = keccak256("KeyOwnership(address operator,bytes key)");

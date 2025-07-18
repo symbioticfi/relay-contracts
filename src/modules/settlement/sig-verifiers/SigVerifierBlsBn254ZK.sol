@@ -6,9 +6,9 @@ import {ExtraDataStorageHelper} from "./libraries/ExtraDataStorageHelper.sol";
 import {KEY_TYPE_BLS_BN254} from "../../../interfaces/modules/key-registry/IKeyRegistry.sol";
 import {KeyTags} from "../../../libraries/utils/KeyTags.sol";
 
-import {ISigVerifier} from "../../../interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol";
 import {ISettlement} from "../../../interfaces/modules/settlement/ISettlement.sol";
 import {ISigVerifierBlsBn254ZK} from "../../../interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254ZK.sol";
+import {ISigVerifier} from "../../../interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol";
 import {IVerifier} from "../../../interfaces/modules/settlement/sig-verifiers/zk/IVerifier.sol";
 
 contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
