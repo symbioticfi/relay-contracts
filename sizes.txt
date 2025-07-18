@@ -1,5 +1,5 @@
 Compiling 6 files with Solc 0.8.28
-Solc 0.8.28 finished in 5.18s
+Solc 0.8.28 finished in 5.36s
 Compiler run successful with warnings:
 Warning (9302): Return value of low-level calls not used.
    --> script/integration/SymbioticInit.sol:111:9:

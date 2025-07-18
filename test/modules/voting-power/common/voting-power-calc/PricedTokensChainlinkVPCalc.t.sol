@@ -185,7 +185,7 @@ contract PricedTokensChainlinkVPCalcTest is InitSetupTest {
             _registerOperator_SymbioticCore(symbioticCore, validOperator);
 
             INetworkManager.NetworkManagerInitParams memory netInit =
-                INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkID: IDENTIFIER});
+                INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkId: IDENTIFIER});
 
             IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
                 .VotingPowerProviderInitParams({
@@ -308,7 +308,7 @@ contract PricedTokensChainlinkVPCalcTest is InitSetupTest {
             _registerOperator_SymbioticCore(symbioticCore, validOperator);
 
             INetworkManager.NetworkManagerInitParams memory netInit =
-                INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkID: IDENTIFIER});
+                INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkId: IDENTIFIER});
 
             IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
                 .VotingPowerProviderInitParams({
@@ -434,7 +434,7 @@ contract PricedTokensChainlinkVPCalcTest is InitSetupTest {
             _registerOperator_SymbioticCore(symbioticCore, validOperator);
 
             INetworkManager.NetworkManagerInitParams memory netInit =
-                INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkID: IDENTIFIER});
+                INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkId: IDENTIFIER});
 
             IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
                 .VotingPowerProviderInitParams({
@@ -551,7 +551,7 @@ contract PricedTokensChainlinkVPCalcTest is InitSetupTest {
         _registerOperator_SymbioticCore(symbioticCore, validOperator);
 
         INetworkManager.NetworkManagerInitParams memory netInit =
-            INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkID: IDENTIFIER});
+            INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkId: IDENTIFIER});
 
         IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
             .VotingPowerProviderInitParams({

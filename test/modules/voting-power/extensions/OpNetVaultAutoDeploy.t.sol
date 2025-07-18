@@ -100,7 +100,7 @@ contract OpNetVaultAutoDeployTest is Test, InitSetupTest {
         );
 
         INetworkManager.NetworkManagerInitParams memory netInit =
-            INetworkManager.NetworkManagerInitParams({network: address(network), subnetworkID: IDENTIFIER});
+            INetworkManager.NetworkManagerInitParams({network: address(network), subnetworkId: IDENTIFIER});
         IVotingPowerProvider.VotingPowerProviderInitParams memory vpInit = IVotingPowerProvider
             .VotingPowerProviderInitParams({
             networkManagerInitParams: netInit,

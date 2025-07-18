@@ -58,7 +58,7 @@ contract OperatorsWhitelistTest is Test, InitSetupTest {
             new TestOperatorsWhitelist(address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory));
 
         INetworkManager.NetworkManagerInitParams memory netInit =
-            INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkID: IDENTIFIER});
+            INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkId: IDENTIFIER});
         IOperatorsWhitelist.OperatorsWhitelistInitParams memory wlInit =
             IOperatorsWhitelist.OperatorsWhitelistInitParams({isWhitelistEnabled: true});
 

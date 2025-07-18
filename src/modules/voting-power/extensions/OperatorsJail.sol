@@ -5,7 +5,6 @@ import {VotingPowerProvider} from "../VotingPowerProvider.sol";
 
 import {IOperatorsJail} from "../../../interfaces/modules/voting-power/extensions/IOperatorsJail.sol";
 
-import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
 abstract contract OperatorsJail is VotingPowerProvider, IOperatorsJail {

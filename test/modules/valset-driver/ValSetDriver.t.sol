@@ -56,7 +56,7 @@ contract ValSetDriverTest is Test {
         IValSetDriver.QuorumThreshold[] memory quorumThresholds = new IValSetDriver.QuorumThreshold[](1);
         quorumThresholds[0] = IValSetDriver.QuorumThreshold({keyTag: 0x2A, quorumThreshold: uint248(10 ** 18)});
         IValSetDriver.ValSetDriverInitParams memory initParams = IValSetDriver.ValSetDriverInitParams({
-            networkManagerInitParams: INetworkManager.NetworkManagerInitParams({network: address(1), subnetworkID: 0}),
+            networkManagerInitParams: INetworkManager.NetworkManagerInitParams({network: address(1), subnetworkId: 0}),
             epochManagerInitParams: IEpochManager.EpochManagerInitParams({
                 epochDuration: 100,
                 epochDurationTimestamp: uint48(vm.getBlockTimestamp())

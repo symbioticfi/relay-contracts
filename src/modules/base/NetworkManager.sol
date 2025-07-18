@@ -28,8 +28,8 @@ abstract contract NetworkManager is Initializable, StaticDelegateCallable, INetw
         }
         INetworkManager.NetworkManagerStorage storage $ = _getNetworkManagerStorage();
         $._network = initParams.network;
-        $._subnetworkID = initParams.subnetworkID;
-        emit INetworkManager.InitSubnetwork(initParams.network, initParams.subnetworkID);
+        $._subnetworkID = initParams.subnetworkId;
+        emit INetworkManager.InitSubnetwork(initParams.network, initParams.subnetworkId);
     }
 
     /**

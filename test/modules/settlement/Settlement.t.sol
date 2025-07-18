@@ -166,7 +166,7 @@ contract SettlementRawTest is Test {
 
             INetworkManager.NetworkManagerInitParams memory netInit;
             netInit.network = address(0xDEF);
-            netInit.subnetworkID = 999;
+            netInit.subnetworkId = 999;
 
             initParams.ozEip712InitParams = eip712;
             initParams.networkManagerInitParams = netInit;

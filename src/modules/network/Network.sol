@@ -210,11 +210,11 @@ contract Network is TimelockControllerUpgradeable, INetwork {
     /**
      * @inheritdoc ISetMaxNetworkLimitHook
      */
-    function setMaxNetworkLimit(address delegator, uint96 subnetworkID, uint256 maxNetworkLimit) public virtual {
+    function setMaxNetworkLimit(address delegator, uint96 subnetworkId, uint256 maxNetworkLimit) public virtual {
         if (msg.sender != INetworkMiddlewareService(NETWORK_MIDDLEWARE_SERVICE).middleware(address(this))) {
             revert NotMiddleware();
         }
-        _setMaxNetworkLimit(delegator, subnetworkID, maxNetworkLimit);
+        _setMaxNetworkLimit(delegator, subnetworkId, maxNetworkLimit);
     }
 
     function _updateDelay(address target, bytes4 selector, bool enabled, uint256 newDelay) internal virtual {
@@ -250,8 +250,8 @@ contract Network is TimelockControllerUpgradeable, INetwork {
         emit MetadataURISet(metadataURI_);
     }
 
-    function _setMaxNetworkLimit(address delegator, uint96 subnetworkID, uint256 maxNetworkLimit) internal virtual {
-        IBaseDelegator(delegator).setMaxNetworkLimit(subnetworkID, maxNetworkLimit);
+    function _setMaxNetworkLimit(address delegator, uint96 subnetworkId, uint256 maxNetworkLimit) internal virtual {
+        IBaseDelegator(delegator).setMaxNetworkLimit(subnetworkId, maxNetworkLimit);
     }
 
     function _getId(address target, bytes4 selector) internal pure virtual returns (bytes32 id) {

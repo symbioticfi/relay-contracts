@@ -98,7 +98,7 @@ contract MasterSetupScript is InitSetupScript {
             IVotingPowerProvider.VotingPowerProviderInitParams({
                 networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
                     network: vars.network.addr,
-                    subnetworkID: networkSetupParams.SUBNETWORK_ID
+                    subnetworkId: networkSetupParams.SUBNETWORK_ID
                 }),
                 ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "VotingPowerProvider", version: "1"}),
                 slashingWindow: networkSetupParams.SLASHING_WINDOW,
@@ -161,7 +161,7 @@ contract MasterSetupScript is InitSetupScript {
                 ISettlement.SettlementInitParams({
                     networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
                         network: vars.network.addr,
-                        subnetworkID: networkSetupParams.SUBNETWORK_ID
+                        subnetworkId: networkSetupParams.SUBNETWORK_ID
                     }),
                     ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
                     sigVerifier: localVars.sigVerifier
@@ -208,7 +208,7 @@ contract MasterSetupScript is InitSetupScript {
                 IValSetDriver.ValSetDriverInitParams({
                     networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
                         network: vars.network.addr,
-                        subnetworkID: networkSetupParams.SUBNETWORK_ID
+                        subnetworkId: networkSetupParams.SUBNETWORK_ID
                     }),
                     epochManagerInitParams: IEpochManager.EpochManagerInitParams({
                         epochDuration: networkSetupParams.EPOCH_DURATION,

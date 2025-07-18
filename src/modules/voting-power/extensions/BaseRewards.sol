@@ -1,10 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {IStakerRewards} from "@symbioticfi/rewards/src/interfaces/stakerRewards/IStakerRewards.sol";
-import {IDefaultOperatorRewards} from
-    "@symbioticfi/rewards/src/interfaces/defaultOperatorRewards/IDefaultOperatorRewards.sol";
-
 import {IBaseRewards} from "../../../interfaces/modules/voting-power/extensions/IBaseRewards.sol";
 import {VotingPowerProvider} from "../VotingPowerProvider.sol";
 import {BaseRewardsLogic} from "./logic/BaseRewardsLogic.sol";
