@@ -1,5 +1,5 @@
-Compiling 6 files with Solc 0.8.28
-Solc 0.8.28 finished in 5.41s
+Compiling 5 files with Solc 0.8.28
+Solc 0.8.28 finished in 4.77s
 Compiler run successful with warnings:
 Warning (9302): Return value of low-level calls not used.
    --> script/integration/SymbioticInit.sol:111:9:
@@ -140,27 +140,27 @@ Warning (2018): Function state mutability can be restricted to pure
     |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:163:5:
-    |
-163 |     function getVaultParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
    --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:169:5:
     |
-169 |     function getVaultTokenizedParams(
+169 |     function getVaultParams(
     |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:202:5:
+   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:175:5:
     |
-202 |     function getSlasherParams(
+175 |     function getVaultTokenizedParams(
     |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:211:5:
+   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:208:5:
     |
-211 |     function getVetoSlasherParams(
+208 |     function getSlasherParams(
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:217:5:
+    |
+217 |     function getVetoSlasherParams(
     |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
@@ -265,7 +265,7 @@ Warning (2018): Function state mutability can be restricted to view
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Network                                                                                                          | 12,138           | 12,330            | 12,438             | 36,822              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| OpNetVaultAutoDeployLogic                                                                                        | 5,666            | 5,718             | 18,910             | 43,434              |
+| OpNetVaultAutoDeployLogic                                                                                        | 5,704            | 5,756             | 18,872             | 43,396              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Panic                                                                                                            | 85               | 135               | 24,491             | 49,017              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|

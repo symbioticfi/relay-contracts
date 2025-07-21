@@ -70,7 +70,7 @@ library OpNetVaultAutoDeployLogic {
     function setAutoDeployConfig(
         IOpNetVaultAutoDeploy.AutoDeployConfig memory config
     ) public {
-        _validateConfig(config);
+        validateConfig(config);
         _getOpNetVaultAutoDeployStorage()._config = config;
         emit IOpNetVaultAutoDeploy.SetAutoDeployConfig(config);
     }
@@ -137,7 +137,7 @@ library OpNetVaultAutoDeployLogic {
         return (true, slasherIndex, slasherParams);
     }
 
-    function _validateConfig(
+    function validateConfig(
         IOpNetVaultAutoDeploy.AutoDeployConfig memory config
     ) public view {
         if (config.collateral == address(0)) {
@@ -150,11 +150,17 @@ library OpNetVaultAutoDeployLogic {
         if (config.epochDuration < slashingWindow) {
             revert IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidEpochDuration();
         }
-        if (!config.withSlasher && slashingWindow > 0) {
-            revert IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidWithSlasher();
-        }
-        if (!config.withSlasher && config.isBurnerHook) {
-            revert IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidBurnerHook();
+        if (config.withSlasher) {
+            if (config.isBurnerHook && config.burner == address(0)) {
+                revert IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidBurnerHook();
+            }
+        } else {
+            if (slashingWindow > 0) {
+                revert IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidWithSlasher();
+            }
+            if (config.isBurnerHook) {
+                revert IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidBurnerHook();
+            }
         }
     }
 
