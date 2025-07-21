@@ -9,6 +9,7 @@ import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/Signa
 import {IVotingPowerProvider} from "../../../interfaces/modules/voting-power/IVotingPowerProvider.sol";
 
 import {NoncesUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/NoncesUpgradeable.sol";
+import {MulticallUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
 
 import {NetworkManager} from "../base/NetworkManager.sol";
 
@@ -22,6 +23,7 @@ abstract contract VotingPowerProvider is
     OzEIP712,
     PermissionManager,
     NoncesUpgradeable,
+    MulticallUpgradeable,
     IVotingPowerProvider
 {
     /**
