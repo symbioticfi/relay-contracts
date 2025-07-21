@@ -11,13 +11,34 @@ library ChainlinkPriceFeed {
     using Math for uint256;
     using Scaler for uint256;
 
+    /**
+     * @notice Reverts when the length is zero.
+     */
     error ZeroLength();
+
+    /**
+     * @notice Reverts when the lengths are not equal.
+     */
     error NotEqualLength();
 
+    /**
+     * @notice The offset for the phase in the roundId.
+     */
     uint256 internal constant PHASE_OFFSET = 64;
 
+    /**
+     * @notice The number of decimals to normalize the price to.
+     */
     uint8 internal constant BASE_DECIMALS = 18;
 
+    /**
+     * @notice The data for a round.
+     * @param roundId The roundId (a concatenation of the phase and the original id).
+     * @param answer The price.
+     * @param startedAt The startedAt (deprecated).
+     * @param updatedAt The updatedAt (the timestamp when the round was updated).
+     * @param answeredInRound The answeredInRound (deprecated).
+     */
     struct RoundData {
         uint80 roundId;
         uint256 answer;
@@ -26,6 +47,16 @@ library ChainlinkPriceFeed {
         uint80 answeredInRound;
     }
 
+    /**
+     * @notice Returns the price at a given timestamp using one or two hops.
+     * @param aggregators The price aggregators.
+     * @param timestamp The timestamp.
+     * @param inverts If to invert the fetched prices.
+     * @param stalenessDurations The staleness durations (if too much time passed since the last update).
+     * @return The price.
+     * @dev Returns zero if the data is stale or unavailable.
+     *      The price is normalized to the 18 decimals.
+     */
     function getPriceAt(
         address[2] memory aggregators,
         uint48 timestamp,
@@ -37,6 +68,16 @@ library ChainlinkPriceFeed {
         return getPriceAt(dynamicAggregators, timestamp, dynamicInverts, dynamicStalenessDurations);
     }
 
+    /**
+     * @notice Returns the price at a given timestamp using one or more hops.
+     * @param aggregators The price aggregators.
+     * @param timestamp The timestamp.
+     * @param inverts If to invert the fetched prices.
+     * @param stalenessDurations The staleness durations (if too much time passed since the last update).
+     * @return The price.
+     * @dev Returns zero if the data is stale or unavailable.
+     *      The price is normalized to the 18 decimals.
+     */
     function getPriceAt(
         address[] memory aggregators,
         uint48 timestamp,
@@ -59,6 +100,16 @@ library ChainlinkPriceFeed {
         return price;
     }
 
+    /**
+     * @notice Returns the price at a given timestamp.
+     * @param aggregator The price aggregator.
+     * @param timestamp The timestamp.
+     * @param invert If to invert the fetched price.
+     * @param stalenessDuration The staleness duration (if too much time passed since the last update).
+     * @return The price.
+     * @dev Returns zero if the data is stale or unavailable.
+     *      The price is normalized to the 18 decimals.
+     */
     function getPriceAt(
         address aggregator,
         uint48 timestamp,
@@ -69,6 +120,16 @@ library ChainlinkPriceFeed {
         return success ? roundData.answer : 0;
     }
 
+    /**
+     * @notice Returns the price data at a given timestamp.
+     * @param aggregator The price aggregator.
+     * @param timestamp The timestamp.
+     * @param invert If to invert the fetched price.
+     * @param stalenessDuration The staleness duration (if too much time passed since the last update).
+     * @return success If the data is available and not stale.
+     * @return roundData The round data.
+     * @dev The answer is normalized to the 18 decimals.
+     */
     function getPriceDataAt(
         address aggregator,
         uint48 timestamp,
@@ -85,6 +146,13 @@ library ChainlinkPriceFeed {
         }
     }
 
+    /**
+     * @notice Returns the round data at a given timestamp.
+     * @param aggregator The price aggregator.
+     * @param timestamp The timestamp.
+     * @return success If the data is available.
+     * @return roundData The round data.
+     */
     function getRoundDataAt(
         address aggregator,
         uint48 timestamp
@@ -146,6 +214,13 @@ library ChainlinkPriceFeed {
         return getRoundData(aggregator, resultRoundId);
     }
 
+    /**
+     * @notice Returns the round data at a given roundId.
+     * @param aggregator The price aggregator.
+     * @param roundId The roundId.
+     * @return success If the data is available.
+     * @return roundData The round data.
+     */
     function getRoundData(address aggregator, uint80 roundId) public view returns (bool, RoundData memory roundData) {
         try AggregatorV3Interface(aggregator).getRoundData(roundId) returns (
             uint80, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound
@@ -161,6 +236,15 @@ library ChainlinkPriceFeed {
         } catch {}
     }
 
+    /**
+     * @notice Returns the latest price using one or two hops.
+     * @param aggregators The price aggregators.
+     * @param inverts If to invert the fetched prices.
+     * @param stalenessDurations The staleness durations (if too much time passed since the last update).
+     * @return The price.
+     * @dev Returns zero if the data is stale or unavailable.
+     *      The price is normalized to the 18 decimals.
+     */
     function getLatestPrice(
         address[2] memory aggregators,
         bool[2] memory inverts,
@@ -171,6 +255,15 @@ library ChainlinkPriceFeed {
         return getLatestPrice(dynamicAggregators, dynamicInverts, dynamicStalenessDurations);
     }
 
+    /**
+     * @notice Returns the latest price using one or more hops.
+     * @param aggregators The price aggregators.
+     * @param inverts If to invert the fetched prices.
+     * @param stalenessDurations The staleness durations (if too much time passed since the last update).
+     * @return The price.
+     * @dev Returns zero if the data is stale or unavailable.
+     *      The price is normalized to the 18 decimals.
+     */
     function getLatestPrice(
         address[] memory aggregators,
         bool[] memory inverts,
@@ -190,11 +283,29 @@ library ChainlinkPriceFeed {
         return price;
     }
 
+    /**
+     * @notice Returns the latest price.
+     * @param aggregator The price aggregator.
+     * @param invert If to invert the fetched price.
+     * @param stalenessDuration The staleness duration (if too much time passed since the last update).
+     * @return The price.
+     * @dev Returns zero if the data is stale or unavailable.
+     *      The price is normalized to the 18 decimals.
+     */
     function getLatestPrice(address aggregator, bool invert, uint48 stalenessDuration) public view returns (uint256) {
         (bool success, RoundData memory roundData) = getLatestPriceData(aggregator, invert, stalenessDuration);
         return success ? roundData.answer : 0;
     }
 
+    /**
+     * @notice Returns the latest price data.
+     * @param aggregator The price aggregator.
+     * @param invert If to invert the fetched price.
+     * @param stalenessDuration The staleness duration (if too much time passed since the last update).
+     * @return success If the data is available and not stale.
+     * @return roundData The round data.
+     * @dev The answer is normalized to the 18 decimals.
+     */
     function getLatestPriceData(
         address aggregator,
         bool invert,
@@ -210,6 +321,12 @@ library ChainlinkPriceFeed {
         }
     }
 
+    /**
+     * @notice Returns the latest round data.
+     * @param aggregator The price aggregator.
+     * @return success If the data is available.
+     * @return roundData The round data.
+     */
     function getLatestRoundData(
         address aggregator
     ) public view returns (bool, RoundData memory roundData) {
@@ -227,6 +344,13 @@ library ChainlinkPriceFeed {
         } catch {}
     }
 
+    /**
+     * @notice Returns if the round data is stale.
+     * @param timestamp The timestamp.
+     * @param roundData The round data.
+     * @param stalenessDuration The staleness duration (if too much time passed since the last update).
+     * @return If the round data is stale.
+     */
     function isStale(
         uint48 timestamp,
         RoundData memory roundData,
