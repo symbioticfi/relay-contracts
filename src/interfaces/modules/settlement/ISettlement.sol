@@ -34,6 +34,11 @@ interface ISettlement {
     error Settlement_InvalidSigVerifier();
 
     /**
+     * @notice Reverts when the validator set SSZ root is zero.
+     */
+    error Settlement_InvalidValidatorsSszMRoot();
+
+    /**
      * @notice Reverts when the version to be committed is not the same as the version inside the contract.
      * @dev Can be triggered during the upgrades.
      */

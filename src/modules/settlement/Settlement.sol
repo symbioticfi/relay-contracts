@@ -362,6 +362,10 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
             revert Settlement_InvalidCaptureTimestamp();
         }
 
+        if (header.validatorsSszMRoot == bytes32(0)) {
+            revert Settlement_InvalidValidatorsSszMRoot();
+        }
+
         if (header.previousHeaderHash != getValSetHeaderHashAt(lastCommittedHeaderEpoch)) {
             revert Settlement_InvalidPreviousHeaderHash();
         }

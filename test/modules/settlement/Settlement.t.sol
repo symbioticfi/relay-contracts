@@ -390,6 +390,11 @@ contract SettlementRawTest is Test {
 
         header.previousHeaderHash = testSettle.getValSetHeaderHash();
 
+        header.validatorsSszMRoot = bytes32(0);
+        vm.expectRevert(ISettlement.Settlement_InvalidValidatorsSszMRoot.selector);
+        testSettle.commitValSetHeader(header, someExtra, bytes(""));
+        header.validatorsSszMRoot = sampleHeader.validatorsSszMRoot;
+
         testSettle.commitValSetHeader(header, someExtra, bytes(""));
     }
 

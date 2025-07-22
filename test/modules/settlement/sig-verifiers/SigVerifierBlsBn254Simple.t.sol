@@ -423,7 +423,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
             captureTimestamp: masterSetupParams.valSetDriver.getEpochStart(0),
             quorumThreshold: uint256(2).mulDiv(1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
             totalVotingPower: totalVotingPower,
-            validatorsSszMRoot: 0x0000000000000000000000000000000000000000000000000000000000000000,
+            validatorsSszMRoot: 0x0000000000000000000000000000000000000000000000000000000000000001,
             previousHeaderHash: 0xd397b3b043d87fcd6fad1291ff0bfd16401c274896d8c63a923727f077b8e0b5
         });
 
