@@ -1,5 +1,5 @@
-Compiling 46 files with Solc 0.8.28
-Solc 0.8.28 finished in 29.32s
+Compiling 9 files with Solc 0.8.28
+Solc 0.8.28 finished in 5.37s
 Compiler run successful with warnings:
 Warning (9302): Return value of low-level calls not used.
    --> script/integration/SymbioticInit.sol:111:9:
@@ -67,304 +67,70 @@ Warning (5667): Unused function parameter. Remove or comment out the variable na
 319 |     ) internal virtual returns (uint256 amount) {
     |                                 ^^^^^^^^^^^^^^
 
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> test/integration/SymbioticCoreBindings.sol:240:33:
-    |
-240 |     ) internal virtual returns (uint256 depositedAmount, uint256 mintedShares) {
-    |                                 ^^^^^^^^^^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> test/integration/SymbioticCoreBindings.sol:240:58:
-    |
-240 |     ) internal virtual returns (uint256 depositedAmount, uint256 mintedShares) {
-    |                                                          ^^^^^^^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> test/integration/SymbioticCoreBindings.sol:259:33:
-    |
-259 |     ) internal virtual returns (uint256 burnedShares, uint256 mintedShares) {
-    |                                 ^^^^^^^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> test/integration/SymbioticCoreBindings.sol:259:55:
-    |
-259 |     ) internal virtual returns (uint256 burnedShares, uint256 mintedShares) {
-    |                                                       ^^^^^^^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> test/integration/SymbioticCoreBindings.sol:278:33:
-    |
-278 |     ) internal virtual returns (uint256 withdrawnAssets, uint256 mintedShares) {
-    |                                 ^^^^^^^^^^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> test/integration/SymbioticCoreBindings.sol:278:58:
-    |
-278 |     ) internal virtual returns (uint256 withdrawnAssets, uint256 mintedShares) {
-    |                                                          ^^^^^^^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> test/integration/SymbioticCoreBindings.sol:297:33:
-    |
-297 |     ) internal virtual returns (uint256 amount) {
-    |                                 ^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> test/integration/SymbioticCoreBindings.sol:316:33:
-    |
-316 |     ) internal virtual returns (uint256 amount) {
-    |                                 ^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-  --> test/modules/base/NetworkManager.t.sol:48:9:
-   |
-48 |         bytes32 subn = nm.SUBNETWORK();
-   |         ^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-   --> test/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.t.sol:174:9:
-    |
-174 |         SigVerifierBlsBn254Simple sigVerifier = SigVerifierBlsBn254Simple(masterSetupParams.settlement.getSigVerifier());
-    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-   --> test/modules/voting-power/VotingPowerProvider.t.sol:404:10:
-    |
-404 |         (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
-    |          ^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-   --> test/modules/voting-power/VotingPowerProvider.t.sol:624:10:
-    |
-624 |         (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
-    |          ^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-   --> test/modules/voting-power/VotingPowerProvider.t.sol:675:10:
-    |
-675 |         (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
-    |          ^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-   --> test/modules/voting-power/VotingPowerProvider.t.sol:707:10:
-    |
-707 |         (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
-    |          ^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-   --> test/modules/voting-power/VotingPowerProvider.t.sol:731:10:
-    |
-731 |         (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
-    |          ^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-   --> test/modules/voting-power/VotingPowerProvider.t.sol:731:31:
-    |
-731 |         (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
-    |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-   --> test/modules/voting-power/VotingPowerProvider.t.sol:761:10:
-    |
-761 |         (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
-    |          ^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-   --> test/modules/voting-power/VotingPowerProvider.t.sol:970:10:
-    |
-970 |         (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
-    |          ^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-    --> test/modules/voting-power/VotingPowerProvider.t.sol:1013:10:
-     |
-1013 |         (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
-     |          ^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-    --> test/modules/voting-power/VotingPowerProvider.t.sol:1056:10:
-     |
-1056 |         (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
-     |          ^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-    --> test/modules/voting-power/VotingPowerProvider.t.sol:1099:9:
-     |
-1099 |         uint256 operatorPk = getOperator(0).privateKey;
-     |         ^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-    --> test/modules/voting-power/VotingPowerProvider.t.sol:1100:10:
-     |
-1100 |         (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
-     |          ^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-    --> test/modules/voting-power/VotingPowerProvider.t.sol:1102:9:
-     |
-1102 |         address someVault = _getVault_SymbioticCore(
-     |         ^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-   --> test/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.t.sol:227:14:
-    |
-227 |             (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
-    |              ^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-   --> test/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.t.sol:303:14:
-    |
-303 |             (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
-    |              ^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-   --> test/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.t.sol:379:14:
-    |
-379 |             (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
-    |              ^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-   --> test/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.t.sol:210:18:
-    |
-210 |                 (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
-    |                  ^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-   --> test/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.t.sol:335:18:
-    |
-335 |                 (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
-    |                  ^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-   --> test/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.t.sol:463:18:
-    |
-463 |                 (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
-    |                  ^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-   --> test/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.t.sol:522:16:
-    |
-522 |             (, int256 wethAnswer,,,) = wethFeed.latestRoundData();
-    |                ^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-   --> test/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.t.sol:527:16:
-    |
-527 |             (, int256 wbtcAnswer,,,) = wbtcFeed.latestRoundData();
-    |                ^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-   --> test/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.t.sol:582:14:
-    |
-582 |             (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
-    |              ^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-   --> test/modules/voting-power/common/voting-power-calc/WeightedTokensVPCalc.t.sol:229:14:
-    |
-229 |             (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
-    |              ^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-   --> test/modules/voting-power/common/voting-power-calc/WeightedVaultsVPCalc.t.sol:229:14:
-    |
-229 |             (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
-    |              ^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-   --> test/modules/voting-power/extensions/BaseSlashing.t.sol:120:10:
-    |
-120 |         (bool requireSlasher, uint48 minVaultEpochDuration) = masterSetupParams.votingPowerProvider.getSlashingData();
-    |          ^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-   --> test/modules/voting-power/extensions/BaseSlashing.t.sol:151:10:
-    |
-151 |         (bool requireSlasher, uint48 minVaultEpochDuration) = masterSetupParams.votingPowerProvider.getSlashingData();
-    |          ^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-   --> test/modules/voting-power/extensions/OpNetVaultAutoDeploy.t.sol:171:10:
-    |
-171 |         (bool requireSlasher, uint48 minVaultEpochDuration_) = deployer.getSlashingData();
-    |          ^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-  --> test/modules/voting-power/extensions/OperatorsBlacklist.t.sol:72:10:
-   |
-72 |         (bool requireSlasher, uint48 minVaultEpochDuration) = blacklistOps.getSlashingData();
-   |          ^^^^^^^^^^^^^^^^^^^
-
-Warning (2072): Unused local variable.
-  --> test/modules/voting-power/extensions/OperatorsWhitelist.t.sol:79:10:
-   |
-79 |         (bool requireSlasher, uint48 minVaultEpochDuration) = whitelistOps.getSlashingData();
-   |          ^^^^^^^^^^^^^^^^^^^
-
 Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyBlsBn254.sol:37:5:
+  --> src/libraries/keys/KeyBlsBn254.sol:59:5:
    |
-37 |     function unwrap(
+59 |     function unwrap(
    |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyBlsBn254.sol:68:5:
-   |
-68 |     function toBytes(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
+   --> src/libraries/keys/KeyBlsBn254.sol:106:5:
+    |
+106 |     function toBytes(
+    |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyBlsBn254.sol:83:5:
-   |
-83 |     function zeroKey() internal view returns (KEY_BLS_BN254 memory key) {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
+   --> src/libraries/keys/KeyBlsBn254.sol:130:5:
+    |
+130 |     function zeroKey() internal view returns (KEY_BLS_BN254 memory key) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyBlsBn254.sol:87:5:
-   |
-87 |     function equal(KEY_BLS_BN254 memory key1, KEY_BLS_BN254 memory key2) internal view returns (bool) {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:23:5:
-   |
-23 |     function unwrap(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:29:5:
-   |
-29 |     function serialize(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:35:5:
-   |
-35 |     function deserialize(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
+   --> src/libraries/keys/KeyBlsBn254.sol:140:5:
+    |
+140 |     function equal(KEY_BLS_BN254 memory key1, KEY_BLS_BN254 memory key2) internal view returns (bool) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
   --> src/libraries/keys/KeyEcdsaSecp256k1.sol:41:5:
    |
-41 |     function toBytes(
+41 |     function unwrap(
    |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:56:5:
+  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:53:5:
    |
-56 |     function zeroKey() internal view returns (KEY_ECDSA_SECP256K1 memory key) {
+53 |     function serialize(
    |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:60:5:
+  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:64:5:
    |
-60 |     function equal(KEY_ECDSA_SECP256K1 memory key1, KEY_ECDSA_SECP256K1 memory key2) internal view returns (bool) {
+64 |     function deserialize(
    |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/sigs/SigEcdsaSecp256k1.sol:47:5:
+  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:75:5:
    |
-47 |     function verify(address key, bytes32 message, bytes memory signature) internal view returns (bool) {
+75 |     function toBytes(
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:99:5:
+   |
+99 |     function zeroKey() internal view returns (KEY_ECDSA_SECP256K1 memory key) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/libraries/keys/KeyEcdsaSecp256k1.sol:109:5:
+    |
+109 |     function equal(KEY_ECDSA_SECP256K1 memory key1, KEY_ECDSA_SECP256K1 memory key2) internal view returns (bool) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/libraries/sigs/SigEcdsaSecp256k1.sol:49:5:
+   |
+49 |     function verify(address key, bytes32 message, bytes memory signature) internal view returns (bool) {
    |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
@@ -419,138 +185,6 @@ Warning (2018): Function state mutability can be restricted to view
    --> script/test/MasterCommit.s.sol:151:5:
     |
 151 |     function loadZkProof() internal returns (ZkProof memory) {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/MasterGenesisSetup.sol:68:5:
-   |
-68 |     function loadGenesis()
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> test/mocks/SigVerifierFalseMock.sol:15:5:
-   |
-15 |     function verifyQuorumSig(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/modules/base/NetworkManager.t.sol:45:5:
-   |
-45 |     function test_DefaultsBeforeInit() public {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> test/modules/base/NetworkManager.t.sol:51:5:
-   |
-51 |     function test_Location() public {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/modules/network/Network.t.sol:78:5:
-   |
-78 |     function test_Init() public {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-   --> test/modules/network/Network.t.sol:143:5:
-    |
-143 |     function test_PerSelectorDelayOverridesGlobal() public {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-   --> test/modules/settlement/Settlement.t.sol:193:5:
-    |
-193 |     function testVersion() public {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-   --> test/modules/settlement/Settlement.t.sol:197:5:
-    |
-197 |     function testInitParams() public {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/modules/valset-driver/ValSetDriver.t.sol:79:5:
-   |
-79 |     function test_InitialConfig() public {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> test/modules/valset-driver/ValSetDriver.t.sol:323:5:
-    |
-323 |     function test_Location() public {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-   --> test/modules/valset-driver/ValSetDriver.t.sol:410:5:
-    |
-410 |     function test_GetValSetConfig() public {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> test/modules/voting-power/VotingPowerProvider.t.sol:754:5:
-    |
-754 |     function test_Location() public {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> test/modules/voting-power/extensions/BaseRewards.t.sol:162:5:
-    |
-162 |     function test_Location() public {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> test/modules/voting-power/extensions/BaseSlashing.t.sol:244:5:
-    |
-244 |     function test_Location() public {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-   --> test/modules/voting-power/extensions/OpNetVaultAutoDeploy.t.sol:143:5:
-    |
-143 |     function test_BasicFlags() public {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> test/modules/voting-power/extensions/OpNetVaultAutoDeploy.t.sol:256:5:
-    |
-256 |     function test_Location() public {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/modules/voting-power/extensions/OperatorsBlacklist.t.sol:94:5:
-   |
-94 |     function test_BasicEnvironment() public {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> test/modules/voting-power/extensions/OperatorsBlacklist.t.sol:130:5:
-    |
-130 |     function test_Location() public {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> test/modules/voting-power/extensions/OperatorsJail.t.sol:64:5:
-   |
-64 |     function test_BasicEnvironment() public {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> test/modules/voting-power/extensions/OperatorsJail.t.sol:122:5:
-    |
-122 |     function test_Location() public {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-   --> test/modules/voting-power/extensions/OperatorsWhitelist.t.sol:118:5:
-    |
-118 |     function test_WhitelistEnabledByDefault() public {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> test/modules/voting-power/extensions/OperatorsWhitelist.t.sol:174:5:
-    |
-174 |     function test_Location() public {
     |     ^ (Relevant source part starts here and spans across multiple lines).
 
 

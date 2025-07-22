@@ -21,6 +21,7 @@ library SigBlsBn254 {
      * @param extraData The encoded G2 public key.
      * @return If the signature is valid.
      * @dev Burns the whole gas if pairing precompile fails.
+     *      Returns false if the key is zero G1 point.
      */
     function verify(
         bytes memory keyBytes,
@@ -48,6 +49,7 @@ library SigBlsBn254 {
      * @param keyG2 The G2 public key.
      * @return If the signature is valid.
      * @dev Burns the whole gas if pairing precompile fails.
+     *      Returns false if the key is zero G1 point.
      */
     function verify(
         BN254.G1Point memory keyG1,

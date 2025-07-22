@@ -2,17 +2,37 @@
 pragma solidity ^0.8.25;
 
 library ValSetVerifier {
+    /**
+     * @notice The validator's key.
+     * @param tag The key tag.
+     * @param payloadHash The hash of the key.
+     */
     struct Key {
         uint8 tag;
         bytes32 payloadHash;
     }
 
+    /**
+     * @notice The validator's vault.
+     * @param chainId The chain ID.
+     * @param vault The vault address.
+     * @param votingPower The voting power.
+     */
     struct Vault {
         uint64 chainId;
         address vault;
         uint256 votingPower;
     }
 
+    /**
+     * @notice The validator.
+     * @param operator The operator address.
+     * @param votingPower The voting power.
+     * @param isActive If the validator is active.
+     * @param keys The validator's keys.
+     * @param vaults The validator's vaults.
+     * @dev The voting power may not be equal to the sum of the voting powers inside the vaults.
+     */
     struct Validator {
         address operator;
         uint256 votingPower;
@@ -21,10 +41,19 @@ library ValSetVerifier {
         Vault[] vaults;
     }
 
+    /**
+     * @notice The validator set.
+     * @param validators The validators in the validator set.
+     */
     struct ValidatorSet {
         Validator[] validators;
     }
 
+    /**
+     * @notice The Merkle proof.
+     * @param leaf The leaf to prove.
+     * @param proof The proof.
+     */
     struct SszProof {
         bytes32 leaf;
         bytes32[] proof;
@@ -134,6 +163,17 @@ library ValSetVerifier {
 
     uint256 internal constant VAULT_VOTING_POWER_PROOF_EXPECTED_HEIGHT = VAULT_TREE_HEIGHT; // (to element in Vault)
 
+    /**
+     * @notice Verifies that the key is in the validator set.
+     * @param validatorRootProof The proof of the validator root.
+     * @param validatorRootLocalIndex The local index of the validator root inside the validator set.
+     * @param validatorSetRoot The validator set root.
+     * @param keyRootProof The proof of the key root.
+     * @param keyRootLocalIndex The local index of the key root inside the validator.
+     * @param keyTagProof The proof of the key tag.
+     * @param keyPayloadHashProof The proof of the key hash.
+     * @return isValid If the key is in the validator set.
+     */
     function verifyKey(
         SszProof calldata validatorRootProof,
         uint256 validatorRootLocalIndex,
@@ -158,6 +198,18 @@ library ValSetVerifier {
         return verifyKeyPayloadHash(keyPayloadHashProof, keyRootProof.leaf);
     }
 
+    /**
+     * @notice Verifies that the vault is in the validator set.
+     * @param validatorRootProof The proof of the validator root.
+     * @param validatorRootLocalIndex The local index of the validator root inside the validator set.
+     * @param validatorSetRoot The validator set root.
+     * @param vaultRootProof The proof of the vault root.
+     * @param vaultRootLocalIndex The local index of the vault root inside the validator.
+     * @param vaultChainIdProof The proof of the vault chain ID.
+     * @param vaultVaultProof The proof of the vault address.
+     * @param vaultVotingPowerProof The proof of the vault voting power.
+     * @return isValid If the vault is in the validator set.
+     */
     function verifyVault(
         SszProof calldata validatorRootProof,
         uint256 validatorRootLocalIndex,
@@ -187,6 +239,14 @@ library ValSetVerifier {
         return verifyVaultVotingPowerLocal(vaultVotingPowerProof, vaultRootProof.leaf);
     }
 
+    /**
+     * @notice Verifies that the operator address is in the validator set.
+     * @param validatorRootProof The proof of the validator root.
+     * @param validatorRootLocalIndex The local index of the validator root inside the validator set.
+     * @param validatorSetRoot The validator set root.
+     * @param operatorProof The proof of the operator address.
+     * @return isValid If the operator address is in the validator set.
+     */
     function verifyOperator(
         SszProof calldata validatorRootProof,
         uint256 validatorRootLocalIndex,
@@ -200,6 +260,14 @@ library ValSetVerifier {
         return verifyValidatorOperatorLocal(operatorProof, validatorRootProof.leaf);
     }
 
+    /**
+     * @notice Verifies that the validator's voting power is in the validator set.
+     * @param validatorRootProof The proof of the validator root.
+     * @param validatorRootLocalIndex The local index of the validator root inside the validator set.
+     * @param validatorSetRoot The validator set root.
+     * @param votingPowerProof The proof of the voting power.
+     * @return isValid If the validator's voting power is in the validator set.
+     */
     function verifyVotingPower(
         SszProof calldata validatorRootProof,
         uint256 validatorRootLocalIndex,
@@ -213,6 +281,14 @@ library ValSetVerifier {
         return verifyValidatorVotingPowerLocal(votingPowerProof, validatorRootProof.leaf);
     }
 
+    /**
+     * @notice Verifies that the validator's activity status is in the validator set.
+     * @param validatorRootProof The proof of the validator root.
+     * @param validatorRootLocalIndex The local index of the validator root inside the validator set.
+     * @param validatorSetRoot The validator set root.
+     * @param isActiveProof The proof of the validator's is active.
+     * @return isValid If the validator is active.
+     */
     function verifyIsActive(
         SszProof calldata validatorRootProof,
         uint256 validatorRootLocalIndex,
@@ -226,6 +302,13 @@ library ValSetVerifier {
         return verifyValidatorIsActiveLocal(isActiveProof, validatorRootProof.leaf);
     }
 
+    /**
+     * @notice Verifies that the validator root is in the validator set.
+     * @param validatorRootProof The proof of the validator root.
+     * @param validatorRootLocalIndex The local index of the validator root inside the validator set.
+     * @param validatorSetRoot The validator set root.
+     * @return isValid If the validator root is in the validator set.
+     */
     function verifyValidatorRootLocal(
         SszProof calldata validatorRootProof,
         uint256 validatorRootLocalIndex,
@@ -247,6 +330,12 @@ library ValSetVerifier {
         );
     }
 
+    /**
+     * @notice Verifies that the operator address is in the validator.
+     * @param validatorOperatorProof The proof of the operator address.
+     * @param validatorRoot The validator root.
+     * @return isValid If the operator address is in the validator.
+     */
     function verifyValidatorOperatorLocal(
         SszProof calldata validatorOperatorProof,
         bytes32 validatorRoot
@@ -260,6 +349,12 @@ library ValSetVerifier {
         );
     }
 
+    /**
+     * @notice Verifies that the validator's voting power is in the validator.
+     * @param validatorVotingPowerProof The proof of the validator's voting power.
+     * @param validatorRoot The validator root.
+     * @return isValid If the validator's voting power is in the validator.
+     */
     function verifyValidatorVotingPowerLocal(
         SszProof calldata validatorVotingPowerProof,
         bytes32 validatorRoot
@@ -273,6 +368,12 @@ library ValSetVerifier {
         );
     }
 
+    /**
+     * @notice Verifies that the validator's activity status is in the validator.
+     * @param validatorIsActiveProof The proof of the validator's activity status.
+     * @param validatorRoot The validator root.
+     * @return isValid If the validator's activity status is in the validator.
+     */
     function verifyValidatorIsActiveLocal(
         SszProof calldata validatorIsActiveProof,
         bytes32 validatorRoot
@@ -286,6 +387,13 @@ library ValSetVerifier {
         );
     }
 
+    /**
+     * @notice Verifies that the key root is in the validator.
+     * @param keyRootProof The proof of the key root.
+     * @param keyRootLocalIndex The local index of the key root inside the validator.
+     * @param validatorRoot The validator root.
+     * @return isValid If the key root is in the validator.
+     */
     function verifyValidatorKeyRootLocal(
         SszProof calldata keyRootProof,
         uint256 keyRootLocalIndex,
@@ -300,6 +408,13 @@ library ValSetVerifier {
         );
     }
 
+    /**
+     * @notice Verifies that the vault root is in the validator.
+     * @param vaultRootProof The proof of the vault root.
+     * @param vaultRootLocalIndex The local index of the vault root inside the validator.
+     * @param validatorRoot The validator root.
+     * @return isValid If the vault root is in the validator.
+     */
     function verifyValidatorVaultRootLocal(
         SszProof calldata vaultRootProof,
         uint256 vaultRootLocalIndex,
@@ -318,12 +433,24 @@ library ValSetVerifier {
         );
     }
 
+    /**
+     * @notice Verifies that the key tag is in the key.
+     * @param keyTagProof The proof of the key tag.
+     * @param keyRoot The key root.
+     * @return isValid If the key tag is in the key.
+     */
     function verifyKeyTagLocal(SszProof calldata keyTagProof, bytes32 keyRoot) internal view returns (bool) {
         return processInclusionProofSha256(
             keyTagProof.proof, keyTagProof.leaf, keyRoot, KEY_TAG_LOCAL_INDEX, KEY_TAG_PROOF_EXPECTED_HEIGHT
         );
     }
 
+    /**
+     * @notice Verifies that the key hash is in the key.
+     * @param keyPayloadHashProof The proof of the key hash.
+     * @param keyRoot The key root.
+     * @return isValid If the key hash is in the key.
+     */
     function verifyKeyPayloadHash(
         SszProof calldata keyPayloadHashProof,
         bytes32 keyRoot
@@ -337,6 +464,12 @@ library ValSetVerifier {
         );
     }
 
+    /**
+     * @notice Verifies that the vault's chain ID is in the vault.
+     * @param vaultChainIdProof The proof of the vault chain ID.
+     * @param vaultRoot The vault root.
+     * @return isValid If the vault's chain ID is in the vault.
+     */
     function verifyVaultChainIdLocal(
         SszProof calldata vaultChainIdProof,
         bytes32 vaultRoot
@@ -350,6 +483,12 @@ library ValSetVerifier {
         );
     }
 
+    /**
+     * @notice Verifies that the vault address is in the vault.
+     * @param vaultVaultProof The proof of the vault address.
+     * @param vaultRoot The vault root.
+     * @return isValid If the vault address is in the vault.
+     */
     function verifyVaultVaultLocal(SszProof calldata vaultVaultProof, bytes32 vaultRoot) internal view returns (bool) {
         return processInclusionProofSha256(
             vaultVaultProof.proof,
@@ -360,6 +499,12 @@ library ValSetVerifier {
         );
     }
 
+    /**
+     * @notice Verifies that the vault's voting power is in the vault.
+     * @param vaultVotingPowerProof The proof of the vault voting power.
+     * @param vaultRoot The vault root.
+     * @return isValid If the vault's voting power is in the vault.
+     */
     function verifyVaultVotingPowerLocal(
         SszProof calldata vaultVotingPowerProof,
         bytes32 vaultRoot
@@ -373,20 +518,17 @@ library ValSetVerifier {
         );
     }
 
-    /// @dev Processes an inclusion proof with a SHA256 hash.
-    ///
-    /// In case of an invalid proof length, we return false which is to be
-    /// handled by the caller.
-    ///
-    /// In case of a failed SHA-256 call, we revert.
-    ///
-    /// @param proof The inclusion proof.
-    /// @param leaf The leaf to be proven.
-    /// @param root The root to reconcile the proof against.
-    /// @param localIndex The local index of the leaf.
-    /// @param expectedHeight The height of the tree that the proof is for.
-    /// @return valid A boolean indicating whether the derived root from the proof
-    /// matches the `root` provided.
+    /**
+     * @notice Processes an inclusion proof with a SHA256 hash.
+     * @param proof The inclusion proof.
+     * @param leaf The leaf to be proven.
+     * @param root The root to reconcile the proof against.
+     * @param localIndex The local index of the leaf.
+     * @param expectedHeight The height of the tree that the proof is for.
+     * @return valid A boolean indicating whether the derived root from the proof matches the `root` provided.
+     * @dev In case of an invalid proof length, we return false which is to be handled by the caller.
+     *      In case of a failed SHA-256 call, we revert.
+     */
     function processInclusionProofSha256(
         bytes32[] calldata proof,
         bytes32 leaf,

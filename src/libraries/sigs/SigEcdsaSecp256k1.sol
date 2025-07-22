@@ -20,6 +20,7 @@ library SigEcdsaSecp256k1 {
      * @param message The encoded message hash to verify.
      * @param signature The encoded ECDSA signature.
      * @return If the signature is valid.
+     * @dev Returns false if the key is zero address.
      */
     function verify(
         bytes memory keyBytes,
@@ -43,6 +44,7 @@ library SigEcdsaSecp256k1 {
      * @param message The message hash to verify.
      * @param signature The ECDSA signature.
      * @return If the signature is valid.
+     * @dev Returns false if the key is zero address.
      */
     function verify(address key, bytes32 message, bytes memory signature) internal view returns (bool) {
         if (key == address(0)) {

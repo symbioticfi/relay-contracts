@@ -137,7 +137,7 @@ contract KeyTagTest is Test {
         tags[1] = 2;
         tags[2] = 5;
 
-        vm.expectRevert(KeyTags.Duplicate.selector);
+        vm.expectRevert(KeyTags.DuplicateKeyTag.selector);
         this.serialize(tags);
     }
 
