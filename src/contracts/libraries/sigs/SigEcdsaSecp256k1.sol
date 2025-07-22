@@ -9,8 +9,18 @@ library SigEcdsaSecp256k1 {
     using ECDSA for bytes32;
     using KeyEcdsaSecp256k1 for KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1;
 
+    /**
+     * @notice Reverts when the message length is invalid.
+     */
     error SigEcdsaSecp256k1_InvalidMessageLength();
 
+    /**
+     * @notice Verify an ECDSA signature.
+     * @param keyBytes The encoded signer address.
+     * @param message The encoded message hash to verify.
+     * @param signature The encoded ECDSA signature.
+     * @return If the signature is valid.
+     */
     function verify(
         bytes memory keyBytes,
         bytes memory message,
@@ -27,6 +37,13 @@ library SigEcdsaSecp256k1 {
         return verify(keyAddress, messageHash, signature);
     }
 
+    /**
+     * @notice Verify an ECDSA signature.
+     * @param key The signer address.
+     * @param message The message hash to verify.
+     * @param signature The ECDSA signature.
+     * @return If the signature is valid.
+     */
     function verify(address key, bytes32 message, bytes memory signature) internal view returns (bool) {
         if (key == address(0)) {
             return false;
