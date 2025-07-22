@@ -1,192 +1,4 @@
-Compiling 9 files with Solc 0.8.28
-Solc 0.8.28 finished in 5.37s
-Compiler run successful with warnings:
-Warning (9302): Return value of low-level calls not used.
-   --> script/integration/SymbioticInit.sol:111:9:
-    |
-111 |         to.call{value: give}("");
-    |         ^^^^^^^^^^^^^^^^^^^^^^^^
-
-Warning (6321): Unnamed return variable can remain unassigned. Add an explicit return with value to all non-reverting code paths or name the variable.
-   --> src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:224:84:
-    |
-224 |     function getRoundData(address aggregator, uint80 roundId) public view returns (bool, RoundData memory roundData) {
-    |                                                                                    ^^^^
-
-Warning (6321): Unnamed return variable can remain unassigned. Add an explicit return with value to all non-reverting code paths or name the variable.
-   --> src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:332:28:
-    |
-332 |     ) public view returns (bool, RoundData memory roundData) {
-    |                            ^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> script/integration/SymbioticCoreBindings.sol:243:33:
-    |
-243 |     ) internal virtual returns (uint256 depositedAmount, uint256 mintedShares) {
-    |                                 ^^^^^^^^^^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> script/integration/SymbioticCoreBindings.sol:243:58:
-    |
-243 |     ) internal virtual returns (uint256 depositedAmount, uint256 mintedShares) {
-    |                                                          ^^^^^^^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> script/integration/SymbioticCoreBindings.sol:262:33:
-    |
-262 |     ) internal virtual returns (uint256 burnedShares, uint256 mintedShares) {
-    |                                 ^^^^^^^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> script/integration/SymbioticCoreBindings.sol:262:55:
-    |
-262 |     ) internal virtual returns (uint256 burnedShares, uint256 mintedShares) {
-    |                                                       ^^^^^^^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> script/integration/SymbioticCoreBindings.sol:281:33:
-    |
-281 |     ) internal virtual returns (uint256 withdrawnAssets, uint256 mintedShares) {
-    |                                 ^^^^^^^^^^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> script/integration/SymbioticCoreBindings.sol:281:58:
-    |
-281 |     ) internal virtual returns (uint256 withdrawnAssets, uint256 mintedShares) {
-    |                                                          ^^^^^^^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> script/integration/SymbioticCoreBindings.sol:300:33:
-    |
-300 |     ) internal virtual returns (uint256 amount) {
-    |                                 ^^^^^^^^^^^^^^
-
-Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
-   --> script/integration/SymbioticCoreBindings.sol:319:33:
-    |
-319 |     ) internal virtual returns (uint256 amount) {
-    |                                 ^^^^^^^^^^^^^^
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyBlsBn254.sol:59:5:
-   |
-59 |     function unwrap(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/libraries/keys/KeyBlsBn254.sol:106:5:
-    |
-106 |     function toBytes(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/libraries/keys/KeyBlsBn254.sol:130:5:
-    |
-130 |     function zeroKey() internal view returns (KEY_BLS_BN254 memory key) {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/libraries/keys/KeyBlsBn254.sol:140:5:
-    |
-140 |     function equal(KEY_BLS_BN254 memory key1, KEY_BLS_BN254 memory key2) internal view returns (bool) {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:41:5:
-   |
-41 |     function unwrap(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:53:5:
-   |
-53 |     function serialize(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:64:5:
-   |
-64 |     function deserialize(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:75:5:
-   |
-75 |     function toBytes(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:99:5:
-   |
-99 |     function zeroKey() internal view returns (KEY_ECDSA_SECP256K1 memory key) {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/libraries/keys/KeyEcdsaSecp256k1.sol:109:5:
-    |
-109 |     function equal(KEY_ECDSA_SECP256K1 memory key1, KEY_ECDSA_SECP256K1 memory key2) internal view returns (bool) {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/sigs/SigEcdsaSecp256k1.sol:49:5:
-   |
-49 |     function verify(address key, bytes32 message, bytes memory signature) internal view returns (bool) {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> test/integration/SymbioticCoreConstants.sol:442:5:
-    |
-442 |     function allTokens() internal view returns (string[] memory result) {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:169:5:
-    |
-169 |     function getVaultParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:175:5:
-    |
-175 |     function getVaultTokenizedParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:208:5:
-    |
-208 |     function getSlasherParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:217:5:
-    |
-217 |     function getVetoSlasherParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> test/mocks/SigVerifierMock.sol:15:5:
-   |
-15 |     function verifyQuorumSig(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-   --> script/test/MasterSetup.s.sol:277:5:
-    |
-277 |     function loadMasterSetupParams() public returns (MasterSetupParams memory masterSetupParams) {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-  --> script/test/MasterGenesisSetup.s.sol:44:5:
-   |
-44 |     function loadGenesis()
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to view
-   --> script/test/MasterCommit.s.sol:151:5:
-    |
-151 |     function loadZkProof() internal returns (ZkProof memory) {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
+No files changed, compilation skipped
 
 ╭------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------╮
 | Contract                                                                                                         | Runtime Size (B) | Initcode Size (B) | Runtime Margin (B) | Initcode Margin (B) |
@@ -201,7 +13,7 @@ Warning (2018): Function state mutability can be restricted to view
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | BaseRewardsLogic                                                                                                 | 1,647            | 1,699             | 22,929             | 47,453              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| BaseSlashingLogic                                                                                                | 4,039            | 4,091             | 20,537             | 45,061              |
+| BaseSlashingLogic                                                                                                | 4,428            | 4,480             | 20,148             | 44,672              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Bytes                                                                                                            | 85               | 135               | 24,491             | 49,017              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -221,7 +33,7 @@ Warning (2018): Function state mutability can be restricted to view
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Errors                                                                                                           | 85               | 135               | 24,491             | 49,017              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| ExtraDataStorageHelper                                                                                           | 212              | 263               | 24,364             | 48,889              |
+| ExtraDataStorageHelper                                                                                           | 164              | 214               | 24,412             | 48,938              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | FeeOnTransferToken                                                                                               | 1,826            | 3,238             | 22,750             | 45,914              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -257,7 +69,7 @@ Warning (2018): Function state mutability can be restricted to view
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | MyNetwork                                                                                                        | 12,385           | 12,577            | 12,191             | 36,575              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| MySettlement                                                                                                     | 12,036           | 12,064            | 12,540             | 37,088              |
+| MySettlement                                                                                                     | 12,196           | 12,224            | 12,380             | 36,928              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | MyValSetDriver                                                                                                   | 18,205           | 18,233            | 6,371              | 30,919              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -283,9 +95,9 @@ Warning (2018): Function state mutability can be restricted to view
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | SigEcdsaSecp256k1                                                                                                | 85               | 135               | 24,491             | 49,017              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| SigVerifierBlsBn254Simple                                                                                        | 5,224            | 5,252             | 19,352             | 43,900              |
+| SigVerifierBlsBn254Simple                                                                                        | 4,987            | 5,015             | 19,589             | 44,137              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| SigVerifierBlsBn254ZK                                                                                            | 2,832            | 3,912             | 21,744             | 45,240              |
+| SigVerifierBlsBn254ZK                                                                                            | 2,735            | 3,815             | 21,841             | 45,337              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | SigVerifierFalseMock                                                                                             | 627              | 655               | 23,949             | 48,497              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -333,7 +145,7 @@ Warning (2018): Function state mutability can be restricted to view
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | TestPermissionManager                                                                                            | 616              | 644               | 23,960             | 48,508              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestSettlement                                                                                                   | 10,833           | 10,861            | 13,743             | 38,291              |
+| TestSettlement                                                                                                   | 10,993           | 11,021            | 13,583             | 38,131              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | TestSharedVaults                                                                                                 | 12,373           | 12,541            | 12,203             | 36,611              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|

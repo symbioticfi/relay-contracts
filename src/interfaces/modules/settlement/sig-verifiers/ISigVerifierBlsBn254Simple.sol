@@ -47,12 +47,6 @@ interface ISigVerifierBlsBn254Simple is ISigVerifier {
     function VALIDATOR_SET_HASH_KECCAK256_HASH() external view returns (bytes32);
 
     /**
-     * @notice Returns the marker for extra data fetching of the total voting power.
-     * @return The marker for extra data fetching of the total voting power.
-     */
-    function TOTAL_VOTING_POWER_HASH() external view returns (bytes32);
-
-    /**
      * @notice Returns the marker for extra data fetching of the aggregated public key G1.
      * @return The marker for extra data fetching of the aggregated public key G1.
      * @dev The public key is compressed to one bytes32 slot.

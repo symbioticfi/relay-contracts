@@ -83,6 +83,7 @@ interface ISettlement {
      * @param epoch The epoch of the validator set.
      * @param captureTimestamp The capture timestamp of the validator set.
      * @param quorumThreshold The quorum threshold of the validator set header which will need to be reached to commit the next header.
+     * @param totalVotingPower The total voting power of the validator set.
      * @param validatorsSszMRoot The validator set SSZ root.
      * @param previousHeaderHash The previous header hash.
      */
@@ -92,6 +93,7 @@ interface ISettlement {
         uint48 epoch;
         uint48 captureTimestamp;
         uint256 quorumThreshold;
+        uint256 totalVotingPower;
         bytes32 validatorsSszMRoot;
         bytes32 previousHeaderHash;
     }
@@ -258,6 +260,21 @@ interface ISettlement {
      * @return The quorum threshold from the last committed validator set header.
      */
     function getQuorumThresholdFromValSetHeader() external view returns (uint256);
+
+    /**
+     * @notice Returns the total voting power from the validator set header at the given epoch.
+     * @param epoch The epoch.
+     * @return The total voting power from the validator set header at the given epoch.
+     */
+    function getTotalVotingPowerFromValSetHeaderAt(
+        uint48 epoch
+    ) external view returns (uint256);
+
+    /**
+     * @notice Returns the total voting power from the last committed validator set header.
+     * @return The total voting power from the last committed validator set header.
+     */
+    function getTotalVotingPowerFromValSetHeader() external view returns (uint256);
 
     /**
      * @notice Returns the validator set SSZ root from the validator set header at the given epoch.

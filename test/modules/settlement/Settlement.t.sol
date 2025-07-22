@@ -184,8 +184,9 @@ contract SettlementRawTest is Test {
             epoch: 0,
             captureTimestamp: uint48(vm.getBlockTimestamp()) - 1,
             quorumThreshold: 1000,
+            totalVotingPower: 1501,
             validatorsSszMRoot: bytes32(uint256(0xAAA)),
-            previousHeaderHash: 0x868e09d528a16744c1f38ea3c10cc2251e01a456434f91172247695087d129b7
+            previousHeaderHash: 0xd397b3b043d87fcd6fad1291ff0bfd16401c274896d8c63a923727f077b8e0b5
         });
         someExtra.push(ISettlement.ExtraData({key: bytes32(uint256(0xCCC)), value: bytes32(uint256(0xBBB))}));
     }
@@ -240,6 +241,16 @@ contract SettlementRawTest is Test {
             testSettle.getQuorumThresholdFromValSetHeaderAt(sampleHeader.epoch),
             sampleHeader.quorumThreshold,
             "ValSet quorumThreshold mismatch after setGenesis"
+        );
+        assertEq(
+            testSettle.getTotalVotingPowerFromValSetHeader(),
+            sampleHeader.totalVotingPower,
+            "ValSet totalVotingPower mismatch after setGenesis"
+        );
+        assertEq(
+            testSettle.getTotalVotingPowerFromValSetHeaderAt(sampleHeader.epoch),
+            sampleHeader.totalVotingPower,
+            "ValSet totalVotingPower mismatch after setGenesis"
         );
         assertEq(
             testSettle.getRequiredKeyTagFromValSetHeader(),
@@ -306,7 +317,7 @@ contract SettlementRawTest is Test {
         );
         assertEq(
             stored.previousHeaderHash,
-            0x868e09d528a16744c1f38ea3c10cc2251e01a456434f91172247695087d129b7,
+            0xd397b3b043d87fcd6fad1291ff0bfd16401c274896d8c63a923727f077b8e0b5,
             "ValSet previousHeaderHash mismatch after setGenesis"
         );
 
@@ -324,7 +335,7 @@ contract SettlementRawTest is Test {
         );
         assertEq(
             stored.previousHeaderHash,
-            0x868e09d528a16744c1f38ea3c10cc2251e01a456434f91172247695087d129b7,
+            0xd397b3b043d87fcd6fad1291ff0bfd16401c274896d8c63a923727f077b8e0b5,
             "ValSet previousHeaderHash mismatch after setGenesis"
         );
     }

@@ -181,6 +181,22 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
     /**
      * @inheritdoc ISettlement
      */
+    function getTotalVotingPowerFromValSetHeaderAt(
+        uint48 epoch
+    ) public view virtual returns (uint256) {
+        return _getSettlementStorage()._valSetHeader[epoch].totalVotingPower;
+    }
+
+    /**
+     * @inheritdoc ISettlement
+     */
+    function getTotalVotingPowerFromValSetHeader() public view virtual returns (uint256) {
+        return getTotalVotingPowerFromValSetHeaderAt(getLastCommittedHeaderEpoch());
+    }
+
+    /**
+     * @inheritdoc ISettlement
+     */
     function getValidatorsSszMRootFromValSetHeaderAt(
         uint48 epoch
     ) public view virtual returns (bytes32) {
@@ -358,6 +374,7 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
         headerStorage.epoch = header.epoch;
         headerStorage.captureTimestamp = header.captureTimestamp;
         headerStorage.quorumThreshold = header.quorumThreshold;
+        headerStorage.totalVotingPower = header.totalVotingPower;
         headerStorage.validatorsSszMRoot = header.validatorsSszMRoot;
         headerStorage.previousHeaderHash = header.previousHeaderHash;
 

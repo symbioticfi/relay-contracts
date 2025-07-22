@@ -40,11 +40,6 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
     /**
      * @inheritdoc ISigVerifierBlsBn254Simple
      */
-    bytes32 public constant TOTAL_VOTING_POWER_HASH = keccak256("totalVotingPower");
-
-    /**
-     * @inheritdoc ISigVerifierBlsBn254Simple
-     */
     bytes32 public constant AGGREGATED_PUBLIC_KEY_G1_HASH = keccak256("aggPublicKeyG1");
 
     /**
@@ -162,9 +157,7 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
 
             if (
                 quorumThreshold
-                    > uint256(
-                        ISettlement(settlement).getExtraDataAt(epoch, VERIFICATION_TYPE.getKey(TOTAL_VOTING_POWER_HASH))
-                    ) - nonSignersVotingPower
+                    > uint256(ISettlement(settlement).getTotalVotingPowerFromValSetHeaderAt(epoch)) - nonSignersVotingPower
             ) {
                 return false;
             }

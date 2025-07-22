@@ -422,11 +422,12 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
             epoch: 0,
             captureTimestamp: masterSetupParams.valSetDriver.getEpochStart(0),
             quorumThreshold: uint256(2).mulDiv(1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
+            totalVotingPower: totalVotingPower,
             validatorsSszMRoot: 0x0000000000000000000000000000000000000000000000000000000000000000,
-            previousHeaderHash: 0x868e09d528a16744c1f38ea3c10cc2251e01a456434f91172247695087d129b7
+            previousHeaderHash: 0xd397b3b043d87fcd6fad1291ff0bfd16401c274896d8c63a923727f077b8e0b5
         });
 
-        extraData = new ISettlement.ExtraData[](3);
+        extraData = new ISettlement.ExtraData[](2);
         SigVerifierBlsBn254Simple sigVerifier = SigVerifierBlsBn254Simple(masterSetupParams.settlement.getSigVerifier());
 
         {
@@ -438,12 +439,6 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
             });
         }
         {
-            extraData[1] = ISettlement.ExtraData({
-                key: uint32(1).getKey(sigVerifier.TOTAL_VOTING_POWER_HASH()),
-                value: bytes32(totalVotingPower)
-            });
-        }
-        {
             BN254.G1Point memory aggPublicKeyG1Raw;
             for (uint256 i; i < networkSetupParams.OPERATORS_TO_REGISTER; ++i) {
                 BN254.G1Point memory keyG1 = BN254.generatorG1().scalar_mul(getOperator(i).privateKey);
@@ -451,7 +446,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
             }
             bytes32 aggPublicKeyG1 = abi.decode(aggPublicKeyG1Raw.wrap().serialize(), (bytes32));
 
-            extraData[2] = ISettlement.ExtraData({
+            extraData[1] = ISettlement.ExtraData({
                 key: uint32(1).getKey(15, sigVerifier.AGGREGATED_PUBLIC_KEY_G1_HASH()),
                 value: aggPublicKeyG1
             });
