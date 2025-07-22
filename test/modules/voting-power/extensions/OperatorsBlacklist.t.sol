@@ -63,7 +63,8 @@ contract OperatorsBlacklistTest is InitSetupTest {
             .VotingPowerProviderInitParams({
             networkManagerInitParams: netInit,
             ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
-            slashingWindow: 100,
+            requireSlasher: true,
+            minVaultEpochDuration: 100,
             token: initSetupParams.masterChain.tokens[0]
         });
 
@@ -72,6 +73,8 @@ contract OperatorsBlacklistTest is InitSetupTest {
         operator1 = getOperator(0).addr;
         operator1Pk = getOperator(0).privateKey;
 
+        (bool requireSlasher, uint48 minVaultEpochDuration) = blacklistOps.getSlashingData();
+
         // blacklistOps.registerToken(initSetupParams.masterChain.tokens[0]);
 
         vault1 = _getVault_SymbioticCore(
@@ -79,7 +82,7 @@ contract OperatorsBlacklistTest is InitSetupTest {
                 owner: operator1,
                 collateral: initSetupParams.masterChain.tokens[0],
                 burner: 0x000000000000000000000000000000000000dEaD,
-                epochDuration: blacklistOps.getSlashingWindow() * 2,
+                epochDuration: minVaultEpochDuration * 2,
                 whitelistedDepositors: new address[](0),
                 depositLimit: 0,
                 delegatorIndex: 2,

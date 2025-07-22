@@ -55,18 +55,19 @@ library VotingPowerProviderLogic {
     function initialize(
         IVotingPowerProvider.VotingPowerProviderInitParams memory initParams
     ) public {
-        setSlashingWindowInternal(initParams.slashingWindow);
+        setSlashingData(initParams.requireSlasher, initParams.minVaultEpochDuration);
         if (initParams.token != address(0)) {
             registerToken(initParams.token);
         }
     }
 
-    function getSlashingWindowAt(uint48 timestamp, bytes memory hint) public view returns (uint48) {
-        return uint48(_getVotingPowerProviderStorage()._slashingWindow.upperLookupRecent(timestamp, hint));
+    function getSlashingDataAt(uint48 timestamp, bytes memory hint) public view returns (bool, uint48) {
+        return
+            deserializeSlashingData(_getVotingPowerProviderStorage()._slashingData.upperLookupRecent(timestamp, hint));
     }
 
-    function getSlashingWindow() public view returns (uint48) {
-        return uint48(_getVotingPowerProviderStorage()._slashingWindow.latest());
+    function getSlashingData() public view returns (bool, uint48) {
+        return deserializeSlashingData(_getVotingPowerProviderStorage()._slashingData.latest());
     }
 
     function isTokenRegisteredAt(address token, uint48 timestamp, bytes memory hint) public view returns (bool) {
@@ -371,21 +372,12 @@ library VotingPowerProviderLogic {
         }
     }
 
-    function setSlashingWindow(
-        uint48 slashingWindow
-    ) public {
-        if (slashingWindow >= getSlashingWindow()) {
-            revert IVotingPowerProvider.VotingPowerProvider_SlashingWindowTooLarge();
-        }
-        setSlashingWindowInternal(slashingWindow);
-    }
+    function setSlashingData(bool requireSlasher, uint48 minVaultEpochDuration) public {
+        _getVotingPowerProviderStorage()._slashingData.push(
+            Time.timestamp(), serializeSlashingData(requireSlasher, minVaultEpochDuration)
+        );
 
-    function setSlashingWindowInternal(
-        uint48 slashingWindow
-    ) public {
-        _getVotingPowerProviderStorage()._slashingWindow.push(Time.timestamp(), slashingWindow);
-
-        emit IVotingPowerProvider.SetSlashingWindow(slashingWindow);
+        emit IVotingPowerProvider.SetSlashingData(requireSlasher, minVaultEpochDuration);
     }
 
     function registerToken(
@@ -497,6 +489,16 @@ library VotingPowerProviderLogic {
         emit IVotingPowerProvider.UnregisterOperatorVault(operator, vault);
     }
 
+    function serializeSlashingData(bool requireSlasher, uint48 minVaultEpochDuration) public pure returns (uint208) {
+        return uint208(minVaultEpochDuration) << 1 | (requireSlasher ? 1 : 0);
+    }
+
+    function deserializeSlashingData(
+        uint208 slashingData
+    ) public pure returns (bool, uint48) {
+        return (slashingData & 1 > 0, uint48(slashingData >> 1));
+    }
+
     function _validateOperator(
         address operator
     ) public view returns (bool) {
@@ -517,7 +519,7 @@ library VotingPowerProviderLogic {
             return false;
         }
 
-        if (!_validateVaultEpochDuration(vault)) {
+        if (!_validateVaultSlashing(vault)) {
             return false;
         }
 
@@ -567,13 +569,16 @@ library VotingPowerProviderLogic {
         return true;
     }
 
-    function _validateVaultEpochDuration(
+    function _validateVaultSlashing(
         address vault
     ) public view returns (bool) {
-        uint48 vaultEpochDuration = IVault(vault).epochDuration();
-        uint48 slashingWindow = getSlashingWindow();
         address slasher = IVault(vault).slasher();
+        (bool requireSlasher, uint48 minVaultEpochDuration) = getSlashingData();
+        if (requireSlasher && slasher == address(0)) {
+            return false;
+        }
 
+        uint48 vaultEpochDuration = IVault(vault).epochDuration();
         if (slasher != address(0)) {
             uint64 slasherType = IEntity(slasher).TYPE();
             if (slasherType == uint64(IVotingPowerProvider.SlasherType.VETO)) {
@@ -581,9 +586,7 @@ library VotingPowerProviderLogic {
             } else if (slasherType > uint64(type(IVotingPowerProvider.SlasherType).max)) {
                 return false;
             }
-
-            return slashingWindow <= vaultEpochDuration;
         }
-        return slashingWindow == 0;
+        return minVaultEpochDuration <= vaultEpochDuration;
     }
 }

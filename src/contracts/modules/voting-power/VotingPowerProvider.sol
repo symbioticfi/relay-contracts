@@ -56,15 +56,15 @@ abstract contract VotingPowerProvider is
     /**
      * @inheritdoc IVotingPowerProvider
      */
-    function getSlashingWindowAt(uint48 timestamp, bytes memory hint) public view virtual returns (uint48) {
-        return VotingPowerProviderLogic.getSlashingWindowAt(timestamp, hint);
+    function getSlashingDataAt(uint48 timestamp, bytes memory hint) public view virtual returns (bool, uint48) {
+        return VotingPowerProviderLogic.getSlashingDataAt(timestamp, hint);
     }
 
     /**
      * @inheritdoc IVotingPowerProvider
      */
-    function getSlashingWindow() public view virtual returns (uint48) {
-        return VotingPowerProviderLogic.getSlashingWindow();
+    function getSlashingData() public view virtual returns (bool, uint48) {
+        return VotingPowerProviderLogic.getSlashingData();
     }
 
     /**
@@ -384,10 +384,8 @@ abstract contract VotingPowerProvider is
         _useNonce(msg.sender);
     }
 
-    function _setSlashingWindow(
-        uint48 slashingWindow
-    ) internal virtual {
-        VotingPowerProviderLogic.setSlashingWindow(slashingWindow);
+    function _setSlashingData(bool requireSlasher, uint48 minVaultEpochDuration) internal virtual {
+        VotingPowerProviderLogic.setSlashingData(requireSlasher, minVaultEpochDuration);
     }
 
     function _registerToken(

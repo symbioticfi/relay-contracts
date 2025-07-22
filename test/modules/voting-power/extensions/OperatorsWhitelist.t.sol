@@ -67,7 +67,8 @@ contract OperatorsWhitelistTest is Test, InitSetupTest {
             .VotingPowerProviderInitParams({
             networkManagerInitParams: netInit,
             ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
-            slashingWindow: 100,
+            requireSlasher: true,
+            minVaultEpochDuration: 100,
             token: initSetupParams.masterChain.tokens[0]
         });
 
@@ -76,6 +77,8 @@ contract OperatorsWhitelistTest is Test, InitSetupTest {
         operator1 = getOperator(0).addr;
         operator1Pk = getOperator(0).privateKey;
 
+        (bool requireSlasher, uint48 minVaultEpochDuration) = whitelistOps.getSlashingData();
+
         // whitelistOps.registerToken(initSetupParams.masterChain.tokens[0]);
 
         vaultA = _getVault_SymbioticCore(
@@ -83,7 +86,7 @@ contract OperatorsWhitelistTest is Test, InitSetupTest {
                 owner: operator1,
                 collateral: initSetupParams.masterChain.tokens[0],
                 burner: 0x000000000000000000000000000000000000dEaD,
-                epochDuration: whitelistOps.getSlashingWindow() * 2,
+                epochDuration: minVaultEpochDuration * 2,
                 whitelistedDepositors: new address[](0),
                 depositLimit: 0,
                 delegatorIndex: 2,
@@ -100,7 +103,7 @@ contract OperatorsWhitelistTest is Test, InitSetupTest {
                 owner: operator1,
                 collateral: initSetupParams.masterChain.tokens[0],
                 burner: 0x000000000000000000000000000000000000dEaD,
-                epochDuration: whitelistOps.getSlashingWindow() * 2,
+                epochDuration: minVaultEpochDuration * 2,
                 whitelistedDepositors: new address[](0),
                 depositLimit: 0,
                 delegatorIndex: 2,
