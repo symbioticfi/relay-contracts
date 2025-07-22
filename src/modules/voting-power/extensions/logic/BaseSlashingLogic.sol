@@ -40,13 +40,17 @@ library BaseSlashingLogic {
             slashHints = abi.decode(hints, (IBaseSlashing.SlashHints));
         }
 
-        uint48 slashingWindow = VotingPowerProviderLogic.getSlashingWindowAt(timestamp, slashHints.slashingWindowHint);
-        if (block.timestamp - timestamp > slashingWindow) {
+        (bool requireSlasher, uint48 minVaultEpochDuration) =
+            VotingPowerProviderLogic.getSlashingDataAt(timestamp, slashHints.slashingDataHint);
+        if (!requireSlasher) {
             return (false, new bytes(0));
         }
 
         uint64 slasherType = IEntity(slasher).TYPE();
         if (slasherType == uint64(IVotingPowerProvider.SlasherType.INSTANT)) {
+            if (block.timestamp - timestamp > minVaultEpochDuration) {
+                return (false, new bytes(0));
+            }
             (success, response) = slasher.call(
                 abi.encodeCall(
                     IInstantSlasher.slash,
@@ -61,6 +65,9 @@ library BaseSlashingLogic {
             );
             emit IBaseSlashing.InstantSlash(slasher, operator, success, success ? abi.decode(response, (uint256)) : 0);
         } else if (slasherType == uint64(IVotingPowerProvider.SlasherType.VETO)) {
+            if (block.timestamp - timestamp + IVetoSlasher(slasher).vetoDuration() > minVaultEpochDuration) {
+                return (false, new bytes(0));
+            }
             (success, response) = slasher.call(
                 abi.encodeCall(
                     IVetoSlasher.requestSlash,
@@ -105,9 +112,9 @@ library BaseSlashingLogic {
         uint64 slasherType = IEntity(slasher).TYPE();
         if (slasherType == uint64(IVotingPowerProvider.SlasherType.VETO)) {
             (,,, uint48 timestamp,,) = IVetoSlasher(slasher).slashRequests(slashIndex);
-            uint48 slashingWindow =
-                VotingPowerProviderLogic.getSlashingWindowAt(timestamp, executeSlashHints.slashingWindowHint);
-            if (block.timestamp - timestamp > slashingWindow) {
+            (, uint48 minVaultEpochDuration) =
+                VotingPowerProviderLogic.getSlashingDataAt(timestamp, executeSlashHints.slashingDataHint);
+            if (block.timestamp - timestamp > minVaultEpochDuration) {
                 return (false, 0);
             }
 

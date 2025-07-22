@@ -146,8 +146,8 @@ library OpNetVaultAutoDeployLogic {
         if (config.epochDuration == 0) {
             revert IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidEpochDuration();
         }
-        uint48 slashingWindow = IVotingPowerProvider(address(this)).getSlashingWindow();
-        if (config.epochDuration < slashingWindow) {
+        (bool requireSlasher, uint48 minVaultEpochDuration) = IVotingPowerProvider(address(this)).getSlashingData();
+        if (config.epochDuration < minVaultEpochDuration) {
             revert IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidEpochDuration();
         }
         if (config.withSlasher) {
@@ -155,7 +155,7 @@ library OpNetVaultAutoDeployLogic {
                 revert IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidBurnerHook();
             }
         } else {
-            if (slashingWindow > 0) {
+            if (requireSlasher) {
                 revert IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidWithSlasher();
             }
             if (config.isBurnerHook) {

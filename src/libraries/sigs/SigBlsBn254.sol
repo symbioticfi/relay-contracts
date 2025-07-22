@@ -8,10 +8,20 @@ library SigBlsBn254 {
     using BN254 for BN254.G1Point;
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
 
+    /**
+     * @notice Reverts when the message length is invalid.
+     */
     error SigBlsBn254_InvalidMessageLength();
 
-    uint256 internal constant PAIRING_CHECK_GAS_LIMIT = 120_000;
-
+    /**
+     * @notice Verify a BLS signature.
+     * @param keyBytes The encoded G1 public key.
+     * @param message The encoded message hash to verify.
+     * @param signature The encoded G1 signature.
+     * @param extraData The encoded G2 public key.
+     * @return If the signature is valid.
+     * @dev Burns the whole gas if pairing precompile fails.
+     */
     function verify(
         bytes memory keyBytes,
         bytes memory message,
@@ -30,6 +40,15 @@ library SigBlsBn254 {
         return verify(keyG1, messageHash, signatureG1, keyG2);
     }
 
+    /**
+     * @notice Verify a BLS signature.
+     * @param keyG1 The G1 public key.
+     * @param messageHash The message hash to verify.
+     * @param signatureG1 The G1 signature.
+     * @param keyG2 The G2 public key.
+     * @return If the signature is valid.
+     * @dev Burns the whole gas if pairing precompile fails.
+     */
     function verify(
         BN254.G1Point memory keyG1,
         bytes32 messageHash,
@@ -41,15 +60,17 @@ library SigBlsBn254 {
         }
         BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash);
         uint256 alpha = uint256(
-            keccak256(abi.encodePacked(messageHash, keyG1.X, keyG1.Y, keyG2.X, keyG2.Y, signatureG1.X, signatureG1.Y))
+            keccak256(
+                abi.encodePacked(
+                    signatureG1.X, signatureG1.Y, keyG1.X, keyG1.Y, keyG2.X, keyG2.Y, messageG1.X, messageG1.Y
+                )
+            )
         ) % BN254.FR_MODULUS;
-        (bool success, bool result) = BN254.safePairing(
+        return BN254.pairing(
             signatureG1.plus(keyG1.scalar_mul(alpha)),
             BN254.negGeneratorG2(),
             messageG1.plus(BN254.generatorG1().scalar_mul(alpha)),
-            keyG2,
-            PAIRING_CHECK_GAS_LIMIT
+            keyG2
         );
-        return success && result;
     }
 }

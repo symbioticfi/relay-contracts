@@ -95,10 +95,8 @@ contract TestVotingPowerProvider is VotingPowerProvider, NormalizedTokenDecimals
         _unregisterOperator(operator);
     }
 
-    function setSlashingWindow(
-        uint48 sw
-    ) external {
-        _setSlashingWindow(sw);
+    function setSlashingData(bool requireSlasher, uint48 minVaultEpochDuration) external {
+        _setSlashingData(requireSlasher, minVaultEpochDuration);
     }
 
     function registerToken(
@@ -149,10 +147,10 @@ contract TestVotingPowerProvider is VotingPowerProvider, NormalizedTokenDecimals
         return VotingPowerProviderLogic._validateOperatorVault(operator, vault);
     }
 
-    function validateVaultEpochDuration(
+    function validateVaultSlashing(
         address vault
     ) external view returns (bool) {
-        return VotingPowerProviderLogic._validateVaultEpochDuration(vault);
+        return VotingPowerProviderLogic._validateVaultSlashing(vault);
     }
 }
 
@@ -180,7 +178,8 @@ contract NormalizedTokenDecimalsVPCalcTest is InitSetupTest {
             .VotingPowerProviderInitParams({
             networkManagerInitParams: netInit,
             ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
-            slashingWindow: 100,
+            requireSlasher: true,
+            minVaultEpochDuration: 100,
             token: address(0)
         });
 
@@ -207,7 +206,8 @@ contract NormalizedTokenDecimalsVPCalcTest is InitSetupTest {
             .VotingPowerProviderInitParams({
             networkManagerInitParams: netInit,
             ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
-            slashingWindow: 100,
+            requireSlasher: true,
+            minVaultEpochDuration: 100,
             token: address(mockToken)
         });
 
@@ -224,12 +224,13 @@ contract NormalizedTokenDecimalsVPCalcTest is InitSetupTest {
 
         for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
             Vm.Wallet memory operator = getOperator(i);
+            (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
             address operatorVault = _getVault_SymbioticCore(
                 VaultParams({
                     owner: operator.addr,
                     collateral: address(mockToken),
                     burner: 0x000000000000000000000000000000000000dEaD,
-                    epochDuration: votingPowerProvider.getSlashingWindow() * 2,
+                    epochDuration: minVaultEpochDuration * 2,
                     whitelistedDepositors: new address[](0),
                     depositLimit: 0,
                     delegatorIndex: 2,
@@ -281,7 +282,8 @@ contract NormalizedTokenDecimalsVPCalcTest is InitSetupTest {
             .VotingPowerProviderInitParams({
             networkManagerInitParams: netInit,
             ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
-            slashingWindow: 100,
+            requireSlasher: true,
+            minVaultEpochDuration: 100,
             token: address(mockToken)
         });
 
@@ -298,12 +300,13 @@ contract NormalizedTokenDecimalsVPCalcTest is InitSetupTest {
 
         for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
             Vm.Wallet memory operator = getOperator(i);
+            (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
             address operatorVault = _getVault_SymbioticCore(
                 VaultParams({
                     owner: operator.addr,
                     collateral: address(mockToken),
                     burner: 0x000000000000000000000000000000000000dEaD,
-                    epochDuration: votingPowerProvider.getSlashingWindow() * 2,
+                    epochDuration: minVaultEpochDuration * 2,
                     whitelistedDepositors: new address[](0),
                     depositLimit: 0,
                     delegatorIndex: 2,
@@ -355,7 +358,8 @@ contract NormalizedTokenDecimalsVPCalcTest is InitSetupTest {
             .VotingPowerProviderInitParams({
             networkManagerInitParams: netInit,
             ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
-            slashingWindow: 100,
+            requireSlasher: true,
+            minVaultEpochDuration: 100,
             token: address(mockToken)
         });
 
@@ -372,12 +376,13 @@ contract NormalizedTokenDecimalsVPCalcTest is InitSetupTest {
 
         for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
             Vm.Wallet memory operator = getOperator(i);
+            (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
             address operatorVault = _getVault_SymbioticCore(
                 VaultParams({
                     owner: operator.addr,
                     collateral: address(mockToken),
                     burner: 0x000000000000000000000000000000000000dEaD,
-                    epochDuration: votingPowerProvider.getSlashingWindow() * 2,
+                    epochDuration: minVaultEpochDuration * 2,
                     whitelistedDepositors: new address[](0),
                     depositLimit: 0,
                     delegatorIndex: 2,

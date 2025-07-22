@@ -101,7 +101,8 @@ contract MasterSetupScript is InitSetupScript {
                     subnetworkId: networkSetupParams.SUBNETWORK_ID
                 }),
                 ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "VotingPowerProvider", version: "1"}),
-                slashingWindow: networkSetupParams.SLASHING_WINDOW,
+                requireSlasher: true,
+                minVaultEpochDuration: networkSetupParams.SLASHING_WINDOW,
                 token: initSetupParams.masterChain.tokens[0]
             }),
             IOzOwnable.OzOwnableInitParams({owner: vars.network.addr}),
