@@ -1,5 +1,5 @@
-Compiling 9 files with Solc 0.8.28
-Solc 0.8.28 finished in 5.24s
+Compiling 46 files with Solc 0.8.28
+Solc 0.8.28 finished in 29.32s
 Compiler run successful with warnings:
 Warning (9302): Return value of low-level calls not used.
    --> script/integration/SymbioticInit.sol:111:9:
@@ -8,15 +8,15 @@ Warning (9302): Return value of low-level calls not used.
     |         ^^^^^^^^^^^^^^^^^^^^^^^^
 
 Warning (6321): Unnamed return variable can remain unassigned. Add an explicit return with value to all non-reverting code paths or name the variable.
-   --> src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:149:84:
+   --> src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:224:84:
     |
-149 |     function getRoundData(address aggregator, uint80 roundId) public view returns (bool, RoundData memory roundData) {
+224 |     function getRoundData(address aggregator, uint80 roundId) public view returns (bool, RoundData memory roundData) {
     |                                                                                    ^^^^
 
 Warning (6321): Unnamed return variable can remain unassigned. Add an explicit return with value to all non-reverting code paths or name the variable.
-   --> src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:215:28:
+   --> src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:332:28:
     |
-215 |     ) public view returns (bool, RoundData memory roundData) {
+332 |     ) public view returns (bool, RoundData memory roundData) {
     |                            ^^^^
 
 Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
@@ -66,6 +66,240 @@ Warning (5667): Unused function parameter. Remove or comment out the variable na
     |
 319 |     ) internal virtual returns (uint256 amount) {
     |                                 ^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> test/integration/SymbioticCoreBindings.sol:240:33:
+    |
+240 |     ) internal virtual returns (uint256 depositedAmount, uint256 mintedShares) {
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> test/integration/SymbioticCoreBindings.sol:240:58:
+    |
+240 |     ) internal virtual returns (uint256 depositedAmount, uint256 mintedShares) {
+    |                                                          ^^^^^^^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> test/integration/SymbioticCoreBindings.sol:259:33:
+    |
+259 |     ) internal virtual returns (uint256 burnedShares, uint256 mintedShares) {
+    |                                 ^^^^^^^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> test/integration/SymbioticCoreBindings.sol:259:55:
+    |
+259 |     ) internal virtual returns (uint256 burnedShares, uint256 mintedShares) {
+    |                                                       ^^^^^^^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> test/integration/SymbioticCoreBindings.sol:278:33:
+    |
+278 |     ) internal virtual returns (uint256 withdrawnAssets, uint256 mintedShares) {
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> test/integration/SymbioticCoreBindings.sol:278:58:
+    |
+278 |     ) internal virtual returns (uint256 withdrawnAssets, uint256 mintedShares) {
+    |                                                          ^^^^^^^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> test/integration/SymbioticCoreBindings.sol:297:33:
+    |
+297 |     ) internal virtual returns (uint256 amount) {
+    |                                 ^^^^^^^^^^^^^^
+
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+   --> test/integration/SymbioticCoreBindings.sol:316:33:
+    |
+316 |     ) internal virtual returns (uint256 amount) {
+    |                                 ^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+  --> test/modules/base/NetworkManager.t.sol:48:9:
+   |
+48 |         bytes32 subn = nm.SUBNETWORK();
+   |         ^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.t.sol:174:9:
+    |
+174 |         SigVerifierBlsBn254Simple sigVerifier = SigVerifierBlsBn254Simple(masterSetupParams.settlement.getSigVerifier());
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/voting-power/VotingPowerProvider.t.sol:404:10:
+    |
+404 |         (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
+    |          ^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/voting-power/VotingPowerProvider.t.sol:624:10:
+    |
+624 |         (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
+    |          ^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/voting-power/VotingPowerProvider.t.sol:675:10:
+    |
+675 |         (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
+    |          ^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/voting-power/VotingPowerProvider.t.sol:707:10:
+    |
+707 |         (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
+    |          ^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/voting-power/VotingPowerProvider.t.sol:731:10:
+    |
+731 |         (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
+    |          ^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/voting-power/VotingPowerProvider.t.sol:731:31:
+    |
+731 |         (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
+    |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/voting-power/VotingPowerProvider.t.sol:761:10:
+    |
+761 |         (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
+    |          ^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/voting-power/VotingPowerProvider.t.sol:970:10:
+    |
+970 |         (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
+    |          ^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+    --> test/modules/voting-power/VotingPowerProvider.t.sol:1013:10:
+     |
+1013 |         (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
+     |          ^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+    --> test/modules/voting-power/VotingPowerProvider.t.sol:1056:10:
+     |
+1056 |         (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
+     |          ^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+    --> test/modules/voting-power/VotingPowerProvider.t.sol:1099:9:
+     |
+1099 |         uint256 operatorPk = getOperator(0).privateKey;
+     |         ^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+    --> test/modules/voting-power/VotingPowerProvider.t.sol:1100:10:
+     |
+1100 |         (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
+     |          ^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+    --> test/modules/voting-power/VotingPowerProvider.t.sol:1102:9:
+     |
+1102 |         address someVault = _getVault_SymbioticCore(
+     |         ^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.t.sol:227:14:
+    |
+227 |             (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
+    |              ^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.t.sol:303:14:
+    |
+303 |             (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
+    |              ^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.t.sol:379:14:
+    |
+379 |             (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
+    |              ^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.t.sol:210:18:
+    |
+210 |                 (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
+    |                  ^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.t.sol:335:18:
+    |
+335 |                 (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
+    |                  ^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.t.sol:463:18:
+    |
+463 |                 (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
+    |                  ^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.t.sol:522:16:
+    |
+522 |             (, int256 wethAnswer,,,) = wethFeed.latestRoundData();
+    |                ^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.t.sol:527:16:
+    |
+527 |             (, int256 wbtcAnswer,,,) = wbtcFeed.latestRoundData();
+    |                ^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.t.sol:582:14:
+    |
+582 |             (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
+    |              ^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/voting-power/common/voting-power-calc/WeightedTokensVPCalc.t.sol:229:14:
+    |
+229 |             (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
+    |              ^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/voting-power/common/voting-power-calc/WeightedVaultsVPCalc.t.sol:229:14:
+    |
+229 |             (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
+    |              ^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/voting-power/extensions/BaseSlashing.t.sol:120:10:
+    |
+120 |         (bool requireSlasher, uint48 minVaultEpochDuration) = masterSetupParams.votingPowerProvider.getSlashingData();
+    |          ^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/voting-power/extensions/BaseSlashing.t.sol:151:10:
+    |
+151 |         (bool requireSlasher, uint48 minVaultEpochDuration) = masterSetupParams.votingPowerProvider.getSlashingData();
+    |          ^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+   --> test/modules/voting-power/extensions/OpNetVaultAutoDeploy.t.sol:171:10:
+    |
+171 |         (bool requireSlasher, uint48 minVaultEpochDuration_) = deployer.getSlashingData();
+    |          ^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+  --> test/modules/voting-power/extensions/OperatorsBlacklist.t.sol:72:10:
+   |
+72 |         (bool requireSlasher, uint48 minVaultEpochDuration) = blacklistOps.getSlashingData();
+   |          ^^^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+  --> test/modules/voting-power/extensions/OperatorsWhitelist.t.sol:79:10:
+   |
+79 |         (bool requireSlasher, uint48 minVaultEpochDuration) = whitelistOps.getSlashingData();
+   |          ^^^^^^^^^^^^^^^^^^^
 
 Warning (2018): Function state mutability can be restricted to pure
   --> src/libraries/keys/KeyBlsBn254.sol:37:5:
@@ -128,9 +362,9 @@ Warning (2018): Function state mutability can be restricted to pure
    |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/sigs/SigEcdsaSecp256k1.sol:30:5:
+  --> src/libraries/sigs/SigEcdsaSecp256k1.sol:47:5:
    |
-30 |     function verify(address key, bytes32 message, bytes memory signature) internal view returns (bool) {
+47 |     function verify(address key, bytes32 message, bytes memory signature) internal view returns (bool) {
    |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
@@ -170,9 +404,9 @@ Warning (2018): Function state mutability can be restricted to pure
    |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to view
-   --> script/test/MasterSetup.s.sol:276:5:
+   --> script/test/MasterSetup.s.sol:277:5:
     |
-276 |     function loadMasterSetupParams() public returns (MasterSetupParams memory masterSetupParams) {
+277 |     function loadMasterSetupParams() public returns (MasterSetupParams memory masterSetupParams) {
     |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to view
@@ -185,6 +419,138 @@ Warning (2018): Function state mutability can be restricted to view
    --> script/test/MasterCommit.s.sol:151:5:
     |
 151 |     function loadZkProof() internal returns (ZkProof memory) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/MasterGenesisSetup.sol:68:5:
+   |
+68 |     function loadGenesis()
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> test/mocks/SigVerifierFalseMock.sol:15:5:
+   |
+15 |     function verifyQuorumSig(
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/modules/base/NetworkManager.t.sol:45:5:
+   |
+45 |     function test_DefaultsBeforeInit() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> test/modules/base/NetworkManager.t.sol:51:5:
+   |
+51 |     function test_Location() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/modules/network/Network.t.sol:78:5:
+   |
+78 |     function test_Init() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> test/modules/network/Network.t.sol:143:5:
+    |
+143 |     function test_PerSelectorDelayOverridesGlobal() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> test/modules/settlement/Settlement.t.sol:193:5:
+    |
+193 |     function testVersion() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> test/modules/settlement/Settlement.t.sol:197:5:
+    |
+197 |     function testInitParams() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/modules/valset-driver/ValSetDriver.t.sol:79:5:
+   |
+79 |     function test_InitialConfig() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> test/modules/valset-driver/ValSetDriver.t.sol:323:5:
+    |
+323 |     function test_Location() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> test/modules/valset-driver/ValSetDriver.t.sol:410:5:
+    |
+410 |     function test_GetValSetConfig() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> test/modules/voting-power/VotingPowerProvider.t.sol:754:5:
+    |
+754 |     function test_Location() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> test/modules/voting-power/extensions/BaseRewards.t.sol:162:5:
+    |
+162 |     function test_Location() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> test/modules/voting-power/extensions/BaseSlashing.t.sol:244:5:
+    |
+244 |     function test_Location() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> test/modules/voting-power/extensions/OpNetVaultAutoDeploy.t.sol:143:5:
+    |
+143 |     function test_BasicFlags() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> test/modules/voting-power/extensions/OpNetVaultAutoDeploy.t.sol:256:5:
+    |
+256 |     function test_Location() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/modules/voting-power/extensions/OperatorsBlacklist.t.sol:94:5:
+   |
+94 |     function test_BasicEnvironment() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> test/modules/voting-power/extensions/OperatorsBlacklist.t.sol:130:5:
+    |
+130 |     function test_Location() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/modules/voting-power/extensions/OperatorsJail.t.sol:64:5:
+   |
+64 |     function test_BasicEnvironment() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> test/modules/voting-power/extensions/OperatorsJail.t.sol:122:5:
+    |
+122 |     function test_Location() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> test/modules/voting-power/extensions/OperatorsWhitelist.t.sol:118:5:
+    |
+118 |     function test_WhitelistEnabledByDefault() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> test/modules/voting-power/extensions/OperatorsWhitelist.t.sol:174:5:
+    |
+174 |     function test_Location() public {
     |     ^ (Relevant source part starts here and spans across multiple lines).
 
 
@@ -201,7 +567,7 @@ Warning (2018): Function state mutability can be restricted to view
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | BaseRewardsLogic                                                                                                 | 1,647            | 1,699             | 22,929             | 47,453              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| BaseSlashingLogic                                                                                                | 3,724            | 3,776             | 20,852             | 45,376              |
+| BaseSlashingLogic                                                                                                | 4,039            | 4,091             | 20,537             | 45,061              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Bytes                                                                                                            | 85               | 135               | 24,491             | 49,017              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -235,9 +601,9 @@ Warning (2018): Function state mutability can be restricted to view
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | KeyEcdsaSecp256k1Mock                                                                                            | 1,451            | 1,479             | 23,125             | 47,673              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| KeyRegistry                                                                                                      | 15,159           | 15,187            | 9,417              | 33,965              |
+| KeyRegistry                                                                                                      | 15,203           | 15,231            | 9,373              | 33,921              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| KeyRegistryWithKey64                                                                                             | 16,539           | 16,567            | 8,037              | 32,585              |
+| KeyRegistryWithKey64                                                                                             | 16,583           | 16,611            | 7,993              | 32,541              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | KeyTags                                                                                                          | 85               | 135               | 24,491             | 49,017              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -253,19 +619,19 @@ Warning (2018): Function state mutability can be restricted to view
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | MockToken (test/modules/voting-power/common/voting-power-calc/WeightedVaultsVPCalc.t.sol)                        | 1,798            | 2,922             | 22,778             | 46,230              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| MyKeyRegistry                                                                                                    | 15,449           | 15,477            | 9,127              | 33,675              |
+| MyKeyRegistry                                                                                                    | 15,493           | 15,521            | 9,083              | 33,631              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| MyNetwork                                                                                                        | 12,443           | 12,635            | 12,133             | 36,517              |
+| MyNetwork                                                                                                        | 12,385           | 12,577            | 12,191             | 36,575              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | MySettlement                                                                                                     | 12,036           | 12,064            | 12,540             | 37,088              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | MyValSetDriver                                                                                                   | 18,205           | 18,233            | 6,371              | 30,919              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| MyVotingPowerProvider                                                                                            | 12,061           | 12,229            | 12,515             | 36,923              |
+| MyVotingPowerProvider                                                                                            | 12,997           | 13,165            | 11,579             | 35,987              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| Network                                                                                                          | 12,138           | 12,330            | 12,438             | 36,822              |
+| Network                                                                                                          | 12,080           | 12,272            | 12,496             | 36,880              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| OpNetVaultAutoDeployLogic                                                                                        | 5,704            | 5,756             | 18,872             | 43,396              |
+| OpNetVaultAutoDeployLogic                                                                                        | 5,734            | 5,786             | 18,842             | 43,366              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Panic                                                                                                            | 85               | 135               | 24,491             | 49,017              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -283,7 +649,7 @@ Warning (2018): Function state mutability can be restricted to view
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | SigEcdsaSecp256k1                                                                                                | 85               | 135               | 24,491             | 49,017              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| SigVerifierBlsBn254Simple                                                                                        | 5,172            | 5,200             | 19,404             | 43,952              |
+| SigVerifierBlsBn254Simple                                                                                        | 5,224            | 5,252             | 19,352             | 43,900              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | SigVerifierBlsBn254ZK                                                                                            | 2,832            | 3,912             | 21,744             | 45,240              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -307,21 +673,21 @@ Warning (2018): Function state mutability can be restricted to view
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | TestEpochManager                                                                                                 | 4,368            | 4,396             | 20,208             | 44,756              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestKeyRegistry                                                                                                  | 17,108           | 17,136            | 7,468              | 32,016              |
+| TestKeyRegistry                                                                                                  | 17,152           | 17,180            | 7,424              | 31,972              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestMultiToken                                                                                                   | 11,348           | 11,516            | 13,228             | 37,636              |
+| TestMultiToken                                                                                                   | 12,270           | 12,438            | 12,306             | 36,714              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | TestNetworkManager                                                                                               | 1,397            | 1,425             | 23,179             | 47,727              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | TestNoPermissionManager                                                                                          | 375              | 403               | 24,201             | 48,749              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestOpNetVaultAutoDeploy                                                                                         | 14,024           | 14,232            | 10,552             | 34,920              |
+| TestOpNetVaultAutoDeploy                                                                                         | 14,940           | 15,148            | 9,636              | 34,004              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestOperatorsBlacklist                                                                                           | 12,180           | 12,348            | 12,396             | 36,804              |
+| TestOperatorsBlacklist                                                                                           | 13,117           | 13,285            | 11,459             | 35,867              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestOperatorsJail                                                                                                | 12,403           | 12,571            | 12,173             | 36,581              |
+| TestOperatorsJail                                                                                                | 13,371           | 13,539            | 11,205             | 35,613              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestOperatorsWhitelist                                                                                           | 12,608           | 12,776            | 11,968             | 36,376              |
+| TestOperatorsWhitelist                                                                                           | 13,536           | 13,704            | 11,040             | 35,448              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | TestOzAccessControl                                                                                              | 1,776            | 1,804             | 22,800             | 47,348              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -335,21 +701,21 @@ Warning (2018): Function state mutability can be restricted to view
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | TestSettlement                                                                                                   | 10,833           | 10,861            | 13,743             | 38,291              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestSharedVaults                                                                                                 | 11,451           | 11,619            | 13,125             | 37,533              |
+| TestSharedVaults                                                                                                 | 12,373           | 12,541            | 12,203             | 36,611              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | TestValSetDriver                                                                                                 | 16,017           | 16,045            | 8,559              | 33,107              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | TestVotingPowerCalcManager                                                                                       | 952              | 980               | 23,624             | 48,172              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestVotingPowerProvider (test/modules/voting-power/VotingPowerProvider.t.sol)                                    | 13,901           | 14,069            | 10,675             | 35,083              |
+| TestVotingPowerProvider (test/modules/voting-power/VotingPowerProvider.t.sol)                                    | 14,860           | 15,028            | 9,716              | 34,124              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestVotingPowerProvider (test/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.t.sol) | 14,605           | 14,773            | 9,971              | 34,379              |
+| TestVotingPowerProvider (test/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.t.sol) | 15,564           | 15,732            | 9,012              | 33,420              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestVotingPowerProvider (test/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.t.sol)   | 18,297           | 18,465            | 6,279              | 30,687              |
+| TestVotingPowerProvider (test/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.t.sol)   | 19,247           | 19,415            | 5,329              | 29,737              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestVotingPowerProvider (test/modules/voting-power/common/voting-power-calc/WeightedTokensVPCalc.t.sol)          | 16,441           | 16,609            | 8,135              | 32,543              |
+| TestVotingPowerProvider (test/modules/voting-power/common/voting-power-calc/WeightedTokensVPCalc.t.sol)          | 17,400           | 17,568            | 7,176              | 31,584              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestVotingPowerProvider (test/modules/voting-power/common/voting-power-calc/WeightedVaultsVPCalc.t.sol)          | 15,775           | 15,943            | 8,801              | 33,209              |
+| TestVotingPowerProvider (test/modules/voting-power/common/voting-power-calc/WeightedVaultsVPCalc.t.sol)          | 16,734           | 16,902            | 7,842              | 32,250              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Time                                                                                                             | 85               | 135               | 24,491             | 49,017              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -375,12 +741,12 @@ Warning (2018): Function state mutability can be restricted to view
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Verifier (test/data/zk/Verifier_1000.sol)                                                                        | 6,432            | 6,460             | 18,144             | 42,692              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| VotingPowerProviderFull                                                                                          | 23,431           | 23,639            | 1,145              | 25,513              |
+| VotingPowerProviderFull                                                                                          | 24,309           | 24,517            | 267                | 24,635              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| VotingPowerProviderLogic                                                                                         | 15,579           | 15,631            | 8,997              | 33,521              |
+| VotingPowerProviderLogic                                                                                         | 15,767           | 15,819            | 8,809              | 33,333              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| VotingPowerProviderSemiFull                                                                                      | 15,910           | 16,078            | 8,666              | 33,074              |
+| VotingPowerProviderSemiFull                                                                                      | 16,822           | 16,990            | 7,754              | 32,162              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| VotingPowerProviderSharedVaults                                                                                  | 11,924           | 12,092            | 12,652             | 37,060              |
+| VotingPowerProviderSharedVaults                                                                                  | 12,860           | 13,028            | 11,716             | 36,124              |
 ╰------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------╯
 
