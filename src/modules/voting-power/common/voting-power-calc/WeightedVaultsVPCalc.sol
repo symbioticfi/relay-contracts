@@ -10,6 +10,10 @@ import {IVotingPowerCalcManager} from "../../../../interfaces/modules/voting-pow
 import {IWeightedVaultsVPCalc} from
     "../../../../interfaces/modules/voting-power/common/voting-power-calc/IWeightedVaultsVPCalc.sol";
 
+/**
+ * @title WeightedVaultsVPCalc
+ * @notice Contract for calculating the voting power, weighting the vaults.
+ */
 abstract contract WeightedVaultsVPCalc is EqualStakeVPCalc, PermissionManager, IWeightedVaultsVPCalc {
     using Checkpoints for Checkpoints.Trace208;
 

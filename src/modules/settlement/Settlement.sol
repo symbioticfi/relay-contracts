@@ -10,6 +10,10 @@ import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
 import {ISettlement} from "../../interfaces/modules/settlement/ISettlement.sol";
 import {ISigVerifier} from "../../interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol";
 
+/**
+ * @title Settlement
+ * @notice Contract for processing the validator sets through epochs and allowing verifying their decisions on-chain.
+ */
 abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISettlement {
     using Checkpoints for Checkpoints.Trace208;
 

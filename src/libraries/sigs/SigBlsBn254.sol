@@ -4,6 +4,10 @@ pragma solidity ^0.8.25;
 import {BN254} from "../utils/BN254.sol";
 import {KeyBlsBn254} from "../keys/KeyBlsBn254.sol";
 
+/**
+ * @title SigBlsBn254
+ * @notice Library for verifying BLS signatures on the BN254 curve.
+ */
 library SigBlsBn254 {
     using BN254 for BN254.G1Point;
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;

@@ -758,7 +758,6 @@ contract VotingPowerProviderTest is InitSetupTest {
     }
 
     function test_CheckStakes() public {
-        (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
         votingPowerProvider =
             new TestVotingPowerProvider(address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory));
 
@@ -796,6 +795,7 @@ contract VotingPowerProviderTest is InitSetupTest {
             vm.stopPrank();
         }
 
+        (, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
         for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
             Vm.Wallet memory operator = getOperator(i);
             address operatorVault = _getVault_SymbioticCore(
@@ -829,10 +829,6 @@ contract VotingPowerProviderTest is InitSetupTest {
             vm.startPrank(vars.network.addr);
             votingPowerProvider.registerOperatorVault(operator.addr, operatorVault);
             vm.stopPrank();
-
-            console2.log(
-                "operatorVotingPowers1", votingPowerProvider.getOperatorStake(getOperator(0).addr, operatorVault)
-            );
         }
 
         IVotingPowerProvider.OperatorVotingPower[] memory operatorVotingPowers1 =
@@ -844,13 +840,12 @@ contract VotingPowerProviderTest is InitSetupTest {
 
         uint256 totalStake;
         for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
-            IVotingPowerProvider.VaultValue[] memory vaultStakes1 =
-                votingPowerProvider.getOperatorStakes(getOperator(0).addr);
+            Vm.Wallet memory operator = getOperator(i);
+            IVotingPowerProvider.VaultValue[] memory vaultStakes1 = votingPowerProvider.getOperatorStakes(operator.addr);
             assertEq(
                 abi.encode(vaultStakes1),
-                abi.encode(votingPowerProvider.getOperatorStakesAt(getOperator(0).addr, uint48(vm.getBlockTimestamp())))
+                abi.encode(votingPowerProvider.getOperatorStakesAt(operator.addr, uint48(vm.getBlockTimestamp())))
             );
-            Vm.Wallet memory operator = getOperator(i);
             IVotingPowerProvider.VaultValue[] memory vaultVotingPowers1 =
                 votingPowerProvider.getOperatorVotingPowers(operator.addr, "");
             assertEq(

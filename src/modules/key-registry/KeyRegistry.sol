@@ -19,6 +19,13 @@ import {
 
 import {MulticallUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
 
+/**
+ * @title KeyRegistry
+ * @notice Contract for operators' keys management.
+ * @dev It supports:
+ *       - BLS public keys on BN254
+ *       - ECDSA public keys on secp256k1
+ */
 contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
     using KeyTags for uint8;
     using KeyTags for uint128;

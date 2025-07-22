@@ -2,6 +2,9 @@
 pragma solidity ^0.8.0;
 
 interface INetworkManager {
+    /**
+     * @notice Reverts when the network is zero address.
+     */
     error NetworkManager_InvalidNetwork();
 
     /**

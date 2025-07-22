@@ -7,6 +7,10 @@ import {BaseSlashingLogic} from "./logic/BaseSlashingLogic.sol";
 
 import {IBaseSlashing} from "../../../interfaces/modules/voting-power/extensions/IBaseSlashing.sol";
 
+/**
+ * @title BaseSlashing
+ * @notice Base contract for slashing vaults.
+ */
 abstract contract BaseSlashing is VotingPowerProvider, IBaseSlashing {
     modifier onlySlasher() {
         _checkSlasher();

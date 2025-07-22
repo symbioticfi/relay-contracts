@@ -5,6 +5,10 @@ import {VotingPowerProvider} from "../VotingPowerProvider.sol";
 
 import {IOperatorsJail} from "../../../interfaces/modules/voting-power/extensions/IOperatorsJail.sol";
 
+/**
+ * @title OperatorsJail
+ * @notice Contract for jailing (unregistering and not allowing to register) operators for a given duration.
+ */
 abstract contract OperatorsJail is VotingPowerProvider, IOperatorsJail {
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OperatorsJail")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant OperatorsJailStorageLocation =

@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
+/**
+ * @title KeyTags
+ * @notice Library for working with key tags which represent the keys' types and arbitrary purpose identifiers.
+ */
 library KeyTags {
     using KeyTags for uint128;
 

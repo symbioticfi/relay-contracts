@@ -11,6 +11,10 @@ import {IPricedTokensChainlinkVPCalc} from
     "../../../../interfaces/modules/voting-power/common/voting-power-calc/IPricedTokensChainlinkVPCalc.sol";
 import {IVotingPowerCalcManager} from "../../../../interfaces/modules/voting-power/base/IVotingPowerCalcManager.sol";
 
+/**
+ * @title PricedTokensChainlinkVPCalc
+ * @notice Contract for calculating the voting power, pricing the tokens using Chainlink.
+ */
 abstract contract PricedTokensChainlinkVPCalc is
     NormalizedTokenDecimalsVPCalc,
     PermissionManager,

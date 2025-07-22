@@ -13,6 +13,11 @@ import {ISigVerifierBlsBn254Simple} from
 import {ISigVerifier} from "../../../interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol";
 import {KEY_TYPE_BLS_BN254} from "../../../interfaces/modules/key-registry/IKeyRegistry.sol";
 
+/**
+ * @title SigVerifierBlsBn254Simple
+ * @notice Contract for verifying validator's set decision based on BLS signatures on the BN254 curve
+ *         by decompressing the whole validator set on-chain.
+ */
 contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
     using KeyBlsBn254 for bytes;
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;

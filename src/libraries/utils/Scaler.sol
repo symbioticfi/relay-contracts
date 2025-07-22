@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
+/**
+ * @title Scaler
+ * @notice Library for scaling values between different decimals and inverting them.
+ */
 library Scaler {
     /**
      * @notice Scales a value given its decimals to the target decimals.

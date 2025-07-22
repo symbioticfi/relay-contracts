@@ -5,8 +5,9 @@ import {Checkpoints} from "../structs/Checkpoints.sol";
 
 /**
  * @title PersistentSet
- * @notice This library implements a persistent set using Checkpoints.
- * @dev The first addition of an element to the set is optimized by using 0 as an "included" status and 1 otherwise.
+ * @notice Library implementing a persistent set using Checkpoints.
+ * @dev The library is optimized towards "write" operations, so, in general, "read" batch operations
+ *      like `values()` and `valuesAt()` should not be used on-chain.
  */
 library PersistentSet {
     using Checkpoints for Checkpoints.Trace208;

@@ -13,6 +13,10 @@ import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
 
 import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
+/**
+ * @title NormalizedTokenDecimalsVPCalc
+ * @notice Contract for calculating the voting power, normalizing the stakes in different tokens to the same decimals.
+ */
 abstract contract NormalizedTokenDecimalsVPCalc is EqualStakeVPCalc, INormalizedTokenDecimalsVPCalc {
     using Scaler for uint256;
 

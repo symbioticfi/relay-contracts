@@ -6,6 +6,10 @@ import {IOzEIP712} from "../../interfaces/modules/base/IOzEIP712.sol";
 import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
+/**
+ * @title OzEIP712
+ * @notice Contract for EIP712 hashing.
+ */
 abstract contract OzEIP712 is EIP712Upgradeable, IOzEIP712 {
     bytes32 private constant CROSS_CHAIN_TYPE_HASH = keccak256("EIP712Domain(string name,string version)");
 

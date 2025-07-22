@@ -8,6 +8,10 @@ import {Subnetwork} from "@symbioticfi/core/src/contracts/libraries/Subnetwork.s
 
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
+/**
+ * @title NetworkManager
+ * @notice Contract for managing the network and subnetwork getters.
+ */
 abstract contract NetworkManager is Initializable, StaticDelegateCallable, INetworkManager {
     using Subnetwork for address;
 

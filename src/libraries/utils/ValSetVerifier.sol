@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
+/**
+ * @title ValSetVerifier
+ * @notice Library for verifying the validity of validator set elements.
+ */
 library ValSetVerifier {
     /**
      * @notice The validator's key.

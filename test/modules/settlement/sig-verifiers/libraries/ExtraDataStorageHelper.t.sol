@@ -15,7 +15,7 @@ contract ExtraDataStorageHelperTest is Test {
         uint32 vt = 1;
         bytes32 nameHash = _randomNameHash("alice");
 
-        bytes32 expected = keccak256(abi.encode(ExtraDataStorageHelper.GLOBAL_KEY_PREFIX_HASH, vt, nameHash));
+        bytes32 expected = keccak256(abi.encode(vt, nameHash));
         bytes32 produced = ExtraDataStorageHelper.getKey(vt, nameHash);
 
         assertEq(produced, expected, "base key mismatch");
@@ -26,15 +26,7 @@ contract ExtraDataStorageHelperTest is Test {
         uint8 keyTag = 3;
         bytes32 nameHash = _randomNameHash("bob");
 
-        bytes32 expected = keccak256(
-            abi.encode(
-                ExtraDataStorageHelper.GLOBAL_KEY_PREFIX_HASH,
-                vt,
-                ExtraDataStorageHelper.KEY_TAG_PREFIX_HASH,
-                keyTag,
-                nameHash
-            )
-        );
+        bytes32 expected = keccak256(abi.encode(vt, ExtraDataStorageHelper.KEY_TAG_PREFIX_HASH, keyTag, nameHash));
 
         bytes32 produced = ExtraDataStorageHelper.getKey(vt, keyTag, nameHash);
         assertEq(produced, expected, "tagged key mismatch");

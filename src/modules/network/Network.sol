@@ -12,6 +12,13 @@ import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 import {TimelockControllerUpgradeable} from
     "@openzeppelin/contracts-upgradeable/governance/TimelockControllerUpgradeable.sol";
 
+/**
+ * @title Network
+ * @notice Contract for network management.
+ * @dev It allows any external watcher to verify if the set delay is sufficient for a given operation (call to some contract's function).
+ *      It supports delays for native asset transfers.
+ *      It supports setting delay for (exact target | exact selector) pairs and for (any target | exact selector) pairs.
+ */
 contract Network is TimelockControllerUpgradeable, INetwork {
     using Bytes for bytes;
 

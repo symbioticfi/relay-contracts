@@ -13,6 +13,11 @@ interface IBaseSlashing {
     error BaseSlashing_NoSlasher();
 
     /**
+     * @notice Reverts when the slashing wasn't required at the requested timestamp.
+     */
+    error BaseSlashing_NoSlashing();
+
+    /**
      * @notice Reverts when the caller is not the slasher.
      */
     error BaseSlashing_NotSlasher();

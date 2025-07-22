@@ -5,6 +5,10 @@ import {VotingPowerProvider} from "../VotingPowerProvider.sol";
 
 import {IOperatorVaults} from "../../../interfaces/modules/voting-power/extensions/IOperatorVaults.sol";
 
+/**
+ * @title OperatorVaults
+ * @notice Contract for registering and unregistering operator vaults.
+ */
 abstract contract OperatorVaults is VotingPowerProvider, IOperatorVaults {
     function __OperatorVaults_init() internal virtual onlyInitializing {}
 

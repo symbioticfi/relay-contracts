@@ -8,6 +8,10 @@ import {OpNetVaultAutoDeployLogic} from "./logic/OpNetVaultAutoDeployLogic.sol";
 import {IOpNetVaultAutoDeploy} from "../../../interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol";
 import {ISetMaxNetworkLimitHook} from "../../../interfaces/modules/network/ISetMaxNetworkLimitHook.sol";
 
+/**
+ * @title OpNetVaultAutoDeploy
+ * @notice Contract for auto-deploying vaults for operators on their registration.
+ */
 abstract contract OpNetVaultAutoDeploy is VotingPowerProvider, IOpNetVaultAutoDeploy {
     /**
      * @inheritdoc IOpNetVaultAutoDeploy

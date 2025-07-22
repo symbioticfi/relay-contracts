@@ -7,6 +7,10 @@ import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
 
 import {IEpochManager} from "../../interfaces/modules/valset-driver/IEpochManager.sol";
 
+/**
+ * @title EpochManager
+ * @notice Contract for managing the epochs state machine.
+ */
 abstract contract EpochManager is PermissionManager, IEpochManager {
     using Checkpoints for Checkpoints.Trace208;
 

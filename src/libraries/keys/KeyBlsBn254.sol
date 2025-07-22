@@ -3,6 +3,11 @@ pragma solidity ^0.8.25;
 
 import {BN254} from "../utils/BN254.sol";
 
+/**
+ * @title KeyBlsBn254
+ * @notice Library for interacting with BLS public keys on the BN254 curve, including validation, serialization, and compression.
+ * @dev The keys are represented as G1 points on the BN254 curve.
+ */
 library KeyBlsBn254 {
     using KeyBlsBn254 for KEY_BLS_BN254;
     using KeyBlsBn254 for BN254.G1Point;

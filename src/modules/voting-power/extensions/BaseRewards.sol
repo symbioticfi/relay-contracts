@@ -7,6 +7,10 @@ import {BaseRewardsLogic} from "./logic/BaseRewardsLogic.sol";
 
 import {IBaseRewards} from "../../../interfaces/modules/voting-power/extensions/IBaseRewards.sol";
 
+/**
+ * @title BaseRewards
+ * @notice Base contract for distributing rewards to stakers and operators.
+ */
 abstract contract BaseRewards is VotingPowerProvider, IBaseRewards {
     modifier onlyRewarder() {
         _checkRewarder();

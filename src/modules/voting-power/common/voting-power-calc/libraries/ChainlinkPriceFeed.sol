@@ -7,6 +7,12 @@ import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interf
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
+/**
+ * @title ChainlinkPriceFeed
+ * @notice Library for fetching prices from Chainlink in a historical manner.
+ * @dev It supports arbitrary aggregators' decimals, an arbitrary number of aggregator hops, and a possibility to invert prices.
+ *      It supports most of Chainlink's aggregators through the whole history except the oldest ones not supporting `getRoundData()`.
+ */
 library ChainlinkPriceFeed {
     using Math for uint256;
     using Scaler for uint256;

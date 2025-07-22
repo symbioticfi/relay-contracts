@@ -7,6 +7,10 @@ import {IEqualStakeVPCalc} from
     "../../../../interfaces/modules/voting-power/common/voting-power-calc/IEqualStakeVPCalc.sol";
 import {IVotingPowerCalcManager} from "../../../../interfaces/modules/voting-power/base/IVotingPowerCalcManager.sol";
 
+/**
+ * @title EqualStakeVPCalc
+ * @notice Contract for calculating the voting power, making it equal to the stake.
+ */
 abstract contract EqualStakeVPCalc is VotingPowerCalcManager, IEqualStakeVPCalc {
     function __EqualStakeVPCalc_init() internal virtual onlyInitializing {}
 

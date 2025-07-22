@@ -18,6 +18,10 @@ import {IVetoSlasher} from "@symbioticfi/core/src/interfaces/slasher/IVetoSlashe
 uint64 constant BASE_VAULT_VERSION = 1;
 uint64 constant TOKENIZED_VAULT_VERSION = 2;
 
+/**
+ * @title OpNetVaultAutoDeployLogic
+ * @notice Library for auto-deploying vaults.
+ */
 library OpNetVaultAutoDeployLogic {
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OpNetVaultAutoDeploy")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant OpNetVaultAutoDeployStorageLocation =
@@ -70,7 +74,7 @@ library OpNetVaultAutoDeployLogic {
     function setAutoDeployConfig(
         IOpNetVaultAutoDeploy.AutoDeployConfig memory config
     ) public {
-        validateConfig(config);
+        _validateConfig(config);
         _getOpNetVaultAutoDeployStorage()._config = config;
         emit IOpNetVaultAutoDeploy.SetAutoDeployConfig(config);
     }
@@ -137,7 +141,7 @@ library OpNetVaultAutoDeployLogic {
         return (true, slasherIndex, slasherParams);
     }
 
-    function validateConfig(
+    function _validateConfig(
         IOpNetVaultAutoDeploy.AutoDeployConfig memory config
     ) public view {
         if (config.collateral == address(0)) {
@@ -166,12 +170,26 @@ library OpNetVaultAutoDeployLogic {
 
     // ------------------------------------ HELPER FUNCTIONS ------------------------------------
 
+    /**
+     * @notice Gets the encoded base vault params.
+     * @param params The vault params.
+     * @return version The version of the vault.
+     * @return params The encoded base vault params.
+     */
     function getVaultParams(
         IVault.InitParams memory params
     ) public view returns (uint64, bytes memory) {
         return (BASE_VAULT_VERSION, abi.encode(params));
     }
 
+    /**
+     * @notice Gets the encoded tokenized vault params.
+     * @param baseParams The base vault params.
+     * @param name The name of the tokenized vault.
+     * @param symbol The symbol of the tokenized vault.
+     * @return version The version of the vault.
+     * @return params The encoded tokenized vault params.
+     */
     function getVaultTokenizedParams(
         IVault.InitParams memory baseParams,
         string memory name,
@@ -183,6 +201,15 @@ library OpNetVaultAutoDeployLogic {
         );
     }
 
+    /**
+     * @notice Gets the encoded operator-network-specific delegator params.
+     * @param operator The operator.
+     * @param defaultAdminRoleHolder The default admin role holder.
+     * @param hook The hook.
+     * @param hookSetRoleHolder The hook set role holder.
+     * @return version The version of the delegator.
+     * @return params The encoded operator-network-specific delegator params.
+     */
     function getOperatorNetworkSpecificDelegatorParams(
         address operator,
         address defaultAdminRoleHolder,
@@ -205,6 +232,12 @@ library OpNetVaultAutoDeployLogic {
         );
     }
 
+    /**
+     * @notice Gets the encoded instant slasher params.
+     * @param isBurnerHook If the burner needs a hook call.
+     * @return version The version of the slasher.
+     * @return params The encoded instant slasher params.
+     */
     function getSlasherParams(
         bool isBurnerHook
     ) public view returns (uint64, bytes memory) {
@@ -214,6 +247,14 @@ library OpNetVaultAutoDeployLogic {
         );
     }
 
+    /**
+     * @notice Gets the encoded veto slasher params.
+     * @param isBurnerHook If the burner needs a hook call.
+     * @param vetoDuration The veto duration.
+     * @param resolverSetEpochsDelay The delay in epochs for a resolver to be set.
+     * @return version The version of the slasher.
+     * @return params The encoded veto slasher params.
+     */
     function getVetoSlasherParams(
         bool isBurnerHook,
         uint48 vetoDuration,
@@ -231,6 +272,20 @@ library OpNetVaultAutoDeployLogic {
         );
     }
 
+    /**
+     * @notice Creates a vault.
+     * @param version The version of the vault.
+     * @param owner The owner of the vault.
+     * @param vaultParams The vault params.
+     * @param delegatorIndex The index of the delegator.
+     * @param delegatorParams The delegator params.
+     * @param withSlasher If the vault should have a slasher.
+     * @param slasherIndex The index of the slasher.
+     * @param slasherParams The slasher params.
+     * @return vault The address of the vault.
+     * @return delegator The address of the delegator.
+     * @return slasher The address of the slasher.
+     */
     function createVault(
         uint64 version,
         address owner,

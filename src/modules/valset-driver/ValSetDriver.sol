@@ -12,6 +12,10 @@ import {IValSetDriver} from "../../interfaces/modules/valset-driver/IValSetDrive
 
 import {MulticallUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
 
+/**
+ * @title ValSetDriver
+ * @notice Contract for providing various configs and driving data for off-chain services.
+ */
 abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgradeable, IValSetDriver {
     using Checkpoints for Checkpoints.Trace256;
     using Checkpoints for Checkpoints.Trace208;

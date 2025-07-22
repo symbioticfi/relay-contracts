@@ -10,6 +10,10 @@ import {IVotingPowerCalcManager} from "../../../../interfaces/modules/voting-pow
 import {IWeightedTokensVPCalc} from
     "../../../../interfaces/modules/voting-power/common/voting-power-calc/IWeightedTokensVPCalc.sol";
 
+/**
+ * @title WeightedTokensVPCalc
+ * @notice Contract for calculating the voting power, weighting the tokens.
+ */
 abstract contract WeightedTokensVPCalc is NormalizedTokenDecimalsVPCalc, PermissionManager, IWeightedTokensVPCalc {
     using Checkpoints for Checkpoints.Trace208;
 

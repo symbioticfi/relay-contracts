@@ -14,6 +14,10 @@ import {MulticallUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/Mu
 import {NoncesUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/NoncesUpgradeable.sol";
 import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
+/**
+ * @title VotingPowerProvider
+ * @notice Contract for managing tokens, operators, vaults, and their voting powers.
+ */
 abstract contract VotingPowerProvider is
     NetworkManager,
     VotingPowerCalcManager,

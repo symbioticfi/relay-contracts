@@ -5,6 +5,10 @@ import {KeyEcdsaSecp256k1} from "../keys/KeyEcdsaSecp256k1.sol";
 
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
+/**
+ * @title SigEcdsaSecp256k1
+ * @notice Library for verifying ECDSA signatures on the secp256k1 curve.
+ */
 library SigEcdsaSecp256k1 {
     using ECDSA for bytes32;
     using KeyEcdsaSecp256k1 for KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1;

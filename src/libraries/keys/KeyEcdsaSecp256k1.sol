@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
+/**
+ * @title KeyEcdsaSecp256k1
+ * @notice Library for interacting with ECDSA public keys on the secp256k1 curve, including validation and serialization.
+ * @dev The keys are represented as addresses.
+ */
 library KeyEcdsaSecp256k1 {
     using KeyEcdsaSecp256k1 for KEY_ECDSA_SECP256K1;
     using KeyEcdsaSecp256k1 for address;

@@ -7,6 +7,10 @@ import {IOzOwnable} from "../../../interfaces/modules/common/permissions/IOzOwna
 
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
+/**
+ * @title OzOwnable
+ * @notice Contract for permission management based on OpenZeppelin's Ownable.
+ */
 abstract contract OzOwnable is PermissionManager, OwnableUpgradeable, IOzOwnable {
     function __OzOwnable_init(
         OzOwnableInitParams memory initParams

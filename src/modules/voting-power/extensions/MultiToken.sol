@@ -5,6 +5,10 @@ import {VotingPowerProvider} from "../VotingPowerProvider.sol";
 
 import {IMultiToken} from "../../../interfaces/modules/voting-power/extensions/IMultiToken.sol";
 
+/**
+ * @title MultiToken
+ * @notice Contract for registering and unregistering multiple tokens.
+ */
 abstract contract MultiToken is VotingPowerProvider, IMultiToken {
     function __MultiToken_init() internal virtual onlyInitializing {}
 

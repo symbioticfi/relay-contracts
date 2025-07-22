@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
+/**
+ * @title InputNormalizer
+ * @notice Library for normalizing input arrays to a given length.
+ */
 library InputNormalizer {
     /**
      * @notice Reverts when the length of the input is not zero and not equal to the expected length.

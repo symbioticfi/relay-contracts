@@ -5,6 +5,10 @@ import {IVotingPowerCalcManager} from "../../../interfaces/modules/voting-power/
 
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
+/**
+ * @title VotingPowerCalcManager
+ * @notice Base contract for voting power calculations.
+ */
 abstract contract VotingPowerCalcManager is Initializable, IVotingPowerCalcManager {
     /**
      * @inheritdoc IVotingPowerCalcManager

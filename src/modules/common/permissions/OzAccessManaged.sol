@@ -7,6 +7,10 @@ import {IOzAccessManaged} from "../../../interfaces/modules/common/permissions/I
 
 import {AccessManagedUpgradeable} from "@openzeppelin/contracts-upgradeable/access/manager/AccessManagedUpgradeable.sol";
 
+/**
+ * @title OzAccessManaged
+ * @notice Contract for permission management based on OpenZeppelin's AccessManaged.
+ */
 abstract contract OzAccessManaged is PermissionManager, AccessManagedUpgradeable, IOzAccessManaged {
     function __OzAccessManaged_init(
         OzAccessManagedInitParams memory initParams

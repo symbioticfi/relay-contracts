@@ -18,6 +18,10 @@ import {IRegistry} from "@symbioticfi/core/src/interfaces/common/IRegistry.sol";
 import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
 import {IVetoSlasher} from "@symbioticfi/core/src/interfaces/slasher/IVetoSlasher.sol";
 
+/**
+ * @title VotingPowerProviderLogic
+ * @notice Library-logic of the voting power provider contract.
+ */
 library VotingPowerProviderLogic {
     using Checkpoints for Checkpoints.Trace208;
     using PersistentSet for PersistentSet.AddressSet;
