@@ -6,6 +6,7 @@
     "requiredKeyTag": 15,
     "captureTimestamp": 1746024875,
     "quorumThreshold": 20000000000001,
+    "totalVotingPower": 30000000000000,
     "previousHeaderHash": "0xd397b3b043d87fcd6fad1291ff0bfd16401c274896d8c63a923727f077b8e0b5"
   },
   "extraData": [
