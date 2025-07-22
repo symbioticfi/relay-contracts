@@ -68,11 +68,6 @@ interface IVotingPowerProvider {
     error VotingPowerProvider_SharedVaultNotRegistered();
 
     /**
-     * @notice Reverts when the slashing window is greater than the current one.
-     */
-    error VotingPowerProvider_SlashingWindowTooLarge();
-
-    /**
      * @notice Reverts when the token is already registered.
      */
     error VotingPowerProvider_TokenAlreadyIsRegistered();
