@@ -3,6 +3,8 @@
 
 # Symbiotic Relay Smart Contracts
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/symbioticfi/middleware-sdk)
+
 ## Overview
 
 Symbiotic Relay is a peer-to-peer side-network designed to collect and aggregate signatures from validators, maintain validator sets on the settlement contract.
