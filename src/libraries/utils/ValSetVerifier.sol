@@ -75,9 +75,9 @@ library ValSetVerifier {
 
     uint256 internal constant KEY_LIST_MAX_LENGTH = 128; // 128 elements (2 ^ KEY_LIST_TREE_HEIGHT)
 
-    uint256 internal constant VAULT_LIST_TREE_HEIGHT = 5; // 32 elements (ceil(log2(32)))
+    uint256 internal constant VAULT_LIST_TREE_HEIGHT = 10; // 1024 elements (ceil(log2(1024)))
 
-    uint256 internal constant VAULT_LIST_MAX_LENGTH = 32; // 32 elements (2 ^ VAULT_LIST_TREE_HEIGHT)
+    uint256 internal constant VAULT_LIST_MAX_LENGTH = 1024; // 1024 elements (2 ^ VAULT_LIST_TREE_HEIGHT)
 
     uint256 internal constant KEY_TREE_HEIGHT = 1; // 2 elements (ceil(log2(2)))
 
