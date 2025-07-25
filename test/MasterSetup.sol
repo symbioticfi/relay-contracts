@@ -246,7 +246,7 @@ contract MasterSetupTest is InitSetupTest {
 
         console2.log("-----------------------------------------------------------------------------------------------");
         uint256 totalVotingPower;
-        console2.log("Registred operators: ", networkSetupParams.OPERATORS_TO_REGISTER);
+        console2.log("Registered operators: ", networkSetupParams.OPERATORS_TO_REGISTER);
         for (uint256 i; i < networkSetupParams.OPERATORS_TO_REGISTER; ++i) {
             Vm.Wallet memory operator = getOperator(i);
             uint256 operatorVotingPower;

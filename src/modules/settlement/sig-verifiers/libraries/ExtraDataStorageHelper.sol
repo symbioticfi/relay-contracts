@@ -14,7 +14,7 @@ library ExtraDataStorageHelper {
      * @return The key.
      * @dev It can be used, e.g., to store some global data like number of validators.
      */
-    function getKey(
+    function getKeyGlobal(
         bytes32 nameHash
     ) internal pure returns (bytes32) {
         return keccak256(abi.encode(nameHash));
@@ -27,7 +27,7 @@ library ExtraDataStorageHelper {
      * @return The key.
      * @dev It can be used, e.g., to store some data dependent on the key tag like quorum threshold.
      */
-    function getKey(uint8 keyTag, bytes32 nameHash) internal pure returns (bytes32) {
+    function getKeyGlobal(uint8 keyTag, bytes32 nameHash) internal pure returns (bytes32) {
         return keccak256(abi.encode(KEY_TAG_PREFIX_HASH, keyTag, nameHash));
     }
 
@@ -40,7 +40,7 @@ library ExtraDataStorageHelper {
      * @dev It can be used, e.g., to store some data dependent on the key tag, which needs more than 1 storage slot (32 bytes),
      *      like aggregated BLS12-381 public key.
      */
-    function getKey(uint8 keyTag, bytes32 nameHash, uint256 index) internal pure returns (bytes32) {
+    function getKeyGlobal(uint8 keyTag, bytes32 nameHash, uint256 index) internal pure returns (bytes32) {
         return bytes32(uint256(keccak256(abi.encode(KEY_TAG_PREFIX_HASH, keyTag, nameHash))) + index);
     }
 

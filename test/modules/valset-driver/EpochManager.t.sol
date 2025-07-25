@@ -105,6 +105,25 @@ contract EpochManagerTest is Test {
         assertEq(location, 0xab930e9b836b4d72502da14061937ab080936446173403910135ea983863d400);
     }
 
+    function test_Initialize_SetsEpochDuration_WithZeroTimestamp() public {
+        vm.expectRevert();
+        epochManager.getCurrentEpoch();
+
+        IEpochManager.EpochManagerInitParams memory initParams =
+            IEpochManager.EpochManagerInitParams({epochDuration: 100, epochDurationTimestamp: 0});
+
+        epochManager.initialize(initParams);
+        uint48 currentEpoch = epochManager.getCurrentEpoch();
+        assertEq(currentEpoch, 0, "Initially, epoch should be 0 if we haven't reached startTime");
+
+        uint48 currentEpochStart = epochManager.getCurrentEpochStart();
+        assertEq(currentEpochStart, uint48(vm.getBlockTimestamp()), "Epoch start mismatch");
+
+        assertEq(epochManager.getNextEpoch(), 1);
+        assertEq(epochManager.getNextEpochStart(), uint48(vm.getBlockTimestamp()) + 100);
+        assertEq(epochManager.getNextEpochDuration(), 100);
+    }
+
     function test_Initialize_RevertOnZeroEpochDuration() public {
         IEpochManager.EpochManagerInitParams memory initParams = IEpochManager.EpochManagerInitParams({
             epochDuration: 0,

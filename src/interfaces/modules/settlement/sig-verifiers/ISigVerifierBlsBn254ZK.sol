@@ -57,8 +57,8 @@ interface ISigVerifierBlsBn254ZK is ISigVerifier {
     function TOTAL_ACTIVE_VALIDATORS_HASH() external view returns (bytes32);
 
     /**
-     * @notice Returns the marker for extra data fetching of the validator set mimc hash.
-     * @return The marker for extra data fetching of the validator set mimc hash.
+     * @notice Returns the marker for extra data fetching of the validator set MiMC hash.
+     * @return The marker for extra data fetching of the validator set MiMC hash.
      */
     function VALIDATOR_SET_HASH_MIMC_HASH() external view returns (bytes32);
 

@@ -199,7 +199,6 @@ library VotingPowerProviderLogic {
                 vaultStakes[length++] = IVotingPowerProvider.VaultValue({vault: operatorVaults[i], value: stake});
             }
         }
-
         assembly ("memory-safe") {
             mstore(vaultStakes, length)
         }
@@ -224,7 +223,6 @@ library VotingPowerProviderLogic {
                 vaultStakes[length++] = IVotingPowerProvider.VaultValue({vault: operatorVaults[i], value: stake});
             }
         }
-
         assembly ("memory-safe") {
             mstore(vaultStakes, length)
         }
@@ -293,7 +291,6 @@ library VotingPowerProviderLogic {
                     IVotingPowerProvider.VaultValue({vault: operatorVaults[i], value: votingPower});
             }
         }
-
         assembly ("memory-safe") {
             mstore(vaultVotingPowers, length)
         }
@@ -334,7 +331,6 @@ library VotingPowerProviderLogic {
                     IVotingPowerProvider.VaultValue({vault: operatorVaults[i], value: votingPower});
             }
         }
-
         assembly ("memory-safe") {
             mstore(vaultVotingPowers, length)
         }

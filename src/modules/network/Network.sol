@@ -61,7 +61,7 @@ contract Network is TimelockControllerUpgradeable, INetwork {
         }
     }
 
-    function _getTimelockControllerStorageOverriden() internal pure returns (TimelockControllerStorage storage $) {
+    function _getTimelockControllerStorageOverridden() internal pure returns (TimelockControllerStorage storage $) {
         assembly {
             $.slot := TimelockControllerStorageLocation
         }
@@ -155,7 +155,7 @@ contract Network is TimelockControllerUpgradeable, INetwork {
             revert TimelockInsufficientDelay(delay, minDelay);
         }
         bytes32 id = hashOperation(target, value, data, predecessor, salt);
-        _scheduleOverriden(id, delay);
+        _scheduleOverridden(id, delay);
         emit CallScheduled(id, 0, target, value, data, predecessor, delay);
         if (salt != bytes32(0)) {
             emit CallSalt(id, salt);
@@ -184,7 +184,7 @@ contract Network is TimelockControllerUpgradeable, INetwork {
         }
 
         bytes32 id = hashOperationBatch(targets, values, payloads, predecessor, salt);
-        _scheduleOverriden(id, delay);
+        _scheduleOverridden(id, delay);
         for (uint256 i = 0; i < targets.length; ++i) {
             emit CallScheduled(id, i, targets[i], values[i], payloads[i], predecessor, delay);
         }
@@ -232,8 +232,8 @@ contract Network is TimelockControllerUpgradeable, INetwork {
         $._minDelays[id] = newDelay;
     }
 
-    function _scheduleOverriden(bytes32 id, uint256 delay) internal virtual {
-        TimelockControllerStorage storage $ = _getTimelockControllerStorageOverriden();
+    function _scheduleOverridden(bytes32 id, uint256 delay) internal virtual {
+        TimelockControllerStorage storage $ = _getTimelockControllerStorageOverridden();
         if (isOperation(id)) {
             revert TimelockUnexpectedOperationState(id, _encodeStateBitmap(OperationState.Unset));
         }

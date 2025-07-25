@@ -59,6 +59,14 @@ contract ValSetVerifierContract {
         );
     }
 
+    function verifyValidatorKeyRootLocal(
+        ValSetVerifier.SszProof calldata keyRootProof,
+        uint256 keyRootLocalIndex,
+        bytes32 validatorRoot
+    ) public returns (bool) {
+        return ValSetVerifier.verifyValidatorKeyRootLocal(keyRootProof, keyRootLocalIndex, validatorRoot);
+    }
+
     function verifyVault(
         ValSetVerifier.SszProof calldata validatorRootProofArr,
         uint256 validatorRootLocalIndex,
@@ -79,6 +87,14 @@ contract ValSetVerifierContract {
             vaultVaultProof,
             vaultVotingPowerProof
         );
+    }
+
+    function verifyValidatorVaultRootLocal(
+        ValSetVerifier.SszProof calldata vaultRootProof,
+        uint256 vaultRootLocalIndex,
+        bytes32 validatorRoot
+    ) public returns (bool) {
+        return ValSetVerifier.verifyValidatorVaultRootLocal(vaultRootProof, vaultRootLocalIndex, validatorRoot);
     }
 }
 
@@ -150,6 +166,8 @@ contract ValSetVerifierDataTest is Test {
         operatorProof.proof[0] = bytes32(uint256(operatorProof.proof[0]) + 1);
         assertFalse(verifier.verifyOperator(validatorRootProof, 0, validatorSetRoot, operatorProof));
         operatorProof.proof[0] = bytes32(uint256(operatorProof.proof[0]) - 1);
+
+        assertFalse(verifier.verifyOperator(validatorRootProof, type(uint256).max, validatorSetRoot, operatorProof));
     }
 
     function test_VerifyVotingPower() public {
@@ -212,6 +230,10 @@ contract ValSetVerifierDataTest is Test {
         votingPowerProof.proof[0] = bytes32(uint256(votingPowerProof.proof[0]) + 1);
         assertFalse(verifier.verifyVotingPower(validatorRootProof, 0, validatorSetRoot, votingPowerProof));
         votingPowerProof.proof[0] = bytes32(uint256(votingPowerProof.proof[0]) - 1);
+
+        assertFalse(
+            verifier.verifyVotingPower(validatorRootProof, type(uint256).max, validatorSetRoot, votingPowerProof)
+        );
     }
 
     function test_VerifyIsActive() public {
@@ -273,6 +295,8 @@ contract ValSetVerifierDataTest is Test {
         isActiveProof.proof[0] = bytes32(uint256(isActiveProof.proof[0]) + 1);
         assertFalse(verifier.verifyIsActive(validatorRootProof, 0, validatorSetRoot, isActiveProof));
         isActiveProof.proof[0] = bytes32(uint256(isActiveProof.proof[0]) - 1);
+
+        assertFalse(verifier.verifyIsActive(validatorRootProof, type(uint256).max, validatorSetRoot, isActiveProof));
     }
 
     function test_VerifyKey() public {
@@ -363,6 +387,18 @@ contract ValSetVerifierDataTest is Test {
             verifier.verifyKey(validatorRootProof, 0, validatorSetRoot, keyRootProof, 768, tagProof, payloadProof)
         );
         payloadProof.leaf = bytes32(uint256(payloadProof.leaf) - 1);
+
+        assertFalse(
+            verifier.verifyKey(
+                validatorRootProof, type(uint256).max, validatorSetRoot, keyRootProof, 768, tagProof, payloadProof
+            )
+        );
+
+        assertFalse(
+            verifier.verifyKey(
+                validatorRootProof, 0, validatorSetRoot, keyRootProof, type(uint256).max, tagProof, payloadProof
+            )
+        );
     }
 
     function test_VerifyVault() public {
@@ -451,79 +487,105 @@ contract ValSetVerifierDataTest is Test {
             )
         );
 
-        // validatorRootProof.leaf = bytes32(uint256(validatorRootProof.leaf) + 1);
-        // assertFalse(
-        //     verifier.verifyVault(
-        //         validatorRootProof,
-        //         0,
-        //         validatorSetRoot,
-        //         vaultRootProof,
-        //         8192,
-        //         vaultChainIdProof,
-        //         vaultVaultProof,
-        //         votingPowerProof
-        //     )
-        // );
-        // validatorRootProof.leaf = bytes32(uint256(validatorRootProof.leaf) - 1);
+        validatorRootProof.leaf = bytes32(uint256(validatorRootProof.leaf) + 1);
+        assertFalse(
+            verifier.verifyVault(
+                validatorRootProof,
+                0,
+                validatorSetRoot,
+                vaultRootProof,
+                8192,
+                vaultChainIdProof,
+                vaultVaultProof,
+                votingPowerProof
+            )
+        );
+        validatorRootProof.leaf = bytes32(uint256(validatorRootProof.leaf) - 1);
 
-        // vaultRootProof.leaf = bytes32(uint256(vaultRootProof.leaf) + 1);
-        // assertFalse(
-        //     verifier.verifyVault(
-        //         validatorRootProof,
-        //         0,
-        //         validatorSetRoot,
-        //         vaultRootProof,
-        //         8192,
-        //         vaultChainIdProof,
-        //         vaultVaultProof,
-        //         votingPowerProof
-        //     )
-        // );
-        // vaultRootProof.leaf = bytes32(uint256(vaultRootProof.leaf) - 1);
+        vaultRootProof.leaf = bytes32(uint256(vaultRootProof.leaf) + 1);
+        assertFalse(
+            verifier.verifyVault(
+                validatorRootProof,
+                0,
+                validatorSetRoot,
+                vaultRootProof,
+                8192,
+                vaultChainIdProof,
+                vaultVaultProof,
+                votingPowerProof
+            )
+        );
+        vaultRootProof.leaf = bytes32(uint256(vaultRootProof.leaf) - 1);
 
-        // vaultChainIdProof.leaf = bytes32(uint256(vaultChainIdProof.leaf) + 1);
-        // assertFalse(
-        //     verifier.verifyVault(
-        //         validatorRootProof,
-        //         0,
-        //         validatorSetRoot,
-        //         vaultRootProof,
-        //         8192,
-        //         vaultChainIdProof,
-        //         vaultVaultProof,
-        //         votingPowerProof
-        //     )
-        // );
-        // vaultChainIdProof.leaf = bytes32(uint256(vaultChainIdProof.leaf) - 1);
+        vaultChainIdProof.leaf = bytes32(uint256(vaultChainIdProof.leaf) + 1);
+        assertFalse(
+            verifier.verifyVault(
+                validatorRootProof,
+                0,
+                validatorSetRoot,
+                vaultRootProof,
+                8192,
+                vaultChainIdProof,
+                vaultVaultProof,
+                votingPowerProof
+            )
+        );
+        vaultChainIdProof.leaf = bytes32(uint256(vaultChainIdProof.leaf) - 1);
 
-        // vaultVaultProof.leaf = bytes32(uint256(vaultVaultProof.leaf) + 1);
-        // assertFalse(
-        //     verifier.verifyVault(
-        //         validatorRootProof,
-        //         0,
-        //         validatorSetRoot,
-        //         vaultRootProof,
-        //         8192,
-        //         vaultChainIdProof,
-        //         vaultVaultProof,
-        //         votingPowerProof
-        //     )
-        // );
-        // vaultVaultProof.leaf = bytes32(uint256(vaultVaultProof.leaf) - 1);
+        vaultVaultProof.leaf = bytes32(uint256(vaultVaultProof.leaf) + 1);
+        assertFalse(
+            verifier.verifyVault(
+                validatorRootProof,
+                0,
+                validatorSetRoot,
+                vaultRootProof,
+                8192,
+                vaultChainIdProof,
+                vaultVaultProof,
+                votingPowerProof
+            )
+        );
+        vaultVaultProof.leaf = bytes32(uint256(vaultVaultProof.leaf) - 1);
 
-        // votingPowerProof.leaf = bytes32(uint256(votingPowerProof.leaf) + 1);
-        // assertFalse(
-        //     verifier.verifyVault(
-        //         validatorRootProof,
-        //         0,
-        //         validatorSetRoot,
-        //         vaultRootProof,
-        //         8192,
-        //         vaultChainIdProof,
-        //         vaultVaultProof,
-        //         votingPowerProof
-        //     )
-        // );
-        // votingPowerProof.leaf = bytes32(uint256(votingPowerProof.leaf) - 1);
+        votingPowerProof.leaf = bytes32(uint256(votingPowerProof.leaf) + 1);
+        assertFalse(
+            verifier.verifyVault(
+                validatorRootProof,
+                0,
+                validatorSetRoot,
+                vaultRootProof,
+                8192,
+                vaultChainIdProof,
+                vaultVaultProof,
+                votingPowerProof
+            )
+        );
+        votingPowerProof.leaf = bytes32(uint256(votingPowerProof.leaf) - 1);
+
+        assertFalse(
+            verifier.verifyVault(
+                validatorRootProof,
+                type(uint256).max,
+                validatorSetRoot,
+                vaultRootProof,
+                8192,
+                vaultChainIdProof,
+                vaultVaultProof,
+                votingPowerProof
+            )
+        );
+
+        assertFalse(
+            verifier.verifyVault(
+                validatorRootProof,
+                0,
+                validatorSetRoot,
+                vaultRootProof,
+                type(uint256).max,
+                vaultChainIdProof,
+                vaultVaultProof,
+                votingPowerProof
+            )
+        );
     }
 }

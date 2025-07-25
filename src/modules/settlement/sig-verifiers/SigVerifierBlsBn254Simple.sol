@@ -15,7 +15,7 @@ import {KEY_TYPE_BLS_BN254} from "../../../interfaces/modules/key-registry/IKeyR
 
 /**
  * @title SigVerifierBlsBn254Simple
- * @notice Contract for verifying validator's set decision based on BLS signatures on the BN254 curve
+ * @notice Contract for verifying validator's set attestations based on BLS signatures on the BN254 curve
  *         by decompressing the whole validator set on-chain.
  */
 contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {

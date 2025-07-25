@@ -79,4 +79,27 @@ contract SigBlsBn254Test is Test {
         );
         assertFalse(result);
     }
+
+    function verify(
+        bytes memory keyBytes,
+        bytes memory message,
+        bytes memory signature,
+        bytes memory extraData
+    ) public view returns (bool) {
+        return SigBlsBn254.verify(keyBytes, message, signature, extraData);
+    }
+
+    function test_InvalidMessageLength() public {
+        bytes memory keyBytes = KeyBlsBn254.wrap(BN254.G1Point(0, 0)).toBytes();
+        bytes memory message = bytes("Hello, BLS!");
+        bytes32 hashed = keccak256(message);
+        bytes memory signature = abi.encode(BN254.G1Point(0, 0));
+        vm.expectRevert(SigBlsBn254.SigBlsBn254_InvalidMessageLength.selector);
+        this.verify(
+            keyBytes,
+            abi.encode(hashed, hashed),
+            signature,
+            abi.encode(BN254.G2Point([uint256(0), uint256(0)], [uint256(0), uint256(0)]))
+        );
+    }
 }

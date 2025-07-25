@@ -330,6 +330,8 @@ contract ValSetDriverTest is Test {
         vm.startPrank(owner);
         testMCP.setMaxVotingPower(5000);
         testMCP.setMinInclusionVotingPower(123);
+        vm.expectRevert(IValSetDriver.ValSetDriver_InvalidMaxValidatorsCount.selector);
+        testMCP.setMaxValidatorsCount(0);
         testMCP.setMaxValidatorsCount(777);
         uint8[] memory newTags = new uint8[](2);
         newTags[0] = 1;

@@ -11,9 +11,11 @@ import {ISigVerifierBlsBn254ZK} from "../../../interfaces/modules/settlement/sig
 import {ISigVerifier} from "../../../interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol";
 import {IVerifier} from "../../../interfaces/modules/settlement/sig-verifiers/zk/IVerifier.sol";
 
+import {console2} from "forge-std/console2.sol";
+
 /**
  * @title SigVerifierBlsBn254ZK
- * @notice Contract for verifying validator's set decision based on BLS signatures on the BN254 curve
+ * @notice Contract for verifying validator's set attestations based on BLS signatures on the BN254 curve
  *         by decompressing the whole validator set using ZK.
  */
 contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {

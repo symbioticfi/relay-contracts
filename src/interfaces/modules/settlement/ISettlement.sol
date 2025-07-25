@@ -385,7 +385,7 @@ interface ISettlement {
      * @param header The validator set header.
      * @param extraData The extra data.
      * @param proof The proof to verify the quorum signature.
-     * @dev The caller can be anyone, the call is validated by verification of the validator set's decision.
+     * @dev The caller can be anyone, the call is validated by verification of the validator set's attestation.
      */
     function commitValSetHeader(
         ValSetHeader calldata header,

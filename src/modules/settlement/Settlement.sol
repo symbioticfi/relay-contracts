@@ -12,7 +12,7 @@ import {ISigVerifier} from "../../interfaces/modules/settlement/sig-verifiers/IS
 
 /**
  * @title Settlement
- * @notice Contract for processing the validator sets through epochs and allowing verifying their decisions on-chain.
+ * @notice Contract for processing the validator sets through epochs and allowing verifying their attestations on-chain.
  */
 abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISettlement {
     using Checkpoints for Checkpoints.Trace208;

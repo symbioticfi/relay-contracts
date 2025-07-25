@@ -72,6 +72,8 @@ contract OperatorsJailTest is InitSetupTest {
 
         assertTrue(jailOps.isOperatorRegistered(operator1));
 
+        vm.expectRevert(IOperatorsJail.OperatorsJail_InvalidDuration.selector);
+        jailOps.jailOperator(operator1, 0);
         jailOps.jailOperator(operator1, jailDuration);
 
         assertTrue(jailOps.isOperatorJailed(operator1));

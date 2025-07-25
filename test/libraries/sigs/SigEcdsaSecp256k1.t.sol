@@ -88,4 +88,22 @@ contract SigEcdsaSecp256k1Test is Test {
         result = SigEcdsaSecp256k1.verify(address(0), hashed, signature);
         assertFalse(result);
     }
+
+    function verify(
+        bytes memory keyBytes,
+        bytes memory message,
+        bytes memory signature,
+        bytes memory extraData
+    ) public view returns (bool) {
+        return SigEcdsaSecp256k1.verify(keyBytes, message, signature, extraData);
+    }
+
+    function test_InvalidMessageLength() public {
+        bytes memory keyBytes = KeyEcdsaSecp256k1.wrap(address(0)).toBytes();
+        bytes memory message = bytes("Hello, ECDSA!");
+        bytes32 hashed = keccak256(message);
+        bytes memory signature = new bytes(65);
+        vm.expectRevert(SigEcdsaSecp256k1.SigEcdsaSecp256k1_InvalidMessageLength.selector);
+        this.verify(keyBytes, abi.encode(hashed, hashed), signature, "");
+    }
 }
