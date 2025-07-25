@@ -14,8 +14,8 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
  *      It supports most of Chainlink's aggregators through the whole history except the oldest ones not supporting `getRoundData()`.
  */
 library ChainlinkPriceFeed {
-    using Math for uint256;
     using Scaler for uint256;
+    using Math for uint256;
 
     /**
      * @notice Reverts when the length is zero.

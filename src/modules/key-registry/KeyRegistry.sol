@@ -27,13 +27,13 @@ import {MulticallUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/Mu
  *       - ECDSA public keys on secp256k1
  */
 contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
-    using KeyTags for uint8;
-    using KeyTags for uint128;
     using Checkpoints for Checkpoints.Trace208;
     using Checkpoints for Checkpoints.Trace256;
     using Checkpoints for Checkpoints.Trace512;
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
     using KeyEcdsaSecp256k1 for KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1;
+    using KeyTags for uint8;
+    using KeyTags for uint128;
     using PersistentSet for PersistentSet.AddressSet;
 
     bytes32 internal constant KEY_OWNERSHIP_TYPEHASH = keccak256("KeyOwnership(address operator,bytes key)");

@@ -7,8 +7,8 @@ pragma solidity ^0.8.25;
  * @dev The keys are represented as addresses.
  */
 library KeyEcdsaSecp256k1 {
-    using KeyEcdsaSecp256k1 for KEY_ECDSA_SECP256K1;
     using KeyEcdsaSecp256k1 for address;
+    using KeyEcdsaSecp256k1 for KEY_ECDSA_SECP256K1;
 
     /**
      * @notice Reverts when the key bytes are invalid.

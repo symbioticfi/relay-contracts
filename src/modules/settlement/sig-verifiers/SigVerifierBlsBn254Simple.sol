@@ -19,12 +19,10 @@ import {KEY_TYPE_BLS_BN254} from "../../../interfaces/modules/key-registry/IKeyR
  *         by decompressing the whole validator set on-chain.
  */
 contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
-    using KeyBlsBn254 for bytes;
-    using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
-    using KeyBlsBn254 for BN254.G1Point;
-    using SigBlsBn254 for bytes;
     using BN254 for BN254.G1Point;
     using ExtraDataStorageHelper for uint32;
+    using KeyBlsBn254 for bytes;
+    using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
     using KeyTags for uint8;
 
     /**

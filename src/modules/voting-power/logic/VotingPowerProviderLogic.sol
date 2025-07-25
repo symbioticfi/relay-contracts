@@ -24,8 +24,8 @@ import {IVetoSlasher} from "@symbioticfi/core/src/interfaces/slasher/IVetoSlashe
  */
 library VotingPowerProviderLogic {
     using Checkpoints for Checkpoints.Trace208;
-    using PersistentSet for PersistentSet.AddressSet;
     using InputNormalizer for bytes[];
+    using PersistentSet for PersistentSet.AddressSet;
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.VotingPowerProvider")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant VotingPowerProviderStorageLocation =

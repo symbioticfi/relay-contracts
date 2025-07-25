@@ -17,12 +17,12 @@ import {MulticallUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/Mu
  * @notice Contract for providing various configs and driving data for off-chain services.
  */
 abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgradeable, IValSetDriver {
-    using Checkpoints for Checkpoints.Trace256;
     using Checkpoints for Checkpoints.Trace208;
-    using PersistentSet for PersistentSet.Bytes32Set;
+    using Checkpoints for Checkpoints.Trace256;
     using KeyTags for uint128;
     using KeyTags for uint8[];
     using KeyTags for uint8;
+    using PersistentSet for PersistentSet.Bytes32Set;
 
     /**
      * @inheritdoc IValSetDriver

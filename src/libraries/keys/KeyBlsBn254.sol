@@ -9,8 +9,8 @@ import {BN254} from "../utils/BN254.sol";
  * @dev The keys are represented as G1 points on the BN254 curve.
  */
 library KeyBlsBn254 {
-    using KeyBlsBn254 for KEY_BLS_BN254;
     using KeyBlsBn254 for BN254.G1Point;
+    using KeyBlsBn254 for KEY_BLS_BN254;
 
     /**
      * @notice Reverts when the key bytes are invalid.
