@@ -3,7 +3,7 @@
 
 # Symbiotic Relay Smart Contracts
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/symbioticfi/middleware-sdk)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/symbioticfi/relay-contracts)
 
 ## Overview
 
@@ -42,7 +42,7 @@ Security audits can be found [here](./audits).
 Clone the repo:
 
 ```bash
-git clone --recurse-submodules https://github.com/symbioticfi/middleware-sdk.git
+git clone --recurse-submodules https://github.com/symbioticfi/relay-contracts.git
 ```
 
 ## Create env configuration
