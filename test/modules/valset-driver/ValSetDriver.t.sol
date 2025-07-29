@@ -61,16 +61,18 @@ contract ValSetDriverTest is Test {
                 epochDuration: 100,
                 epochDurationTimestamp: uint48(vm.getBlockTimestamp())
             }),
+            numAggregators: 1,
+            numCommitters: 1,
             votingPowerProviders: vpps,
             keysProvider: keysProv,
             replicas: reps,
-            verificationType: 7,
             maxVotingPower: 1e36,
             minInclusionVotingPower: 0,
             maxValidatorsCount: 100,
             requiredKeyTags: requiredKeyTags,
+            quorumThresholds: quorumThresholds,
             requiredHeaderKeyTag: requiredKeyTags[0],
-            quorumThresholds: quorumThresholds
+            verificationType: 7
         });
 
         testMCP.initialize(initParams, owner);

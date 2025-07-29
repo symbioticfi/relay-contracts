@@ -215,16 +215,18 @@ contract MasterSetupScript is InitSetupScript {
                         epochDuration: networkSetupParams.EPOCH_DURATION,
                         epochDurationTimestamp: uint48(vm.getBlockTimestamp() + vm.envOr("DEPLOYMENT_BUFFER", uint256(600)))
                     }),
+                    numAggregators: 1,
+                    numCommitters: 1,
                     votingPowerProviders: localVars.votingPowerProviders,
                     keysProvider: localVars.keysProvider,
                     replicas: localVars.replicas,
-                    verificationType: networkSetupParams.VERIFICATION_TYPE,
                     maxVotingPower: 1e36,
                     minInclusionVotingPower: 0,
                     maxValidatorsCount: 99_999_999,
                     requiredKeyTags: localVars.requiredKeyTags,
+                    quorumThresholds: localVars.quorumThresholds,
                     requiredHeaderKeyTag: localVars.requiredKeyTags[0],
-                    quorumThresholds: localVars.quorumThresholds
+                    verificationType: networkSetupParams.VERIFICATION_TYPE
                 }),
                 vars.deployer.addr
             );

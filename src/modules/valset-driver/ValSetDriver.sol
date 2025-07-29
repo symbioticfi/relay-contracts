@@ -46,6 +46,8 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         __NetworkManager_init(valSetDriverInitParams.networkManagerInitParams);
         __EpochManager_init(valSetDriverInitParams.epochManagerInitParams);
 
+        _setNumAggregators(valSetDriverInitParams.numAggregators);
+        _setNumCommitters(valSetDriverInitParams.numCommitters);
         for (uint256 i; i < valSetDriverInitParams.votingPowerProviders.length; ++i) {
             _addVotingPowerProvider(valSetDriverInitParams.votingPowerProviders[i]);
         }
@@ -53,15 +55,15 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         for (uint256 i; i < valSetDriverInitParams.replicas.length; ++i) {
             _addReplica(valSetDriverInitParams.replicas[i]);
         }
-        _setVerificationType(valSetDriverInitParams.verificationType);
         _setMaxVotingPower(valSetDriverInitParams.maxVotingPower);
         _setMinInclusionVotingPower(valSetDriverInitParams.minInclusionVotingPower);
         _setMaxValidatorsCount(valSetDriverInitParams.maxValidatorsCount);
         _setRequiredKeyTags(valSetDriverInitParams.requiredKeyTags);
-        _setRequiredHeaderKeyTag(valSetDriverInitParams.requiredHeaderKeyTag);
         for (uint256 i; i < valSetDriverInitParams.quorumThresholds.length; ++i) {
             _addQuorumThreshold(valSetDriverInitParams.quorumThresholds[i]);
         }
+        _setRequiredHeaderKeyTag(valSetDriverInitParams.requiredHeaderKeyTag);
+        _setVerificationType(valSetDriverInitParams.verificationType);
     }
 
     /**
@@ -314,20 +316,54 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /**
      * @inheritdoc IValSetDriver
      */
+    function getNumAggregatorsAt(
+        uint48 timestamp
+    ) public view virtual returns (uint208) {
+        return _getValSetDriverStorage()._numAggregators.upperLookupRecent(timestamp);
+    }
+
+    /**
+     * @inheritdoc IValSetDriver
+     */
+    function getNumAggregators() public view virtual returns (uint208) {
+        return _getValSetDriverStorage()._numAggregators.latest();
+    }
+
+    /**
+     * @inheritdoc IValSetDriver
+     */
+    function getNumCommittersAt(
+        uint48 timestamp
+    ) public view virtual returns (uint208) {
+        return _getValSetDriverStorage()._numCommitters.upperLookupRecent(timestamp);
+    }
+
+    /**
+     * @inheritdoc IValSetDriver
+     */
+    function getNumCommitters() public view virtual returns (uint208) {
+        return _getValSetDriverStorage()._numCommitters.latest();
+    }
+
+    /**
+     * @inheritdoc IValSetDriver
+     */
     function getConfigAt(
         uint48 timestamp
     ) public view virtual returns (Config memory) {
         return Config({
+            numAggregators: getNumAggregatorsAt(timestamp),
+            numCommitters: getNumCommittersAt(timestamp),
             votingPowerProviders: getVotingPowerProvidersAt(timestamp),
             keysProvider: getKeysProviderAt(timestamp),
             replicas: getReplicasAt(timestamp),
-            verificationType: getVerificationTypeAt(timestamp),
             maxVotingPower: getMaxVotingPowerAt(timestamp),
             minInclusionVotingPower: getMinInclusionVotingPowerAt(timestamp),
             maxValidatorsCount: getMaxValidatorsCountAt(timestamp),
             requiredKeyTags: getRequiredKeyTagsAt(timestamp),
+            quorumThresholds: getQuorumThresholdsAt(timestamp),
             requiredHeaderKeyTag: getRequiredHeaderKeyTagAt(timestamp),
-            quorumThresholds: getQuorumThresholdsAt(timestamp)
+            verificationType: getVerificationTypeAt(timestamp)
         });
     }
 
@@ -336,17 +372,37 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
      */
     function getConfig() public view virtual returns (Config memory) {
         return Config({
+            numAggregators: getNumAggregators(),
+            numCommitters: getNumCommitters(),
             votingPowerProviders: getVotingPowerProviders(),
             keysProvider: getKeysProvider(),
             replicas: getReplicas(),
-            verificationType: getVerificationType(),
             maxVotingPower: getMaxVotingPower(),
             minInclusionVotingPower: getMinInclusionVotingPower(),
             maxValidatorsCount: getMaxValidatorsCount(),
             requiredKeyTags: getRequiredKeyTags(),
+            quorumThresholds: getQuorumThresholds(),
             requiredHeaderKeyTag: getRequiredHeaderKeyTag(),
-            quorumThresholds: getQuorumThresholds()
+            verificationType: getVerificationType()
         });
+    }
+
+    /**
+     * @inheritdoc IValSetDriver
+     */
+    function setNumAggregators(
+        uint208 numAggregators
+    ) public virtual checkPermission {
+        _setNumAggregators(numAggregators);
+    }
+
+    /**
+     * @inheritdoc IValSetDriver
+     */
+    function setNumCommitters(
+        uint208 numCommitters
+    ) public virtual checkPermission {
+        _setNumCommitters(numCommitters);
     }
 
     /**
@@ -397,15 +453,6 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /**
      * @inheritdoc IValSetDriver
      */
-    function setVerificationType(
-        uint32 verificationType
-    ) public virtual checkPermission {
-        _setVerificationType(verificationType);
-    }
-
-    /**
-     * @inheritdoc IValSetDriver
-     */
     function setMaxVotingPower(
         uint256 maxVotingPower
     ) public virtual checkPermission {
@@ -442,15 +489,6 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /**
      * @inheritdoc IValSetDriver
      */
-    function setRequiredHeaderKeyTag(
-        uint8 requiredHeaderKeyTag
-    ) public virtual checkPermission {
-        _setRequiredHeaderKeyTag(requiredHeaderKeyTag);
-    }
-
-    /**
-     * @inheritdoc IValSetDriver
-     */
     function addQuorumThreshold(
         QuorumThreshold memory quorumThreshold
     ) public virtual checkPermission {
@@ -464,6 +502,44 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         QuorumThreshold memory quorumThreshold
     ) public virtual checkPermission {
         _removeQuorumThreshold(quorumThreshold);
+    }
+
+    /**
+     * @inheritdoc IValSetDriver
+     */
+    function setRequiredHeaderKeyTag(
+        uint8 requiredHeaderKeyTag
+    ) public virtual checkPermission {
+        _setRequiredHeaderKeyTag(requiredHeaderKeyTag);
+    }
+
+    /**
+     * @inheritdoc IValSetDriver
+     */
+    function setVerificationType(
+        uint32 verificationType
+    ) public virtual checkPermission {
+        _setVerificationType(verificationType);
+    }
+
+    function _setNumAggregators(
+        uint208 numAggregators
+    ) internal virtual {
+        if (numAggregators == 0) {
+            revert ValSetDriver_ZeroNumAggregators();
+        }
+        _getValSetDriverStorage()._numAggregators.push(uint48(block.timestamp), numAggregators);
+        emit SetNumAggregators(numAggregators);
+    }
+
+    function _setNumCommitters(
+        uint208 numCommitters
+    ) internal virtual {
+        if (numCommitters == 0) {
+            revert ValSetDriver_ZeroNumCommitters();
+        }
+        _getValSetDriverStorage()._numCommitters.push(uint48(block.timestamp), numCommitters);
+        emit SetNumCommitters(numCommitters);
     }
 
     function _addVotingPowerProvider(
@@ -525,13 +601,6 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         emit RemoveReplica(replica);
     }
 
-    function _setVerificationType(
-        uint32 verificationType
-    ) internal virtual {
-        _getValSetDriverStorage()._verificationType.push(uint48(block.timestamp), verificationType);
-        emit SetVerificationType(verificationType);
-    }
-
     function _setMaxVotingPower(
         uint256 maxVotingPower
     ) internal virtual {
@@ -563,14 +632,6 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         emit SetRequiredKeyTags(requiredKeyTags);
     }
 
-    function _setRequiredHeaderKeyTag(
-        uint8 requiredHeaderKeyTag
-    ) internal virtual {
-        requiredHeaderKeyTag.validateKeyTag();
-        _getValSetDriverStorage()._requiredHeaderKeyTag.push(uint48(block.timestamp), requiredHeaderKeyTag);
-        emit SetRequiredHeaderKeyTag(requiredHeaderKeyTag);
-    }
-
     function _addQuorumThreshold(
         QuorumThreshold memory quorumThreshold
     ) internal virtual {
@@ -596,6 +657,21 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         }
         $._isQuorumThresholdKeyTagAdded[quorumThreshold.keyTag] = false;
         emit RemoveQuorumThreshold(quorumThreshold);
+    }
+
+    function _setRequiredHeaderKeyTag(
+        uint8 requiredHeaderKeyTag
+    ) internal virtual {
+        requiredHeaderKeyTag.validateKeyTag();
+        _getValSetDriverStorage()._requiredHeaderKeyTag.push(uint48(block.timestamp), requiredHeaderKeyTag);
+        emit SetRequiredHeaderKeyTag(requiredHeaderKeyTag);
+    }
+
+    function _setVerificationType(
+        uint32 verificationType
+    ) internal virtual {
+        _getValSetDriverStorage()._verificationType.push(uint48(block.timestamp), verificationType);
+        emit SetVerificationType(verificationType);
     }
 
     function _validateCrossChainAddress(

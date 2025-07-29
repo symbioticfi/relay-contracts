@@ -40,6 +40,16 @@ interface IValSetDriver {
     error ValSetDriver_NotAdded();
 
     /**
+     * @notice Reverts when the number of aggregators is zero.
+     */
+    error ValSetDriver_ZeroNumAggregators();
+
+    /**
+     * @notice Reverts when the number of committers is zero.
+     */
+    error ValSetDriver_ZeroNumCommitters();
+
+    /**
      * @notice The storage of the ValSetDriver contract.
      * @param _isVotingPowerProviderChainAdded The mapping from the chain ID to the voting power provider chain added status.
      * @param _votingPowerProviders The set of the voting power providers.
@@ -54,6 +64,8 @@ interface IValSetDriver {
      * @param _requiredHeaderKeyTag The checkpoint of the required header key tag.
      * @param _isQuorumThresholdKeyTagAdded The mapping from the key tag to the quorum threshold key tag added status.
      * @param _quorumThresholds The set of the quorum thresholds.
+     * @param _numAggregators The checkpoint of the number of aggregators.
+     * @param _numCommitters The checkpoint of the number of committers.
      * @custom:storage-location erc7201:symbiotic.storage.ValSetDriver
      */
     struct ValSetDriverStorage {
@@ -70,36 +82,42 @@ interface IValSetDriver {
         Checkpoints.Trace208 _requiredHeaderKeyTag;
         mapping(uint8 keyTag => bool isAdded) _isQuorumThresholdKeyTagAdded;
         PersistentSet.Bytes32Set _quorumThresholds;
+        Checkpoints.Trace208 _numAggregators;
+        Checkpoints.Trace208 _numCommitters;
     }
 
     /**
      * @notice The parameters for the initialization of the ValSetDriver contract.
      * @param networkManagerInitParams The parameters for the initialization of the NetworkManager contract.
      * @param epochManagerInitParams The parameters for the initialization of the EpochManager contract.
+     * @param numAggregators The number of aggregators.
+     * @param numCommitters The number of committers.
      * @param votingPowerProviders The voting power providers.
      * @param keysProvider The keys provider.
      * @param replicas The replicas.
-     * @param verificationType The verification type.
      * @param maxVotingPower The max voting power.
      * @param minInclusionVotingPower The min inclusion voting power.
      * @param maxValidatorsCount The max validators count.
      * @param requiredKeyTags The required key tags.
-     * @param requiredHeaderKeyTag The required header key tag.
      * @param quorumThresholds The quorum thresholds.
+     * @param requiredHeaderKeyTag The required header key tag.
+     * @param verificationType The verification type.
      */
     struct ValSetDriverInitParams {
         INetworkManager.NetworkManagerInitParams networkManagerInitParams;
         IEpochManager.EpochManagerInitParams epochManagerInitParams;
+        uint208 numAggregators;
+        uint208 numCommitters;
         CrossChainAddress[] votingPowerProviders;
         CrossChainAddress keysProvider;
         CrossChainAddress[] replicas;
-        uint32 verificationType;
         uint256 maxVotingPower;
         uint256 minInclusionVotingPower;
         uint208 maxValidatorsCount;
         uint8[] requiredKeyTags;
-        uint8 requiredHeaderKeyTag;
         QuorumThreshold[] quorumThresholds;
+        uint8 requiredHeaderKeyTag;
+        uint32 verificationType;
     }
 
     /**
@@ -124,29 +142,45 @@ interface IValSetDriver {
 
     /**
      * @notice The configuration.
+     * @param numAggregators The number of aggregators.
+     * @param numCommitters The number of committers.
      * @param votingPowerProviders The voting power providers.
      * @param keysProvider The keys provider.
      * @param replicas The replicas.
-     * @param verificationType The verification type.
      * @param maxVotingPower The max voting power.
      * @param minInclusionVotingPower The min inclusion voting power.
      * @param maxValidatorsCount The max validators count.
      * @param requiredKeyTags The required key tags.
-     * @param requiredHeaderKeyTag The required header key tag.
      * @param quorumThresholds The quorum thresholds.
+     * @param requiredHeaderKeyTag The required header key tag.
+     * @param verificationType The verification type.
      */
     struct Config {
+        uint208 numAggregators;
+        uint208 numCommitters;
         CrossChainAddress[] votingPowerProviders;
         CrossChainAddress keysProvider;
         CrossChainAddress[] replicas;
-        uint32 verificationType;
         uint256 maxVotingPower;
         uint256 minInclusionVotingPower;
         uint208 maxValidatorsCount;
         uint8[] requiredKeyTags;
-        uint8 requiredHeaderKeyTag;
         QuorumThreshold[] quorumThresholds;
+        uint8 requiredHeaderKeyTag;
+        uint32 verificationType;
     }
+
+    /**
+     * @notice Emitted when the number of aggregators is set.
+     * @param numAggregators The number of aggregators.
+     */
+    event SetNumAggregators(uint208 numAggregators);
+
+    /**
+     * @notice Emitted when the number of committers is set.
+     * @param numCommitters The number of committers.
+     */
+    event SetNumCommitters(uint208 numCommitters);
 
     /**
      * @notice Emitted when the voting power provider is added.
@@ -179,12 +213,6 @@ interface IValSetDriver {
     event RemoveReplica(CrossChainAddress replica);
 
     /**
-     * @notice Emitted when the verification type is set.
-     * @param verificationType The verification type.
-     */
-    event SetVerificationType(uint32 verificationType);
-
-    /**
      * @notice Emitted when the max voting power is set.
      * @param maxVotingPower The max voting power.
      */
@@ -209,16 +237,16 @@ interface IValSetDriver {
     event SetRequiredKeyTags(uint8[] requiredKeyTags);
 
     /**
-     * @notice Emitted when the required header key tag is set.
-     * @param requiredHeaderKeyTag The required header key tag.
-     */
-    event SetRequiredHeaderKeyTag(uint8 requiredHeaderKeyTag);
-
-    /**
      * @notice Emitted when the quorum threshold is added.
      * @param quorumThreshold The quorum threshold.
      */
     event AddQuorumThreshold(QuorumThreshold quorumThreshold);
+
+    /**
+     * @notice Emitted when the required header key tag is set.
+     * @param requiredHeaderKeyTag The required header key tag.
+     */
+    event SetRequiredHeaderKeyTag(uint8 requiredHeaderKeyTag);
 
     /**
      * @notice Emitted when the quorum threshold is removed.
@@ -227,11 +255,66 @@ interface IValSetDriver {
     event RemoveQuorumThreshold(QuorumThreshold quorumThreshold);
 
     /**
+     * @notice Emitted when the verification type is set.
+     * @param verificationType The verification type.
+     */
+    event SetVerificationType(uint32 verificationType);
+
+    /**
      * @notice Returns the maximum quorum threshold.
      * @return The maximum quorum threshold.
      * @dev The maximum quorum threshold is 1e18 = 100%.
      */
     function MAX_QUORUM_THRESHOLD() external view returns (uint248);
+
+    /**
+     * @notice Returns the configuration at the given timestamp.
+     * @param timestamp The timestamp.
+     * @return The configuration at the given timestamp.
+     */
+    function getConfigAt(
+        uint48 timestamp
+    ) external view returns (Config memory);
+
+    /**
+     * @notice Returns the configuration.
+     * @return The configuration.
+     */
+    function getConfig() external view returns (Config memory);
+
+    /**
+     * @notice Returns the number of aggregators (those who aggregate the validators' signatures
+     *         and produce the proof for the verification) at the given timestamp.
+     * @param timestamp The timestamp.
+     * @return The number of aggregators at the given timestamp.
+     */
+    function getNumAggregatorsAt(
+        uint48 timestamp
+    ) external view returns (uint208);
+
+    /**
+     * @notice Returns the number of aggregators (those who aggregate the validators' signatures
+     *         and produce the proof for the verification).
+     * @return The number of aggregators.
+     */
+    function getNumAggregators() external view returns (uint208);
+
+    /**
+     * @notice Returns the number of committers (those who commit some data (e.g., ValSetHeader)
+     *         to on-chain) at the given timestamp.
+     * @param timestamp The timestamp.
+     * @return The number of committers at the given timestamp.
+     */
+    function getNumCommittersAt(
+        uint48 timestamp
+    ) external view returns (uint208);
+
+    /**
+     * @notice Returns the number of committers (those who commit some data (e.g., ValSetHeader)
+     *         to on-chain).
+     * @return The number of committers.
+     */
+    function getNumCommitters() external view returns (uint208);
 
     /**
      * @notice Returns if the voting power provider is registered at the given timestamp.
@@ -316,21 +399,6 @@ interface IValSetDriver {
     function getReplicas() external view returns (CrossChainAddress[] memory);
 
     /**
-     * @notice Returns the verification type at the given timestamp.
-     * @param timestamp The timestamp.
-     * @return The verification type at the given timestamp.
-     */
-    function getVerificationTypeAt(
-        uint48 timestamp
-    ) external view returns (uint32);
-
-    /**
-     * @notice Returns the verification type.
-     * @return The verification type.
-     */
-    function getVerificationType() external view returns (uint32);
-
-    /**
      * @notice Returns the max voting power at the given timestamp.
      * @param timestamp The timestamp.
      * @return The max voting power at the given timestamp.
@@ -391,21 +459,6 @@ interface IValSetDriver {
     function getRequiredKeyTags() external view returns (uint8[] memory);
 
     /**
-     * @notice Returns the required header key tag at the given timestamp.
-     * @param timestamp The timestamp.
-     * @return The required header key tag at the given timestamp.
-     */
-    function getRequiredHeaderKeyTagAt(
-        uint48 timestamp
-    ) external view returns (uint8);
-
-    /**
-     * @notice Returns the required header key tag.
-     * @return The required header key tag.
-     */
-    function getRequiredHeaderKeyTag() external view returns (uint8);
-
-    /**
      * @notice Returns if the quorum threshold is registered at the given timestamp.
      * @param quorumThreshold The quorum threshold.
      * @param timestamp The timestamp.
@@ -441,19 +494,54 @@ interface IValSetDriver {
     function getQuorumThresholds() external view returns (QuorumThreshold[] memory);
 
     /**
-     * @notice Returns the configuration at the given timestamp.
+     * @notice Returns the required header key tag at the given timestamp.
      * @param timestamp The timestamp.
-     * @return The configuration at the given timestamp.
+     * @return The required header key tag at the given timestamp.
      */
-    function getConfigAt(
+    function getRequiredHeaderKeyTagAt(
         uint48 timestamp
-    ) external view returns (Config memory);
+    ) external view returns (uint8);
 
     /**
-     * @notice Returns the configuration.
-     * @return The configuration.
+     * @notice Returns the required header key tag.
+     * @return The required header key tag.
      */
-    function getConfig() external view returns (Config memory);
+    function getRequiredHeaderKeyTag() external view returns (uint8);
+
+    /**
+     * @notice Returns the verification type at the given timestamp.
+     * @param timestamp The timestamp.
+     * @return The verification type at the given timestamp.
+     */
+    function getVerificationTypeAt(
+        uint48 timestamp
+    ) external view returns (uint32);
+
+    /**
+     * @notice Returns the verification type.
+     * @return The verification type.
+     */
+    function getVerificationType() external view returns (uint32);
+
+    /**
+     * @notice Sets the number of aggregators (those who aggregate the validators' signatures
+     *         and produce the proof for the verification).
+     * @param numAggregators The number of aggregators.
+     * @dev The caller must have the needed permission.
+     */
+    function setNumAggregators(
+        uint208 numAggregators
+    ) external;
+
+    /**
+     * @notice Sets the number of committers (those who commit some data (e.g., ValSetHeader)
+     *         to on-chain).
+     * @param numCommitters The number of committers.
+     * @dev The caller must have the needed permission.
+     */
+    function setNumCommitters(
+        uint208 numCommitters
+    ) external;
 
     /**
      * @notice Adds a voting power provider.
@@ -501,15 +589,6 @@ interface IValSetDriver {
     ) external;
 
     /**
-     * @notice Sets the verification type.
-     * @param verificationType The verification type.
-     * @dev The caller must have the needed permission.
-     */
-    function setVerificationType(
-        uint32 verificationType
-    ) external;
-
-    /**
      * @notice Sets the max voting power.
      * @param maxVotingPower The max voting power.
      * @dev The caller must have the needed permission.
@@ -546,15 +625,6 @@ interface IValSetDriver {
     ) external;
 
     /**
-     * @notice Sets the required header key tag.
-     * @param requiredHeaderKeyTag The required header key tag.
-     * @dev The caller must have the needed permission.
-     */
-    function setRequiredHeaderKeyTag(
-        uint8 requiredHeaderKeyTag
-    ) external;
-
-    /**
      * @notice Adds a quorum threshold.
      * @param quorumThreshold The quorum threshold.
      * @dev The caller must have the needed permission.
@@ -570,5 +640,23 @@ interface IValSetDriver {
      */
     function removeQuorumThreshold(
         QuorumThreshold memory quorumThreshold
+    ) external;
+
+    /**
+     * @notice Sets the required header key tag.
+     * @param requiredHeaderKeyTag The required header key tag.
+     * @dev The caller must have the needed permission.
+     */
+    function setRequiredHeaderKeyTag(
+        uint8 requiredHeaderKeyTag
+    ) external;
+
+    /**
+     * @notice Sets the verification type.
+     * @param verificationType The verification type.
+     * @dev The caller must have the needed permission.
+     */
+    function setVerificationType(
+        uint32 verificationType
     ) external;
 }
