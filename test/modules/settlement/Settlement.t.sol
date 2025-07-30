@@ -374,10 +374,16 @@ contract SettlementRawTest is Test {
 
         testSettle.commitValSetHeader(header, someExtra, bytes(""));
 
+        vm.expectRevert(ISettlement.Settlement_InvalidPreviousHeaderHash.selector);
+        testSettle.commitValSetHeader(header, someExtra, bytes(""));
+
+        header.previousHeaderHash = testSettle.getValSetHeaderHash();
+
         vm.expectRevert(ISettlement.Settlement_InvalidEpoch.selector);
         testSettle.commitValSetHeader(header, someExtra, bytes(""));
 
         header.epoch = 3;
+
         vm.expectRevert(ISettlement.Settlement_InvalidCaptureTimestamp.selector);
         testSettle.commitValSetHeader(header, someExtra, bytes(""));
 
@@ -385,15 +391,17 @@ contract SettlementRawTest is Test {
 
         header.captureTimestamp = uint48(vm.getBlockTimestamp() - 1);
 
-        vm.expectRevert(ISettlement.Settlement_InvalidPreviousHeaderHash.selector);
-        testSettle.commitValSetHeader(header, someExtra, bytes(""));
-
-        header.previousHeaderHash = testSettle.getValSetHeaderHash();
-
         header.validatorsSszMRoot = bytes32(0);
         vm.expectRevert(ISettlement.Settlement_InvalidValidatorsSszMRoot.selector);
         testSettle.commitValSetHeader(header, someExtra, bytes(""));
         header.validatorsSszMRoot = sampleHeader.validatorsSszMRoot;
+
+        header.previousHeaderHash = bytes32(0);
+
+        vm.expectRevert(ISettlement.Settlement_InvalidPreviousHeaderHash.selector);
+        testSettle.commitValSetHeader(header, someExtra, bytes(""));
+
+        header.previousHeaderHash = testSettle.getValSetHeaderHash();
 
         testSettle.commitValSetHeader(header, someExtra, bytes(""));
     }

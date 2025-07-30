@@ -313,6 +313,9 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
         bytes calldata proof
     ) public virtual {
         uint48 valSetEpoch = getLastCommittedHeaderEpoch();
+        if (header.previousHeaderHash != getValSetHeaderHashAt(valSetEpoch)) {
+            revert Settlement_InvalidPreviousHeaderHash();
+        }
         if (
             !verifyQuorumSig(
                 abi.encode(
@@ -366,7 +369,7 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
             revert Settlement_InvalidValidatorsSszMRoot();
         }
 
-        if (header.previousHeaderHash != getValSetHeaderHashAt(lastCommittedHeaderEpoch)) {
+        if (header.previousHeaderHash == bytes32(0)) {
             revert Settlement_InvalidPreviousHeaderHash();
         }
 
