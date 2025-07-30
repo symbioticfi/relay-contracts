@@ -64,6 +64,83 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         }
         _setRequiredHeaderKeyTag(valSetDriverInitParams.requiredHeaderKeyTag);
         _setVerificationType(valSetDriverInitParams.verificationType);
+        _setMaxMissingEpochs(valSetDriverInitParams.maxMissingEpochs);
+    }
+
+    /**
+     * @inheritdoc IValSetDriver
+     */
+    function getConfigAt(
+        uint48 timestamp
+    ) public view virtual returns (Config memory) {
+        return Config({
+            numAggregators: getNumAggregatorsAt(timestamp),
+            numCommitters: getNumCommittersAt(timestamp),
+            votingPowerProviders: getVotingPowerProvidersAt(timestamp),
+            keysProvider: getKeysProviderAt(timestamp),
+            replicas: getReplicasAt(timestamp),
+            maxVotingPower: getMaxVotingPowerAt(timestamp),
+            minInclusionVotingPower: getMinInclusionVotingPowerAt(timestamp),
+            maxValidatorsCount: getMaxValidatorsCountAt(timestamp),
+            requiredKeyTags: getRequiredKeyTagsAt(timestamp),
+            quorumThresholds: getQuorumThresholdsAt(timestamp),
+            requiredHeaderKeyTag: getRequiredHeaderKeyTagAt(timestamp),
+            verificationType: getVerificationTypeAt(timestamp),
+            maxMissingEpochs: getMaxMissingEpochsAt(timestamp)
+        });
+    }
+
+    /**
+     * @inheritdoc IValSetDriver
+     */
+    function getConfig() public view virtual returns (Config memory) {
+        return Config({
+            numAggregators: getNumAggregators(),
+            numCommitters: getNumCommitters(),
+            votingPowerProviders: getVotingPowerProviders(),
+            keysProvider: getKeysProvider(),
+            replicas: getReplicas(),
+            maxVotingPower: getMaxVotingPower(),
+            minInclusionVotingPower: getMinInclusionVotingPower(),
+            maxValidatorsCount: getMaxValidatorsCount(),
+            requiredKeyTags: getRequiredKeyTags(),
+            quorumThresholds: getQuorumThresholds(),
+            requiredHeaderKeyTag: getRequiredHeaderKeyTag(),
+            verificationType: getVerificationType(),
+            maxMissingEpochs: getMaxMissingEpochs()
+        });
+    }
+
+    /**
+     * @inheritdoc IValSetDriver
+     */
+    function getNumAggregatorsAt(
+        uint48 timestamp
+    ) public view virtual returns (uint208) {
+        return _getValSetDriverStorage()._numAggregators.upperLookupRecent(timestamp);
+    }
+
+    /**
+     * @inheritdoc IValSetDriver
+     */
+    function getNumAggregators() public view virtual returns (uint208) {
+        return _getValSetDriverStorage()._numAggregators.latest();
+    }
+
+    /**
+     * @inheritdoc IValSetDriver
+     */
+    function getNumCommittersAt(
+        uint48 timestamp
+    ) public view virtual returns (uint208) {
+        return _getValSetDriverStorage()._numCommitters.upperLookupRecent(timestamp);
+    }
+
+    /**
+     * @inheritdoc IValSetDriver
+     */
+    function getNumCommitters() public view virtual returns (uint208) {
+        return _getValSetDriverStorage()._numCommitters.latest();
     }
 
     /**
@@ -175,22 +252,6 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /**
      * @inheritdoc IValSetDriver
      */
-    function getVerificationTypeAt(
-        uint48 timestamp
-    ) public view virtual returns (uint32) {
-        return uint32(_getValSetDriverStorage()._verificationType.upperLookupRecent(timestamp));
-    }
-
-    /**
-     * @inheritdoc IValSetDriver
-     */
-    function getVerificationType() public view virtual returns (uint32) {
-        return uint32(_getValSetDriverStorage()._verificationType.latest());
-    }
-
-    /**
-     * @inheritdoc IValSetDriver
-     */
     function getMaxVotingPowerAt(
         uint48 timestamp
     ) public view virtual returns (uint256) {
@@ -255,22 +316,6 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /**
      * @inheritdoc IValSetDriver
      */
-    function getRequiredHeaderKeyTagAt(
-        uint48 timestamp
-    ) public view virtual returns (uint8) {
-        return uint8(_getValSetDriverStorage()._requiredHeaderKeyTag.upperLookupRecent(timestamp));
-    }
-
-    /**
-     * @inheritdoc IValSetDriver
-     */
-    function getRequiredHeaderKeyTag() public view virtual returns (uint8) {
-        return uint8(_getValSetDriverStorage()._requiredHeaderKeyTag.latest());
-    }
-
-    /**
-     * @inheritdoc IValSetDriver
-     */
     function isQuorumThresholdRegisteredAt(
         QuorumThreshold memory quorumThreshold,
         uint48 timestamp
@@ -316,75 +361,49 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /**
      * @inheritdoc IValSetDriver
      */
-    function getNumAggregatorsAt(
+    function getRequiredHeaderKeyTagAt(
         uint48 timestamp
-    ) public view virtual returns (uint208) {
-        return _getValSetDriverStorage()._numAggregators.upperLookupRecent(timestamp);
+    ) public view virtual returns (uint8) {
+        return uint8(_getValSetDriverStorage()._requiredHeaderKeyTag.upperLookupRecent(timestamp));
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function getNumAggregators() public view virtual returns (uint208) {
-        return _getValSetDriverStorage()._numAggregators.latest();
+    function getRequiredHeaderKeyTag() public view virtual returns (uint8) {
+        return uint8(_getValSetDriverStorage()._requiredHeaderKeyTag.latest());
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function getNumCommittersAt(
+    function getVerificationTypeAt(
         uint48 timestamp
-    ) public view virtual returns (uint208) {
-        return _getValSetDriverStorage()._numCommitters.upperLookupRecent(timestamp);
+    ) public view virtual returns (uint32) {
+        return uint32(_getValSetDriverStorage()._verificationType.upperLookupRecent(timestamp));
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function getNumCommitters() public view virtual returns (uint208) {
-        return _getValSetDriverStorage()._numCommitters.latest();
+    function getVerificationType() public view virtual returns (uint32) {
+        return uint32(_getValSetDriverStorage()._verificationType.latest());
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function getConfigAt(
+    function getMaxMissingEpochsAt(
         uint48 timestamp
-    ) public view virtual returns (Config memory) {
-        return Config({
-            numAggregators: getNumAggregatorsAt(timestamp),
-            numCommitters: getNumCommittersAt(timestamp),
-            votingPowerProviders: getVotingPowerProvidersAt(timestamp),
-            keysProvider: getKeysProviderAt(timestamp),
-            replicas: getReplicasAt(timestamp),
-            maxVotingPower: getMaxVotingPowerAt(timestamp),
-            minInclusionVotingPower: getMinInclusionVotingPowerAt(timestamp),
-            maxValidatorsCount: getMaxValidatorsCountAt(timestamp),
-            requiredKeyTags: getRequiredKeyTagsAt(timestamp),
-            quorumThresholds: getQuorumThresholdsAt(timestamp),
-            requiredHeaderKeyTag: getRequiredHeaderKeyTagAt(timestamp),
-            verificationType: getVerificationTypeAt(timestamp)
-        });
+    ) public view virtual returns (uint48) {
+        return uint48(_getValSetDriverStorage()._maxMissingEpochs.upperLookupRecent(timestamp));
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function getConfig() public view virtual returns (Config memory) {
-        return Config({
-            numAggregators: getNumAggregators(),
-            numCommitters: getNumCommitters(),
-            votingPowerProviders: getVotingPowerProviders(),
-            keysProvider: getKeysProvider(),
-            replicas: getReplicas(),
-            maxVotingPower: getMaxVotingPower(),
-            minInclusionVotingPower: getMinInclusionVotingPower(),
-            maxValidatorsCount: getMaxValidatorsCount(),
-            requiredKeyTags: getRequiredKeyTags(),
-            quorumThresholds: getQuorumThresholds(),
-            requiredHeaderKeyTag: getRequiredHeaderKeyTag(),
-            verificationType: getVerificationType()
-        });
+    function getMaxMissingEpochs() public view virtual returns (uint48) {
+        return uint48(_getValSetDriverStorage()._maxMissingEpochs.latest());
     }
 
     /**
@@ -520,6 +539,15 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         uint32 verificationType
     ) public virtual checkPermission {
         _setVerificationType(verificationType);
+    }
+
+    /**
+     * @inheritdoc IValSetDriver
+     */
+    function setMaxMissingEpochs(
+        uint48 maxMissingEpochs
+    ) public virtual checkPermission {
+        _setMaxMissingEpochs(maxMissingEpochs);
     }
 
     function _setNumAggregators(
@@ -672,6 +700,13 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     ) internal virtual {
         _getValSetDriverStorage()._verificationType.push(uint48(block.timestamp), verificationType);
         emit SetVerificationType(verificationType);
+    }
+
+    function _setMaxMissingEpochs(
+        uint48 maxMissingEpochs
+    ) internal virtual {
+        _getValSetDriverStorage()._maxMissingEpochs.push(uint48(block.timestamp), maxMissingEpochs);
+        emit SetMaxMissingEpochs(maxMissingEpochs);
     }
 
     function _validateCrossChainAddress(
