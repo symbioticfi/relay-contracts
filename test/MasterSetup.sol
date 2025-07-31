@@ -27,6 +27,7 @@ import "./InitSetup.sol";
 
 import {SigVerifierBlsBn254ZK} from "../src/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol";
 import {SigVerifierBlsBn254Simple} from "../src/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol";
+import {SigVerifierBlsBn254Merkle} from "../src/modules/settlement/sig-verifiers/SigVerifierBlsBn254Merkle.sol";
 import {Verifier as Verifier_10} from "./data/zk/Verifier_10.sol";
 import {Verifier as Verifier_100} from "./data/zk/Verifier_100.sol";
 import {Verifier as Verifier_1000} from "./data/zk/Verifier_1000.sol";
@@ -146,6 +147,8 @@ contract MasterSetupTest is InitSetupTest {
                 localVars.sigVerifier = address(new SigVerifierBlsBn254ZK(verifiers, maxValidators));
             } else if (networkSetupParams.VERIFICATION_TYPE == 1) {
                 localVars.sigVerifier = address(new SigVerifierBlsBn254Simple());
+            } else if (networkSetupParams.VERIFICATION_TYPE == 2) {
+                localVars.sigVerifier = address(new SigVerifierBlsBn254Merkle());
             } else {
                 revert("Invalid verification type");
             }
