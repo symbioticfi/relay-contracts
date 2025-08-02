@@ -25,9 +25,6 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
     function __EpochManager_init(
         EpochManagerInitParams memory initParams
     ) internal virtual onlyInitializing {
-        if (initParams.epochDurationTimestamp < Time.timestamp()) {
-            revert EpochManager_InvalidEpochDurationTimestamp();
-        }
         _setEpochDuration(initParams.epochDuration, initParams.epochDurationTimestamp, 0);
         emit InitEpochDuration(initParams.epochDuration, initParams.epochDurationTimestamp);
     }
@@ -129,6 +126,9 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
     ) internal virtual {
         if (epochDuration == 0) {
             revert EpochManager_InvalidEpochDuration();
+        }
+        if (epochDurationTimestamp == 0) {
+            epochDurationTimestamp = uint48(block.timestamp);
         }
         _getEpochManagerStorage()._epochDurationDataByTimestamp.push(
             epochDurationTimestamp,
