@@ -74,6 +74,7 @@ contract EpochManagerTest is Test {
         IEpochManager.EpochManager_InvalidEpochDurationTimestamp.selector;
 
     function setUp() public {
+        vm.warp(1000);
         epochManager = new TestEpochManager();
     }
 
