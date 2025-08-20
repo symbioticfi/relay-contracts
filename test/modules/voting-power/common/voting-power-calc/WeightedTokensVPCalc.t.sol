@@ -338,7 +338,7 @@ contract WeightedTokensVPCalcTest is InitSetupTest {
         // Make a deposit at t0
         _deal_Symbiotic(address(mockToken), getStaker(0).addr, type(uint128).max, true);
         _stakerDeposit_SymbioticCore(getStaker(0).addr, operatorVault, 1000);
-        uint48 t0 = uint48(block.timestamp);
+        uint48 t0 = uint48(vm.getBlockTimestamp());
 
         vm.startPrank(vars.network.addr);
         votingPowerProvider.registerOperatorVault(operator.addr, operatorVault);
@@ -351,8 +351,8 @@ contract WeightedTokensVPCalcTest is InitSetupTest {
         );
 
         // Change weight at t1 and ensure historical query at t0 still uses default weight
-        vm.warp(block.timestamp + 10);
-        uint48 t1 = uint48(block.timestamp);
+        vm.warp(vm.getBlockTimestamp() + 10);
+        uint48 t1 = uint48(vm.getBlockTimestamp());
         votingPowerProvider.setTokenWeight(address(mockToken), 10 ** 5);
 
         assertEq(
@@ -363,8 +363,8 @@ contract WeightedTokensVPCalcTest is InitSetupTest {
         );
 
         // Another change at t2 should reflect new weight while t1 stays at previous
-        vm.warp(block.timestamp + 10);
-        uint48 t2 = uint48(block.timestamp);
+        vm.warp(vm.getBlockTimestamp() + 10);
+        uint48 t2 = uint48(vm.getBlockTimestamp());
         votingPowerProvider.setTokenWeight(address(mockToken), 123_456_789);
 
         assertEq(

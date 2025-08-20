@@ -339,12 +339,12 @@ contract WeightedVaultsVPCalcTest is InitSetupTest {
         vm.stopPrank();
 
         // At t0, vault weight should be default (1e4)
-        uint48 t0 = uint48(block.timestamp);
+        uint48 t0 = uint48(vm.getBlockTimestamp());
         assertEq(votingPowerProvider.getVaultWeightAt(operatorVault, t0), 10 ** 4);
 
         // Change vault weight at t1
-        vm.warp(block.timestamp + 10);
-        uint48 t1 = uint48(block.timestamp);
+        vm.warp(vm.getBlockTimestamp() + 10);
+        uint48 t1 = uint48(vm.getBlockTimestamp());
         votingPowerProvider.setVaultWeight(operatorVault, 10 ** 5);
 
         // Historical query at t0 should still return default weight
@@ -353,8 +353,8 @@ contract WeightedVaultsVPCalcTest is InitSetupTest {
         assertEq(votingPowerProvider.getVaultWeightAt(operatorVault, t1), 10 ** 5);
 
         // Another change at t2
-        vm.warp(block.timestamp + 10);
-        uint48 t2 = uint48(block.timestamp);
+        vm.warp(vm.getBlockTimestamp() + 10);
+        uint48 t2 = uint48(vm.getBlockTimestamp());
         votingPowerProvider.setVaultWeight(operatorVault, 123_456);
 
         // Historical queries should return appropriate weights
@@ -419,7 +419,7 @@ contract WeightedVaultsVPCalcTest is InitSetupTest {
         // Make a deposit at t0
         _deal_Symbiotic(address(mockToken), getStaker(0).addr, type(uint128).max, true);
         _stakerDeposit_SymbioticCore(getStaker(0).addr, operatorVault, 1000);
-        uint48 t0 = uint48(block.timestamp);
+        uint48 t0 = uint48(vm.getBlockTimestamp());
 
         vm.startPrank(vars.network.addr);
         votingPowerProvider.registerOperatorVault(operator.addr, operatorVault);
@@ -432,8 +432,8 @@ contract WeightedVaultsVPCalcTest is InitSetupTest {
         );
 
         // Change vault weight at t1 and ensure historical query at t0 still uses default weight
-        vm.warp(block.timestamp + 10);
-        uint48 t1 = uint48(block.timestamp);
+        vm.warp(vm.getBlockTimestamp() + 10);
+        uint48 t1 = uint48(vm.getBlockTimestamp());
         votingPowerProvider.setVaultWeight(operatorVault, 10 ** 5);
 
         assertEq(
@@ -444,8 +444,8 @@ contract WeightedVaultsVPCalcTest is InitSetupTest {
         );
 
         // Another change at t2 should reflect new weight while t1 stays at previous
-        vm.warp(block.timestamp + 10);
-        uint48 t2 = uint48(block.timestamp);
+        vm.warp(vm.getBlockTimestamp() + 10);
+        uint48 t2 = uint48(vm.getBlockTimestamp());
         votingPowerProvider.setVaultWeight(operatorVault, 123_456);
 
         assertEq(
