@@ -15,6 +15,11 @@ interface IOperatorsJail {
     error OperatorsJail_OperatorJailed();
 
     /**
+     * @notice Reverts when the operator is not jailed.
+     */
+    error OperatorsJail_OperatorNotJailed();
+
+    /**
      * @notice The storage of the OperatorsJail contract.
      * @param _jailedUntil The mapping from the operator to the jailed until timestamp.
      * @custom:storage-location erc7201:symbiotic.storage.OperatorsJail

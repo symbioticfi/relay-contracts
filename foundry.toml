@@ -41,9 +41,11 @@ ignore = ["test/**/*.sol","script/**/*.sol","src/interfaces/**/*.sol"]
 [[profile.default.compilation_restrictions]]
 paths = "{test/mocks/VotingPowerProviderFull.sol}"
 via_ir = true
+optimizer_runs = 1
 
 [[profile.default.additional_compiler_profiles]]
-name = "via-ir"
+name = "via-ir-1"
 via_ir = true
+optimizer_runs = 1
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
