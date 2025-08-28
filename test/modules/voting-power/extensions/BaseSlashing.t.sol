@@ -12,6 +12,8 @@ import {IOzEIP712} from "../../../../src/interfaces/modules/base/IOzEIP712.sol";
 import {NoPermissionManager} from "../../../../test/mocks/NoPermissionManager.sol";
 import {EqualStakeVPCalc} from "../../../../src/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol";
 import {OperatorVaults} from "../../../../src/modules/voting-power/extensions/OperatorVaults.sol";
+import {IEntity} from "lib/core/src/interfaces/common/IEntity.sol";
+import {IVault} from "lib/core/src/interfaces/vault/IVault.sol";
 
 import {BN254} from "../../../../src/libraries/utils/BN254.sol";
 import "../../../MasterSetup.sol";
@@ -239,6 +241,82 @@ contract BaseSlashingTest is MasterSetupTest {
         vm.expectRevert(abi.encodeWithSelector(IBaseSlashing.BaseSlashing_NotVetoSlasher.selector));
 
         slasher.executeSlashVault(address(masterSetupParams.votingPowerProvider), vaults[0], 0, new bytes(0));
+    }
+
+    function test_RevertWhen_SlashVault_NoSlashing() public {
+        vm.warp(vm.getBlockTimestamp() + 1);
+
+        SlasherMock slasher = new SlasherMock();
+
+        vm.prank(vars.deployer.addr);
+        masterSetupParams.votingPowerProvider.setSlasher(address(slasher));
+
+        address operator = getOperator(0).addr;
+        address[] memory vaults = masterSetupParams.votingPowerProvider.getSharedVaults();
+
+        vm.expectRevert(abi.encodeWithSelector(IBaseSlashing.BaseSlashing_NoSlashing.selector));
+
+        slasher.slashVault(
+            address(masterSetupParams.votingPowerProvider),
+            uint48(1), // set timestamp that has no slasher data
+            vaults[0],
+            operator,
+            100,
+            new bytes(0)
+        );
+    }
+
+    function test_RevertWhen_SlashVault_UnknownSlasherType() public {
+        vm.warp(vm.getBlockTimestamp() + 1);
+
+        SlasherMock slasher = new SlasherMock();
+
+        vm.prank(vars.deployer.addr);
+        masterSetupParams.votingPowerProvider.setSlasher(address(slasher));
+
+        address operator = getOperator(0).addr;
+        address[] memory vaults = masterSetupParams.votingPowerProvider.getSharedVaults();
+
+        address vaultSlasher = IVault(vaults[0]).slasher();
+        // mock the slasher type to be unknown
+        vm.mockCall(vaultSlasher, abi.encodeWithSelector(IEntity.TYPE.selector), abi.encode(uint64(100)));
+
+        vm.expectRevert(abi.encodeWithSelector(IBaseSlashing.BaseSlashing_UnknownSlasherType.selector));
+
+        slasher.slashVault(
+            address(masterSetupParams.votingPowerProvider),
+            uint48(vm.getBlockTimestamp() - 1),
+            vaults[0],
+            operator,
+            100,
+            new bytes(0)
+        );
+    }
+
+    function test_SlashVault_EpochDurationPassed() public {
+        vm.warp(vm.getBlockTimestamp() + 1);
+
+        SlasherMock slasher = new SlasherMock();
+
+        vm.prank(vars.deployer.addr);
+        masterSetupParams.votingPowerProvider.setSlasher(address(slasher));
+
+        address operator = getOperator(0).addr;
+        address[] memory vaults = masterSetupParams.votingPowerProvider.getSharedVaults();
+
+        (bool requireSlasher, uint48 minVaultEpochDuration) = masterSetupParams.votingPowerProvider.getSlashingData();
+
+        uint48 currentTimestamp = uint48(vm.getBlockTimestamp());
+
+        // increase timestamp to pass the minVaultEpochDuration
+        vm.warp(vm.getBlockTimestamp() + minVaultEpochDuration + 1);
+
+        (bool success, bytes memory response) = slasher.slashVault(
+            address(masterSetupParams.votingPowerProvider), currentTimestamp, vaults[0], operator, 100, new bytes(0)
+        );
+
+        assertFalse(success);
+        assertEq(response, new bytes(0));
     }
 
     function test_Location() public {
