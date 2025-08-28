@@ -12,6 +12,7 @@ fs_permissions = [{ access = "read-write", path = "./"}]
 gas_reports = ["*"]
 gas_limit = "18446744073709551615"
 dynamic_test_linking = true
+ignored_warnings_from = ["test/","script/"]
 
 [rpc_endpoints]
 mainnet = "${ETH_RPC_URL}"
@@ -36,5 +37,13 @@ max_test_rejects = 262144
 lint_on_build = false
 exclude_lints = ["asm-keccak256","mixed-case-function","mixed-case-variable","pascal-case-struct","screaming-snake-case-const"]
 ignore = ["test/**/*.sol","script/**/*.sol","src/interfaces/**/*.sol"]
+
+[[profile.default.compilation_restrictions]]
+paths = "{test/mocks/VotingPowerProviderFull.sol}"
+via_ir = true
+
+[[profile.default.additional_compiler_profiles]]
+name = "via-ir"
+via_ir = true
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
