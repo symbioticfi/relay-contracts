@@ -34,7 +34,6 @@ contract BaseSlashingTest is MasterSetupTest {
         assertEq(masterSetupParams.votingPowerProvider.getSlasher(), address(1));
 
         vm.prank(vars.deployer.addr);
-        vm.expectRevert(abi.encodeWithSelector(IBaseSlashing.BaseSlashing_InvalidSlasher.selector));
         masterSetupParams.votingPowerProvider.setSlasher(address(0));
 
         vm.prank(vars.deployer.addr);
@@ -72,7 +71,6 @@ contract BaseSlashingTest is MasterSetupTest {
         assertEq(masterSetupParams.votingPowerProvider.getSlasher(), address(1));
 
         vm.prank(vars.deployer.addr);
-        vm.expectRevert(abi.encodeWithSelector(IBaseSlashing.BaseSlashing_InvalidSlasher.selector));
         masterSetupParams.votingPowerProvider.setSlasher(address(0));
 
         vm.prank(vars.deployer.addr);

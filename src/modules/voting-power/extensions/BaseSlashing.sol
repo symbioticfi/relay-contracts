@@ -18,7 +18,7 @@ abstract contract BaseSlashing is VotingPowerProvider, IBaseSlashing {
     }
 
     function _checkSlasher() internal view virtual {
-        if (msg.sender != getSlasher()) {
+        if (getSlasher() != msg.sender) {
             revert BaseSlashing_NotSlasher();
         }
     }
@@ -85,9 +85,6 @@ abstract contract BaseSlashing is VotingPowerProvider, IBaseSlashing {
     function _setSlasher(
         address slasher
     ) internal virtual {
-        if (slasher == address(0)) {
-            revert BaseSlashing_InvalidSlasher();
-        }
         _getBaseSlashingStorage()._slasher = slasher;
         emit SetSlasher(slasher);
     }

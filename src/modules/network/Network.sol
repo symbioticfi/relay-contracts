@@ -215,7 +215,7 @@ contract Network is TimelockControllerUpgradeable, INetwork {
      * @inheritdoc ISetMaxNetworkLimitHook
      */
     function setMaxNetworkLimit(address delegator, uint96 subnetworkId, uint256 maxNetworkLimit) public virtual {
-        if (msg.sender != INetworkMiddlewareService(NETWORK_MIDDLEWARE_SERVICE).middleware(address(this))) {
+        if (INetworkMiddlewareService(NETWORK_MIDDLEWARE_SERVICE).middleware(address(this)) != msg.sender) {
             revert NotMiddleware();
         }
         _setMaxNetworkLimit(delegator, subnetworkId, maxNetworkLimit);

@@ -3,11 +3,6 @@ pragma solidity ^0.8.0;
 
 interface IBaseSlashing {
     /**
-     * @notice Reverts when the new slasher is zero address.
-     */
-    error BaseSlashing_InvalidSlasher();
-
-    /**
      * @notice Reverts when the vault doesn't have a slasher.
      */
     error BaseSlashing_NoSlasher();

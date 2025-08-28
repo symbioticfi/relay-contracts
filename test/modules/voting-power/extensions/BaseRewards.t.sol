@@ -42,7 +42,6 @@ contract BaseRewardsTest is MasterSetupTest, SymbioticRewardsBindings {
         assertEq(masterSetupParams.votingPowerProvider.getRewarder(), address(1));
 
         vm.prank(vars.deployer.addr);
-        vm.expectRevert(abi.encodeWithSelector(IBaseRewards.BaseRewards_InvalidRewarder.selector));
         masterSetupParams.votingPowerProvider.setRewarder(address(0));
 
         vm.prank(vars.deployer.addr);
@@ -95,7 +94,6 @@ contract BaseRewardsTest is MasterSetupTest, SymbioticRewardsBindings {
         assertEq(masterSetupParams.votingPowerProvider.getRewarder(), address(1));
 
         vm.prank(vars.deployer.addr);
-        vm.expectRevert(abi.encodeWithSelector(IBaseRewards.BaseRewards_InvalidRewarder.selector));
         masterSetupParams.votingPowerProvider.setRewarder(address(0));
 
         vm.prank(vars.deployer.addr);
