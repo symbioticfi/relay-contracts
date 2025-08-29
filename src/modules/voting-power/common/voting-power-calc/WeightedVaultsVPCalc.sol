@@ -18,6 +18,7 @@ abstract contract WeightedVaultsVPCalc is EqualStakeVPCalc, PermissionManager, I
     using Checkpoints for Checkpoints.Trace208;
 
     uint208 internal constant DEFAULT_VAULT_WEIGHT = 1e4;
+    uint208 internal constant MAX_VAULT_WEIGHT_SCALE = DEFAULT_VAULT_WEIGHT * DEFAULT_VAULT_WEIGHT;
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.WeightedVaultsVPCalc")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant WeightedVaultsVPCalcStorageLocation =
@@ -82,6 +83,9 @@ abstract contract WeightedVaultsVPCalc is EqualStakeVPCalc, PermissionManager, I
     }
 
     function _setVaultWeight(address vault, uint208 weight) internal virtual {
+        if (weight > MAX_VAULT_WEIGHT_SCALE) {
+            revert WeightedVaultsVPCalc_TooLargeWeight();
+        }
         _getWeightedVaultsVPCalcStorage()._vaultWeight[vault].push(uint48(block.timestamp), weight);
         emit SetVaultWeight(vault, weight);
     }

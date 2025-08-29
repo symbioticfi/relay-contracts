@@ -5,6 +5,11 @@ import {Checkpoints} from "../../../../../libraries/structs/Checkpoints.sol";
 
 interface IWeightedTokensVPCalc {
     /**
+     * @notice Reverts when the weight is too large.
+     */
+    error WeightedTokensVPCalc_TooLargeWeight();
+
+    /**
      * @notice The storage of the WeightedTokensVPCalc contract.
      * @param _tokenWeight The weight for each token.
      */
