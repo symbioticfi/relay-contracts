@@ -52,8 +52,8 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
             _addVotingPowerProvider(valSetDriverInitParams.votingPowerProviders[i]);
         }
         _setKeysProvider(valSetDriverInitParams.keysProvider);
-        for (uint256 i; i < valSetDriverInitParams.replicas.length; ++i) {
-            _addReplica(valSetDriverInitParams.replicas[i]);
+        for (uint256 i; i < valSetDriverInitParams.settlements.length; ++i) {
+            _addSettlement(valSetDriverInitParams.settlements[i]);
         }
         _setMaxVotingPower(valSetDriverInitParams.maxVotingPower);
         _setMinInclusionVotingPower(valSetDriverInitParams.minInclusionVotingPower);
@@ -78,7 +78,7 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
             numCommitters: getNumCommittersAt(timestamp),
             votingPowerProviders: getVotingPowerProvidersAt(timestamp),
             keysProvider: getKeysProviderAt(timestamp),
-            replicas: getReplicasAt(timestamp),
+            settlements: getSettlementsAt(timestamp),
             maxVotingPower: getMaxVotingPowerAt(timestamp),
             minInclusionVotingPower: getMinInclusionVotingPowerAt(timestamp),
             maxValidatorsCount: getMaxValidatorsCountAt(timestamp),
@@ -99,7 +99,7 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
             numCommitters: getNumCommitters(),
             votingPowerProviders: getVotingPowerProviders(),
             keysProvider: getKeysProvider(),
-            replicas: getReplicas(),
+            settlements: getSettlements(),
             maxVotingPower: getMaxVotingPower(),
             minInclusionVotingPower: getMinInclusionVotingPower(),
             maxValidatorsCount: getMaxValidatorsCount(),
@@ -209,43 +209,43 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /**
      * @inheritdoc IValSetDriver
      */
-    function isReplicaRegisteredAt(
-        CrossChainAddress memory replica,
+    function isSettlementRegisteredAt(
+        CrossChainAddress memory settlement,
         uint48 timestamp
     ) public view virtual returns (bool) {
-        return _getValSetDriverStorage()._replicas.containsAt(timestamp, _serializeCrossChainAddress(replica));
+        return _getValSetDriverStorage()._settlements.containsAt(timestamp, _serializeCrossChainAddress(settlement));
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function isReplicaRegistered(
-        CrossChainAddress memory replica
+    function isSettlementRegistered(
+        CrossChainAddress memory settlement
     ) public view virtual returns (bool) {
-        return _getValSetDriverStorage()._replicas.contains(_serializeCrossChainAddress(replica));
+        return _getValSetDriverStorage()._settlements.contains(_serializeCrossChainAddress(settlement));
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function getReplicasAt(
+    function getSettlementsAt(
         uint48 timestamp
-    ) public view virtual returns (CrossChainAddress[] memory replicas) {
-        bytes32[] memory replicasRaw = _getValSetDriverStorage()._replicas.valuesAt(timestamp);
-        replicas = new CrossChainAddress[](replicasRaw.length);
-        for (uint256 i; i < replicasRaw.length; ++i) {
-            replicas[i] = _deserializeCrossChainAddress(replicasRaw[i]);
+    ) public view virtual returns (CrossChainAddress[] memory settlements) {
+        bytes32[] memory settlementsRaw = _getValSetDriverStorage()._settlements.valuesAt(timestamp);
+        settlements = new CrossChainAddress[](settlementsRaw.length);
+        for (uint256 i; i < settlementsRaw.length; ++i) {
+            settlements[i] = _deserializeCrossChainAddress(settlementsRaw[i]);
         }
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function getReplicas() public view virtual returns (CrossChainAddress[] memory replicas) {
-        bytes32[] memory replicasRaw = _getValSetDriverStorage()._replicas.values();
-        replicas = new CrossChainAddress[](replicasRaw.length);
-        for (uint256 i; i < replicasRaw.length; ++i) {
-            replicas[i] = _deserializeCrossChainAddress(replicasRaw[i]);
+    function getSettlements() public view virtual returns (CrossChainAddress[] memory settlements) {
+        bytes32[] memory settlementsRaw = _getValSetDriverStorage()._settlements.values();
+        settlements = new CrossChainAddress[](settlementsRaw.length);
+        for (uint256 i; i < settlementsRaw.length; ++i) {
+            settlements[i] = _deserializeCrossChainAddress(settlementsRaw[i]);
         }
     }
 
@@ -454,19 +454,19 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /**
      * @inheritdoc IValSetDriver
      */
-    function addReplica(
-        CrossChainAddress memory replica
+    function addSettlement(
+        CrossChainAddress memory settlement
     ) public virtual checkPermission {
-        _addReplica(replica);
+        _addSettlement(settlement);
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function removeReplica(
-        CrossChainAddress memory replica
+    function removeSettlement(
+        CrossChainAddress memory settlement
     ) public virtual checkPermission {
-        _removeReplica(replica);
+        _removeSettlement(settlement);
     }
 
     /**
@@ -605,28 +605,28 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         emit SetKeysProvider(keysProvider);
     }
 
-    function _addReplica(
-        CrossChainAddress memory replica
+    function _addSettlement(
+        CrossChainAddress memory settlement
     ) internal virtual {
         ValSetDriverStorage storage $ = _getValSetDriverStorage();
-        _validateCrossChainAddress(replica);
-        if ($._isReplicaChainAdded[replica.chainId]) {
+        _validateCrossChainAddress(settlement);
+        if ($._isSettlementChainAdded[settlement.chainId]) {
             revert ValSetDriver_ChainAlreadyAdded();
         }
-        $._isReplicaChainAdded[replica.chainId] = true;
-        $._replicas.add(uint48(block.timestamp), _serializeCrossChainAddress(replica));
-        emit AddReplica(replica);
+        $._isSettlementChainAdded[settlement.chainId] = true;
+        $._settlements.add(uint48(block.timestamp), _serializeCrossChainAddress(settlement));
+        emit AddSettlement(settlement);
     }
 
-    function _removeReplica(
-        CrossChainAddress memory replica
+    function _removeSettlement(
+        CrossChainAddress memory settlement
     ) internal virtual {
         ValSetDriverStorage storage $ = _getValSetDriverStorage();
-        if (!$._replicas.remove(uint48(block.timestamp), _serializeCrossChainAddress(replica))) {
+        if (!$._settlements.remove(uint48(block.timestamp), _serializeCrossChainAddress(settlement))) {
             revert ValSetDriver_NotAdded();
         }
-        $._isReplicaChainAdded[replica.chainId] = false;
-        emit RemoveReplica(replica);
+        $._isSettlementChainAdded[settlement.chainId] = false;
+        emit RemoveSettlement(settlement);
     }
 
     function _setMaxVotingPower(

@@ -54,8 +54,8 @@ interface IValSetDriver {
      * @param _isVotingPowerProviderChainAdded The mapping from the chain ID to the voting power provider chain added status.
      * @param _votingPowerProviders The set of the voting power providers.
      * @param _keysProvider The checkpoint of the keys provider.
-     * @param _isReplicaChainAdded The mapping from the chain ID to the replica chain added status.
-     * @param _replicas The set of the replicas.
+     * @param _isSettlementChainAdded The mapping from the chain ID to the settlement chain added status.
+     * @param _settlements The set of the settlements.
      * @param _verificationType The checkpoint of the verification type.
      * @param _maxVotingPower The checkpoint of the maximum voting power.
      * @param _minInclusionVotingPower The checkpoint of the minimum inclusion voting power.
@@ -73,8 +73,8 @@ interface IValSetDriver {
         mapping(uint64 chainId => bool isAdded) _isVotingPowerProviderChainAdded;
         PersistentSet.Bytes32Set _votingPowerProviders;
         Checkpoints.Trace256 _keysProvider;
-        mapping(uint64 chainId => bool isAdded) _isReplicaChainAdded;
-        PersistentSet.Bytes32Set _replicas;
+        mapping(uint64 chainId => bool isAdded) _isSettlementChainAdded;
+        PersistentSet.Bytes32Set _settlements;
         Checkpoints.Trace208 _verificationType;
         Checkpoints.Trace256 _maxVotingPower;
         Checkpoints.Trace256 _minInclusionVotingPower;
@@ -98,7 +98,7 @@ interface IValSetDriver {
      *         to on-chain) at the genesis.
      * @param votingPowerProviders The voting power providers (contracts that provide the voting powers of the operators on different chains).
      * @param keysProvider The keys provider (contract that provides the keys of the operators).
-     * @param replicas The replicas (contracts that enable a verification of the validator set's attestations on different chains).
+     * @param settlements The settlements (contracts that enable a verification of the validator set's attestations on different chains).
      * @param maxVotingPower The maximum voting power for each validator.
      * @param minInclusionVotingPower The minimum inclusion voting power for the operator to be included in the validator set.
      * @param maxValidatorsCount The maximum active validators count in the validator set.
@@ -115,7 +115,7 @@ interface IValSetDriver {
         uint208 numCommitters;
         CrossChainAddress[] votingPowerProviders;
         CrossChainAddress keysProvider;
-        CrossChainAddress[] replicas;
+        CrossChainAddress[] settlements;
         uint256 maxVotingPower;
         uint256 minInclusionVotingPower;
         uint208 maxValidatorsCount;
@@ -154,7 +154,7 @@ interface IValSetDriver {
      *         to on-chain).
      * @param votingPowerProviders The voting power providers (contracts that provide the voting powers of the operators on different chains).
      * @param keysProvider The keys provider (contract that provides the keys of the operators).
-     * @param replicas The replicas (contracts that enable a verification of the validator set's attestations on different chains).
+     * @param settlements The settlements (contracts that enable a verification of the validator set's attestations on different chains).
      * @param maxVotingPower The maximum voting power for each validator.
      * @param minInclusionVotingPower The minimum inclusion voting power for the operator to be included in the validator set.
      * @param maxValidatorsCount The maximum active validators count in the validator set.
@@ -169,7 +169,7 @@ interface IValSetDriver {
         uint208 numCommitters;
         CrossChainAddress[] votingPowerProviders;
         CrossChainAddress keysProvider;
-        CrossChainAddress[] replicas;
+        CrossChainAddress[] settlements;
         uint256 maxVotingPower;
         uint256 minInclusionVotingPower;
         uint208 maxValidatorsCount;
@@ -213,16 +213,16 @@ interface IValSetDriver {
     event SetKeysProvider(CrossChainAddress keysProvider);
 
     /**
-     * @notice Emitted when the replica is added.
-     * @param replica The replica (contract that enable a verification of the validator set's attestations on different chains).
+     * @notice Emitted when the settlement is added.
+     * @param settlement The settlement (contract that enable a verification of the validator set's attestations on different chains).
      */
-    event AddReplica(CrossChainAddress replica);
+    event AddSettlement(CrossChainAddress settlement);
 
     /**
-     * @notice Emitted when the replica is removed.
-     * @param replica The replica (contract that enable a verification of the validator set's attestations on different chains).
+     * @notice Emitted when the settlement is removed.
+     * @param settlement The settlement (contract that enable a verification of the validator set's attestations on different chains).
      */
-    event RemoveReplica(CrossChainAddress replica);
+    event RemoveSettlement(CrossChainAddress settlement);
 
     /**
      * @notice Emitted when the maximum voting power is set.
@@ -385,36 +385,39 @@ interface IValSetDriver {
     function getKeysProvider() external view returns (CrossChainAddress memory);
 
     /**
-     * @notice Returns if the replica is registered at the given timestamp.
-     * @param replica The replica.
+     * @notice Returns if the settlement is registered at the given timestamp.
+     * @param settlement The settlement.
      * @param timestamp The timestamp.
-     * @return If the replica is registered.
+     * @return If the settlement is registered.
      */
-    function isReplicaRegisteredAt(CrossChainAddress memory replica, uint48 timestamp) external view returns (bool);
-
-    /**
-     * @notice Returns if the replica is registered.
-     * @param replica The replica.
-     * @return If the replica is registered.
-     */
-    function isReplicaRegistered(
-        CrossChainAddress memory replica
+    function isSettlementRegisteredAt(
+        CrossChainAddress memory settlement,
+        uint48 timestamp
     ) external view returns (bool);
 
     /**
-     * @notice Returns the replicas at the given timestamp.
-     * @param timestamp The timestamp.
-     * @return The replicas (contracts that enable a verification of the validator set's attestations on different chains).
+     * @notice Returns if the settlement is registered.
+     * @param settlement The settlement.
+     * @return If the settlement is registered.
      */
-    function getReplicasAt(
+    function isSettlementRegistered(
+        CrossChainAddress memory settlement
+    ) external view returns (bool);
+
+    /**
+     * @notice Returns the settlements at the given timestamp.
+     * @param timestamp The timestamp.
+     * @return The settlements (contracts that enable a verification of the validator set's attestations on different chains).
+     */
+    function getSettlementsAt(
         uint48 timestamp
     ) external view returns (CrossChainAddress[] memory);
 
     /**
-     * @notice Returns the replicas.
-     * @return The replicas (contracts that enable a verification of the validator set's attestations on different chains).
+     * @notice Returns the settlements.
+     * @return The settlements (contracts that enable a verification of the validator set's attestations on different chains).
      */
-    function getReplicas() external view returns (CrossChainAddress[] memory);
+    function getSettlements() external view returns (CrossChainAddress[] memory);
 
     /**
      * @notice Returns the maximum voting power at the given timestamp.
@@ -604,21 +607,21 @@ interface IValSetDriver {
     ) external;
 
     /**
-     * @notice Adds a replica.
-     * @param replica The replica (contract that enable a verification of the validator set's attestations on different chains).
+     * @notice Adds a settlement.
+     * @param settlement The settlement (contract that enable a verification of the validator set's attestations on different chains).
      * @dev The caller must have the needed permission.
      */
-    function addReplica(
-        CrossChainAddress memory replica
+    function addSettlement(
+        CrossChainAddress memory settlement
     ) external;
 
     /**
-     * @notice Removes a replica.
-     * @param replica The replica (contract that enable a verification of the validator set's attestations on different chains).
+     * @notice Removes a settlement.
+     * @param settlement The settlement (contract that enable a verification of the validator set's attestations on different chains).
      * @dev The caller must have the needed permission.
      */
-    function removeReplica(
-        CrossChainAddress memory replica
+    function removeSettlement(
+        CrossChainAddress memory settlement
     ) external;
 
     /**

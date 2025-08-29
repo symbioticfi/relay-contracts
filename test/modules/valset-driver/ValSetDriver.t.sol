@@ -48,8 +48,8 @@ contract ValSetDriverTest is Test {
 
         IValSetDriver.CrossChainAddress memory keysProv = cca(address(444), 222);
 
-        IValSetDriver.CrossChainAddress[] memory reps = new IValSetDriver.CrossChainAddress[](1);
-        reps[0] = cca(address(0xBB01), 303);
+        IValSetDriver.CrossChainAddress[] memory settls = new IValSetDriver.CrossChainAddress[](1);
+        settls[0] = cca(address(0xBB01), 303);
 
         uint8[] memory requiredKeyTags = new uint8[](1);
         requiredKeyTags[0] = 0x2A;
@@ -65,7 +65,7 @@ contract ValSetDriverTest is Test {
             numCommitters: 1,
             votingPowerProviders: vpps,
             keysProvider: keysProv,
-            replicas: reps,
+            settlements: settls,
             maxVotingPower: 1e36,
             minInclusionVotingPower: 0,
             maxValidatorsCount: 100,
@@ -117,10 +117,10 @@ contract ValSetDriverTest is Test {
         assertEq(keysP.addr, address(444), "keysProvider addr mismatch");
         assertEq(keysP.chainId, 222, "keysProvider chainId mismatch");
 
-        IValSetDriver.CrossChainAddress[] memory reps = testMCP.getReplicas();
-        assertEq(reps.length, 1, "Should have 1 replica");
-        assertEq(reps[0].addr, address(0xBB01));
-        assertEq(reps[0].chainId, 303);
+        IValSetDriver.CrossChainAddress[] memory settls = testMCP.getSettlements();
+        assertEq(settls.length, 1, "Should have 1 settlement");
+        assertEq(settls[0].addr, address(0xBB01));
+        assertEq(settls[0].chainId, 303);
 
         assertEq(testMCP.getVerificationType(), 7, "verificationType mismatch");
 
@@ -135,7 +135,7 @@ contract ValSetDriverTest is Test {
         assertEq(mc.votingPowerProviders.length, 2);
         assertEq(mc.votingPowerProviders[0].addr, address(0xAA01));
         assertEq(mc.keysProvider.addr, address(444));
-        assertEq(mc.replicas.length, 1);
+        assertEq(mc.settlements.length, 1);
         assertEq(mc.maxVotingPower, 1e36);
         assertEq(mc.minInclusionVotingPower, 0);
         assertEq(mc.maxValidatorsCount, 100);
@@ -220,47 +220,47 @@ contract ValSetDriverTest is Test {
         assertEq(got.chainId, 555);
     }
 
-    function test_AddRemoveReplica() public {
+    function test_AddRemoveSettlement() public {
         IValSetDriver.CrossChainAddress memory rep2 = cca(address(0xBB02), 304);
 
         vm.prank(nonOwner);
         vm.expectRevert("Not authorized");
-        testMCP.addReplica(rep2);
+        testMCP.addSettlement(rep2);
 
         vm.prank(owner);
-        testMCP.addReplica(rep2);
-        IValSetDriver.CrossChainAddress[] memory reps = testMCP.getReplicas();
-        assertEq(reps.length, 2, "Should have 2 replicas now");
-        assertEq(reps[1].addr, address(0xBB02));
+        testMCP.addSettlement(rep2);
+        IValSetDriver.CrossChainAddress[] memory settls = testMCP.getSettlements();
+        assertEq(settls.length, 2, "Should have 2 settlements now");
+        assertEq(settls[1].addr, address(0xBB02));
 
         vm.prank(owner);
         vm.expectRevert(IValSetDriver.ValSetDriver_ChainAlreadyAdded.selector);
-        testMCP.addReplica(rep2);
+        testMCP.addSettlement(rep2);
         vm.expectRevert(IValSetDriver.ValSetDriver_InvalidCrossChainAddress.selector);
-        testMCP.addReplica(cca(address(0), 304));
+        testMCP.addSettlement(cca(address(0), 304));
         vm.expectRevert(IValSetDriver.ValSetDriver_InvalidCrossChainAddress.selector);
-        testMCP.addReplica(cca(address(1), 0));
+        testMCP.addSettlement(cca(address(1), 0));
 
-        reps = testMCP.getReplicasAt(uint48(vm.getBlockTimestamp()));
-        assertEq(reps.length, 2, "Should have 2 replicas now");
-        assertEq(reps[1].addr, address(0xBB02));
+        settls = testMCP.getSettlementsAt(uint48(vm.getBlockTimestamp()));
+        assertEq(settls.length, 2, "Should have 2 settlements now");
+        assertEq(settls[1].addr, address(0xBB02));
 
-        assertEq(testMCP.isReplicaRegistered(rep2), true);
-        assertEq(testMCP.isReplicaRegisteredAt(rep2, uint48(vm.getBlockTimestamp())), true);
-        assertEq(testMCP.isReplicaRegistered(cca(address(0xBB03), 305)), false);
+        assertEq(testMCP.isSettlementRegistered(rep2), true);
+        assertEq(testMCP.isSettlementRegisteredAt(rep2, uint48(vm.getBlockTimestamp())), true);
+        assertEq(testMCP.isSettlementRegistered(cca(address(0xBB03), 305)), false);
 
         vm.prank(nonOwner);
         vm.expectRevert("Not authorized");
-        testMCP.removeReplica(rep2);
+        testMCP.removeSettlement(rep2);
 
         vm.prank(owner);
-        testMCP.removeReplica(rep2);
-        reps = testMCP.getReplicas();
-        assertEq(reps.length, 1);
+        testMCP.removeSettlement(rep2);
+        settls = testMCP.getSettlements();
+        assertEq(settls.length, 1);
 
         vm.prank(owner);
         vm.expectRevert(IValSetDriver.ValSetDriver_NotAdded.selector);
-        testMCP.removeReplica(rep2);
+        testMCP.removeSettlement(rep2);
     }
 
     function test_AddRemoveQuorumThreshold() public {
