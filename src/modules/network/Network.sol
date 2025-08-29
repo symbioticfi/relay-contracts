@@ -16,7 +16,7 @@ import {TimelockControllerUpgradeable} from
  * @title Network
  * @notice Contract for network management.
  * @dev It allows any external watcher to verify if the set delay is sufficient for a given operation (call to some contract's function).
- *      It supports delays for native asset transfers.
+ *      It supports delays for native asset transfers (native transfer is determined as a call with 0xEEEEEEEE selector).
  *      It supports setting delay for (exact target | exact selector) pairs and for (any target | exact selector) pairs.
  */
 contract Network is TimelockControllerUpgradeable, INetwork {
