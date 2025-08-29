@@ -20,7 +20,7 @@ import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IER
 abstract contract NormalizedTokenDecimalsVPCalc is EqualStakeVPCalc, INormalizedTokenDecimalsVPCalc {
     using Scaler for uint256;
 
-    uint8 internal constant BASE_DECIMALS = 24;
+    uint8 internal constant BASE_DECIMALS = 18;
 
     function __NormalizedTokenDecimalsVPCalc_init() internal virtual onlyInitializing {}
 

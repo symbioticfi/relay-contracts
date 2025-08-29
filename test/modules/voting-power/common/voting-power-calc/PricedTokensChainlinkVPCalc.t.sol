@@ -279,7 +279,7 @@ contract PricedTokensChainlinkVPCalcTest is InitSetupTest {
                 Vm.Wallet memory operator = getOperator(i);
                 address[] memory operatorVaults = votingPowerProvider.getOperatorVaults(operator.addr);
 
-                uint256 expectedVP = (1000 + i) * 10 ** (24 - 18)
+                uint256 expectedVP = (1000 + i) * 10 ** (18 - 18)
                     * ((uint256(wethAnswer) * 10 ** (18 - 8)) * (uint256(wbtcAnswer) * 10 ** (18 - 8)) / 10 ** 18);
                 console2.log("expectedVP", expectedVP);
                 assertEq(votingPowerProvider.getOperatorVotingPower(operator.addr, operatorVaults[0], ""), expectedVP);
@@ -404,7 +404,7 @@ contract PricedTokensChainlinkVPCalcTest is InitSetupTest {
                 Vm.Wallet memory operator = getOperator(i);
                 address[] memory operatorVaults = votingPowerProvider.getOperatorVaults(operator.addr);
 
-                uint256 expectedVP = (1000 + i) * 10 ** (24 - 18)
+                uint256 expectedVP = (1000 + i) * 10 ** (18 - 18)
                     * (
                         (uint256(wethAnswer) * 10 ** (18 - 8)) * (10 ** 36 / (uint256(wbtcAnswer) * 10 ** (18 - 8)))
                             / 10 ** 18
@@ -638,26 +638,26 @@ contract PricedTokensChainlinkVPCalcTest is InitSetupTest {
         assertEq(stalenessDurations[1], uint48(1_000_000));
 
         uint256[] memory expectedVPs = new uint256[](20);
-        expectedVPs[0] = 289_285_670_012_285_649_900_000_000_000_000_000;
-        expectedVPs[1] = 289_574_955_682_297_935_549_900_000_000_000_000;
-        expectedVPs[2] = 289_864_241_352_310_221_199_800_000_000_000_000;
-        expectedVPs[3] = 290_153_527_022_322_506_849_700_000_000_000_000;
-        expectedVPs[4] = 290_442_812_692_334_792_499_600_000_000_000_000;
-        expectedVPs[5] = 290_732_098_362_347_078_149_500_000_000_000_000;
-        expectedVPs[6] = 291_021_384_032_359_363_799_400_000_000_000_000;
-        expectedVPs[7] = 291_310_669_702_371_649_449_300_000_000_000_000;
-        expectedVPs[8] = 291_599_955_372_383_935_099_200_000_000_000_000;
-        expectedVPs[9] = 291_889_241_042_396_220_749_100_000_000_000_000;
-        expectedVPs[10] = 292_178_526_712_408_506_399_000_000_000_000_000;
-        expectedVPs[11] = 292_467_812_382_420_792_048_900_000_000_000_000;
-        expectedVPs[12] = 292_757_098_052_433_077_698_800_000_000_000_000;
-        expectedVPs[13] = 293_046_383_722_445_363_348_700_000_000_000_000;
-        expectedVPs[14] = 293_335_669_392_457_648_998_600_000_000_000_000;
-        expectedVPs[15] = 293_624_955_062_469_934_648_500_000_000_000_000;
-        expectedVPs[16] = 293_914_240_732_482_220_298_400_000_000_000_000;
-        expectedVPs[17] = 294_203_526_402_494_505_948_300_000_000_000_000;
-        expectedVPs[18] = 294_492_812_072_506_791_598_200_000_000_000_000;
-        expectedVPs[19] = 294_782_097_742_519_077_248_100_000_000_000_000;
+        expectedVPs[0] = 289_285_670_012_285_649_900_000_000_000;
+        expectedVPs[1] = 289_574_955_682_297_935_549_900_000_000;
+        expectedVPs[2] = 289_864_241_352_310_221_199_800_000_000;
+        expectedVPs[3] = 290_153_527_022_322_506_849_700_000_000;
+        expectedVPs[4] = 290_442_812_692_334_792_499_600_000_000;
+        expectedVPs[5] = 290_732_098_362_347_078_149_500_000_000;
+        expectedVPs[6] = 291_021_384_032_359_363_799_400_000_000;
+        expectedVPs[7] = 291_310_669_702_371_649_449_300_000_000;
+        expectedVPs[8] = 291_599_955_372_383_935_099_200_000_000;
+        expectedVPs[9] = 291_889_241_042_396_220_749_100_000_000;
+        expectedVPs[10] = 292_178_526_712_408_506_399_000_000_000;
+        expectedVPs[11] = 292_467_812_382_420_792_048_900_000_000;
+        expectedVPs[12] = 292_757_098_052_433_077_698_800_000_000;
+        expectedVPs[13] = 293_046_383_722_445_363_348_700_000_000;
+        expectedVPs[14] = 293_335_669_392_457_648_998_600_000_000;
+        expectedVPs[15] = 293_624_955_062_469_934_648_500_000_000;
+        expectedVPs[16] = 293_914_240_732_482_220_298_400_000_000;
+        expectedVPs[17] = 294_203_526_402_494_505_948_300_000_000;
+        expectedVPs[18] = 294_492_812_072_506_791_598_200_000_000;
+        expectedVPs[19] = 294_782_097_742_519_077_248_100_000_000;
 
         for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
             Vm.Wallet memory operator = getOperator(i);

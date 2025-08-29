@@ -266,7 +266,7 @@ contract WeightedTokensVPCalcTest is InitSetupTest {
             address[] memory operatorVaults = votingPowerProvider.getOperatorVaults(operator.addr);
             assertEq(
                 votingPowerProvider.getOperatorVotingPower(operator.addr, operatorVaults[0], ""),
-                (1000 + i) * 10 ** (24 - 18) * 10 ** 12
+                (1000 + i) * 10 ** (18 - 18) * 10 ** 12
             );
         }
 
@@ -277,7 +277,7 @@ contract WeightedTokensVPCalcTest is InitSetupTest {
             address[] memory operatorVaults = votingPowerProvider.getOperatorVaults(operator.addr);
             assertEq(
                 votingPowerProvider.getOperatorVotingPower(operator.addr, operatorVaults[0], ""),
-                (1000 + i) * 10 ** (24 - 18) * 10 ** 5
+                (1000 + i) * 10 ** (18 - 18) * 10 ** 5
             );
         }
     }
@@ -345,7 +345,7 @@ contract WeightedTokensVPCalcTest is InitSetupTest {
         vm.stopPrank();
 
         // Default weight is 1e12 at t0
-        uint256 expectedBase = uint256(1000) * (10 ** (24 - 18));
+        uint256 expectedBase = uint256(1000) * (10 ** (18 - 18));
         assertEq(
             votingPowerProvider.getOperatorVotingPowerAt(operator.addr, operatorVault, "", t0), expectedBase * 10 ** 12
         );

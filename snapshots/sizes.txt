@@ -1,5 +1,5 @@
-Compiling 29 files with Solc 0.8.28
-Solc 0.8.28 finished in 28.84s
+Compiling 3 files with Solc 0.8.28
+Solc 0.8.28 finished in 62.36ms
 Compiler run successful with warnings:
 Warning (6321): Unnamed return variable can remain unassigned. Add an explicit return with value to all non-reverting code paths or name the variable.
    --> src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:230:84:
@@ -12,96 +12,6 @@ Warning (6321): Unnamed return variable can remain unassigned. Add an explicit r
     |
 338 |     ) public view returns (bool, RoundData memory roundData) {
     |                            ^^^^
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyBlsBn254.sol:64:5:
-   |
-64 |     function unwrap(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/libraries/keys/KeyBlsBn254.sol:111:5:
-    |
-111 |     function toBytes(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/libraries/keys/KeyBlsBn254.sol:135:5:
-    |
-135 |     function zeroKey() internal view returns (KEY_BLS_BN254 memory key) {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/libraries/keys/KeyBlsBn254.sol:145:5:
-    |
-145 |     function equal(KEY_BLS_BN254 memory key1, KEY_BLS_BN254 memory key2) internal view returns (bool) {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:46:5:
-   |
-46 |     function unwrap(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:58:5:
-   |
-58 |     function serialize(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:69:5:
-   |
-69 |     function deserialize(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:80:5:
-   |
-80 |     function toBytes(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/libraries/keys/KeyEcdsaSecp256k1.sol:104:5:
-    |
-104 |     function zeroKey() internal view returns (KEY_ECDSA_SECP256K1 memory key) {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/libraries/keys/KeyEcdsaSecp256k1.sol:114:5:
-    |
-114 |     function equal(KEY_ECDSA_SECP256K1 memory key1, KEY_ECDSA_SECP256K1 memory key2) internal view returns (bool) {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/sigs/SigEcdsaSecp256k1.sol:53:5:
-   |
-53 |     function verify(address key, bytes32 message, bytes memory signature) internal view returns (bool) {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:179:5:
-    |
-179 |     function getVaultParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:193:5:
-    |
-193 |     function getVaultTokenizedParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:241:5:
-    |
-241 |     function getSlasherParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:258:5:
-    |
-258 |     function getVetoSlasherParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
 
 
 ╭------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------╮
