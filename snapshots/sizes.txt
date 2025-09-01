@@ -1,122 +1,4 @@
-Compiling 5 files with Solc 0.8.28
-Compiling 15 files with Solc 0.8.28
-Solc 0.8.28 finished in 1.93s
-Solc 0.8.28 finished in 4.08s
-Compiler run successful with warnings:
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:179:5:
-    |
-179 |     function getVaultParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:193:5:
-    |
-193 |     function getVaultTokenizedParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:241:5:
-    |
-241 |     function getSlasherParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:258:5:
-    |
-258 |     function getVetoSlasherParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyBlsBn254.sol:64:5:
-   |
-64 |     function unwrap(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/libraries/keys/KeyBlsBn254.sol:111:5:
-    |
-111 |     function toBytes(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/libraries/keys/KeyBlsBn254.sol:135:5:
-    |
-135 |     function zeroKey() internal view returns (KEY_BLS_BN254 memory key) {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/libraries/keys/KeyBlsBn254.sol:145:5:
-    |
-145 |     function equal(KEY_BLS_BN254 memory key1, KEY_BLS_BN254 memory key2) internal view returns (bool) {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:46:5:
-   |
-46 |     function unwrap(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:58:5:
-   |
-58 |     function serialize(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:69:5:
-   |
-69 |     function deserialize(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:80:5:
-   |
-80 |     function toBytes(
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/libraries/keys/KeyEcdsaSecp256k1.sol:104:5:
-    |
-104 |     function zeroKey() internal view returns (KEY_ECDSA_SECP256K1 memory key) {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/libraries/keys/KeyEcdsaSecp256k1.sol:114:5:
-    |
-114 |     function equal(KEY_ECDSA_SECP256K1 memory key1, KEY_ECDSA_SECP256K1 memory key2) internal view returns (bool) {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/sigs/SigEcdsaSecp256k1.sol:53:5:
-   |
-53 |     function verify(address key, bytes32 message, bytes memory signature) internal view returns (bool) {
-   |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:179:5:
-    |
-179 |     function getVaultParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:193:5:
-    |
-193 |     function getVaultTokenizedParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:241:5:
-    |
-241 |     function getSlasherParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:258:5:
-    |
-258 |     function getVetoSlasherParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
+No files changed, compilation skipped
 
 ╭------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------╮
 | Contract                                                                                                         | Runtime Size (B) | Initcode Size (B) | Runtime Margin (B) | Initcode Margin (B) |
@@ -133,7 +15,7 @@ Warning (2018): Function state mutability can be restricted to pure
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | BaseRewardsLogic                                                                                                 | 1,606            | 1,658             | 22,970             | 47,494              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| BaseSlashingLogic                                                                                                | 3,498            | 3,530             | 21,078             | 45,622              |
+| BaseSlashingLogic (src/modules/voting-power/extensions/logic/BaseSlashingLogic.sol)                              | 3,498            | 3,530             | 21,078             | 45,622              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Bytes                                                                                                            | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -213,13 +95,13 @@ Warning (2018): Function state mutability can be restricted to pure
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Network                                                                                                          | 12,031           | 12,223            | 12,545             | 36,929              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| OpNetVaultAutoDeployLogic                                                                                        | 5,822            | 5,854             | 18,754             | 43,298              |
+| OpNetVaultAutoDeployLogic (src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol)              | 5,822            | 5,854             | 18,754             | 43,298              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Panic.default                                                                                                    | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Panic.via-ir-1                                                                                                   | 16               | 44                | 24,560             | 49,108              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| PersistentSet                                                                                                    | 16               | 44                | 24,560             | 49,108              |
+| PersistentSet (src/libraries/structs/PersistentSet.sol)                                                          | 16               | 44                | 24,560             | 49,108              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | RewarderMock                                                                                                     | 730              | 758               | 23,846             | 48,394              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -283,7 +165,7 @@ Warning (2018): Function state mutability can be restricted to pure
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | TestOperatorsBlacklist                                                                                           | 13,153           | 13,321            | 11,423             | 35,831              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestOperatorsJail                                                                                                | 13,368           | 13,536            | 11,208             | 35,616              |
+| TestOperatorsJail                                                                                                | 13,391           | 13,559            | 11,185             | 35,593              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | TestOperatorsWhitelist                                                                                           | 13,625           | 13,793            | 10,951             | 35,359              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -341,7 +223,7 @@ Warning (2018): Function state mutability can be restricted to pure
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | VotingPowerProviderFull                                                                                          | 23,303           | 23,496            | 1,273              | 25,656              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| VotingPowerProviderLogic                                                                                         | 16,948           | 16,980            | 7,628              | 32,172              |
+| VotingPowerProviderLogic (src/modules/voting-power/logic/VotingPowerProviderLogic.sol)                           | 16,948           | 16,980            | 7,628              | 32,172              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | VotingPowerProviderSemiFull                                                                                      | 16,892           | 17,060            | 7,684              | 32,092              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|

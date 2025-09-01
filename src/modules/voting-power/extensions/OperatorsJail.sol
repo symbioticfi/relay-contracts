@@ -49,9 +49,10 @@ abstract contract OperatorsJail is VotingPowerProvider, IOperatorsJail {
             revert OperatorsJail_InvalidDuration();
         }
         uint48 jailedUntil = uint48(block.timestamp) + duration;
-        if (jailedUntil > getOperatorJailedUntil(operator)) {
-            _getOperatorsJailStorage()._jailedUntil[operator] = jailedUntil;
+        if (jailedUntil <= getOperatorJailedUntil(operator)) {
+            revert OperatorsJail_AlreadyJailed();
         }
+        _getOperatorsJailStorage()._jailedUntil[operator] = jailedUntil;
         if (isOperatorRegistered(operator)) {
             _unregisterOperator(operator);
         }
