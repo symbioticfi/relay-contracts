@@ -377,6 +377,7 @@ interface ISettlement {
      * @param valSetHeader The validator set header.
      * @param extraData The extra data.
      * @dev The caller must have the needed permission.
+     *      Can be called multiple times.
      */
     function setGenesis(ValSetHeader calldata valSetHeader, ExtraData[] calldata extraData) external;
 
