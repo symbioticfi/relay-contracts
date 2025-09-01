@@ -64,7 +64,6 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         }
         _setRequiredHeaderKeyTag(valSetDriverInitParams.requiredHeaderKeyTag);
         _setVerificationType(valSetDriverInitParams.verificationType);
-        _setMaxMissingEpochs(valSetDriverInitParams.maxMissingEpochs);
     }
 
     /**
@@ -85,8 +84,7 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
             requiredKeyTags: getRequiredKeyTagsAt(timestamp),
             quorumThresholds: getQuorumThresholdsAt(timestamp),
             requiredHeaderKeyTag: getRequiredHeaderKeyTagAt(timestamp),
-            verificationType: getVerificationTypeAt(timestamp),
-            maxMissingEpochs: getMaxMissingEpochsAt(timestamp)
+            verificationType: getVerificationTypeAt(timestamp)
         });
     }
 
@@ -106,8 +104,7 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
             requiredKeyTags: getRequiredKeyTags(),
             quorumThresholds: getQuorumThresholds(),
             requiredHeaderKeyTag: getRequiredHeaderKeyTag(),
-            verificationType: getVerificationType(),
-            maxMissingEpochs: getMaxMissingEpochs()
+            verificationType: getVerificationType()
         });
     }
 
@@ -393,22 +390,6 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /**
      * @inheritdoc IValSetDriver
      */
-    function getMaxMissingEpochsAt(
-        uint48 timestamp
-    ) public view virtual returns (uint48) {
-        return uint48(_getValSetDriverStorage()._maxMissingEpochs.upperLookupRecent(timestamp));
-    }
-
-    /**
-     * @inheritdoc IValSetDriver
-     */
-    function getMaxMissingEpochs() public view virtual returns (uint48) {
-        return uint48(_getValSetDriverStorage()._maxMissingEpochs.latest());
-    }
-
-    /**
-     * @inheritdoc IValSetDriver
-     */
     function setNumAggregators(
         uint208 numAggregators
     ) public virtual checkPermission {
@@ -539,15 +520,6 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         uint32 verificationType
     ) public virtual checkPermission {
         _setVerificationType(verificationType);
-    }
-
-    /**
-     * @inheritdoc IValSetDriver
-     */
-    function setMaxMissingEpochs(
-        uint48 maxMissingEpochs
-    ) public virtual checkPermission {
-        _setMaxMissingEpochs(maxMissingEpochs);
     }
 
     function _setNumAggregators(
@@ -700,13 +672,6 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     ) internal virtual {
         _getValSetDriverStorage()._verificationType.push(uint48(block.timestamp), verificationType);
         emit SetVerificationType(verificationType);
-    }
-
-    function _setMaxMissingEpochs(
-        uint48 maxMissingEpochs
-    ) internal virtual {
-        _getValSetDriverStorage()._maxMissingEpochs.push(uint48(block.timestamp), maxMissingEpochs);
-        emit SetMaxMissingEpochs(maxMissingEpochs);
     }
 
     function _validateCrossChainAddress(

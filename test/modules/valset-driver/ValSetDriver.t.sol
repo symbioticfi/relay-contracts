@@ -72,8 +72,7 @@ contract ValSetDriverTest is Test {
             requiredKeyTags: requiredKeyTags,
             quorumThresholds: quorumThresholds,
             requiredHeaderKeyTag: requiredKeyTags[0],
-            verificationType: 7,
-            maxMissingEpochs: 0
+            verificationType: 7
         });
 
         testMCP.initialize(initParams, owner);
@@ -127,8 +126,6 @@ contract ValSetDriverTest is Test {
         assertEq(testMCP.getNumAggregators(), 1, "numAggregators mismatch");
         assertEq(testMCP.getNumCommitters(), 1, "numCommitters mismatch");
 
-        assertEq(testMCP.getMaxMissingEpochs(), 0, "maxMissingEpochs mismatch");
-
         IValSetDriver.Config memory mc = testMCP.getConfig();
         assertEq(mc.numAggregators, 1);
         assertEq(mc.numCommitters, 1);
@@ -146,7 +143,6 @@ contract ValSetDriverTest is Test {
         assertEq(mc.quorumThresholds[0].quorumThreshold, 1e18);
         assertEq(mc.requiredHeaderKeyTag, 0x2A);
         assertEq(mc.verificationType, 7);
-        assertEq(mc.maxMissingEpochs, 0);
     }
 
     function test_PermissionChecks() public {
@@ -403,35 +399,6 @@ contract ValSetDriverTest is Test {
         assertEq(testMCP.getConfig().numCommitters, 2);
         assertEq(testMCP.getConfigAt(uint48(vm.getBlockTimestamp())).numCommitters, 2);
         assertEq(testMCP.getConfigAt(uint48(vm.getBlockTimestamp() - 1)).numCommitters, 1);
-    }
-
-    function test_SetMaxMissingEpochs() public {
-        vm.prank(nonOwner);
-        vm.expectRevert("Not authorized");
-        testMCP.setMaxMissingEpochs(10);
-
-        vm.prank(owner);
-        testMCP.setMaxMissingEpochs(10);
-
-        assertEq(testMCP.getMaxMissingEpochs(), 10);
-
-        vm.prank(owner);
-        testMCP.setMaxMissingEpochs(0);
-
-        assertEq(testMCP.getMaxMissingEpochs(), 0);
-
-        vm.warp(vm.getBlockTimestamp() + 100);
-
-        vm.prank(owner);
-        testMCP.setMaxMissingEpochs(10);
-
-        assertEq(testMCP.getMaxMissingEpochsAt(uint48(vm.getBlockTimestamp())), 10);
-
-        assertEq(testMCP.getMaxMissingEpochsAt(uint48(vm.getBlockTimestamp() - 1)), 0);
-
-        assertEq(testMCP.getConfig().maxMissingEpochs, 10);
-        assertEq(testMCP.getConfigAt(uint48(vm.getBlockTimestamp())).maxMissingEpochs, 10);
-        assertEq(testMCP.getConfigAt(uint48(vm.getBlockTimestamp() - 1)).maxMissingEpochs, 0);
     }
 
     function test_Location() public {

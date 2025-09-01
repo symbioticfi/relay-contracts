@@ -219,8 +219,7 @@ contract MasterSetupTest is InitSetupTest {
                     requiredKeyTags: localVars.requiredKeyTags,
                     quorumThresholds: localVars.quorumThresholds,
                     requiredHeaderKeyTag: localVars.requiredKeyTags[0],
-                    verificationType: networkSetupParams.VERIFICATION_TYPE,
-                    maxMissingEpochs: 0
+                    verificationType: networkSetupParams.VERIFICATION_TYPE
                 }),
                 vars.deployer.addr
             );

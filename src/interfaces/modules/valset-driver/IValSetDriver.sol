@@ -66,7 +66,6 @@ interface IValSetDriver {
      * @param _quorumThresholds The set of the quorum thresholds.
      * @param _numAggregators The checkpoint of the number of aggregators.
      * @param _numCommitters The checkpoint of the number of committers.
-     * @param _maxMissingEpochs The checkpoint of the maximum acceptable number of missing epochs by one validator set.
      * @custom:storage-location erc7201:symbiotic.storage.ValSetDriver
      */
     struct ValSetDriverStorage {
@@ -85,7 +84,6 @@ interface IValSetDriver {
         PersistentSet.Bytes32Set _quorumThresholds;
         Checkpoints.Trace208 _numAggregators;
         Checkpoints.Trace208 _numCommitters;
-        Checkpoints.Trace208 _maxMissingEpochs;
     }
 
     /**
@@ -106,7 +104,6 @@ interface IValSetDriver {
      * @param quorumThresholds The quorum thresholds to use for attestations' verification.
      * @param requiredHeaderKeyTag The required header key tag to use to maintain the validator set through epochs.
      * @param verificationType The verification type (e.g., simple on-chain verification, or zk-based one).
-     * @param maxMissingEpochs The maximum acceptable number of missing epochs by one validator set.
      */
     struct ValSetDriverInitParams {
         INetworkManager.NetworkManagerInitParams networkManagerInitParams;
@@ -123,7 +120,6 @@ interface IValSetDriver {
         QuorumThreshold[] quorumThresholds;
         uint8 requiredHeaderKeyTag;
         uint32 verificationType;
-        uint48 maxMissingEpochs;
     }
 
     /**
@@ -162,7 +158,6 @@ interface IValSetDriver {
      * @param quorumThresholds The quorum thresholds to use for attestations' verification.
      * @param requiredHeaderKeyTag The required header key tag to use to maintain the validator set through epochs.
      * @param verificationType The verification type (e.g., simple on-chain verification, or zk-based one).
-     * @param maxMissingEpochs The maximum acceptable number of missing epochs by one validator set for attestation verification.
      */
     struct Config {
         uint208 numAggregators;
@@ -177,7 +172,6 @@ interface IValSetDriver {
         QuorumThreshold[] quorumThresholds;
         uint8 requiredHeaderKeyTag;
         uint32 verificationType;
-        uint48 maxMissingEpochs;
     }
 
     /**
@@ -271,12 +265,6 @@ interface IValSetDriver {
      * @param verificationType The verification type (e.g., simple on-chain verification, or zk-based one).
      */
     event SetVerificationType(uint32 verificationType);
-
-    /**
-     * @notice Emitted when the maximum acceptable number of missing epochs by one validator set is set.
-     * @param maxMissingEpochs The maximum acceptable number of missing epochs by one validator set.
-     */
-    event SetMaxMissingEpochs(uint48 maxMissingEpochs);
 
     /**
      * @notice Returns the maximum quorum threshold.
@@ -545,21 +533,6 @@ interface IValSetDriver {
     function getVerificationType() external view returns (uint32);
 
     /**
-     * @notice Returns the maximum acceptable number of missing epochs by one validator set at the given timestamp.
-     * @param timestamp The timestamp.
-     * @return The maximum acceptable number of missing epochs by one validator set.
-     */
-    function getMaxMissingEpochsAt(
-        uint48 timestamp
-    ) external view returns (uint48);
-
-    /**
-     * @notice Returns the maximum acceptable number of missing epochs by one validator set.
-     * @return The maximum acceptable number of missing epochs by one validator set.
-     */
-    function getMaxMissingEpochs() external view returns (uint48);
-
-    /**
      * @notice Sets the number of aggregators (those who aggregate the validators' signatures
      *         and produce the proof for the verification).
      * @param numAggregators The number of aggregators.
@@ -694,14 +667,5 @@ interface IValSetDriver {
      */
     function setVerificationType(
         uint32 verificationType
-    ) external;
-
-    /**
-     * @notice Sets the maximum acceptable number of missing epochs by one validator set.
-     * @param maxMissingEpochs The maximum acceptable number of missing epochs by one validator set.
-     * @dev The caller must have the needed permission.
-     */
-    function setMaxMissingEpochs(
-        uint48 maxMissingEpochs
     ) external;
 }
