@@ -30,6 +30,7 @@ interface IWeightedTokensVPCalc {
      * @param timestamp The timestamp.
      * @return The weight.
      * @dev Returns 1e12 if the weight wasn't explicitly set yet.
+     *      Can return non-zero weight for unregistered tokens.
      */
     function getTokenWeightAt(address token, uint48 timestamp) external view returns (uint208);
 
@@ -38,6 +39,7 @@ interface IWeightedTokensVPCalc {
      * @param token The token.
      * @return The weight.
      * @dev Returns 1e12 if the weight wasn't explicitly set yet.
+     *      Can return non-zero weight for unregistered tokens.
      */
     function getTokenWeight(
         address token
