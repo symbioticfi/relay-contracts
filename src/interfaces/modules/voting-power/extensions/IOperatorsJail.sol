@@ -69,6 +69,7 @@ interface IOperatorsJail {
      * @param duration The duration of the jail.
      * @dev The caller must have the needed permission.
      *      The operator will be unregistered if currently registered.
+     *      It is allowed only to extend the jail duration.
      */
     function jailOperator(address operator, uint48 duration) external;
 
