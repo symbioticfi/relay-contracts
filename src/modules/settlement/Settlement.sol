@@ -316,6 +316,9 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
         if (header.previousHeaderHash != getValSetHeaderHashAt(valSetEpoch)) {
             revert Settlement_InvalidPreviousHeaderHash();
         }
+        if (header.epoch != valSetEpoch + 1) {
+            revert Settlement_InvalidEpoch();
+        }
         if (
             !verifyQuorumSig(
                 abi.encode(
@@ -349,15 +352,11 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
             revert Settlement_InvalidVersion();
         }
 
-        uint48 lastCommittedHeaderEpoch = getLastCommittedHeaderEpoch();
-        if (lastCommittedHeaderEpoch > 0) {
-            if (header.epoch <= lastCommittedHeaderEpoch) {
-                revert Settlement_InvalidEpoch();
-            }
-        } else if (header.epoch == 0 && isValSetHeaderCommittedAt(0)) {
+        if (isValSetHeaderCommittedAt(header.epoch)) {
             revert Settlement_ValSetHeaderAlreadyCommitted();
         }
 
+        uint48 lastCommittedHeaderEpoch = getLastCommittedHeaderEpoch();
         if (
             header.captureTimestamp <= getCaptureTimestampFromValSetHeaderAt(lastCommittedHeaderEpoch)
                 || header.captureTimestamp >= block.timestamp

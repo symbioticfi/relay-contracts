@@ -382,6 +382,11 @@ contract SettlementRawTest is Test {
         vm.expectRevert(ISettlement.Settlement_InvalidEpoch.selector);
         testSettle.commitValSetHeader(header, someExtra, bytes(""));
 
+        header.epoch = 4;
+
+        vm.expectRevert(ISettlement.Settlement_InvalidEpoch.selector);
+        testSettle.commitValSetHeader(header, someExtra, bytes(""));
+
         header.epoch = 3;
 
         vm.expectRevert(ISettlement.Settlement_InvalidCaptureTimestamp.selector);
@@ -433,6 +438,8 @@ contract SettlementRawTest is Test {
     function test_commitValSetHeader_VerificationFailed() public {
         ISettlement.ValSetHeader memory header = sampleHeader;
 
+        header.epoch = 1;
+
         vm.expectRevert(ISettlement.Settlement_VerificationFailed.selector);
         testSettle.commitValSetHeader(header, someExtra, bytes(""));
 
@@ -447,7 +454,6 @@ contract SettlementRawTest is Test {
 
         assertFalse(testSettle.verifyQuorumSigAt(new bytes(0), 0, 0, new bytes(0), 1, new bytes(0)));
 
-        header.epoch = 1;
         header.captureTimestamp = uint48(vm.getBlockTimestamp() - 1);
         header.previousHeaderHash = testSettle.getValSetHeaderHash();
 
