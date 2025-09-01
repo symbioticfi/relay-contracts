@@ -1,4 +1,96 @@
-No files changed, compilation skipped
+Compiling 4 files with Solc 0.8.28
+Solc 0.8.28 finished in 4.41s
+Compiler run successful with warnings:
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/libraries/keys/KeyBlsBn254.sol:64:5:
+   |
+64 |     function unwrap(
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/libraries/keys/KeyBlsBn254.sol:111:5:
+    |
+111 |     function toBytes(
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/libraries/keys/KeyBlsBn254.sol:135:5:
+    |
+135 |     function zeroKey() internal view returns (KEY_BLS_BN254 memory key) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/libraries/keys/KeyBlsBn254.sol:145:5:
+    |
+145 |     function equal(KEY_BLS_BN254 memory key1, KEY_BLS_BN254 memory key2) internal view returns (bool) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:46:5:
+   |
+46 |     function unwrap(
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:58:5:
+   |
+58 |     function serialize(
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:69:5:
+   |
+69 |     function deserialize(
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:80:5:
+   |
+80 |     function toBytes(
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/libraries/keys/KeyEcdsaSecp256k1.sol:104:5:
+    |
+104 |     function zeroKey() internal view returns (KEY_ECDSA_SECP256K1 memory key) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/libraries/keys/KeyEcdsaSecp256k1.sol:114:5:
+    |
+114 |     function equal(KEY_ECDSA_SECP256K1 memory key1, KEY_ECDSA_SECP256K1 memory key2) internal view returns (bool) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/libraries/sigs/SigEcdsaSecp256k1.sol:53:5:
+   |
+53 |     function verify(address key, bytes32 message, bytes memory signature) internal view returns (bool) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:179:5:
+    |
+179 |     function getVaultParams(
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:193:5:
+    |
+193 |     function getVaultTokenizedParams(
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:241:5:
+    |
+241 |     function getSlasherParams(
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:258:5:
+    |
+258 |     function getVetoSlasherParams(
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
 
 ╭------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------╮
 | Contract                                                                                                         | Runtime Size (B) | Initcode Size (B) | Runtime Margin (B) | Initcode Margin (B) |
@@ -55,13 +147,13 @@ No files changed, compilation skipped
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | KeyBlsBn254                                                                                                      | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| KeyBlsBn254Mock                                                                                                  | 2,689            | 2,717             | 21,887             | 46,435              |
+| KeyBlsBn254Mock                                                                                                  | 2,659            | 2,687             | 21,917             | 46,465              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | KeyEcdsaSecp256k1                                                                                                | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| KeyEcdsaSecp256k1Mock                                                                                            | 1,410            | 1,438             | 23,166             | 47,714              |
+| KeyEcdsaSecp256k1Mock                                                                                            | 1,362            | 1,390             | 23,214             | 47,762              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| KeyRegistry                                                                                                      | 15,069           | 15,097            | 9,507              | 34,055              |
+| KeyRegistry                                                                                                      | 14,970           | 14,998            | 9,606              | 34,154              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | KeyRegistryWithKey64                                                                                             | 16,542           | 16,570            | 8,034              | 32,582              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -83,7 +175,7 @@ No files changed, compilation skipped
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | MockToken (test/modules/voting-power/common/voting-power-calc/WeightedVaultsVPCalc.t.sol)                        | 1,757            | 2,881             | 22,819             | 46,271              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| MyKeyRegistry                                                                                                    | 15,359           | 15,387            | 9,217              | 33,765              |
+| MyKeyRegistry                                                                                                    | 15,260           | 15,288            | 9,316              | 33,864              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | MyNetwork                                                                                                        | 12,336           | 12,528            | 12,240             | 36,624              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -151,7 +243,7 @@ No files changed, compilation skipped
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | TestEpochManager                                                                                                 | 4,327            | 4,355             | 20,249             | 44,797              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestKeyRegistry                                                                                                  | 17,027           | 17,055            | 7,549              | 32,097              |
+| TestKeyRegistry                                                                                                  | 16,928           | 16,956            | 7,648              | 32,196              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | TestMultiToken                                                                                                   | 12,229           | 12,397            | 12,347             | 36,755              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|

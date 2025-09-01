@@ -76,6 +76,7 @@ library KeyEcdsaSecp256k1 {
      * @notice Converts a key to bytes.
      * @param key The key.
      * @return keyBytes The bytes representation of the key.
+     * @dev It is a bytes representation of the underlying key itself.
      */
     function toBytes(
         KEY_ECDSA_SECP256K1 memory key
@@ -91,7 +92,7 @@ library KeyEcdsaSecp256k1 {
     function fromBytes(
         bytes memory keyBytes
     ) internal view returns (KEY_ECDSA_SECP256K1 memory key) {
-        key = abi.decode(keyBytes, (KEY_ECDSA_SECP256K1));
+        key.value = abi.decode(keyBytes, (address));
         if (keccak256(key.unwrap().wrap().toBytes()) != keccak256(keyBytes)) {
             revert KeyEcdsaSecp256k1_InvalidBytes();
         }
