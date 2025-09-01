@@ -1,5 +1,7 @@
 Compiling 4 files with Solc 0.8.28
-Solc 0.8.28 finished in 4.41s
+Compiling 8 files with Solc 0.8.28
+Solc 0.8.28 finished in 469.27ms
+Solc 0.8.28 finished in 4.04s
 Compiler run successful with warnings:
 Warning (2018): Function state mutability can be restricted to pure
   --> src/libraries/keys/KeyBlsBn254.sol:64:5:
@@ -8,21 +10,21 @@ Warning (2018): Function state mutability can be restricted to pure
    |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-   --> src/libraries/keys/KeyBlsBn254.sol:111:5:
+   --> src/libraries/keys/KeyBlsBn254.sol:112:5:
     |
-111 |     function toBytes(
+112 |     function toBytes(
     |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-   --> src/libraries/keys/KeyBlsBn254.sol:135:5:
+   --> src/libraries/keys/KeyBlsBn254.sol:136:5:
     |
-135 |     function zeroKey() internal view returns (KEY_BLS_BN254 memory key) {
+136 |     function zeroKey() internal view returns (KEY_BLS_BN254 memory key) {
     |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-   --> src/libraries/keys/KeyBlsBn254.sol:145:5:
+   --> src/libraries/keys/KeyBlsBn254.sol:146:5:
     |
-145 |     function equal(KEY_BLS_BN254 memory key1, KEY_BLS_BN254 memory key2) internal view returns (bool) {
+146 |     function equal(KEY_BLS_BN254 memory key1, KEY_BLS_BN254 memory key2) internal view returns (bool) {
     |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
@@ -44,21 +46,21 @@ Warning (2018): Function state mutability can be restricted to pure
    |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:80:5:
+  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:81:5:
    |
-80 |     function toBytes(
+81 |     function toBytes(
    |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-   --> src/libraries/keys/KeyEcdsaSecp256k1.sol:104:5:
+   --> src/libraries/keys/KeyEcdsaSecp256k1.sol:105:5:
     |
-104 |     function zeroKey() internal view returns (KEY_ECDSA_SECP256K1 memory key) {
+105 |     function zeroKey() internal view returns (KEY_ECDSA_SECP256K1 memory key) {
     |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-   --> src/libraries/keys/KeyEcdsaSecp256k1.sol:114:5:
+   --> src/libraries/keys/KeyEcdsaSecp256k1.sol:115:5:
     |
-114 |     function equal(KEY_ECDSA_SECP256K1 memory key1, KEY_ECDSA_SECP256K1 memory key2) internal view returns (bool) {
+115 |     function equal(KEY_ECDSA_SECP256K1 memory key1, KEY_ECDSA_SECP256K1 memory key2) internal view returns (bool) {
     |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
@@ -91,6 +93,18 @@ Warning (2018): Function state mutability can be restricted to pure
 258 |     function getVetoSlasherParams(
     |     ^ (Relevant source part starts here and spans across multiple lines).
 
+Warning (6321): Unnamed return variable can remain unassigned. Add an explicit return with value to all non-reverting code paths or name the variable.
+   --> src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:230:84:
+    |
+230 |     function getRoundData(address aggregator, uint80 roundId) public view returns (bool, RoundData memory roundData) {
+    |                                                                                    ^^^^
+
+Warning (6321): Unnamed return variable can remain unassigned. Add an explicit return with value to all non-reverting code paths or name the variable.
+   --> src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:338:28:
+    |
+338 |     ) public view returns (bool, RoundData memory roundData) {
+    |                            ^^^^
+
 
 ╭------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------╮
 | Contract                                                                                                         | Runtime Size (B) | Initcode Size (B) | Runtime Margin (B) | Initcode Margin (B) |
@@ -111,9 +125,7 @@ Warning (2018): Function state mutability can be restricted to pure
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Bytes                                                                                                            | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| ChainlinkPriceFeed                                                                                               | 6,072            | 6,124             | 18,504             | 43,028              |
-|------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| ChainlinkPriceFeed.via-ir-1                                                                                      | 4,992            | 5,022             | 19,584             | 44,130              |
+| ChainlinkPriceFeed                                                                                               | 4,992            | 5,022             | 19,584             | 44,130              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Checkpoints (lib/core/src/contracts/libraries/Checkpoints.sol)                                                   | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -203,9 +215,7 @@ Warning (2018): Function state mutability can be restricted to pure
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | SafeERC20                                                                                                        | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| Scaler                                                                                                           | 44               | 94                | 24,532             | 49,058              |
-|------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| Scaler.via-ir-1                                                                                                  | 16               | 44                | 24,560             | 49,108              |
+| Scaler                                                                                                           | 16               | 44                | 24,560             | 49,108              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | SigBlsBn254                                                                                                      | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
