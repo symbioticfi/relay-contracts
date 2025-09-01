@@ -51,15 +51,16 @@ library PersistentSet {
      */
     function _add(Set storage set, uint48 key, bytes32 value) private returns (bool) {
         unchecked {
-            if (set._statuses[value].isAdded) {
-                if (set._statuses[value].isRemoved.latest() == 0) {
+            Status storage status = set._statuses[value];
+            if (status.isAdded) {
+                if (status.isRemoved.latest() == 0) {
                     return false;
                 }
-                set._statuses[value].isRemoved.push(key, 0);
+                status.isRemoved.push(key, 0);
             } else {
                 set._elements.push(value);
-                set._statuses[value].isAdded = true;
-                set._statuses[value].addedAt = key;
+                status.isAdded = true;
+                status.addedAt = key;
             }
             set._length += 1;
             return true;
@@ -79,10 +80,11 @@ library PersistentSet {
             if (!_contains(set, value)) {
                 return false;
             }
-            if (key < set._statuses[value].addedAt) {
+            Status storage status = set._statuses[value];
+            if (key < status.addedAt) {
                 revert InvalidKey();
             }
-            set._statuses[value].isRemoved.push(key, 1);
+            status.isRemoved.push(key, 1);
             set._length -= 1;
             return true;
         }
@@ -97,8 +99,8 @@ library PersistentSet {
      * @return If the element is in the set at the given key.
      */
     function _containsAt(Set storage set, uint48 key, bytes32 value, bytes memory hint) private view returns (bool) {
-        return set._statuses[value].isAdded && key >= set._statuses[value].addedAt
-            && set._statuses[value].isRemoved.upperLookupRecent(key, hint) == 0;
+        Status storage status = set._statuses[value];
+        return status.isAdded && key >= status.addedAt && status.isRemoved.upperLookupRecent(key, hint) == 0;
     }
 
     /**
@@ -119,7 +121,8 @@ library PersistentSet {
      * @return If the element is in the set.
      */
     function _contains(Set storage set, bytes32 value) private view returns (bool) {
-        return set._statuses[value].isAdded && set._statuses[value].isRemoved.latest() == 0;
+        Status storage status = set._statuses[value];
+        return status.isAdded && status.isRemoved.latest() == 0;
     }
 
     /**
