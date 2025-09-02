@@ -213,22 +213,6 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
     /**
      * @inheritdoc ISettlement
      */
-    function getPreviousHeaderHashFromValSetHeaderAt(
-        uint48 epoch
-    ) public view virtual returns (bytes32) {
-        return _getSettlementStorage()._valSetHeader[epoch].previousHeaderHash;
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
-    function getPreviousHeaderHashFromValSetHeader() public view virtual returns (bytes32) {
-        return getPreviousHeaderHashFromValSetHeaderAt(getLastCommittedHeaderEpoch());
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
     function getExtraDataAt(uint48 epoch, bytes32 key) public view virtual returns (bytes32) {
         return _getSettlementStorage()._extraData[epoch][key];
     }
@@ -313,9 +297,6 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
         bytes calldata proof
     ) public virtual {
         uint48 valSetEpoch = getLastCommittedHeaderEpoch();
-        if (header.previousHeaderHash != getValSetHeaderHashAt(valSetEpoch)) {
-            revert Settlement_InvalidPreviousHeaderHash();
-        }
         if (header.epoch != valSetEpoch + 1) {
             revert Settlement_InvalidEpoch();
         }
@@ -368,10 +349,6 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
             revert Settlement_InvalidValidatorsSszMRoot();
         }
 
-        if (header.previousHeaderHash == bytes32(0)) {
-            revert Settlement_InvalidPreviousHeaderHash();
-        }
-
         SettlementStorage storage $ = _getSettlementStorage();
 
         ValSetHeader storage headerStorage = $._valSetHeader[header.epoch];
@@ -382,7 +359,6 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
         headerStorage.quorumThreshold = header.quorumThreshold;
         headerStorage.totalVotingPower = header.totalVotingPower;
         headerStorage.validatorsSszMRoot = header.validatorsSszMRoot;
-        headerStorage.previousHeaderHash = header.previousHeaderHash;
 
         mapping(bytes32 key => bytes32 value) storage extraDataStorage = $._extraData[header.epoch];
         for (uint256 i; i < extraData.length; ++i) {

@@ -1,56 +1,6 @@
-Compiling 269 files with Solc 0.8.28
-Compiling 85 files with Solc 0.8.28
-Solc 0.8.28 finished in 4.28s
-Solc 0.8.28 finished in 39.01s
+Compiling 4 files with Solc 0.8.28
+Solc 0.8.28 finished in 4.50s
 Compiler run successful with warnings:
-Warning (6321): Unnamed return variable can remain unassigned. Add an explicit return with value to all non-reverting code paths or name the variable.
-   --> src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:230:84:
-    |
-230 |     function getRoundData(address aggregator, uint80 roundId) public view returns (bool, RoundData memory roundData) {
-    |                                                                                    ^^^^
-
-Warning (6321): Unnamed return variable can remain unassigned. Add an explicit return with value to all non-reverting code paths or name the variable.
-   --> src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:338:28:
-    |
-338 |     ) public view returns (bool, RoundData memory roundData) {
-    |                            ^^^^
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:179:5:
-    |
-179 |     function getVaultParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:193:5:
-    |
-193 |     function getVaultTokenizedParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:241:5:
-    |
-241 |     function getSlasherParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:258:5:
-    |
-258 |     function getVetoSlasherParams(
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (6321): Unnamed return variable can remain unassigned. Add an explicit return with value to all non-reverting code paths or name the variable.
-   --> src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:230:84:
-    |
-230 |     function getRoundData(address aggregator, uint80 roundId) public view returns (bool, RoundData memory roundData) {
-    |                                                                                    ^^^^
-
-Warning (6321): Unnamed return variable can remain unassigned. Add an explicit return with value to all non-reverting code paths or name the variable.
-   --> src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:338:28:
-    |
-338 |     ) public view returns (bool, RoundData memory roundData) {
-    |                            ^^^^
-
 Warning (2018): Function state mutability can be restricted to pure
   --> src/libraries/keys/KeyBlsBn254.sol:64:5:
    |
@@ -231,7 +181,7 @@ Warning (2018): Function state mutability can be restricted to pure
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | MyNetwork                                                                                                        | 12,294           | 12,486            | 12,282             | 36,666              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| MySettlement                                                                                                     | 12,192           | 12,220            | 12,384             | 36,932              |
+| MySettlement                                                                                                     | 11,954           | 11,982            | 12,622             | 37,170              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | MyValSetDriver                                                                                                   | 18,817           | 18,845            | 5,759              | 30,307              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -327,7 +277,7 @@ Warning (2018): Function state mutability can be restricted to pure
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | TestPermissionManager                                                                                            | 575              | 603               | 24,001             | 48,549              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| TestSettlement                                                                                                   | 10,989           | 11,017            | 13,587             | 38,135              |
+| TestSettlement                                                                                                   | 10,751           | 10,779            | 13,825             | 38,373              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | TestSharedVaults                                                                                                 | 12,332           | 12,500            | 12,244             | 36,652              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
