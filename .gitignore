@@ -1,5 +1,6 @@
 # Ignore node_modules and dependencies
 node_modules
+dependencies
 *.log
 yarn-error.log
 

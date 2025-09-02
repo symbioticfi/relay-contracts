@@ -1,0 +1,46 @@
+[[dependencies]]
+name = "@openzeppelin-contracts"
+version = "5.4.0"
+url = "https://soldeer-revisions.s3.amazonaws.com/@openzeppelin-contracts/5_4_0_19-07-2025_08:59:41_contracts.zip"
+checksum = "3dd38f17610dba4602bd008ee2cb551e51e97d7b4ce04e1ffdf853da832942fa"
+integrity = "4eb0ef219d10ab5a5708adaae1132dc0a93ab6a193378486e842d606c989ff3e"
+
+[[dependencies]]
+name = "@openzeppelin-contracts-upgradeable"
+version = "5.4.0"
+url = "https://soldeer-revisions.s3.amazonaws.com/@openzeppelin-contracts-upgradeable/5_4_0_19-07-2025_08:59:45_contracts-upgradeable.zip"
+checksum = "bc405f98749d27dc19e747f1e797f3df59ccf6c9781ab39369892eaf700ac40b"
+integrity = "eeb22da11d2b7a8202e43a3a91978f0d9e6cdabfe006cf799f57282065267a1a"
+
+[[dependencies]]
+name = "@test-core"
+version = "1.0.0"
+url = "https://soldeer-revisions.s3.amazonaws.com/@test-core/1_0_0_02-09-2025_11:40:47_core.zip"
+checksum = "2be315ce31d80e56495f679e2b46e3117c80620220c0e2b91e7db1deca0139dd"
+integrity = "3ec590f32cb5e85b45e12c2a3ec069fefaa21e1847601a493478a9d609c809b3"
+
+[[dependencies]]
+name = "crypto-lib"
+version = "v1"
+git = "https://github.com/get-smooth/crypto-lib"
+rev = "d714e9824e2e2e44be3c8fd498e0de651ddc9425"
+
+[[dependencies]]
+name = "forge-std"
+version = "1.10.0"
+url = "https://soldeer-revisions.s3.amazonaws.com/forge-std/1_10_0_02-08-2025_06:50:35_forge-std-1.10.zip"
+checksum = "8cc59e92a7762c170c15f2102c4f3718106dfc78239978fe87c64f316740cc09"
+integrity = "3fd441e2499c5cf04ef9b4126f52150a50dcef9cac1645ff7a955345e947cd04"
+
+[[dependencies]]
+name = "rewards"
+version = "v1"
+git = "https://github.com/symbioticfi/rewards"
+rev = "deb0e5aa14b2e72a75b1d8bf559576859fa0cb5a"
+
+[[dependencies]]
+name = "smartcontractkit-chainlink-evm"
+version = "0.3.2"
+url = "https://soldeer-revisions.s3.amazonaws.com/smartcontractkit-chainlink-evm/0_3_2_21-08-2025_05:55:43_smartcontractkit-chainlink-evm-0.3.zip"
+checksum = "440af4394db269f09e57bf1df0155663cee7d07488758d1991e79cd7e05908ce"
+integrity = "e71eae2a239fd39e532814ac86b2c9f2676158756cb5f1defa08fe49a402a0ca"

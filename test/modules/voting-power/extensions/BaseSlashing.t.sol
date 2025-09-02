@@ -12,8 +12,8 @@ import {IOzEIP712} from "../../../../src/interfaces/modules/base/IOzEIP712.sol";
 import {NoPermissionManager} from "../../../../test/mocks/NoPermissionManager.sol";
 import {EqualStakeVPCalc} from "../../../../src/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol";
 import {OperatorVaults} from "../../../../src/modules/voting-power/extensions/OperatorVaults.sol";
-import {IEntity} from "lib/core/src/interfaces/common/IEntity.sol";
-import {IVault} from "lib/core/src/interfaces/vault/IVault.sol";
+import {IEntity} from "@symbioticfi/core/src/interfaces/common/IEntity.sol";
+import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
 
 import {BN254} from "../../../../src/libraries/utils/BN254.sol";
 import "../../../MasterSetup.sol";

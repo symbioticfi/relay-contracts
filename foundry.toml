@@ -7,7 +7,7 @@ via_ir = false
 bytecode_hash = "none"
 src = "src"
 out = "out"
-libs = ["lib"]
+libs = ["lib", "dependencies"]
 fs_permissions = [{ access = "read-write", path = "./"}]
 gas_reports = ["*"]
 gas_limit = "18446744073709551615"
@@ -38,6 +38,15 @@ lint_on_build = false
 exclude_lints = ["asm-keccak256","mixed-case-function","mixed-case-variable","pascal-case-struct","screaming-snake-case-const"]
 ignore = ["test/**/*.sol","script/**/*.sol","src/interfaces/**/*.sol"]
 
+[dependencies]
+forge-std = "1.10.0"
+"@openzeppelin-contracts" = "5.4.0"
+"@openzeppelin-contracts-upgradeable" = "5.4.0"
+crypto-lib = { version = "v1", git = "https://github.com/get-smooth/crypto-lib", rev = "d714e9824e2e2e44be3c8fd498e0de651ddc9425" }
+smartcontractkit-chainlink-evm = "0.3.2"
+"@test-core" = "1.0.0"
+rewards = { version = "v1", git = "https://github.com/symbioticfi/rewards", rev = "deb0e5aa14b2e72a75b1d8bf559576859fa0cb5a" }
+
 [[profile.default.compilation_restrictions]]
 paths = "{test/mocks/VotingPowerProviderFull.sol}"
 via_ir = true
@@ -47,5 +56,20 @@ optimizer_runs = 1
 name = "via-ir-1"
 via_ir = true
 optimizer_runs = 1
+
+[soldeer]
+# whether Soldeer manages remappings
+remappings_generate = true
+# whether Soldeer re-generates all remappings when installing, updating or uninstalling deps
+remappings_regenerate = false
+# whether to suffix the remapping with the version requirement string: `name-a.b.c`
+remappings_version = false
+# a prefix to add to the remappings ("@" would give `@name`)
+remappings_prefix = ""
+# where to store the remappings ("txt" for `remappings.txt` or "config" for `foundry.toml`)
+# ignored when `soldeer.toml` is used as config (uses `remappings.txt`)
+remappings_location = "txt"
+# whether to install sub-dependencies or not. If true this will install the dependencies of dependencies recursively.
+recursive_deps = false
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
