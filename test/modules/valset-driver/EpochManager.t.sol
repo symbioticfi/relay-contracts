@@ -208,6 +208,19 @@ contract EpochManagerTest is Test {
         assertEq(epochIndex, 2, "Should be epoch #2 for that timestamp");
     }
 
+    function test_GetEpochIndex_RevertIfTooOldTimestamp() public {
+        IEpochManager.EpochManagerInitParams memory initParams = IEpochManager.EpochManagerInitParams({
+            epochDuration: 60,
+            epochDurationTimestamp: uint48(vm.getBlockTimestamp() + 10)
+        });
+        epochManager.initialize(initParams);
+
+        vm.expectRevert(IEpochManager.EpochManager_TooOldTimestamp.selector);
+        epochManager.getEpochIndex(uint48(vm.getBlockTimestamp() + 9));
+
+        epochManager.getEpochIndex(uint48(vm.getBlockTimestamp() + 10));
+    }
+
     function test_GetEpochDurationAndStart() public {
         IEpochManager.EpochManagerInitParams memory initParams = IEpochManager.EpochManagerInitParams({
             epochDuration: 50,

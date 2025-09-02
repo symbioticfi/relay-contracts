@@ -12,6 +12,10 @@ import {IOzEIP712} from "../../../../../src/interfaces/modules/base/IOzEIP712.so
 import {PricedTokensChainlinkVPCalc} from
     "../../../../../src/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.sol";
 import {NoPermissionManager} from "../../../../../test/mocks/NoPermissionManager.sol";
+import {IPricedTokensChainlinkVPCalc} from
+    "../../../../../src/interfaces/modules/voting-power/common/voting-power-calc/IPricedTokensChainlinkVPCalc.sol";
+import {ChainlinkPriceFeed} from
+    "../../../../../src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol";
 
 import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 
@@ -242,6 +246,11 @@ contract PricedTokensChainlinkVPCalcTest is InitSetupTest {
                 vm.stopPrank();
             }
 
+            vm.expectRevert(IPricedTokensChainlinkVPCalc.PricedTokensChainlinkVPCalc_InvalidAggregator.selector);
+            votingPowerProvider.setTokenHops(
+                WETH, [address(0), WBTC_USD_FEED], [false, false], [uint48(1_000_000), uint48(1_000_000)]
+            );
+
             votingPowerProvider.setTokenHops(
                 WETH, [WETH_USD_FEED, WBTC_USD_FEED], [false, false], [uint48(1_000_000), uint48(1_000_000)]
             );
@@ -274,6 +283,12 @@ contract PricedTokensChainlinkVPCalcTest is InitSetupTest {
             (, int256 wbtcAnswer,,,) = wbtcFeed.latestRoundData();
             uint8 wbtcPriceDecimals = wbtcFeed.decimals();
             assertEq(wbtcPriceDecimals, 8);
+
+            uint256 price = votingPowerProvider.getTokenPrice(WETH);
+            assertEq(
+                price, ((uint256(wethAnswer) * 10 ** (18 - 8)) * (uint256(wbtcAnswer) * 10 ** (18 - 8)) / 10 ** 18)
+            );
+            assertEq(price, votingPowerProvider.getTokenPriceAt(WETH, uint48(vm.getBlockTimestamp())));
 
             for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
                 Vm.Wallet memory operator = getOperator(i);
@@ -399,6 +414,16 @@ contract PricedTokensChainlinkVPCalcTest is InitSetupTest {
             (, int256 wbtcAnswer,,,) = wbtcFeed.latestRoundData();
             uint8 wbtcPriceDecimals = wbtcFeed.decimals();
             assertEq(wbtcPriceDecimals, 8);
+
+            uint256 price = votingPowerProvider.getTokenPrice(WETH);
+            assertEq(
+                price,
+                (
+                    (uint256(wethAnswer) * 10 ** (18 - 8)) * (10 ** 36 / (uint256(wbtcAnswer) * 10 ** (18 - 8)))
+                        / 10 ** 18
+                )
+            );
+            assertEq(price, votingPowerProvider.getTokenPriceAt(WETH, uint48(vm.getBlockTimestamp())));
 
             for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
                 Vm.Wallet memory operator = getOperator(i);
@@ -659,6 +684,11 @@ contract PricedTokensChainlinkVPCalcTest is InitSetupTest {
         expectedVPs[18] = 294_492_812_072_506_791_598_200_000_000;
         expectedVPs[19] = 294_782_097_742_519_077_248_100_000_000;
 
+        uint256 price = votingPowerProvider.getTokenPrice(WETH);
+        for (uint256 i; i < expectedVPs.length; ++i) {
+            assertEq(price, expectedVPs[i] / (1000 + i));
+        }
+
         for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
             Vm.Wallet memory operator = getOperator(i);
             address[] memory operatorVaults = votingPowerProvider.getOperatorVaults(operator.addr);
@@ -672,5 +702,135 @@ contract PricedTokensChainlinkVPCalcTest is InitSetupTest {
                 expectedVPs[i]
             );
         }
+
+        vm.warp(vm.getBlockTimestamp() + 111_111);
+
+        price = votingPowerProvider.getTokenPriceAt(WETH, uint48(1_731_757_007));
+        for (uint256 i; i < expectedVPs.length; ++i) {
+            assertEq(price, expectedVPs[i] / (1000 + i));
+        }
+
+        for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
+            Vm.Wallet memory operator = getOperator(i);
+            address[] memory operatorVaults = votingPowerProvider.getOperatorVaults(operator.addr);
+
+            assertEq(
+                votingPowerProvider.getOperatorVotingPowerAt(
+                    operator.addr, operatorVaults[0], "", uint48(1_731_757_007)
+                ),
+                expectedVPs[i]
+            );
+        }
+    }
+
+    function test_ChainlinkCalcTracksRealPriceHistoricalZero() public {
+        SYMBIOTIC_CORE_NUMBER_OF_OPERATORS = 20;
+
+        vm.createSelectFork("mainnet", FORK_BLOCK_INITIAL);
+
+        SYMBIOTIC_INIT_BLOCK = FORK_BLOCK_INITIAL;
+        InitSetupTest.setUp();
+
+        votingPowerProvider =
+            new TestVotingPowerProvider(address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory));
+
+        _registerOperator_SymbioticCore(symbioticCore, operator1);
+        _registerOperator_SymbioticCore(symbioticCore, operator2);
+
+        _registerOperator_SymbioticCore(symbioticCore, validOperator);
+
+        INetworkManager.NetworkManagerInitParams memory netInit =
+            INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkId: IDENTIFIER});
+
+        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
+            .VotingPowerProviderInitParams({
+            networkManagerInitParams: netInit,
+            ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
+            requireSlasher: true,
+            minVaultEpochDuration: 100,
+            token: WETH
+        });
+
+        votingPowerProvider.initialize(votingPowerProviderInit);
+
+        _networkSetMiddleware_SymbioticCore(vars.network.addr, address(votingPowerProvider));
+
+        for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
+            Vm.Wallet memory operator = getOperator(i);
+            vm.startPrank(operator.addr);
+            votingPowerProvider.registerOperator(operator.addr);
+            vm.stopPrank();
+        }
+
+        for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
+            Vm.Wallet memory operator = getOperator(i);
+            (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
+            address operatorVault = _getVault_SymbioticCore(
+                VaultParams({
+                    owner: operator.addr,
+                    collateral: WETH,
+                    burner: 0x000000000000000000000000000000000000dEaD,
+                    epochDuration: minVaultEpochDuration * 2,
+                    whitelistedDepositors: new address[](0),
+                    depositLimit: 0,
+                    delegatorIndex: 2,
+                    hook: address(0),
+                    network: address(0),
+                    withSlasher: true,
+                    slasherIndex: 0,
+                    vetoDuration: 1
+                })
+            );
+
+            _operatorOptIn_SymbioticCore(operator.addr, operatorVault);
+            _networkSetMaxNetworkLimit_SymbioticCore(
+                votingPowerProvider.NETWORK(),
+                operatorVault,
+                votingPowerProvider.SUBNETWORK_IDENTIFIER(),
+                type(uint256).max
+            );
+            _curatorSetNetworkLimit_SymbioticCore(
+                operator.addr, operatorVault, votingPowerProvider.SUBNETWORK(), type(uint256).max
+            );
+            _deal_Symbiotic(WETH, getStaker(0).addr, type(uint128).max, false);
+            _stakerDeposit_SymbioticCore(getStaker(0).addr, operatorVault, 1000 + i);
+            vm.startPrank(vars.network.addr);
+            votingPowerProvider.registerOperatorVault(operator.addr, operatorVault);
+            vm.stopPrank();
+        }
+
+        votingPowerProvider.setTokenHops(
+            WETH, [WETH_USD_FEED, WBTC_USD_FEED], [false, false], [uint48(1_000_000), uint48(1_000_000)]
+        );
+        votingPowerProvider.setTokenHops(WBTC, [WBTC_USD_FEED, address(0)], [false, false], [uint48(1_000_000), 0]);
+
+        (address[2] memory aggregators, bool[2] memory inverts, uint48[2] memory stalenessDurations) =
+            votingPowerProvider.getTokenHops(WETH);
+        assertEq(aggregators[0], WETH_USD_FEED);
+        assertEq(inverts[0], false);
+        assertEq(stalenessDurations[0], uint48(1_000_000));
+        assertEq(aggregators[1], WBTC_USD_FEED);
+        assertEq(inverts[1], false);
+        assertEq(stalenessDurations[1], uint48(1_000_000));
+
+        (aggregators, inverts, stalenessDurations) =
+            votingPowerProvider.getTokenHopsAt(WETH, uint48(vm.getBlockTimestamp()));
+        assertEq(aggregators[0], WETH_USD_FEED);
+        assertEq(inverts[0], false);
+        assertEq(stalenessDurations[0], uint48(1_000_000));
+        assertEq(aggregators[1], WBTC_USD_FEED);
+        assertEq(inverts[1], false);
+        assertEq(stalenessDurations[1], uint48(1_000_000));
+
+        assertEq(votingPowerProvider.getTokenPriceAt(WETH, uint48(vm.getBlockTimestamp()) + 1), 0);
+
+        vm.mockCall(
+            WBTC_USD_FEED,
+            abi.encodeWithSelector(AggregatorV3Interface.latestRoundData.selector),
+            abi.encode(0, 0, 0, 0, 0)
+        );
+        assertEq(votingPowerProvider.getTokenPriceAt(WETH, uint48(vm.getBlockTimestamp())), 0);
+
+        assertEq(ChainlinkPriceFeed.getPriceAt(WETH_USD_FEED, 1, false, uint48(1_000_000)), 0);
     }
 }

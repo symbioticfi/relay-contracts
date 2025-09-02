@@ -211,17 +211,31 @@ contract BaseSlashingTest is MasterSetupTest {
             vault,
             operator,
             100,
-            new bytes(0)
+            abi.encode(IBaseSlashing.SlashHints({slashingDataHint: new bytes(0), slashCoreHints: new bytes(0)}))
         );
 
         assertTrue(success, "Slashing should be successful");
         assertEq(response, abi.encode(uint256(0)));
 
+        vm.warp(vm.getBlockTimestamp() + minVaultEpochDuration);
+
         uint256 slashedAmount;
         (success, slashedAmount) = slasher.executeSlashVault(
             address(masterSetupParams.votingPowerProvider), vault, abi.decode(response, (uint256)), new bytes(0)
         );
+        assertFalse(success);
+        assertEq(slashedAmount, 0);
 
+        vm.warp(vm.getBlockTimestamp() - minVaultEpochDuration);
+
+        (success, slashedAmount) = slasher.executeSlashVault(
+            address(masterSetupParams.votingPowerProvider),
+            vault,
+            abi.decode(response, (uint256)),
+            abi.encode(
+                IBaseSlashing.ExecuteSlashHints({slashingDataHint: new bytes(0), executeSlashCoreHints: new bytes(0)})
+            )
+        );
         assertTrue(success, "Slashing should be successful");
         assertEq(slashedAmount, 100);
     }
@@ -237,8 +251,36 @@ contract BaseSlashingTest is MasterSetupTest {
         address[] memory vaults = masterSetupParams.votingPowerProvider.getSharedVaults();
 
         vm.expectRevert(abi.encodeWithSelector(IBaseSlashing.BaseSlashing_NotVetoSlasher.selector));
-
         slasher.executeSlashVault(address(masterSetupParams.votingPowerProvider), vaults[0], 0, new bytes(0));
+    }
+
+    function test_ExecuteSlashVault_NoSlasher() public {
+        vm.warp(vm.getBlockTimestamp() + 1);
+
+        SlasherMock slasher = new SlasherMock();
+
+        vm.prank(vars.deployer.addr);
+        masterSetupParams.votingPowerProvider.setSlasher(address(slasher));
+
+        address vault = _getVault_SymbioticCore(
+            VaultParams({
+                owner: getOperator(0).addr,
+                collateral: initSetupParams.masterChain.tokens[0],
+                burner: 0x000000000000000000000000000000000000dEaD,
+                epochDuration: 100,
+                whitelistedDepositors: new address[](0),
+                depositLimit: 0,
+                delegatorIndex: 0,
+                hook: address(0),
+                network: address(0),
+                withSlasher: false,
+                slasherIndex: 0,
+                vetoDuration: 0
+            })
+        );
+
+        vm.expectRevert(abi.encodeWithSelector(IBaseSlashing.BaseSlashing_NoSlasher.selector));
+        slasher.executeSlashVault(address(masterSetupParams.votingPowerProvider), vault, 0, new bytes(0));
     }
 
     function test_RevertWhen_SlashVault_NoSlashing() public {

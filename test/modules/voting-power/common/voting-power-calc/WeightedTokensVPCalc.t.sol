@@ -17,6 +17,9 @@ import {WeightedTokensVPCalc} from
     "../../../../../src/modules/voting-power/common/voting-power-calc/WeightedTokensVPCalc.sol";
 import {OperatorVaults} from "../../../../../src/modules/voting-power/extensions/OperatorVaults.sol";
 
+import {IWeightedTokensVPCalc} from
+    "../../../../../src/interfaces/modules/voting-power/common/voting-power-calc/IWeightedTokensVPCalc.sol";
+
 import {BN254} from "../../../../../src/libraries/utils/BN254.sol";
 import "../../../../InitSetup.sol";
 
@@ -280,6 +283,13 @@ contract WeightedTokensVPCalcTest is InitSetupTest {
                 (1000 + i) * 10 ** (18 - 18) * 10 ** 5
             );
         }
+    }
+
+    function test_SetTokenWeight_RevertIfTooLarge() public {
+        vm.expectRevert(abi.encodeWithSelector(IWeightedTokensVPCalc.WeightedTokensVPCalc_TooLargeWeight.selector));
+        votingPowerProvider.setTokenWeight(address(1), (10 ** 12) ** 2 + 1);
+
+        votingPowerProvider.setTokenWeight(address(1), (10 ** 12) ** 2);
     }
 
     function test_StakeToVotingPowerAt_UsesHistoricalTokenWeightAndNormalization() public {

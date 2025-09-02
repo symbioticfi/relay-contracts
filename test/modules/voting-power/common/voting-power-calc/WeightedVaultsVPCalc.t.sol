@@ -17,6 +17,9 @@ import {WeightedVaultsVPCalc} from
     "../../../../../src/modules/voting-power/common/voting-power-calc/WeightedVaultsVPCalc.sol";
 import {OperatorVaults} from "../../../../../src/modules/voting-power/extensions/OperatorVaults.sol";
 
+import {IWeightedVaultsVPCalc} from
+    "../../../../../src/interfaces/modules/voting-power/common/voting-power-calc/IWeightedVaultsVPCalc.sol";
+
 import {BN254} from "../../../../../src/libraries/utils/BN254.sol";
 import "../../../../InitSetup.sol";
 
@@ -279,6 +282,13 @@ contract WeightedVaultsVPCalcTest is InitSetupTest {
                 );
             }
         }
+    }
+
+    function test_SetVaultWeight_RevertIfTooLarge() public {
+        vm.expectRevert(abi.encodeWithSelector(IWeightedVaultsVPCalc.WeightedVaultsVPCalc_TooLargeWeight.selector));
+        votingPowerProvider.setVaultWeight(address(1), (10 ** 4) ** 2 + 1);
+
+        votingPowerProvider.setVaultWeight(address(1), (10 ** 4) ** 2);
     }
 
     function test_GetVaultWeightAt_UsesHistoricalVaultWeight() public {

@@ -306,6 +306,14 @@ contract VotingPowerProviderTest is InitSetupTest {
         (requireSlasher, minVaultEpochDuration) = votingPowerProvider.getSlashingData();
         assertFalse(requireSlasher);
         assertEq(minVaultEpochDuration, 50);
+        (requireSlasher, minVaultEpochDuration) =
+            votingPowerProvider.getSlashingDataAt(uint48(vm.getBlockTimestamp()) - 1, "");
+        assertTrue(requireSlasher);
+        assertEq(minVaultEpochDuration, 100);
+        (requireSlasher, minVaultEpochDuration) =
+            votingPowerProvider.getSlashingDataAt(uint48(vm.getBlockTimestamp()) + 100, "");
+        assertFalse(requireSlasher);
+        assertEq(minVaultEpochDuration, 50);
     }
 
     function test_RegisterToken() public {

@@ -340,6 +340,14 @@ contract SettlementRawTest is Test {
         );
     }
 
+    function testCommitValSetHeader_Revert_InvalidPreviousHeaderHash() public {
+        sampleHeader.previousHeaderHash = bytes32(0);
+
+        vm.prank(owner);
+        vm.expectRevert(ISettlement.Settlement_InvalidPreviousHeaderHash.selector);
+        testSettle.setGenesis(sampleHeader, someExtra);
+    }
+
     function testCommitValSetHeader_Basic() public {
         vm.prank(owner);
         testSettle.setGenesis(sampleHeader, someExtra);
