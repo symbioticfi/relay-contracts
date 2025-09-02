@@ -53,8 +53,6 @@ contract SettlementTest is MasterGenesisSetupTest {
 
     //     valSetHeader.epoch = 1;
     //     valSetHeader.captureTimestamp = uint48(vm.getBlockTimestamp()) - 1;
-    //     // valSetHeader.previousHeaderHash = keccak256(abi.encode(masterSetupParams.master.getValSetHeaderAt(0)));
-    //     valSetHeader.previousHeaderHash = 0x9ff403105928d3f1b175251c01c8c0fb0bba20e781cdd12c845e7715c84549f2;
 
     //     bytes32 messageHash = masterSetupParams.master.hashTypedDataV4CrossChain(
     //         keccak256(
@@ -70,7 +68,6 @@ contract SettlementTest is MasterGenesisSetupTest {
 
     //     console2.log("messageHash");
     //     console2.logBytes32(messageHash);
-    //     console2.logBytes32(valSetHeader.previousHeaderHash);
 
     //     BN254.G1Point memory aggKeyG1;
     //     BN254.G2Point memory aggKeyG2;
@@ -185,8 +182,7 @@ contract SettlementRawTest is Test {
             epoch: 0,
             captureTimestamp: uint48(vm.getBlockTimestamp()) - 1,
             quorumThreshold: 1000,
-            validatorsSszMRoot: bytes32(uint256(0xAAA)),
-            previousHeaderHash: 0x868e09d528a16744c1f38ea3c10cc2251e01a456434f91172247695087d129b7
+            validatorsSszMRoot: bytes32(uint256(0xAAA))
         });
         someExtra.push(ISettlement.ExtraData({key: bytes32(uint256(0xCCC)), value: bytes32(uint256(0xBBB))}));
     }
@@ -212,16 +208,6 @@ contract SettlementRawTest is Test {
         vm.prank(owner);
         testSettle.setGenesis(sampleHeader, someExtra);
 
-        vm.assertEq(
-            testSettle.getPreviousHeaderHashFromValSetHeader(),
-            sampleHeader.previousHeaderHash,
-            "ValSet previousHeaderHash mismatch after setGenesis"
-        );
-        assertEq(
-            testSettle.getPreviousHeaderHashFromValSetHeaderAt(sampleHeader.epoch),
-            sampleHeader.previousHeaderHash,
-            "ValSet previousHeaderHash mismatch after setGenesis"
-        );
         assertEq(
             testSettle.getValidatorsSszMRootFromValSetHeader(),
             sampleHeader.validatorsSszMRoot,
@@ -305,11 +291,6 @@ contract SettlementRawTest is Test {
         assertEq(
             stored.validatorsSszMRoot, bytes32(uint256(0xAAA)), "ValSet validatorsSszMRoot mismatch after setGenesis"
         );
-        assertEq(
-            stored.previousHeaderHash,
-            0x868e09d528a16744c1f38ea3c10cc2251e01a456434f91172247695087d129b7,
-            "ValSet previousHeaderHash mismatch after setGenesis"
-        );
 
         stored = testSettle.getValSetHeader();
         assertEq(stored.version, sampleHeader.version, "ValSet version mismatch after setGenesis");
@@ -322,11 +303,6 @@ contract SettlementRawTest is Test {
         assertEq(stored.quorumThreshold, 1000, "ValSet quorumThreshold mismatch after setGenesis");
         assertEq(
             stored.validatorsSszMRoot, bytes32(uint256(0xAAA)), "ValSet validatorsSszMRoot mismatch after setGenesis"
-        );
-        assertEq(
-            stored.previousHeaderHash,
-            0x868e09d528a16744c1f38ea3c10cc2251e01a456434f91172247695087d129b7,
-            "ValSet previousHeaderHash mismatch after setGenesis"
         );
     }
 
@@ -344,7 +320,6 @@ contract SettlementRawTest is Test {
         header.version = 2;
         header.epoch = 1;
         header.captureTimestamp = uint48(vm.getBlockTimestamp() - 1);
-        header.previousHeaderHash = testSettle.getValSetHeaderHash();
 
         vm.expectRevert(ISettlement.Settlement_InvalidVersion.selector);
         testSettle.commitValSetHeader(header, someExtra, bytes(""));
@@ -360,7 +335,6 @@ contract SettlementRawTest is Test {
 
         header.epoch = 2;
         header.captureTimestamp = uint48(vm.getBlockTimestamp() - 1);
-        header.previousHeaderHash = testSettle.getValSetHeaderHash();
 
         testSettle.commitValSetHeader(header, someExtra, bytes(""));
 
@@ -374,11 +348,6 @@ contract SettlementRawTest is Test {
         vm.warp(vm.getBlockTimestamp() + 1);
 
         header.captureTimestamp = uint48(vm.getBlockTimestamp() - 1);
-
-        vm.expectRevert(ISettlement.Settlement_InvalidPreviousHeaderHash.selector);
-        testSettle.commitValSetHeader(header, someExtra, bytes(""));
-
-        header.previousHeaderHash = testSettle.getValSetHeaderHash();
 
         testSettle.commitValSetHeader(header, someExtra, bytes(""));
     }
@@ -421,14 +390,12 @@ contract SettlementRawTest is Test {
 
         header.epoch = 1;
         header.captureTimestamp = uint48(vm.getBlockTimestamp() - 1);
-        header.previousHeaderHash = testSettle.getValSetHeaderHash();
         testSettle.commitValSetHeader(header, someExtra, bytes(""));
 
         vm.warp(vm.getBlockTimestamp() + 1);
 
         header.epoch = 2;
         header.captureTimestamp = uint48(vm.getBlockTimestamp() - 1);
-        header.previousHeaderHash = testSettle.getValSetHeaderHash();
         vm.expectRevert(ISettlement.Settlement_VerificationFailed.selector);
         testSettle.commitValSetHeader(header, someExtra, bytes(""));
     }

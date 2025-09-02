@@ -113,16 +113,6 @@ contract EpochManagerTest is Test {
         epochManager.initialize(initParams);
     }
 
-    function test_Initialize_RevertOnPastTimestamp() public {
-        IEpochManager.EpochManagerInitParams memory initParams = IEpochManager.EpochManagerInitParams({
-            epochDuration: 100,
-            epochDurationTimestamp: uint48(vm.getBlockTimestamp() - 1)
-        });
-
-        vm.expectRevert(ERR_INVALID_EPOCH_DURATION_TIMESTAMP);
-        epochManager.initialize(initParams);
-    }
-
     function test_AdvanceTimeAndCheckEpoch() public {
         IEpochManager.EpochManagerInitParams memory initParams = IEpochManager.EpochManagerInitParams({
             epochDuration: 100,

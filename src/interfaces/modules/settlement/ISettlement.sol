@@ -40,11 +40,6 @@ interface ISettlement {
     error Settlement_InvalidSigVerifier();
 
     /**
-     * @notice Reverts when the proposed previous header hash is not the same as the hash of the latest committed header.
-     */
-    error Settlement_InvalidPreviousHeaderHash();
-
-    /**
      * @notice Reverts when the checkpoint is not found for the current time point.
      */
     error Settlement_NoCheckpoint();
@@ -84,7 +79,6 @@ interface ISettlement {
      * @param captureTimestamp The capture timestamp of the validator set.
      * @param quorumThreshold The quorum threshold of the validator set header which will need to be surpassed to commit the next header.
      * @param validatorsSszMRoot The validator set SSZ root.
-     * @param previousHeaderHash The previous header hash.
      */
     struct ValSetHeader {
         uint8 version;
@@ -93,7 +87,6 @@ interface ISettlement {
         uint48 captureTimestamp;
         uint256 quorumThreshold;
         bytes32 validatorsSszMRoot;
-        bytes32 previousHeaderHash;
     }
 
     /**
@@ -273,21 +266,6 @@ interface ISettlement {
      * @return The validator set SSZ root from the last committed validator set header.
      */
     function getValidatorsSszMRootFromValSetHeader() external view returns (bytes32);
-
-    /**
-     * @notice Returns the previous header hash from the validator set header at the given epoch.
-     * @param epoch The epoch.
-     * @return The previous header hash from the validator set header at the given epoch.
-     */
-    function getPreviousHeaderHashFromValSetHeaderAt(
-        uint48 epoch
-    ) external view returns (bytes32);
-
-    /**
-     * @notice Returns the previous header hash from the last committed validator set header.
-     * @return The previous header hash from the last committed validator set header.
-     */
-    function getPreviousHeaderHashFromValSetHeader() external view returns (bytes32);
 
     /**
      * @notice Returns the extra data at the given epoch for a certain key.

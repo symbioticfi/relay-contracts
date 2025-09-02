@@ -36,7 +36,6 @@ contract MasterCommitScript is MasterGenesisSetupScript {
         MasterSetupParams memory masterSetupParams = loadMasterSetupParams();
 
         (ISettlement.ValSetHeader memory valSetHeader, ISettlement.ExtraData[] memory extraData) = loadGenesis();
-        valSetHeader.previousHeaderHash = keccak256(abi.encode(valSetHeader));
         valSetHeader.epoch = masterSetupParams.valSetDriver.getCurrentEpoch();
         valSetHeader.captureTimestamp = masterSetupParams.valSetDriver.getCurrentEpochStart();
 
@@ -132,7 +131,6 @@ contract MasterCommitScript is MasterGenesisSetupScript {
         console2.log("header");
         console2.log(valSetHeader.captureTimestamp);
         console2.log(valSetHeader.epoch);
-        console2.logBytes32(valSetHeader.previousHeaderHash);
         console2.log(valSetHeader.quorumThreshold);
         console2.log(valSetHeader.requiredKeyTag);
         console2.logBytes32(valSetHeader.validatorsSszMRoot);
