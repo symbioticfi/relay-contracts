@@ -358,12 +358,26 @@ contract SettlementRawTest is Test {
 
         header.epoch = 3;
 
+        header.requiredKeyTag = 16;
+
+        vm.expectRevert();
+        testSettle.commitValSetHeader(header, someExtra, bytes(""));
+
+        header.requiredKeyTag = 7;
+
         vm.expectRevert(ISettlement.Settlement_InvalidCaptureTimestamp.selector);
         testSettle.commitValSetHeader(header, someExtra, bytes(""));
 
         vm.warp(vm.getBlockTimestamp() + 1);
 
         header.captureTimestamp = uint48(vm.getBlockTimestamp() - 1);
+
+        header.quorumThreshold = header.totalVotingPower + 1;
+
+        vm.expectRevert(ISettlement.Settlement_QuorumThresholdGtTotalVotingPower.selector);
+        testSettle.commitValSetHeader(header, someExtra, bytes(""));
+
+        header.quorumThreshold = 1000;
 
         header.validatorsSszMRoot = bytes32(0);
         vm.expectRevert(ISettlement.Settlement_InvalidValidatorsSszMRoot.selector);

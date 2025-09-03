@@ -88,6 +88,7 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetupTest {
         }
         valSetHeader.quorumThreshold =
             quorumThreshold.mulDiv(totalVotingPower, masterSetupParams.valSetDriver.MAX_QUORUM_THRESHOLD()) + 1;
+        valSetHeader.totalVotingPower = totalVotingPower;
 
         masterSetupParams.settlement.setGenesis(valSetHeader, extraData);
         vm.stopPrank();

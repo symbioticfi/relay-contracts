@@ -40,6 +40,11 @@ interface ISettlement {
     error Settlement_InvalidVersion();
 
     /**
+     * @notice Reverts when the quorum threshold is greater than the total voting power.
+     */
+    error Settlement_QuorumThresholdGtTotalVotingPower();
+
+    /**
      * @notice Reverts when the validator set header is already committed for the proposed epoch.
      */
     error Settlement_ValSetHeaderAlreadyCommitted();

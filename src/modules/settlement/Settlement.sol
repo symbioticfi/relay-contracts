@@ -6,6 +6,7 @@ import {OzEIP712} from "../base/OzEIP712.sol";
 import {PermissionManager} from "../base/PermissionManager.sol";
 
 import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
+import {KeyTags} from "../../libraries/utils/KeyTags.sol";
 
 import {ISettlement} from "../../interfaces/modules/settlement/ISettlement.sol";
 import {ISigVerifier} from "../../interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol";
@@ -16,6 +17,7 @@ import {ISigVerifier} from "../../interfaces/modules/settlement/sig-verifiers/IS
  */
 abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISettlement {
     using Checkpoints for Checkpoints.Trace208;
+    using KeyTags for uint8;
 
     /**
      * @inheritdoc ISettlement
@@ -337,12 +339,18 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
             revert Settlement_ValSetHeaderAlreadyCommitted();
         }
 
+        header.requiredKeyTag.validateKeyTag();
+
         uint48 lastCommittedHeaderEpoch = getLastCommittedHeaderEpoch();
         if (
             header.captureTimestamp <= getCaptureTimestampFromValSetHeaderAt(lastCommittedHeaderEpoch)
                 || header.captureTimestamp >= block.timestamp
         ) {
             revert Settlement_InvalidCaptureTimestamp();
+        }
+
+        if (header.quorumThreshold > header.totalVotingPower) {
+            revert Settlement_QuorumThresholdGtTotalVotingPower();
         }
 
         if (header.validatorsSszMRoot == bytes32(0)) {
