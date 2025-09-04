@@ -28,8 +28,7 @@ contract NetworkTest is MasterSetupTest {
         SYMBIOTIC_CORE_PROJECT_ROOT = "lib/core/";
         MasterSetupTest.setUp();
 
-        myNetwork =
-            new Network(address(symbioticCore.networkRegistry), address(symbioticCore.networkMiddlewareService));
+        myNetwork = new Network(address(symbioticCore.networkRegistry), address(symbioticCore.networkMiddlewareService));
 
         INetwork.NetworkInitParams memory p;
         p.globalMinDelay = GLOBAL_MIN_DELAY;
