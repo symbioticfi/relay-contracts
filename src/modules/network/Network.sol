@@ -67,6 +67,12 @@ contract Network is TimelockControllerUpgradeable, INetwork {
         }
     }
 
+    function initialize(
+        NetworkInitParams memory initParams
+    ) public virtual initializer {
+        __Network_init(initParams);
+    }
+
     function __Network_init(
         NetworkInitParams memory initParams
     ) internal virtual onlyInitializing {

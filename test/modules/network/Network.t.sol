@@ -3,7 +3,7 @@ pragma solidity ^0.8.25;
 
 import "forge-std/Test.sol";
 
-import {MyNetwork} from "../../../examples/MyNetwork.sol";
+import {Network} from "../../../src/modules/network/Network.sol";
 
 import {INetwork} from "../../../src/interfaces/modules/network/INetwork.sol";
 
@@ -14,7 +14,7 @@ import {Subnetwork} from "@symbioticfi/core/src/contracts/libraries/Subnetwork.s
 contract NetworkTest is MasterSetupTest {
     using Subnetwork for address;
 
-    MyNetwork private myNetwork;
+    Network private myNetwork;
 
     address internal admin = address(0xA11CE);
     address internal proposer = address(0xBEEF1);
@@ -29,7 +29,7 @@ contract NetworkTest is MasterSetupTest {
         MasterSetupTest.setUp();
 
         myNetwork =
-            new MyNetwork(address(symbioticCore.networkRegistry), address(symbioticCore.networkMiddlewareService));
+            new Network(address(symbioticCore.networkRegistry), address(symbioticCore.networkMiddlewareService));
 
         INetwork.NetworkInitParams memory p;
         p.globalMinDelay = GLOBAL_MIN_DELAY;

@@ -20,7 +20,7 @@ import {IBaseSlasher} from "@symbioticfi/core/src/interfaces/slasher/IBaseSlashe
 import {INetworkMiddlewareService} from "@symbioticfi/core/src/interfaces/service/INetworkMiddlewareService.sol";
 import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
 
-import {MyNetwork} from "../../../../examples/MyNetwork.sol";
+import {Network} from "../../../../src/modules/network/Network.sol";
 import {INetwork} from "../../../../src/interfaces/modules/network/INetwork.sol";
 
 contract TestOpNetVaultAutoDeploy is
@@ -77,8 +77,8 @@ contract OpNetVaultAutoDeployTest is Test, InitSetupTest {
             address(symbioticCore.vaultConfigurator)
         );
 
-        MyNetwork network =
-            new MyNetwork(address(symbioticCore.networkRegistry), address(symbioticCore.networkMiddlewareService));
+        Network network =
+            new Network(address(symbioticCore.networkRegistry), address(symbioticCore.networkMiddlewareService));
         address[] memory proposers = new address[](1);
         proposers[0] = address(this);
         address[] memory executors = new address[](1);
