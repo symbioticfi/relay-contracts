@@ -38,6 +38,9 @@ abstract contract OperatorsBlacklist is VotingPowerProvider, IOperatorsBlacklist
     function blacklistOperator(
         address operator
     ) public virtual checkPermission {
+        if (isOperatorBlacklisted(operator)) {
+            revert OperatorsBlacklist_OperatorBlacklisted();
+        }
         _getOperatorsBlacklistStorage()._blacklisted[operator] = true;
         if (isOperatorRegistered(operator)) {
             _unregisterOperator(operator);
@@ -51,6 +54,9 @@ abstract contract OperatorsBlacklist is VotingPowerProvider, IOperatorsBlacklist
     function unblacklistOperator(
         address operator
     ) public virtual checkPermission {
+        if (!isOperatorBlacklisted(operator)) {
+            revert OperatorsBlacklist_OperatorNotBlacklisted();
+        }
         _getOperatorsBlacklistStorage()._blacklisted[operator] = false;
         emit UnblacklistOperator(operator);
     }

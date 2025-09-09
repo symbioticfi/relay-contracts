@@ -17,6 +17,9 @@ import {WeightedVaultsVPCalc} from
     "../../../../../src/modules/voting-power/common/voting-power-calc/WeightedVaultsVPCalc.sol";
 import {OperatorVaults} from "../../../../../src/modules/voting-power/extensions/OperatorVaults.sol";
 
+import {IWeightedVaultsVPCalc} from
+    "../../../../../src/interfaces/modules/voting-power/common/voting-power-calc/IWeightedVaultsVPCalc.sol";
+
 import {BN254} from "../../../../../src/libraries/utils/BN254.sol";
 import "../../../../InitSetup.sol";
 
@@ -279,5 +282,187 @@ contract WeightedVaultsVPCalcTest is InitSetupTest {
                 );
             }
         }
+    }
+
+    function test_SetVaultWeight_RevertIfTooLarge() public {
+        vm.expectRevert(abi.encodeWithSelector(IWeightedVaultsVPCalc.WeightedVaultsVPCalc_TooLargeWeight.selector));
+        votingPowerProvider.setVaultWeight(address(1), (10 ** 4) ** 2 + 1);
+
+        votingPowerProvider.setVaultWeight(address(1), (10 ** 4) ** 2);
+    }
+
+    function test_GetVaultWeightAt_UsesHistoricalVaultWeight() public {
+        votingPowerProvider =
+            new TestVotingPowerProvider(address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory));
+
+        INetworkManager.NetworkManagerInitParams memory netInit =
+            INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkId: IDENTIFIER});
+
+        MockToken mockToken = new MockToken("MockToken", "MTK", 18);
+
+        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
+            .VotingPowerProviderInitParams({
+            networkManagerInitParams: netInit,
+            ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
+            requireSlasher: true,
+            minVaultEpochDuration: 100,
+            token: address(mockToken)
+        });
+
+        votingPowerProvider.initialize(votingPowerProviderInit);
+
+        _networkSetMiddleware_SymbioticCore(vars.network.addr, address(votingPowerProvider));
+
+        Vm.Wallet memory operator = getOperator(0);
+        vm.startPrank(operator.addr);
+        votingPowerProvider.registerOperator(operator.addr);
+        vm.stopPrank();
+
+        (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
+        address operatorVault = _getVault_SymbioticCore(
+            VaultParams({
+                owner: operator.addr,
+                collateral: address(mockToken),
+                burner: 0x000000000000000000000000000000000000dEaD,
+                epochDuration: minVaultEpochDuration * 2,
+                whitelistedDepositors: new address[](0),
+                depositLimit: 0,
+                delegatorIndex: 2,
+                hook: address(0),
+                network: address(0),
+                withSlasher: true,
+                slasherIndex: 0,
+                vetoDuration: 1
+            })
+        );
+
+        _operatorOptIn_SymbioticCore(operator.addr, operatorVault);
+        _networkSetMaxNetworkLimit_SymbioticCore(
+            votingPowerProvider.NETWORK(), operatorVault, votingPowerProvider.SUBNETWORK_IDENTIFIER(), type(uint256).max
+        );
+        _curatorSetNetworkLimit_SymbioticCore(
+            operator.addr, operatorVault, votingPowerProvider.SUBNETWORK(), type(uint256).max
+        );
+
+        vm.startPrank(vars.network.addr);
+        votingPowerProvider.registerOperatorVault(operator.addr, operatorVault);
+        vm.stopPrank();
+
+        // At t0, vault weight should be default (1e4)
+        uint48 t0 = uint48(vm.getBlockTimestamp());
+        assertEq(votingPowerProvider.getVaultWeightAt(operatorVault, t0), 10 ** 4);
+
+        // Change vault weight at t1
+        vm.warp(vm.getBlockTimestamp() + 10);
+        uint48 t1 = uint48(vm.getBlockTimestamp());
+        votingPowerProvider.setVaultWeight(operatorVault, 10 ** 5);
+
+        // Historical query at t0 should still return default weight
+        assertEq(votingPowerProvider.getVaultWeightAt(operatorVault, t0), 10 ** 4);
+        // Current query at t1 should return new weight
+        assertEq(votingPowerProvider.getVaultWeightAt(operatorVault, t1), 10 ** 5);
+
+        // Another change at t2
+        vm.warp(vm.getBlockTimestamp() + 10);
+        uint48 t2 = uint48(vm.getBlockTimestamp());
+        votingPowerProvider.setVaultWeight(operatorVault, 123_456);
+
+        // Historical queries should return appropriate weights
+        assertEq(votingPowerProvider.getVaultWeightAt(operatorVault, t0), 10 ** 4);
+        assertEq(votingPowerProvider.getVaultWeightAt(operatorVault, t1), 10 ** 5);
+        assertEq(votingPowerProvider.getVaultWeightAt(operatorVault, t2), 123_456);
+    }
+
+    function test_StakeToVotingPowerAt_UsesHistoricalVaultWeight() public {
+        votingPowerProvider =
+            new TestVotingPowerProvider(address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory));
+
+        INetworkManager.NetworkManagerInitParams memory netInit =
+            INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkId: IDENTIFIER});
+
+        MockToken mockToken = new MockToken("MockToken", "MTK", 18);
+
+        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
+            .VotingPowerProviderInitParams({
+            networkManagerInitParams: netInit,
+            ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
+            requireSlasher: true,
+            minVaultEpochDuration: 100,
+            token: address(mockToken)
+        });
+
+        votingPowerProvider.initialize(votingPowerProviderInit);
+
+        _networkSetMiddleware_SymbioticCore(vars.network.addr, address(votingPowerProvider));
+
+        Vm.Wallet memory operator = getOperator(0);
+        vm.startPrank(operator.addr);
+        votingPowerProvider.registerOperator(operator.addr);
+        vm.stopPrank();
+
+        (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
+        address operatorVault = _getVault_SymbioticCore(
+            VaultParams({
+                owner: operator.addr,
+                collateral: address(mockToken),
+                burner: 0x000000000000000000000000000000000000dEaD,
+                epochDuration: minVaultEpochDuration * 2,
+                whitelistedDepositors: new address[](0),
+                depositLimit: 0,
+                delegatorIndex: 2,
+                hook: address(0),
+                network: address(0),
+                withSlasher: true,
+                slasherIndex: 0,
+                vetoDuration: 1
+            })
+        );
+
+        _operatorOptIn_SymbioticCore(operator.addr, operatorVault);
+        _networkSetMaxNetworkLimit_SymbioticCore(
+            votingPowerProvider.NETWORK(), operatorVault, votingPowerProvider.SUBNETWORK_IDENTIFIER(), type(uint256).max
+        );
+        _curatorSetNetworkLimit_SymbioticCore(
+            operator.addr, operatorVault, votingPowerProvider.SUBNETWORK(), type(uint256).max
+        );
+
+        // Make a deposit at t0
+        _deal_Symbiotic(address(mockToken), getStaker(0).addr, type(uint128).max, true);
+        _stakerDeposit_SymbioticCore(getStaker(0).addr, operatorVault, 1000);
+        uint48 t0 = uint48(vm.getBlockTimestamp());
+
+        vm.startPrank(vars.network.addr);
+        votingPowerProvider.registerOperatorVault(operator.addr, operatorVault);
+        vm.stopPrank();
+
+        // Default vault weight is 1e4 at t0
+        uint256 expectedBase = uint256(1000);
+        assertEq(
+            votingPowerProvider.getOperatorVotingPowerAt(operator.addr, operatorVault, "", t0), expectedBase * 10 ** 4
+        );
+
+        // Change vault weight at t1 and ensure historical query at t0 still uses default weight
+        vm.warp(vm.getBlockTimestamp() + 10);
+        uint48 t1 = uint48(vm.getBlockTimestamp());
+        votingPowerProvider.setVaultWeight(operatorVault, 10 ** 5);
+
+        assertEq(
+            votingPowerProvider.getOperatorVotingPowerAt(operator.addr, operatorVault, "", t0), expectedBase * 10 ** 4
+        );
+        assertEq(
+            votingPowerProvider.getOperatorVotingPowerAt(operator.addr, operatorVault, "", t1), expectedBase * 10 ** 5
+        );
+
+        // Another change at t2 should reflect new weight while t1 stays at previous
+        vm.warp(vm.getBlockTimestamp() + 10);
+        uint48 t2 = uint48(vm.getBlockTimestamp());
+        votingPowerProvider.setVaultWeight(operatorVault, 123_456);
+
+        assertEq(
+            votingPowerProvider.getOperatorVotingPowerAt(operator.addr, operatorVault, "", t1), expectedBase * 10 ** 5
+        );
+        assertEq(
+            votingPowerProvider.getOperatorVotingPowerAt(operator.addr, operatorVault, "", t2), expectedBase * 123_456
+        );
     }
 }

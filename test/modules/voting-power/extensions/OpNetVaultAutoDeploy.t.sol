@@ -20,7 +20,7 @@ import {IBaseSlasher} from "@symbioticfi/core/src/interfaces/slasher/IBaseSlashe
 import {INetworkMiddlewareService} from "@symbioticfi/core/src/interfaces/service/INetworkMiddlewareService.sol";
 import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
 
-import {MyNetwork} from "../../../../examples/MyNetwork.sol";
+import {Network} from "../../../../src/modules/network/Network.sol";
 import {INetwork} from "../../../../src/interfaces/modules/network/INetwork.sol";
 
 contract TestOpNetVaultAutoDeploy is
@@ -77,8 +77,8 @@ contract OpNetVaultAutoDeployTest is Test, InitSetupTest {
             address(symbioticCore.vaultConfigurator)
         );
 
-        MyNetwork network =
-            new MyNetwork(address(symbioticCore.networkRegistry), address(symbioticCore.networkMiddlewareService));
+        Network network =
+            new Network(address(symbioticCore.networkRegistry), address(symbioticCore.networkMiddlewareService));
         address[] memory proposers = new address[](1);
         proposers[0] = address(this);
         address[] memory executors = new address[](1);
@@ -185,8 +185,18 @@ contract OpNetVaultAutoDeployTest is Test, InitSetupTest {
     function test_SetAutoDeployConfig_InvalidBurnerHook() public {
         deployer.setSlashingData(false, 0);
         IOpNetVaultAutoDeploy.AutoDeployConfig memory cfg = validConfig;
-        cfg.isBurnerHook = true;
         cfg.withSlasher = false;
+        cfg.isBurnerHook = true;
+        vm.expectRevert(IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidBurnerHook.selector);
+        deployer.setAutoDeployConfig(cfg);
+    }
+
+    function test_SetAutoDeployConfig_InvalidBurnerParamsWithSlasher() public {
+        deployer.setSlashingData(false, 0);
+        IOpNetVaultAutoDeploy.AutoDeployConfig memory cfg = validConfig;
+        cfg.withSlasher = true;
+        cfg.isBurnerHook = true;
+        cfg.burner = address(0);
         vm.expectRevert(IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidBurnerHook.selector);
         deployer.setAutoDeployConfig(cfg);
     }
@@ -228,6 +238,7 @@ contract OpNetVaultAutoDeployTest is Test, InitSetupTest {
         deployer.setSlashingData(false, 0);
         validConfig.withSlasher = false;
         validConfig.isBurnerHook = false;
+        validConfig.burner = address(0);
         deployer.setAutoDeployConfig(validConfig);
         deployer.setAutoDeployStatus(true);
         vm.startPrank(operator1);
@@ -239,7 +250,7 @@ contract OpNetVaultAutoDeployTest is Test, InitSetupTest {
         assertEq(v, vaults[0]);
         assertEq(IVault(v).epochDuration(), validConfig.epochDuration);
         assertEq(IVault(v).collateral(), validConfig.collateral);
-        assertEq(IVault(v).burner(), validConfig.burner);
+        assertEq(IVault(v).burner(), address(0));
         assertTrue(IVault(v).slasher() == address(0));
     }
 

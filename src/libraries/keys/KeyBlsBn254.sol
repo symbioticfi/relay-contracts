@@ -107,6 +107,7 @@ library KeyBlsBn254 {
      * @notice Converts a key to bytes.
      * @param key The key.
      * @return keyBytes The bytes representation of the key.
+     * @dev It is a bytes representation of the underlying key itself.
      */
     function toBytes(
         KEY_BLS_BN254 memory key
@@ -122,7 +123,7 @@ library KeyBlsBn254 {
     function fromBytes(
         bytes memory keyBytes
     ) internal view returns (KEY_BLS_BN254 memory key) {
-        key = abi.decode(keyBytes, (KEY_BLS_BN254));
+        key.value = abi.decode(keyBytes, (BN254.G1Point));
         if (keccak256(key.unwrap().wrap().toBytes()) != keccak256(keyBytes)) {
             revert KeyBlsBn254_InvalidBytes();
         }

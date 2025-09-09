@@ -262,86 +262,7 @@ contract NormalizedTokenDecimalsVPCalcTest is InitSetupTest {
         for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
             Vm.Wallet memory operator = getOperator(i);
             address[] memory operatorVaults = votingPowerProvider.getOperatorVaults(operator.addr);
-            assertEq(
-                votingPowerProvider.getOperatorVotingPower(operator.addr, operatorVaults[0], ""),
-                (1000 + i) * 10 ** (24 - 18)
-            );
-        }
-    }
-
-    function test_CheckStakes_28() public {
-        votingPowerProvider =
-            new TestVotingPowerProvider(address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory));
-
-        INetworkManager.NetworkManagerInitParams memory netInit =
-            INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkId: IDENTIFIER});
-
-        MockToken mockToken = new MockToken("MockToken", "MTK", 28);
-
-        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
-            .VotingPowerProviderInitParams({
-            networkManagerInitParams: netInit,
-            ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
-            requireSlasher: true,
-            minVaultEpochDuration: 100,
-            token: address(mockToken)
-        });
-
-        votingPowerProvider.initialize(votingPowerProviderInit);
-
-        _networkSetMiddleware_SymbioticCore(vars.network.addr, address(votingPowerProvider));
-
-        for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
-            Vm.Wallet memory operator = getOperator(i);
-            vm.startPrank(operator.addr);
-            votingPowerProvider.registerOperator(operator.addr);
-            vm.stopPrank();
-        }
-
-        for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
-            Vm.Wallet memory operator = getOperator(i);
-            (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
-            address operatorVault = _getVault_SymbioticCore(
-                VaultParams({
-                    owner: operator.addr,
-                    collateral: address(mockToken),
-                    burner: 0x000000000000000000000000000000000000dEaD,
-                    epochDuration: minVaultEpochDuration * 2,
-                    whitelistedDepositors: new address[](0),
-                    depositLimit: 0,
-                    delegatorIndex: 2,
-                    hook: address(0),
-                    network: address(0),
-                    withSlasher: true,
-                    slasherIndex: 0,
-                    vetoDuration: 1
-                })
-            );
-
-            _operatorOptIn_SymbioticCore(operator.addr, operatorVault);
-            _networkSetMaxNetworkLimit_SymbioticCore(
-                votingPowerProvider.NETWORK(),
-                operatorVault,
-                votingPowerProvider.SUBNETWORK_IDENTIFIER(),
-                type(uint256).max
-            );
-            _curatorSetNetworkLimit_SymbioticCore(
-                operator.addr, operatorVault, votingPowerProvider.SUBNETWORK(), type(uint256).max
-            );
-            _deal_Symbiotic(address(mockToken), getStaker(0).addr, type(uint128).max, true);
-            _stakerDeposit_SymbioticCore(getStaker(0).addr, operatorVault, 1000 + i);
-            vm.startPrank(vars.network.addr);
-            votingPowerProvider.registerOperatorVault(operator.addr, operatorVault);
-            vm.stopPrank();
-        }
-
-        for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
-            Vm.Wallet memory operator = getOperator(i);
-            address[] memory operatorVaults = votingPowerProvider.getOperatorVaults(operator.addr);
-            assertEq(
-                votingPowerProvider.getOperatorVotingPower(operator.addr, operatorVaults[0], ""),
-                (1000 + i) / 10 ** (28 - 24)
-            );
+            assertEq(votingPowerProvider.getOperatorVotingPower(operator.addr, operatorVaults[0], ""), (1000 + i));
         }
     }
 
@@ -414,7 +335,86 @@ contract NormalizedTokenDecimalsVPCalcTest is InitSetupTest {
         for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
             Vm.Wallet memory operator = getOperator(i);
             address[] memory operatorVaults = votingPowerProvider.getOperatorVaults(operator.addr);
-            assertEq(votingPowerProvider.getOperatorVotingPower(operator.addr, operatorVaults[0], ""), (1000 + i));
+            assertEq(
+                votingPowerProvider.getOperatorVotingPower(operator.addr, operatorVaults[0], ""),
+                (1000 + i) / 10 ** (24 - 18)
+            );
+        }
+    }
+
+    function test_CheckStakes_8() public {
+        votingPowerProvider =
+            new TestVotingPowerProvider(address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory));
+
+        INetworkManager.NetworkManagerInitParams memory netInit =
+            INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkId: IDENTIFIER});
+
+        MockToken mockToken = new MockToken("MockToken", "MTK", 8);
+
+        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
+            .VotingPowerProviderInitParams({
+            networkManagerInitParams: netInit,
+            ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
+            requireSlasher: true,
+            minVaultEpochDuration: 100,
+            token: address(mockToken)
+        });
+
+        votingPowerProvider.initialize(votingPowerProviderInit);
+
+        _networkSetMiddleware_SymbioticCore(vars.network.addr, address(votingPowerProvider));
+
+        for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
+            Vm.Wallet memory operator = getOperator(i);
+            vm.startPrank(operator.addr);
+            votingPowerProvider.registerOperator(operator.addr);
+            vm.stopPrank();
+        }
+
+        for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
+            Vm.Wallet memory operator = getOperator(i);
+            (bool requireSlasher, uint48 minVaultEpochDuration) = votingPowerProvider.getSlashingData();
+            address operatorVault = _getVault_SymbioticCore(
+                VaultParams({
+                    owner: operator.addr,
+                    collateral: address(mockToken),
+                    burner: 0x000000000000000000000000000000000000dEaD,
+                    epochDuration: minVaultEpochDuration * 2,
+                    whitelistedDepositors: new address[](0),
+                    depositLimit: 0,
+                    delegatorIndex: 2,
+                    hook: address(0),
+                    network: address(0),
+                    withSlasher: true,
+                    slasherIndex: 0,
+                    vetoDuration: 1
+                })
+            );
+
+            _operatorOptIn_SymbioticCore(operator.addr, operatorVault);
+            _networkSetMaxNetworkLimit_SymbioticCore(
+                votingPowerProvider.NETWORK(),
+                operatorVault,
+                votingPowerProvider.SUBNETWORK_IDENTIFIER(),
+                type(uint256).max
+            );
+            _curatorSetNetworkLimit_SymbioticCore(
+                operator.addr, operatorVault, votingPowerProvider.SUBNETWORK(), type(uint256).max
+            );
+            _deal_Symbiotic(address(mockToken), getStaker(0).addr, type(uint128).max, true);
+            _stakerDeposit_SymbioticCore(getStaker(0).addr, operatorVault, 1000 + i);
+            vm.startPrank(vars.network.addr);
+            votingPowerProvider.registerOperatorVault(operator.addr, operatorVault);
+            vm.stopPrank();
+        }
+
+        for (uint256 i; i < SYMBIOTIC_CORE_NUMBER_OF_OPERATORS; ++i) {
+            Vm.Wallet memory operator = getOperator(i);
+            address[] memory operatorVaults = votingPowerProvider.getOperatorVaults(operator.addr);
+            assertEq(
+                votingPowerProvider.getOperatorVotingPower(operator.addr, operatorVaults[0], ""),
+                (1000 + i) * 10 ** (18 - 8)
+            );
         }
     }
 }

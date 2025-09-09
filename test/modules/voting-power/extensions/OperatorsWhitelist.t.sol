@@ -138,6 +138,12 @@ contract OperatorsWhitelistTest is Test, InitSetupTest {
         assertTrue(whitelistOps.isOperatorRegistered(operator1));
     }
 
+    function test_WhitelistOperator_RevertIfAlreadyWhitelisted() public {
+        whitelistOps.whitelistOperator(operator1);
+        vm.expectRevert(IOperatorsWhitelist.OperatorsWhitelist_OperatorWhitelisted.selector);
+        whitelistOps.whitelistOperator(operator1);
+    }
+
     function test_UnwhitelistOperator_RegisteredOperatorGetsUnregistered() public {
         whitelistOps.whitelistOperator(operator1);
         vm.prank(operator1);
@@ -149,6 +155,11 @@ contract OperatorsWhitelistTest is Test, InitSetupTest {
         assertFalse(whitelistOps.isOperatorWhitelisted(operator1));
     }
 
+    function test_UnwhitelistOperator_RevertIfNotWhitelisted() public {
+        vm.expectRevert(IOperatorsWhitelist.OperatorsWhitelist_OperatorNotWhitelisted.selector);
+        whitelistOps.unwhitelistOperator(operator1);
+    }
+
     function test_DisableWhitelistAndRegister() public {
         whitelistOps.setWhitelistStatus(false);
         assertFalse(whitelistOps.isWhitelistEnabled());
@@ -156,6 +167,24 @@ contract OperatorsWhitelistTest is Test, InitSetupTest {
         vm.prank(operator1);
         whitelistOps.registerOperator();
         assertTrue(whitelistOps.isOperatorRegistered(operator1));
+    }
+
+    function test_SetWhitelistStatus_RevertIfAlreadySet() public {
+        whitelistOps.setWhitelistStatus(false);
+        assertFalse(whitelistOps.isWhitelistEnabled());
+        vm.expectRevert(IOperatorsWhitelist.OperatorsWhitelist_StatusAlreadySet.selector);
+        whitelistOps.setWhitelistStatus(false);
+
+        whitelistOps.setWhitelistStatus(true);
+        assertTrue(whitelistOps.isWhitelistEnabled());
+        vm.expectRevert(IOperatorsWhitelist.OperatorsWhitelist_StatusAlreadySet.selector);
+        whitelistOps.setWhitelistStatus(true);
+    }
+
+    function test_SetWhitelistStatus_RevertIfNotWhitelisted() public {
+        vm.expectRevert(IOperatorsWhitelist.OperatorsWhitelist_OperatorNotWhitelisted.selector);
+        vm.prank(operator1);
+        whitelistOps.registerOperator();
     }
 
     function test_DisableWhitelistAndRegisterOperatorVault() public {

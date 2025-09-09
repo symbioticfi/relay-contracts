@@ -105,6 +105,18 @@ contract OperatorsJailTest is InitSetupTest {
         vm.stopPrank();
     }
 
+    function test_JailOperator_RevertIfAlreadyJailed() public {
+        jailOps.jailOperator(operator1, jailDuration);
+        assertTrue(jailOps.isOperatorJailed(operator1));
+
+        vm.warp(vm.getBlockTimestamp() + 1);
+
+        vm.expectRevert(IOperatorsJail.OperatorsJail_AlreadyJailed.selector);
+        jailOps.jailOperator(operator1, jailDuration - 1);
+
+        jailOps.jailOperator(operator1, jailDuration);
+    }
+
     function test_UnjailOperator() public {
         jailOps.jailOperator(operator1, jailDuration);
         assertTrue(jailOps.isOperatorJailed(operator1));
@@ -119,6 +131,11 @@ contract OperatorsJailTest is InitSetupTest {
         vm.stopPrank();
 
         assertTrue(jailOps.isOperatorRegistered(operator1));
+    }
+
+    function test_UnjailOperator_RevertIfNotJailed() public {
+        vm.expectRevert(IOperatorsJail.OperatorsJail_OperatorNotJailed.selector);
+        jailOps.unjailOperator(operator1);
     }
 
     function test_Location() public {

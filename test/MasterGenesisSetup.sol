@@ -21,7 +21,6 @@ contract MasterGenesisSetupTest is MasterSetupTest {
     struct ValSetHeaderStruct {
         uint48 captureTimestamp;
         uint48 epoch;
-        bytes32 previousHeaderHash;
         uint256 quorumThreshold;
         uint8 requiredKeyTag;
         uint256 totalVotingPower;
@@ -39,7 +38,6 @@ contract MasterGenesisSetupTest is MasterSetupTest {
         (ISettlement.ValSetHeader memory valSetHeader, ISettlement.ExtraData[] memory extraData) = loadGenesis();
         valSetHeader.captureTimestamp = masterSetupParams.valSetDriver.getCurrentEpochStart();
         valSetHeader.epoch = masterSetupParams.valSetDriver.getCurrentEpoch();
-        valSetHeader.previousHeaderHash = masterSetupParams.settlement.getValSetHeaderHash();
         valSetHeader.requiredKeyTag = masterSetupParams.valSetDriver.getRequiredHeaderKeyTag();
         valSetHeader.version = masterSetupParams.settlement.VALIDATOR_SET_VERSION();
 
@@ -86,8 +84,7 @@ contract MasterGenesisSetupTest is MasterSetupTest {
             captureTimestamp: genesis.header.captureTimestamp,
             quorumThreshold: genesis.header.quorumThreshold,
             totalVotingPower: genesis.header.totalVotingPower,
-            validatorsSszMRoot: genesis.header.validatorsSszMRoot,
-            previousHeaderHash: genesis.header.previousHeaderHash
+            validatorsSszMRoot: genesis.header.validatorsSszMRoot
         });
 
         extraData = new ISettlement.ExtraData[](genesis.extraData.length);

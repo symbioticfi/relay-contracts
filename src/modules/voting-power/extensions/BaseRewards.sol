@@ -18,7 +18,7 @@ abstract contract BaseRewards is VotingPowerProvider, IBaseRewards {
     }
 
     function _checkRewarder() internal view virtual {
-        if (msg.sender != getRewarder()) {
+        if (getRewarder() != msg.sender) {
             revert BaseRewards_NotRewarder();
         }
     }
@@ -85,9 +85,6 @@ abstract contract BaseRewards is VotingPowerProvider, IBaseRewards {
     function _setRewarder(
         address rewarder
     ) internal virtual {
-        if (rewarder == address(0)) {
-            revert BaseRewards_InvalidRewarder();
-        }
         _getBaseRewardsStorage()._rewarder = rewarder;
         emit SetRewarder(rewarder);
     }

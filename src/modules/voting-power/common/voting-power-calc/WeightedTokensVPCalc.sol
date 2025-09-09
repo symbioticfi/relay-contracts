@@ -18,6 +18,7 @@ abstract contract WeightedTokensVPCalc is NormalizedTokenDecimalsVPCalc, Permiss
     using Checkpoints for Checkpoints.Trace208;
 
     uint208 internal constant DEFAULT_TOKEN_WEIGHT = 1e12;
+    uint208 internal constant MAX_TOKEN_WEIGHT_SCALE = DEFAULT_TOKEN_WEIGHT * DEFAULT_TOKEN_WEIGHT;
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.WeightedTokensVPCalc")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant WeightedTokensVPCalcStorageLocation =
@@ -83,6 +84,9 @@ abstract contract WeightedTokensVPCalc is NormalizedTokenDecimalsVPCalc, Permiss
     }
 
     function _setTokenWeight(address token, uint208 weight) internal virtual {
+        if (weight > MAX_TOKEN_WEIGHT_SCALE) {
+            revert WeightedTokensVPCalc_TooLargeWeight();
+        }
         _getWeightedTokensVPCalcStorage()._tokenWeight[token].push(uint48(block.timestamp), weight);
         emit SetTokenWeight(token, weight);
     }

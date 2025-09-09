@@ -60,7 +60,7 @@ contract MasterSetupScript is InitSetupScript {
     struct LocalVars {
         uint8[] requiredKeyTags;
         IValSetDriver.CrossChainAddress[] votingPowerProviders;
-        IValSetDriver.CrossChainAddress[] replicas;
+        IValSetDriver.CrossChainAddress[] settlements;
         IValSetDriver.CrossChainAddress keysProvider;
         address sigVerifier;
         IValSetDriver.QuorumThreshold[] quorumThresholds;
@@ -191,8 +191,8 @@ contract MasterSetupScript is InitSetupScript {
                 addr: address(masterSetupParams.keyRegistry),
                 chainId: uint64(initSetupParams.masterChain.chainId)
             });
-            localVars.replicas = new IValSetDriver.CrossChainAddress[](1);
-            localVars.replicas[0] = IValSetDriver.CrossChainAddress({
+            localVars.settlements = new IValSetDriver.CrossChainAddress[](1);
+            localVars.settlements[0] = IValSetDriver.CrossChainAddress({
                 addr: address(masterSetupParams.settlement),
                 chainId: uint64(initSetupParams.masterChain.chainId)
             });
@@ -215,16 +215,18 @@ contract MasterSetupScript is InitSetupScript {
                         epochDuration: networkSetupParams.EPOCH_DURATION,
                         epochDurationTimestamp: uint48(vm.getBlockTimestamp() + vm.envOr("DEPLOYMENT_BUFFER", uint256(600)))
                     }),
+                    numAggregators: 1,
+                    numCommitters: 1,
                     votingPowerProviders: localVars.votingPowerProviders,
                     keysProvider: localVars.keysProvider,
-                    replicas: localVars.replicas,
-                    verificationType: networkSetupParams.VERIFICATION_TYPE,
+                    settlements: localVars.settlements,
                     maxVotingPower: 1e36,
                     minInclusionVotingPower: 0,
                     maxValidatorsCount: 99_999_999,
                     requiredKeyTags: localVars.requiredKeyTags,
+                    quorumThresholds: localVars.quorumThresholds,
                     requiredHeaderKeyTag: localVars.requiredKeyTags[0],
-                    quorumThresholds: localVars.quorumThresholds
+                    verificationType: networkSetupParams.VERIFICATION_TYPE
                 }),
                 vars.deployer.addr
             );

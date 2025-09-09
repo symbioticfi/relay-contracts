@@ -5,9 +5,19 @@ import {IVotingPowerProvider} from "../IVotingPowerProvider.sol";
 
 interface IOperatorsWhitelist {
     /**
+     * @notice Reverts when the whitelist status is already set.
+     */
+    error OperatorsWhitelist_StatusAlreadySet();
+
+    /**
      * @notice Reverts when the operator is not whitelisted.
      */
     error OperatorsWhitelist_OperatorNotWhitelisted();
+
+    /**
+     * @notice Reverts when the operator is already whitelisted.
+     */
+    error OperatorsWhitelist_OperatorWhitelisted();
 
     /**
      * @notice The storage of the OperatorsWhitelist contract.

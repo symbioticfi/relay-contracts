@@ -60,7 +60,6 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetupTest {
         (ISettlement.ValSetHeader memory valSetHeader, ISettlement.ExtraData[] memory extraData) = loadGenesis();
         valSetHeader.captureTimestamp = masterSetupParams.valSetDriver.getCurrentEpochStart();
         valSetHeader.epoch = masterSetupParams.valSetDriver.getCurrentEpoch();
-        valSetHeader.previousHeaderHash = masterSetupParams.settlement.getValSetHeaderHash();
         valSetHeader.requiredKeyTag = masterSetupParams.valSetDriver.getRequiredHeaderKeyTag();
         valSetHeader.version = masterSetupParams.settlement.VALIDATOR_SET_VERSION();
 
@@ -89,6 +88,7 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetupTest {
         }
         valSetHeader.quorumThreshold =
             quorumThreshold.mulDiv(totalVotingPower, masterSetupParams.valSetDriver.MAX_QUORUM_THRESHOLD()) + 1;
+        valSetHeader.totalVotingPower = totalVotingPower;
 
         masterSetupParams.settlement.setGenesis(valSetHeader, extraData);
         vm.stopPrank();

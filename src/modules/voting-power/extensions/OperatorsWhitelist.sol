@@ -49,6 +49,9 @@ abstract contract OperatorsWhitelist is VotingPowerProvider, IOperatorsWhitelist
     function setWhitelistStatus(
         bool status
     ) public virtual checkPermission {
+        if (status == isWhitelistEnabled()) {
+            revert OperatorsWhitelist_StatusAlreadySet();
+        }
         _setWhitelistStatus(status);
     }
 
@@ -58,6 +61,9 @@ abstract contract OperatorsWhitelist is VotingPowerProvider, IOperatorsWhitelist
     function whitelistOperator(
         address operator
     ) public virtual checkPermission {
+        if (isOperatorWhitelisted(operator)) {
+            revert OperatorsWhitelist_OperatorWhitelisted();
+        }
         _getOperatorsWhitelistStorage()._whitelisted[operator] = true;
         emit WhitelistOperator(operator);
     }
@@ -68,6 +74,9 @@ abstract contract OperatorsWhitelist is VotingPowerProvider, IOperatorsWhitelist
     function unwhitelistOperator(
         address operator
     ) public virtual checkPermission {
+        if (!isOperatorWhitelisted(operator)) {
+            revert OperatorsWhitelist_OperatorNotWhitelisted();
+        }
         _getOperatorsWhitelistStorage()._whitelisted[operator] = false;
         if (isWhitelistEnabled() && isOperatorRegistered(operator)) {
             _unregisterOperator(operator);

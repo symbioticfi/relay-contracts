@@ -24,11 +24,6 @@ interface ISettlement {
     error Settlement_InvalidEpoch();
 
     /**
-     * @notice Reverts when the proposed previous header hash is not the same as the hash of the latest committed header.
-     */
-    error Settlement_InvalidPreviousHeaderHash();
-
-    /**
      * @notice Reverts when the new quorum signature verifier is zero.
      */
     error Settlement_InvalidSigVerifier();
@@ -43,6 +38,11 @@ interface ISettlement {
      * @dev Can be triggered during the upgrades.
      */
     error Settlement_InvalidVersion();
+
+    /**
+     * @notice Reverts when the quorum threshold is greater than the total voting power.
+     */
+    error Settlement_QuorumThresholdGtTotalVotingPower();
 
     /**
      * @notice Reverts when the validator set header is already committed for the proposed epoch.
@@ -90,7 +90,6 @@ interface ISettlement {
      * @param quorumThreshold The quorum threshold of the validator set header which will need to be reached to commit the next header.
      * @param totalVotingPower The total voting power of the validator set.
      * @param validatorsSszMRoot The validator set SSZ root.
-     * @param previousHeaderHash The previous header hash.
      */
     struct ValSetHeader {
         uint8 version;
@@ -100,7 +99,6 @@ interface ISettlement {
         uint256 quorumThreshold;
         uint256 totalVotingPower;
         bytes32 validatorsSszMRoot;
-        bytes32 previousHeaderHash;
     }
 
     /**
@@ -297,21 +295,6 @@ interface ISettlement {
     function getValidatorsSszMRootFromValSetHeader() external view returns (bytes32);
 
     /**
-     * @notice Returns the previous header hash from the validator set header at the given epoch.
-     * @param epoch The epoch.
-     * @return The previous header hash from the validator set header at the given epoch.
-     */
-    function getPreviousHeaderHashFromValSetHeaderAt(
-        uint48 epoch
-    ) external view returns (bytes32);
-
-    /**
-     * @notice Returns the previous header hash from the last committed validator set header.
-     * @return The previous header hash from the last committed validator set header.
-     */
-    function getPreviousHeaderHashFromValSetHeader() external view returns (bytes32);
-
-    /**
      * @notice Returns the extra data at the given epoch for a certain key.
      * @param epoch The epoch.
      * @param key The key.
@@ -377,6 +360,7 @@ interface ISettlement {
      * @param valSetHeader The validator set header.
      * @param extraData The extra data.
      * @dev The caller must have the needed permission.
+     *      Can be called multiple times.
      */
     function setGenesis(ValSetHeader calldata valSetHeader, ExtraData[] calldata extraData) external;
 

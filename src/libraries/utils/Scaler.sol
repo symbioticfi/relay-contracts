@@ -36,6 +36,7 @@ library Scaler {
      * @param value The value to invert.
      * @param decimals The base decimals of the value.
      * @return The inverted value.
+     * @dev Reverts if the value is zero.
      */
     function invert(uint256 value, uint8 decimals) internal pure returns (uint256) {
         return 10 ** (uint256(decimals) << 1) / value;

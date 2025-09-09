@@ -5,6 +5,11 @@ import {Checkpoints} from "../../../../../libraries/structs/Checkpoints.sol";
 
 interface IWeightedVaultsVPCalc {
     /**
+     * @notice Reverts when the weight is too large.
+     */
+    error WeightedVaultsVPCalc_TooLargeWeight();
+
+    /**
      * @notice The storage of the WeightedVaultsVPCalc contract.
      * @param _vaultWeight The weight for each vault.
      */
@@ -25,6 +30,7 @@ interface IWeightedVaultsVPCalc {
      * @param timestamp The timestamp.
      * @return The weight.
      * @dev Returns 1e4 if the weight wasn't explicitly set yet.
+     *      Can return non-zero weight for unregistered vaults.
      */
     function getVaultWeightAt(address vault, uint48 timestamp) external view returns (uint208);
 
@@ -33,6 +39,7 @@ interface IWeightedVaultsVPCalc {
      * @param vault The vault.
      * @return The weight.
      * @dev Returns 1e4 if the weight wasn't explicitly set yet.
+     *      Can return non-zero weight for unregistered vaults.
      */
     function getVaultWeight(
         address vault

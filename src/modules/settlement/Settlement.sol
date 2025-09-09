@@ -6,6 +6,7 @@ import {OzEIP712} from "../base/OzEIP712.sol";
 import {PermissionManager} from "../base/PermissionManager.sol";
 
 import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
+import {KeyTags} from "../../libraries/utils/KeyTags.sol";
 
 import {ISettlement} from "../../interfaces/modules/settlement/ISettlement.sol";
 import {ISigVerifier} from "../../interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol";
@@ -16,6 +17,7 @@ import {ISigVerifier} from "../../interfaces/modules/settlement/sig-verifiers/IS
  */
 abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISettlement {
     using Checkpoints for Checkpoints.Trace208;
+    using KeyTags for uint8;
 
     /**
      * @inheritdoc ISettlement
@@ -213,22 +215,6 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
     /**
      * @inheritdoc ISettlement
      */
-    function getPreviousHeaderHashFromValSetHeaderAt(
-        uint48 epoch
-    ) public view virtual returns (bytes32) {
-        return _getSettlementStorage()._valSetHeader[epoch].previousHeaderHash;
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
-    function getPreviousHeaderHashFromValSetHeader() public view virtual returns (bytes32) {
-        return getPreviousHeaderHashFromValSetHeaderAt(getLastCommittedHeaderEpoch());
-    }
-
-    /**
-     * @inheritdoc ISettlement
-     */
     function getExtraDataAt(uint48 epoch, bytes32 key) public view virtual returns (bytes32) {
         return _getSettlementStorage()._extraData[epoch][key];
     }
@@ -313,6 +299,9 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
         bytes calldata proof
     ) public virtual {
         uint48 valSetEpoch = getLastCommittedHeaderEpoch();
+        if (header.epoch != valSetEpoch + 1) {
+            revert Settlement_InvalidEpoch();
+        }
         if (
             !verifyQuorumSig(
                 abi.encode(
@@ -346,15 +335,13 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
             revert Settlement_InvalidVersion();
         }
 
-        uint48 lastCommittedHeaderEpoch = getLastCommittedHeaderEpoch();
-        if (lastCommittedHeaderEpoch > 0) {
-            if (header.epoch <= lastCommittedHeaderEpoch) {
-                revert Settlement_InvalidEpoch();
-            }
-        } else if (header.epoch == 0 && isValSetHeaderCommittedAt(0)) {
+        if (isValSetHeaderCommittedAt(header.epoch)) {
             revert Settlement_ValSetHeaderAlreadyCommitted();
         }
 
+        header.requiredKeyTag.validateKeyTag();
+
+        uint48 lastCommittedHeaderEpoch = getLastCommittedHeaderEpoch();
         if (
             header.captureTimestamp <= getCaptureTimestampFromValSetHeaderAt(lastCommittedHeaderEpoch)
                 || header.captureTimestamp >= block.timestamp
@@ -362,12 +349,12 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
             revert Settlement_InvalidCaptureTimestamp();
         }
 
-        if (header.validatorsSszMRoot == bytes32(0)) {
-            revert Settlement_InvalidValidatorsSszMRoot();
+        if (header.quorumThreshold > header.totalVotingPower) {
+            revert Settlement_QuorumThresholdGtTotalVotingPower();
         }
 
-        if (header.previousHeaderHash != getValSetHeaderHashAt(lastCommittedHeaderEpoch)) {
-            revert Settlement_InvalidPreviousHeaderHash();
+        if (header.validatorsSszMRoot == bytes32(0)) {
+            revert Settlement_InvalidValidatorsSszMRoot();
         }
 
         SettlementStorage storage $ = _getSettlementStorage();
@@ -380,7 +367,6 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
         headerStorage.quorumThreshold = header.quorumThreshold;
         headerStorage.totalVotingPower = header.totalVotingPower;
         headerStorage.validatorsSszMRoot = header.validatorsSszMRoot;
-        headerStorage.previousHeaderHash = header.previousHeaderHash;
 
         mapping(bytes32 key => bytes32 value) storage extraDataStorage = $._extraData[header.epoch];
         for (uint256 i; i < extraData.length; ++i) {
