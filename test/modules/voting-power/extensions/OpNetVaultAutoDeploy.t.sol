@@ -3,13 +3,12 @@ pragma solidity ^0.8.25;
 
 import "forge-std/Test.sol";
 
-import {OpNetVaultAutoDeploy} from "../../../../src/contracts/modules/voting-power/extensions/OpNetVaultAutoDeploy.sol";
-import {VotingPowerProvider} from "../../../../src/contracts/modules/voting-power/VotingPowerProvider.sol";
+import {OpNetVaultAutoDeploy} from "../../../../src/modules/voting-power/extensions/OpNetVaultAutoDeploy.sol";
+import {VotingPowerProvider} from "../../../../src/modules/voting-power/VotingPowerProvider.sol";
 import {NoPermissionManager} from "../../../../test/mocks/NoPermissionManager.sol";
-import {EqualStakeVPCalc} from
-    "../../../../src/contracts/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol";
-import {MultiToken} from "../../../../src/contracts/modules/voting-power/extensions/MultiToken.sol";
-import {OperatorVaults} from "../../../../src/contracts/modules/voting-power/extensions/OperatorVaults.sol";
+import {EqualStakeVPCalc} from "../../../../src/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol";
+import {MultiToken} from "../../../../src/modules/voting-power/extensions/MultiToken.sol";
+import {OperatorVaults} from "../../../../src/modules/voting-power/extensions/OperatorVaults.sol";
 import {INetworkManager} from "../../../../src/interfaces/modules/base/INetworkManager.sol";
 import {IOpNetVaultAutoDeploy} from
     "../../../../src/interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol";
@@ -21,7 +20,7 @@ import {IBaseSlasher} from "@symbioticfi/core/src/interfaces/slasher/IBaseSlashe
 import {INetworkMiddlewareService} from "@symbioticfi/core/src/interfaces/service/INetworkMiddlewareService.sol";
 import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
 
-import {MyNetwork} from "../../../../examples/MyNetwork.sol";
+import {Network} from "../../../../src/modules/network/Network.sol";
 import {INetwork} from "../../../../src/interfaces/modules/network/INetwork.sol";
 
 contract TestOpNetVaultAutoDeploy is
@@ -78,8 +77,8 @@ contract OpNetVaultAutoDeployTest is Test, InitSetupTest {
             address(symbioticCore.vaultConfigurator)
         );
 
-        MyNetwork network =
-            new MyNetwork(address(symbioticCore.networkRegistry), address(symbioticCore.networkMiddlewareService));
+        Network network =
+            new Network(address(symbioticCore.networkRegistry), address(symbioticCore.networkMiddlewareService));
         address[] memory proposers = new address[](1);
         proposers[0] = address(this);
         address[] memory executors = new address[](1);
@@ -99,7 +98,7 @@ contract OpNetVaultAutoDeployTest is Test, InitSetupTest {
         );
 
         INetworkManager.NetworkManagerInitParams memory netInit =
-            INetworkManager.NetworkManagerInitParams({network: address(network), subnetworkID: IDENTIFIER});
+            INetworkManager.NetworkManagerInitParams({network: address(network), subnetworkId: IDENTIFIER});
         IVotingPowerProvider.VotingPowerProviderInitParams memory vpInit = IVotingPowerProvider
             .VotingPowerProviderInitParams({
             networkManagerInitParams: netInit,
@@ -169,9 +168,9 @@ contract OpNetVaultAutoDeployTest is Test, InitSetupTest {
     }
 
     function test_SetAutoDeployConfig_InvalidEpochDurationLessThanMinVaultEpochDuration() public {
-        (bool requireSlasher, uint48 minVaultEpochDuration) = deployer.getSlashingData();
+        (bool requireSlasher, uint48 minVaultEpochDuration_) = deployer.getSlashingData();
         IOpNetVaultAutoDeploy.AutoDeployConfig memory cfg = validConfig;
-        cfg.epochDuration = uint48(minVaultEpochDuration - 1);
+        cfg.epochDuration = uint48(minVaultEpochDuration_ - 1);
         vm.expectRevert(IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidEpochDuration.selector);
         deployer.setAutoDeployConfig(cfg);
     }
@@ -186,8 +185,18 @@ contract OpNetVaultAutoDeployTest is Test, InitSetupTest {
     function test_SetAutoDeployConfig_InvalidBurnerHook() public {
         deployer.setSlashingData(false, 0);
         IOpNetVaultAutoDeploy.AutoDeployConfig memory cfg = validConfig;
-        cfg.isBurnerHook = true;
         cfg.withSlasher = false;
+        cfg.isBurnerHook = true;
+        vm.expectRevert(IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidBurnerHook.selector);
+        deployer.setAutoDeployConfig(cfg);
+    }
+
+    function test_SetAutoDeployConfig_InvalidBurnerParamsWithSlasher() public {
+        deployer.setSlashingData(false, 0);
+        IOpNetVaultAutoDeploy.AutoDeployConfig memory cfg = validConfig;
+        cfg.withSlasher = true;
+        cfg.isBurnerHook = true;
+        cfg.burner = address(0);
         vm.expectRevert(IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidBurnerHook.selector);
         deployer.setAutoDeployConfig(cfg);
     }
@@ -229,6 +238,7 @@ contract OpNetVaultAutoDeployTest is Test, InitSetupTest {
         deployer.setSlashingData(false, 0);
         validConfig.withSlasher = false;
         validConfig.isBurnerHook = false;
+        validConfig.burner = address(0);
         deployer.setAutoDeployConfig(validConfig);
         deployer.setAutoDeployStatus(true);
         vm.startPrank(operator1);
@@ -240,7 +250,7 @@ contract OpNetVaultAutoDeployTest is Test, InitSetupTest {
         assertEq(v, vaults[0]);
         assertEq(IVault(v).epochDuration(), validConfig.epochDuration);
         assertEq(IVault(v).collateral(), validConfig.collateral);
-        assertEq(IVault(v).burner(), validConfig.burner);
+        assertEq(IVault(v).burner(), address(0));
         assertTrue(IVault(v).slasher() == address(0));
     }
 

@@ -3,7 +3,7 @@ pragma solidity ^0.8.25;
 
 import "forge-std/Test.sol";
 
-import {MyNetwork} from "../../../examples/MyNetwork.sol";
+import {Network} from "../../../src/modules/network/Network.sol";
 
 import {INetwork} from "../../../src/interfaces/modules/network/INetwork.sol";
 
@@ -14,7 +14,7 @@ import {Subnetwork} from "@symbioticfi/core/src/contracts/libraries/Subnetwork.s
 contract NetworkTest is MasterSetupTest {
     using Subnetwork for address;
 
-    MyNetwork private myNetwork;
+    Network private myNetwork;
 
     address internal admin = address(0xA11CE);
     address internal proposer = address(0xBEEF1);
@@ -28,8 +28,7 @@ contract NetworkTest is MasterSetupTest {
         SYMBIOTIC_CORE_PROJECT_ROOT = "lib/core/";
         MasterSetupTest.setUp();
 
-        myNetwork =
-            new MyNetwork(address(symbioticCore.networkRegistry), address(symbioticCore.networkMiddlewareService));
+        myNetwork = new Network(address(symbioticCore.networkRegistry), address(symbioticCore.networkMiddlewareService));
 
         INetwork.NetworkInitParams memory p;
         p.globalMinDelay = GLOBAL_MIN_DELAY;
@@ -370,5 +369,28 @@ contract NetworkTest is MasterSetupTest {
         myNetwork.executeBatch(targets, values, payloads, bytes32(0), salt);
 
         assertEq(myNetwork.getMinDelay(address(this), abi.encodeWithSelector(FOO_SEL)), newSelectorDelay);
+    }
+
+    function test_EthTransfer() public {
+        uint256 amount = 100 ether;
+
+        deal(address(myNetwork), amount);
+
+        vm.prank(proposer);
+        myNetwork.schedule(address(1), amount, new bytes(0), bytes32(0), bytes32("salt42"), GLOBAL_MIN_DELAY);
+
+        vm.prank(proposer);
+        vm.expectRevert();
+        myNetwork.schedule(address(1), amount, new bytes(0), bytes32(0), bytes32("salt42"), GLOBAL_MIN_DELAY);
+
+        uint256 balanceBefore = address(1).balance;
+
+        vm.warp(vm.getBlockTimestamp() + GLOBAL_MIN_DELAY);
+        vm.prank(executor);
+        myNetwork.execute(address(1), amount, new bytes(0), bytes32(0), bytes32("salt42"));
+
+        assertEq(address(1).balance - balanceBefore, amount);
+
+        assertEq(myNetwork.getMinDelay(address(1), new bytes(0)), GLOBAL_MIN_DELAY);
     }
 }

@@ -5,14 +5,24 @@ import {IVotingPowerProvider} from "../IVotingPowerProvider.sol";
 
 interface IOperatorsJail {
     /**
-     * @notice The error thrown when the duration is invalid.
+     * @notice Reverts when the operator is already jailed.
+     */
+    error OperatorsJail_AlreadyJailed();
+
+    /**
+     * @notice Reverts when the duration is invalid.
      */
     error OperatorsJail_InvalidDuration();
 
     /**
-     * @notice The error thrown when the operator is jailed.
+     * @notice Reverts when the operator is jailed.
      */
     error OperatorsJail_OperatorJailed();
+
+    /**
+     * @notice Reverts when the operator is not jailed.
+     */
+    error OperatorsJail_OperatorNotJailed();
 
     /**
      * @notice The storage of the OperatorsJail contract.
@@ -59,6 +69,7 @@ interface IOperatorsJail {
      * @param duration The duration of the jail.
      * @dev The caller must have the needed permission.
      *      The operator will be unregistered if currently registered.
+     *      It is allowed only to extend the jail duration.
      */
     function jailOperator(address operator, uint48 duration) external;
 

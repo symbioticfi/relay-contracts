@@ -5,7 +5,12 @@ import {IVotingPowerProvider} from "../IVotingPowerProvider.sol";
 
 interface IOperatorsBlacklist {
     /**
-     * @notice The error thrown when the operator is already blacklisted.
+     * @notice Reverts when the operator is not blacklisted.
+     */
+    error OperatorsBlacklist_OperatorNotBlacklisted();
+
+    /**
+     * @notice Reverts when the operator is already blacklisted.
      */
     error OperatorsBlacklist_OperatorBlacklisted();
 

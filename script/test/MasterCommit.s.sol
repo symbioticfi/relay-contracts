@@ -5,8 +5,7 @@ import "./MasterGenesisSetup.s.sol";
 
 import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
-import {ExtraDataStorageHelper} from
-    "../../src/contracts/modules/settlement/sig-verifiers/libraries/ExtraDataStorageHelper.sol";
+import {ExtraDataStorageHelper} from "../../src/modules/settlement/sig-verifiers/libraries/ExtraDataStorageHelper.sol";
 
 // forge script script/test/MasterCommit.s.sol:MasterCommitScript 25235 --sig "run(uint256)" --rpc-url $ETH_RPC_URL_MASTER
 
@@ -36,7 +35,6 @@ contract MasterCommitScript is MasterGenesisSetupScript {
         MasterSetupParams memory masterSetupParams = loadMasterSetupParams();
 
         (ISettlement.ValSetHeader memory valSetHeader, ISettlement.ExtraData[] memory extraData) = loadGenesis();
-        valSetHeader.previousHeaderHash = keccak256(abi.encode(valSetHeader));
         valSetHeader.epoch = masterSetupParams.valSetDriver.getCurrentEpoch();
         valSetHeader.captureTimestamp = masterSetupParams.valSetDriver.getCurrentEpochStart();
 
@@ -60,7 +58,7 @@ contract MasterCommitScript is MasterGenesisSetupScript {
         uint256 signersVotingPower;
         for (uint256 i; i < votingPowers.length; ++i) {
             for (uint256 j; j < votingPowers[i].vaults.length; ++j) {
-                signersVotingPower += votingPowers[i].vaults[j].votingPower;
+                signersVotingPower += votingPowers[i].vaults[j].value;
             }
         }
 
@@ -68,8 +66,8 @@ contract MasterCommitScript is MasterGenesisSetupScript {
         BN254.G2Point memory aggKeyG2;
         BN254.G1Point memory aggSigG1;
 
-        uint256 operatorsLength = masterSetupParams.votingPowerProvider.getOperatorsLength();
-        for (uint256 i; i < operatorsLength; ++i) {
+        address[] memory operators = masterSetupParams.votingPowerProvider.getOperators();
+        for (uint256 i; i < operators.length; ++i) {
             Vm.Wallet memory operator = getOperator(i);
             aggKeyG1 = aggKeyG1.plus(BN254.generatorG1().scalar_mul(operator.privateKey));
             aggSigG1 = aggSigG1.plus(BN254.hashToG1(messageHash).scalar_mul(operator.privateKey));
@@ -132,7 +130,6 @@ contract MasterCommitScript is MasterGenesisSetupScript {
         console2.log("header");
         console2.log(valSetHeader.captureTimestamp);
         console2.log(valSetHeader.epoch);
-        console2.logBytes32(valSetHeader.previousHeaderHash);
         console2.log(valSetHeader.quorumThreshold);
         console2.log(valSetHeader.requiredKeyTag);
         console2.logBytes32(valSetHeader.validatorsSszMRoot);
