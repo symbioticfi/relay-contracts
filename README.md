@@ -12,6 +12,7 @@ Symbiotic Relay is a peer-to-peer side-network designed to collect and aggregate
 To achieve that, Symbiotic provides a set of predefined smart contracts, in general, representing the following modules:
 
 - [VotingPowerProvider](./src/modules/voting-power/) - provides the basic data regarding operators, vaults and their voting power, it allows constructing various onboarding schemes such as:
+
   - [OperatorsWhitelist](./src/modules/voting-power/extensions/OperatorsWhitelist.sol) - only whitelisted operators can register
   - [OperatorsBlacklist](./src/modules/voting-power/extensions/OperatorsBlacklist.sol) - blacklisted operators are unregistered and are forbidden to return back
   - [OperatorsJail](./src/modules/voting-power/extensions/OperatorsJail.sol) - operators can be jailed for some amount of time and register back after that
@@ -19,7 +20,16 @@ To achieve that, Symbiotic provides a set of predefined smart contracts, in gene
   - [OperatorVaults](./src/modules/voting-power/extensions/OperatorVaults.sol) - vaults that are attached to a single operator can be added
   - [MultiToken](./src/modules/voting-power/extensions/MultiToken.sol) - possible to add new supported tokens on the go
   - [OpNetVaultAutoDeploy](./src/modules/voting-power/extensions/OpNetVaultAutoDeploy.sol) - enable auto-creation of the configured by you vault on each operator registration
+  - [VotingPowerCalculators](./src/modules/voting-power/common/voting-power-calc/) - there are several stake-to-votingPower conversion mechanisms you can use separately or combine:
+
+    - [EqualStakeVPCalc](./src/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol) - voting power is equal to stake
+    - [NormalizedTokenDecimalsVPCalc](./src/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.sol) - all tokens' decimals are normalized to 18
+    - [PricedTokensChainlinkVPCalc](./src/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.sol) - voting power is calculated using Chainlink price feeds
+    - [WeightedTokensVPCalc](./src/modules/voting-power/common/voting-power-calc/WeightedTokensVPCalc.sol) - voting power is affected by configured weights for tokens
+    - [WeightedVaultsVPCalc](./src/modules/voting-power/common/voting-power-calc/WeightedVaultsVPCalc.sol) - voting power is affected by configured weights for vaults
+
   - Also, there are ready bindings for [slashing](./src/modules/voting-power/extensions/BaseSlashing.sol) and [rewards](./src/modules/voting-power/extensions/BaseRewards.sol)
+
 - [KeyRegistry](./src/modules/key-registry/) - verifies and manages operators' keys; currently, these key types are supported:
   - [BlsBn254](./src/libraries/keys/KeyBlsBn254.sol) ([signature verification](./src/libraries/sigs/SigBlsBn254.sol))
   - [EcdsaSecp256k1](./src/libraries/keys/KeyEcdsaSecp256k1.sol) ([signature verification](./src/libraries/sigs/SigEcdsaSecp256k1.sol))
