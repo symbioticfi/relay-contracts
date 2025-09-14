@@ -150,6 +150,14 @@ interface INetwork is ISetMaxNetworkLimitHook {
     function metadataURI() external view returns (string memory);
 
     /**
+     * @notice Initializes the network.
+     * @param networkInitParams The parameters for the initialization of the network.
+     */
+    function initialize(
+        NetworkInitParams memory networkInitParams
+    ) external;
+
+    /**
      * @notice Updates the delay for a given target and selector.
      * @param target The target address the delay is for.
      * @param selector The function selector the delay is for.

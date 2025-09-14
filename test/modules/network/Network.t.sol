@@ -10,6 +10,8 @@ import {INetwork} from "../../../src/interfaces/modules/network/INetwork.sol";
 import "../../MasterSetup.sol";
 
 import {Subnetwork} from "@symbioticfi/core/src/contracts/libraries/Subnetwork.sol";
+import {TimelockControllerUpgradeable} from
+    "@openzeppelin/contracts-upgradeable/governance/TimelockControllerUpgradeable.sol";
 
 contract NetworkTest is MasterSetupTest {
     using Subnetwork for address;
@@ -392,5 +394,52 @@ contract NetworkTest is MasterSetupTest {
         assertEq(address(1).balance - balanceBefore, amount);
 
         assertEq(myNetwork.getMinDelay(address(1), new bytes(0)), GLOBAL_MIN_DELAY);
+    }
+
+    function test_BreakInvariant() public {
+        vm.startPrank(proposer);
+        vm.expectRevert(INetwork.InvalidTargetAndSelector.selector);
+        myNetwork.schedule(
+            address(myNetwork),
+            0,
+            abi.encodeCall(
+                Network.updateDelay, (address(myNetwork), TimelockControllerUpgradeable.updateDelay.selector, true, 0)
+            ),
+            0,
+            bytes32(0),
+            GLOBAL_MIN_DELAY
+        );
+        vm.stopPrank();
+
+        assertEq(myNetwork.getMinDelay(address(1), new bytes(0)), GLOBAL_MIN_DELAY);
+        assertEq(
+            myNetwork.getMinDelay(address(myNetwork), abi.encodeCall(TimelockControllerUpgradeable.updateDelay, (0))),
+            GLOBAL_MIN_DELAY
+        );
+
+        vm.startPrank(proposer);
+        myNetwork.schedule(
+            address(myNetwork),
+            0,
+            abi.encodeCall(TimelockControllerUpgradeable.updateDelay, (0)),
+            0,
+            bytes32(0),
+            GLOBAL_MIN_DELAY
+        );
+        vm.stopPrank();
+
+        vm.warp(vm.getBlockTimestamp() + GLOBAL_MIN_DELAY);
+
+        vm.startPrank(executor);
+        myNetwork.execute(
+            address(myNetwork), 0, abi.encodeCall(TimelockControllerUpgradeable.updateDelay, (0)), 0, bytes32(0)
+        );
+        vm.stopPrank();
+
+        assertEq(
+            myNetwork.getMinDelay(address(myNetwork), abi.encodeCall(TimelockControllerUpgradeable.updateDelay, (0))), 0
+        );
+
+        assertEq(myNetwork.getMinDelay(address(1), new bytes(0)), 0);
     }
 }

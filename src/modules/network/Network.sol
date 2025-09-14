@@ -67,6 +67,9 @@ contract Network is TimelockControllerUpgradeable, INetwork {
         }
     }
 
+    /**
+     * @inheritdoc INetwork
+     */
     function initialize(
         NetworkInitParams memory initParams
     ) public virtual initializer {
@@ -110,13 +113,28 @@ contract Network is TimelockControllerUpgradeable, INetwork {
      */
     function getMinDelay(address target, bytes memory data) public view virtual returns (uint256) {
         bytes4 selector = _getSelector(data);
-        if (target == address(this) && selector == INetwork.updateDelay.selector) {
-            (address underlyingTarget, bytes4 underlyingSelector,,) =
-                abi.decode(_getPayload(data), (address, bytes4, bool, uint256));
-            _validateUpdateDelayTargetAndSelector(underlyingTarget, underlyingSelector);
-            return _getMinDelay(underlyingTarget, underlyingSelector);
+        if (target == address(this)) {
+            if (selector == INetwork.updateDelay.selector) {
+                (address underlyingTarget, bytes4 underlyingSelector,,) =
+                    abi.decode(_getPayload(data), (address, bytes4, bool, uint256));
+                if (
+                    underlyingTarget == address(this)
+                        && (
+                            underlyingSelector == INetwork.updateDelay.selector
+                                || underlyingSelector == TimelockControllerUpgradeable.updateDelay.selector
+                        )
+                ) {
+                    revert InvalidTargetAndSelector();
+                }
+                return _getMinDelay(underlyingTarget, underlyingSelector);
+            }
+            if (selector == TimelockControllerUpgradeable.updateDelay.selector) {
+                return getMinDelay();
+            }
         }
-        _validateTargetAndSelector(target, selector);
+        if (target == address(0)) {
+            revert InvalidTargetAndSelector();
+        }
         return _getMinDelay(target, selector);
     }
 
@@ -285,19 +303,6 @@ contract Network is TimelockControllerUpgradeable, INetwork {
     ) internal view virtual returns (bool, uint256) {
         NetworkStorage storage $ = _getNetworkStorage();
         return ($._isMinDelayEnabled[id], $._minDelays[id]);
-    }
-
-    function _validateTargetAndSelector(address target, bytes4 selector) internal view virtual {
-        if (target == address(0)) {
-            revert InvalidTargetAndSelector();
-        }
-        _validateUpdateDelayTargetAndSelector(target, selector);
-    }
-
-    function _validateUpdateDelayTargetAndSelector(address target, bytes4 selector) internal view virtual {
-        if (target == address(this) && selector == INetwork.updateDelay.selector) {
-            revert InvalidTargetAndSelector();
-        }
     }
 
     function _getSelector(
