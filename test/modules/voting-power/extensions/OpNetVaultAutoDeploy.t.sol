@@ -20,8 +20,8 @@ import {IBaseSlasher} from "@symbioticfi/core/src/interfaces/slasher/IBaseSlashe
 import {INetworkMiddlewareService} from "@symbioticfi/core/src/interfaces/service/INetworkMiddlewareService.sol";
 import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
 
-import {Network} from "../../../../src/modules/network/Network.sol";
-import {INetwork} from "../../../../src/interfaces/modules/network/INetwork.sol";
+import {Network} from "@symbioticfi/network/src/Network.sol";
+import {INetwork} from "@symbioticfi/network/src/interfaces/INetwork.sol";
 
 contract TestOpNetVaultAutoDeploy is
     OpNetVaultAutoDeploy,

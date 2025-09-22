@@ -12,7 +12,7 @@ import {MyKeyRegistry} from "../../examples/MyKeyRegistry.sol";
 import {MyVotingPowerProvider} from "../../examples/MyVotingPowerProvider.sol";
 import {VotingPowerProviderSemiFull} from "../../test/mocks/VotingPowerProviderSemiFull.sol";
 import {MySettlement} from "../../examples/MySettlement.sol";
-import {Network} from "../../src/modules/network/Network.sol";
+import {Network} from "@symbioticfi/network/src/Network.sol";
 import {MyValSetDriver} from "../../examples/MyValSetDriver.sol";
 import {KeyEcdsaSecp256k1} from "../../src/libraries/keys/KeyEcdsaSecp256k1.sol";
 import {KeyBlsBn254, BN254} from "../../src/libraries/keys/KeyBlsBn254.sol";

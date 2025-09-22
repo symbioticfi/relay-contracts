@@ -3,9 +3,9 @@ pragma solidity ^0.8.25;
 
 import "forge-std/Test.sol";
 
-import {Network} from "../../../src/modules/network/Network.sol";
+import {Network} from "@symbioticfi/network/src/Network.sol";
 
-import {INetwork} from "../../../src/interfaces/modules/network/INetwork.sol";
+import {INetwork} from "@symbioticfi/network/src/interfaces/INetwork.sol";
 
 import "../../MasterSetup.sol";
 
