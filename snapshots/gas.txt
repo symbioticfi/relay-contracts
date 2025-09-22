@@ -1,19 +1,17 @@
 No files changed, compilation skipped
 
-Ran 12 tests for test/libraries/utils/KeyTag.t.sol:KeyTagTest
-[PASS] test_AddMultiple() (gas: 6532)
-[PASS] test_ContainsAddRemove() (gas: 4737)
-[PASS] test_DeserializeBitmask() (gas: 36115)
-[PASS] test_GetKeyTagInvalidIdentifier() (gas: 4264)
-[PASS] test_GetKeyTagInvalidType() (gas: 4180)
-[PASS] test_GetKeyTagValid() (gas: 3330)
-[PASS] test_GetTag() (gas: 3318)
-[PASS] test_GetTagRevertWhenTooLarge() (gas: 4046)
-[PASS] test_GetType() (gas: 3257)
-[PASS] test_GetTypeRevertWhenTooLarge() (gas: 4081)
-[PASS] test_SerializeRevertOnDuplicate() (gas: 6095)
-[PASS] test_SerializeUniqueKeyTags() (gas: 8498)
-Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 6.04ms (1.29ms CPU time)
+Ran 1 test for test/modules/voting-power/extensions/EqualStakeVPCalc.t.sol:EqualStakeVPCalcTest
+[PASS] test_create() (gas: 143)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 4.18ms (672.63µs CPU time)
+
+Ran 6 tests for test/libraries/utils/InputNormalizer.t.sol:InputNormalizerTest
+[PASS] test_normalizeDoubleDimEmpty() (gas: 6971)
+[PASS] test_normalizeDoubleDimExact() (gas: 8790)
+[PASS] test_normalizeDoubleDimMismatchRevert() (gas: 10039)
+[PASS] test_normalizeSingleDimEmpty() (gas: 7871)
+[PASS] test_normalizeSingleDimExact() (gas: 7476)
+[PASS] test_normalizeSingleDimMismatchRevert() (gas: 9196)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 4.97ms (1.67ms CPU time)
 
 Ran 18 tests for test/modules/valset-driver/EpochManager.t.sol:EpochManagerTest
 [PASS] test_AdvanceTimeAndCheckEpoch() (gas: 219919)
@@ -34,11 +32,7 @@ Ran 18 tests for test/modules/valset-driver/EpochManager.t.sol:EpochManagerTest
 [PASS] test_SerializeDeserializeEpochDurationData() (gas: 14062)
 [PASS] test_SetEpochDuration_RevertIfIndexLessThanCurrent() (gas: 303284)
 [PASS] test_SetEpochDuration_RevertOnZeroDuration() (gas: 180262)
-Suite result: ok. 18 passed; 0 failed; 0 skipped; finished in 6.73ms (2.12ms CPU time)
-
-Ran 1 test for test/modules/voting-power/extensions/EqualStakeVPCalc.t.sol:EqualStakeVPCalcTest
-[PASS] test_create() (gas: 143)
-Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 202.38µs (3.88µs CPU time)
+Suite result: ok. 18 passed; 0 failed; 0 skipped; finished in 5.37ms (2.13ms CPU time)
 
 Ran 5 tests for test/modules/base/OzEIP712.t.sol:OzEIP712Test
 [PASS] test_HashTypedDataV4() (gas: 128150)
@@ -46,7 +40,154 @@ Ran 5 tests for test/modules/base/OzEIP712.t.sol:OzEIP712Test
 [PASS] test_Location() (gas: 3382)
 [PASS] test_ReInitialize() (gas: 133734)
 [PASS] test_SignatureRecovery() (gas: 122476)
-Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 9.17ms (4.41ms CPU time)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 8.91ms (5.58ms CPU time)
+
+Ran 4 tests for test/modules/common/permissions/OzOwnable.t.sol:OzOwnableTest
+[PASS] testProtectedAction_RevertsForNonOwner() (gas: 34449)
+[PASS] testProtectedAction_SucceedsForOwner() (gas: 34018)
+[PASS] testReinitializeReverts() (gas: 34172)
+[PASS] testTransferOwnership() (gas: 91026)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 681.08µs (68.25µs CPU time)
+
+Ran 2 tests for test/modules/base/PermissionManager.t.sol:PermissionManagerTest
+[PASS] test_ProtectedAction_RevertIfNotOwner() (gas: 32491)
+[PASS] test_ProtectedAction_SucceedsForOwner() (gas: 28627)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 247.88µs (24.58µs CPU time)
+
+Ran 8 tests for test/libraries/structs/PersistentSet.t.sol:PersistentSetTest
+[PASS] test_AddressSetAddRemoveAndContains() (gas: 219822)
+[PASS] test_AddressSetAllValues() (gas: 188636)
+[PASS] test_AddressSetLengthAndValuesAt() (gas: 245588)
+[PASS] test_Bytes32SetAddRemoveAndContains() (gas: 233924)
+[PASS] test_Bytes32SetAllValues() (gas: 188310)
+[PASS] test_Bytes32SetValuesAt() (gas: 251751)
+[PASS] test_LargeAddressSetExceed256Elements() (gas: 17267714)
+[PASS] test_RevertPersistentSet_InvalidKey() (gas: 184062)
+Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 6.30ms (6.06ms CPU time)
+
+Ran 7 tests for test/modules/settlement/sig-verifiers/libraries/ExtraDataStorageHelper.t.sol:ExtraDataStorageHelperTest
+[PASS] testFuzz_Uniqueness(uint32,uint32,uint8,uint8,bytes32,bytes32,uint256,uint256) (runs: 4096, μ: 9569, ~: 9650)
+[PASS] test_BaseKey() (gas: 4145)
+[PASS] test_IndexedKey() (gas: 12093)
+[PASS] test_IndexedTagOnlyKey() (gas: 11851)
+[PASS] test_SimpleKey() (gas: 4082)
+[PASS] test_TagOnlyKey() (gas: 4216)
+[PASS] test_TaggedKey() (gas: 5171)
+Suite result: ok. 7 passed; 0 failed; 0 skipped; finished in 89.70ms (86.48ms CPU time)
+
+Ran 12 tests for test/libraries/keys/KeyEcdsaSecp256k1.t.sol:KeyEcdsaSecp256k1Test
+[PASS] test_DeserializeRevertsIfNot20Bytes() (gas: 10144)
+[PASS] test_Equal() (gas: 23302)
+[PASS] test_EqualFalse() (gas: 23301)
+[PASS] test_FromBytesRevertsIfNot20Bytes() (gas: 10143)
+[PASS] test_FromBytesRevertsInvalidBytes() (gas: 12982)
+[PASS] test_FuzzSerializeDeserialize(address) (runs: 4096, μ: 3999, ~: 3999)
+[PASS] test_FuzzToBytesFromBytes(address) (runs: 4096, μ: 4341, ~: 4341)
+[PASS] test_FuzzWrapUnwrap(address) (runs: 4096, μ: 3513, ~: 3513)
+[PASS] test_SerializeDeserialize() (gas: 5123)
+[PASS] test_ToBytesFromBytes() (gas: 5607)
+[PASS] test_WrapUnwrap() (gas: 4682)
+[PASS] test_ZeroKey() (gas: 8738)
+Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 95.42ms (92.19ms CPU time)
+
+Ran 12 tests for test/modules/key-registry/KeyRegistry.t.sol:KeyRegistryTest
+[PASS] test_GetKeysAt_TimeCheckpoints() (gas: 852907)
+[PASS] test_GetKeysOperators_MultipleOperators() (gas: 1051963)
+[PASS] test_GetOperator_UnknownKey() (gas: 11763)
+[PASS] test_Location() (gas: 3729)
+[PASS] test_SetBLSKey() (gas: 865269)
+[PASS] test_SetECDSAKey() (gas: 491911)
+[PASS] test_SetECDSAKey_RevertOnInvalidSignature() (gas: 59183)
+[PASS] test_SetKey64() (gas: 496700)
+[PASS] test_SetKey_AlreadyUsedKeyDifferentOperator() (gas: 395681)
+[PASS] test_SetKey_RevertOnInvalidKeyType() (gas: 40960)
+[PASS] test_SetKey_SameOperatorDifferentTags() (gas: 620491)
+[PASS] test_SetKey_SameOperatorSameTag_Overwrite() (gas: 500285)
+Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 22.32ms (21.78ms CPU time)
+
+Ran 12 tests for test/libraries/utils/KeyTag.t.sol:KeyTagTest
+[PASS] test_AddMultiple() (gas: 6532)
+[PASS] test_ContainsAddRemove() (gas: 4737)
+[PASS] test_DeserializeBitmask() (gas: 36115)
+[PASS] test_GetKeyTagInvalidIdentifier() (gas: 4264)
+[PASS] test_GetKeyTagInvalidType() (gas: 4180)
+[PASS] test_GetKeyTagValid() (gas: 3330)
+[PASS] test_GetTag() (gas: 3318)
+[PASS] test_GetTagRevertWhenTooLarge() (gas: 4046)
+[PASS] test_GetType() (gas: 3257)
+[PASS] test_GetTypeRevertWhenTooLarge() (gas: 4081)
+[PASS] test_SerializeRevertOnDuplicate() (gas: 6095)
+[PASS] test_SerializeUniqueKeyTags() (gas: 8498)
+Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 551.88µs (191.50µs CPU time)
+
+Ran 6 tests for test/modules/voting-power/extensions/OperatorsBlacklist.t.sol:OperatorsBlacklistTest
+[PASS] test_BasicEnvironment() (gas: 12928)
+[PASS] test_BlacklistOperator() (gas: 321032)
+[PASS] test_BlacklistOperator_RevertIfAlreadyBlacklisted() (gas: 93866)
+[PASS] test_Location() (gas: 3378)
+[PASS] test_UnblacklistOperator() (gas: 257000)
+[PASS] test_UnblacklistOperator_RevertIfNotBlacklisted() (gas: 34346)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 164.64ms (1.48ms CPU time)
+
+Ran 11 tests for test/modules/voting-power/extensions/OperatorsWhitelist.t.sol:OperatorsWhitelistTest
+[PASS] test_DisableWhitelistAndRegister() (gas: 191711)
+[PASS] test_DisableWhitelistAndRegisterOperatorVault() (gas: 474333)
+[PASS] test_Location() (gas: 3443)
+[PASS] test_RegisterOperator_RevertIfNotWhitelisted() (gas: 36816)
+[PASS] test_SetWhitelistStatus_RevertIfAlreadySet() (gas: 134109)
+[PASS] test_SetWhitelistStatus_RevertIfNotWhitelisted() (gas: 36503)
+[PASS] test_UnwhitelistOperator_RegisteredOperatorGetsUnregistered() (gas: 314960)
+[PASS] test_UnwhitelistOperator_RevertIfNotWhitelisted() (gas: 34377)
+[PASS] test_WhitelistEnabledByDefault() (gas: 10623)
+[PASS] test_WhitelistOperatorAndRegister() (gas: 223909)
+[PASS] test_WhitelistOperator_RevertIfAlreadyWhitelisted() (gas: 80347)
+Suite result: ok. 11 passed; 0 failed; 0 skipped; finished in 180.38ms (2.76ms CPU time)
+
+Ran 6 tests for test/modules/common/permissions/OzAccessControl.t.sol:OzAccessControlTest
+[PASS] testChangeRoleForProtectedFunction() (gas: 137363)
+[PASS] testGetRoleForFunctionSelector() (gas: 71010)
+[PASS] testProtectedFunction_RevertIfCallerDoesNotHaveRole() (gas: 36888)
+[PASS] testSetNoRoleForSelector() (gas: 92562)
+[PASS] test_Location() (gas: 3303)
+[PASS] test_ProtectedFunction_DefaultAdminCanCall() (gas: 31147)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 362.42µs (110.17µs CPU time)
+
+Ran 3 tests for test/modules/common/permissions/OzAccessManaged.t.sol:OzAccessManagedTest
+[PASS] testCannotChangeAuthority() (gas: 32035)
+[PASS] testProtectedAction_RevertsForNonAdmin() (gas: 40741)
+[PASS] testProtectedAction_SucceedsForAdmin() (gas: 40297)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 281.63µs (44.08µs CPU time)
+
+Ran 8 tests for test/modules/settlement/Settlement.t.sol:SettlementRawTest
+[PASS] testCommitValSetHeader_Basic() (gas: 1088944)
+[PASS] testInitParams() (gas: 33003)
+[PASS] testSetGenesis_Permission() (gas: 432855)
+[PASS] testSetGenesis_Revert_ValSetHeaderAlreadySubmitted() (gas: 246268)
+[PASS] testVersion() (gas: 8813)
+[PASS] test_commitValSetHeader_VerificationFailed() (gas: 931962)
+[PASS] test_setSigVerifier() (gas: 331125)
+[PASS] test_setSigVerifier_Revert_InvalidSigVerifier() (gas: 34441)
+Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 1.34ms (910.62µs CPU time)
+
+Ran 6 tests for test/modules/voting-power/extensions/OperatorsJail.t.sol:OperatorsJailTest
+[PASS] test_BasicEnvironment() (gas: 13066)
+[PASS] test_JailOperator() (gas: 525141)
+[PASS] test_JailOperator_RevertIfAlreadyJailed() (gas: 135311)
+[PASS] test_Location() (gas: 3412)
+[PASS] test_UnjailOperator() (gas: 282776)
+[PASS] test_UnjailOperator_RevertIfNotJailed() (gas: 34416)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 203.56ms (1.57ms CPU time)
+
+Ran 2 tests for test/modules/voting-power/extensions/SharedVaults.t.sol:SharedVaultsTest
+[PASS] test_RegisterSharedVault_OnlyOwnerCanCall() (gas: 180133)
+[PASS] test_RegisterUnregisterSharedVault_VaultManagerSide() (gas: 283083)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 205.77ms (593.67µs CPU time)
+
+Ran 3 tests for test/modules/voting-power/extensions/BaseRewards.t.sol:BaseRewardsTest
+[PASS] test_Location() (gas: 3390)
+[PASS] test_OperatorRewards() (gas: 984646)
+[PASS] test_StakerRewards() (gas: 1273279)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 209.37ms (3.04ms CPU time)
 
 Ran 14 tests for test/modules/valset-driver/ValSetDriver.t.sol:ValSetDriverTest
 [PASS] test_AddRemoveQuorumThreshold() (gas: 450301)
@@ -63,19 +204,7 @@ Ran 14 tests for test/modules/valset-driver/ValSetDriver.t.sol:ValSetDriverTest
 [PASS] test_TimeBasedConfig() (gas: 120346)
 [PASS] test_TimeBasedQueries() (gas: 370963)
 [PASS] test_UpdateAllConfigs() (gas: 1076682)
-Suite result: ok. 14 passed; 0 failed; 0 skipped; finished in 9.40ms (4.32ms CPU time)
-
-Ran 4 tests for test/modules/common/permissions/OzOwnable.t.sol:OzOwnableTest
-[PASS] testProtectedAction_RevertsForNonOwner() (gas: 34449)
-[PASS] testProtectedAction_SucceedsForOwner() (gas: 34018)
-[PASS] testReinitializeReverts() (gas: 34172)
-[PASS] testTransferOwnership() (gas: 91026)
-Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 442.79µs (64.09µs CPU time)
-
-Ran 2 tests for test/modules/base/PermissionManager.t.sol:PermissionManagerTest
-[PASS] test_ProtectedAction_RevertIfNotOwner() (gas: 32491)
-[PASS] test_ProtectedAction_SucceedsForOwner() (gas: 28627)
-Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 239.29µs (21.29µs CPU time)
+Suite result: ok. 14 passed; 0 failed; 0 skipped; finished in 6.40ms (5.80ms CPU time)
 
 Ran 5 tests for test/libraries/utils/ValSetVerifier.t.sol:ValSetVerifierDataTest
 [PASS] test_VerifyIsActive() (gas: 430558)
@@ -83,126 +212,21 @@ Ran 5 tests for test/libraries/utils/ValSetVerifier.t.sol:ValSetVerifierDataTest
 [PASS] test_VerifyOperator() (gas: 428470)
 [PASS] test_VerifyVault() (gas: 693456)
 [PASS] test_VerifyVotingPower() (gas: 428471)
-Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 1.83ms (1.54ms CPU time)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 1.74ms (1.44ms CPU time)
 
 Ran 4 tests for test/modules/base/VotingPowerCalcManager.t.sol:VotingPowerCalcManagerTest
 [PASS] testReInitializeReverts() (gas: 31727)
 [PASS] testStakeToVotingPower() (gas: 9445)
 [PASS] testStakeToVotingPowerAt() (gas: 12460)
 [PASS] testWithExtraData() (gas: 9650)
-Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 266.38µs (46.83µs CPU time)
-
-Ran 8 tests for test/libraries/structs/PersistentSet.t.sol:PersistentSetTest
-[PASS] test_AddressSetAddRemoveAndContains() (gas: 219822)
-[PASS] test_AddressSetAllValues() (gas: 188636)
-[PASS] test_AddressSetLengthAndValuesAt() (gas: 245588)
-[PASS] test_Bytes32SetAddRemoveAndContains() (gas: 233924)
-[PASS] test_Bytes32SetAllValues() (gas: 188310)
-[PASS] test_Bytes32SetValuesAt() (gas: 251751)
-[PASS] test_LargeAddressSetExceed256Elements() (gas: 17267714)
-[PASS] test_RevertPersistentSet_InvalidKey() (gas: 184062)
-Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 6.38ms (6.15ms CPU time)
-
-Ran 12 tests for test/modules/key-registry/KeyRegistry.t.sol:KeyRegistryTest
-[PASS] test_GetKeysAt_TimeCheckpoints() (gas: 852907)
-[PASS] test_GetKeysOperators_MultipleOperators() (gas: 1051963)
-[PASS] test_GetOperator_UnknownKey() (gas: 11763)
-[PASS] test_Location() (gas: 3729)
-[PASS] test_SetBLSKey() (gas: 865269)
-[PASS] test_SetECDSAKey() (gas: 491911)
-[PASS] test_SetECDSAKey_RevertOnInvalidSignature() (gas: 59183)
-[PASS] test_SetKey64() (gas: 496700)
-[PASS] test_SetKey_AlreadyUsedKeyDifferentOperator() (gas: 395681)
-[PASS] test_SetKey_RevertOnInvalidKeyType() (gas: 40960)
-[PASS] test_SetKey_SameOperatorDifferentTags() (gas: 620491)
-[PASS] test_SetKey_SameOperatorSameTag_Overwrite() (gas: 500285)
-Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 18.07ms (11.83ms CPU time)
-
-Ran 8 tests for test/modules/settlement/Settlement.t.sol:SettlementRawTest
-[PASS] testCommitValSetHeader_Basic() (gas: 1088944)
-[PASS] testInitParams() (gas: 33003)
-[PASS] testSetGenesis_Permission() (gas: 432855)
-[PASS] testSetGenesis_Revert_ValSetHeaderAlreadySubmitted() (gas: 246268)
-[PASS] testVersion() (gas: 8813)
-[PASS] test_commitValSetHeader_VerificationFailed() (gas: 931962)
-[PASS] test_setSigVerifier() (gas: 331125)
-[PASS] test_setSigVerifier_Revert_InvalidSigVerifier() (gas: 34441)
-Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 1.41ms (933.04µs CPU time)
-
-Ran 7 tests for test/modules/settlement/sig-verifiers/libraries/ExtraDataStorageHelper.t.sol:ExtraDataStorageHelperTest
-[PASS] testFuzz_Uniqueness(uint32,uint32,uint8,uint8,bytes32,bytes32,uint256,uint256) (runs: 4096, μ: 9575, ~: 9650)
-[PASS] test_BaseKey() (gas: 4145)
-[PASS] test_IndexedKey() (gas: 12093)
-[PASS] test_IndexedTagOnlyKey() (gas: 11851)
-[PASS] test_SimpleKey() (gas: 4082)
-[PASS] test_TagOnlyKey() (gas: 4216)
-[PASS] test_TaggedKey() (gas: 5171)
-Suite result: ok. 7 passed; 0 failed; 0 skipped; finished in 88.27ms (83.80ms CPU time)
-
-Ran 6 tests for test/libraries/utils/InputNormalizer.t.sol:InputNormalizerTest
-[PASS] test_normalizeDoubleDimEmpty() (gas: 6971)
-[PASS] test_normalizeDoubleDimExact() (gas: 8790)
-[PASS] test_normalizeDoubleDimMismatchRevert() (gas: 10039)
-[PASS] test_normalizeSingleDimEmpty() (gas: 7871)
-[PASS] test_normalizeSingleDimExact() (gas: 7476)
-[PASS] test_normalizeSingleDimMismatchRevert() (gas: 9196)
-Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 349.71µs (113.46µs CPU time)
-
-Ran 11 tests for test/modules/voting-power/extensions/OperatorsWhitelist.t.sol:OperatorsWhitelistTest
-[PASS] test_DisableWhitelistAndRegister() (gas: 191711)
-[PASS] test_DisableWhitelistAndRegisterOperatorVault() (gas: 474333)
-[PASS] test_Location() (gas: 3443)
-[PASS] test_RegisterOperator_RevertIfNotWhitelisted() (gas: 36816)
-[PASS] test_SetWhitelistStatus_RevertIfAlreadySet() (gas: 134109)
-[PASS] test_SetWhitelistStatus_RevertIfNotWhitelisted() (gas: 36503)
-[PASS] test_UnwhitelistOperator_RegisteredOperatorGetsUnregistered() (gas: 314960)
-[PASS] test_UnwhitelistOperator_RevertIfNotWhitelisted() (gas: 34377)
-[PASS] test_WhitelistEnabledByDefault() (gas: 10623)
-[PASS] test_WhitelistOperatorAndRegister() (gas: 223909)
-[PASS] test_WhitelistOperator_RevertIfAlreadyWhitelisted() (gas: 80347)
-Suite result: ok. 11 passed; 0 failed; 0 skipped; finished in 164.00ms (4.24ms CPU time)
-
-Ran 6 tests for test/modules/common/permissions/OzAccessControl.t.sol:OzAccessControlTest
-[PASS] testChangeRoleForProtectedFunction() (gas: 137363)
-[PASS] testGetRoleForFunctionSelector() (gas: 71010)
-[PASS] testProtectedFunction_RevertIfCallerDoesNotHaveRole() (gas: 36888)
-[PASS] testSetNoRoleForSelector() (gas: 92562)
-[PASS] test_Location() (gas: 3303)
-[PASS] test_ProtectedFunction_DefaultAdminCanCall() (gas: 31147)
-Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 361.79µs (106.54µs CPU time)
-
-Ran 3 tests for test/modules/common/permissions/OzAccessManaged.t.sol:OzAccessManagedTest
-[PASS] testCannotChangeAuthority() (gas: 32035)
-[PASS] testProtectedAction_RevertsForNonAdmin() (gas: 40741)
-[PASS] testProtectedAction_SucceedsForAdmin() (gas: 40297)
-Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 277.13µs (43.75µs CPU time)
-
-Ran 2 tests for test/modules/voting-power/extensions/SharedVaults.t.sol:SharedVaultsTest
-[PASS] test_RegisterSharedVault_OnlyOwnerCanCall() (gas: 180133)
-[PASS] test_RegisterUnregisterSharedVault_VaultManagerSide() (gas: 283083)
-Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 178.28ms (559.25µs CPU time)
-
-Ran 6 tests for test/modules/voting-power/extensions/OperatorsBlacklist.t.sol:OperatorsBlacklistTest
-[PASS] test_BasicEnvironment() (gas: 12928)
-[PASS] test_BlacklistOperator() (gas: 321032)
-[PASS] test_BlacklistOperator_RevertIfAlreadyBlacklisted() (gas: 93866)
-[PASS] test_Location() (gas: 3378)
-[PASS] test_UnblacklistOperator() (gas: 257000)
-[PASS] test_UnblacklistOperator_RevertIfNotBlacklisted() (gas: 34346)
-Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 190.35ms (5.57ms CPU time)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 272.54µs (49.33µs CPU time)
 
 Ran 4 tests for test/libraries/sigs/SigBlsBn254.t.sol:SigBlsBn254Test
 [PASS] test_BLSRegisterOperator() (gas: 1127494)
 [PASS] test_BLSRegisterOperatorInvalid() (gas: 1127582)
 [PASS] test_InvalidMessageLength() (gas: 7664)
 [PASS] test_ZeroKey() (gas: 8187)
-Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 12.44ms (12.20ms CPU time)
-
-Ran 3 tests for test/modules/voting-power/extensions/BaseRewards.t.sol:BaseRewardsTest
-[PASS] test_Location() (gas: 3390)
-[PASS] test_OperatorRewards() (gas: 984646)
-[PASS] test_StakerRewards() (gas: 1273279)
-Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 197.79ms (1.91ms CPU time)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 8.40ms (8.16ms CPU time)
 
 Ran 10 tests for test/modules/voting-power/extensions/BaseSlashing.t.sol:BaseSlashingTest
 [PASS] test_ExecuteSlashVaul_NotVetoSlasher() (gas: 489994)
@@ -215,64 +239,30 @@ Ran 10 tests for test/modules/voting-power/extensions/BaseSlashing.t.sol:BaseSla
 [PASS] test_SlashVault_EpochDurationPassed() (gas: 517743)
 [PASS] test_SlashVault_VetoSlasher() (gas: 3616633)
 [PASS] test_SlashVault_WithHints() (gas: 889314)
-Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 206.05ms (13.82ms CPU time)
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 221.41ms (15.27ms CPU time)
 
-Ran 2 tests for test/modules/voting-power/extensions/MultiToken.t.sol:MultiTokenTest
-[PASS] test_RegisterToken_OnlyOwnerCanCall() (gas: 85980)
-[PASS] test_RegisterUnregisterToken_VaultManagerSide() (gas: 193139)
-Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 207.19ms (454.67µs CPU time)
-
-Ran 6 tests for test/modules/voting-power/extensions/OperatorsJail.t.sol:OperatorsJailTest
-[PASS] test_BasicEnvironment() (gas: 13066)
-[PASS] test_JailOperator() (gas: 525141)
-[PASS] test_JailOperator_RevertIfAlreadyJailed() (gas: 135311)
-[PASS] test_Location() (gas: 3412)
-[PASS] test_UnjailOperator() (gas: 282776)
-[PASS] test_UnjailOperator_RevertIfNotJailed() (gas: 34416)
-Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 187.14ms (1.48ms CPU time)
-
-Ran 12 tests for test/libraries/keys/KeyEcdsaSecp256k1.t.sol:KeyEcdsaSecp256k1Test
-[PASS] test_DeserializeRevertsIfNot20Bytes() (gas: 10144)
-[PASS] test_Equal() (gas: 23302)
-[PASS] test_EqualFalse() (gas: 23301)
-[PASS] test_FromBytesRevertsIfNot20Bytes() (gas: 10143)
-[PASS] test_FromBytesRevertsInvalidBytes() (gas: 12982)
-[PASS] test_FuzzSerializeDeserialize(address) (runs: 4096, μ: 3999, ~: 3999)
-[PASS] test_FuzzToBytesFromBytes(address) (runs: 4096, μ: 4341, ~: 4341)
-[PASS] test_FuzzWrapUnwrap(address) (runs: 4096, μ: 3513, ~: 3513)
-[PASS] test_SerializeDeserialize() (gas: 5123)
-[PASS] test_ToBytesFromBytes() (gas: 5607)
-[PASS] test_WrapUnwrap() (gas: 4682)
-[PASS] test_ZeroKey() (gas: 8738)
-Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 222.01ms (83.01ms CPU time)
-
-Ran 3 tests for test/modules/voting-power/common/voting-power-calc/WeightedTokensVPCalc.t.sol:WeightedTokensVPCalcTest
-[PASS] test_CheckStakesTokenWeight() (gas: 89166528)
-[PASS] test_SetTokenWeight_RevertIfTooLarge() (gas: 99727)
-[PASS] test_StakeToVotingPowerAt_UsesHistoricalTokenWeightAndNormalization() (gas: 8169952)
-Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 239.24ms (49.94ms CPU time)
-
-Ran 19 tests for test/modules/network/Network.t.sol:NetworkTest
+Ran 20 tests for test/modules/network/Network.t.sol:NetworkTest
 [PASS] testInitializeCantBeCalledTwice() (gas: 38467)
-[PASS] test_DirectUpdateDelayReverts() (gas: 31528)
-[PASS] test_EthTransfer() (gas: 209208)
-[PASS] test_GetMinDelayInvalidSelectorReverts() (gas: 9417)
-[PASS] test_Init() (gas: 125750)
-[PASS] test_PerSelectorDelayOverridesGlobal() (gas: 19171)
-[PASS] test_ScheduleBatchAndExecute() (gas: 223663)
+[PASS] test_BreakInvariant() (gas: 191230)
+[PASS] test_DirectUpdateDelayReverts() (gas: 31616)
+[PASS] test_EthTransfer() (gas: 208790)
+[PASS] test_GetMinDelayInvalidSelectorReverts() (gas: 9480)
+[PASS] test_Init() (gas: 125288)
+[PASS] test_PerSelectorDelayOverridesGlobal() (gas: 19017)
+[PASS] test_ScheduleBatchAndExecute() (gas: 223312)
 [PASS] test_ScheduleBatchLengthMismatchReverts() (gas: 39548)
-[PASS] test_ScheduleBatchRevertsIfDelayTooShort() (gas: 59710)
-[PASS] test_ScheduleRevertsIfDelayTooShort() (gas: 46761)
+[PASS] test_ScheduleBatchRevertsIfDelayTooShort() (gas: 59402)
+[PASS] test_ScheduleRevertsIfDelayTooShort() (gas: 46607)
 [PASS] test_SetMaxNetworkLimitOnlyMiddleware() (gas: 141882)
 [PASS] test_SetMaxNetworkLimitWrongCallerReverts() (gas: 38022)
-[PASS] test_UpdateDelayThroughTimelock() (gas: 240820)
-[PASS] test_UpdateDelayThroughTimelock_RevertInvalidNewDelay() (gas: 115287)
-[PASS] test_UpdateDelayThroughTimelock_ZeroAddress() (gas: 202601)
-[PASS] test_UpdateDelayThroughTimelock_ZeroSelector() (gas: 244784)
+[PASS] test_UpdateDelayThroughTimelock() (gas: 240586)
+[PASS] test_UpdateDelayThroughTimelock_RevertInvalidNewDelay() (gas: 115307)
+[PASS] test_UpdateDelayThroughTimelock_ZeroAddress() (gas: 202337)
+[PASS] test_UpdateDelayThroughTimelock_ZeroSelector() (gas: 244550)
 [PASS] test_UpdateMetadataURI() (gas: 49715)
 [PASS] test_UpdateNameByRoleHolder() (gas: 49719)
 [PASS] test_UpdateNameWithoutRoleReverts() (gas: 32963)
-Suite result: ok. 19 passed; 0 failed; 0 skipped; finished in 259.92ms (13.88ms CPU time)
+Suite result: ok. 20 passed; 0 failed; 0 skipped; finished in 225.48ms (7.91ms CPU time)
 
 Ran 5 tests for test/modules/base/NetworkManager.t.sol:NetworkManagerTest
 [PASS] test_DefaultsBeforeInit() (gas: 24190)
@@ -280,11 +270,16 @@ Ran 5 tests for test/modules/base/NetworkManager.t.sol:NetworkManagerTest
 [PASS] test_Location() (gas: 3589)
 [PASS] test_ReinitializeReverts() (gas: 104712)
 [PASS] test_RevertNetworkManager_InvalidNetwork() (gas: 123081)
-Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 340.38µs (97.17µs CPU time)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 346.71µs (94.88µs CPU time)
 
 Ran 1 test for test/modules/common/permissions/NoPermissionManager.t.sol:NoPermissionManagerTest
 [PASS] test_NoPermissionCheck() (gas: 29620)
-Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 221.25µs (8.96µs CPU time)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 225.29µs (11.00µs CPU time)
+
+Ran 2 tests for test/modules/voting-power/extensions/MultiToken.t.sol:MultiTokenTest
+[PASS] test_RegisterToken_OnlyOwnerCanCall() (gas: 85980)
+[PASS] test_RegisterUnregisterToken_VaultManagerSide() (gas: 193139)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 188.58ms (552.92µs CPU time)
 
 Ran 21 tests for test/examples/MyVotingPowerProvider.t.sol:MyVotingPowerProviderTest
 [PASS] testGetOperatorsAt_withTime() (gas: 477486)
@@ -308,7 +303,13 @@ Ran 21 tests for test/examples/MyVotingPowerProvider.t.sol:MyVotingPowerProvider
 [PASS] test_registerOperatorWithSignature() (gas: 1646970)
 [PASS] test_registerOperatorWithSignature_RevertIfInvalidSig() (gas: 1212891)
 [PASS] test_unregisterOperatorWithSignature() (gas: 290811)
-Suite result: ok. 21 passed; 0 failed; 0 skipped; finished in 280.18ms (81.48ms CPU time)
+Suite result: ok. 21 passed; 0 failed; 0 skipped; finished in 229.21ms (69.60ms CPU time)
+
+Ran 3 tests for test/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.t.sol:NormalizedTokenDecimalsVPCalcTest
+[PASS] test_CheckStakes_18() (gas: 84769758)
+[PASS] test_CheckStakes_24() (gas: 84784914)
+[PASS] test_CheckStakes_8() (gas: 84785673)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 340.49ms (145.35ms CPU time)
 
 Ran 30 tests for test/modules/voting-power/VotingPowerProvider.t.sol:VotingPowerProviderTest
 [PASS] testGetOperatorsAt_withTime() (gas: 454850)
@@ -341,14 +342,31 @@ Ran 30 tests for test/modules/voting-power/VotingPowerProvider.t.sol:VotingPower
 [PASS] test_registerOperatorWithSignature() (gas: 1761946)
 [PASS] test_registerOperatorWithSignature_RevertIfInvalidSig() (gas: 1212785)
 [PASS] test_unregisterOperatorWithSignature() (gas: 290960)
-Suite result: ok. 30 passed; 0 failed; 0 skipped; finished in 513.27ms (301.73ms CPU time)
+Suite result: ok. 30 passed; 0 failed; 0 skipped; finished in 421.13ms (233.74ms CPU time)
 
-Ran 4 tests for test/modules/voting-power/common/voting-power-calc/WeightedVaultsVPCalc.t.sol:WeightedVaultsVPCalcTest
-[PASS] test_CheckStakesVaultWeight() (gas: 85044993)
-[PASS] test_GetVaultWeightAt_UsesHistoricalVaultWeight() (gas: 6769593)
-[PASS] test_SetVaultWeight_RevertIfTooLarge() (gas: 99612)
-[PASS] test_StakeToVotingPowerAt_UsesHistoricalVaultWeight() (gas: 7984400)
-Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 270.80ms (41.69ms CPU time)
+Ran 21 tests for test/libraries/keys/KeyBlsBn254.t.sol:KeyBlsBn254Test
+[PASS] test_DeserializeEmptyBytesIsIdentity() (gas: 4076)
+[PASS] test_DeserializeRevertsInvalidLength() (gas: 10290)
+[PASS] test_Equal() (gas: 17621)
+[PASS] test_EqualFalse() (gas: 21908)
+[PASS] test_FromBytesRevertsInvalidBytes() (gas: 13117)
+[PASS] test_FromBytesRevertsInvalidLength() (gas: 10314)
+[PASS] test_FuzzSerializeDeserialize(uint256) (runs: 4096, μ: 7210, ~: 11504)
+[PASS] test_FuzzSerializeDeserializeNonZeroNegate(uint256) (runs: 4096, μ: 7661, ~: 12304)
+[PASS] test_FuzzToBytesFromBytes(uint256) (runs: 4096, μ: 5468, ~: 8170)
+[PASS] test_FuzzWrapUnwrap(uint256) (runs: 4096, μ: 4702, ~: 6623)
+[PASS] test_OutOfBounds() (gas: 27369)
+[PASS] test_SerializeDeserializeIdentity() (gas: 4582)
+[PASS] test_SerializeDeserializeNonZero() (gas: 11338)
+[PASS] test_SerializeDeserializeNonZeroNegate() (gas: 12181)
+[PASS] test_SerializeRevertsInvalidKey() (gas: 12565)
+[PASS] test_ToBytesFromBytesIdentity() (gas: 5448)
+[PASS] test_ToBytesFromBytesNonZero() (gas: 7982)
+[PASS] test_WrapRevertsInvalidKey(uint256) (runs: 4096, μ: 12804, ~: 12804)
+[PASS] test_WrapUnwrapIdentity() (gas: 4022)
+[PASS] test_WrapUnwrapNonZero() (gas: 6414)
+[PASS] test_ZeroKey() (gas: 9461)
+Suite result: ok. 21 passed; 0 failed; 0 skipped; finished in 693.78ms (693.31ms CPU time)
 
 Ran 12 tests for test/modules/voting-power/extensions/OpNetVaultAutoDeploy.t.sol:OpNetVaultAutoDeployTest
 [PASS] test_AutoDeployOnRegister() (gas: 1779847)
@@ -363,25 +381,48 @@ Ran 12 tests for test/modules/voting-power/extensions/OpNetVaultAutoDeploy.t.sol
 [PASS] test_SetAutoDeployConfig_InvalidEpochDurationZero() (gas: 39928)
 [PASS] test_SetAutoDeployConfig_InvalidWithSlasher() (gas: 48723)
 [PASS] test_SetAutoDeployStatus() (gas: 62268)
-Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 236.06ms (8.03ms CPU time)
+Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 175.41ms (4.79ms CPU time)
 
-Ran 3 tests for test/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.t.sol:NormalizedTokenDecimalsVPCalcTest
-[PASS] test_CheckStakes_18() (gas: 84769758)
-[PASS] test_CheckStakes_24() (gas: 84784914)
-[PASS] test_CheckStakes_8() (gas: 84785673)
-Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 342.63ms (128.03ms CPU time)
-
-Ran 1 test for test/modules/voting-power/extensions/OperatorVaults.t.sol:OperatorVaultsTest
-[PASS] test_RegisterOperatorVault_OnlyOwnerCanCall() (gas: 1997686)
-Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 161.27ms (2.90ms CPU time)
+Ran 3 tests for test/modules/voting-power/common/voting-power-calc/WeightedTokensVPCalc.t.sol:WeightedTokensVPCalcTest
+[PASS] test_CheckStakesTokenWeight() (gas: 89166528)
+[PASS] test_SetTokenWeight_RevertIfTooLarge() (gas: 99727)
+[PASS] test_StakeToVotingPowerAt_UsesHistoricalTokenWeightAndNormalization() (gas: 8169952)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 224.86ms (46.31ms CPU time)
 
 Ran 5 tests for test/libraries/sigs/SigEcdsaSecp256k1.t.sol:SigEcdsaSecp256k1Test
 [PASS] test_CorrectSignature() (gas: 18808)
-[PASS] test_FuzzVerification(uint256,bytes) (runs: 4096, μ: 22579, ~: 22551)
+[PASS] test_FuzzVerification(uint256,bytes) (runs: 4096, μ: 22576, ~: 22551)
 [PASS] test_IncorrectSignature() (gas: 34398)
 [PASS] test_InvalidMessageLength() (gas: 6500)
 [PASS] test_ZeroKey() (gas: 5340)
-Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 708.56ms (708.38ms CPU time)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 661.96ms (661.74ms CPU time)
+
+Ran 1 test for test/modules/voting-power/extensions/OperatorVaults.t.sol:OperatorVaultsTest
+[PASS] test_RegisterOperatorVault_OnlyOwnerCanCall() (gas: 1997686)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 181.52ms (748.33µs CPU time)
+
+Ran 13 tests for test/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.t.sol:SigVerifierBlsBn254ZKTest
+[PASS] test_Create() (gas: 4410955)
+[PASS] test_FalseQuorumThreshold() (gas: 6974357)
+[PASS] test_RevertInvalidLength() (gas: 4206)
+[PASS] test_RevertInvalidTotalActiveValidators() (gas: 7225114)
+[PASS] test_Revert_InvalidMaxValidators() (gas: 4411164)
+[PASS] test_Revert_InvalidMaxValidatorsOrder() (gas: 4411206)
+[PASS] test_Revert_InvalidMessageLength() (gas: 4428635)
+[PASS] test_Revert_InvalidProofLength() (gas: 4434737)
+[PASS] test_Revert_InvalidVerifier() (gas: 2942997)
+[PASS] test_Revert_UnsupportedKeyTag() (gas: 4428484)
+[PASS] test_ZeroValidators() (gas: 7241250)
+[PASS] test_verifyQuorumSig() (gas: 7338685)
+[PASS] test_verifyQuorumSig_FalseZkProof() (gas: 17595493375392677637)
+Suite result: ok. 13 passed; 0 failed; 0 skipped; finished in 151.43ms (29.73ms CPU time)
+
+Ran 4 tests for test/modules/voting-power/common/voting-power-calc/WeightedVaultsVPCalc.t.sol:WeightedVaultsVPCalcTest
+[PASS] test_CheckStakesVaultWeight() (gas: 85044993)
+[PASS] test_GetVaultWeightAt_UsesHistoricalVaultWeight() (gas: 6769593)
+[PASS] test_SetVaultWeight_RevertIfTooLarge() (gas: 99612)
+[PASS] test_StakeToVotingPowerAt_UsesHistoricalVaultWeight() (gas: 7984400)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 210.77ms (50.31ms CPU time)
 
 Ran 14 tests for test/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.t.sol:SigVerifierBlsBn254SimpleTest
 [PASS] test_FalseQuorumThreshold() (gas: 30734481)
@@ -398,47 +439,20 @@ Ran 14 tests for test/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple
 [PASS] test_verifyQuorumSig1() (gas: 35001072)
 [PASS] test_verifyQuorumSig2() (gas: 39376044)
 [PASS] test_verifyQuorumSig3() (gas: 33360119)
-Suite result: ok. 14 passed; 0 failed; 0 skipped; finished in 1.62s (1.40s CPU time)
+Suite result: ok. 14 passed; 0 failed; 0 skipped; finished in 1.50s (1.27s CPU time)
 
-Ran 13 tests for test/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.t.sol:SigVerifierBlsBn254ZKTest
-[PASS] test_Create() (gas: 4410955)
-[PASS] test_FalseQuorumThreshold() (gas: 6974357)
-[PASS] test_RevertInvalidLength() (gas: 4206)
-[PASS] test_RevertInvalidTotalActiveValidators() (gas: 7225114)
-[PASS] test_Revert_InvalidMaxValidators() (gas: 4411164)
-[PASS] test_Revert_InvalidMaxValidatorsOrder() (gas: 4411206)
-[PASS] test_Revert_InvalidMessageLength() (gas: 4428635)
-[PASS] test_Revert_InvalidProofLength() (gas: 4434737)
-[PASS] test_Revert_InvalidVerifier() (gas: 2942997)
-[PASS] test_Revert_UnsupportedKeyTag() (gas: 4428484)
-[PASS] test_ZeroValidators() (gas: 7241250)
-[PASS] test_verifyQuorumSig() (gas: 7338685)
-[PASS] test_verifyQuorumSig_FalseZkProof() (gas: 17595493375392677637)
-Suite result: ok. 13 passed; 0 failed; 0 skipped; finished in 151.19ms (27.20ms CPU time)
-
-Ran 21 tests for test/libraries/keys/KeyBlsBn254.t.sol:KeyBlsBn254Test
-[PASS] test_DeserializeEmptyBytesIsIdentity() (gas: 4076)
-[PASS] test_DeserializeRevertsInvalidLength() (gas: 10290)
-[PASS] test_Equal() (gas: 17621)
-[PASS] test_EqualFalse() (gas: 21908)
-[PASS] test_FromBytesRevertsInvalidBytes() (gas: 13117)
-[PASS] test_FromBytesRevertsInvalidLength() (gas: 10314)
-[PASS] test_FuzzSerializeDeserialize(uint256) (runs: 4096, μ: 7253, ~: 11504)
-[PASS] test_FuzzSerializeDeserializeNonZeroNegate(uint256) (runs: 4096, μ: 7699, ~: 12304)
-[PASS] test_FuzzToBytesFromBytes(uint256) (runs: 4096, μ: 5539, ~: 8170)
-[PASS] test_FuzzWrapUnwrap(uint256) (runs: 4096, μ: 4733, ~: 6623)
-[PASS] test_OutOfBounds() (gas: 27369)
-[PASS] test_SerializeDeserializeIdentity() (gas: 4582)
-[PASS] test_SerializeDeserializeNonZero() (gas: 11338)
-[PASS] test_SerializeDeserializeNonZeroNegate() (gas: 12181)
-[PASS] test_SerializeRevertsInvalidKey() (gas: 12565)
-[PASS] test_ToBytesFromBytesIdentity() (gas: 5448)
-[PASS] test_ToBytesFromBytesNonZero() (gas: 7982)
-[PASS] test_WrapRevertsInvalidKey(uint256) (runs: 4096, μ: 12804, ~: 12804)
-[PASS] test_WrapUnwrapIdentity() (gas: 4022)
-[PASS] test_WrapUnwrapNonZero() (gas: 6414)
-[PASS] test_ZeroKey() (gas: 9461)
-Suite result: ok. 21 passed; 0 failed; 0 skipped; finished in 9.77s (886.15ms CPU time)
+Ran 10 tests for test/libraries/structs/Checkpoints.t.sol:CheckpointsTrace256Test
+[PASS] testAt(uint48[],uint256[],uint32) (runs: 4096, μ: 8408015, ~: 8968100)
+[PASS] testLatest(uint48[],uint256[]) (runs: 4096, μ: 8308346, ~: 8800489)
+[PASS] testLatestCheckpoint(uint48[],uint256[]) (runs: 4096, μ: 8438840, ~: 8943685)
+[PASS] testLength(uint48[],uint256[]) (runs: 4096, μ: 8194532, ~: 8634439)
+[PASS] testLookup(uint48[],uint256[],uint48) (runs: 4096, μ: 8087390, ~: 8567485)
+[PASS] testPop(uint48[],uint256[]) (runs: 4096, μ: 4197097, ~: 3762180)
+[PASS] testPush(uint48[],uint256[],uint48) (runs: 4096, μ: 8999472, ~: 9460213)
+[PASS] testUpperLookupRecentCheckpoint(uint48[],uint256[],uint48) (runs: 4096, μ: 8362045, ~: 8891016)
+[PASS] testUpperLookupRecentCheckpointWithHint(uint48[],uint256[],uint48,uint32) (runs: 4096, μ: 8101810, ~: 8570946)
+[PASS] testUpperLookupRecentWithHint(uint48[],uint256[],uint48,uint32) (runs: 4096, μ: 8100468, ~: 8608242)
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 34.82s (138.00s CPU time)
 
 Ran 5 tests for test/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.t.sol:PricedTokensChainlinkVPCalcTest
 [PASS] test_ChainlinkCalcTracksRealPrice() (gas: 432014087)
@@ -446,46 +460,33 @@ Ran 5 tests for test/modules/voting-power/common/voting-power-calc/PricedTokensC
 [PASS] test_ChainlinkCalcTracksRealPriceHistoricalZero() (gas: 146626890)
 [PASS] test_ChainlinkCalcTracksRealPriceStale() (gas: 430171622)
 [PASS] test_ChainlinkCalcTracksRealPriceWithInvert() (gas: 431474166)
-Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 21.79s (23.75s CPU time)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 34.80s (22.61s CPU time)
 
 Ran 10 tests for test/libraries/structs/Checkpoints.t.sol:CheckpointsTrace208Test
-[PASS] testAt(uint48[],uint208[],uint32) (runs: 4096, μ: 4448388, ~: 4750408)
-[PASS] testLatest(uint48[],uint208[]) (runs: 4096, μ: 4413571, ~: 4676653)
-[PASS] testLatestCheckpoint(uint48[],uint208[]) (runs: 4096, μ: 4538615, ~: 4792825)
-[PASS] testLength(uint48[],uint208[]) (runs: 4096, μ: 4404890, ~: 4685142)
-[PASS] testLookup(uint48[],uint208[],uint48) (runs: 4096, μ: 4311988, ~: 4586569)
-[PASS] testPop(uint48[],uint208[]) (runs: 4096, μ: 2287559, ~: 2036168)
-[PASS] testPush(uint48[],uint208[],uint48) (runs: 4096, μ: 5092794, ~: 5355813)
-[PASS] testUpperLookupRecentCheckpoint(uint48[],uint208[],uint48) (runs: 4096, μ: 4472443, ~: 4755335)
-[PASS] testUpperLookupRecentCheckpointWithHint(uint48[],uint208[],uint48,uint32) (runs: 4096, μ: 4248203, ~: 4511134)
-[PASS] testUpperLookupRecentWithHint(uint48[],uint208[],uint48,uint32) (runs: 4096, μ: 4208620, ~: 4430960)
-Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 30.01s (91.82s CPU time)
-
-Ran 10 tests for test/libraries/structs/Checkpoints.t.sol:CheckpointsTrace256Test
-[PASS] testAt(uint48[],uint256[],uint32) (runs: 4096, μ: 8504667, ~: 9072753)
-[PASS] testLatest(uint48[],uint256[]) (runs: 4096, μ: 8222103, ~: 8708241)
-[PASS] testLatestCheckpoint(uint48[],uint256[]) (runs: 4096, μ: 8447063, ~: 8956660)
-[PASS] testLength(uint48[],uint256[]) (runs: 4096, μ: 8213729, ~: 8693393)
-[PASS] testLookup(uint48[],uint256[],uint48) (runs: 4096, μ: 7998169, ~: 8470645)
-[PASS] testPop(uint48[],uint256[]) (runs: 4096, μ: 4148198, ~: 3672023)
-[PASS] testPush(uint48[],uint256[],uint48) (runs: 4096, μ: 9005176, ~: 9653407)
-[PASS] testUpperLookupRecentCheckpoint(uint48[],uint256[],uint48) (runs: 4096, μ: 8297006, ~: 8696473)
-[PASS] testUpperLookupRecentCheckpointWithHint(uint48[],uint256[],uint48,uint32) (runs: 4096, μ: 8106010, ~: 8596033)
-[PASS] testUpperLookupRecentWithHint(uint48[],uint256[],uint48,uint32) (runs: 4096, μ: 8053402, ~: 8550489)
-Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 31.98s (118.21s CPU time)
+[PASS] testAt(uint48[],uint208[],uint32) (runs: 4096, μ: 4405112, ~: 4681139)
+[PASS] testLatest(uint48[],uint208[]) (runs: 4096, μ: 4409331, ~: 4654594)
+[PASS] testLatestCheckpoint(uint48[],uint208[]) (runs: 4096, μ: 4540066, ~: 4773328)
+[PASS] testLength(uint48[],uint208[]) (runs: 4096, μ: 4411606, ~: 4662724)
+[PASS] testLookup(uint48[],uint208[],uint48) (runs: 4096, μ: 4284832, ~: 4494360)
+[PASS] testPop(uint48[],uint208[]) (runs: 4096, μ: 2265574, ~: 2010991)
+[PASS] testPush(uint48[],uint208[],uint48) (runs: 4096, μ: 5155582, ~: 5480913)
+[PASS] testUpperLookupRecentCheckpoint(uint48[],uint208[],uint48) (runs: 4096, μ: 4450217, ~: 4714652)
+[PASS] testUpperLookupRecentCheckpointWithHint(uint48[],uint208[],uint48,uint32) (runs: 4096, μ: 4272919, ~: 4522750)
+[PASS] testUpperLookupRecentWithHint(uint48[],uint208[],uint48,uint32) (runs: 4096, μ: 4257201, ~: 4514045)
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 34.82s (98.69s CPU time)
 
 Ran 10 tests for test/libraries/structs/Checkpoints.t.sol:CheckpointsTrace512Test
-[PASS] testAt(uint48[],uint256[],uint32) (runs: 4096, μ: 12317436, ~: 13151101)
-[PASS] testLatest(uint48[],uint256[]) (runs: 4096, μ: 12368934, ~: 13094640)
-[PASS] testLatestCheckpoint(uint48[],uint256[]) (runs: 4096, μ: 12552282, ~: 13242617)
-[PASS] testLength(uint48[],uint256[]) (runs: 4096, μ: 11959764, ~: 12714815)
-[PASS] testLookup(uint48[],uint256[],uint48) (runs: 4096, μ: 11936942, ~: 12541019)
-[PASS] testPop(uint48[],uint256[]) (runs: 4096, μ: 5996304, ~: 5254990)
-[PASS] testPush(uint48[],uint256[],uint48) (runs: 4096, μ: 13824394, ~: 14632132)
-[PASS] testUpperLookupRecentCheckpoint(uint48[],uint256[],uint48) (runs: 4096, μ: 12070159, ~: 12813587)
-[PASS] testUpperLookupRecentCheckpointWithHint(uint48[],uint256[],uint48,uint32) (runs: 4096, μ: 11787221, ~: 12461151)
-[PASS] testUpperLookupRecentWithHint(uint48[],uint256[],uint48,uint32) (runs: 4096, μ: 11849841, ~: 12532625)
-Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 38.74s (148.46s CPU time)
+[PASS] testAt(uint48[],uint256[],uint32) (runs: 4096, μ: 12322985, ~: 13017190)
+[PASS] testLatest(uint48[],uint256[]) (runs: 4096, μ: 12250104, ~: 12968181)
+[PASS] testLatestCheckpoint(uint48[],uint256[]) (runs: 4096, μ: 12548351, ~: 13325535)
+[PASS] testLength(uint48[],uint256[]) (runs: 4096, μ: 12040582, ~: 12640154)
+[PASS] testLookup(uint48[],uint256[],uint48) (runs: 4096, μ: 11881077, ~: 12593197)
+[PASS] testPop(uint48[],uint256[]) (runs: 4096, μ: 6061291, ~: 5464276)
+[PASS] testPush(uint48[],uint256[],uint48) (runs: 4096, μ: 13974754, ~: 14807087)
+[PASS] testUpperLookupRecentCheckpoint(uint48[],uint256[],uint48) (runs: 4096, μ: 12047561, ~: 12819773)
+[PASS] testUpperLookupRecentCheckpointWithHint(uint48[],uint256[],uint48,uint32) (runs: 4096, μ: 11883097, ~: 12620976)
+[PASS] testUpperLookupRecentWithHint(uint48[],uint256[],uint48,uint32) (runs: 4096, μ: 11961181, ~: 12666051)
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 43.11s (170.02s CPU time)
 
 ╭---------------------------------------------------+-----------------+--------+--------+--------+---------╮
 | examples/MyKeyRegistry.sol:MyKeyRegistry Contract |                 |        |        |        |         |
@@ -498,11 +499,11 @@ Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 38.74s (148.46s CP
 |---------------------------------------------------+-----------------+--------+--------+--------+---------|
 | Function Name                                     | Min             | Avg    | Median | Max    | # Calls |
 |---------------------------------------------------+-----------------+--------+--------+--------+---------|
-| hashTypedDataV4                                   | 6730            | 6730   | 6730   | 6730   | 5196    |
+| hashTypedDataV4                                   | 6730            | 6730   | 6730   | 6730   | 5228    |
 |---------------------------------------------------+-----------------+--------+--------+--------+---------|
-| initialize                                        | 100690          | 100690 | 100690 | 100690 | 168     |
+| initialize                                        | 100690          | 100690 | 100690 | 100690 | 169     |
 |---------------------------------------------------+-----------------+--------+--------+--------+---------|
-| setKey                                            | 414935          | 418349 | 417209 | 453694 | 5196    |
+| setKey                                            | 414935          | 418349 | 417209 | 453694 | 5228    |
 ╰---------------------------------------------------+-----------------+--------+--------+--------+---------╯
 
 ╭-------------------------------------------------+-----------------+--------+--------+--------+---------╮
@@ -516,7 +517,7 @@ Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 38.74s (148.46s CP
 |-------------------------------------------------+-----------------+--------+--------+--------+---------|
 | Function Name                                   | Min             | Avg    | Median | Max    | # Calls |
 |-------------------------------------------------+-----------------+--------+--------+--------+---------|
-| SET_GENESIS_ROLE                                | 316             | 316    | 316    | 316    | 59      |
+| SET_GENESIS_ROLE                                | 316             | 316    | 316    | 316    | 60      |
 |-------------------------------------------------+-----------------+--------+--------+--------+---------|
 | VALIDATOR_SET_VERSION                           | 293             | 293    | 293    | 293    | 13      |
 |-------------------------------------------------+-----------------+--------+--------+--------+---------|
@@ -528,9 +529,9 @@ Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 38.74s (148.46s CP
 |-------------------------------------------------+-----------------+--------+--------+--------+---------|
 | getTotalVotingPowerFromValSetHeaderAt           | 2666            | 2666   | 2666   | 2666   | 5       |
 |-------------------------------------------------+-----------------+--------+--------+--------+---------|
-| grantRole                                       | 51664           | 51664  | 51664  | 51664  | 59      |
+| grantRole                                       | 51664           | 51664  | 51664  | 51664  | 60      |
 |-------------------------------------------------+-----------------+--------+--------+--------+---------|
-| initialize                                      | 244584          | 244584 | 244584 | 244584 | 59      |
+| initialize                                      | 244584          | 244584 | 244584 | 244584 | 60      |
 |-------------------------------------------------+-----------------+--------+--------+--------+---------|
 | setGenesis                                      | 156404          | 173786 | 174424 | 174436 | 28      |
 |-------------------------------------------------+-----------------+--------+--------+--------+---------|
@@ -562,7 +563,7 @@ Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 38.74s (148.46s CP
 |-----------------------------------------------------+-----------------+---------+---------+---------+---------|
 | getRequiredHeaderKeyTag                             | 4867            | 4867    | 4867    | 4867    | 13      |
 |-----------------------------------------------------+-----------------+---------+---------+---------+---------|
-| initialize                                          | 1332424         | 1332433 | 1332436 | 1332436 | 59      |
+| initialize                                          | 1332424         | 1332433 | 1332436 | 1332436 | 60      |
 ╰-----------------------------------------------------+-----------------+---------+---------+---------+---------╯
 
 ╭-------------------------------------------------------------------+-----------------+---------+---------+---------+---------╮
@@ -658,13 +659,13 @@ Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 38.74s (148.46s CP
 |----------------------------------------------+-----------------+-------+--------+-------+---------|
 | Function Name                                | Min             | Avg   | Median | Max   | # Calls |
 |----------------------------------------------+-----------------+-------+--------+-------+---------|
-| approve                                      | 46306           | 46356 | 46366  | 46366 | 569     |
+| approve                                      | 46306           | 46356 | 46366  | 46366 | 572     |
 |----------------------------------------------+-----------------+-------+--------+-------+---------|
-| balanceOf                                    | 559             | 1985  | 2559   | 2559  | 1992    |
+| balanceOf                                    | 559             | 1985  | 2559   | 2559  | 2003    |
 |----------------------------------------------+-----------------+-------+--------+-------+---------|
-| decimals                                     | 176             | 176   | 176    | 176   | 800     |
+| decimals                                     | 176             | 176   | 176    | 176   | 804     |
 |----------------------------------------------+-----------------+-------+--------+-------+---------|
-| totalSupply                                  | 2325            | 2325  | 2325   | 2325  | 844     |
+| totalSupply                                  | 2325            | 2325  | 2325   | 2325  | 849     |
 |----------------------------------------------+-----------------+-------+--------+-------+---------|
 | transfer                                     | 51553           | 51553 | 51553  | 51553 | 2       |
 ╰----------------------------------------------+-----------------+-------+--------+-------+---------╯
@@ -674,7 +675,7 @@ Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 38.74s (148.46s CP
 +=========================================================================================================+
 | Deployment Cost                                  | Deployment Size |        |        |        |         |
 |--------------------------------------------------+-----------------+--------+--------+--------+---------|
-| 0                                                | 12550           |        |        |        |         |
+| 0                                                | 12607           |        |        |        |         |
 |--------------------------------------------------+-----------------+--------+--------+--------+---------|
 |                                                  |                 |        |        |        |         |
 |--------------------------------------------------+-----------------+--------+--------+--------+---------|
@@ -692,23 +693,23 @@ Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 38.74s (148.46s CP
 |--------------------------------------------------+-----------------+--------+--------+--------+---------|
 | PROPOSER_ROLE                                    | 290             | 290    | 290    | 290    | 1       |
 |--------------------------------------------------+-----------------+--------+--------+--------+---------|
-| execute                                          | 32946           | 69537  | 70058  | 88034  | 36      |
+| execute                                          | 32946           | 68773  | 70058  | 88034  | 38      |
 |--------------------------------------------------+-----------------+--------+--------+--------+---------|
 | executeBatch                                     | 111588          | 111588 | 111588 | 111588 | 1       |
 |--------------------------------------------------+-----------------+--------+--------+--------+---------|
-| getMinDelay                                      | 977             | 6697   | 6003   | 12722  | 16      |
+| getMinDelay                                      | 977             | 6865   | 5849   | 12568  | 20      |
 |--------------------------------------------------+-----------------+--------+--------+--------+---------|
 | hasRole                                          | 2767            | 2767   | 2767   | 2767   | 4       |
 |--------------------------------------------------+-----------------+--------+--------+--------+---------|
-| initialize                                       | 28745           | 402905 | 479681 | 479681 | 32      |
+| initialize                                       | 28745           | 405232 | 479681 | 479681 | 33      |
 |--------------------------------------------------+-----------------+--------+--------+--------+---------|
 | metadataURI                                      | 3211            | 3211   | 3211   | 3211   | 2       |
 |--------------------------------------------------+-----------------+--------+--------+--------+---------|
 | name                                             | 3233            | 3233   | 3233   | 3233   | 2       |
 |--------------------------------------------------+-----------------+--------+--------+--------+---------|
-| schedule                                         | 35631           | 58845  | 58274  | 68874  | 41      |
+| schedule                                         | 27981           | 57922  | 58120  | 68831  | 44      |
 |--------------------------------------------------+-----------------+--------+--------+--------+---------|
-| scheduleBatch                                    | 27163           | 51248  | 44580  | 82002  | 3       |
+| scheduleBatch                                    | 27163           | 51080  | 44272  | 81805  | 3       |
 |--------------------------------------------------+-----------------+--------+--------+--------+---------|
 | setMaxNetworkLimit                               | 27393           | 47484  | 47484  | 67576  | 2       |
 |--------------------------------------------------+-----------------+--------+--------+--------+---------|
@@ -860,7 +861,7 @@ Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 38.74s (148.46s CP
 |-----------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | getOperatorVotingPowerAt                                                                      | 15017           | 119032  | 95724   | 488341  | 338     |
 |-----------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getOperatorVotingPowers                                                                       | 86090           | 249852  | 252252  | 315078  | 2756    |
+| getOperatorVotingPowers                                                                       | 86090           | 249879  | 252252  | 315078  | 2788    |
 |-----------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | getOperatorVotingPowersAt                                                                     | 92953           | 219506  | 219506  | 346060  | 128     |
 |-----------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
@@ -910,11 +911,11 @@ Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 38.74s (148.46s CP
 |-----------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | isTokenRegisteredAt                                                                           | 8429            | 8429    | 8429    | 8429    | 1       |
 |-----------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| registerOperator                                                                              | 6552            | 64064   | 62495   | 96695   | 2232    |
+| registerOperator                                                                              | 6552            | 64057   | 62495   | 96695   | 2264    |
 |-----------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | registerOperatorVault                                                                         | 17136           | 208023  | 208990  | 243212  | 483     |
 |-----------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| registerSharedVault                                                                           | 6648            | 119583  | 111583  | 145827  | 192     |
+| registerSharedVault                                                                           | 6648            | 119636  | 111583  | 145827  | 195     |
 |-----------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | registerToken                                                                                 | 426             | 73088   | 90466   | 90466   | 16      |
 |-----------------------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
@@ -982,9 +983,9 @@ Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 38.74s (148.46s CP
 |---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
 | Function Name                                                             | Min             | Avg   | Median | Max   | # Calls |
 |---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
-| pop                                                                       | 23586           | 23586 | 23586  | 23586 | 5       |
+| pop                                                                       | 23586           | 23586 | 23586  | 23586 | 2       |
 |---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
-| push                                                                      | 26412           | 26529 | 26484  | 26736 | 256     |
+| push                                                                      | 26412           | 26524 | 26472  | 26736 | 256     |
 ╰---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╯
 
 ╭---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╮
@@ -1000,7 +1001,7 @@ Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 38.74s (148.46s CP
 |---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
 | pop                                                                       | 23596           | 23596 | 23596  | 23596 | 3       |
 |---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
-| push                                                                      | 29745           | 29874 | 29793  | 30129 | 256     |
+| push                                                                      | 29745           | 29875 | 29805  | 30129 | 256     |
 ╰---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╯
 
 ╭---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╮
@@ -1013,8 +1014,6 @@ Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 38.74s (148.46s CP
 |                                                                           |                 |       |        |       |         |
 |---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
 | Function Name                                                             | Min             | Avg   | Median | Max   | # Calls |
-|---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
-| pop                                                                       | 23674           | 23674 | 23674  | 23674 | 1       |
 |---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------|
 | push                                                                      | 32861           | 32882 | 32885  | 32885 | 256     |
 ╰---------------------------------------------------------------------------+-----------------+-------+--------+-------+---------╯
@@ -1208,17 +1207,17 @@ Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 38.74s (148.46s CP
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | NETWORK                                                                         | 2443            | 2443    | 2443    | 2443    | 6       |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| OPERATOR_REGISTRY                                                               | 350             | 350     | 350     | 350     | 1732    |
+| OPERATOR_REGISTRY                                                               | 350             | 350     | 350     | 350     | 1764    |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| SUBNETWORK                                                                      | 719             | 1175    | 719     | 2719    | 11755   |
+| SUBNETWORK                                                                      | 719             | 1177    | 719     | 2719    | 11851   |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| VAULT_FACTORY                                                                   | 284             | 284     | 284     | 284     | 178     |
+| VAULT_FACTORY                                                                   | 284             | 284     | 284     | 284     | 181     |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | distributeOperatorRewards                                                       | 24854           | 24854   | 24854   | 24854   | 1       |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | distributeStakerRewards                                                         | 27110           | 27110   | 27110   | 27110   | 1       |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| getOperatorVotingPowers                                                         | 258357          | 258357  | 258357  | 258357  | 2628    |
+| getOperatorVotingPowers                                                         | 258357          | 258357  | 258357  | 258357  | 2660    |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | getRewarder                                                                     | 2432            | 2432    | 2432    | 2432    | 4       |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
@@ -1230,11 +1229,11 @@ Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 38.74s (148.46s CP
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | getVotingPowers                                                                 | 2456108         | 3310040 | 3840067 | 3840067 | 47      |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| initialize                                                                      | 345805          | 345805  | 345805  | 345805  | 59      |
+| initialize                                                                      | 345805          | 345805  | 345805  | 345805  | 60      |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| registerOperator                                                                | 113472          | 114637  | 113472  | 147672  | 1732    |
+| registerOperator                                                                | 113472          | 114635  | 113472  | 147672  | 1764    |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| registerSharedVault                                                             | 138549          | 149904  | 138549  | 172749  | 178     |
+| registerSharedVault                                                             | 138549          | 149905  | 138549  | 172749  | 181     |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | setRewarder                                                                     | 25218           | 36282   | 36282   | 47346   | 4       |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
@@ -1242,7 +1241,7 @@ Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 38.74s (148.46s CP
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
 | slashVault                                                                      | 25676           | 25676   | 25676   | 25676   | 1       |
 |---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------|
-| stakeToVotingPower                                                              | 915             | 915     | 915     | 915     | 11748   |
+| stakeToVotingPower                                                              | 915             | 915     | 915     | 915     | 11844   |
 ╰---------------------------------------------------------------------------------+-----------------+---------+---------+---------+---------╯
 
 ╭--------------------------------------------------------------------+-----------------+-------+--------+-------+---------╮
@@ -2216,4 +2215,4 @@ Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 38.74s (148.46s CP
 ╰-----------------------------------------------------------------------------------+-----------------+--------+--------+--------+---------╯
 
 
-Ran 43 test suites in 39.36s (138.79s CPU time): 358 tests passed, 0 failed, 0 skipped (358 total tests)
+Ran 43 test suites in 44.47s (154.20s CPU time): 359 tests passed, 0 failed, 0 skipped (359 total tests)
