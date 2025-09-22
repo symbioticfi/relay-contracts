@@ -1,5 +1,7 @@
 @openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/
 @openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/
 @symbioticfi/core/=lib/core/
+@symbioticfi/network/=lib/network
 @crypto-lib/=lib/crypto-lib/src/
 @symbioticfi/rewards/=lib/rewards/
+@chainlink/contracts=lib/chainlink-evm/contracts

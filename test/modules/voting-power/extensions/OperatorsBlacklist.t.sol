@@ -3,19 +3,18 @@ pragma solidity ^0.8.25;
 
 import "forge-std/Test.sol";
 
-import {OperatorsBlacklist} from "../../../../src/contracts/modules/voting-power/extensions/OperatorsBlacklist.sol";
-import {VotingPowerProvider} from "../../../../src/contracts/modules/voting-power/VotingPowerProvider.sol";
+import {OperatorsBlacklist} from "../../../../src/modules/voting-power/extensions/OperatorsBlacklist.sol";
+import {VotingPowerProvider} from "../../../../src/modules/voting-power/VotingPowerProvider.sol";
 import {NoPermissionManager} from "../../../../test/mocks/NoPermissionManager.sol";
-import {EqualStakeVPCalc} from
-    "../../../../src/contracts/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol";
+import {EqualStakeVPCalc} from "../../../../src/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol";
 
 import {INetworkManager} from "../../../../src/interfaces/modules/base/INetworkManager.sol";
 import {IOperatorsBlacklist} from "../../../../src/interfaces/modules/voting-power/extensions/IOperatorsBlacklist.sol";
 import {InitSetupTest} from "../../../InitSetup.sol";
-import {MultiToken} from "../../../../src/contracts/modules/voting-power/extensions/MultiToken.sol";
+import {MultiToken} from "../../../../src/modules/voting-power/extensions/MultiToken.sol";
 import {IVotingPowerProvider} from "../../../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
 import {IOzEIP712} from "../../../../src/interfaces/modules/base/IOzEIP712.sol";
-import {OperatorVaults} from "../../../../src/contracts/modules/voting-power/extensions/OperatorVaults.sol";
+import {OperatorVaults} from "../../../../src/modules/voting-power/extensions/OperatorVaults.sol";
 
 contract TestOperatorsBlacklist is
     OperatorsBlacklist,
@@ -30,9 +29,6 @@ contract TestOperatorsBlacklist is
         IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit
     ) external initializer {
         __VotingPowerProvider_init(votingPowerProviderInit);
-        __OperatorVaults_init();
-
-        __OperatorsBlacklist_init();
     }
 
     function _registerOperatorImpl(
@@ -57,13 +53,14 @@ contract OperatorsBlacklistTest is InitSetupTest {
             new TestOperatorsBlacklist(address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory));
 
         INetworkManager.NetworkManagerInitParams memory netInit =
-            INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkID: IDENTIFIER});
+            INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkId: IDENTIFIER});
 
         IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
             .VotingPowerProviderInitParams({
             networkManagerInitParams: netInit,
             ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
-            slashingWindow: 100,
+            requireSlasher: true,
+            minVaultEpochDuration: 100,
             token: initSetupParams.masterChain.tokens[0]
         });
 
@@ -72,6 +69,8 @@ contract OperatorsBlacklistTest is InitSetupTest {
         operator1 = getOperator(0).addr;
         operator1Pk = getOperator(0).privateKey;
 
+        (bool requireSlasher, uint48 minVaultEpochDuration) = blacklistOps.getSlashingData();
+
         // blacklistOps.registerToken(initSetupParams.masterChain.tokens[0]);
 
         vault1 = _getVault_SymbioticCore(
@@ -79,7 +78,7 @@ contract OperatorsBlacklistTest is InitSetupTest {
                 owner: operator1,
                 collateral: initSetupParams.masterChain.tokens[0],
                 burner: 0x000000000000000000000000000000000000dEaD,
-                epochDuration: blacklistOps.getSlashingWindow() * 2,
+                epochDuration: minVaultEpochDuration * 2,
                 whitelistedDepositors: new address[](0),
                 depositLimit: 0,
                 delegatorIndex: 2,
@@ -114,9 +113,9 @@ contract OperatorsBlacklistTest is InitSetupTest {
         vm.stopPrank();
     }
 
-    function test_BlacklistOperator_OperatorBlacklisted() public {
+    function test_BlacklistOperator_RevertIfAlreadyBlacklisted() public {
         blacklistOps.blacklistOperator(operator1);
-
+        assertTrue(blacklistOps.isOperatorBlacklisted(operator1));
         vm.expectRevert(IOperatorsBlacklist.OperatorsBlacklist_OperatorBlacklisted.selector);
         blacklistOps.blacklistOperator(operator1);
     }
@@ -135,7 +134,7 @@ contract OperatorsBlacklistTest is InitSetupTest {
         assertTrue(blacklistOps.isOperatorRegistered(operator1));
     }
 
-    function test_UnblacklistOperator_OperatorNotBlacklisted() public {
+    function test_UnblacklistOperator_RevertIfNotBlacklisted() public {
         vm.expectRevert(IOperatorsBlacklist.OperatorsBlacklist_OperatorNotBlacklisted.selector);
         blacklistOps.unblacklistOperator(operator1);
     }

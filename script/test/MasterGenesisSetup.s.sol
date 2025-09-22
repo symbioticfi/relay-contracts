@@ -19,9 +19,9 @@ contract MasterGenesisSetupScript is MasterSetupScript {
     struct ValSetHeaderStruct {
         uint48 captureTimestamp;
         uint48 epoch;
-        bytes32 previousHeaderHash;
         uint256 quorumThreshold;
         uint8 requiredKeyTag;
+        uint256 totalVotingPower;
         bytes32 validatorsSszMRoot;
         uint8 version;
     }
@@ -60,8 +60,8 @@ contract MasterGenesisSetupScript is MasterSetupScript {
             epoch: genesis.header.epoch,
             captureTimestamp: genesis.header.captureTimestamp,
             quorumThreshold: genesis.header.quorumThreshold,
-            validatorsSszMRoot: genesis.header.validatorsSszMRoot,
-            previousHeaderHash: genesis.header.previousHeaderHash
+            totalVotingPower: genesis.header.totalVotingPower,
+            validatorsSszMRoot: genesis.header.validatorsSszMRoot
         });
 
         extraData = new ISettlement.ExtraData[](genesis.extraData.length);

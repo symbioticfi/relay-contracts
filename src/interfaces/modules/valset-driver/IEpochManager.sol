@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {Checkpoints} from "../../../contracts/libraries/structs/Checkpoints.sol";
+import {Checkpoints} from "../../../libraries/structs/Checkpoints.sol";
 
 interface IEpochManager {
     /**
@@ -15,9 +15,9 @@ interface IEpochManager {
     error EpochManager_InvalidEpochDurationTimestamp();
 
     /**
-     * @notice Reverts when the checkpoint is not found for the current time point.
+     * @notice Reverts when the timestamp is too old.
      */
-    error EpochManager_NoCheckpoint();
+    error EpochManager_TooOldTimestamp();
 
     /**
      * @notice The storage of the EpochManager contract.
@@ -93,26 +93,29 @@ interface IEpochManager {
     /**
      * @notice Returns the epoch index at the given timestamp.
      * @param timestamp The timestamp.
-     * @param hint The hint to optimize the epoch index fetching.
      * @return The epoch index at the given timestamp.
      */
-    function getEpochIndex(uint48 timestamp, bytes memory hint) external view returns (uint48);
+    function getEpochIndex(
+        uint48 timestamp
+    ) external view returns (uint48);
 
     /**
      * @notice Returns the epoch duration of the given epoch.
      * @param epoch The epoch.
-     * @param hint The hint to optimize the epoch duration fetching.
      * @return The epoch duration of the given epoch.
      */
-    function getEpochDuration(uint48 epoch, bytes memory hint) external view returns (uint48);
+    function getEpochDuration(
+        uint48 epoch
+    ) external view returns (uint48);
 
     /**
      * @notice Returns the epoch start of the given epoch.
      * @param epoch The epoch.
-     * @param hint The hint to optimize the epoch start fetching.
      * @return The epoch start of the given epoch.
      */
-    function getEpochStart(uint48 epoch, bytes memory hint) external view returns (uint48);
+    function getEpochStart(
+        uint48 epoch
+    ) external view returns (uint48);
 
     /**
      * @notice Sets the epoch duration.

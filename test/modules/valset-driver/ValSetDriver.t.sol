@@ -3,7 +3,7 @@ pragma solidity ^0.8.25;
 
 import "forge-std/Test.sol";
 
-import {ValSetDriver} from "../../../src/contracts/modules/valset-driver/ValSetDriver.sol";
+import {ValSetDriver} from "../../../src/modules/valset-driver/ValSetDriver.sol";
 import {IValSetDriver} from "../../../src/interfaces/modules/valset-driver/IValSetDriver.sol";
 
 import {INetworkManager} from "../../../src/interfaces/modules/base/INetworkManager.sol";
@@ -48,29 +48,31 @@ contract ValSetDriverTest is Test {
 
         IValSetDriver.CrossChainAddress memory keysProv = cca(address(444), 222);
 
-        IValSetDriver.CrossChainAddress[] memory reps = new IValSetDriver.CrossChainAddress[](1);
-        reps[0] = cca(address(0xBB01), 303);
+        IValSetDriver.CrossChainAddress[] memory settls = new IValSetDriver.CrossChainAddress[](1);
+        settls[0] = cca(address(0xBB01), 303);
 
         uint8[] memory requiredKeyTags = new uint8[](1);
         requiredKeyTags[0] = 0x2A;
         IValSetDriver.QuorumThreshold[] memory quorumThresholds = new IValSetDriver.QuorumThreshold[](1);
         quorumThresholds[0] = IValSetDriver.QuorumThreshold({keyTag: 0x2A, quorumThreshold: uint248(10 ** 18)});
         IValSetDriver.ValSetDriverInitParams memory initParams = IValSetDriver.ValSetDriverInitParams({
-            networkManagerInitParams: INetworkManager.NetworkManagerInitParams({network: address(1), subnetworkID: 0}),
+            networkManagerInitParams: INetworkManager.NetworkManagerInitParams({network: address(1), subnetworkId: 0}),
             epochManagerInitParams: IEpochManager.EpochManagerInitParams({
                 epochDuration: 100,
                 epochDurationTimestamp: uint48(vm.getBlockTimestamp())
             }),
+            numAggregators: 1,
+            numCommitters: 1,
             votingPowerProviders: vpps,
             keysProvider: keysProv,
-            replicas: reps,
-            verificationType: 7,
+            settlements: settls,
             maxVotingPower: 1e36,
             minInclusionVotingPower: 0,
             maxValidatorsCount: 100,
             requiredKeyTags: requiredKeyTags,
+            quorumThresholds: quorumThresholds,
             requiredHeaderKeyTag: requiredKeyTags[0],
-            quorumThresholds: quorumThresholds
+            verificationType: 7
         });
 
         testMCP.initialize(initParams, owner);
@@ -114,19 +116,32 @@ contract ValSetDriverTest is Test {
         assertEq(keysP.addr, address(444), "keysProvider addr mismatch");
         assertEq(keysP.chainId, 222, "keysProvider chainId mismatch");
 
-        IValSetDriver.CrossChainAddress[] memory reps = testMCP.getReplicas();
-        assertEq(reps.length, 1, "Should have 1 replica");
-        assertEq(reps[0].addr, address(0xBB01));
-        assertEq(reps[0].chainId, 303);
+        IValSetDriver.CrossChainAddress[] memory settls = testMCP.getSettlements();
+        assertEq(settls.length, 1, "Should have 1 settlement");
+        assertEq(settls[0].addr, address(0xBB01));
+        assertEq(settls[0].chainId, 303);
 
-        uint32 vt = testMCP.getVerificationType();
-        assertEq(vt, 7, "verificationType mismatch");
+        assertEq(testMCP.getVerificationType(), 7, "verificationType mismatch");
+
+        assertEq(testMCP.getNumAggregators(), 1, "numAggregators mismatch");
+        assertEq(testMCP.getNumCommitters(), 1, "numCommitters mismatch");
 
         IValSetDriver.Config memory mc = testMCP.getConfig();
+        assertEq(mc.numAggregators, 1);
+        assertEq(mc.numCommitters, 1);
         assertEq(mc.votingPowerProviders.length, 2);
         assertEq(mc.votingPowerProviders[0].addr, address(0xAA01));
         assertEq(mc.keysProvider.addr, address(444));
-        assertEq(mc.replicas.length, 1);
+        assertEq(mc.settlements.length, 1);
+        assertEq(mc.maxVotingPower, 1e36);
+        assertEq(mc.minInclusionVotingPower, 0);
+        assertEq(mc.maxValidatorsCount, 100);
+        assertEq(mc.requiredKeyTags.length, 1);
+        assertEq(mc.requiredKeyTags[0], 0x2A);
+        assertEq(mc.quorumThresholds.length, 1);
+        assertEq(mc.quorumThresholds[0].keyTag, 0x2A);
+        assertEq(mc.quorumThresholds[0].quorumThreshold, 1e18);
+        assertEq(mc.requiredHeaderKeyTag, 0x2A);
         assertEq(mc.verificationType, 7);
     }
 
@@ -201,47 +216,47 @@ contract ValSetDriverTest is Test {
         assertEq(got.chainId, 555);
     }
 
-    function test_AddRemoveReplica() public {
+    function test_AddRemoveSettlement() public {
         IValSetDriver.CrossChainAddress memory rep2 = cca(address(0xBB02), 304);
 
         vm.prank(nonOwner);
         vm.expectRevert("Not authorized");
-        testMCP.addReplica(rep2);
+        testMCP.addSettlement(rep2);
 
         vm.prank(owner);
-        testMCP.addReplica(rep2);
-        IValSetDriver.CrossChainAddress[] memory reps = testMCP.getReplicas();
-        assertEq(reps.length, 2, "Should have 2 replicas now");
-        assertEq(reps[1].addr, address(0xBB02));
+        testMCP.addSettlement(rep2);
+        IValSetDriver.CrossChainAddress[] memory settls = testMCP.getSettlements();
+        assertEq(settls.length, 2, "Should have 2 settlements now");
+        assertEq(settls[1].addr, address(0xBB02));
 
         vm.prank(owner);
         vm.expectRevert(IValSetDriver.ValSetDriver_ChainAlreadyAdded.selector);
-        testMCP.addReplica(rep2);
+        testMCP.addSettlement(rep2);
         vm.expectRevert(IValSetDriver.ValSetDriver_InvalidCrossChainAddress.selector);
-        testMCP.addReplica(cca(address(0), 304));
+        testMCP.addSettlement(cca(address(0), 304));
         vm.expectRevert(IValSetDriver.ValSetDriver_InvalidCrossChainAddress.selector);
-        testMCP.addReplica(cca(address(1), 0));
+        testMCP.addSettlement(cca(address(1), 0));
 
-        reps = testMCP.getReplicasAt(uint48(vm.getBlockTimestamp()));
-        assertEq(reps.length, 2, "Should have 2 replicas now");
-        assertEq(reps[1].addr, address(0xBB02));
+        settls = testMCP.getSettlementsAt(uint48(vm.getBlockTimestamp()));
+        assertEq(settls.length, 2, "Should have 2 settlements now");
+        assertEq(settls[1].addr, address(0xBB02));
 
-        assertEq(testMCP.isReplicaRegistered(rep2), true);
-        assertEq(testMCP.isReplicaRegisteredAt(rep2, uint48(vm.getBlockTimestamp())), true);
-        assertEq(testMCP.isReplicaRegistered(cca(address(0xBB03), 305)), false);
+        assertEq(testMCP.isSettlementRegistered(rep2), true);
+        assertEq(testMCP.isSettlementRegisteredAt(rep2, uint48(vm.getBlockTimestamp())), true);
+        assertEq(testMCP.isSettlementRegistered(cca(address(0xBB03), 305)), false);
 
         vm.prank(nonOwner);
         vm.expectRevert("Not authorized");
-        testMCP.removeReplica(rep2);
+        testMCP.removeSettlement(rep2);
 
         vm.prank(owner);
-        testMCP.removeReplica(rep2);
-        reps = testMCP.getReplicas();
-        assertEq(reps.length, 1);
+        testMCP.removeSettlement(rep2);
+        settls = testMCP.getSettlements();
+        assertEq(settls.length, 1);
 
         vm.prank(owner);
         vm.expectRevert(IValSetDriver.ValSetDriver_NotAdded.selector);
-        testMCP.removeReplica(rep2);
+        testMCP.removeSettlement(rep2);
     }
 
     function test_AddRemoveQuorumThreshold() public {
@@ -320,6 +335,72 @@ contract ValSetDriverTest is Test {
         assertEq(mcNew.verificationType, 777);
     }
 
+    function test_SetNumAggregators() public {
+        vm.prank(nonOwner);
+        vm.expectRevert("Not authorized");
+        testMCP.setNumAggregators(2);
+
+        vm.prank(owner);
+        testMCP.setNumAggregators(2);
+
+        assertEq(testMCP.getNumAggregators(), 2);
+
+        vm.prank(owner);
+        vm.expectRevert(IValSetDriver.ValSetDriver_ZeroNumAggregators.selector);
+        testMCP.setNumAggregators(0);
+
+        vm.prank(owner);
+        testMCP.setNumAggregators(1);
+
+        assertEq(testMCP.getNumAggregators(), 1);
+
+        vm.warp(vm.getBlockTimestamp() + 100);
+
+        vm.prank(owner);
+        testMCP.setNumAggregators(2);
+
+        assertEq(testMCP.getNumAggregatorsAt(uint48(vm.getBlockTimestamp())), 2);
+
+        assertEq(testMCP.getNumAggregatorsAt(uint48(vm.getBlockTimestamp() - 1)), 1);
+
+        assertEq(testMCP.getConfig().numAggregators, 2);
+        assertEq(testMCP.getConfigAt(uint48(vm.getBlockTimestamp())).numAggregators, 2);
+        assertEq(testMCP.getConfigAt(uint48(vm.getBlockTimestamp() - 1)).numAggregators, 1);
+    }
+
+    function test_SetNumCommitters() public {
+        vm.prank(nonOwner);
+        vm.expectRevert("Not authorized");
+        testMCP.setNumCommitters(2);
+
+        vm.prank(owner);
+        testMCP.setNumCommitters(2);
+
+        assertEq(testMCP.getNumCommitters(), 2);
+
+        vm.prank(owner);
+        vm.expectRevert(IValSetDriver.ValSetDriver_ZeroNumCommitters.selector);
+        testMCP.setNumCommitters(0);
+
+        vm.prank(owner);
+        testMCP.setNumCommitters(1);
+
+        assertEq(testMCP.getNumCommitters(), 1);
+
+        vm.warp(vm.getBlockTimestamp() + 100);
+
+        vm.prank(owner);
+        testMCP.setNumCommitters(2);
+
+        assertEq(testMCP.getNumCommittersAt(uint48(vm.getBlockTimestamp())), 2);
+
+        assertEq(testMCP.getNumCommittersAt(uint48(vm.getBlockTimestamp() - 1)), 1);
+
+        assertEq(testMCP.getConfig().numCommitters, 2);
+        assertEq(testMCP.getConfigAt(uint48(vm.getBlockTimestamp())).numCommitters, 2);
+        assertEq(testMCP.getConfigAt(uint48(vm.getBlockTimestamp() - 1)).numCommitters, 1);
+    }
+
     function test_Location() public {
         bytes32 location =
             keccak256(abi.encode(uint256(keccak256("symbiotic.storage.ValSetDriver")) - 1)) & ~bytes32(uint256(0xff));
@@ -330,6 +411,8 @@ contract ValSetDriverTest is Test {
         vm.startPrank(owner);
         testMCP.setMaxVotingPower(5000);
         testMCP.setMinInclusionVotingPower(123);
+        vm.expectRevert(IValSetDriver.ValSetDriver_InvalidMaxValidatorsCount.selector);
+        testMCP.setMaxValidatorsCount(0);
         testMCP.setMaxValidatorsCount(777);
         uint8[] memory newTags = new uint8[](2);
         newTags[0] = 1;

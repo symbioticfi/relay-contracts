@@ -2,9 +2,9 @@ name: test
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
+
+env:
+  ETH_RPC_URL: ${{ secrets.ETH_RPC_URL }}
 
 jobs:
   run-tests:
@@ -19,7 +19,7 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
-          version: nightly
+          version: stable
 
       - name: Run Forge tests
         run: |

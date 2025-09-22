@@ -6,16 +6,15 @@ import "forge-std/Test.sol";
 import {IOperatorsWhitelist} from "../../../../src/interfaces/modules/voting-power/extensions/IOperatorsWhitelist.sol";
 import "../../../InitSetup.sol";
 
-import {OperatorsWhitelist} from "../../../../src/contracts/modules/voting-power/extensions/OperatorsWhitelist.sol";
+import {OperatorsWhitelist} from "../../../../src/modules/voting-power/extensions/OperatorsWhitelist.sol";
 import {NoPermissionManager} from "../../../../test/mocks/NoPermissionManager.sol";
-import {EqualStakeVPCalc} from
-    "../../../../src/contracts/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol";
+import {EqualStakeVPCalc} from "../../../../src/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol";
 import {INetworkManager} from "../../../../src/interfaces/modules/base/INetworkManager.sol";
 import {IVotingPowerProvider} from "../../../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
-import {MultiToken} from "../../../../src/contracts/modules/voting-power/extensions/MultiToken.sol";
+import {MultiToken} from "../../../../src/modules/voting-power/extensions/MultiToken.sol";
 import {IOzEIP712} from "../../../../src/interfaces/modules/base/IOzEIP712.sol";
-import {VotingPowerProvider} from "../../../../src/contracts/modules/voting-power/VotingPowerProvider.sol";
-import {OperatorVaults} from "../../../../src/contracts/modules/voting-power/extensions/OperatorVaults.sol";
+import {VotingPowerProvider} from "../../../../src/modules/voting-power/VotingPowerProvider.sol";
+import {OperatorVaults} from "../../../../src/modules/voting-power/extensions/OperatorVaults.sol";
 
 contract TestOperatorsWhitelist is
     OperatorsWhitelist,
@@ -31,7 +30,7 @@ contract TestOperatorsWhitelist is
         OperatorsWhitelistInitParams memory wlInit
     ) external initializer {
         __VotingPowerProvider_init(votingPowerProviderInit);
-        __OperatorVaults_init();
+
         __OperatorsWhitelist_init(wlInit);
     }
 
@@ -59,7 +58,7 @@ contract OperatorsWhitelistTest is Test, InitSetupTest {
             new TestOperatorsWhitelist(address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory));
 
         INetworkManager.NetworkManagerInitParams memory netInit =
-            INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkID: IDENTIFIER});
+            INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkId: IDENTIFIER});
         IOperatorsWhitelist.OperatorsWhitelistInitParams memory wlInit =
             IOperatorsWhitelist.OperatorsWhitelistInitParams({isWhitelistEnabled: true});
 
@@ -67,7 +66,8 @@ contract OperatorsWhitelistTest is Test, InitSetupTest {
             .VotingPowerProviderInitParams({
             networkManagerInitParams: netInit,
             ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
-            slashingWindow: 100,
+            requireSlasher: true,
+            minVaultEpochDuration: 100,
             token: initSetupParams.masterChain.tokens[0]
         });
 
@@ -76,6 +76,8 @@ contract OperatorsWhitelistTest is Test, InitSetupTest {
         operator1 = getOperator(0).addr;
         operator1Pk = getOperator(0).privateKey;
 
+        (bool requireSlasher, uint48 minVaultEpochDuration) = whitelistOps.getSlashingData();
+
         // whitelistOps.registerToken(initSetupParams.masterChain.tokens[0]);
 
         vaultA = _getVault_SymbioticCore(
@@ -83,7 +85,7 @@ contract OperatorsWhitelistTest is Test, InitSetupTest {
                 owner: operator1,
                 collateral: initSetupParams.masterChain.tokens[0],
                 burner: 0x000000000000000000000000000000000000dEaD,
-                epochDuration: whitelistOps.getSlashingWindow() * 2,
+                epochDuration: minVaultEpochDuration * 2,
                 whitelistedDepositors: new address[](0),
                 depositLimit: 0,
                 delegatorIndex: 2,
@@ -100,7 +102,7 @@ contract OperatorsWhitelistTest is Test, InitSetupTest {
                 owner: operator1,
                 collateral: initSetupParams.masterChain.tokens[0],
                 burner: 0x000000000000000000000000000000000000dEaD,
-                epochDuration: whitelistOps.getSlashingWindow() * 2,
+                epochDuration: minVaultEpochDuration * 2,
                 whitelistedDepositors: new address[](0),
                 depositLimit: 0,
                 delegatorIndex: 2,
@@ -136,6 +138,12 @@ contract OperatorsWhitelistTest is Test, InitSetupTest {
         assertTrue(whitelistOps.isOperatorRegistered(operator1));
     }
 
+    function test_WhitelistOperator_RevertIfAlreadyWhitelisted() public {
+        whitelistOps.whitelistOperator(operator1);
+        vm.expectRevert(IOperatorsWhitelist.OperatorsWhitelist_OperatorWhitelisted.selector);
+        whitelistOps.whitelistOperator(operator1);
+    }
+
     function test_UnwhitelistOperator_RegisteredOperatorGetsUnregistered() public {
         whitelistOps.whitelistOperator(operator1);
         vm.prank(operator1);
@@ -147,6 +155,11 @@ contract OperatorsWhitelistTest is Test, InitSetupTest {
         assertFalse(whitelistOps.isOperatorWhitelisted(operator1));
     }
 
+    function test_UnwhitelistOperator_RevertIfNotWhitelisted() public {
+        vm.expectRevert(IOperatorsWhitelist.OperatorsWhitelist_OperatorNotWhitelisted.selector);
+        whitelistOps.unwhitelistOperator(operator1);
+    }
+
     function test_DisableWhitelistAndRegister() public {
         whitelistOps.setWhitelistStatus(false);
         assertFalse(whitelistOps.isWhitelistEnabled());
@@ -154,6 +167,24 @@ contract OperatorsWhitelistTest is Test, InitSetupTest {
         vm.prank(operator1);
         whitelistOps.registerOperator();
         assertTrue(whitelistOps.isOperatorRegistered(operator1));
+    }
+
+    function test_SetWhitelistStatus_RevertIfAlreadySet() public {
+        whitelistOps.setWhitelistStatus(false);
+        assertFalse(whitelistOps.isWhitelistEnabled());
+        vm.expectRevert(IOperatorsWhitelist.OperatorsWhitelist_StatusAlreadySet.selector);
+        whitelistOps.setWhitelistStatus(false);
+
+        whitelistOps.setWhitelistStatus(true);
+        assertTrue(whitelistOps.isWhitelistEnabled());
+        vm.expectRevert(IOperatorsWhitelist.OperatorsWhitelist_StatusAlreadySet.selector);
+        whitelistOps.setWhitelistStatus(true);
+    }
+
+    function test_SetWhitelistStatus_RevertIfNotWhitelisted() public {
+        vm.expectRevert(IOperatorsWhitelist.OperatorsWhitelist_OperatorNotWhitelisted.selector);
+        vm.prank(operator1);
+        whitelistOps.registerOperator();
     }
 
     function test_DisableWhitelistAndRegisterOperatorVault() public {
@@ -167,17 +198,6 @@ contract OperatorsWhitelistTest is Test, InitSetupTest {
 
         assertTrue(whitelistOps.isOperatorVaultRegistered(operator1, vaultA));
         assertTrue(whitelistOps.isOperatorVaultRegistered(vaultA));
-    }
-
-    function test_UnwhitelistOperator_RevertIfNotWhitelisted() public {
-        vm.expectRevert(IOperatorsWhitelist.OperatorsWhitelist_OperatorNotWhitelisted.selector);
-        whitelistOps.unwhitelistOperator(operator1);
-    }
-
-    function test_WhitelistOperator_RevertIfAlreadyWhitelisted() public {
-        whitelistOps.whitelistOperator(operator1);
-        vm.expectRevert(IOperatorsWhitelist.OperatorsWhitelist_OperatorAlreadyWhitelisted.selector);
-        whitelistOps.whitelistOperator(operator1);
     }
 
     function test_Location() public {

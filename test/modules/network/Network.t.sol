@@ -3,18 +3,20 @@ pragma solidity ^0.8.25;
 
 import "forge-std/Test.sol";
 
-import {MyNetwork} from "../../../examples/MyNetwork.sol";
+import {Network} from "@symbioticfi/network/src/Network.sol";
 
-import {INetwork} from "../../../src/interfaces/modules/network/INetwork.sol";
+import {INetwork} from "@symbioticfi/network/src/interfaces/INetwork.sol";
 
 import "../../MasterSetup.sol";
 
 import {Subnetwork} from "@symbioticfi/core/src/contracts/libraries/Subnetwork.sol";
+import {TimelockControllerUpgradeable} from
+    "@openzeppelin/contracts-upgradeable/governance/TimelockControllerUpgradeable.sol";
 
 contract NetworkTest is MasterSetupTest {
     using Subnetwork for address;
 
-    MyNetwork private myNetwork;
+    Network private myNetwork;
 
     address internal admin = address(0xA11CE);
     address internal proposer = address(0xBEEF1);
@@ -28,8 +30,7 @@ contract NetworkTest is MasterSetupTest {
         SYMBIOTIC_CORE_PROJECT_ROOT = "lib/core/";
         MasterSetupTest.setUp();
 
-        myNetwork =
-            new MyNetwork(address(symbioticCore.networkRegistry), address(symbioticCore.networkMiddlewareService));
+        myNetwork = new Network(address(symbioticCore.networkRegistry), address(symbioticCore.networkMiddlewareService));
 
         INetwork.NetworkInitParams memory p;
         p.globalMinDelay = GLOBAL_MIN_DELAY;
@@ -210,6 +211,8 @@ contract NetworkTest is MasterSetupTest {
         myNetwork.execute(address(myNetwork), 0, callData, bytes32(0), bytes32("salt42"));
 
         assertEq(myNetwork.getMinDelay(address(this), abi.encodeWithSelector(FOO_SEL)), newDelay);
+        vm.expectRevert(INetwork.InvalidTargetAndSelector.selector);
+        myNetwork.getMinDelay(address(0), abi.encodeWithSelector(FOO_SEL));
         assertEq(
             myNetwork.getMinDelay(
                 address(myNetwork),
@@ -218,6 +221,46 @@ contract NetworkTest is MasterSetupTest {
                 )
             ),
             newDelay
+        );
+    }
+
+    function test_UpdateDelayThroughTimelock_ZeroSelector() public {
+        uint256 newDelay = 5 days;
+        bytes memory callData = abi.encodeWithSelector(
+            bytes4(keccak256("updateDelay(address,bytes4,bool,uint256)")), address(this), bytes4(0), true, newDelay
+        );
+
+        vm.prank(proposer);
+        myNetwork.schedule(address(myNetwork), 0, callData, bytes32(0), bytes32("salt42"), GLOBAL_MIN_DELAY);
+
+        vm.prank(proposer);
+        vm.expectRevert();
+        myNetwork.schedule(address(myNetwork), 0, callData, bytes32(0), bytes32("salt42"), GLOBAL_MIN_DELAY);
+
+        vm.warp(vm.getBlockTimestamp() + GLOBAL_MIN_DELAY);
+        vm.prank(executor);
+        myNetwork.execute(address(myNetwork), 0, callData, bytes32(0), bytes32("salt42"));
+
+        assertEq(myNetwork.getMinDelay(address(this), abi.encodeWithSelector(bytes4(0))), newDelay);
+        assertEq(
+            myNetwork.getMinDelay(
+                address(myNetwork),
+                abi.encodeWithSelector(
+                    bytes4(keccak256("updateDelay(address,bytes4,bool,uint256)")), address(this), bytes4(0), false, 0
+                )
+            ),
+            newDelay
+        );
+        vm.expectRevert(INetwork.InvalidTargetAndSelector.selector);
+        myNetwork.getMinDelay(
+            address(myNetwork),
+            abi.encodeWithSelector(
+                bytes4(keccak256("updateDelay(address,bytes4,bool,uint256)")),
+                address(myNetwork),
+                bytes4(keccak256("updateDelay(address,bytes4,bool,uint256)")),
+                false,
+                0
+            )
         );
     }
 
@@ -263,7 +306,7 @@ contract NetworkTest is MasterSetupTest {
 
     function test_GetMinDelayInvalidSelectorReverts() public {
         vm.expectRevert(INetwork.InvalidDataLength.selector);
-        myNetwork.getMinDelay(address(0), "");
+        myNetwork.getMinDelay(address(0), new bytes(1));
     }
 
     function test_ScheduleBatchLengthMismatchReverts() public {
@@ -328,5 +371,75 @@ contract NetworkTest is MasterSetupTest {
         myNetwork.executeBatch(targets, values, payloads, bytes32(0), salt);
 
         assertEq(myNetwork.getMinDelay(address(this), abi.encodeWithSelector(FOO_SEL)), newSelectorDelay);
+    }
+
+    function test_EthTransfer() public {
+        uint256 amount = 100 ether;
+
+        deal(address(myNetwork), amount);
+
+        vm.prank(proposer);
+        myNetwork.schedule(address(1), amount, new bytes(0), bytes32(0), bytes32("salt42"), GLOBAL_MIN_DELAY);
+
+        vm.prank(proposer);
+        vm.expectRevert();
+        myNetwork.schedule(address(1), amount, new bytes(0), bytes32(0), bytes32("salt42"), GLOBAL_MIN_DELAY);
+
+        uint256 balanceBefore = address(1).balance;
+
+        vm.warp(vm.getBlockTimestamp() + GLOBAL_MIN_DELAY);
+        vm.prank(executor);
+        myNetwork.execute(address(1), amount, new bytes(0), bytes32(0), bytes32("salt42"));
+
+        assertEq(address(1).balance - balanceBefore, amount);
+
+        assertEq(myNetwork.getMinDelay(address(1), new bytes(0)), GLOBAL_MIN_DELAY);
+    }
+
+    function test_BreakInvariant() public {
+        vm.startPrank(proposer);
+        vm.expectRevert(INetwork.InvalidTargetAndSelector.selector);
+        myNetwork.schedule(
+            address(myNetwork),
+            0,
+            abi.encodeCall(
+                Network.updateDelay, (address(myNetwork), TimelockControllerUpgradeable.updateDelay.selector, true, 0)
+            ),
+            0,
+            bytes32(0),
+            GLOBAL_MIN_DELAY
+        );
+        vm.stopPrank();
+
+        assertEq(myNetwork.getMinDelay(address(1), new bytes(0)), GLOBAL_MIN_DELAY);
+        assertEq(
+            myNetwork.getMinDelay(address(myNetwork), abi.encodeCall(TimelockControllerUpgradeable.updateDelay, (0))),
+            GLOBAL_MIN_DELAY
+        );
+
+        vm.startPrank(proposer);
+        myNetwork.schedule(
+            address(myNetwork),
+            0,
+            abi.encodeCall(TimelockControllerUpgradeable.updateDelay, (0)),
+            0,
+            bytes32(0),
+            GLOBAL_MIN_DELAY
+        );
+        vm.stopPrank();
+
+        vm.warp(vm.getBlockTimestamp() + GLOBAL_MIN_DELAY);
+
+        vm.startPrank(executor);
+        myNetwork.execute(
+            address(myNetwork), 0, abi.encodeCall(TimelockControllerUpgradeable.updateDelay, (0)), 0, bytes32(0)
+        );
+        vm.stopPrank();
+
+        assertEq(
+            myNetwork.getMinDelay(address(myNetwork), abi.encodeCall(TimelockControllerUpgradeable.updateDelay, (0))), 0
+        );
+
+        assertEq(myNetwork.getMinDelay(address(1), new bytes(0)), 0);
     }
 }
