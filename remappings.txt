@@ -5,3 +5,4 @@
 @crypto-lib/=lib/crypto-lib/src/
 @symbioticfi/rewards/=lib/rewards/
 @chainlink/contracts=lib/chainlink-evm/contracts
+@createx/contracts/=lib/network/lib/createx/src/

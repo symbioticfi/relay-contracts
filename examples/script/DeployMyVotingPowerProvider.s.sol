@@ -8,8 +8,8 @@ import {INetworkManager} from "../../src/interfaces/modules/base/INetworkManager
 import {IOzEIP712} from "../../src/interfaces/modules/base/IOzEIP712.sol";
 import {IOzOwnable} from "../../src/interfaces/modules/common/permissions/IOzOwnable.sol";
 
-contract VotingPowerProviderScript is BaseDeployScript {
-    bytes11 public constant NETWORK_SALT = "VotingPower";
+contract DeployMyVotingPowerProviderScript is BaseDeployScript {
+    bytes32 public constant NETWORK_SALT = keccak256("MyVotingPowerProvider");
     string public constant NAME = "MyVotingPowerProvider";
     string public constant VERSION = "1";
 
@@ -46,6 +46,6 @@ contract VotingPowerProviderScript is BaseDeployScript {
                 IOzOwnable.OzOwnableInitParams({owner: deployer})
             )
         );
-        runDeploy(deployer, NETWORK_SALT, initCode, data);
+        runDeployCreate3(NETWORK_SALT, initCode, data);
     }
 }

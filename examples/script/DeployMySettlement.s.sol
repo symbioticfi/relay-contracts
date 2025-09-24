@@ -7,8 +7,8 @@ import {ISettlement} from "../../src/interfaces/modules/settlement/ISettlement.s
 import {INetworkManager} from "../../src/interfaces/modules/base/INetworkManager.sol";
 import {IOzEIP712} from "../../src/interfaces/modules/base/IOzEIP712.sol";
 
-contract SettlementScript is BaseDeployScript {
-    bytes11 public constant NETWORK_SALT = "MySettleme";
+contract DeployMySettlementScript is BaseDeployScript {
+    bytes32 public constant NETWORK_SALT = keccak256("MySettlement");
     string public constant NAME = "MySettlement";
     string public constant VERSION = "1";
     address public constant NETWORK_ADDRESS = address(0);
@@ -32,6 +32,6 @@ contract SettlementScript is BaseDeployScript {
                 deployer
             )
         );
-        runDeploy(deployer, NETWORK_SALT, initCode, data);
+        runDeployCreate3(NETWORK_SALT, initCode, data);
     }
 }

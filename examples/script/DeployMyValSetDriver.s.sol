@@ -7,8 +7,8 @@ import {IValSetDriver} from "../../src/interfaces/modules/valset-driver/IValSetD
 import {INetworkManager} from "../../src/interfaces/modules/base/INetworkManager.sol";
 import {IEpochManager} from "../../src/interfaces/modules/valset-driver/IEpochManager.sol";
 
-contract ValSetDriverScript is BaseDeployScript {
-    bytes11 public constant NETWORK_SALT = "ValSetDriv";
+contract DeployMyValSetDriverScript is BaseDeployScript {
+    bytes32 public constant NETWORK_SALT = keccak256("MyValSetDriver");
     string public constant NAME = "MyValSetDriver";
     string public constant VERSION = "1";
 
@@ -76,6 +76,6 @@ contract ValSetDriverScript is BaseDeployScript {
                 deployer
             )
         );
-        runDeploy(deployer, NETWORK_SALT, initCode, data);
+        runDeployCreate3(NETWORK_SALT, initCode, data);
     }
 }
