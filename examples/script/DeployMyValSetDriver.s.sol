@@ -7,6 +7,7 @@ import {IValSetDriver} from "../../src/interfaces/modules/valset-driver/IValSetD
 import {INetworkManager} from "../../src/interfaces/modules/base/INetworkManager.sol";
 import {IEpochManager} from "../../src/interfaces/modules/valset-driver/IEpochManager.sol";
 
+// usage: forge script script/DeployMyValSetDriver.s.sol:DeployMyValSetDriverScript --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast 
 contract DeployMyValSetDriverScript is BaseDeployScript {
     bytes32 public constant NETWORK_SALT = keccak256("MyValSetDriver");
     string public constant NAME = "MyValSetDriver";

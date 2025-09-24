@@ -6,6 +6,7 @@ import {MyKeyRegistry} from "../../examples/MyKeyRegistry.sol";
 import {IKeyRegistry} from "../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
 import {IOzEIP712} from "../../src/interfaces/modules/base/IOzEIP712.sol";
 
+// usage: forge script script/DeployMyKeyRegistry.s.sol:DeployMyKeyRegistryScript --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast 
 contract DeployMyKeyRegistryScript is BaseDeployScript {
     bytes32 public constant NETWORK_SALT = keccak256("MyKeyRegistry");
     string public constant NAME = "KeyRegistry";

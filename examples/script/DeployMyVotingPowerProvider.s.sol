@@ -8,6 +8,7 @@ import {INetworkManager} from "../../src/interfaces/modules/base/INetworkManager
 import {IOzEIP712} from "../../src/interfaces/modules/base/IOzEIP712.sol";
 import {IOzOwnable} from "../../src/interfaces/modules/common/permissions/IOzOwnable.sol";
 
+// usage: forge script script/DeployMyVotingPowerProvider.s.sol:DeployMyVotingPowerProviderScript --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast 
 contract DeployMyVotingPowerProviderScript is BaseDeployScript {
     bytes32 public constant NETWORK_SALT = keccak256("MyVotingPowerProvider");
     string public constant NAME = "MyVotingPowerProvider";

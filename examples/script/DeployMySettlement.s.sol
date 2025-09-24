@@ -7,6 +7,7 @@ import {ISettlement} from "../../src/interfaces/modules/settlement/ISettlement.s
 import {INetworkManager} from "../../src/interfaces/modules/base/INetworkManager.sol";
 import {IOzEIP712} from "../../src/interfaces/modules/base/IOzEIP712.sol";
 
+// usage: forge script script/DeployMySettlement.s.sol:DeployMySettlementScript --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast 
 contract DeployMySettlementScript is BaseDeployScript {
     bytes32 public constant NETWORK_SALT = keccak256("MySettlement");
     string public constant NAME = "MySettlement";
