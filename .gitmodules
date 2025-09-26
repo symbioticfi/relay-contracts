@@ -4,6 +4,7 @@
 [submodule "lib/core"]
 	path = lib/core
 	url = https://github.com/symbioticfi/core
+	branch = script-utils
 [submodule "lib/crypto-lib"]
 	path = lib/crypto-lib
 	url = https://github.com/get-smooth/crypto-lib
