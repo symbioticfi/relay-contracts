@@ -27,23 +27,35 @@ abstract contract RelayDeploy is Script, CreateXWrapper {
     }
 
     function deployVotingPower() public virtual returns (address) {
+        vm.startBroadcast();
         (address implementation, bytes memory initData) = _votingPowerParams();
-        return _deployContract(VOTING_POWERS_SALT, implementation, initData);
+        address newContract = _deployContract(VOTING_POWERS_SALT, implementation, initData);
+        vm.stopBroadcast();
+        return newContract;
     }
 
     function deployKeyRegistry() public virtual returns (address) {
+        vm.startBroadcast();
         (address implementation, bytes memory initData) = _keyRegistryParams();
-        return _deployContract(KEY_REGISTRY_SALT, implementation, initData);
+        address newContract = _deployContract(KEY_REGISTRY_SALT, implementation, initData);
+        vm.stopBroadcast();
+        return newContract;
     }
 
     function deployDriver() public virtual returns (address) {
+        vm.startBroadcast();
         (address implementation, bytes memory initData) = _driverParams();
-        return _deployContract(DRIVER_SALT, implementation, initData);
+        address newContract = _deployContract(DRIVER_SALT, implementation, initData);
+        vm.stopBroadcast();
+        return newContract;
     }
 
     function deploySettlement() public virtual returns (address) {
+        vm.startBroadcast();
         (address implementation, bytes memory initData) = _settlementParams();
-        return _deployContract(SETTLEMENT_SALT, implementation, initData);
+        address newContract = _deployContract(SETTLEMENT_SALT, implementation, initData);
+        vm.stopBroadcast();
+        return newContract;
     }
 
     function _getInitialOwner() internal virtual returns (address) {
@@ -63,10 +75,10 @@ abstract contract RelayDeploy is Script, CreateXWrapper {
             type(TransparentUpgradeableProxy).creationCode, abi.encode(implementation, initialOwner, emptyData)
         );
 
-        vm.startBroadcast();
-        address newContract = deployCreate3AndInit(salt, proxyInitCode, initData);
-        vm.stopBroadcast();
-
-        return newContract;
+        if (initData.length > 0) {
+            return deployCreate3AndInit(salt, proxyInitCode, initData);
+        } else {
+            return deployCreate3(salt, proxyInitCode);
+        }
     }
 }
