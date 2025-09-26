@@ -58,12 +58,13 @@ abstract contract RelayDeploy is Script, CreateXWrapper {
     ) internal virtual returns (address) {
         address initialOwner = _getInitialOwner();
 
+        bytes memory emptyData;
         bytes memory proxyInitCode = abi.encodePacked(
-            type(TransparentUpgradeableProxy).creationCode, abi.encode(implementation, initialOwner, initData)
+            type(TransparentUpgradeableProxy).creationCode, abi.encode(implementation, initialOwner, emptyData)
         );
 
         vm.startBroadcast();
-        address newContract = deployCreate3(salt, proxyInitCode);
+        address newContract = deployCreate3AndInit(salt, proxyInitCode, initData);
         vm.stopBroadcast();
 
         return newContract;
