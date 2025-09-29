@@ -13,7 +13,6 @@ gas_reports = ["*"]
 gas_limit = "18446744073709551615"
 dynamic_test_linking = true
 ignored_warnings_from = ["test/","script/"]
-verbosity = 2
 ffi = true
 
 [rpc_endpoints]
