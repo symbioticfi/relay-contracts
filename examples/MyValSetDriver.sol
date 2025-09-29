@@ -7,7 +7,6 @@ import {OzAccessControl} from "../src/modules/common/permissions/OzAccessControl
 import {IEpochManager} from "../src/interfaces/modules/valset-driver/IEpochManager.sol";
 import {IValSetDriver} from "../src/interfaces/modules/valset-driver/IValSetDriver.sol";
 
-
 contract MyValSetDriver is ValSetDriver, OzAccessControl {
     bytes32 public constant SET_EPOCH_DURATION_ROLE = keccak256("SET_EPOCH_DURATION_ROLE");
     bytes32 public constant MANAGE_VOTING_POWER_PROVIDERS_ROLE = keccak256("MANAGE_VOTING_POWER_PROVIDERS_ROLE");

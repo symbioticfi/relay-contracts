@@ -5,11 +5,6 @@ repos:
       - id: mixed-line-ending
         args: ["--fix=lf"]
         exclude: "^docs/autogen"
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
-      - id: check-merge-conflict
-      - id: check-yaml
-      - id: check-json
 
   - repo: local
     hooks:
@@ -28,21 +23,6 @@ repos:
         # generates docs and unstages files if only the commit hash changed within the file, this way only when the documentation is updated, the documentation needs to be regenerated and only the changed files are pushed
         entry: "script/util/doc_gen.sh"
         pass_filenames: false
-      - id: forge-snapshots
-        name: Update forge snapshots
-        description: Build contracts and refresh gas/sizes snapshots
-        language: system
-        entry: bash
-        args:
-          - -c
-          - |
-            set -euo pipefail
-            mkdir -p snapshots
-            forge build
-            forge build --sizes | tee snapshots/sizes.txt
-            forge test --gas-report | tee snapshots/gas.txt
-        pass_filenames: false
-        always_run: true
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v3.1.0
     hooks:
