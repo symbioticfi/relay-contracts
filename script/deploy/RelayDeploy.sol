@@ -8,6 +8,7 @@ import {SymbioticCoreConstants} from "@symbioticfi/core/test/integration/Symbiot
 
 import {TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
+import {IOpNetVaultAutoDeploy} from "../../src/interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol";
 import {VotingPowerProvider} from "../../src/modules/voting-power/VotingPowerProvider.sol";
 
 abstract contract RelayDeploy is Script, CreateXWrapper {
@@ -23,12 +24,10 @@ abstract contract RelayDeploy is Script, CreateXWrapper {
     function _driverParams() internal virtual returns (address implementation, bytes memory initData);
 
     function run() public virtual {
-        address settlement = deploySettlement();
-        address votingPower = deployVotingPower();
-        address keyRegistry = deployKeyRegistry();
-        address driver = deployDriver();
-
-        _validate(settlement, votingPower, keyRegistry, driver);
+        deploySettlement();
+        deployVotingPower();
+        deployKeyRegistry();
+        deployDriver();
     }
 
     function deployVotingPower() public virtual returns (address) {
@@ -36,6 +35,25 @@ abstract contract RelayDeploy is Script, CreateXWrapper {
         (address implementation, bytes memory initData) = _votingPowerParams();
         address newContract = _deployContract(VOTING_POWERS_SALT, implementation, initData);
         vm.stopBroadcast();
+
+        // Validate deployment
+        SymbioticCoreConstants.Core memory symbioticCore = SymbioticCoreConstants.core();
+        require(
+            VotingPowerProvider(newContract).OPERATOR_REGISTRY() == address(symbioticCore.operatorRegistry),
+            "VotingPower.OPERATOR_REGISTRY() has incorrect value"
+        );
+        require(
+            VotingPowerProvider(newContract).VAULT_FACTORY() == address(symbioticCore.vaultFactory),
+            "VotingPower.VAULT_FACTORY() has incorrect value"
+        );
+        (bool success, bytes memory data) =
+            newContract.call(abi.encodeWithSelector(IOpNetVaultAutoDeploy.VAULT_CONFIGURATOR.selector));
+        if (success) {
+            require(
+                abi.decode(data, (address)) == address(symbioticCore.vaultConfigurator),
+                "VotingPower.VAULT_CONFIGURATOR() has incorrect value"
+            );
+        }
         return newContract;
     }
 
@@ -85,16 +103,5 @@ abstract contract RelayDeploy is Script, CreateXWrapper {
         } else {
             return deployCreate3(salt, proxyInitCode);
         }
-    }
-
-    function _validate(
-        address settlement,
-        address votingPower,
-        address keyRegistry,
-        address driver
-    ) internal virtual {
-        SymbioticCoreConstants.Core memory symbioticCore = SymbioticCoreConstants.core();
-        require(VotingPowerProvider(votingPower).OPERATOR_REGISTRY() == address(symbioticCore.operatorRegistry), "VotingPower.OPERATOR_REGISTRY() is not the same as the operator registry");
-        require(VotingPowerProvider(votingPower).VAULT_FACTORY() == address(symbioticCore.vaultFactory), "VotingPower.VAULT_FACTORY() is not the same as the vault factory");
     }
 }
