@@ -4,8 +4,11 @@ pragma solidity ^0.8.20;
 import {Script} from "forge-std/Script.sol";
 
 import {CreateXWrapper} from "@symbioticfi/core/script/utils/CreateXWrapper.sol";
+import {SymbioticCoreConstants} from "@symbioticfi/core/test/integration/SymbioticCoreConstants.sol";
 
 import {TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
+
+import {VotingPowerProvider} from "../../src/modules/voting-power/VotingPowerProvider.sol";
 
 abstract contract RelayDeploy is Script, CreateXWrapper {
     // CREATE3 salts
@@ -20,10 +23,12 @@ abstract contract RelayDeploy is Script, CreateXWrapper {
     function _driverParams() internal virtual returns (address implementation, bytes memory initData);
 
     function run() public virtual {
-        deploySettlement();
-        deployVotingPower();
-        deployKeyRegistry();
-        deployDriver();
+        address settlement = deploySettlement();
+        address votingPower = deployVotingPower();
+        address keyRegistry = deployKeyRegistry();
+        address driver = deployDriver();
+
+        _validate(settlement, votingPower, keyRegistry, driver);
     }
 
     function deployVotingPower() public virtual returns (address) {
@@ -80,5 +85,16 @@ abstract contract RelayDeploy is Script, CreateXWrapper {
         } else {
             return deployCreate3(salt, proxyInitCode);
         }
+    }
+
+    function _validate(
+        address settlement,
+        address votingPower,
+        address keyRegistry,
+        address driver
+    ) internal virtual {
+        SymbioticCoreConstants.Core memory symbioticCore = SymbioticCoreConstants.core();
+        require(VotingPowerProvider(votingPower).OPERATOR_REGISTRY() == address(symbioticCore.operatorRegistry), "VotingPower.OPERATOR_REGISTRY() is not the same as the operator registry");
+        require(VotingPowerProvider(votingPower).VAULT_FACTORY() == address(symbioticCore.vaultFactory), "VotingPower.VAULT_FACTORY() is not the same as the vault factory");
     }
 }
