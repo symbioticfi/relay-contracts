@@ -18,6 +18,7 @@ import {MySettlement} from "../../../examples/MySettlement.sol";
 import {ISettlement} from "../../../src/interfaces/modules/settlement/ISettlement.sol";
 
 contract MyRelayDeploy is RelayDeploy {
+    address public constant OWNER = address(0);
     // Voting power parameters
     string public constant VOTING_POWER_NAME = "MyVotingPowerProvider";
     string public constant VOTING_POWER_VERSION = "1";
@@ -53,6 +54,13 @@ contract MyRelayDeploy is RelayDeploy {
     string public constant SETTLEMENT_VERSION = "1";
     address public constant SIG_VERIFIER_ADDRESS = address(0);
 
+    function run() public {
+        deploySettlement({proxyOwner: OWNER, isDeployerGuarded: true});
+        deployVotingPower({proxyOwner: OWNER, isDeployerGuarded: true});
+        deployKeyRegistry({proxyOwner: OWNER, isDeployerGuarded: true});
+        deployDriver({proxyOwner: OWNER, isDeployerGuarded: true});
+    }
+
     function _votingPowerParams() internal override returns (address implementation, bytes memory initData) {
         implementation = address(new MyVotingPowerProvider(OPERATOR_REGISTRY_ADDRESS, VAULT_FACTORY_ADDRESS));
 
@@ -72,7 +80,7 @@ contract MyRelayDeploy is RelayDeploy {
                     minVaultEpochDuration: MIN_VAULT_EPOCH_DURATION,
                     token: TOKEN_ADDRESS
                 }),
-                IOzOwnable.OzOwnableInitParams({owner: _getInitialOwner()})
+                IOzOwnable.OzOwnableInitParams({owner: OWNER})
             )
         );
     }
@@ -137,7 +145,7 @@ contract MyRelayDeploy is RelayDeploy {
                     requiredHeaderKeyTag: REQUIRED_HEADER_KEY_TAG,
                     verificationType: VERIFICATION_TYPE
                 }),
-                _getInitialOwner()
+                OWNER
             )
         );
     }
@@ -156,7 +164,7 @@ contract MyRelayDeploy is RelayDeploy {
                     ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: SETTLEMENT_NAME, version: SETTLEMENT_VERSION}),
                     sigVerifier: SIG_VERIFIER_ADDRESS
                 }),
-                _getInitialOwner()
+                OWNER
             )
         );
     }
