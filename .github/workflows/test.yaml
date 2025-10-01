@@ -33,28 +33,16 @@ jobs:
       - name: Run Forge fmt check
         run: forge fmt --check
 
-      - name: Run Forge build
+      - name: Run Forge tests
+        run: forge test --isolate
+
+      - name: Run Forge coverage
         run: |
-          echo "Foundry profile: $FOUNDRY_PROFILE"
-          forge --version
-          forge build --sizes
-
-      - name: Build (sizes snapshot)
-        run: |
-          echo "Foundry profile: $FOUNDRY_PROFILE"
-          forge --version
-          mkdir -p snapshots
-          forge build --sizes | tee snapshots/sizes.txt
-
-      - name: Run Forge tests (with gas report)
-        run: forge test --isolate --gas-report | tee snapshots/gas.txt
-
-      - name: Upload snapshots
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        if: always()
+          forge coverage --report lcov
+        id: coverage
+        env:
+          COVERAGE: true
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
         with:
-          name: forge-snapshots
-          path: |
-            snapshots/sizes.txt
-            snapshots/gas.txt
-          if-no-files-found: ignore
+          token: ${{ secrets.CODECOV_TOKEN }}

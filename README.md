@@ -4,6 +4,7 @@
 # Symbiotic Relay Smart Contracts
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/symbioticfi/relay-contracts)
+[![codecov](https://codecov.io/github/symbioticfi/relay-contracts/graph/badge.svg?token=9F5PUM6HB0)](https://codecov.io/github/symbioticfi/relay-contracts)
 
 ## Overview
 
