@@ -15,7 +15,8 @@ env:
 
 jobs:
   pre-commit:
-    runs-on: ubuntu-latest
+    runs-on:
+      group: relay
     timeout-minutes: 45
     steps:
       - uses: bullfrogsec/bullfrog@1831f79cce8ad602eef14d2163873f27081ebfb3 # v0.8.4
@@ -24,7 +25,7 @@ jobs:
           submodules: recursive
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
-          python-version: "3.11"
+          python-version: '3.11'
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@82dee4ba654bd2146511f85f0d013af94670c4de # v1.4.0
