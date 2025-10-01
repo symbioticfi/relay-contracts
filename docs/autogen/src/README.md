@@ -1,4 +1,4 @@
-> [!WARNING]  
+> [!WARNING]
 > The SDK is a work in progress and is currently under audits. Breaking changes may occur in SDK updates as well as backward compatibility is not guaranteed. Use with caution.
 
 # Symbiotic Relay Smart Contracts

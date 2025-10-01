@@ -4,7 +4,15 @@ repos:
     hooks:
       - id: mixed-line-ending
         args: ["--fix=lf"]
-        exclude: "^docs/autogen"
+        exclude: "^(docs/autogen|snapshots/)"
+      - id: trailing-whitespace
+        exclude: "^(docs/autogen|snapshots/)"
+      - id: end-of-file-fixer
+        exclude: "^(docs/autogen|snapshots/)"
+      - id: check-merge-conflict
+      - id: check-json
+        exclude: "^(docs/autogen|snapshots/)"
+      - id: check-yaml
 
   - repo: local
     hooks:

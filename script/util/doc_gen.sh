@@ -15,7 +15,7 @@ for file in $files; do
     if [[ -f $file ]]; then
         # Get the diff for the file, strip metadata and only keep lines that start with - or +
         diff=$(git diff $file | sed '/^diff --git/d; /^index /d; /^--- /d; /^\+\+\+ /d; /^@@ /d' | grep '^[+-]')
-        
+
         # Filter lines that start with -[Git Source] or +[Git Source]
         filtered_diff=$(echo "$diff" | grep '^\-\[Git Source\]\|^\+\[Git Source\]' || true)
 
