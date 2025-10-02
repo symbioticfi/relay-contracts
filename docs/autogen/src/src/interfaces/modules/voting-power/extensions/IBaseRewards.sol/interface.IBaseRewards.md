@@ -1,0 +1,175 @@
+# IBaseRewards
+[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/voting-power/extensions/IBaseRewards.sol)
+
+
+## Functions
+### getRewarder
+
+Returns the address of the rewarder.
+
+
+```solidity
+function getRewarder() external view returns (address);
+```
+**Returns**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`<none>`|`address`|The address of the rewarder.|
+
+
+### setRewarder
+
+Sets the rewarder.
+
+*The caller must have the needed permission.*
+
+
+```solidity
+function setRewarder(
+    address rewarder
+) external;
+```
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`rewarder`|`address`|The address of the rewarder.|
+
+
+### distributeStakerRewards
+
+Distributes the staker rewards.
+
+*Only the rewarder can call this function.
+The funds should be transferred to this contract separately before the call.*
+
+
+```solidity
+function distributeStakerRewards(address stakerRewards, address token, uint256 amount, bytes memory data) external;
+```
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`stakerRewards`|`address`|The address of the staker rewards.|
+|`token`|`address`|The address of the token.|
+|`amount`|`uint256`|The amount of the token.|
+|`data`|`bytes`|The data (depends on the staker rewards implementation).|
+
+
+### distributeOperatorRewards
+
+Distributes the operator rewards.
+
+*Only the rewarder can call this function.
+The funds should be transferred to this contract separately before the call.*
+
+
+```solidity
+function distributeOperatorRewards(address operatorRewards, address token, uint256 amount, bytes32 root) external;
+```
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`operatorRewards`|`address`|The address of the operator rewards.|
+|`token`|`address`|The address of the token.|
+|`amount`|`uint256`|The amount of the token.|
+|`root`|`bytes32`|The Merkle root of the distribution.|
+
+
+## Events
+### SetRewarder
+Emitted when the rewarder is set.
+
+
+```solidity
+event SetRewarder(address rewarder);
+```
+
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`rewarder`|`address`|The address of the rewarder.|
+
+### DistributeStakerRewards
+Emitted when the staker rewards are distributed.
+
+
+```solidity
+event DistributeStakerRewards(address indexed stakerRewards, address indexed token, uint256 amount, bytes data);
+```
+
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`stakerRewards`|`address`|The address of the staker rewards.|
+|`token`|`address`|The address of the token.|
+|`amount`|`uint256`|The amount of the token.|
+|`data`|`bytes`|The data (depends on the staker rewards implementation).|
+
+### DistributeOperatorRewards
+Emitted when the operator rewards are distributed.
+
+
+```solidity
+event DistributeOperatorRewards(address indexed operatorRewards, address indexed token, uint256 amount, bytes32 root);
+```
+
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`operatorRewards`|`address`|The address of the operator rewards.|
+|`token`|`address`|The address of the token.|
+|`amount`|`uint256`|The amount of the token.|
+|`root`|`bytes32`|The Merkle root of the distribution.|
+
+## Errors
+### BaseRewards_NotRewarder
+Reverts when the caller is not the rewarder.
+
+
+```solidity
+error BaseRewards_NotRewarder();
+```
+
+## Structs
+### BaseRewardsStorage
+The storage of the BaseRewards contract.
+
+**Note:**
+storage-location: erc7201:symbiotic.storage.BaseRewards
+
+
+```solidity
+struct BaseRewardsStorage {
+    address _rewarder;
+}
+```
+
+**Properties**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`_rewarder`|`address`|The address of the rewarder.|
+
+### BaseRewardsInitParams
+The parameters for the initialization of the BaseRewards contract.
+
+
+```solidity
+struct BaseRewardsInitParams {
+    address rewarder;
+}
+```
+
+**Properties**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`rewarder`|`address`|The address of the rewarder.|
+

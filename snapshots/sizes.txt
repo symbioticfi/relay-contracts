@@ -1,9 +1,113 @@
-No files changed, compilation skipped
+Compiling 269 files with Solc 0.8.28
+Solc 0.8.28 finished in 41.83s
+Compiler run successful with warnings:
+Warning (6321): Unnamed return variable can remain unassigned. Add an explicit return with value to all non-reverting code paths or name the variable.
+   --> src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:231:84:
+    |
+231 |     function getRoundData(address aggregator, uint80 roundId) public view returns (bool, RoundData memory roundData) {
+    |                                                                                    ^^^^
+
+Warning (6321): Unnamed return variable can remain unassigned. Add an explicit return with value to all non-reverting code paths or name the variable.
+   --> src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:339:28:
+    |
+339 |     ) public view returns (bool, RoundData memory roundData) {
+    |                            ^^^^
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/libraries/keys/KeyBlsBn254.sol:64:5:
+   |
+64 |     function unwrap(
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/libraries/keys/KeyBlsBn254.sol:112:5:
+    |
+112 |     function toBytes(
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/libraries/keys/KeyBlsBn254.sol:136:5:
+    |
+136 |     function zeroKey() internal view returns (KEY_BLS_BN254 memory key) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/libraries/keys/KeyBlsBn254.sol:146:5:
+    |
+146 |     function equal(KEY_BLS_BN254 memory key1, KEY_BLS_BN254 memory key2) internal view returns (bool) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:46:5:
+   |
+46 |     function unwrap(
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:58:5:
+   |
+58 |     function serialize(
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:69:5:
+   |
+69 |     function deserialize(
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:81:5:
+   |
+81 |     function toBytes(
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/libraries/keys/KeyEcdsaSecp256k1.sol:105:5:
+    |
+105 |     function zeroKey() internal view returns (KEY_ECDSA_SECP256K1 memory key) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/libraries/keys/KeyEcdsaSecp256k1.sol:115:5:
+    |
+115 |     function equal(KEY_ECDSA_SECP256K1 memory key1, KEY_ECDSA_SECP256K1 memory key2) internal view returns (bool) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+  --> src/libraries/sigs/SigEcdsaSecp256k1.sol:53:5:
+   |
+53 |     function verify(address key, bytes32 message, bytes memory signature) internal view returns (bool) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:179:5:
+    |
+179 |     function getVaultParams(
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:193:5:
+    |
+193 |     function getVaultTokenizedParams(
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:241:5:
+    |
+241 |     function getSlasherParams(
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:258:5:
+    |
+258 |     function getVetoSlasherParams(
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
 
 ╭------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------╮
 | Contract                                                                                                         | Runtime Size (B) | Initcode Size (B) | Runtime Margin (B) | Initcode Margin (B) |
 +====================================================================================================================================================================================================+
-| Address (lib/openzeppelin-contracts/contracts/utils/Address.sol)                                                 | 16               | 44                | 24,560             | 49,108              |
+| Address                                                                                                          | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | AuthorityUtils                                                                                                   | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -13,31 +117,31 @@ No files changed, compilation skipped
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | BaseRewardsLogic                                                                                                 | 1,606            | 1,658             | 22,970             | 47,494              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| BaseSlashingLogic (src/modules/voting-power/extensions/logic/BaseSlashingLogic.sol)                              | 3,498            | 3,530             | 21,078             | 45,622              |
+| BaseSlashingLogic                                                                                                | 4,387            | 4,439             | 20,189             | 44,713              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Bytes                                                                                                            | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| ChainlinkPriceFeed (src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol)          | 4,992            | 5,022             | 19,584             | 44,130              |
+| ChainlinkPriceFeed                                                                                               | 6,072            | 6,124             | 18,504             | 43,028              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Checkpoints (lib/core/src/contracts/libraries/Checkpoints.sol)                                                   | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| Checkpoints (lib/openzeppelin-contracts/contracts/utils/structs/Checkpoints.sol)                                 | 16               | 44                | 24,560             | 49,108              |
+| Checkpoints (lib/openzeppelin-contracts/contracts/utils/structs/Checkpoints.sol)                                 | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| Checkpoints (src/libraries/structs/Checkpoints.sol)                                                              | 16               | 44                | 24,560             | 49,108              |
+| Checkpoints (src/libraries/structs/Checkpoints.sol)                                                              | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| ECDSA (lib/openzeppelin-contracts/contracts/utils/cryptography/ECDSA.sol)                                        | 16               | 44                | 24,560             | 49,108              |
+| ECDSA                                                                                                            | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | ERC4626Math                                                                                                      | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | EnumerableSet                                                                                                    | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| Errors (lib/openzeppelin-contracts/contracts/utils/Errors.sol)                                                   | 16               | 44                | 24,560             | 49,108              |
+| Errors                                                                                                           | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | ExtraDataStorageHelper                                                                                           | 123              | 173               | 24,453             | 48,979              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | FeeOnTransferToken                                                                                               | 1,785            | 3,197             | 22,791             | 45,955              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| InputNormalizer (src/libraries/utils/InputNormalizer.sol)                                                        | 16               | 44                | 24,560             | 49,108              |
+| InputNormalizer                                                                                                  | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | KeyBlsBn254                                                                                                      | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -53,9 +157,9 @@ No files changed, compilation skipped
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | KeyTags                                                                                                          | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| Math (lib/openzeppelin-contracts/contracts/utils/math/Math.sol)                                                  | 16               | 44                | 24,560             | 49,108              |
+| Math                                                                                                             | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| MessageHashUtils (lib/openzeppelin-contracts/contracts/utils/cryptography/MessageHashUtils.sol)                  | 16               | 44                | 24,560             | 49,108              |
+| MessageHashUtils                                                                                                 | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | MockAuthority                                                                                                    | 258              | 392               | 24,318             | 48,760              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -75,19 +179,19 @@ No files changed, compilation skipped
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Network                                                                                                          | 12,351           | 12,543            | 12,225             | 36,609              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| OpNetVaultAutoDeployLogic (src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol)              | 5,822            | 5,854             | 18,754             | 43,298              |
+| OpNetVaultAutoDeployLogic                                                                                        | 5,693            | 5,745             | 18,883             | 43,407              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| Panic (lib/openzeppelin-contracts/contracts/utils/Panic.sol)                                                     | 16               | 44                | 24,560             | 49,108              |
+| Panic                                                                                                            | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| PersistentSet (src/libraries/structs/PersistentSet.sol)                                                          | 16               | 44                | 24,560             | 49,108              |
+| PersistentSet                                                                                                    | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | RewarderMock                                                                                                     | 730              | 758               | 23,846             | 48,394              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| SafeCast (lib/openzeppelin-contracts/contracts/utils/math/SafeCast.sol)                                          | 16               | 44                | 24,560             | 49,108              |
+| SafeCast                                                                                                         | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | SafeERC20                                                                                                        | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| Scaler (src/libraries/utils/Scaler.sol)                                                                          | 16               | 44                | 24,560             | 49,108              |
+| Scaler                                                                                                           | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | SigBlsBn254                                                                                                      | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -101,15 +205,15 @@ No files changed, compilation skipped
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | SigVerifierMock                                                                                                  | 587              | 615               | 23,989             | 48,537              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| SignatureChecker (lib/openzeppelin-contracts/contracts/utils/cryptography/SignatureChecker.sol)                  | 16               | 44                | 24,560             | 49,108              |
+| SignatureChecker                                                                                                 | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| SignedMath (lib/openzeppelin-contracts/contracts/utils/math/SignedMath.sol)                                      | 16               | 44                | 24,560             | 49,108              |
+| SignedMath                                                                                                       | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | SlasherMock                                                                                                      | 1,264            | 1,292             | 23,312             | 47,860              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| Strings (lib/openzeppelin-contracts/contracts/utils/Strings.sol)                                                 | 16               | 44                | 24,560             | 49,108              |
+| Strings                                                                                                          | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| Subnetwork (lib/core/src/contracts/libraries/Subnetwork.sol)                                                     | 16               | 44                | 24,560             | 49,108              |
+| Subnetwork                                                                                                       | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | SymbioticCoreConstants                                                                                           | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -187,9 +291,9 @@ No files changed, compilation skipped
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Verifier (test/data/zk/Verifier_1000.sol)                                                                        | 6,391            | 6,419             | 18,185             | 42,733              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| VotingPowerProviderFull                                                                                          | 23,303           | 23,496            | 1,273              | 25,656              |
+| VotingPowerProviderFull                                                                                          | 24,286           | 24,494            | 290                | 24,658              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| VotingPowerProviderLogic (src/modules/voting-power/logic/VotingPowerProviderLogic.sol)                           | 16,948           | 16,980            | 7,628              | 32,172              |
+| VotingPowerProviderLogic                                                                                         | 15,628           | 15,680            | 8,948              | 33,472              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | VotingPowerProviderSemiFull                                                                                      | 16,892           | 17,060            | 7,684              | 32,092              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|

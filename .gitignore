@@ -25,6 +25,11 @@ Thumbs.db
 
 cache/
 out/
-/broadcast/
+broadcast/
+deployments/
 
 lcov.info
+/target
+/coverage
+/report
+.password
