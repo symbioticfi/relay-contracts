@@ -29,10 +29,10 @@ import {VotingPowerProvider} from "../../src/modules/voting-power/VotingPowerPro
  */
 abstract contract RelayDeploy is Script, CreateXWrapper {
     /// @notice CREATE3 salts for contracts deployment
-    bytes32 public VOTING_POWERS_SALT = keccak256("VotingPowerProvider");
-    bytes32 public KEY_REGISTRY_SALT = keccak256("KeyRegistry");
-    bytes32 public SETTLEMENT_SALT = keccak256("Settlement");
-    bytes32 public DRIVER_SALT = keccak256("ValSetDriver");
+    bytes11 public VOTING_POWERS_SALT = bytes11("VotingPower");
+    bytes11 public KEY_REGISTRY_SALT = bytes11("KeyRegistry");
+    bytes11 public SETTLEMENT_SALT = bytes11("Settlement");
+    bytes11 public DRIVER_SALT = bytes11("ValSetDrv");
 
     /**
      * @notice Returns deployment parameters for the Settlement contract
@@ -168,7 +168,7 @@ abstract contract RelayDeploy is Script, CreateXWrapper {
      * @return The address of the deployed contract
      */
     function _deployContract(
-        bytes32 salt,
+        bytes11 salt,
         address implementation,
         bytes memory initData,
         address owner,
@@ -181,12 +181,12 @@ abstract contract RelayDeploy is Script, CreateXWrapper {
         (,, address deployer) = vm.readCallers();
         if (initData.length > 0) {
             return isDeployerGuarded
-                ? deployCreate3AndInitWithGuardedSalt(deployer, bytes11(salt), proxyInitCode, initData)
-                : deployCreate3AndInit(salt, proxyInitCode, initData);
+                ? deployCreate3AndInitWithGuardedSalt(deployer, salt, proxyInitCode, initData)
+                : deployCreate3AndInit(bytes32(salt), proxyInitCode, initData);
         } else {
             return isDeployerGuarded
-                ? deployCreate3WithGuardedSalt(deployer, bytes11(salt), proxyInitCode)
-                : deployCreate3(salt, proxyInitCode);
+                ? deployCreate3WithGuardedSalt(deployer, salt, proxyInitCode)
+                : deployCreate3(bytes32(salt), proxyInitCode);
         }
     }
 }

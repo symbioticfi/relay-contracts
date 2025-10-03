@@ -3,6 +3,7 @@ pragma solidity ^0.8.25;
 
 import {Network} from "@symbioticfi/network/src/Network.sol";
 
+import {SigVerifierBlsBn254Simple} from "../../../src/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol";
 import {RelayDeploy} from "../RelayDeploy.sol";
 import {IVotingPowerProvider} from "../../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
 import {INetworkManager} from "../../../src/interfaces/modules/base/INetworkManager.sol";
@@ -16,7 +17,15 @@ import {IValSetDriver} from "../../../src/interfaces/modules/valset-driver/IValS
 import {IEpochManager} from "../../../src/interfaces/modules/valset-driver/IEpochManager.sol";
 import {MySettlement} from "../../../examples/MySettlement.sol";
 import {ISettlement} from "../../../src/interfaces/modules/settlement/ISettlement.sol";
+import {RelayContractsJson} from "./RelayContractsJson.sol";
 
+/**
+ * @notice Example script to deploy the relay contracts.
+ * @dev First deploy the voting power provider, key registry, settlement using run() function.
+ * Settlement and VotingPowerProvider can be deployed multiple times on different chains.
+ * Contract addresses along with the chain id are saved to the relay_contracts.json file.
+ * The driver is deployed using runDeployDriver() function last utilizing the addresses from the file.
+ */
 contract MyRelayDeploy is RelayDeploy {
     address public constant OWNER = address(0);
     // Voting power parameters
@@ -43,11 +52,10 @@ contract MyRelayDeploy is RelayDeploy {
     uint256 public constant MAX_VOTING_POWER = 1_000_000 * 10 ** 18;
     uint256 public constant MIN_INCLUSION_VOTING_POWER = 1000 * 10 ** 18;
     uint208 public constant MAX_VALIDATORS_COUNT = 100;
-    uint8 public constant REQUIRED_HEADER_KEY_TAG = 1;
+    uint8 public constant REQUIRED_HEADER_KEY_TAG = 15;
     uint32 public constant VERIFICATION_TYPE = 0;
     uint248 public constant QUORUM_THRESHOLD = 6667;
     uint64 public constant CHAIN_ID = 1;
-    address public constant PROVIDER_ADDRESS = address(0);
 
     // Settlement parameters
     string public constant SETTLEMENT_NAME = "MySettlement";
@@ -58,6 +66,9 @@ contract MyRelayDeploy is RelayDeploy {
         deploySettlement({proxyOwner: OWNER, isDeployerGuarded: true});
         deployVotingPower({proxyOwner: OWNER, isDeployerGuarded: true});
         deployKeyRegistry({proxyOwner: OWNER, isDeployerGuarded: true});
+    }
+
+    function runDeployDriver() public {
         deployDriver({proxyOwner: OWNER, isDeployerGuarded: true});
     }
 
@@ -104,14 +115,34 @@ contract MyRelayDeploy is RelayDeploy {
     function _driverParams() internal override returns (address implementation, bytes memory initData) {
         implementation = address(new MyValSetDriver());
 
-        IValSetDriver.CrossChainAddress[] memory votingPowerProviders = new IValSetDriver.CrossChainAddress[](1);
-        votingPowerProviders[0] = IValSetDriver.CrossChainAddress({chainId: CHAIN_ID, addr: PROVIDER_ADDRESS});
+        // Load addresses from JSON file
+        RelayContractsJson.RelayContractsAddresses memory contracts = RelayContractsJson.loadDeployedAddressesSafe();
+
+        // Validate that required contracts are available
+        require(contracts.keyRegistry.addr != address(0), "KeyRegistry not deployed");
+        require(contracts.settlements.length > 0, "No settlements deployed");
+        require(contracts.votingPowerProviders.length > 0, "No voting power providers deployed");
+
+        IValSetDriver.CrossChainAddress[] memory votingPowerProviders =
+            new IValSetDriver.CrossChainAddress[](contracts.votingPowerProviders.length);
+        for (uint256 i = 0; i < contracts.votingPowerProviders.length; i++) {
+            votingPowerProviders[i] = IValSetDriver.CrossChainAddress({
+                chainId: contracts.votingPowerProviders[i].chainId,
+                addr: contracts.votingPowerProviders[i].addr
+            });
+        }
 
         IValSetDriver.CrossChainAddress memory keysProvider =
-            IValSetDriver.CrossChainAddress({chainId: CHAIN_ID, addr: PROVIDER_ADDRESS});
+            IValSetDriver.CrossChainAddress({chainId: contracts.keyRegistry.chainId, addr: contracts.keyRegistry.addr});
 
-        IValSetDriver.CrossChainAddress[] memory settlements = new IValSetDriver.CrossChainAddress[](1);
-        settlements[0] = IValSetDriver.CrossChainAddress({chainId: CHAIN_ID, addr: PROVIDER_ADDRESS});
+        IValSetDriver.CrossChainAddress[] memory settlements =
+            new IValSetDriver.CrossChainAddress[](contracts.settlements.length);
+        for (uint256 i = 0; i < contracts.settlements.length; i++) {
+            settlements[i] = IValSetDriver.CrossChainAddress({
+                chainId: contracts.settlements[i].chainId,
+                addr: contracts.settlements[i].addr
+            });
+        }
 
         uint8[] memory requiredKeyTags = new uint8[](1);
         requiredKeyTags[0] = REQUIRED_HEADER_KEY_TAG;
@@ -130,7 +161,7 @@ contract MyRelayDeploy is RelayDeploy {
                     }),
                     epochManagerInitParams: IEpochManager.EpochManagerInitParams({
                         epochDuration: EPOCH_DURATION,
-                        epochDurationTimestamp: uint48(block.timestamp)
+                        epochDurationTimestamp: 0
                     }),
                     numAggregators: NUM_AGGREGATORS,
                     numCommitters: NUM_COMMITTERS,
@@ -162,10 +193,33 @@ contract MyRelayDeploy is RelayDeploy {
                         subnetworkId: SUBNETWORK_ID
                     }),
                     ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: SETTLEMENT_NAME, version: SETTLEMENT_VERSION}),
-                    sigVerifier: SIG_VERIFIER_ADDRESS
+                    sigVerifier: address(new SigVerifierBlsBn254Simple())
                 }),
                 OWNER
             )
         );
+    }
+
+    function deployVotingPower(address proxyOwner, bool isDeployerGuarded) public override returns (address) {
+        address votingPower = super.deployVotingPower(proxyOwner, isDeployerGuarded);
+        RelayContractsJson.saveVotingPowerAddress(votingPower);
+        return votingPower;
+    }
+
+    function deployKeyRegistry(address proxyOwner, bool isDeployerGuarded) public override returns (address) {
+        address keyRegistry = super.deployKeyRegistry(proxyOwner, isDeployerGuarded);
+        RelayContractsJson.saveKeyRegistryAddress(keyRegistry);
+        return keyRegistry;
+    }
+
+    function deploySettlement(address proxyOwner, bool isDeployerGuarded) public override returns (address) {
+        address settlement = super.deploySettlement(proxyOwner, isDeployerGuarded);
+        RelayContractsJson.saveSettlementAddress(settlement);
+        return settlement;
+    }
+
+    function deployDriver(address proxyOwner, bool isDeployerGuarded) public override returns (address) {
+        super.deployDriver(proxyOwner, isDeployerGuarded);
+        RelayContractsJson.clearRelayContractsFile();
     }
 }
