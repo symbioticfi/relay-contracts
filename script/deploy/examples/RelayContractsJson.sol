@@ -53,10 +53,10 @@ library RelayContractsJson {
 
     /**
      * @notice Save a single voting power provider address to the JSON file
-     * @param votingPower The deployed voting power provider address
+     * @param votingPowerProvider The deployed voting power provider address
      */
-    function saveVotingPowerAddress(
-        address votingPower
+    function saveVotingPowerProviderAddress(
+        address votingPowerProvider
     ) internal {
         // Initialize empty file if it doesn't exist
         // initializeContractsFileIfNeeded();
@@ -70,7 +70,7 @@ library RelayContractsJson {
             newVotingPowerProviders[i] = contracts.votingPowerProviders[i];
         }
         newVotingPowerProviders[contracts.votingPowerProviders.length] =
-            CrossChainAddress({addr: votingPower, chainId: uint64(block.chainid)});
+            CrossChainAddress({addr: votingPowerProvider, chainId: uint64(block.chainid)});
         contracts.votingPowerProviders = newVotingPowerProviders;
 
         writeContractsToFile(contracts);

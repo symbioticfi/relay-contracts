@@ -29,8 +29,8 @@ import {RelayContractsJson} from "./RelayContractsJson.sol";
 contract MyRelayDeploy is RelayDeploy {
     address public constant OWNER = address(0);
     // Voting power parameters
-    string public constant VOTING_POWER_NAME = "MyVotingPowerProvider";
-    string public constant VOTING_POWER_VERSION = "1";
+    string public constant VOTING_POWER_PROVIDER_NAME = "MyVotingPowerProvider";
+    string public constant VOTING_POWER_PROVIDER_VERSION = "1";
     address public constant NETWORK_ADDRESS = address(0);
     uint96 public constant SUBNETWORK_ID = 1;
     bool public constant REQUIRE_SLASHER = false;
@@ -64,15 +64,15 @@ contract MyRelayDeploy is RelayDeploy {
 
     function run() public {
         deploySettlement({proxyOwner: OWNER, isDeployerGuarded: true});
-        deployVotingPower({proxyOwner: OWNER, isDeployerGuarded: true});
+        deployVotingPowerProvider({proxyOwner: OWNER, isDeployerGuarded: true});
         deployKeyRegistry({proxyOwner: OWNER, isDeployerGuarded: true});
     }
 
-    function runDeployDriver() public {
-        deployDriver({proxyOwner: OWNER, isDeployerGuarded: true});
+    function runDeployValSetDriver() public {
+        deployValSetDriver({proxyOwner: OWNER, isDeployerGuarded: true});
     }
 
-    function _votingPowerParams() internal override returns (address implementation, bytes memory initData) {
+    function _votingPowerProviderParams() internal override returns (address implementation, bytes memory initData) {
         implementation = address(new MyVotingPowerProvider(OPERATOR_REGISTRY_ADDRESS, VAULT_FACTORY_ADDRESS));
 
         initData = abi.encodeCall(
@@ -84,8 +84,8 @@ contract MyRelayDeploy is RelayDeploy {
                         subnetworkId: SUBNETWORK_ID
                     }),
                     ozEip712InitParams: IOzEIP712.OzEIP712InitParams({
-                        name: VOTING_POWER_NAME,
-                        version: VOTING_POWER_VERSION
+                        name: VOTING_POWER_PROVIDER_NAME,
+                        version: VOTING_POWER_PROVIDER_VERSION
                     }),
                     requireSlasher: REQUIRE_SLASHER,
                     minVaultEpochDuration: MIN_VAULT_EPOCH_DURATION,
@@ -112,7 +112,7 @@ contract MyRelayDeploy is RelayDeploy {
         );
     }
 
-    function _driverParams() internal override returns (address implementation, bytes memory initData) {
+    function _valSetDriverParams() internal override returns (address implementation, bytes memory initData) {
         implementation = address(new MyValSetDriver());
 
         // Load addresses from JSON file
@@ -200,10 +200,10 @@ contract MyRelayDeploy is RelayDeploy {
         );
     }
 
-    function deployVotingPower(address proxyOwner, bool isDeployerGuarded) public override returns (address) {
-        address votingPower = super.deployVotingPower(proxyOwner, isDeployerGuarded);
-        RelayContractsJson.saveVotingPowerAddress(votingPower);
-        return votingPower;
+    function deployVotingPowerProvider(address proxyOwner, bool isDeployerGuarded) public override returns (address) {
+        address votingPowerProvider = super.deployVotingPowerProvider(proxyOwner, isDeployerGuarded);
+        RelayContractsJson.saveVotingPowerProviderAddress(votingPowerProvider);
+        return votingPowerProvider;
     }
 
     function deployKeyRegistry(address proxyOwner, bool isDeployerGuarded) public override returns (address) {
@@ -218,8 +218,8 @@ contract MyRelayDeploy is RelayDeploy {
         return settlement;
     }
 
-    function deployDriver(address proxyOwner, bool isDeployerGuarded) public override returns (address) {
-        super.deployDriver(proxyOwner, isDeployerGuarded);
+    function deployValSetDriver(address proxyOwner, bool isDeployerGuarded) public override returns (address) {
+        super.deployValSetDriver(proxyOwner, isDeployerGuarded);
         RelayContractsJson.clearRelayContractsFile();
     }
 }

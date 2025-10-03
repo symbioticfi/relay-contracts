@@ -29,10 +29,10 @@ import {VotingPowerProvider} from "../../src/modules/voting-power/VotingPowerPro
  */
 abstract contract RelayDeploy is Script, CreateXWrapper {
     /// @notice CREATE3 salts for contracts deployment
-    bytes11 public VOTING_POWERS_SALT = bytes11("VotingPower");
+    bytes11 public VOTING_POWER_PROVIDER_SALT = bytes11("VotingPower");
     bytes11 public KEY_REGISTRY_SALT = bytes11("KeyRegistry");
     bytes11 public SETTLEMENT_SALT = bytes11("Settlement");
-    bytes11 public DRIVER_SALT = bytes11("ValSetDrv");
+    bytes11 public VALSET_DRIVER_SALT = bytes11("ValSetDrv");
 
     /**
      * @notice Returns deployment parameters for the Settlement contract
@@ -48,7 +48,7 @@ abstract contract RelayDeploy is Script, CreateXWrapper {
      * @return implementation The implementation contract address
      * @return initData The initialization data for the proxy
      */
-    function _votingPowerParams() internal virtual returns (address implementation, bytes memory initData);
+    function _votingPowerProviderParams() internal virtual returns (address implementation, bytes memory initData);
 
     /**
      * @notice Returns deployment parameters for the KeyRegistry contract
@@ -64,7 +64,7 @@ abstract contract RelayDeploy is Script, CreateXWrapper {
      * @return implementation The implementation contract address
      * @return initData The initialization data for the proxy
      */
-    function _driverParams() internal virtual returns (address implementation, bytes memory initData);
+    function _valSetDriverParams() internal virtual returns (address implementation, bytes memory initData);
 
     /**
      * @notice Deploy the VotingPowerProvider contract using CREATE3
@@ -73,11 +73,11 @@ abstract contract RelayDeploy is Script, CreateXWrapper {
      * @param isDeployerGuarded Whether to deploy with guarded salt for enhanced security
      * @return The address of the deployed VotingPowerProvider contract
      */
-    function deployVotingPower(address proxyOwner, bool isDeployerGuarded) public virtual returns (address) {
+    function deployVotingPowerProvider(address proxyOwner, bool isDeployerGuarded) public virtual returns (address) {
         vm.startBroadcast();
-        (address implementation, bytes memory initData) = _votingPowerParams();
+        (address implementation, bytes memory initData) = _votingPowerProviderParams();
         address newContract =
-            _deployContract(VOTING_POWERS_SALT, implementation, initData, proxyOwner, isDeployerGuarded);
+            _deployContract(VOTING_POWER_PROVIDER_SALT, implementation, initData, proxyOwner, isDeployerGuarded);
         vm.stopBroadcast();
 
         if (SymbioticCoreConstants.coreSupported()) {
@@ -130,10 +130,10 @@ abstract contract RelayDeploy is Script, CreateXWrapper {
      * @param isDeployerGuarded Whether to deploy with guarded salt for enhanced security
      * @return The address of the deployed ValSetDriver contract
      */
-    function deployDriver(address proxyOwner, bool isDeployerGuarded) public virtual returns (address) {
+    function deployValSetDriver(address proxyOwner, bool isDeployerGuarded) public virtual returns (address) {
         vm.startBroadcast();
-        (address implementation, bytes memory initData) = _driverParams();
-        address newContract = _deployContract(DRIVER_SALT, implementation, initData, proxyOwner, isDeployerGuarded);
+        (address implementation, bytes memory initData) = _valSetDriverParams();
+        address newContract = _deployContract(VALSET_DRIVER_SALT, implementation, initData, proxyOwner, isDeployerGuarded);
         vm.stopBroadcast();
         Logs.log(string.concat("ValSetDriver deployed at: ", vm.toString(newContract)));
 
