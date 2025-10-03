@@ -1,0 +1,119 @@
+# INetworkManager
+[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/base/INetworkManager.sol)
+
+
+## Functions
+### NETWORK
+
+Returns the address of the network.
+
+
+```solidity
+function NETWORK() external view returns (address);
+```
+**Returns**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`<none>`|`address`|The address of the network.|
+
+
+### SUBNETWORK_IDENTIFIER
+
+Returns the identifier of the subnetwork.
+
+
+```solidity
+function SUBNETWORK_IDENTIFIER() external view returns (uint96);
+```
+**Returns**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`<none>`|`uint96`|The identifier of the subnetwork.|
+
+
+### SUBNETWORK
+
+Returns the subnetwork (a concatenation of the network and the subnetwork ID).
+
+
+```solidity
+function SUBNETWORK() external view returns (bytes32);
+```
+**Returns**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`<none>`|`bytes32`|The subnetwork.|
+
+
+## Events
+### InitSubnetwork
+Emitted during the NetworkManager initialization.
+
+
+```solidity
+event InitSubnetwork(address network, uint96 subnetworkId);
+```
+
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`network`|`address`|The address of the network.|
+|`subnetworkId`|`uint96`|The identifier of the subnetwork.|
+
+## Errors
+### NetworkManager_InvalidNetwork
+Reverts when the network is zero address.
+
+
+```solidity
+error NetworkManager_InvalidNetwork();
+```
+
+## Structs
+### NetworkManagerStorage
+The storage of the NetworkManager contract.
+
+*The whole set of contracts supports only a single subnetwork per network.*
+
+**Note:**
+storage-location: erc7201:symbiotic.storage.NetworkManager
+
+
+```solidity
+struct NetworkManagerStorage {
+    address _network;
+    uint96 _subnetworkID;
+}
+```
+
+**Properties**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`_network`|`address`|The address of the network.|
+|`_subnetworkID`|`uint96`|The identifier of the subnetwork.|
+
+### NetworkManagerInitParams
+The parameters for the initialization of the NetworkManager contract.
+
+*`network` is not obligated to be registered in NetworkRegistry contract, it can be any non-zero address.*
+
+
+```solidity
+struct NetworkManagerInitParams {
+    address network;
+    uint96 subnetworkId;
+}
+```
+
+**Properties**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`network`|`address`|The address of the network.|
+|`subnetworkId`|`uint96`|The identifier of the subnetwork.|
+

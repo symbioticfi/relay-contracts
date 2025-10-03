@@ -43,14 +43,14 @@ def aggregate_public_keys_G1(pubkeys: list[Tuple[FQ, FQ, FQ]]) -> Tuple[FQ, FQ, 
 
 def hash_to_point(data: bytes):
     x = int.from_bytes(data, byteorder='big') % field_modulus
-    
+
     while True:
         beta, y = find_y_from_x(x)
-        
+
         # Check if y^2 == beta
         if pow(y, 2, field_modulus) == beta:
             return FQ(x), FQ(y), FQ(1)
-            
+
         x = (x + 1) % field_modulus
 
 
@@ -58,12 +58,12 @@ def find_y_from_x(x: int) -> Tuple[int, int]:
     """
     Given x coordinate, find y coordinate on BN254 curve
     Returns (beta, y) where:
-        beta = x^3 + 3 (mod p)  
+        beta = x^3 + 3 (mod p)
         y = sqrt(beta) if it exists
     """
     # Calculate beta = x^3 + 3 mod p
     beta = (pow(x, 3, field_modulus) + 3) % field_modulus
-    
+
     # Calculate y = beta^((p+1)/4) mod p
     # Using same exponent as in BN254.sol: 0xc19139cb84c680a6e14116da060561765e05aa45a1c72a34f082305b61f3f52
     y = pow(beta, 0xc19139cb84c680a6e14116da060561765e05aa45a1c72a34f082305b61f3f52, field_modulus)
@@ -77,7 +77,7 @@ def sqrt(x_square: int) -> Tuple[int, bool]:
     # where p ≡ 3 (mod 4)
     exp = (field_modulus + 1) // 4
     y = pow(x_square, exp, field_modulus)
-    
+
     # Verify y is actually a square root
     if pow(y, 2, field_modulus) == x_square:
         return y, True
@@ -104,12 +104,12 @@ def format_G2(g2_element: Tuple[FQ2, FQ2, FQ2]) -> Tuple[FQ2, FQ2]:
 def verify(message: bytes, signature: Tuple[FQ, FQ, FQ], public_key: Tuple[FQ2, FQ2, FQ2]) -> bool:
     # Map message to curve point
     h = hash_to_point(message)
-    
+
     # Check e(signature, G2) = e(h, public_key)
     # Note: signature and h are in G1, while G2 and public_key are in G2
     pairing1 = pairing(G2, signature)
     pairing2 = pairing(public_key, h)
-    
+
     return pairing1 == pairing2
 
 
@@ -134,8 +134,8 @@ operator = generate_operator_address()
 message = eth_abi.encode(
     ['address', 'uint256', 'uint256', 'uint256[2]', 'uint256[2]'],
     [
-        operator, int(formatted_pubkey_g1[0]), int(formatted_pubkey_g1[1]), 
-        [int(formatted_pubkey[0]), int(formatted_pubkey[1])], 
+        operator, int(formatted_pubkey_g1[0]), int(formatted_pubkey_g1[1]),
+        [int(formatted_pubkey[0]), int(formatted_pubkey[1])],
         [int(formatted_pubkey[2]), int(formatted_pubkey[3])]
     ]
 )

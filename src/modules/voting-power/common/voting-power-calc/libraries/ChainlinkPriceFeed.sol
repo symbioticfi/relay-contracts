@@ -3,7 +3,8 @@ pragma solidity ^0.8.25;
 
 import {Scaler} from "../../../../../libraries/utils/Scaler.sol";
 
-import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
+import {AggregatorV3Interface} from
+    "../../../../../interfaces/modules/voting-power/common/voting-power-calc/libraries/AggregatorV3Interface.sol";
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 

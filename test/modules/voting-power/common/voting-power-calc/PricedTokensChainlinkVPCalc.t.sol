@@ -17,7 +17,8 @@ import {IPricedTokensChainlinkVPCalc} from
 import {ChainlinkPriceFeed} from
     "../../../../../src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol";
 
-import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
+import {AggregatorV3Interface} from
+    "../../../../../src/interfaces/modules/voting-power/common/voting-power-calc/libraries/AggregatorV3Interface.sol";
 
 import "../../../../InitSetup.sol";
 
