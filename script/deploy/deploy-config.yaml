@@ -1,0 +1,36 @@
+# Relay Contracts Deployment Configuration
+# This file defines which contracts should be deployed to which chains
+
+# Chain configurations with RPC URLs
+chains:
+  31337: # Anvil (localhost)
+    rpc_url: "http://127.0.0.1:8545"
+    name: "anvil"
+  31338: # Anvil (localhost)
+    rpc_url: "http://127.0.0.1:8546"
+    name: "anvil2"
+
+# Contract deployment configuration
+# Settlement and VotingPowerProvider can be deployed to multiple chains
+contracts:
+  settlement:
+    chains: [31337, 31338]
+    description: "Settlement contract for cross-chain validation"
+  
+  keyRegistry:
+    chains: [31337]
+    description: "Key registry contract for validator keys"
+  
+  votingPowerProvider:
+    chains: [31337, 31338]
+    description: "Voting power provider contract (optional)"
+  
+  valSetDriver:
+    chains: [31337]
+    description: "Validator set driver contract (deployed last)"
+
+# Deployment order (automatically handled by the script)
+# 1. settlement
+# 2. keyRegistry  
+# 3. votingPowerProvider
+# 4. valSetDriver (requires addresses from previous deployments)

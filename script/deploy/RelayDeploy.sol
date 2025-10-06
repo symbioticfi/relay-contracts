@@ -11,6 +11,7 @@ import {TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transpa
 
 import {IOpNetVaultAutoDeploy} from "../../src/interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol";
 import {VotingPowerProvider} from "../../src/modules/voting-power/VotingPowerProvider.sol";
+import {IValSetDriver} from "../../src/interfaces/modules/valset-driver/IValSetDriver.sol";
 
 /**
  * @title RelayDeploy
@@ -64,7 +65,11 @@ abstract contract RelayDeploy is Script, CreateXWrapper {
      * @return implementation The implementation contract address
      * @return initData The initialization data for the proxy
      */
-    function _valSetDriverParams() internal virtual returns (address implementation, bytes memory initData);
+    function _valSetDriverParams(
+        IValSetDriver.CrossChainAddress memory keyRegistry,
+        IValSetDriver.CrossChainAddress[] memory settlements,
+        IValSetDriver.CrossChainAddress[] memory votingPowerProviders
+    ) internal virtual returns (address implementation, bytes memory initData);
 
     /**
      * @notice Deploy the VotingPowerProvider contract using CREATE3
@@ -130,10 +135,18 @@ abstract contract RelayDeploy is Script, CreateXWrapper {
      * @param isDeployerGuarded Whether to deploy with guarded salt for enhanced security
      * @return The address of the deployed ValSetDriver contract
      */
-    function deployValSetDriver(address proxyOwner, bool isDeployerGuarded) public virtual returns (address) {
+    function deployValSetDriver(
+        address proxyOwner,
+        bool isDeployerGuarded,
+        IValSetDriver.CrossChainAddress memory keyRegistry,
+        IValSetDriver.CrossChainAddress[] memory settlements,
+        IValSetDriver.CrossChainAddress[] memory votingPowerProviders
+    ) public virtual returns (address) {
         vm.startBroadcast();
-        (address implementation, bytes memory initData) = _valSetDriverParams();
-        address newContract = _deployContract(VALSET_DRIVER_SALT, implementation, initData, proxyOwner, isDeployerGuarded);
+        (address implementation, bytes memory initData) =
+            _valSetDriverParams(keyRegistry, settlements, votingPowerProviders);
+        address newContract =
+            _deployContract(VALSET_DRIVER_SALT, implementation, initData, proxyOwner, isDeployerGuarded);
         vm.stopBroadcast();
         Logs.log(string.concat("ValSetDriver deployed at: ", vm.toString(newContract)));
 
