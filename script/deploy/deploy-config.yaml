@@ -13,20 +13,26 @@ chains:
 # Contract deployment configuration
 # Settlement and VotingPowerProvider can be deployed to multiple chains
 contracts:
+
   settlement:
     chains: [31337, 31338]
+    function_name: "runDeploySettlement()"
     description: "Settlement contract for cross-chain validation"
   
   keyRegistry:
     chains: [31337]
+    function_name: "runDeployKeyRegistry()"
     description: "Key registry contract for validator keys"
   
   votingPowerProvider:
     chains: [31337, 31338]
+    function_name: "runDeployVotingPowerProvider()"
     description: "Voting power provider contract (optional)"
   
   valSetDriver:
     chains: [31337]
+    function_name: "runDeployValSetDriver((uint64,address),(uint64,address)[],(uint64,address)[])"
+    params: "keyRegistry,settlement[],votingPowerProvider[]"
     description: "Validator set driver contract (deployed last)"
 
 # Deployment order (automatically handled by the script)

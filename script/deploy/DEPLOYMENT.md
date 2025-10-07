@@ -8,9 +8,8 @@ The deployment script (`deploy.sh`) automates the deployment of relay contracts 
 
 ## Files
 
-- `script/deploy/deploy.sh` - Main deployment script
-- `script/deploy/deploy-config.yaml` - Your deployment configuration
-- `script/deploy/examples/MyRelayDeploy.s.sol` - Solidity deployment script
+- `deploy.sh` - Main deployment script
+- `deploy-config.yaml` - Your deployment configuration
 
 ## Prerequisites
 
@@ -22,18 +21,11 @@ The deployment script (`deploy.sh`) automates the deployment of relay contracts 
 
 ## Configuration
 
-### 1. Create Configuration File
-
-Copy the example configuration:
-```bash
-cp script/deploy/deploy-config.example.yaml script/deploy/deploy-config.yaml
-```
-
-### 2. Edit Configuration
-
-Edit `script/deploy/deploy-config.yaml` to specify:
+Edit `deploy-config.yaml` to specify:
 - **Chains**: RPC URLs for each chain you want to deploy to
 - **Contracts**: Which contracts to deploy to which chains
+
+**Important**: The deployment script dynamically reads the contract list from the config file. Contracts are deployed **in the order they appear** in the configuration file, so ensure dependencies are ordered correctly.
 
 Example configuration:
 ```yaml
@@ -46,32 +38,58 @@ chains:
     name: "goerli"
 
 contracts:
+  # Contracts are deployed in the order listed below
   settlement:
-    chains: [1, 5, 100]
+    chains: [1, 5]
+    function_name: "runDeploySettlement()"
+    description: "Settlement contract for cross-chain validation"
+  
   keyRegistry:
     chains: [1]
+    function_name: "runDeployKeyRegistry()"
+    description: "Key registry contract for validator keys"
+  
   votingPowerProvider:
-    chains: []
+    chains: [1, 5]
+    function_name: "runDeployVotingPowerProvider()"
+    description: "Voting power provider contract (optional)"
+  
   valSetDriver:
     chains: [1]
+    function_name: "runDeployValSetDriver((uint64,address),(uint64,address)[],(uint64,address)[])"
+    params: "keyRegistry,settlement[],votingPowerProvider[]"
+    description: "Validator set driver contract (deployed last)"
 ```
+
+### Configuration Fields
+
+For each contract, you can specify:
+- **`chains`**: Array of chain IDs where this contract should be deployed
+- **`function_name`**: The Solidity function signature to call in your deployment script
+- **`params`** (optional): Parameters to pass to the function, can be only previously deployed contracts
+  - Use contract name for single address parameters
+  - Use `contractName[]` for array parameters (collects addresses from all chains)
+- **`description`** (optional): Human-readable description of the contract
 
 ## Usage
 
 ### Basic Usage
 
+Open the script directory
+```bash
+cd <PATH TO SCRIPT>
+```
+
 Deploy with default configuration:
 ```bash
-cd script/deploy
-./deploy.sh
+./deploy.sh --script <script path>/MyRelayDeploy.s.sol
 ```
 
 ### With Custom Configuration
 
 Specify a custom configuration file:
 ```bash
-cd script/deploy
-./deploy.sh --config my-config.yaml
+./deploy.sh --script <script path>/MyRelayDeploy.s.sol --config my-config.yaml
 ```
 
 ### With Forge Parameters
@@ -80,42 +98,27 @@ The script supports all standard `forge script` parameters:
 
 **Using private key:**
 ```bash
-cd script/deploy
-./deploy.sh --private-key 0x123... --broadcast
+./deploy.sh --script <script path>/MyRelayDeploy.s.sol --private-key 0x123... --broadcast
 ```
 
 **Using hardware wallet:**
 ```bash
-cd script/deploy
-./deploy.sh --ledger --broadcast
+./deploy.sh --script <script path>/MyRelayDeploy.s.sol --ledger --broadcast
 ```
 
-**With verification:**
-```bash
-cd script/deploy
-./deploy.sh --private-key 0x123... --broadcast --verify
-```
-
-**With custom gas settings:**
-```bash
-cd script/deploy
-./deploy.sh --private-key 0x123... --broadcast --gas-limit 10000000 --gas-price 20000000000
-```
-
-**Slow mode (for congested networks):**
-```bash
-cd script/deploy
-./deploy.sh --private-key 0x123... --broadcast --slow
-```
 
 ## Deployment Order
 
-The script automatically deploys contracts in the correct order:
+The script deploys contracts **in the order they appear in the configuration file**. This allows you to control the deployment sequence and ensure dependencies are met.
+
+**Recommended order** for standard relay contracts:
 
 1. **Settlement** contracts (can be deployed to multiple chains)
 2. **KeyRegistry** contracts
 3. **VotingPowerProvider** contracts (optional)
 4. **ValSetDriver** contracts (requires addresses from previous deployments)
+
+**Important**: If you add custom contracts or reorder the list, ensure that any contract with dependencies (specified via `params`) appears **after** the contracts it depends on in the configuration file.
 
 ## Contract Types
 
@@ -137,6 +140,31 @@ The script automatically deploys contracts in the correct order:
 - Requires addresses from settlements, keyRegistry, and votingPowerProvider
 - Typically deployed to a single chain
 
+## Adding Custom Contracts
+
+You can add custom contracts to the deployment configuration. Simply add a new entry in the `contracts` section:
+
+```yaml
+contracts:
+  settlement:
+    chains: [1, 5]
+    function_name: "runDeploySettlement()"
+  
+  myCustomContract:
+    chains: [1]
+    function_name: "runDeployMyCustomContract()"
+  
+  keyRegistry:
+    chains: [1]
+    function_name: "runDeployKeyRegistry()"
+```
+
+The script will automatically:
+- Read all contract names from the config file
+- Deploy them in the order specified
+- Skip any contracts with empty `chains` arrays
+- Pass parameters to contracts that require them
+
 ## Output
 
 The script provides:
@@ -149,22 +177,21 @@ The script provides:
 
 ### Common Issues
 
-1. **Missing dependencies**:
-   ```bash
-   # Install yq if missing
-   brew install yq  # macOS
-   apt-get install yq  # Ubuntu/Debian
-   ```
-
-2. **Invalid configuration**:
+1. **Invalid configuration**:
    - Check YAML syntax
    - Ensure all chains have RPC URLs
    - Verify chain IDs are correct
+   - Ensure contracts with dependencies appear after their dependencies in the config file
 
-3. **Deployment failures**:
+2. **Deployment failures**:
    - Check RPC URL accessibility
    - Verify private key has sufficient funds
    - Check gas settings for the target network
+   - Verify function names match your deployment script exactly
+
+3. **Missing dependencies**:
+   - If a contract fails due to missing parameters, check that the required contracts are listed earlier in the config
+   - Ensure the `params` field correctly references other contract names
 
 4. **Permission errors**:
    ```bash
@@ -175,52 +202,14 @@ The script provides:
 
 Show usage information:
 ```bash
-cd script/deploy
 ./deploy.sh --help
 ```
 
-## Security Considerations
-
-- **Never commit private keys** to version control
-- **Use environment variables** for sensitive data
-- **Test on testnets** before mainnet deployment
-- **Verify contracts** after deployment
-- **Use hardware wallets** for mainnet deployments
-
-## Example Workflow
-
-1. **Setup**:
-   ```bash
-   cd script/deploy
-   cp deploy-config.example.yaml deploy-config.yaml
-   # Edit deploy-config.yaml with your settings
-   ```
-
-2. **Test deployment** (testnet):
-   ```bash
-   cd script/deploy
-   ./deploy.sh --config deploy-config.yaml --private-key $TESTNET_PRIVATE_KEY --broadcast
-   ```
-
-3. **Verify contracts**:
-   ```bash
-   cd script/deploy
-   ./deploy.sh --config deploy-config.yaml --private-key $TESTNET_PRIVATE_KEY --verify
-   ```
-
-4. **Mainnet deployment** (with hardware wallet):
-   ```bash
-   cd script/deploy
-   ./deploy.sh --config deploy-config.yaml --ledger --broadcast --verify
-   ```
-
-## Advanced Usage
 
 ### Custom Script File
 
 Use a different deployment script:
 ```bash
-cd script/deploy
 ./deploy.sh --script path/to/your/script.s.sol --private-key 0x123... --broadcast
 ```
 
@@ -229,18 +218,6 @@ cd script/deploy
 Use environment variables for sensitive data:
 ```bash
 export PRIVATE_KEY="0x123..."
-cd script/deploy
 ./deploy.sh --private-key $PRIVATE_KEY --broadcast
 ```
 
-### Batch Deployment
-
-Deploy to multiple configurations:
-```bash
-# Testnet deployment
-cd script/deploy
-./deploy.sh --config testnet-config.yaml --private-key $TESTNET_KEY --broadcast
-
-# Mainnet deployment
-./deploy.sh --config mainnet-config.yaml --ledger --broadcast --verify
-```

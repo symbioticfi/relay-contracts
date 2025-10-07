@@ -36,53 +36,22 @@ abstract contract RelayDeploy is Script, CreateXWrapper {
     bytes11 public VALSET_DRIVER_SALT = bytes11("ValSetDrv");
 
     /**
-     * @notice Returns deployment parameters for the Settlement contract
-     * @dev Must be implemented by concrete deployment contracts
-     * @return implementation The implementation contract address
-     * @return initData The initialization data for the proxy
-     */
-    function _settlementParams() internal virtual returns (address implementation, bytes memory initData);
-
-    /**
-     * @notice Returns deployment parameters for the VotingPowerProvider contract
-     * @dev Must be implemented by concrete deployment contracts
-     * @return implementation The implementation contract address
-     * @return initData The initialization data for the proxy
-     */
-    function _votingPowerProviderParams() internal virtual returns (address implementation, bytes memory initData);
-
-    /**
-     * @notice Returns deployment parameters for the KeyRegistry contract
-     * @dev Must be implemented by concrete deployment contracts
-     * @return implementation The implementation contract address
-     * @return initData The initialization data for the proxy
-     */
-    function _keyRegistryParams() internal virtual returns (address implementation, bytes memory initData);
-
-    /**
-     * @notice Returns deployment parameters for the ValSetDriver contract
-     * @dev Must be implemented by concrete deployment contracts
-     * @return implementation The implementation contract address
-     * @return initData The initialization data for the proxy
-     */
-    function _valSetDriverParams(
-        IValSetDriver.CrossChainAddress memory keyRegistry,
-        IValSetDriver.CrossChainAddress[] memory settlements,
-        IValSetDriver.CrossChainAddress[] memory votingPowerProviders
-    ) internal virtual returns (address implementation, bytes memory initData);
-
-    /**
      * @notice Deploy the VotingPowerProvider contract using CREATE3
      * @dev Deploys a transparent upgradeable proxy for the VotingPowerProvider
      * @param proxyOwner The owner of the proxy contract
      * @param isDeployerGuarded Whether to deploy with guarded salt for enhanced security
      * @return The address of the deployed VotingPowerProvider contract
      */
-    function deployVotingPowerProvider(address proxyOwner, bool isDeployerGuarded) public virtual returns (address) {
+    function deployVotingPowerProvider(
+        address proxyOwner,
+        bool isDeployerGuarded,
+        address implementation,
+        bytes memory initData
+    ) public virtual returns (address) {
         vm.startBroadcast();
-        (address implementation, bytes memory initData) = _votingPowerProviderParams();
-        address newContract =
-            _deployContract(VOTING_POWER_PROVIDER_SALT, implementation, initData, proxyOwner, isDeployerGuarded);
+        address newContract = _deployContract(
+            VOTING_POWER_PROVIDER_SALT, implementation, initData, proxyOwner, isDeployerGuarded, "VotingPowerProvider"
+        );
         vm.stopBroadcast();
 
         if (SymbioticCoreConstants.coreSupported()) {
@@ -105,7 +74,6 @@ abstract contract RelayDeploy is Script, CreateXWrapper {
                 );
             }
         }
-        Logs.log(string.concat("VotingPowerProvider deployed at: ", vm.toString(newContract)));
 
         return newContract;
     }
@@ -117,13 +85,16 @@ abstract contract RelayDeploy is Script, CreateXWrapper {
      * @param isDeployerGuarded Whether to deploy with guarded salt for enhanced security
      * @return The address of the deployed KeyRegistry contract
      */
-    function deployKeyRegistry(address proxyOwner, bool isDeployerGuarded) public virtual returns (address) {
+    function deployKeyRegistry(
+        address proxyOwner,
+        bool isDeployerGuarded,
+        address implementation,
+        bytes memory initData
+    ) public virtual returns (address) {
         vm.startBroadcast();
-        (address implementation, bytes memory initData) = _keyRegistryParams();
         address newContract =
-            _deployContract(KEY_REGISTRY_SALT, implementation, initData, proxyOwner, isDeployerGuarded);
+            _deployContract(KEY_REGISTRY_SALT, implementation, initData, proxyOwner, isDeployerGuarded, "KeyRegistry");
         vm.stopBroadcast();
-        Logs.log(string.concat("KeyRegistry deployed at: ", vm.toString(newContract)));
 
         return newContract;
     }
@@ -138,17 +109,13 @@ abstract contract RelayDeploy is Script, CreateXWrapper {
     function deployValSetDriver(
         address proxyOwner,
         bool isDeployerGuarded,
-        IValSetDriver.CrossChainAddress memory keyRegistry,
-        IValSetDriver.CrossChainAddress[] memory settlements,
-        IValSetDriver.CrossChainAddress[] memory votingPowerProviders
+        address implementation,
+        bytes memory initData
     ) public virtual returns (address) {
         vm.startBroadcast();
-        (address implementation, bytes memory initData) =
-            _valSetDriverParams(keyRegistry, settlements, votingPowerProviders);
         address newContract =
-            _deployContract(VALSET_DRIVER_SALT, implementation, initData, proxyOwner, isDeployerGuarded);
+            _deployContract(VALSET_DRIVER_SALT, implementation, initData, proxyOwner, isDeployerGuarded, "ValSetDriver");
         vm.stopBroadcast();
-        Logs.log(string.concat("ValSetDriver deployed at: ", vm.toString(newContract)));
 
         return newContract;
     }
@@ -160,12 +127,16 @@ abstract contract RelayDeploy is Script, CreateXWrapper {
      * @param isDeployerGuarded Whether to deploy with guarded salt for enhanced security
      * @return The address of the deployed Settlement contract
      */
-    function deploySettlement(address proxyOwner, bool isDeployerGuarded) public virtual returns (address) {
+    function deploySettlement(
+        address proxyOwner,
+        bool isDeployerGuarded,
+        address implementation,
+        bytes memory initData
+    ) public virtual returns (address) {
         vm.startBroadcast();
-        (address implementation, bytes memory initData) = _settlementParams();
-        address newContract = _deployContract(SETTLEMENT_SALT, implementation, initData, proxyOwner, isDeployerGuarded);
+        address newContract =
+            _deployContract(SETTLEMENT_SALT, implementation, initData, proxyOwner, isDeployerGuarded, "Settlement");
         vm.stopBroadcast();
-        Logs.log(string.concat("Settlement deployed at: ", vm.toString(newContract)));
 
         return newContract;
     }
@@ -178,28 +149,32 @@ abstract contract RelayDeploy is Script, CreateXWrapper {
      * @param initData The initialization data for the proxy (empty bytes if no initialization)
      * @param owner The owner of the proxy contract
      * @param isDeployerGuarded Whether to use guarded salt deployment
-     * @return The address of the deployed contract
+     * @param name The name of the contract for logging
+     * @return newContract The address of the deployed contract
      */
     function _deployContract(
         bytes11 salt,
         address implementation,
         bytes memory initData,
         address owner,
-        bool isDeployerGuarded
-    ) internal virtual returns (address) {
+        bool isDeployerGuarded,
+        string memory name
+    ) internal virtual returns (address newContract) {
         bytes memory proxyInitCode = abi.encodePacked(
             type(TransparentUpgradeableProxy).creationCode, abi.encode(implementation, owner, new bytes(0))
         );
 
         (,, address deployer) = vm.readCallers();
+
         if (initData.length > 0) {
-            return isDeployerGuarded
+            newContract = isDeployerGuarded
                 ? deployCreate3AndInitWithGuardedSalt(deployer, salt, proxyInitCode, initData)
                 : deployCreate3AndInit(bytes32(salt), proxyInitCode, initData);
         } else {
-            return isDeployerGuarded
+            newContract = isDeployerGuarded
                 ? deployCreate3WithGuardedSalt(deployer, salt, proxyInitCode)
                 : deployCreate3(bytes32(salt), proxyInitCode);
         }
+        Logs.log(string.concat(name, " deployed at: ", vm.toString(newContract)));
     }
 }
