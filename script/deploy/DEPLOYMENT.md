@@ -33,9 +33,11 @@ chains:
   1: # Ethereum Mainnet
     rpc_url: "https://mainnet.infura.io/v3/YOUR_PROJECT_ID"
     name: "ethereum"
+    needCoreDeploy: false
   5: # Goerli Testnet
     rpc_url: "https://goerli.infura.io/v3/YOUR_PROJECT_ID"
     name: "goerli"
+    needCoreDeploy: false
 
 contracts:
   # Contracts are deployed in the order listed below
@@ -50,7 +52,7 @@ contracts:
     description: "Key registry contract for validator keys"
   
   votingPowerProvider:
-    chains: [1, 5]
+    chains: [1]
     function_name: "runDeployVotingPowerProvider()"
     description: "Voting power provider contract (optional)"
   
@@ -63,10 +65,19 @@ contracts:
 
 ### Configuration Fields
 
-For each contract, you can specify:
+#### Chain Configuration
+
+For each chain in the `chains` section, you can specify:
+- **`rpc_url`**: RPC endpoint URL for the chain (required)
+- **`name`**: Human-readable name for the chain (optional)
+- **`needCoreDeploy`**: Boolean flag indicating whether Symbiotic Core contracts should be deployed to this chain 
+
+#### Contract Configuration
+
+For each contract in the `contracts` section, you can specify:
 - **`chains`**: Array of chain IDs where this contract should be deployed
 - **`function_name`**: The Solidity function signature to call in your deployment script
-- **`params`** (optional): Parameters to pass to the function, can be only previously deployed contracts
+- **`params`** (optional): Parameters to pass to the function, can be only tuples (uint64,address) representing previously deployed contracts
   - Use contract name for single address parameters
   - Use `contractName[]` for array parameters (collects addresses from all chains)
 - **`description`** (optional): Human-readable description of the contract
@@ -110,6 +121,18 @@ The script supports all standard `forge script` parameters:
 ## Deployment Order
 
 The script deploys contracts **in the order they appear in the configuration file**. This allows you to control the deployment sequence and ensure dependencies are met.
+
+### Pre-Deployment Phase
+
+Before deploying any relay contracts, the script automatically:
+
+1. **Deploys CreateX** factory contract to all configured chains (if not already deployed)
+2. **Deploys Symbiotic Core** contracts to chains where `needCoreDeploy: true` is set
+   - This includes core infrastructure contracts required by the relay system
+   - Typically needed for local development chains (anvil) or new networks
+   - Skip this step (set to `false`) for chains where Core is already deployed
+
+### Main Deployment Phase
 
 **Recommended order** for standard relay contracts:
 
