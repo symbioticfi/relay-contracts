@@ -1,5 +1,5 @@
 Compiling 286 files with Solc 0.8.28
-Solc 0.8.28 finished in 39.49s
+Solc 0.8.28 finished in 40.91s
 Compiler run successful with warnings:
 Warning (6321): Unnamed return variable can remain unassigned. Add an explicit return with value to all non-reverting code paths or name the variable.
    --> src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:231:84:
