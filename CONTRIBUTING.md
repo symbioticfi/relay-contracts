@@ -44,7 +44,7 @@ This repo includes the following pre-commit hooks that are defined in the `.pre-
 - `check-json`: Validates JSON files and fails fast on malformed syntax.
 - `check-yaml`: Parses YAML files to verify they are syntactically valid.
 - `format`: This hook uses `forge fmt` to format all Solidity files.
-- `doc`: This hook uses `forge doc` to automatically generate documentation for all Solidity files whenever the NatSpec documentation changes. The `script/util/doc_gen.sh` script is used to generate documentation. Forge updates the commit hash in the documentation automatically. To only generate new documentation when the documentation has actually changed, the script checks whether more than just the hash has changed in the documentation and discard all changes if only the hash has changed.
+- `doc`: This hook uses `forge doc` to generate the Solidity documentation. Commit the generated files whenever the documentation changes.
 - `prettier`: All remaining files are formatted using prettier.
 
 ## Requirements for merge
