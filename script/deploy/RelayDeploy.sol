@@ -31,8 +31,8 @@ import {IValSetDriver} from "../../src/interfaces/modules/valset-driver/IValSetD
  */
 abstract contract RelayDeploy is Script, Config, CreateXWrapper {
     /// @notice CREATE3 salts for contracts deployment
-    bytes11 public VOTING_POWER_PROVIDER_SALT = bytes11("VotingPower");
     bytes11 public KEY_REGISTRY_SALT = bytes11("KeyRegistry");
+    bytes11 public VOTING_POWER_PROVIDER_SALT = bytes11("VotingPower");
     bytes11 public SETTLEMENT_SALT = bytes11("Settlement");
     bytes11 public VALSET_DRIVER_SALT = bytes11("ValSetDrv");
 
@@ -62,12 +62,12 @@ abstract contract RelayDeploy is Script, Config, CreateXWrapper {
     }
 
     /**
-     * @notice Returns deployment parameters for the Settlement contract
+     * @notice Returns deployment parameters for the KeyRegistry contract
      * @dev Must be implemented by concrete deployment contracts
      * @return implementation The implementation contract address
      * @return initData The initialization data for the proxy
      */
-    function _settlementParams() internal virtual returns (address implementation, bytes memory initData);
+    function _keyRegistryParams() internal virtual returns (address implementation, bytes memory initData);
 
     /**
      * @notice Returns deployment parameters for the VotingPowerProvider contract
@@ -78,12 +78,12 @@ abstract contract RelayDeploy is Script, Config, CreateXWrapper {
     function _votingPowerProviderParams() internal virtual returns (address implementation, bytes memory initData);
 
     /**
-     * @notice Returns deployment parameters for the KeyRegistry contract
+     * @notice Returns deployment parameters for the Settlement contract
      * @dev Must be implemented by concrete deployment contracts
      * @return implementation The implementation contract address
      * @return initData The initialization data for the proxy
      */
-    function _keyRegistryParams() internal virtual returns (address implementation, bytes memory initData);
+    function _settlementParams() internal virtual returns (address implementation, bytes memory initData);
 
     /**
      * @notice Returns deployment parameters for the ValSetDriver contract
@@ -93,9 +93,9 @@ abstract contract RelayDeploy is Script, Config, CreateXWrapper {
      */
     function _valSetDriverParams() internal virtual returns (address implementation, bytes memory initData);
 
-    function runDeployVotingPowerProvider() public virtual;
-
     function runDeployKeyRegistry() public virtual;
+
+    function runDeployVotingPowerProvider() public virtual;
 
     function runDeploySettlement() public virtual;
 
@@ -129,6 +129,17 @@ abstract contract RelayDeploy is Script, Config, CreateXWrapper {
         return SymbioticCoreConstants.core();
     }
 
+    function getKeyRegistry() public virtual loadConfig returns (IValSetDriver.CrossChainAddress memory) {
+        uint256[] memory configChainIds = config.getChainIds();
+        for (uint256 i; i < configChainIds.length; ++i) {
+            Variable memory keyRegistry = config.get(configChainIds[i], "key_registry");
+            if (keyRegistry.data.length > 0) {
+                return
+                    IValSetDriver.CrossChainAddress({chainId: uint64(configChainIds[i]), addr: keyRegistry.toAddress()});
+            }
+        }
+    }
+
     function getVotingPowerProvider() public virtual loadConfig returns (address) {
         return config.get("voting_power_provider").toAddress();
     }
@@ -153,17 +164,6 @@ abstract contract RelayDeploy is Script, Config, CreateXWrapper {
         }
         assembly ("memory-safe") {
             mstore(votingPowerProviders, length)
-        }
-    }
-
-    function getKeyRegistry() public virtual loadConfig returns (IValSetDriver.CrossChainAddress memory) {
-        uint256[] memory configChainIds = config.getChainIds();
-        for (uint256 i; i < configChainIds.length; ++i) {
-            Variable memory keyRegistry = config.get(configChainIds[i], "key_registry");
-            if (keyRegistry.data.length > 0) {
-                return
-                    IValSetDriver.CrossChainAddress({chainId: uint64(configChainIds[i]), addr: keyRegistry.toAddress()});
-            }
         }
     }
 
@@ -199,6 +199,22 @@ abstract contract RelayDeploy is Script, Config, CreateXWrapper {
                     });
             }
         }
+    }
+
+    /**
+     * @notice Deploy the KeyRegistry contract using CREATE3
+     * @dev Deploys a transparent upgradeable proxy for the KeyRegistry
+     * @param proxyOwner The owner of the proxy contract
+     * @param isDeployerGuarded Whether to deploy with guarded salt for enhanced security
+     * @return The address of the deployed KeyRegistry contract
+     */
+    function deployKeyRegistry(address proxyOwner, bool isDeployerGuarded) public virtual loadConfig returns (address) {
+        (address implementation, bytes memory initData) = _keyRegistryParams();
+        address newContract =
+            _deployContract(KEY_REGISTRY_SALT, implementation, initData, proxyOwner, isDeployerGuarded);
+        Logs.log(string.concat("KeyRegistry deployed at: ", vm.toString(newContract)));
+        config.set("key_registry", newContract);
+        return newContract;
     }
 
     /**
@@ -240,22 +256,6 @@ abstract contract RelayDeploy is Script, Config, CreateXWrapper {
         }
         Logs.log(string.concat("VotingPowerProvider deployed at: ", vm.toString(newContract)));
         config.set("voting_power_provider", newContract);
-        return newContract;
-    }
-
-    /**
-     * @notice Deploy the KeyRegistry contract using CREATE3
-     * @dev Deploys a transparent upgradeable proxy for the KeyRegistry
-     * @param proxyOwner The owner of the proxy contract
-     * @param isDeployerGuarded Whether to deploy with guarded salt for enhanced security
-     * @return The address of the deployed KeyRegistry contract
-     */
-    function deployKeyRegistry(address proxyOwner, bool isDeployerGuarded) public virtual loadConfig returns (address) {
-        (address implementation, bytes memory initData) = _keyRegistryParams();
-        address newContract =
-            _deployContract(KEY_REGISTRY_SALT, implementation, initData, proxyOwner, isDeployerGuarded);
-        Logs.log(string.concat("KeyRegistry deployed at: ", vm.toString(newContract)));
-        config.set("key_registry", newContract);
         return newContract;
     }
 

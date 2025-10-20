@@ -218,7 +218,7 @@ run_contract_deploy() {
   done
 }
 
-run_contract_deploy "votingPowerProvider" "runDeployVotingPowerProvider()" "VotingPowerProvider deployment"
 run_contract_deploy "keyRegistry" "runDeployKeyRegistry()" "KeyRegistry deployment"
+run_contract_deploy "votingPowerProvider" "runDeployVotingPowerProvider()" "VotingPowerProvider deployment"
 run_contract_deploy "settlement" "runDeploySettlement()" "Settlement deployment"
 run_contract_deploy "valSetDriver" "runDeployValSetDriver()" "ValSetDriver deployment"
