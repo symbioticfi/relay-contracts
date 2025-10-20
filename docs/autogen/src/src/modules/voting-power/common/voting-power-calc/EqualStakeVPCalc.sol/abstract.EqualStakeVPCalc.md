@@ -1,5 +1,5 @@
 # EqualStakeVPCalc
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/7eb78caa6fd861b172d3fcd10e873a8e342caffb/src/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol)
 
 **Inherits:**
 [VotingPowerCalcManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/base/VotingPowerCalcManager.sol/abstract.VotingPowerCalcManager.md), [IEqualStakeVPCalc](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/common/voting-power-calc/IEqualStakeVPCalc.sol/interface.IEqualStakeVPCalc.md)

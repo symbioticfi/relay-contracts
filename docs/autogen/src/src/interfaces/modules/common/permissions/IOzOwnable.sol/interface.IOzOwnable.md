@@ -1,5 +1,5 @@
 # IOzOwnable
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/common/permissions/IOzOwnable.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/7eb78caa6fd861b172d3fcd10e873a8e342caffb/src/interfaces/modules/common/permissions/IOzOwnable.sol)
 
 
 ## Structs

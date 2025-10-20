@@ -1,5 +1,5 @@
 # IOperatorsBlacklist
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/interfaces/modules/voting-power/extensions/IOperatorsBlacklist.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/7eb78caa6fd861b172d3fcd10e873a8e342caffb/src/interfaces/modules/voting-power/extensions/IOperatorsBlacklist.sol)
 
 
 ## Functions

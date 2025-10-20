@@ -18,6 +18,8 @@ import {IEpochManager} from "../../../src/interfaces/modules/valset-driver/IEpoc
 import {MySettlement} from "../../../examples/MySettlement.sol";
 import {ISettlement} from "../../../src/interfaces/modules/settlement/ISettlement.sol";
 
+// ./script/deploy/deploy.sh ./script/deploy/examples/MyRelayDeploy.sol ./script/deploy/examples/my-relay-deploy.toml --broadcast
+
 contract MyRelayDeploy is RelayDeploy {
     address public constant OWNER = address(1);
     address public constant NETWORK_ADDRESS = address(1);

@@ -1,5 +1,5 @@
 # NetworkManager
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/modules/base/NetworkManager.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/7eb78caa6fd861b172d3fcd10e873a8e342caffb/src/modules/base/NetworkManager.sol)
 
 **Inherits:**
 Initializable, StaticDelegateCallable, [INetworkManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/base/INetworkManager.sol/interface.INetworkManager.md)

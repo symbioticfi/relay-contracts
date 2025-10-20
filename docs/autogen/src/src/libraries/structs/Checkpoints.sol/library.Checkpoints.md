@@ -1,5 +1,5 @@
 # Checkpoints
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/libraries/structs/Checkpoints.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/7eb78caa6fd861b172d3fcd10e873a8e342caffb/src/libraries/structs/Checkpoints.sol)
 
 Library implementing a checkpointing mechanism for values as they change at different points in time.
 
