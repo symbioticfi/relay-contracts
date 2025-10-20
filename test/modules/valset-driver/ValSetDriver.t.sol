@@ -32,10 +32,7 @@ contract ValSetDriverTest is Test {
         return IValSetDriver.CrossChainAddress({addr: _addr, chainId: _chainId});
     }
 
-    function qth(
-        uint8 _keyTag,
-        uint248 _quorumThreshold
-    ) internal pure returns (IValSetDriver.QuorumThreshold memory) {
+    function qth(uint8 _keyTag, uint248 _quorumThreshold) internal pure returns (IValSetDriver.QuorumThreshold memory) {
         return IValSetDriver.QuorumThreshold({keyTag: _keyTag, quorumThreshold: _quorumThreshold});
     }
 
@@ -58,8 +55,7 @@ contract ValSetDriverTest is Test {
         IValSetDriver.ValSetDriverInitParams memory initParams = IValSetDriver.ValSetDriverInitParams({
             networkManagerInitParams: INetworkManager.NetworkManagerInitParams({network: address(1), subnetworkId: 0}),
             epochManagerInitParams: IEpochManager.EpochManagerInitParams({
-                epochDuration: 100,
-                epochDurationTimestamp: uint48(vm.getBlockTimestamp())
+                epochDuration: 100, epochDurationTimestamp: uint48(vm.getBlockTimestamp())
             }),
             numAggregators: 1,
             numCommitters: 1,

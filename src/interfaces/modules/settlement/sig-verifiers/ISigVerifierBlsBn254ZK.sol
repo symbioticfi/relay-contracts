@@ -67,16 +67,12 @@ interface ISigVerifierBlsBn254ZK is ISigVerifier {
      * @param index The index of the verifier.
      * @return The verifier at the given index.
      */
-    function verifiers(
-        uint256 index
-    ) external view returns (address);
+    function verifiers(uint256 index) external view returns (address);
 
     /**
      * @notice Returns the maximum supported number of validators for the verifier at the given index.
      * @param index The index of the verifier.
      * @return The maximum supported number of validators for the verifier at the given index.
      */
-    function maxValidators(
-        uint256 index
-    ) external view returns (uint256);
+    function maxValidators(uint256 index) external view returns (uint256);
 }

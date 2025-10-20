@@ -15,18 +15,14 @@ abstract contract MultiToken is VotingPowerProvider, IMultiToken {
     /**
      * @inheritdoc IMultiToken
      */
-    function registerToken(
-        address token
-    ) public virtual checkPermission {
+    function registerToken(address token) public virtual checkPermission {
         _registerToken(token);
     }
 
     /**
      * @inheritdoc IMultiToken
      */
-    function unregisterToken(
-        address token
-    ) public virtual checkPermission {
+    function unregisterToken(address token) public virtual checkPermission {
         _unregisterToken(token);
     }
 }

@@ -11,8 +11,9 @@ import {NetworkManager} from "../../src/modules/base/NetworkManager.sol";
 import {OpNetVaultAutoDeploy} from "../../src/modules/voting-power/extensions/OpNetVaultAutoDeploy.sol";
 import {OperatorVaults} from "../../src/modules/voting-power/extensions/OperatorVaults.sol";
 import {BaseSlashing} from "../../src/modules/voting-power/extensions/BaseSlashing.sol";
-import {PricedTokensChainlinkVPCalc} from
-    "../../src/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.sol";
+import {
+    PricedTokensChainlinkVPCalc
+} from "../../src/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.sol";
 import {WeightedTokensVPCalc} from "../../src/modules/voting-power/common/voting-power-calc/WeightedTokensVPCalc.sol";
 import {WeightedVaultsVPCalc} from "../../src/modules/voting-power/common/voting-power-calc/WeightedVaultsVPCalc.sol";
 import {VotingPowerCalcManager} from "../../src/modules/voting-power/base/VotingPowerCalcManager.sol";
@@ -29,11 +30,10 @@ contract VotingPowerProviderFull is
     WeightedTokensVPCalc,
     WeightedVaultsVPCalc
 {
-    constructor(
-        address operatorRegistry,
-        address vaultFactory,
-        address vaultConfigurator
-    ) VotingPowerProvider(operatorRegistry, vaultFactory) OpNetVaultAutoDeploy(vaultConfigurator) {}
+    constructor(address operatorRegistry, address vaultFactory, address vaultConfigurator)
+        VotingPowerProvider(operatorRegistry, vaultFactory)
+        OpNetVaultAutoDeploy(vaultConfigurator)
+    {}
 
     function initialize(
         VotingPowerProviderInitParams memory votingPowerProviderInitParams,
@@ -49,25 +49,21 @@ contract VotingPowerProviderFull is
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
     }
 
-    function _registerOperatorImpl(
-        address operator
-    ) internal override(OperatorsBlacklist, OperatorsWhitelist, VotingPowerProvider, OpNetVaultAutoDeploy) {
+    function _registerOperatorImpl(address operator)
+        internal
+        override(OperatorsBlacklist, OperatorsWhitelist, VotingPowerProvider, OpNetVaultAutoDeploy)
+    {
         super._registerOperatorImpl(operator);
     }
 
-    function _unregisterOperatorVaultImpl(
-        address operator,
-        address vault
-    ) internal override(VotingPowerProvider, OpNetVaultAutoDeploy) {
+    function _unregisterOperatorVaultImpl(address operator, address vault)
+        internal
+        override(VotingPowerProvider, OpNetVaultAutoDeploy)
+    {
         super._unregisterOperatorVaultImpl(operator, vault);
     }
 
-    function stakeToVotingPowerAt(
-        address vault,
-        uint256 stake,
-        bytes memory extraData,
-        uint48 timestamp
-    )
+    function stakeToVotingPowerAt(address vault, uint256 stake, bytes memory extraData, uint48 timestamp)
         public
         view
         override(VotingPowerCalcManager, PricedTokensChainlinkVPCalc, WeightedTokensVPCalc, WeightedVaultsVPCalc)
@@ -76,11 +72,7 @@ contract VotingPowerProviderFull is
         return super.stakeToVotingPowerAt(vault, stake, extraData, timestamp);
     }
 
-    function stakeToVotingPower(
-        address vault,
-        uint256 stake,
-        bytes memory extraData
-    )
+    function stakeToVotingPower(address vault, uint256 stake, bytes memory extraData)
         public
         view
         override(VotingPowerCalcManager, PricedTokensChainlinkVPCalc, WeightedTokensVPCalc, WeightedVaultsVPCalc)

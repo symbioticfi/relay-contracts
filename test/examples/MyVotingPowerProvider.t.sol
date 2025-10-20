@@ -45,7 +45,8 @@ contract MyVotingPowerProviderTest is InitSetupTest {
 
     bytes4 private ERR_INVALID_SHARED_VAULT = IVotingPowerProvider.VotingPowerProvider_InvalidSharedVault.selector;
     bytes4 private ERR_INVALID_OPERATOR_VAULT = IVotingPowerProvider.VotingPowerProvider_InvalidOperatorVault.selector;
-    bytes4 private ERR_OPERATOR_NOT_REGISTERED = IVotingPowerProvider.VotingPowerProvider_OperatorNotRegistered.selector;
+    bytes4 private ERR_OPERATOR_NOT_REGISTERED =
+        IVotingPowerProvider.VotingPowerProvider_OperatorNotRegistered.selector;
 
     function setUp() public override {
         InitSetupTest.setUp();
@@ -56,14 +57,14 @@ contract MyVotingPowerProviderTest is InitSetupTest {
         INetworkManager.NetworkManagerInitParams memory netInit =
             INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkId: IDENTIFIER});
 
-        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
-            .VotingPowerProviderInitParams({
-            networkManagerInitParams: netInit,
-            ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
-            requireSlasher: true,
-            minVaultEpochDuration: 100,
-            token: initSetupParams.masterChain.tokens[0]
-        });
+        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit =
+            IVotingPowerProvider.VotingPowerProviderInitParams({
+                networkManagerInitParams: netInit,
+                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
+                requireSlasher: true,
+                minVaultEpochDuration: 100,
+                token: initSetupParams.masterChain.tokens[0]
+            });
 
         votingPowerProvider.initialize(
             votingPowerProviderInit, IOzOwnable.OzOwnableInitParams({owner: vars.deployer.addr})
@@ -302,14 +303,14 @@ contract MyVotingPowerProviderTest is InitSetupTest {
         INetworkManager.NetworkManagerInitParams memory netInit =
             INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkId: IDENTIFIER});
 
-        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
-            .VotingPowerProviderInitParams({
-            networkManagerInitParams: netInit,
-            ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
-            requireSlasher: true,
-            minVaultEpochDuration: 100,
-            token: initSetupParams.masterChain.tokens[0]
-        });
+        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit =
+            IVotingPowerProvider.VotingPowerProviderInitParams({
+                networkManagerInitParams: netInit,
+                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
+                requireSlasher: true,
+                minVaultEpochDuration: 100,
+                token: initSetupParams.masterChain.tokens[0]
+            });
 
         votingPowerProvider.initialize(
             votingPowerProviderInit, IOzOwnable.OzOwnableInitParams({owner: vars.deployer.addr})
@@ -390,8 +391,7 @@ contract MyVotingPowerProviderTest is InitSetupTest {
                         operator.addr,
                         abi.encode(
                             IVotingPowerProvider.OperatorVotingPowersExtraData({
-                                sharedVaultsExtraData: new bytes[](0),
-                                operatorVaultsExtraData: new bytes[](0)
+                                sharedVaultsExtraData: new bytes[](0), operatorVaultsExtraData: new bytes[](0)
                             })
                         ),
                         uint48(vm.getBlockTimestamp())
@@ -405,8 +405,7 @@ contract MyVotingPowerProviderTest is InitSetupTest {
                         operator.addr,
                         abi.encode(
                             IVotingPowerProvider.OperatorVotingPowersExtraData({
-                                sharedVaultsExtraData: new bytes[](0),
-                                operatorVaultsExtraData: new bytes[](0)
+                                sharedVaultsExtraData: new bytes[](0), operatorVaultsExtraData: new bytes[](0)
                             })
                         )
                     )

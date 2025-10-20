@@ -7,16 +7,12 @@ interface ISharedVaults {
      * @param sharedVault The address of the shared vault.
      * @dev The caller must have the needed permission.
      */
-    function registerSharedVault(
-        address sharedVault
-    ) external;
+    function registerSharedVault(address sharedVault) external;
 
     /**
      * @notice Unregisters the shared vault.
      * @param sharedVault The address of the shared vault.
      * @dev The caller must have the needed permission.
      */
-    function unregisterSharedVault(
-        address sharedVault
-    ) external;
+    function unregisterSharedVault(address sharedVault) external;
 }

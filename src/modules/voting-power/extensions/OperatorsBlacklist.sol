@@ -26,18 +26,14 @@ abstract contract OperatorsBlacklist is VotingPowerProvider, IOperatorsBlacklist
     /**
      * @inheritdoc IOperatorsBlacklist
      */
-    function isOperatorBlacklisted(
-        address operator
-    ) public view virtual returns (bool) {
+    function isOperatorBlacklisted(address operator) public view virtual returns (bool) {
         return _getOperatorsBlacklistStorage()._blacklisted[operator];
     }
 
     /**
      * @inheritdoc IOperatorsBlacklist
      */
-    function blacklistOperator(
-        address operator
-    ) public virtual checkPermission {
+    function blacklistOperator(address operator) public virtual checkPermission {
         if (isOperatorBlacklisted(operator)) {
             revert OperatorsBlacklist_OperatorBlacklisted();
         }
@@ -51,9 +47,7 @@ abstract contract OperatorsBlacklist is VotingPowerProvider, IOperatorsBlacklist
     /**
      * @inheritdoc IOperatorsBlacklist
      */
-    function unblacklistOperator(
-        address operator
-    ) public virtual checkPermission {
+    function unblacklistOperator(address operator) public virtual checkPermission {
         if (!isOperatorBlacklisted(operator)) {
             revert OperatorsBlacklist_OperatorNotBlacklisted();
         }
@@ -61,9 +55,7 @@ abstract contract OperatorsBlacklist is VotingPowerProvider, IOperatorsBlacklist
         emit UnblacklistOperator(operator);
     }
 
-    function _registerOperatorImpl(
-        address operator
-    ) internal virtual override {
+    function _registerOperatorImpl(address operator) internal virtual override {
         if (isOperatorBlacklisted(operator)) {
             revert OperatorsBlacklist_OperatorBlacklisted();
         }

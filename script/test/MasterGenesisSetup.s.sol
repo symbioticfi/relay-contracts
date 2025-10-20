@@ -26,9 +26,7 @@ contract MasterGenesisSetupScript is MasterSetupScript {
         uint8 version;
     }
 
-    function run(
-        uint256 seed
-    ) public virtual override {
+    function run(uint256 seed) public virtual override {
         SYMBIOTIC_CORE_PROJECT_ROOT = "lib/core/";
         SymbioticInit.run(seed);
 

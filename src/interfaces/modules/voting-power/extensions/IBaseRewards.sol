@@ -61,9 +61,7 @@ interface IBaseRewards {
      * @param rewarder The address of the rewarder.
      * @dev The caller must have the needed permission.
      */
-    function setRewarder(
-        address rewarder
-    ) external;
+    function setRewarder(address rewarder) external;
 
     /**
      * @notice Distributes the staker rewards.
@@ -74,12 +72,7 @@ interface IBaseRewards {
      * @dev Only the rewarder can call this function.
      *      The funds should be transferred to this contract separately before the call.
      */
-    function distributeStakerRewards(
-        address stakerRewards,
-        address token,
-        uint256 amount,
-        bytes memory data
-    ) external;
+    function distributeStakerRewards(address stakerRewards, address token, uint256 amount, bytes memory data) external;
 
     /**
      * @notice Distributes the operator rewards.

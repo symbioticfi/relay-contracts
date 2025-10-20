@@ -15,18 +15,14 @@ abstract contract SharedVaults is VotingPowerProvider, ISharedVaults {
     /**
      * @inheritdoc ISharedVaults
      */
-    function registerSharedVault(
-        address sharedVault
-    ) public virtual checkPermission {
+    function registerSharedVault(address sharedVault) public virtual checkPermission {
         _registerSharedVault(sharedVault);
     }
 
     /**
      * @inheritdoc ISharedVaults
      */
-    function unregisterSharedVault(
-        address sharedVault
-    ) public virtual checkPermission {
+    function unregisterSharedVault(address sharedVault) public virtual checkPermission {
         _unregisterSharedVault(sharedVault);
     }
 }

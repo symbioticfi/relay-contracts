@@ -5,9 +5,7 @@ import "forge-std/Test.sol";
 import {OzOwnable} from "../../../../src/modules/common/permissions/OzOwnable.sol";
 
 contract TestOzOwnable is OzOwnable {
-    function initialize(
-        address owner_
-    ) external initializer {
+    function initialize(address owner_) external initializer {
         OzOwnableInitParams memory initParams = OzOwnableInitParams({owner: owner_});
         __OzOwnable_init(initParams);
     }

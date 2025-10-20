@@ -58,12 +58,13 @@ contract BaseRewardsTest is MasterSetupTest, SymbioticRewardsBindings {
 
         vm.prank(address(this));
         vm.expectRevert(abi.encodeWithSelector(IBaseRewards.BaseRewards_NotRewarder.selector));
-        masterSetupParams.votingPowerProvider.distributeStakerRewards(
-            stakerRewards,
-            initSetupParams.masterChain.tokens[0],
-            100,
-            abi.encode(uint48(vm.getBlockTimestamp() - 1), type(uint256).max, new bytes(0), new bytes(0))
-        );
+        masterSetupParams.votingPowerProvider
+            .distributeStakerRewards(
+                stakerRewards,
+                initSetupParams.masterChain.tokens[0],
+                100,
+                abi.encode(uint48(vm.getBlockTimestamp() - 1), type(uint256).max, new bytes(0), new bytes(0))
+            );
 
         rewarder.distributeStakerRewards(
             address(masterSetupParams.votingPowerProvider),
@@ -74,14 +75,12 @@ contract BaseRewardsTest is MasterSetupTest, SymbioticRewardsBindings {
         );
 
         assertEq(
-            ISymbioticDefaultStakerRewards(stakerRewards).rewardsLength(
-                initSetupParams.masterChain.tokens[0], masterSetupParams.votingPowerProvider.NETWORK()
-            ),
+            ISymbioticDefaultStakerRewards(stakerRewards)
+                .rewardsLength(initSetupParams.masterChain.tokens[0], masterSetupParams.votingPowerProvider.NETWORK()),
             1
         );
-        (uint256 amount, uint48 timestamp) = ISymbioticDefaultStakerRewards(stakerRewards).rewards(
-            initSetupParams.masterChain.tokens[0], masterSetupParams.votingPowerProvider.NETWORK(), 0
-        );
+        (uint256 amount, uint48 timestamp) = ISymbioticDefaultStakerRewards(stakerRewards)
+            .rewards(initSetupParams.masterChain.tokens[0], masterSetupParams.votingPowerProvider.NETWORK(), 0);
         assertEq(amount, 100);
         assertEq(timestamp, uint48(vm.getBlockTimestamp() - 1));
     }
@@ -108,9 +107,8 @@ contract BaseRewardsTest is MasterSetupTest, SymbioticRewardsBindings {
 
         vm.prank(address(this));
         vm.expectRevert(abi.encodeWithSelector(IBaseRewards.BaseRewards_NotRewarder.selector));
-        masterSetupParams.votingPowerProvider.distributeOperatorRewards(
-            operatorRewards, initSetupParams.masterChain.tokens[0], 100, bytes32(uint256(1))
-        );
+        masterSetupParams.votingPowerProvider
+            .distributeOperatorRewards(operatorRewards, initSetupParams.masterChain.tokens[0], 100, bytes32(uint256(1)));
 
         rewarder.distributeOperatorRewards(
             address(masterSetupParams.votingPowerProvider),
@@ -121,9 +119,8 @@ contract BaseRewardsTest is MasterSetupTest, SymbioticRewardsBindings {
         );
 
         assertEq(
-            ISymbioticDefaultOperatorRewards(operatorRewards).root(
-                masterSetupParams.votingPowerProvider.NETWORK(), initSetupParams.masterChain.tokens[0]
-            ),
+            ISymbioticDefaultOperatorRewards(operatorRewards)
+                .root(masterSetupParams.votingPowerProvider.NETWORK(), initSetupParams.masterChain.tokens[0]),
             bytes32(uint256(1))
         );
     }
@@ -163,11 +160,11 @@ contract BaseRewardsTest is MasterSetupTest, SymbioticRewardsBindings {
         assertEq(location, 0xbda599e6417b60ef01d2592ea6468e27d9dc233383dcd1f33c49128d08d88b00);
     }
 
-    function _getDefaultStakerRewards_SymbioticRewards(
-        address vault,
-        uint256 adminFee,
-        address admin
-    ) internal virtual returns (address) {
+    function _getDefaultStakerRewards_SymbioticRewards(address vault, uint256 adminFee, address admin)
+        internal
+        virtual
+        returns (address)
+    {
         return _createDefaultStakerRewards_SymbioticRewards({
             symbioticDefaultStakerRewardsFactory: symbioticDefaultStakerRewardsFactory,
             who: address(this),
@@ -181,8 +178,7 @@ contract BaseRewardsTest is MasterSetupTest, SymbioticRewardsBindings {
 
     function _getDefaultOperatorRewards_SymbioticRewards() internal virtual returns (address) {
         return _createDefaultOperatorRewards_SymbioticRewards({
-            symbioticDefaultOperatorRewardsFactory: symbioticDefaultOperatorRewardsFactory,
-            who: address(this)
+            symbioticDefaultOperatorRewardsFactory: symbioticDefaultOperatorRewardsFactory, who: address(this)
         });
     }
 }

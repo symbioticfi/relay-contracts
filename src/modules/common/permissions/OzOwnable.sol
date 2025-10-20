@@ -12,9 +12,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
  * @notice Contract for permission management based on OpenZeppelin's Ownable.
  */
 abstract contract OzOwnable is PermissionManager, OwnableUpgradeable, IOzOwnable {
-    function __OzOwnable_init(
-        OzOwnableInitParams memory initParams
-    ) internal virtual onlyInitializing {
+    function __OzOwnable_init(OzOwnableInitParams memory initParams) internal virtual onlyInitializing {
         __Ownable_init(initParams.owner);
     }
 

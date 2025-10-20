@@ -3,8 +3,9 @@ pragma solidity ^0.8.25;
 
 import {VotingPowerCalcManager} from "../../base/VotingPowerCalcManager.sol";
 
-import {IEqualStakeVPCalc} from
-    "../../../../interfaces/modules/voting-power/common/voting-power-calc/IEqualStakeVPCalc.sol";
+import {
+    IEqualStakeVPCalc
+} from "../../../../interfaces/modules/voting-power/common/voting-power-calc/IEqualStakeVPCalc.sol";
 import {IVotingPowerCalcManager} from "../../../../interfaces/modules/voting-power/base/IVotingPowerCalcManager.sol";
 
 /**
@@ -22,7 +23,13 @@ abstract contract EqualStakeVPCalc is VotingPowerCalcManager, IEqualStakeVPCalc 
         uint256 stake,
         bytes memory, /* extraData */
         uint48 /* timestamp */
-    ) public view virtual override returns (uint256) {
+    )
+        public
+        view
+        virtual
+        override
+        returns (uint256)
+    {
         return stake;
     }
 
@@ -33,7 +40,13 @@ abstract contract EqualStakeVPCalc is VotingPowerCalcManager, IEqualStakeVPCalc 
         address, /* vault */
         uint256 stake,
         bytes memory /* extraData */
-    ) public view virtual override returns (uint256) {
+    )
+        public
+        view
+        virtual
+        override
+        returns (uint256)
+    {
         return stake;
     }
 }

@@ -40,9 +40,7 @@ interface IOperatorsBlacklist {
      * @param operator The address of the operator.
      * @return The blacklist status of the operator.
      */
-    function isOperatorBlacklisted(
-        address operator
-    ) external view returns (bool);
+    function isOperatorBlacklisted(address operator) external view returns (bool);
 
     /**
      * @notice Blacklists the operator.
@@ -50,16 +48,12 @@ interface IOperatorsBlacklist {
      * @dev The caller must have the needed permission.
      *      The operator will be unregistered if currently registered.
      */
-    function blacklistOperator(
-        address operator
-    ) external;
+    function blacklistOperator(address operator) external;
 
     /**
      * @notice Unblacklists the operator.
      * @param operator The address of the operator.
      * @dev The caller must have the needed permission.
      */
-    function unblacklistOperator(
-        address operator
-    ) external;
+    function unblacklistOperator(address operator) external;
 }

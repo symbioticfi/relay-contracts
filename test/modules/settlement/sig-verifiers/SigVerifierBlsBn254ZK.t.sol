@@ -23,11 +23,13 @@ import {SigVerifierBlsBn254ZK} from "../../../../src/modules/settlement/sig-veri
 
 import {ISigVerifier} from "../../../../src/interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol";
 import {IVotingPowerProvider} from "../../../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
-import {ISigVerifierBlsBn254ZK} from
-    "../../../../src/interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254ZK.sol";
+import {
+    ISigVerifierBlsBn254ZK
+} from "../../../../src/interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254ZK.sol";
 
-import {ExtraDataStorageHelper} from
-    "../../../../src/modules/settlement/sig-verifiers/libraries/ExtraDataStorageHelper.sol";
+import {
+    ExtraDataStorageHelper
+} from "../../../../src/modules/settlement/sig-verifiers/libraries/ExtraDataStorageHelper.sol";
 
 import {Bytes} from "@openzeppelin/contracts/utils/Bytes.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
@@ -493,9 +495,9 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetupTest {
             )
         );
 
-        stdstore.target(address(masterSetupParams.settlement)).sig("getExtraDataAt(uint48,bytes32)").with_key(
-            masterSetupParams.settlement.getLastCommittedHeaderEpoch()
-        ).with_key(uint32(0).getKey(sigVerifier.TOTAL_ACTIVE_VALIDATORS_HASH())).checked_write(bytes32(uint256(0)));
+        stdstore.target(address(masterSetupParams.settlement)).sig("getExtraDataAt(uint48,bytes32)")
+            .with_key(masterSetupParams.settlement.getLastCommittedHeaderEpoch())
+            .with_key(uint32(0).getKey(sigVerifier.TOTAL_ACTIVE_VALIDATORS_HASH())).checked_write(bytes32(uint256(0)));
 
         vm.startPrank(vars.deployer.addr);
         (bool success, bytes memory ret) = address(sigVerifier).call(data);
@@ -550,9 +552,10 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetupTest {
             sigVerifier = new SigVerifierBlsBn254ZK(verifiers, maxValidators);
         }
 
-        stdstore.target(address(masterSetupParams.settlement)).sig("getExtraDataAt(uint48,bytes32)").with_key(
-            masterSetupParams.settlement.getLastCommittedHeaderEpoch()
-        ).with_key(uint32(0).getKey(sigVerifier.TOTAL_ACTIVE_VALIDATORS_HASH())).checked_write(bytes32(uint256(1001)));
+        stdstore.target(address(masterSetupParams.settlement)).sig("getExtraDataAt(uint48,bytes32)")
+            .with_key(masterSetupParams.settlement.getLastCommittedHeaderEpoch())
+            .with_key(uint32(0).getKey(sigVerifier.TOTAL_ACTIVE_VALIDATORS_HASH()))
+            .checked_write(bytes32(uint256(1001)));
 
         vm.startPrank(vars.deployer.addr);
         uint48 lastCommittedHeaderEpoch = masterSetupParams.settlement.getLastCommittedHeaderEpoch();

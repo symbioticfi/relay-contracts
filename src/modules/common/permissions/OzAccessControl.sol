@@ -29,9 +29,7 @@ abstract contract OzAccessControl is PermissionManager, AccessControlUpgradeable
     /**
      * @inheritdoc IOzAccessControl
      */
-    function getRole(
-        bytes4 selector
-    ) public view virtual returns (bytes32) {
+    function getRole(bytes4 selector) public view virtual returns (bytes32) {
         return _getOzAccessControlStorage()._selectorRoles[selector];
     }
 

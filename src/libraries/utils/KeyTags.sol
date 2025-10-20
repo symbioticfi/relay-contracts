@@ -43,9 +43,7 @@ library KeyTags {
      * @notice Validates a key tag.
      * @param keyTag The key tag.
      */
-    function validateKeyTag(
-        uint8 keyTag
-    ) internal pure {
+    function validateKeyTag(uint8 keyTag) internal pure {
         if (keyTag >= TOTAL_KEY_TAGS) {
             revert InvalidKeyTag();
         }
@@ -55,9 +53,7 @@ library KeyTags {
      * @notice Validates a key type.
      * @param type_ The key type.
      */
-    function validateType(
-        uint8 type_
-    ) internal pure {
+    function validateType(uint8 type_) internal pure {
         if (type_ > MAX_KEY_TYPE) {
             revert InvalidKeyType();
         }
@@ -67,9 +63,7 @@ library KeyTags {
      * @notice Validates a key tag identifier.
      * @param tag The key tag identifier.
      */
-    function validateTag(
-        uint8 tag
-    ) internal pure {
+    function validateTag(uint8 tag) internal pure {
         if (tag > MAX_KEY_TAG) {
             revert InvalidKeyTag();
         }
@@ -92,9 +86,7 @@ library KeyTags {
      * @param keyTag The key tag.
      * @return The key type.
      */
-    function getType(
-        uint8 keyTag
-    ) internal pure returns (uint8) {
+    function getType(uint8 keyTag) internal pure returns (uint8) {
         validateKeyTag(keyTag);
         return keyTag >> 4;
     }
@@ -104,9 +96,7 @@ library KeyTags {
      * @param keyTag The key tag.
      * @return The key tag identifier.
      */
-    function getTag(
-        uint8 keyTag
-    ) internal pure returns (uint8) {
+    function getTag(uint8 keyTag) internal pure returns (uint8) {
         validateKeyTag(keyTag);
         return keyTag & 0x0F;
     }
@@ -152,9 +142,7 @@ library KeyTags {
      * @return keyTagsSerialized The serialized key tags.
      * @dev Reverts when the key tags are duplicated.
      */
-    function serialize(
-        uint8[] memory keyTags
-    ) internal pure returns (uint128 keyTagsSerialized) {
+    function serialize(uint8[] memory keyTags) internal pure returns (uint128 keyTagsSerialized) {
         unchecked {
             for (uint256 i; i < keyTags.length; ++i) {
                 uint128 oldKeyTagsSerialized = keyTagsSerialized;
@@ -171,9 +159,7 @@ library KeyTags {
      * @param keyTagsSerialized The serialized key tags.
      * @return keyTags The array of key tags.
      */
-    function deserialize(
-        uint128 keyTagsSerialized
-    ) internal pure returns (uint8[] memory keyTags) {
+    function deserialize(uint128 keyTagsSerialized) internal pure returns (uint8[] memory keyTags) {
         unchecked {
             uint256 length;
             keyTags = new uint8[](KeyTags.TOTAL_KEY_TAGS);

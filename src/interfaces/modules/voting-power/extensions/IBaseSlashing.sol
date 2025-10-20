@@ -110,9 +110,7 @@ interface IBaseSlashing {
      * @param slasher The address of the slasher.
      * @dev The caller must have the needed permission.
      */
-    function setSlasher(
-        address slasher
-    ) external;
+    function setSlasher(address slasher) external;
 
     /**
      * @notice Slashes the vault.
@@ -125,13 +123,9 @@ interface IBaseSlashing {
      * @return response The response of the slash.
      * @dev The function doesn't check the registration statuses.
      */
-    function slashVault(
-        uint48 timestamp,
-        address vault,
-        address operator,
-        uint256 amount,
-        bytes memory hints
-    ) external returns (bool success, bytes memory response);
+    function slashVault(uint48 timestamp, address vault, address operator, uint256 amount, bytes memory hints)
+        external
+        returns (bool success, bytes memory response);
 
     /**
      * @notice Executes the slash of the vault.
@@ -141,9 +135,7 @@ interface IBaseSlashing {
      * @return success The success of the slash.
      * @return slashedAmount The amount of the slashed tokens.
      */
-    function executeSlashVault(
-        address vault,
-        uint256 slashIndex,
-        bytes memory hints
-    ) external returns (bool success, uint256 slashedAmount);
+    function executeSlashVault(address vault, uint256 slashIndex, bytes memory hints)
+        external
+        returns (bool success, uint256 slashedAmount);
 }

@@ -34,8 +34,8 @@ contract OzAccessControlTest is Test {
     }
 
     function test_Location() public {
-        bytes32 location =
-            keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OzAccessControl")) - 1)) & ~bytes32(uint256(0xff));
+        bytes32 location = keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OzAccessControl")) - 1))
+            & ~bytes32(uint256(0xff));
         assertEq(location, 0xbe09a78a256419d2b885312b60a13e8082d8ab3c36c463fff4fbb086f1e96f00);
     }
 

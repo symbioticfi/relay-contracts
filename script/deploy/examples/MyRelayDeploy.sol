@@ -54,10 +54,10 @@ contract MyRelayDeploy is RelayDeploy {
 
     constructor() RelayDeploy("./script/deploy/examples/deploy-config.toml") {}
 
-
     function _votingPowerProviderParams() internal override returns (address implementation, bytes memory initData) {
         vm.startBroadcast();
-        implementation = address(new MyVotingPowerProvider(address(getCore().operatorRegistry), address(getCore().vaultFactory)));
+        implementation =
+            address(new MyVotingPowerProvider(address(getCore().operatorRegistry), address(getCore().vaultFactory)));
         vm.stopBroadcast();
 
         initData = abi.encodeCall(
@@ -65,12 +65,10 @@ contract MyRelayDeploy is RelayDeploy {
             (
                 IVotingPowerProvider.VotingPowerProviderInitParams({
                     networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
-                        network: NETWORK_ADDRESS,
-                        subnetworkId: SUBNETWORK_ID
+                        network: NETWORK_ADDRESS, subnetworkId: SUBNETWORK_ID
                     }),
                     ozEip712InitParams: IOzEIP712.OzEIP712InitParams({
-                        name: VOTING_POWER_PROVIDER_NAME,
-                        version: VOTING_POWER_PROVIDER_VERSION
+                        name: VOTING_POWER_PROVIDER_NAME, version: VOTING_POWER_PROVIDER_VERSION
                     }),
                     requireSlasher: REQUIRE_SLASHER,
                     minVaultEpochDuration: MIN_VAULT_EPOCH_DURATION,
@@ -87,17 +85,13 @@ contract MyRelayDeploy is RelayDeploy {
 
         initData = abi.encodeCall(
             MyKeyRegistry.initialize,
-            (
-                IKeyRegistry.KeyRegistryInitParams({
+            (IKeyRegistry.KeyRegistryInitParams({
                     ozEip712InitParams: IOzEIP712.OzEIP712InitParams({
-                        name: KEY_REGISTRY_NAME,
-                        version: KEY_REGISTRY_VERSION
+                        name: KEY_REGISTRY_NAME, version: KEY_REGISTRY_VERSION
                     })
-                })
-            )
+                }))
         );
     }
-
 
     function _settlementParams() internal override returns (address implementation, bytes memory initData) {
         vm.broadcast();
@@ -108,17 +102,17 @@ contract MyRelayDeploy is RelayDeploy {
             (
                 ISettlement.SettlementInitParams({
                     networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
-                        network: NETWORK_ADDRESS,
-                        subnetworkId: SUBNETWORK_ID
+                        network: NETWORK_ADDRESS, subnetworkId: SUBNETWORK_ID
                     }),
-                    ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: SETTLEMENT_NAME, version: SETTLEMENT_VERSION}),
+                    ozEip712InitParams: IOzEIP712.OzEIP712InitParams({
+                        name: SETTLEMENT_NAME, version: SETTLEMENT_VERSION
+                    }),
                     sigVerifier: address(new SigVerifierBlsBn254Simple())
                 }),
                 OWNER
             )
         );
     }
-
 
     function _valSetDriverParams() internal override returns (address implementation, bytes memory initData) {
         vm.broadcast();
@@ -136,12 +130,10 @@ contract MyRelayDeploy is RelayDeploy {
             (
                 IValSetDriver.ValSetDriverInitParams({
                     networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
-                        network: NETWORK_ADDRESS,
-                        subnetworkId: SUBNETWORK_ID
+                        network: NETWORK_ADDRESS, subnetworkId: SUBNETWORK_ID
                     }),
                     epochManagerInitParams: IEpochManager.EpochManagerInitParams({
-                        epochDuration: EPOCH_DURATION,
-                        epochDurationTimestamp: 0
+                        epochDuration: EPOCH_DURATION, epochDurationTimestamp: 0
                     }),
                     numAggregators: NUM_AGGREGATORS,
                     numCommitters: NUM_COMMITTERS,
@@ -160,7 +152,6 @@ contract MyRelayDeploy is RelayDeploy {
             )
         );
     }
-
 
     function runDeployVotingPowerProvider() public override {
         deployVotingPowerProvider({proxyOwner: OWNER, isDeployerGuarded: true});

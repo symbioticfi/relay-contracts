@@ -16,7 +16,8 @@ abstract contract NetworkManager is Initializable, StaticDelegateCallable, INetw
     using Subnetwork for address;
 
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.NetworkManager")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant NetworkManagerLocation = 0x779150488f5e984d1f840ba606e388ada6c73b44f261274c3595c61a30023e00;
+    bytes32 private constant NetworkManagerLocation =
+        0x779150488f5e984d1f840ba606e388ada6c73b44f261274c3595c61a30023e00;
 
     function _getNetworkManagerStorage() internal pure returns (INetworkManager.NetworkManagerStorage storage $) {
         assembly {
@@ -24,9 +25,7 @@ abstract contract NetworkManager is Initializable, StaticDelegateCallable, INetw
         }
     }
 
-    function __NetworkManager_init(
-        NetworkManagerInitParams memory initParams
-    ) internal virtual onlyInitializing {
+    function __NetworkManager_init(NetworkManagerInitParams memory initParams) internal virtual onlyInitializing {
         if (initParams.network == address(0)) {
             revert NetworkManager_InvalidNetwork();
         }

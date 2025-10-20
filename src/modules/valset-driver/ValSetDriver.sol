@@ -40,9 +40,11 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         }
     }
 
-    function __ValSetDriver_init(
-        ValSetDriverInitParams memory valSetDriverInitParams
-    ) internal virtual onlyInitializing {
+    function __ValSetDriver_init(ValSetDriverInitParams memory valSetDriverInitParams)
+        internal
+        virtual
+        onlyInitializing
+    {
         __NetworkManager_init(valSetDriverInitParams.networkManagerInitParams);
         __EpochManager_init(valSetDriverInitParams.epochManagerInitParams);
 
@@ -69,9 +71,7 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /**
      * @inheritdoc IValSetDriver
      */
-    function getConfigAt(
-        uint48 timestamp
-    ) public view virtual returns (Config memory) {
+    function getConfigAt(uint48 timestamp) public view virtual returns (Config memory) {
         return Config({
             numAggregators: getNumAggregatorsAt(timestamp),
             numCommitters: getNumCommittersAt(timestamp),
@@ -111,9 +111,7 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /**
      * @inheritdoc IValSetDriver
      */
-    function getNumAggregatorsAt(
-        uint48 timestamp
-    ) public view virtual returns (uint208) {
+    function getNumAggregatorsAt(uint48 timestamp) public view virtual returns (uint208) {
         return _getValSetDriverStorage()._numAggregators.upperLookupRecent(timestamp);
     }
 
@@ -127,9 +125,7 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /**
      * @inheritdoc IValSetDriver
      */
-    function getNumCommittersAt(
-        uint48 timestamp
-    ) public view virtual returns (uint208) {
+    function getNumCommittersAt(uint48 timestamp) public view virtual returns (uint208) {
         return _getValSetDriverStorage()._numCommitters.upperLookupRecent(timestamp);
     }
 
@@ -143,31 +139,38 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /**
      * @inheritdoc IValSetDriver
      */
-    function isVotingPowerProviderRegisteredAt(
-        CrossChainAddress memory votingPowerProvider,
-        uint48 timestamp
-    ) public view virtual returns (bool) {
-        return _getValSetDriverStorage()._votingPowerProviders.containsAt(
-            timestamp, _serializeCrossChainAddress(votingPowerProvider)
-        );
+    function isVotingPowerProviderRegisteredAt(CrossChainAddress memory votingPowerProvider, uint48 timestamp)
+        public
+        view
+        virtual
+        returns (bool)
+    {
+        return _getValSetDriverStorage()._votingPowerProviders
+            .containsAt(timestamp, _serializeCrossChainAddress(votingPowerProvider));
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function isVotingPowerProviderRegistered(
-        CrossChainAddress memory votingPowerProvider
-    ) public view virtual returns (bool) {
-        return
-            _getValSetDriverStorage()._votingPowerProviders.contains(_serializeCrossChainAddress(votingPowerProvider));
+    function isVotingPowerProviderRegistered(CrossChainAddress memory votingPowerProvider)
+        public
+        view
+        virtual
+        returns (bool)
+    {
+        return _getValSetDriverStorage()._votingPowerProviders
+            .contains(_serializeCrossChainAddress(votingPowerProvider));
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function getVotingPowerProvidersAt(
-        uint48 timestamp
-    ) public view virtual returns (CrossChainAddress[] memory votingPowerProviders) {
+    function getVotingPowerProvidersAt(uint48 timestamp)
+        public
+        view
+        virtual
+        returns (CrossChainAddress[] memory votingPowerProviders)
+    {
         bytes32[] memory votingPowerProvidersRaw = _getValSetDriverStorage()._votingPowerProviders.valuesAt(timestamp);
         votingPowerProviders = new CrossChainAddress[](votingPowerProvidersRaw.length);
         for (uint256 i; i < votingPowerProvidersRaw.length; ++i) {
@@ -189,9 +192,7 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /**
      * @inheritdoc IValSetDriver
      */
-    function getKeysProviderAt(
-        uint48 timestamp
-    ) public view virtual returns (CrossChainAddress memory) {
+    function getKeysProviderAt(uint48 timestamp) public view virtual returns (CrossChainAddress memory) {
         return
             _deserializeCrossChainAddress(bytes32(_getValSetDriverStorage()._keysProvider.upperLookupRecent(timestamp)));
     }
@@ -206,28 +207,26 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /**
      * @inheritdoc IValSetDriver
      */
-    function isSettlementRegisteredAt(
-        CrossChainAddress memory settlement,
-        uint48 timestamp
-    ) public view virtual returns (bool) {
+    function isSettlementRegisteredAt(CrossChainAddress memory settlement, uint48 timestamp)
+        public
+        view
+        virtual
+        returns (bool)
+    {
         return _getValSetDriverStorage()._settlements.containsAt(timestamp, _serializeCrossChainAddress(settlement));
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function isSettlementRegistered(
-        CrossChainAddress memory settlement
-    ) public view virtual returns (bool) {
+    function isSettlementRegistered(CrossChainAddress memory settlement) public view virtual returns (bool) {
         return _getValSetDriverStorage()._settlements.contains(_serializeCrossChainAddress(settlement));
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function getSettlementsAt(
-        uint48 timestamp
-    ) public view virtual returns (CrossChainAddress[] memory settlements) {
+    function getSettlementsAt(uint48 timestamp) public view virtual returns (CrossChainAddress[] memory settlements) {
         bytes32[] memory settlementsRaw = _getValSetDriverStorage()._settlements.valuesAt(timestamp);
         settlements = new CrossChainAddress[](settlementsRaw.length);
         for (uint256 i; i < settlementsRaw.length; ++i) {
@@ -249,9 +248,7 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /**
      * @inheritdoc IValSetDriver
      */
-    function getMaxVotingPowerAt(
-        uint48 timestamp
-    ) public view virtual returns (uint256) {
+    function getMaxVotingPowerAt(uint48 timestamp) public view virtual returns (uint256) {
         return _getValSetDriverStorage()._maxVotingPower.upperLookupRecent(timestamp);
     }
 
@@ -265,9 +262,7 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /**
      * @inheritdoc IValSetDriver
      */
-    function getMinInclusionVotingPowerAt(
-        uint48 timestamp
-    ) public view virtual returns (uint256) {
+    function getMinInclusionVotingPowerAt(uint48 timestamp) public view virtual returns (uint256) {
         return _getValSetDriverStorage()._minInclusionVotingPower.upperLookupRecent(timestamp);
     }
 
@@ -281,9 +276,7 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /**
      * @inheritdoc IValSetDriver
      */
-    function getMaxValidatorsCountAt(
-        uint48 timestamp
-    ) public view virtual returns (uint208) {
+    function getMaxValidatorsCountAt(uint48 timestamp) public view virtual returns (uint208) {
         return _getValSetDriverStorage()._maxValidatorsCount.upperLookupRecent(timestamp);
     }
 
@@ -297,9 +290,7 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /**
      * @inheritdoc IValSetDriver
      */
-    function getRequiredKeyTagsAt(
-        uint48 timestamp
-    ) public view virtual returns (uint8[] memory requiredKeyTags) {
+    function getRequiredKeyTagsAt(uint48 timestamp) public view virtual returns (uint8[] memory requiredKeyTags) {
         return uint128(_getValSetDriverStorage()._requiredKeyTags.upperLookupRecent(timestamp)).deserialize();
     }
 
@@ -313,30 +304,32 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /**
      * @inheritdoc IValSetDriver
      */
-    function isQuorumThresholdRegisteredAt(
-        QuorumThreshold memory quorumThreshold,
-        uint48 timestamp
-    ) public view virtual returns (bool) {
-        return _getValSetDriverStorage()._quorumThresholds.containsAt(
-            timestamp, _serializeQuorumThreshold(quorumThreshold)
-        );
+    function isQuorumThresholdRegisteredAt(QuorumThreshold memory quorumThreshold, uint48 timestamp)
+        public
+        view
+        virtual
+        returns (bool)
+    {
+        return _getValSetDriverStorage()._quorumThresholds
+            .containsAt(timestamp, _serializeQuorumThreshold(quorumThreshold));
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function isQuorumThresholdRegistered(
-        QuorumThreshold memory quorumThreshold
-    ) public view virtual returns (bool) {
+    function isQuorumThresholdRegistered(QuorumThreshold memory quorumThreshold) public view virtual returns (bool) {
         return _getValSetDriverStorage()._quorumThresholds.contains(_serializeQuorumThreshold(quorumThreshold));
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function getQuorumThresholdsAt(
-        uint48 timestamp
-    ) public view virtual returns (QuorumThreshold[] memory quorumThresholds) {
+    function getQuorumThresholdsAt(uint48 timestamp)
+        public
+        view
+        virtual
+        returns (QuorumThreshold[] memory quorumThresholds)
+    {
         bytes32[] memory quorumThresholdsRaw = _getValSetDriverStorage()._quorumThresholds.valuesAt(timestamp);
         quorumThresholds = new QuorumThreshold[](quorumThresholdsRaw.length);
         for (uint256 i; i < quorumThresholdsRaw.length; ++i) {
@@ -358,9 +351,7 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /**
      * @inheritdoc IValSetDriver
      */
-    function getRequiredHeaderKeyTagAt(
-        uint48 timestamp
-    ) public view virtual returns (uint8) {
+    function getRequiredHeaderKeyTagAt(uint48 timestamp) public view virtual returns (uint8) {
         return uint8(_getValSetDriverStorage()._requiredHeaderKeyTag.upperLookupRecent(timestamp));
     }
 
@@ -374,9 +365,7 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /**
      * @inheritdoc IValSetDriver
      */
-    function getVerificationTypeAt(
-        uint48 timestamp
-    ) public view virtual returns (uint32) {
+    function getVerificationTypeAt(uint48 timestamp) public view virtual returns (uint32) {
         return uint32(_getValSetDriverStorage()._verificationType.upperLookupRecent(timestamp));
     }
 
@@ -390,141 +379,109 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /**
      * @inheritdoc IValSetDriver
      */
-    function setNumAggregators(
-        uint208 numAggregators
-    ) public virtual checkPermission {
+    function setNumAggregators(uint208 numAggregators) public virtual checkPermission {
         _setNumAggregators(numAggregators);
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function setNumCommitters(
-        uint208 numCommitters
-    ) public virtual checkPermission {
+    function setNumCommitters(uint208 numCommitters) public virtual checkPermission {
         _setNumCommitters(numCommitters);
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function addVotingPowerProvider(
-        CrossChainAddress memory votingPowerProvider
-    ) public virtual checkPermission {
+    function addVotingPowerProvider(CrossChainAddress memory votingPowerProvider) public virtual checkPermission {
         _addVotingPowerProvider(votingPowerProvider);
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function removeVotingPowerProvider(
-        CrossChainAddress memory votingPowerProvider
-    ) public virtual checkPermission {
+    function removeVotingPowerProvider(CrossChainAddress memory votingPowerProvider) public virtual checkPermission {
         _removeVotingPowerProvider(votingPowerProvider);
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function setKeysProvider(
-        CrossChainAddress memory keysProvider
-    ) public virtual checkPermission {
+    function setKeysProvider(CrossChainAddress memory keysProvider) public virtual checkPermission {
         _setKeysProvider(keysProvider);
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function addSettlement(
-        CrossChainAddress memory settlement
-    ) public virtual checkPermission {
+    function addSettlement(CrossChainAddress memory settlement) public virtual checkPermission {
         _addSettlement(settlement);
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function removeSettlement(
-        CrossChainAddress memory settlement
-    ) public virtual checkPermission {
+    function removeSettlement(CrossChainAddress memory settlement) public virtual checkPermission {
         _removeSettlement(settlement);
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function setMaxVotingPower(
-        uint256 maxVotingPower
-    ) public virtual checkPermission {
+    function setMaxVotingPower(uint256 maxVotingPower) public virtual checkPermission {
         _setMaxVotingPower(maxVotingPower);
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function setMinInclusionVotingPower(
-        uint256 minInclusionVotingPower
-    ) public virtual checkPermission {
+    function setMinInclusionVotingPower(uint256 minInclusionVotingPower) public virtual checkPermission {
         _setMinInclusionVotingPower(minInclusionVotingPower);
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function setMaxValidatorsCount(
-        uint208 maxValidatorsCount
-    ) public virtual checkPermission {
+    function setMaxValidatorsCount(uint208 maxValidatorsCount) public virtual checkPermission {
         _setMaxValidatorsCount(maxValidatorsCount);
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function setRequiredKeyTags(
-        uint8[] memory requiredKeyTags
-    ) public virtual checkPermission {
+    function setRequiredKeyTags(uint8[] memory requiredKeyTags) public virtual checkPermission {
         _setRequiredKeyTags(requiredKeyTags);
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function addQuorumThreshold(
-        QuorumThreshold memory quorumThreshold
-    ) public virtual checkPermission {
+    function addQuorumThreshold(QuorumThreshold memory quorumThreshold) public virtual checkPermission {
         _addQuorumThreshold(quorumThreshold);
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function removeQuorumThreshold(
-        QuorumThreshold memory quorumThreshold
-    ) public virtual checkPermission {
+    function removeQuorumThreshold(QuorumThreshold memory quorumThreshold) public virtual checkPermission {
         _removeQuorumThreshold(quorumThreshold);
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function setRequiredHeaderKeyTag(
-        uint8 requiredHeaderKeyTag
-    ) public virtual checkPermission {
+    function setRequiredHeaderKeyTag(uint8 requiredHeaderKeyTag) public virtual checkPermission {
         _setRequiredHeaderKeyTag(requiredHeaderKeyTag);
     }
 
     /**
      * @inheritdoc IValSetDriver
      */
-    function setVerificationType(
-        uint32 verificationType
-    ) public virtual checkPermission {
+    function setVerificationType(uint32 verificationType) public virtual checkPermission {
         _setVerificationType(verificationType);
     }
 
-    function _setNumAggregators(
-        uint208 numAggregators
-    ) internal virtual {
+    function _setNumAggregators(uint208 numAggregators) internal virtual {
         if (numAggregators == 0) {
             revert ValSetDriver_ZeroNumAggregators();
         }
@@ -532,9 +489,7 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         emit SetNumAggregators(numAggregators);
     }
 
-    function _setNumCommitters(
-        uint208 numCommitters
-    ) internal virtual {
+    function _setNumCommitters(uint208 numCommitters) internal virtual {
         if (numCommitters == 0) {
             revert ValSetDriver_ZeroNumCommitters();
         }
@@ -542,9 +497,7 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         emit SetNumCommitters(numCommitters);
     }
 
-    function _addVotingPowerProvider(
-        CrossChainAddress memory votingPowerProvider
-    ) internal virtual {
+    function _addVotingPowerProvider(CrossChainAddress memory votingPowerProvider) internal virtual {
         ValSetDriverStorage storage $ = _getValSetDriverStorage();
         _validateCrossChainAddress(votingPowerProvider);
         if ($._isVotingPowerProviderChainAdded[votingPowerProvider.chainId]) {
@@ -555,9 +508,7 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         emit AddVotingPowerProvider(votingPowerProvider);
     }
 
-    function _removeVotingPowerProvider(
-        CrossChainAddress memory votingPowerProvider
-    ) internal virtual {
+    function _removeVotingPowerProvider(CrossChainAddress memory votingPowerProvider) internal virtual {
         ValSetDriverStorage storage $ = _getValSetDriverStorage();
         if (!$._votingPowerProviders.remove(uint48(block.timestamp), _serializeCrossChainAddress(votingPowerProvider)))
         {
@@ -567,19 +518,14 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         emit RemoveVotingPowerProvider(votingPowerProvider);
     }
 
-    function _setKeysProvider(
-        CrossChainAddress memory keysProvider
-    ) internal virtual {
+    function _setKeysProvider(CrossChainAddress memory keysProvider) internal virtual {
         _validateCrossChainAddress(keysProvider);
-        _getValSetDriverStorage()._keysProvider.push(
-            uint48(block.timestamp), uint256(_serializeCrossChainAddress(keysProvider))
-        );
+        _getValSetDriverStorage()._keysProvider
+            .push(uint48(block.timestamp), uint256(_serializeCrossChainAddress(keysProvider)));
         emit SetKeysProvider(keysProvider);
     }
 
-    function _addSettlement(
-        CrossChainAddress memory settlement
-    ) internal virtual {
+    function _addSettlement(CrossChainAddress memory settlement) internal virtual {
         ValSetDriverStorage storage $ = _getValSetDriverStorage();
         _validateCrossChainAddress(settlement);
         if ($._isSettlementChainAdded[settlement.chainId]) {
@@ -590,9 +536,7 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         emit AddSettlement(settlement);
     }
 
-    function _removeSettlement(
-        CrossChainAddress memory settlement
-    ) internal virtual {
+    function _removeSettlement(CrossChainAddress memory settlement) internal virtual {
         ValSetDriverStorage storage $ = _getValSetDriverStorage();
         if (!$._settlements.remove(uint48(block.timestamp), _serializeCrossChainAddress(settlement))) {
             revert ValSetDriver_NotAdded();
@@ -601,23 +545,17 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         emit RemoveSettlement(settlement);
     }
 
-    function _setMaxVotingPower(
-        uint256 maxVotingPower
-    ) internal virtual {
+    function _setMaxVotingPower(uint256 maxVotingPower) internal virtual {
         _getValSetDriverStorage()._maxVotingPower.push(uint48(block.timestamp), maxVotingPower);
         emit SetMaxVotingPower(maxVotingPower);
     }
 
-    function _setMinInclusionVotingPower(
-        uint256 minInclusionVotingPower
-    ) internal virtual {
+    function _setMinInclusionVotingPower(uint256 minInclusionVotingPower) internal virtual {
         _getValSetDriverStorage()._minInclusionVotingPower.push(uint48(block.timestamp), minInclusionVotingPower);
         emit SetMinInclusionVotingPower(minInclusionVotingPower);
     }
 
-    function _setMaxValidatorsCount(
-        uint208 maxValidatorsCount
-    ) internal virtual {
+    function _setMaxValidatorsCount(uint208 maxValidatorsCount) internal virtual {
         if (maxValidatorsCount == 0) {
             revert ValSetDriver_InvalidMaxValidatorsCount();
         }
@@ -625,16 +563,12 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         emit SetMaxValidatorsCount(maxValidatorsCount);
     }
 
-    function _setRequiredKeyTags(
-        uint8[] memory requiredKeyTags
-    ) internal virtual {
+    function _setRequiredKeyTags(uint8[] memory requiredKeyTags) internal virtual {
         _getValSetDriverStorage()._requiredKeyTags.push(uint48(block.timestamp), requiredKeyTags.serialize());
         emit SetRequiredKeyTags(requiredKeyTags);
     }
 
-    function _addQuorumThreshold(
-        QuorumThreshold memory quorumThreshold
-    ) internal virtual {
+    function _addQuorumThreshold(QuorumThreshold memory quorumThreshold) internal virtual {
         ValSetDriverStorage storage $ = _getValSetDriverStorage();
         quorumThreshold.keyTag.validateKeyTag();
         if (quorumThreshold.quorumThreshold > MAX_QUORUM_THRESHOLD) {
@@ -648,9 +582,7 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         emit AddQuorumThreshold(quorumThreshold);
     }
 
-    function _removeQuorumThreshold(
-        QuorumThreshold memory quorumThreshold
-    ) internal virtual {
+    function _removeQuorumThreshold(QuorumThreshold memory quorumThreshold) internal virtual {
         ValSetDriverStorage storage $ = _getValSetDriverStorage();
         if (!$._quorumThresholds.remove(uint48(block.timestamp), _serializeQuorumThreshold(quorumThreshold))) {
             revert ValSetDriver_NotAdded();
@@ -659,53 +591,53 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         emit RemoveQuorumThreshold(quorumThreshold);
     }
 
-    function _setRequiredHeaderKeyTag(
-        uint8 requiredHeaderKeyTag
-    ) internal virtual {
+    function _setRequiredHeaderKeyTag(uint8 requiredHeaderKeyTag) internal virtual {
         requiredHeaderKeyTag.validateKeyTag();
         _getValSetDriverStorage()._requiredHeaderKeyTag.push(uint48(block.timestamp), requiredHeaderKeyTag);
         emit SetRequiredHeaderKeyTag(requiredHeaderKeyTag);
     }
 
-    function _setVerificationType(
-        uint32 verificationType
-    ) internal virtual {
+    function _setVerificationType(uint32 verificationType) internal virtual {
         _getValSetDriverStorage()._verificationType.push(uint48(block.timestamp), verificationType);
         emit SetVerificationType(verificationType);
     }
 
-    function _validateCrossChainAddress(
-        CrossChainAddress memory crossChainAddress
-    ) internal pure virtual {
+    function _validateCrossChainAddress(CrossChainAddress memory crossChainAddress) internal pure virtual {
         if (crossChainAddress.chainId == 0 || crossChainAddress.addr == address(0)) {
             revert ValSetDriver_InvalidCrossChainAddress();
         }
     }
 
-    function _serializeCrossChainAddress(
-        CrossChainAddress memory crossChainAddress
-    ) internal pure virtual returns (bytes32) {
+    function _serializeCrossChainAddress(CrossChainAddress memory crossChainAddress)
+        internal
+        pure
+        virtual
+        returns (bytes32)
+    {
         return bytes32(uint256(crossChainAddress.chainId) << 160 | uint256(uint160(crossChainAddress.addr)));
     }
 
-    function _deserializeCrossChainAddress(
-        bytes32 compressedAddress
-    ) internal pure virtual returns (CrossChainAddress memory) {
+    function _deserializeCrossChainAddress(bytes32 compressedAddress)
+        internal
+        pure
+        virtual
+        returns (CrossChainAddress memory)
+    {
         return CrossChainAddress({
-            addr: address(uint160(uint256(compressedAddress))),
-            chainId: uint64(uint256(compressedAddress) >> 160)
+            addr: address(uint160(uint256(compressedAddress))), chainId: uint64(uint256(compressedAddress) >> 160)
         });
     }
 
-    function _serializeQuorumThreshold(
-        QuorumThreshold memory quorumThreshold
-    ) internal pure virtual returns (bytes32) {
+    function _serializeQuorumThreshold(QuorumThreshold memory quorumThreshold) internal pure virtual returns (bytes32) {
         return bytes32(uint256(quorumThreshold.keyTag) << 248 | uint256(quorumThreshold.quorumThreshold));
     }
 
-    function _deserializeQuorumThreshold(
-        bytes32 compressedQuorumThreshold
-    ) internal pure virtual returns (QuorumThreshold memory) {
+    function _deserializeQuorumThreshold(bytes32 compressedQuorumThreshold)
+        internal
+        pure
+        virtual
+        returns (QuorumThreshold memory)
+    {
         return QuorumThreshold({
             keyTag: uint8(uint256(compressedQuorumThreshold) >> 248),
             quorumThreshold: uint248(uint256(compressedQuorumThreshold))

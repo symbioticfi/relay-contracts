@@ -12,7 +12,8 @@ import {BN254} from "../../../src/libraries/utils/BN254.sol";
 import {BN254G2} from "../../helpers/BN254G2.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {
-    KEY_TYPE_BLS_BN254, KEY_TYPE_ECDSA_SECP256K1
+    KEY_TYPE_BLS_BN254,
+    KEY_TYPE_ECDSA_SECP256K1
 } from "../../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
 
 import {IOzEIP712} from "../../../src/interfaces/modules/base/IOzEIP712.sol";
@@ -33,9 +34,7 @@ contract TestKeyRegistry is KeyRegistryWithKey64 {
         return _getKeyTagsAt(operator, timestamp);
     }
 
-    function getKeyTags(
-        address operator
-    ) public view virtual returns (uint8[] memory) {
+    function getKeyTags(address operator) public view virtual returns (uint8[] memory) {
         return _getKeyTags(operator);
     }
 }
@@ -61,9 +60,7 @@ contract KeyRegistryTest is Test {
 
     uint256 blsUserSk = 0x12345;
 
-    function getG2Key(
-        uint256 privateKey
-    ) internal view returns (BN254.G2Point memory) {
+    function getG2Key(uint256 privateKey) internal view returns (BN254.G2Point memory) {
         BN254.G2Point memory G2 = BN254.generatorG2();
         (uint256 x1, uint256 x2, uint256 y1, uint256 y2) =
             BN254G2.ECTwistMul(privateKey, G2.X[1], G2.X[0], G2.Y[1], G2.Y[0]);

@@ -27,12 +27,11 @@ library SigBlsBn254 {
      * @dev Burns the whole gas if pairing precompile fails.
      *      Returns false if the key is zero G1 point.
      */
-    function verify(
-        bytes memory keyBytes,
-        bytes memory message,
-        bytes memory signature,
-        bytes memory extraData
-    ) internal view returns (bool) {
+    function verify(bytes memory keyBytes, bytes memory message, bytes memory signature, bytes memory extraData)
+        internal
+        view
+        returns (bool)
+    {
         if (message.length != 32) {
             revert SigBlsBn254_InvalidMessageLength();
         }
@@ -65,13 +64,14 @@ library SigBlsBn254 {
             return false;
         }
         BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash);
-        uint256 alpha = uint256(
-            keccak256(
-                abi.encodePacked(
-                    signatureG1.X, signatureG1.Y, keyG1.X, keyG1.Y, keyG2.X, keyG2.Y, messageG1.X, messageG1.Y
-                )
-            )
-        ) % BN254.FR_MODULUS;
+        uint256 alpha =
+            uint256(
+                    keccak256(
+                        abi.encodePacked(
+                            signatureG1.X, signatureG1.Y, keyG1.X, keyG1.Y, keyG2.X, keyG2.Y, messageG1.X, messageG1.Y
+                        )
+                    )
+                ) % BN254.FR_MODULUS;
         return BN254.pairing(
             signatureG1.plus(keyG1.scalar_mul(alpha)),
             BN254.negGeneratorG2(),

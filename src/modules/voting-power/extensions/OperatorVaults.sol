@@ -29,9 +29,7 @@ abstract contract OperatorVaults is VotingPowerProvider, IOperatorVaults {
     /**
      * @inheritdoc IOperatorVaults
      */
-    function unregisterOperatorVault(
-        address vault
-    ) public virtual {
+    function unregisterOperatorVault(address vault) public virtual {
         _unregisterOperatorVaultImpl(msg.sender, vault);
     }
 }

@@ -46,9 +46,11 @@ abstract contract VotingPowerProvider is
         VAULT_FACTORY = vaultFactory;
     }
 
-    function __VotingPowerProvider_init(
-        VotingPowerProviderInitParams memory votingPowerProviderInitParams
-    ) internal virtual onlyInitializing {
+    function __VotingPowerProvider_init(VotingPowerProviderInitParams memory votingPowerProviderInitParams)
+        internal
+        virtual
+        onlyInitializing
+    {
         __NetworkManager_init(votingPowerProviderInitParams.networkManagerInitParams);
         VotingPowerProviderLogic.initialize(votingPowerProviderInitParams);
         __OzEIP712_init(votingPowerProviderInitParams.ozEip712InitParams);
@@ -78,18 +80,14 @@ abstract contract VotingPowerProvider is
     /**
      * @inheritdoc IVotingPowerProvider
      */
-    function isTokenRegistered(
-        address token
-    ) public view virtual returns (bool) {
+    function isTokenRegistered(address token) public view virtual returns (bool) {
         return VotingPowerProviderLogic.isTokenRegistered(token);
     }
 
     /**
      * @inheritdoc IVotingPowerProvider
      */
-    function getTokensAt(
-        uint48 timestamp
-    ) public view virtual returns (address[] memory) {
+    function getTokensAt(uint48 timestamp) public view virtual returns (address[] memory) {
         return VotingPowerProviderLogic.getTokensAt(timestamp);
     }
 
@@ -110,18 +108,14 @@ abstract contract VotingPowerProvider is
     /**
      * @inheritdoc IVotingPowerProvider
      */
-    function isOperatorRegistered(
-        address operator
-    ) public view virtual returns (bool) {
+    function isOperatorRegistered(address operator) public view virtual returns (bool) {
         return VotingPowerProviderLogic.isOperatorRegistered(operator);
     }
 
     /**
      * @inheritdoc IVotingPowerProvider
      */
-    function getOperatorsAt(
-        uint48 timestamp
-    ) public view virtual returns (address[] memory) {
+    function getOperatorsAt(uint48 timestamp) public view virtual returns (address[] memory) {
         return VotingPowerProviderLogic.getOperatorsAt(timestamp);
     }
 
@@ -142,18 +136,14 @@ abstract contract VotingPowerProvider is
     /**
      * @inheritdoc IVotingPowerProvider
      */
-    function isSharedVaultRegistered(
-        address vault
-    ) public view virtual returns (bool) {
+    function isSharedVaultRegistered(address vault) public view virtual returns (bool) {
         return VotingPowerProviderLogic.isSharedVaultRegistered(vault);
     }
 
     /**
      * @inheritdoc IVotingPowerProvider
      */
-    function getSharedVaultsAt(
-        uint48 timestamp
-    ) public view virtual returns (address[] memory) {
+    function getSharedVaultsAt(uint48 timestamp) public view virtual returns (address[] memory) {
         return VotingPowerProviderLogic.getSharedVaultsAt(timestamp);
     }
 
@@ -174,20 +164,19 @@ abstract contract VotingPowerProvider is
     /**
      * @inheritdoc IVotingPowerProvider
      */
-    function isOperatorVaultRegistered(
-        address vault
-    ) public view virtual returns (bool) {
+    function isOperatorVaultRegistered(address vault) public view virtual returns (bool) {
         return VotingPowerProviderLogic.isOperatorVaultRegistered(vault);
     }
 
     /**
      * @inheritdoc IVotingPowerProvider
      */
-    function isOperatorVaultRegisteredAt(
-        address operator,
-        address vault,
-        uint48 timestamp
-    ) public view virtual returns (bool) {
+    function isOperatorVaultRegisteredAt(address operator, address vault, uint48 timestamp)
+        public
+        view
+        virtual
+        returns (bool)
+    {
         return VotingPowerProviderLogic.isOperatorVaultRegisteredAt(operator, vault, timestamp);
     }
 
@@ -208,68 +197,64 @@ abstract contract VotingPowerProvider is
     /**
      * @inheritdoc IVotingPowerProvider
      */
-    function getOperatorVaults(
-        address operator
-    ) public view virtual returns (address[] memory) {
+    function getOperatorVaults(address operator) public view virtual returns (address[] memory) {
         return VotingPowerProviderLogic.getOperatorVaults(operator);
     }
 
     /**
      * @inheritdoc IVotingPowerProvider
      */
-    function getOperatorStakesAt(
-        address operator,
-        uint48 timestamp
-    ) public view virtual returns (VaultValue[] memory) {
+    function getOperatorStakesAt(address operator, uint48 timestamp) public view virtual returns (VaultValue[] memory) {
         return VotingPowerProviderLogic.getOperatorStakesAt(operator, timestamp);
     }
 
     /**
      * @inheritdoc IVotingPowerProvider
      */
-    function getOperatorStakes(
-        address operator
-    ) public view virtual returns (VaultValue[] memory) {
+    function getOperatorStakes(address operator) public view virtual returns (VaultValue[] memory) {
         return VotingPowerProviderLogic.getOperatorStakes(operator);
     }
 
     /**
      * @inheritdoc IVotingPowerProvider
      */
-    function getOperatorVotingPowersAt(
-        address operator,
-        bytes memory extraData,
-        uint48 timestamp
-    ) public view virtual returns (VaultValue[] memory) {
+    function getOperatorVotingPowersAt(address operator, bytes memory extraData, uint48 timestamp)
+        public
+        view
+        virtual
+        returns (VaultValue[] memory)
+    {
         return VotingPowerProviderLogic.getOperatorVotingPowersAt(operator, extraData, timestamp);
     }
 
     /**
      * @inheritdoc IVotingPowerProvider
      */
-    function getOperatorVotingPowers(
-        address operator,
-        bytes memory extraData
-    ) public view virtual returns (VaultValue[] memory) {
+    function getOperatorVotingPowers(address operator, bytes memory extraData)
+        public
+        view
+        virtual
+        returns (VaultValue[] memory)
+    {
         return VotingPowerProviderLogic.getOperatorVotingPowers(operator, extraData);
     }
 
     /**
      * @inheritdoc IVotingPowerProvider
      */
-    function getVotingPowersAt(
-        bytes[] memory extraData,
-        uint48 timestamp
-    ) public view virtual returns (OperatorVotingPower[] memory) {
+    function getVotingPowersAt(bytes[] memory extraData, uint48 timestamp)
+        public
+        view
+        virtual
+        returns (OperatorVotingPower[] memory)
+    {
         return VotingPowerProviderLogic.getVotingPowersAt(extraData, timestamp);
     }
 
     /**
      * @inheritdoc IVotingPowerProvider
      */
-    function getVotingPowers(
-        bytes[] memory extraData
-    ) public view virtual returns (OperatorVotingPower[] memory) {
+    function getVotingPowers(bytes[] memory extraData) public view virtual returns (OperatorVotingPower[] memory) {
         return VotingPowerProviderLogic.getVotingPowers(extraData);
     }
 
@@ -302,9 +287,7 @@ abstract contract VotingPowerProvider is
      * @param operator The operator.
      * @return The length of the operator vaults.
      */
-    function _getOperatorVaultsLength(
-        address operator
-    ) internal view virtual returns (uint256) {
+    function _getOperatorVaultsLength(address operator) internal view virtual returns (uint256) {
         return VotingPowerProviderLogic.getOperatorVaultsLength(operator);
     }
 
@@ -315,11 +298,12 @@ abstract contract VotingPowerProvider is
      * @param timestamp The timestamp.
      * @return The stake of the operator.
      */
-    function _getOperatorStakeAt(
-        address operator,
-        address vault,
-        uint48 timestamp
-    ) internal view virtual returns (uint256) {
+    function _getOperatorStakeAt(address operator, address vault, uint48 timestamp)
+        internal
+        view
+        virtual
+        returns (uint256)
+    {
         return VotingPowerProviderLogic.getOperatorStakeAt(operator, vault, timestamp);
     }
 
@@ -341,12 +325,12 @@ abstract contract VotingPowerProvider is
      * @param timestamp The timestamp.
      * @return The voting power of the operator.
      */
-    function _getOperatorVotingPowerAt(
-        address operator,
-        address vault,
-        bytes memory extraData,
-        uint48 timestamp
-    ) internal view virtual returns (uint256) {
+    function _getOperatorVotingPowerAt(address operator, address vault, bytes memory extraData, uint48 timestamp)
+        internal
+        view
+        virtual
+        returns (uint256)
+    {
         return VotingPowerProviderLogic.getOperatorVotingPowerAt(operator, vault, extraData, timestamp);
     }
 
@@ -357,11 +341,12 @@ abstract contract VotingPowerProvider is
      * @param extraData The extra data.
      * @return The voting power of the operator.
      */
-    function _getOperatorVotingPower(
-        address operator,
-        address vault,
-        bytes memory extraData
-    ) internal view virtual returns (uint256) {
+    function _getOperatorVotingPower(address operator, address vault, bytes memory extraData)
+        internal
+        view
+        virtual
+        returns (uint256)
+    {
         return VotingPowerProviderLogic.getOperatorVotingPower(operator, vault, extraData);
     }
 
@@ -410,33 +395,23 @@ abstract contract VotingPowerProvider is
         VotingPowerProviderLogic.setSlashingData(requireSlasher, minVaultEpochDuration);
     }
 
-    function _registerToken(
-        address token
-    ) internal virtual {
+    function _registerToken(address token) internal virtual {
         VotingPowerProviderLogic.registerToken(token);
     }
 
-    function _unregisterToken(
-        address token
-    ) internal virtual {
+    function _unregisterToken(address token) internal virtual {
         VotingPowerProviderLogic.unregisterToken(token);
     }
 
-    function _registerOperator(
-        address operator
-    ) internal virtual {
+    function _registerOperator(address operator) internal virtual {
         VotingPowerProviderLogic.registerOperator(operator);
     }
 
-    function _unregisterOperator(
-        address operator
-    ) internal virtual {
+    function _unregisterOperator(address operator) internal virtual {
         VotingPowerProviderLogic.unregisterOperator(operator);
     }
 
-    function _registerSharedVault(
-        address vault
-    ) internal virtual {
+    function _registerSharedVault(address vault) internal virtual {
         VotingPowerProviderLogic.registerSharedVault(vault);
     }
 
@@ -444,9 +419,7 @@ abstract contract VotingPowerProvider is
         VotingPowerProviderLogic.registerOperatorVault(operator, vault);
     }
 
-    function _unregisterSharedVault(
-        address vault
-    ) internal virtual {
+    function _unregisterSharedVault(address vault) internal virtual {
         VotingPowerProviderLogic.unregisterSharedVault(vault);
     }
 
@@ -454,16 +427,12 @@ abstract contract VotingPowerProvider is
         VotingPowerProviderLogic.unregisterOperatorVault(operator, vault);
     }
 
-    function _registerOperatorImpl(
-        address operator
-    ) internal virtual {
+    function _registerOperatorImpl(address operator) internal virtual {
         _registerOperator(operator);
         _useNonce(operator);
     }
 
-    function _unregisterOperatorImpl(
-        address operator
-    ) internal virtual {
+    function _unregisterOperatorImpl(address operator) internal virtual {
         _unregisterOperator(operator);
         _useNonce(operator);
     }

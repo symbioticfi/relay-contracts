@@ -32,19 +32,17 @@ interface IPricedTokensChainlinkVPCalc {
      * @param timestamp The timestamp.
      * @return The price conversion hops (price aggregators, invert flags, staleness durations).
      */
-    function getTokenHopsAt(
-        address token,
-        uint48 timestamp
-    ) external view returns (address[2] memory, bool[2] memory, uint48[2] memory);
+    function getTokenHopsAt(address token, uint48 timestamp)
+        external
+        view
+        returns (address[2] memory, bool[2] memory, uint48[2] memory);
 
     /**
      * @notice Returns the price conversion hops for a token.
      * @param token The token.
      * @return The price conversion hops (price aggregators, invert flags, staleness durations).
      */
-    function getTokenHops(
-        address token
-    ) external view returns (address[2] memory, bool[2] memory, uint48[2] memory);
+    function getTokenHops(address token) external view returns (address[2] memory, bool[2] memory, uint48[2] memory);
 
     /**
      * @notice Returns the price for a token at a given timestamp.
@@ -63,9 +61,7 @@ interface IPricedTokensChainlinkVPCalc {
      * @dev Returns zero if the data is stale or unavailable.
      *      The price is normalized to the 18 decimals.
      */
-    function getTokenPrice(
-        address token
-    ) external view returns (uint256);
+    function getTokenPrice(address token) external view returns (uint256);
 
     /**
      * @notice Sets the price conversion hops for a token.

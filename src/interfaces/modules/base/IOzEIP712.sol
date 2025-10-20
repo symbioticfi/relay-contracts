@@ -26,9 +26,7 @@ interface IOzEIP712 is IERC5267 {
      * @param structHash The hash of the typed data struct.
      * @return The EIP712 formatted hash.
      */
-    function hashTypedDataV4(
-        bytes32 structHash
-    ) external view returns (bytes32);
+    function hashTypedDataV4(bytes32 structHash) external view returns (bytes32);
 
     /**
      * @notice Wraps the `structHash` to the EIP712 format for cross-chain usage.
@@ -36,7 +34,5 @@ interface IOzEIP712 is IERC5267 {
      * @return The EIP712 formatted hash.
      * @dev It doesn't include `chainId` and `verifyingContract` fields for the domain separator.
      */
-    function hashTypedDataV4CrossChain(
-        bytes32 structHash
-    ) external view returns (bytes32);
+    function hashTypedDataV4CrossChain(bytes32 structHash) external view returns (bytes32);
 }

@@ -5,8 +5,9 @@ import {EqualStakeVPCalc} from "./EqualStakeVPCalc.sol";
 
 import {Scaler} from "../../../../libraries/utils/Scaler.sol";
 
-import {INormalizedTokenDecimalsVPCalc} from
-    "../../../../interfaces/modules/voting-power/common/voting-power-calc/INormalizedTokenDecimalsVPCalc.sol";
+import {
+    INormalizedTokenDecimalsVPCalc
+} from "../../../../interfaces/modules/voting-power/common/voting-power-calc/INormalizedTokenDecimalsVPCalc.sol";
 import {IVotingPowerCalcManager} from "../../../../interfaces/modules/voting-power/base/IVotingPowerCalcManager.sol";
 
 import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
@@ -27,29 +28,30 @@ abstract contract NormalizedTokenDecimalsVPCalc is EqualStakeVPCalc, INormalized
     /**
      * @inheritdoc IVotingPowerCalcManager
      */
-    function stakeToVotingPowerAt(
-        address vault,
-        uint256 stake,
-        bytes memory extraData,
-        uint48 timestamp
-    ) public view virtual override returns (uint256) {
+    function stakeToVotingPowerAt(address vault, uint256 stake, bytes memory extraData, uint48 timestamp)
+        public
+        view
+        virtual
+        override
+        returns (uint256)
+    {
         return _normalizeVaultTokenDecimals(vault, super.stakeToVotingPowerAt(vault, stake, extraData, timestamp));
     }
 
     /**
      * @inheritdoc IVotingPowerCalcManager
      */
-    function stakeToVotingPower(
-        address vault,
-        uint256 stake,
-        bytes memory extraData
-    ) public view virtual override returns (uint256) {
+    function stakeToVotingPower(address vault, uint256 stake, bytes memory extraData)
+        public
+        view
+        virtual
+        override
+        returns (uint256)
+    {
         return _normalizeVaultTokenDecimals(vault, super.stakeToVotingPower(vault, stake, extraData));
     }
 
-    function _getCollateral(
-        address vault
-    ) internal view virtual returns (address) {
+    function _getCollateral(address vault) internal view virtual returns (address) {
         return IVault(vault).collateral();
     }
 

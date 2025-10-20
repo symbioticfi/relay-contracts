@@ -9,9 +9,7 @@ import {IAuthority} from "@openzeppelin/contracts/access/manager/IAuthority.sol"
 contract MockAuthority is IAuthority {
     address public admin;
 
-    constructor(
-        address _admin
-    ) {
+    constructor(address _admin) {
         admin = _admin;
     }
 
@@ -23,9 +21,7 @@ contract MockAuthority is IAuthority {
 contract TestOzAccessManaged is OzAccessManaged {
     function protectedAction() external checkPermission {}
 
-    function initialize(
-        address authority
-    ) external initializer {
+    function initialize(address authority) external initializer {
         OzAccessManagedInitParams memory initParams = OzAccessManagedInitParams({authority: authority});
         __OzAccessManaged_init(initParams);
     }

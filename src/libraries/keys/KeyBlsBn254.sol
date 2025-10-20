@@ -36,9 +36,7 @@ library KeyBlsBn254 {
      * @return key The wrapped key.
      * @dev Allows to wrap zero G1 point.
      */
-    function wrap(
-        BN254.G1Point memory keyRaw
-    ) internal view returns (KEY_BLS_BN254 memory key) {
+    function wrap(BN254.G1Point memory keyRaw) internal view returns (KEY_BLS_BN254 memory key) {
         if (keyRaw.X == 0 && keyRaw.Y == 0) {
             return zeroKey();
         }
@@ -48,7 +46,9 @@ library KeyBlsBn254 {
         if (
             mulmod(keyRaw.Y, keyRaw.Y, BN254.FP_MODULUS)
                 != addmod(
-                    mulmod(keyRaw.X, mulmod(keyRaw.X, keyRaw.X, BN254.FP_MODULUS), BN254.FP_MODULUS), 3, BN254.FP_MODULUS
+                    mulmod(keyRaw.X, mulmod(keyRaw.X, keyRaw.X, BN254.FP_MODULUS), BN254.FP_MODULUS),
+                    3,
+                    BN254.FP_MODULUS
                 )
         ) {
             revert KeyBlsBn254_InvalidKey();
@@ -61,9 +61,7 @@ library KeyBlsBn254 {
      * @param key The key.
      * @return keyRaw The G1 public key.
      */
-    function unwrap(
-        KEY_BLS_BN254 memory key
-    ) internal view returns (BN254.G1Point memory keyRaw) {
+    function unwrap(KEY_BLS_BN254 memory key) internal view returns (BN254.G1Point memory keyRaw) {
         keyRaw = key.value;
     }
 
@@ -73,9 +71,7 @@ library KeyBlsBn254 {
      * @return keySerialized The serialized key.
      * @dev Compresses G1 point to 32 bytes (255 bits).
      */
-    function serialize(
-        KEY_BLS_BN254 memory key
-    ) internal view returns (bytes memory keySerialized) {
+    function serialize(KEY_BLS_BN254 memory key) internal view returns (bytes memory keySerialized) {
         if (key.value.X == 0 && key.value.Y == 0) {
             return abi.encode(bytes32(0));
         }
@@ -88,9 +84,7 @@ library KeyBlsBn254 {
      * @param keySerialized The serialized key.
      * @return key The key.
      */
-    function deserialize(
-        bytes memory keySerialized
-    ) internal view returns (KEY_BLS_BN254 memory key) {
+    function deserialize(bytes memory keySerialized) internal view returns (KEY_BLS_BN254 memory key) {
         bytes32 compressedKey = abi.decode(keySerialized, (bytes32));
         if (compressedKey == bytes32(0)) {
             return KEY_BLS_BN254(BN254.G1Point({X: 0, Y: 0}));
@@ -109,9 +103,7 @@ library KeyBlsBn254 {
      * @return keyBytes The bytes representation of the key.
      * @dev It is a bytes representation of the underlying key itself.
      */
-    function toBytes(
-        KEY_BLS_BN254 memory key
-    ) internal view returns (bytes memory keyBytes) {
+    function toBytes(KEY_BLS_BN254 memory key) internal view returns (bytes memory keyBytes) {
         keyBytes = abi.encode(key.value);
     }
 
@@ -120,9 +112,7 @@ library KeyBlsBn254 {
      * @param keyBytes The bytes representation of the key.
      * @return key The key.
      */
-    function fromBytes(
-        bytes memory keyBytes
-    ) internal view returns (KEY_BLS_BN254 memory key) {
+    function fromBytes(bytes memory keyBytes) internal view returns (KEY_BLS_BN254 memory key) {
         key.value = abi.decode(keyBytes, (BN254.G1Point));
         if (keccak256(key.unwrap().wrap().toBytes()) != keccak256(keyBytes)) {
             revert KeyBlsBn254_InvalidBytes();

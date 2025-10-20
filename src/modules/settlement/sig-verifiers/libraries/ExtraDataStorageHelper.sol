@@ -14,9 +14,7 @@ library ExtraDataStorageHelper {
      * @return The key.
      * @dev It can be used, e.g., to store some global data like number of validators.
      */
-    function getKeyGlobal(
-        bytes32 nameHash
-    ) internal pure returns (bytes32) {
+    function getKeyGlobal(bytes32 nameHash) internal pure returns (bytes32) {
         return keccak256(abi.encode(nameHash));
     }
 
@@ -80,12 +78,11 @@ library ExtraDataStorageHelper {
      *      which needs more than 1 storage slot (32 bytes), like aggregated BLS12-381 public key
      *      with a possibility to have multiple verification types simultaneously without collisions.
      */
-    function getKey(
-        uint32 verificationType,
-        uint8 keyTag,
-        bytes32 nameHash,
-        uint256 index
-    ) internal pure returns (bytes32) {
+    function getKey(uint32 verificationType, uint8 keyTag, bytes32 nameHash, uint256 index)
+        internal
+        pure
+        returns (bytes32)
+    {
         return bytes32(uint256(keccak256(abi.encode(verificationType, KEY_TAG_PREFIX_HASH, keyTag, nameHash))) + index);
     }
 }

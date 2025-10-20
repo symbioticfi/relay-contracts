@@ -131,9 +131,8 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
 
         uint256 inputHash;
         {
-            bytes32 validatorSetHash = ISettlement(settlement).getExtraDataAt(
-                epoch, VERIFICATION_TYPE.getKey(keyTag, VALIDATOR_SET_HASH_MIMC_HASH)
-            );
+            bytes32 validatorSetHash = ISettlement(settlement)
+                .getExtraDataAt(epoch, VERIFICATION_TYPE.getKey(keyTag, VALIDATOR_SET_HASH_MIMC_HASH));
             BN254.G1Point memory messageG1 = BN254.hashToG1(abi.decode(message, (bytes32)));
 
             inputHash =
@@ -141,17 +140,15 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
             inputHash &= 0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
         }
 
-        try IVerifier(_getVerifier(totalActiveValidators)).verifyProof(zkProof, commitments, commitmentPok, [inputHash])
-        {
+        try IVerifier(_getVerifier(totalActiveValidators))
+            .verifyProof(zkProof, commitments, commitmentPok, [inputHash]) {
             return true;
         } catch {
             return false;
         }
     }
 
-    function _getVerifier(
-        uint256 totalActiveValidators
-    ) internal view returns (address) {
+    function _getVerifier(uint256 totalActiveValidators) internal view returns (address) {
         for (uint256 i; i < maxValidators.length; ++i) {
             if (totalActiveValidators <= maxValidators[i]) {
                 return verifiers[i];

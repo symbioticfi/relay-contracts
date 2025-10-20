@@ -12,21 +12,15 @@ contract TestEpochManager is EpochManager, NoPermissionManager {
 
     Checkpoints.Trace208 private _testTrace;
 
-    function initialize(
-        EpochManagerInitParams memory initParams
-    ) external initializer {
+    function initialize(EpochManagerInitParams memory initParams) external initializer {
         __EpochManager_init(initParams);
     }
 
-    function getEpochDurationDataByTimestamp(
-        uint48 timestamp
-    ) public view returns (uint48, uint48, uint48) {
+    function getEpochDurationDataByTimestamp(uint48 timestamp) public view returns (uint48, uint48, uint48) {
         return _getEpochDurationDataByTimestamp(timestamp);
     }
 
-    function getEpochDurationDataByIndex(
-        uint48 index
-    ) public view returns (uint48, uint48, uint48) {
+    function getEpochDurationDataByIndex(uint48 index) public view returns (uint48, uint48, uint48) {
         return _getEpochDurationDataByIndex(index);
     }
 
@@ -38,23 +32,19 @@ contract TestEpochManager is EpochManager, NoPermissionManager {
         _setEpochDuration(epochDuration, epochDurationTimestamp, epochDurationIndex);
     }
 
-    function serializeEpochDurationData(
-        uint48 epochDuration,
-        uint48 epochDurationTimestamp,
-        uint48 epochDurationIndex
-    ) public pure returns (uint208) {
+    function serializeEpochDurationData(uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex)
+        public
+        pure
+        returns (uint208)
+    {
         return _serializeEpochDurationData(epochDuration, epochDurationTimestamp, epochDurationIndex);
     }
 
-    function deserializeEpochDurationData(
-        uint208 epochDurationData
-    ) public pure returns (uint48, uint48, uint48) {
+    function deserializeEpochDurationData(uint208 epochDurationData) public pure returns (uint48, uint48, uint48) {
         return _deserializeEpochDurationData(epochDurationData);
     }
 
-    function getCurrentValuePublic(
-        uint48 currentTimepoint
-    ) public view returns (uint208) {
+    function getCurrentValuePublic(uint48 currentTimepoint) public view returns (uint208) {
         return _getCurrentValue(_testTrace, currentTimepoint);
     }
 
@@ -126,8 +116,7 @@ contract EpochManagerTest is Test {
 
     function test_Initialize_RevertOnZeroEpochDuration() public {
         IEpochManager.EpochManagerInitParams memory initParams = IEpochManager.EpochManagerInitParams({
-            epochDuration: 0,
-            epochDurationTimestamp: uint48(vm.getBlockTimestamp() + 100)
+            epochDuration: 0, epochDurationTimestamp: uint48(vm.getBlockTimestamp() + 100)
         });
 
         vm.expectRevert(ERR_INVALID_EPOCH_DURATION);
@@ -137,8 +126,7 @@ contract EpochManagerTest is Test {
     function test_Initialize_RevertOnPastTimestamp() public {
         vm.warp(100);
         IEpochManager.EpochManagerInitParams memory initParams = IEpochManager.EpochManagerInitParams({
-            epochDuration: 100,
-            epochDurationTimestamp: uint48(vm.getBlockTimestamp() - 1)
+            epochDuration: 100, epochDurationTimestamp: uint48(vm.getBlockTimestamp() - 1)
         });
 
         vm.expectRevert(ERR_INVALID_EPOCH_DURATION_TIMESTAMP);
@@ -147,8 +135,7 @@ contract EpochManagerTest is Test {
 
     function test_AdvanceTimeAndCheckEpoch() public {
         IEpochManager.EpochManagerInitParams memory initParams = IEpochManager.EpochManagerInitParams({
-            epochDuration: 100,
-            epochDurationTimestamp: uint48(vm.getBlockTimestamp() + 10)
+            epochDuration: 100, epochDurationTimestamp: uint48(vm.getBlockTimestamp() + 10)
         });
         epochManager.initialize(initParams);
 
@@ -168,8 +155,7 @@ contract EpochManagerTest is Test {
 
     function test_SetEpochDuration_RevertIfIndexLessThanCurrent() public {
         IEpochManager.EpochManagerInitParams memory initParams = IEpochManager.EpochManagerInitParams({
-            epochDuration: 100,
-            epochDurationTimestamp: uint48(vm.getBlockTimestamp() + 10)
+            epochDuration: 100, epochDurationTimestamp: uint48(vm.getBlockTimestamp() + 10)
         });
         epochManager.initialize(initParams);
 
@@ -186,8 +172,7 @@ contract EpochManagerTest is Test {
 
     function test_SetEpochDuration_RevertOnZeroDuration() public {
         IEpochManager.EpochManagerInitParams memory initParams = IEpochManager.EpochManagerInitParams({
-            epochDuration: 100,
-            epochDurationTimestamp: uint48(vm.getBlockTimestamp())
+            epochDuration: 100, epochDurationTimestamp: uint48(vm.getBlockTimestamp())
         });
         epochManager.initialize(initParams);
 
@@ -197,8 +182,7 @@ contract EpochManagerTest is Test {
 
     function test_GetEpochIndex() public {
         IEpochManager.EpochManagerInitParams memory initParams = IEpochManager.EpochManagerInitParams({
-            epochDuration: 60,
-            epochDurationTimestamp: uint48(vm.getBlockTimestamp() + 10)
+            epochDuration: 60, epochDurationTimestamp: uint48(vm.getBlockTimestamp() + 10)
         });
         epochManager.initialize(initParams);
 
@@ -210,8 +194,7 @@ contract EpochManagerTest is Test {
 
     function test_GetEpochIndex_RevertIfTooOldTimestamp() public {
         IEpochManager.EpochManagerInitParams memory initParams = IEpochManager.EpochManagerInitParams({
-            epochDuration: 60,
-            epochDurationTimestamp: uint48(vm.getBlockTimestamp() + 10)
+            epochDuration: 60, epochDurationTimestamp: uint48(vm.getBlockTimestamp() + 10)
         });
         epochManager.initialize(initParams);
 
@@ -223,8 +206,7 @@ contract EpochManagerTest is Test {
 
     function test_GetEpochDurationAndStart() public {
         IEpochManager.EpochManagerInitParams memory initParams = IEpochManager.EpochManagerInitParams({
-            epochDuration: 50,
-            epochDurationTimestamp: uint48(vm.getBlockTimestamp() + 10)
+            epochDuration: 50, epochDurationTimestamp: uint48(vm.getBlockTimestamp() + 10)
         });
         epochManager.initialize(initParams);
 

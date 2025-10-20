@@ -26,18 +26,14 @@ abstract contract OperatorsJail is VotingPowerProvider, IOperatorsJail {
     /**
      * @inheritdoc IOperatorsJail
      */
-    function isOperatorJailed(
-        address operator
-    ) public view virtual returns (bool) {
+    function isOperatorJailed(address operator) public view virtual returns (bool) {
         return getOperatorJailedUntil(operator) > block.timestamp;
     }
 
     /**
      * @inheritdoc IOperatorsJail
      */
-    function getOperatorJailedUntil(
-        address operator
-    ) public view virtual returns (uint48) {
+    function getOperatorJailedUntil(address operator) public view virtual returns (uint48) {
         return _getOperatorsJailStorage()._jailedUntil[operator];
     }
 
@@ -63,9 +59,7 @@ abstract contract OperatorsJail is VotingPowerProvider, IOperatorsJail {
     /**
      * @inheritdoc IOperatorsJail
      */
-    function unjailOperator(
-        address operator
-    ) public virtual checkPermission {
+    function unjailOperator(address operator) public virtual checkPermission {
         if (!isOperatorJailed(operator)) {
             revert OperatorsJail_OperatorNotJailed();
         }
@@ -74,9 +68,7 @@ abstract contract OperatorsJail is VotingPowerProvider, IOperatorsJail {
         emit UnjailOperator(operator);
     }
 
-    function _registerOperatorImpl(
-        address operator
-    ) internal virtual override {
+    function _registerOperatorImpl(address operator) internal virtual override {
         if (isOperatorJailed(operator)) {
             revert OperatorsJail_OperatorJailed();
         }

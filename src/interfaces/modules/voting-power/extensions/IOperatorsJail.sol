@@ -50,18 +50,14 @@ interface IOperatorsJail {
      * @param operator The address of the operator.
      * @return The jail status of the operator.
      */
-    function isOperatorJailed(
-        address operator
-    ) external view returns (bool);
+    function isOperatorJailed(address operator) external view returns (bool);
 
     /**
      * @notice Returns the timestamp the operator is jailed until.
      * @param operator The address of the operator.
      * @return The timestamp the operator is jailed until.
      */
-    function getOperatorJailedUntil(
-        address operator
-    ) external view returns (uint48);
+    function getOperatorJailedUntil(address operator) external view returns (uint48);
 
     /**
      * @notice Jails the operator.
@@ -78,7 +74,5 @@ interface IOperatorsJail {
      * @param operator The address of the operator.
      * @dev The caller must have the needed permission.
      */
-    function unjailOperator(
-        address operator
-    ) external;
+    function unjailOperator(address operator) external;
 }

@@ -25,9 +25,7 @@ contract MasterCommitScript is MasterGenesisSetupScript {
         bytes proof;
     }
 
-    function run(
-        uint256 seed
-    ) public virtual override {
+    function run(uint256 seed) public virtual override {
         SYMBIOTIC_CORE_PROJECT_ROOT = "lib/core/";
         SymbioticInit.run(seed);
 
@@ -38,17 +36,18 @@ contract MasterCommitScript is MasterGenesisSetupScript {
         valSetHeader.epoch = masterSetupParams.valSetDriver.getCurrentEpoch();
         valSetHeader.captureTimestamp = masterSetupParams.valSetDriver.getCurrentEpochStart();
 
-        bytes32 messageHash = masterSetupParams.settlement.hashTypedDataV4CrossChain(
-            keccak256(
-                abi.encode(
-                    VALSET_HEADER_COMMIT_TYPEHASH,
-                    masterSetupParams.settlement.SUBNETWORK(),
-                    masterSetupParams.valSetDriver.getCurrentEpoch(),
-                    keccak256(abi.encode(valSetHeader)),
-                    keccak256(abi.encode(extraData))
+        bytes32 messageHash = masterSetupParams.settlement
+            .hashTypedDataV4CrossChain(
+                keccak256(
+                    abi.encode(
+                        VALSET_HEADER_COMMIT_TYPEHASH,
+                        masterSetupParams.settlement.SUBNETWORK(),
+                        masterSetupParams.valSetDriver.getCurrentEpoch(),
+                        keccak256(abi.encode(valSetHeader)),
+                        keccak256(abi.encode(extraData))
+                    )
                 )
-            )
-        );
+            );
 
         console2.log("messageHash");
         console2.logBytes32(messageHash);

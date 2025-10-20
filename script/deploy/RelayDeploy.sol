@@ -112,11 +112,17 @@ abstract contract RelayDeploy is Script, Config, CreateXWrapper {
                 slasherFactory: ISymbioticSlasherFactory(config.get("slasher_factory").toAddress()),
                 networkRegistry: ISymbioticNetworkRegistry(config.get("network_registry").toAddress()),
                 networkMetadataService: ISymbioticMetadataService(config.get("network_metadata_service").toAddress()),
-                networkMiddlewareService: ISymbioticNetworkMiddlewareService(config.get("network_middleware_service").toAddress()),
+                networkMiddlewareService: ISymbioticNetworkMiddlewareService(
+                    config.get("network_middleware_service").toAddress()
+                ),
                 operatorRegistry: ISymbioticOperatorRegistry(config.get("operator_registry").toAddress()),
                 operatorMetadataService: ISymbioticMetadataService(config.get("operator_metadata_service").toAddress()),
-                operatorVaultOptInService: ISymbioticOptInService(config.get("operator_vault_opt_in_service").toAddress()),
-                operatorNetworkOptInService: ISymbioticOptInService(config.get("operator_network_opt_in_service").toAddress()),
+                operatorVaultOptInService: ISymbioticOptInService(
+                    config.get("operator_vault_opt_in_service").toAddress()
+                ),
+                operatorNetworkOptInService: ISymbioticOptInService(
+                    config.get("operator_network_opt_in_service").toAddress()
+                ),
                 vaultConfigurator: ISymbioticVaultConfigurator(config.get("vault_configurator").toAddress())
             });
         }
@@ -127,7 +133,12 @@ abstract contract RelayDeploy is Script, Config, CreateXWrapper {
         return config.get("voting_power_provider").toAddress();
     }
 
-    function getVotingPowerProviders() public virtual loadConfig returns (IValSetDriver.CrossChainAddress[] memory votingPowerProviders) {
+    function getVotingPowerProviders()
+        public
+        virtual
+        loadConfig
+        returns (IValSetDriver.CrossChainAddress[] memory votingPowerProviders)
+    {
         uint256[] memory configChainIds = config.getChainIds();
         votingPowerProviders = new IValSetDriver.CrossChainAddress[](configChainIds.length);
         uint256 length;
@@ -135,8 +146,7 @@ abstract contract RelayDeploy is Script, Config, CreateXWrapper {
             Variable memory votingPowerProvider = config.get(configChainIds[i], "voting_power_provider");
             if (votingPowerProvider.data.length > 0) {
                 votingPowerProviders[i] = IValSetDriver.CrossChainAddress({
-                    chainId: uint64(configChainIds[i]),
-                    addr: votingPowerProvider.toAddress()
+                    chainId: uint64(configChainIds[i]), addr: votingPowerProvider.toAddress()
                 });
                 ++length;
             }
@@ -151,10 +161,8 @@ abstract contract RelayDeploy is Script, Config, CreateXWrapper {
         for (uint256 i; i < configChainIds.length; ++i) {
             Variable memory keyRegistry = config.get(configChainIds[i], "key_registry");
             if (keyRegistry.data.length > 0) {
-                return IValSetDriver.CrossChainAddress({
-                    chainId: uint64(configChainIds[i]),
-                    addr: keyRegistry.toAddress()
-                });
+                return
+                    IValSetDriver.CrossChainAddress({chainId: uint64(configChainIds[i]), addr: keyRegistry.toAddress()});
             }
         }
     }
@@ -170,10 +178,8 @@ abstract contract RelayDeploy is Script, Config, CreateXWrapper {
         for (uint256 i; i < configChainIds.length; ++i) {
             Variable memory settlement = config.get(configChainIds[i], "settlement");
             if (settlement.data.length > 0) {
-                settlements[i] = IValSetDriver.CrossChainAddress({
-                    chainId: uint64(configChainIds[i]),
-                    addr: settlement.toAddress()
-                });
+                settlements[i] =
+                    IValSetDriver.CrossChainAddress({chainId: uint64(configChainIds[i]), addr: settlement.toAddress()});
                 ++length;
             }
         }
@@ -187,10 +193,10 @@ abstract contract RelayDeploy is Script, Config, CreateXWrapper {
         for (uint256 i; i < configChainIds.length; ++i) {
             Variable memory valSetDriver = config.get(configChainIds[i], "val_set_driver");
             if (valSetDriver.data.length > 0) {
-                return IValSetDriver.CrossChainAddress({
-                    chainId: uint64(configChainIds[i]),
-                    addr: valSetDriver.toAddress()
-                });
+                return
+                    IValSetDriver.CrossChainAddress({
+                        chainId: uint64(configChainIds[i]), addr: valSetDriver.toAddress()
+                    });
             }
         }
     }
@@ -202,7 +208,12 @@ abstract contract RelayDeploy is Script, Config, CreateXWrapper {
      * @param isDeployerGuarded Whether to deploy with guarded salt for enhanced security
      * @return The address of the deployed VotingPowerProvider contract
      */
-    function deployVotingPowerProvider(address proxyOwner, bool isDeployerGuarded) public virtual loadConfig returns (address) {
+    function deployVotingPowerProvider(address proxyOwner, bool isDeployerGuarded)
+        public
+        virtual
+        loadConfig
+        returns (address)
+    {
         (address implementation, bytes memory initData) = _votingPowerProviderParams();
         address newContract =
             _deployContract(VOTING_POWER_PROVIDER_SALT, implementation, initData, proxyOwner, isDeployerGuarded);
@@ -270,9 +281,15 @@ abstract contract RelayDeploy is Script, Config, CreateXWrapper {
      * @param isDeployerGuarded Whether to deploy with guarded salt for enhanced security
      * @return The address of the deployed ValSetDriver contract
      */
-    function deployValSetDriver(address proxyOwner, bool isDeployerGuarded) public virtual loadConfig returns (address) {
+    function deployValSetDriver(address proxyOwner, bool isDeployerGuarded)
+        public
+        virtual
+        loadConfig
+        returns (address)
+    {
         (address implementation, bytes memory initData) = _valSetDriverParams();
-        address newContract = _deployContract(VALSET_DRIVER_SALT, implementation, initData, proxyOwner, isDeployerGuarded);
+        address newContract =
+            _deployContract(VALSET_DRIVER_SALT, implementation, initData, proxyOwner, isDeployerGuarded);
         Logs.log(string.concat("ValSetDriver deployed at: ", vm.toString(newContract)));
         config.set("val_set_driver", newContract);
         return newContract;
@@ -310,25 +327,219 @@ abstract contract RelayDeploy is Script, Config, CreateXWrapper {
     function _deployCore() internal virtual withBroadcast returns (SymbioticCoreConstants.Core memory core) {
         (,, address deployer) = vm.readCallers();
 
-        core.vaultFactory = ISymbioticVaultFactory(Create2.deploy(0, "vaultFactory", abi.encodePacked(CoreContractsProvider.getCoreBytecode().vaultFactory, abi.encode(deployer))));
-        core.delegatorFactory = ISymbioticDelegatorFactory(Create2.deploy(0, "delegatorFactory", abi.encodePacked(CoreContractsProvider.getCoreBytecode().delegatorFactory, abi.encode(deployer))));
-        core.slasherFactory = ISymbioticSlasherFactory(Create2.deploy(0, "slasherFactory", abi.encodePacked(CoreContractsProvider.getCoreBytecode().slasherFactory, abi.encode(deployer))));
-        core.networkRegistry = ISymbioticNetworkRegistry(Create2.deploy(0, "network_registry", CoreContractsProvider.getCoreBytecode().networkRegistry));
-        core.operatorRegistry = ISymbioticOperatorRegistry(Create2.deploy(0, "operator_registry", CoreContractsProvider.getCoreBytecode().operatorRegistry));
-        core.operatorMetadataService = ISymbioticMetadataService(Create2.deploy(0, "operator_metadata_service", abi.encodePacked(CoreContractsProvider.getCoreBytecode().operatorMetadataService, abi.encode(core.operatorRegistry))));
-        core.networkMetadataService = ISymbioticMetadataService(Create2.deploy(0, "network_metadata_service", abi.encodePacked(CoreContractsProvider.getCoreBytecode().networkMetadataService, abi.encode(core.networkRegistry))));
-        core.networkMiddlewareService = ISymbioticNetworkMiddlewareService(Create2.deploy(0, "network_middleware_service", abi.encodePacked(CoreContractsProvider.getCoreBytecode().networkMiddlewareService, abi.encode(core.networkRegistry))));
-        core.operatorVaultOptInService = ISymbioticOptInService(Create2.deploy(0, "operator_vault_opt_in_service", abi.encodePacked(CoreContractsProvider.getCoreBytecode().operatorVaultOptInService, abi.encode(core.operatorRegistry, core.vaultFactory, "OperatorVaultOptInService"))));
-        core.operatorNetworkOptInService = ISymbioticOptInService(Create2.deploy(0, "operator_network_opt_in_service", abi.encodePacked(CoreContractsProvider.getCoreBytecode().operatorNetworkOptInService, abi.encode(core.operatorRegistry, core.networkRegistry, "OperatorNetworkOptInService"))));
-        core.vaultConfigurator = ISymbioticVaultConfigurator(Create2.deploy(0, "vault_configurator", abi.encodePacked(CoreContractsProvider.getCoreBytecode().vaultConfigurator, abi.encode(core.vaultFactory, core.delegatorFactory, core.slasherFactory))));
-        core.vaultFactory.whitelist(Create2.deploy(0, "vault", abi.encodePacked(CoreContractsProvider.getCoreBytecode().vault, abi.encode(core.delegatorFactory, core.slasherFactory, core.vaultFactory))));
-        core.vaultFactory.whitelist(Create2.deploy(0, "vaultTokenized", abi.encodePacked(CoreContractsProvider.getCoreBytecode().vaultTokenized, abi.encode(core.delegatorFactory, core.slasherFactory, core.vaultFactory))));
-        core.delegatorFactory.whitelist(Create2.deploy(0, "networkRestakeDelegator", abi.encodePacked(CoreContractsProvider.getCoreBytecode().networkRestakeDelegator, abi.encode(core.networkRegistry, core.vaultFactory, core.operatorVaultOptInService, core.operatorNetworkOptInService, core.delegatorFactory, core.delegatorFactory.totalTypes()))));
-        core.delegatorFactory.whitelist(Create2.deploy(0, "fullRestakeDelegator", abi.encodePacked(CoreContractsProvider.getCoreBytecode().fullRestakeDelegator, abi.encode(core.networkRegistry, core.vaultFactory, core.operatorVaultOptInService, core.operatorNetworkOptInService, core.delegatorFactory, core.delegatorFactory.totalTypes()))));
-        core.delegatorFactory.whitelist(Create2.deploy(0, "operatorSpecificDelegator", abi.encodePacked(CoreContractsProvider.getCoreBytecode().operatorSpecificDelegator, abi.encode(core.operatorRegistry, core.networkRegistry, core.vaultFactory, core.operatorVaultOptInService, core.operatorNetworkOptInService, core.delegatorFactory, core.delegatorFactory.totalTypes()))));
-        core.delegatorFactory.whitelist(Create2.deploy(0, "operatorNetworkSpecificDelegator", abi.encodePacked(CoreContractsProvider.getCoreBytecode().operatorNetworkSpecificDelegator, abi.encode(core.operatorRegistry, core.networkRegistry, core.vaultFactory, core.operatorVaultOptInService, core.operatorNetworkOptInService, core.delegatorFactory, core.delegatorFactory.totalTypes()))));
-        core.slasherFactory.whitelist(Create2.deploy(0, "slasher", abi.encodePacked(CoreContractsProvider.getCoreBytecode().slasher, abi.encode(core.vaultFactory, core.networkMiddlewareService, core.slasherFactory, core.slasherFactory.totalTypes()))));
-        core.slasherFactory.whitelist(Create2.deploy(0, "vetoSlasher", abi.encodePacked(CoreContractsProvider.getCoreBytecode().vetoSlasher, abi.encode(core.vaultFactory, core.networkMiddlewareService, core.networkRegistry, core.slasherFactory, core.slasherFactory.totalTypes()))));
+        core.vaultFactory = ISymbioticVaultFactory(
+            Create2.deploy(
+                0,
+                "vaultFactory",
+                abi.encodePacked(CoreContractsProvider.getCoreBytecode().vaultFactory, abi.encode(deployer))
+            )
+        );
+        core.delegatorFactory = ISymbioticDelegatorFactory(
+            Create2.deploy(
+                0,
+                "delegatorFactory",
+                abi.encodePacked(CoreContractsProvider.getCoreBytecode().delegatorFactory, abi.encode(deployer))
+            )
+        );
+        core.slasherFactory = ISymbioticSlasherFactory(
+            Create2.deploy(
+                0,
+                "slasherFactory",
+                abi.encodePacked(CoreContractsProvider.getCoreBytecode().slasherFactory, abi.encode(deployer))
+            )
+        );
+        core.networkRegistry = ISymbioticNetworkRegistry(
+            Create2.deploy(0, "network_registry", CoreContractsProvider.getCoreBytecode().networkRegistry)
+        );
+        core.operatorRegistry = ISymbioticOperatorRegistry(
+            Create2.deploy(0, "operator_registry", CoreContractsProvider.getCoreBytecode().operatorRegistry)
+        );
+        core.operatorMetadataService = ISymbioticMetadataService(
+            Create2.deploy(
+                0,
+                "operator_metadata_service",
+                abi.encodePacked(
+                    CoreContractsProvider.getCoreBytecode().operatorMetadataService, abi.encode(core.operatorRegistry)
+                )
+            )
+        );
+        core.networkMetadataService = ISymbioticMetadataService(
+            Create2.deploy(
+                0,
+                "network_metadata_service",
+                abi.encodePacked(
+                    CoreContractsProvider.getCoreBytecode().networkMetadataService, abi.encode(core.networkRegistry)
+                )
+            )
+        );
+        core.networkMiddlewareService = ISymbioticNetworkMiddlewareService(
+            Create2.deploy(
+                0,
+                "network_middleware_service",
+                abi.encodePacked(
+                    CoreContractsProvider.getCoreBytecode().networkMiddlewareService, abi.encode(core.networkRegistry)
+                )
+            )
+        );
+        core.operatorVaultOptInService = ISymbioticOptInService(
+            Create2.deploy(
+                0,
+                "operator_vault_opt_in_service",
+                abi.encodePacked(
+                    CoreContractsProvider.getCoreBytecode().operatorVaultOptInService,
+                    abi.encode(core.operatorRegistry, core.vaultFactory, "OperatorVaultOptInService")
+                )
+            )
+        );
+        core.operatorNetworkOptInService = ISymbioticOptInService(
+            Create2.deploy(
+                0,
+                "operator_network_opt_in_service",
+                abi.encodePacked(
+                    CoreContractsProvider.getCoreBytecode().operatorNetworkOptInService,
+                    abi.encode(core.operatorRegistry, core.networkRegistry, "OperatorNetworkOptInService")
+                )
+            )
+        );
+        core.vaultConfigurator = ISymbioticVaultConfigurator(
+            Create2.deploy(
+                0,
+                "vault_configurator",
+                abi.encodePacked(
+                    CoreContractsProvider.getCoreBytecode().vaultConfigurator,
+                    abi.encode(core.vaultFactory, core.delegatorFactory, core.slasherFactory)
+                )
+            )
+        );
+        core.vaultFactory
+            .whitelist(
+                Create2.deploy(
+                    0,
+                    "vault",
+                    abi.encodePacked(
+                        CoreContractsProvider.getCoreBytecode().vault,
+                        abi.encode(core.delegatorFactory, core.slasherFactory, core.vaultFactory)
+                    )
+                )
+            );
+        core.vaultFactory
+            .whitelist(
+                Create2.deploy(
+                    0,
+                    "vaultTokenized",
+                    abi.encodePacked(
+                        CoreContractsProvider.getCoreBytecode().vaultTokenized,
+                        abi.encode(core.delegatorFactory, core.slasherFactory, core.vaultFactory)
+                    )
+                )
+            );
+        core.delegatorFactory
+            .whitelist(
+                Create2.deploy(
+                    0,
+                    "networkRestakeDelegator",
+                    abi.encodePacked(
+                        CoreContractsProvider.getCoreBytecode().networkRestakeDelegator,
+                        abi.encode(
+                            core.networkRegistry,
+                            core.vaultFactory,
+                            core.operatorVaultOptInService,
+                            core.operatorNetworkOptInService,
+                            core.delegatorFactory,
+                            core.delegatorFactory.totalTypes()
+                        )
+                    )
+                )
+            );
+        core.delegatorFactory
+            .whitelist(
+                Create2.deploy(
+                    0,
+                    "fullRestakeDelegator",
+                    abi.encodePacked(
+                        CoreContractsProvider.getCoreBytecode().fullRestakeDelegator,
+                        abi.encode(
+                            core.networkRegistry,
+                            core.vaultFactory,
+                            core.operatorVaultOptInService,
+                            core.operatorNetworkOptInService,
+                            core.delegatorFactory,
+                            core.delegatorFactory.totalTypes()
+                        )
+                    )
+                )
+            );
+        core.delegatorFactory
+            .whitelist(
+                Create2.deploy(
+                    0,
+                    "operatorSpecificDelegator",
+                    abi.encodePacked(
+                        CoreContractsProvider.getCoreBytecode().operatorSpecificDelegator,
+                        abi.encode(
+                            core.operatorRegistry,
+                            core.networkRegistry,
+                            core.vaultFactory,
+                            core.operatorVaultOptInService,
+                            core.operatorNetworkOptInService,
+                            core.delegatorFactory,
+                            core.delegatorFactory.totalTypes()
+                        )
+                    )
+                )
+            );
+        core.delegatorFactory
+            .whitelist(
+                Create2.deploy(
+                    0,
+                    "operatorNetworkSpecificDelegator",
+                    abi.encodePacked(
+                        CoreContractsProvider.getCoreBytecode().operatorNetworkSpecificDelegator,
+                        abi.encode(
+                            core.operatorRegistry,
+                            core.networkRegistry,
+                            core.vaultFactory,
+                            core.operatorVaultOptInService,
+                            core.operatorNetworkOptInService,
+                            core.delegatorFactory,
+                            core.delegatorFactory.totalTypes()
+                        )
+                    )
+                )
+            );
+        core.slasherFactory
+            .whitelist(
+                Create2.deploy(
+                    0,
+                    "slasher",
+                    abi.encodePacked(
+                        CoreContractsProvider.getCoreBytecode().slasher,
+                        abi.encode(
+                            core.vaultFactory,
+                            core.networkMiddlewareService,
+                            core.slasherFactory,
+                            core.slasherFactory.totalTypes()
+                        )
+                    )
+                )
+            );
+        core.slasherFactory
+            .whitelist(
+                Create2.deploy(
+                    0,
+                    "vetoSlasher",
+                    abi.encodePacked(
+                        CoreContractsProvider.getCoreBytecode().vetoSlasher,
+                        abi.encode(
+                            core.vaultFactory,
+                            core.networkMiddlewareService,
+                            core.networkRegistry,
+                            core.slasherFactory,
+                            core.slasherFactory.totalTypes()
+                        )
+                    )
+                )
+            );
 
         config.set("vault_factory", address(core.vaultFactory));
         config.set("delegator_factory", address(core.delegatorFactory));

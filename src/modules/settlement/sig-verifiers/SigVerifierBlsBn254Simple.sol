@@ -8,8 +8,9 @@ import {KeyTags} from "../../../libraries/utils/KeyTags.sol";
 import {SigBlsBn254} from "../../../libraries/sigs/SigBlsBn254.sol";
 
 import {ISettlement} from "../../../interfaces/modules/settlement/ISettlement.sol";
-import {ISigVerifierBlsBn254Simple} from
-    "../../../interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254Simple.sol";
+import {
+    ISigVerifierBlsBn254Simple
+} from "../../../interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254Simple.sol";
 import {ISigVerifier} from "../../../interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol";
 import {KEY_TYPE_BLS_BN254} from "../../../interfaces/modules/key-registry/IKeyRegistry.sol";
 
@@ -101,9 +102,8 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
                 uint256 nonSignersOffset = 224 + validatorsDataLength * 64;
                 if (
                     keccak256(proof[192:nonSignersOffset])
-                        != ISettlement(settlement).getExtraDataAt(
-                            epoch, VERIFICATION_TYPE.getKey(keyTag, VALIDATOR_SET_HASH_KECCAK256_HASH)
-                        )
+                        != ISettlement(settlement)
+                            .getExtraDataAt(epoch, VERIFICATION_TYPE.getKey(keyTag, VALIDATOR_SET_HASH_KECCAK256_HASH))
                 ) {
                     return false;
                 }
@@ -155,16 +155,16 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
 
             if (
                 quorumThreshold
-                    > uint256(ISettlement(settlement).getTotalVotingPowerFromValSetHeaderAt(epoch)) - nonSignersVotingPower
+                    > uint256(ISettlement(settlement).getTotalVotingPowerFromValSetHeaderAt(epoch))
+                        - nonSignersVotingPower
             ) {
                 return false;
             }
 
             {
                 bytes memory aggPublicKeyG1Serialized = abi.encode(
-                    ISettlement(settlement).getExtraDataAt(
-                        epoch, VERIFICATION_TYPE.getKey(keyTag, AGGREGATED_PUBLIC_KEY_G1_HASH)
-                    )
+                    ISettlement(settlement)
+                        .getExtraDataAt(epoch, VERIFICATION_TYPE.getKey(keyTag, AGGREGATED_PUBLIC_KEY_G1_HASH))
                 );
                 bytes32 messageHash;
                 BN254.G1Point calldata signatureG1;

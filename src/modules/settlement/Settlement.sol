@@ -38,9 +38,7 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
         }
     }
 
-    function __Settlement_init(
-        SettlementInitParams memory settlementInitParams
-    ) internal virtual onlyInitializing {
+    function __Settlement_init(SettlementInitParams memory settlementInitParams) internal virtual onlyInitializing {
         __NetworkManager_init(settlementInitParams.networkManagerInitParams);
         __OzEIP712_init(settlementInitParams.ozEip712InitParams);
 
@@ -78,18 +76,14 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
     /**
      * @inheritdoc ISettlement
      */
-    function isValSetHeaderCommittedAt(
-        uint48 epoch
-    ) public view virtual returns (bool) {
+    function isValSetHeaderCommittedAt(uint48 epoch) public view virtual returns (bool) {
         return _getSettlementStorage()._valSetHeader[epoch].version > 0;
     }
 
     /**
      * @inheritdoc ISettlement
      */
-    function getValSetHeaderHashAt(
-        uint48 epoch
-    ) public view returns (bytes32) {
+    function getValSetHeaderHashAt(uint48 epoch) public view returns (bytes32) {
         return keccak256(abi.encode(getValSetHeaderAt(epoch)));
     }
 
@@ -103,9 +97,7 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
     /**
      * @inheritdoc ISettlement
      */
-    function getValSetHeaderAt(
-        uint48 epoch
-    ) public view virtual returns (ValSetHeader memory) {
+    function getValSetHeaderAt(uint48 epoch) public view virtual returns (ValSetHeader memory) {
         return _getSettlementStorage()._valSetHeader[epoch];
     }
 
@@ -119,9 +111,7 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
     /**
      * @inheritdoc ISettlement
      */
-    function getVersionFromValSetHeaderAt(
-        uint48 epoch
-    ) public view virtual returns (uint8) {
+    function getVersionFromValSetHeaderAt(uint48 epoch) public view virtual returns (uint8) {
         return _getSettlementStorage()._valSetHeader[epoch].version;
     }
 
@@ -135,9 +125,7 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
     /**
      * @inheritdoc ISettlement
      */
-    function getRequiredKeyTagFromValSetHeaderAt(
-        uint48 epoch
-    ) public view virtual returns (uint8) {
+    function getRequiredKeyTagFromValSetHeaderAt(uint48 epoch) public view virtual returns (uint8) {
         return _getSettlementStorage()._valSetHeader[epoch].requiredKeyTag;
     }
 
@@ -151,9 +139,7 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
     /**
      * @inheritdoc ISettlement
      */
-    function getCaptureTimestampFromValSetHeaderAt(
-        uint48 epoch
-    ) public view virtual returns (uint48) {
+    function getCaptureTimestampFromValSetHeaderAt(uint48 epoch) public view virtual returns (uint48) {
         return _getSettlementStorage()._valSetHeader[epoch].captureTimestamp;
     }
 
@@ -167,9 +153,7 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
     /**
      * @inheritdoc ISettlement
      */
-    function getQuorumThresholdFromValSetHeaderAt(
-        uint48 epoch
-    ) public view virtual returns (uint256) {
+    function getQuorumThresholdFromValSetHeaderAt(uint48 epoch) public view virtual returns (uint256) {
         return _getSettlementStorage()._valSetHeader[epoch].quorumThreshold;
     }
 
@@ -183,9 +167,7 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
     /**
      * @inheritdoc ISettlement
      */
-    function getTotalVotingPowerFromValSetHeaderAt(
-        uint48 epoch
-    ) public view virtual returns (uint256) {
+    function getTotalVotingPowerFromValSetHeaderAt(uint48 epoch) public view virtual returns (uint256) {
         return _getSettlementStorage()._valSetHeader[epoch].totalVotingPower;
     }
 
@@ -199,9 +181,7 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
     /**
      * @inheritdoc ISettlement
      */
-    function getValidatorsSszMRootFromValSetHeaderAt(
-        uint48 epoch
-    ) public view virtual returns (bytes32) {
+    function getValidatorsSszMRootFromValSetHeaderAt(uint48 epoch) public view virtual returns (bytes32) {
         return _getSettlementStorage()._valSetHeader[epoch].validatorsSszMRoot;
     }
 
@@ -222,9 +202,7 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
     /**
      * @inheritdoc ISettlement
      */
-    function getExtraData(
-        bytes32 key
-    ) public view virtual returns (bytes32) {
+    function getExtraData(bytes32 key) public view virtual returns (bytes32) {
         return getExtraDataAt(getLastCommittedHeaderEpoch(), key);
     }
 
@@ -242,35 +220,31 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
         if (!isValSetHeaderCommittedAt(epoch)) {
             return false;
         }
-        return ISigVerifier(getSigVerifierAt(epoch, hint)).verifyQuorumSig(
-            address(this), epoch, message, keyTag, quorumThreshold, proof
-        );
+        return ISigVerifier(getSigVerifierAt(epoch, hint))
+            .verifyQuorumSig(address(this), epoch, message, keyTag, quorumThreshold, proof);
     }
 
     /**
      * @inheritdoc ISettlement
      */
-    function verifyQuorumSig(
-        bytes memory message,
-        uint8 keyTag,
-        uint256 quorumThreshold,
-        bytes calldata proof
-    ) public view virtual returns (bool) {
+    function verifyQuorumSig(bytes memory message, uint8 keyTag, uint256 quorumThreshold, bytes calldata proof)
+        public
+        view
+        virtual
+        returns (bool)
+    {
         uint48 lastCommittedHeaderEpoch = getLastCommittedHeaderEpoch();
         if (!isValSetHeaderCommittedAt(lastCommittedHeaderEpoch)) {
             return false;
         }
-        return ISigVerifier(getSigVerifier()).verifyQuorumSig(
-            address(this), lastCommittedHeaderEpoch, message, keyTag, quorumThreshold, proof
-        );
+        return ISigVerifier(getSigVerifier())
+            .verifyQuorumSig(address(this), lastCommittedHeaderEpoch, message, keyTag, quorumThreshold, proof);
     }
 
     /**
      * @inheritdoc ISettlement
      */
-    function setSigVerifier(
-        address sigVerifier
-    ) public virtual checkPermission {
+    function setSigVerifier(address sigVerifier) public virtual checkPermission {
         if (sigVerifier == address(0)) {
             revert Settlement_InvalidSigVerifier();
         }
@@ -281,10 +255,11 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
     /**
      * @inheritdoc ISettlement
      */
-    function setGenesis(
-        ValSetHeader calldata valSetHeader,
-        ExtraData[] calldata extraData
-    ) public virtual checkPermission {
+    function setGenesis(ValSetHeader calldata valSetHeader, ExtraData[] calldata extraData)
+        public
+        virtual
+        checkPermission
+    {
         _setValSetHeader(valSetHeader, extraData);
 
         emit SetGenesis(valSetHeader, extraData);
@@ -293,17 +268,15 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
     /**
      * @inheritdoc ISettlement
      */
-    function commitValSetHeader(
-        ValSetHeader calldata header,
-        ExtraData[] calldata extraData,
-        bytes calldata proof
-    ) public virtual {
+    function commitValSetHeader(ValSetHeader calldata header, ExtraData[] calldata extraData, bytes calldata proof)
+        public
+        virtual
+    {
         uint48 valSetEpoch = getLastCommittedHeaderEpoch();
         if (header.epoch != valSetEpoch + 1) {
             revert Settlement_InvalidEpoch();
         }
-        if (
-            !verifyQuorumSig(
+        if (!verifyQuorumSig(
                 abi.encode(
                     hashTypedDataV4CrossChain(
                         keccak256(
@@ -320,8 +293,7 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
                 getRequiredKeyTagFromValSetHeaderAt(valSetEpoch),
                 getQuorumThresholdFromValSetHeaderAt(valSetEpoch),
                 proof
-            )
-        ) {
+            )) {
             revert Settlement_VerificationFailed();
         }
 
@@ -379,10 +351,12 @@ abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISe
         $._lastCommittedHeaderEpoch = header.epoch;
     }
 
-    function _getCurrentValue(
-        Checkpoints.Trace208 storage trace,
-        uint48 currentTimepoint
-    ) internal view virtual returns (uint208) {
+    function _getCurrentValue(Checkpoints.Trace208 storage trace, uint48 currentTimepoint)
+        internal
+        view
+        virtual
+        returns (uint208)
+    {
         uint256 length = trace.length();
         Checkpoints.Checkpoint208 memory checkpoint = trace.at(uint32(length - 1));
         if (checkpoint._key <= currentTimepoint) {

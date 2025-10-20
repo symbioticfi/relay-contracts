@@ -46,9 +46,8 @@ contract BaseSlashingTest is MasterSetupTest {
 
         vm.prank(address(this));
         vm.expectRevert(abi.encodeWithSelector(IBaseSlashing.BaseSlashing_NotSlasher.selector));
-        masterSetupParams.votingPowerProvider.slashVault(
-            uint48(vm.getBlockTimestamp() - 1), vaults[0], operator, 100, new bytes(0)
-        );
+        masterSetupParams.votingPowerProvider
+            .slashVault(uint48(vm.getBlockTimestamp() - 1), vaults[0], operator, 100, new bytes(0));
 
         (bool success, bytes memory response) = slasher.slashVault(
             address(masterSetupParams.votingPowerProvider),
@@ -193,12 +192,10 @@ contract BaseSlashingTest is MasterSetupTest {
 
         vm.startPrank(operator);
         symbioticCore.operatorVaultOptInService.optIn(vault);
-        ISymbioticNetworkRestakeDelegator(ISymbioticVault(vault).delegator()).setNetworkLimit(
-            masterSetupParams.votingPowerProvider.SUBNETWORK(), type(uint256).max
-        );
-        ISymbioticNetworkRestakeDelegator(ISymbioticVault(vault).delegator()).setOperatorNetworkShares(
-            masterSetupParams.votingPowerProvider.SUBNETWORK(), operator, 1
-        );
+        ISymbioticNetworkRestakeDelegator(ISymbioticVault(vault).delegator())
+            .setNetworkLimit(masterSetupParams.votingPowerProvider.SUBNETWORK(), type(uint256).max);
+        ISymbioticNetworkRestakeDelegator(ISymbioticVault(vault).delegator())
+            .setOperatorNetworkShares(masterSetupParams.votingPowerProvider.SUBNETWORK(), operator, 1);
         vm.stopPrank();
 
         _stakerDeposit_SymbioticCore(getStaker(0).addr, vault, 1_000_000);

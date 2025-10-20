@@ -18,18 +18,18 @@ abstract contract OpNetVaultAutoDeploy is VotingPowerProvider, IOpNetVaultAutoDe
      */
     address public immutable VAULT_CONFIGURATOR;
 
-    constructor(
-        address vaultConfigurator
-    ) {
+    constructor(address vaultConfigurator) {
         VAULT_CONFIGURATOR = vaultConfigurator;
     }
 
     /**
      * @dev Must be called after __VotingPowerProvider_init().
      */
-    function __OpNetVaultAutoDeploy_init(
-        OpNetVaultAutoDeployInitParams memory initParams
-    ) internal virtual onlyInitializing {
+    function __OpNetVaultAutoDeploy_init(OpNetVaultAutoDeployInitParams memory initParams)
+        internal
+        virtual
+        onlyInitializing
+    {
         OpNetVaultAutoDeployLogic.initialize(initParams);
     }
 
@@ -43,9 +43,7 @@ abstract contract OpNetVaultAutoDeploy is VotingPowerProvider, IOpNetVaultAutoDe
     /**
      * @inheritdoc IOpNetVaultAutoDeploy
      */
-    function getAutoDeployedVault(
-        address operator
-    ) public view virtual returns (address) {
+    function getAutoDeployedVault(address operator) public view virtual returns (address) {
         return OpNetVaultAutoDeployLogic.getAutoDeployedVault(operator);
     }
 
@@ -66,41 +64,32 @@ abstract contract OpNetVaultAutoDeploy is VotingPowerProvider, IOpNetVaultAutoDe
     /**
      * @inheritdoc IOpNetVaultAutoDeploy
      */
-    function setAutoDeployStatus(
-        bool status
-    ) public virtual checkPermission {
+    function setAutoDeployStatus(bool status) public virtual checkPermission {
         OpNetVaultAutoDeployLogic.setAutoDeployStatus(status);
     }
 
     /**
      * @inheritdoc IOpNetVaultAutoDeploy
      */
-    function setAutoDeployConfig(
-        AutoDeployConfig memory config
-    ) public virtual checkPermission {
+    function setAutoDeployConfig(AutoDeployConfig memory config) public virtual checkPermission {
         OpNetVaultAutoDeployLogic.setAutoDeployConfig(config);
     }
 
     /**
      * @inheritdoc IOpNetVaultAutoDeploy
      */
-    function setSetMaxNetworkLimitHookStatus(
-        bool status
-    ) public virtual checkPermission {
+    function setSetMaxNetworkLimitHookStatus(bool status) public virtual checkPermission {
         OpNetVaultAutoDeployLogic.setSetMaxNetworkLimitHookStatus(status);
     }
 
-    function _registerOperatorImpl(
-        address operator
-    ) internal virtual override {
+    function _registerOperatorImpl(address operator) internal virtual override {
         super._registerOperatorImpl(operator);
         if (isAutoDeployEnabled() && getAutoDeployedVault(operator) == address(0)) {
             (address vault, address delegator,) = OpNetVaultAutoDeployLogic.createVault(operator);
             _registerOperatorVault(operator, vault);
             if (isSetMaxNetworkLimitHookEnabled()) {
-                ISetMaxNetworkLimitHook(NETWORK()).setMaxNetworkLimit(
-                    delegator, SUBNETWORK_IDENTIFIER(), type(uint256).max
-                );
+                ISetMaxNetworkLimitHook(NETWORK())
+                    .setMaxNetworkLimit(delegator, SUBNETWORK_IDENTIFIER(), type(uint256).max);
             }
         }
     }

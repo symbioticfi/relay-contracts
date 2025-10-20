@@ -10,8 +10,9 @@ import {INetwork} from "@symbioticfi/network/src/interfaces/INetwork.sol";
 import "../../MasterSetup.sol";
 
 import {Subnetwork} from "@symbioticfi/core/src/contracts/libraries/Subnetwork.sol";
-import {TimelockControllerUpgradeable} from
-    "@openzeppelin/contracts-upgradeable/governance/TimelockControllerUpgradeable.sol";
+import {
+    TimelockControllerUpgradeable
+} from "@openzeppelin/contracts-upgradeable/governance/TimelockControllerUpgradeable.sol";
 
 contract NetworkTest is MasterSetupTest {
     using Subnetwork for address;
@@ -291,9 +292,8 @@ contract NetworkTest is MasterSetupTest {
         myNetwork.setMaxNetworkLimit(ISymbioticVault(vaults[0]).delegator(), 1, type(uint96).max);
 
         assertEq(
-            ISymbioticBaseDelegator(ISymbioticVault(vaults[0]).delegator()).maxNetworkLimit(
-                address(myNetwork).subnetwork(uint96(1))
-            ),
+            ISymbioticBaseDelegator(ISymbioticVault(vaults[0]).delegator())
+                .maxNetworkLimit(address(myNetwork).subnetwork(uint96(1))),
             type(uint96).max
         );
     }

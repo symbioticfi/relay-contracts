@@ -10,8 +10,9 @@ import {EqualStakeVPCalc} from "../../../../src/modules/voting-power/common/voti
 import {MultiToken} from "../../../../src/modules/voting-power/extensions/MultiToken.sol";
 import {OperatorVaults} from "../../../../src/modules/voting-power/extensions/OperatorVaults.sol";
 import {INetworkManager} from "../../../../src/interfaces/modules/base/INetworkManager.sol";
-import {IOpNetVaultAutoDeploy} from
-    "../../../../src/interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol";
+import {
+    IOpNetVaultAutoDeploy
+} from "../../../../src/interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol";
 import {IVotingPowerProvider} from "../../../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
 import {IOzEIP712} from "../../../../src/interfaces/modules/base/IOzEIP712.sol";
 import {InitSetupTest} from "../../../InitSetup.sol";
@@ -30,11 +31,10 @@ contract TestOpNetVaultAutoDeploy is
     MultiToken,
     OperatorVaults
 {
-    constructor(
-        address operatorRegistry,
-        address vaultFactory,
-        address vaultConfigurator
-    ) VotingPowerProvider(operatorRegistry, vaultFactory) OpNetVaultAutoDeploy(vaultConfigurator) {}
+    constructor(address operatorRegistry, address vaultFactory, address vaultConfigurator)
+        VotingPowerProvider(operatorRegistry, vaultFactory)
+        OpNetVaultAutoDeploy(vaultConfigurator)
+    {}
 
     function initialize(
         IVotingPowerProvider.VotingPowerProviderInitParams memory initParams,
@@ -44,16 +44,14 @@ contract TestOpNetVaultAutoDeploy is
         __OpNetVaultAutoDeploy_init(autoInit);
     }
 
-    function _registerOperatorImpl(
-        address operator
-    ) internal override(OpNetVaultAutoDeploy, VotingPowerProvider) {
+    function _registerOperatorImpl(address operator) internal override(OpNetVaultAutoDeploy, VotingPowerProvider) {
         super._registerOperatorImpl(operator);
     }
 
-    function _unregisterOperatorVaultImpl(
-        address operator,
-        address vault
-    ) internal override(OpNetVaultAutoDeploy, VotingPowerProvider) {
+    function _unregisterOperatorVaultImpl(address operator, address vault)
+        internal
+        override(OpNetVaultAutoDeploy, VotingPowerProvider)
+    {
         super._unregisterOperatorVaultImpl(operator, vault);
     }
 
@@ -99,14 +97,14 @@ contract OpNetVaultAutoDeployTest is Test, InitSetupTest {
 
         INetworkManager.NetworkManagerInitParams memory netInit =
             INetworkManager.NetworkManagerInitParams({network: address(network), subnetworkId: IDENTIFIER});
-        IVotingPowerProvider.VotingPowerProviderInitParams memory vpInit = IVotingPowerProvider
-            .VotingPowerProviderInitParams({
-            networkManagerInitParams: netInit,
-            ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Auto", version: "1"}),
-            requireSlasher: true,
-            minVaultEpochDuration: minVaultEpochDuration,
-            token: initSetupParams.masterChain.tokens[0]
-        });
+        IVotingPowerProvider.VotingPowerProviderInitParams memory vpInit =
+            IVotingPowerProvider.VotingPowerProviderInitParams({
+                networkManagerInitParams: netInit,
+                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Auto", version: "1"}),
+                requireSlasher: true,
+                minVaultEpochDuration: minVaultEpochDuration,
+                token: initSetupParams.masterChain.tokens[0]
+            });
         validConfig = IOpNetVaultAutoDeploy.AutoDeployConfig({
             collateral: initSetupParams.masterChain.tokens[0],
             burner: address(0x1),
@@ -114,12 +112,10 @@ contract OpNetVaultAutoDeployTest is Test, InitSetupTest {
             withSlasher: true,
             isBurnerHook: true
         });
-        IOpNetVaultAutoDeploy.OpNetVaultAutoDeployInitParams memory autoInit = IOpNetVaultAutoDeploy
-            .OpNetVaultAutoDeployInitParams({
-            isAutoDeployEnabled: false,
-            config: validConfig,
-            isSetMaxNetworkLimitHookEnabled: false
-        });
+        IOpNetVaultAutoDeploy.OpNetVaultAutoDeployInitParams memory autoInit =
+            IOpNetVaultAutoDeploy.OpNetVaultAutoDeployInitParams({
+                isAutoDeployEnabled: false, config: validConfig, isSetMaxNetworkLimitHookEnabled: false
+            });
         deployer.initialize(vpInit, autoInit);
         operator1 = getOperator(0).addr;
 

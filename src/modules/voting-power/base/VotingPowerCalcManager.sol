@@ -13,19 +13,18 @@ abstract contract VotingPowerCalcManager is Initializable, IVotingPowerCalcManag
     /**
      * @inheritdoc IVotingPowerCalcManager
      */
-    function stakeToVotingPowerAt(
-        address vault,
-        uint256 stake,
-        bytes memory extraData,
-        uint48 timestamp
-    ) public view virtual returns (uint256 power);
+    function stakeToVotingPowerAt(address vault, uint256 stake, bytes memory extraData, uint48 timestamp)
+        public
+        view
+        virtual
+        returns (uint256 power);
 
     /**
      * @inheritdoc IVotingPowerCalcManager
      */
-    function stakeToVotingPower(
-        address vault,
-        uint256 stake,
-        bytes memory extraData
-    ) public view virtual returns (uint256 power);
+    function stakeToVotingPower(address vault, uint256 stake, bytes memory extraData)
+        public
+        view
+        virtual
+        returns (uint256 power);
 }

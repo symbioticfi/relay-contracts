@@ -278,9 +278,7 @@ interface IValSetDriver {
      * @param timestamp The timestamp.
      * @return The configuration.
      */
-    function getConfigAt(
-        uint48 timestamp
-    ) external view returns (Config memory);
+    function getConfigAt(uint48 timestamp) external view returns (Config memory);
 
     /**
      * @notice Returns the configuration.
@@ -294,9 +292,7 @@ interface IValSetDriver {
      * @param timestamp The timestamp.
      * @return The number of aggregators.
      */
-    function getNumAggregatorsAt(
-        uint48 timestamp
-    ) external view returns (uint208);
+    function getNumAggregatorsAt(uint48 timestamp) external view returns (uint208);
 
     /**
      * @notice Returns the number of aggregators (those who aggregate the validators' signatures
@@ -311,9 +307,7 @@ interface IValSetDriver {
      * @param timestamp The timestamp.
      * @return The number of committers.
      */
-    function getNumCommittersAt(
-        uint48 timestamp
-    ) external view returns (uint208);
+    function getNumCommittersAt(uint48 timestamp) external view returns (uint208);
 
     /**
      * @notice Returns the number of committers (those who commit some data (e.g., ValSetHeader)
@@ -328,28 +322,24 @@ interface IValSetDriver {
      * @param timestamp The timestamp.
      * @return If the voting power provider is registered.
      */
-    function isVotingPowerProviderRegisteredAt(
-        CrossChainAddress memory votingPowerProvider,
-        uint48 timestamp
-    ) external view returns (bool);
+    function isVotingPowerProviderRegisteredAt(CrossChainAddress memory votingPowerProvider, uint48 timestamp)
+        external
+        view
+        returns (bool);
 
     /**
      * @notice Returns if the voting power provider is registered.
      * @param votingPowerProvider The voting power provider.
      * @return If the voting power provider is registered.
      */
-    function isVotingPowerProviderRegistered(
-        CrossChainAddress memory votingPowerProvider
-    ) external view returns (bool);
+    function isVotingPowerProviderRegistered(CrossChainAddress memory votingPowerProvider) external view returns (bool);
 
     /**
      * @notice Returns the voting power providers at the given timestamp.
      * @param timestamp The timestamp.
      * @return The voting power providers (contracts that provide the voting powers of the operators on different chains).
      */
-    function getVotingPowerProvidersAt(
-        uint48 timestamp
-    ) external view returns (CrossChainAddress[] memory);
+    function getVotingPowerProvidersAt(uint48 timestamp) external view returns (CrossChainAddress[] memory);
 
     /**
      * @notice Returns the voting power providers.
@@ -362,9 +352,7 @@ interface IValSetDriver {
      * @param timestamp The timestamp.
      * @return The keys provider (contract that provides the keys of the operators).
      */
-    function getKeysProviderAt(
-        uint48 timestamp
-    ) external view returns (CrossChainAddress memory);
+    function getKeysProviderAt(uint48 timestamp) external view returns (CrossChainAddress memory);
 
     /**
      * @notice Returns the keys provider.
@@ -378,28 +366,24 @@ interface IValSetDriver {
      * @param timestamp The timestamp.
      * @return If the settlement is registered.
      */
-    function isSettlementRegisteredAt(
-        CrossChainAddress memory settlement,
-        uint48 timestamp
-    ) external view returns (bool);
+    function isSettlementRegisteredAt(CrossChainAddress memory settlement, uint48 timestamp)
+        external
+        view
+        returns (bool);
 
     /**
      * @notice Returns if the settlement is registered.
      * @param settlement The settlement.
      * @return If the settlement is registered.
      */
-    function isSettlementRegistered(
-        CrossChainAddress memory settlement
-    ) external view returns (bool);
+    function isSettlementRegistered(CrossChainAddress memory settlement) external view returns (bool);
 
     /**
      * @notice Returns the settlements at the given timestamp.
      * @param timestamp The timestamp.
      * @return The settlements (contracts that enable a verification of the validator set's attestations on different chains).
      */
-    function getSettlementsAt(
-        uint48 timestamp
-    ) external view returns (CrossChainAddress[] memory);
+    function getSettlementsAt(uint48 timestamp) external view returns (CrossChainAddress[] memory);
 
     /**
      * @notice Returns the settlements.
@@ -412,9 +396,7 @@ interface IValSetDriver {
      * @param timestamp The timestamp.
      * @return The maximum voting power for each validator.
      */
-    function getMaxVotingPowerAt(
-        uint48 timestamp
-    ) external view returns (uint256);
+    function getMaxVotingPowerAt(uint48 timestamp) external view returns (uint256);
 
     /**
      * @notice Returns the maximum voting power.
@@ -427,9 +409,7 @@ interface IValSetDriver {
      * @param timestamp The timestamp.
      * @return The minimum inclusion voting power for the operator to be included in the validator set.
      */
-    function getMinInclusionVotingPowerAt(
-        uint48 timestamp
-    ) external view returns (uint256);
+    function getMinInclusionVotingPowerAt(uint48 timestamp) external view returns (uint256);
 
     /**
      * @notice Returns the minimum inclusion voting power.
@@ -442,9 +422,7 @@ interface IValSetDriver {
      * @param timestamp The timestamp.
      * @return The maximum active validators count in the validator set.
      */
-    function getMaxValidatorsCountAt(
-        uint48 timestamp
-    ) external view returns (uint208);
+    function getMaxValidatorsCountAt(uint48 timestamp) external view returns (uint208);
 
     /**
      * @notice Returns the maximum active validators count.
@@ -457,9 +435,7 @@ interface IValSetDriver {
      * @param timestamp The timestamp.
      * @return The required key tags to include in the validator set.
      */
-    function getRequiredKeyTagsAt(
-        uint48 timestamp
-    ) external view returns (uint8[] memory);
+    function getRequiredKeyTagsAt(uint48 timestamp) external view returns (uint8[] memory);
 
     /**
      * @notice Returns the required key tags.
@@ -473,28 +449,24 @@ interface IValSetDriver {
      * @param timestamp The timestamp.
      * @return If the quorum threshold is registered.
      */
-    function isQuorumThresholdRegisteredAt(
-        QuorumThreshold memory quorumThreshold,
-        uint48 timestamp
-    ) external view returns (bool);
+    function isQuorumThresholdRegisteredAt(QuorumThreshold memory quorumThreshold, uint48 timestamp)
+        external
+        view
+        returns (bool);
 
     /**
      * @notice Returns if the quorum threshold is registered.
      * @param quorumThreshold The quorum threshold.
      * @return If the quorum threshold is registered.
      */
-    function isQuorumThresholdRegistered(
-        QuorumThreshold memory quorumThreshold
-    ) external view returns (bool);
+    function isQuorumThresholdRegistered(QuorumThreshold memory quorumThreshold) external view returns (bool);
 
     /**
      * @notice Returns the quorum thresholds at the given timestamp.
      * @param timestamp The timestamp.
      * @return The quorum thresholds to use for attestations' verification.
      */
-    function getQuorumThresholdsAt(
-        uint48 timestamp
-    ) external view returns (QuorumThreshold[] memory);
+    function getQuorumThresholdsAt(uint48 timestamp) external view returns (QuorumThreshold[] memory);
 
     /**
      * @notice Returns the quorum thresholds.
@@ -507,9 +479,7 @@ interface IValSetDriver {
      * @param timestamp The timestamp.
      * @return The required header key tag to use to maintain the validator set through epochs.
      */
-    function getRequiredHeaderKeyTagAt(
-        uint48 timestamp
-    ) external view returns (uint8);
+    function getRequiredHeaderKeyTagAt(uint48 timestamp) external view returns (uint8);
 
     /**
      * @notice Returns the required header key tag.
@@ -522,9 +492,7 @@ interface IValSetDriver {
      * @param timestamp The timestamp.
      * @return The verification type (e.g., simple on-chain verification, or zk-based one).
      */
-    function getVerificationTypeAt(
-        uint48 timestamp
-    ) external view returns (uint32);
+    function getVerificationTypeAt(uint48 timestamp) external view returns (uint32);
 
     /**
      * @notice Returns the verification type.
@@ -538,9 +506,7 @@ interface IValSetDriver {
      * @param numAggregators The number of aggregators.
      * @dev The caller must have the needed permission.
      */
-    function setNumAggregators(
-        uint208 numAggregators
-    ) external;
+    function setNumAggregators(uint208 numAggregators) external;
 
     /**
      * @notice Sets the number of committers (those who commit some data (e.g., ValSetHeader)
@@ -548,124 +514,96 @@ interface IValSetDriver {
      * @param numCommitters The number of committers.
      * @dev The caller must have the needed permission.
      */
-    function setNumCommitters(
-        uint208 numCommitters
-    ) external;
+    function setNumCommitters(uint208 numCommitters) external;
 
     /**
      * @notice Adds a voting power provider.
      * @param votingPowerProvider The voting power provider (contract that provides the voting powers of the operators on different chains).
      * @dev The caller must have the needed permission.
      */
-    function addVotingPowerProvider(
-        CrossChainAddress memory votingPowerProvider
-    ) external;
+    function addVotingPowerProvider(CrossChainAddress memory votingPowerProvider) external;
 
     /**
      * @notice Removes a voting power provider.
      * @param votingPowerProvider The voting power provider (contract that provides the voting powers of the operators on different chains).
      * @dev The caller must have the needed permission.
      */
-    function removeVotingPowerProvider(
-        CrossChainAddress memory votingPowerProvider
-    ) external;
+    function removeVotingPowerProvider(CrossChainAddress memory votingPowerProvider) external;
 
     /**
      * @notice Sets the keys provider.
      * @param keysProvider The keys provider (contract that provides the keys of the operators).
      * @dev The caller must have the needed permission.
      */
-    function setKeysProvider(
-        CrossChainAddress memory keysProvider
-    ) external;
+    function setKeysProvider(CrossChainAddress memory keysProvider) external;
 
     /**
      * @notice Adds a settlement.
      * @param settlement The settlement (contract that enable a verification of the validator set's attestations on different chains).
      * @dev The caller must have the needed permission.
      */
-    function addSettlement(
-        CrossChainAddress memory settlement
-    ) external;
+    function addSettlement(CrossChainAddress memory settlement) external;
 
     /**
      * @notice Removes a settlement.
      * @param settlement The settlement (contract that enable a verification of the validator set's attestations on different chains).
      * @dev The caller must have the needed permission.
      */
-    function removeSettlement(
-        CrossChainAddress memory settlement
-    ) external;
+    function removeSettlement(CrossChainAddress memory settlement) external;
 
     /**
      * @notice Sets the maximum voting power.
      * @param maxVotingPower The maximum voting power for each validator.
      * @dev The caller must have the needed permission.
      */
-    function setMaxVotingPower(
-        uint256 maxVotingPower
-    ) external;
+    function setMaxVotingPower(uint256 maxVotingPower) external;
 
     /**
      * @notice Sets the minimum inclusion voting power.
      * @param minInclusionVotingPower The minimum inclusion voting power for the operator to be included in the validator set.
      * @dev The caller must have the needed permission.
      */
-    function setMinInclusionVotingPower(
-        uint256 minInclusionVotingPower
-    ) external;
+    function setMinInclusionVotingPower(uint256 minInclusionVotingPower) external;
 
     /**
      * @notice Sets the maximum active validators count.
      * @param maxValidatorsCount The maximum active validators count in the validator set.
      * @dev The caller must have the needed permission.
      */
-    function setMaxValidatorsCount(
-        uint208 maxValidatorsCount
-    ) external;
+    function setMaxValidatorsCount(uint208 maxValidatorsCount) external;
 
     /**
      * @notice Sets the required key tags.
      * @param requiredKeyTags The required key tags to include in the validator set.
      * @dev The caller must have the needed permission.
      */
-    function setRequiredKeyTags(
-        uint8[] memory requiredKeyTags
-    ) external;
+    function setRequiredKeyTags(uint8[] memory requiredKeyTags) external;
 
     /**
      * @notice Adds a quorum threshold.
      * @param quorumThreshold The quorum threshold to use for attestations' verification.
      * @dev The caller must have the needed permission.
      */
-    function addQuorumThreshold(
-        QuorumThreshold memory quorumThreshold
-    ) external;
+    function addQuorumThreshold(QuorumThreshold memory quorumThreshold) external;
 
     /**
      * @notice Removes a quorum threshold.
      * @param quorumThreshold The quorum threshold to use for attestations' verification.
      * @dev The caller must have the needed permission.
      */
-    function removeQuorumThreshold(
-        QuorumThreshold memory quorumThreshold
-    ) external;
+    function removeQuorumThreshold(QuorumThreshold memory quorumThreshold) external;
 
     /**
      * @notice Sets the required header key tag.
      * @param requiredHeaderKeyTag The required header key tag to use to maintain the validator set through epochs.
      * @dev The caller must have the needed permission.
      */
-    function setRequiredHeaderKeyTag(
-        uint8 requiredHeaderKeyTag
-    ) external;
+    function setRequiredHeaderKeyTag(uint8 requiredHeaderKeyTag) external;
 
     /**
      * @notice Sets the verification type.
      * @param verificationType The verification type (e.g., simple on-chain verification, or zk-based one).
      * @dev The caller must have the needed permission.
      */
-    function setVerificationType(
-        uint32 verificationType
-    ) external;
+    function setVerificationType(uint32 verificationType) external;
 }

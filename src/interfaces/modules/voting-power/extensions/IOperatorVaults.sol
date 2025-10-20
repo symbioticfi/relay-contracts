@@ -23,7 +23,5 @@ interface IOperatorVaults {
      * @param vault The address of the vault.
      * @dev The caller must be the operator of the vault.
      */
-    function unregisterOperatorVault(
-        address vault
-    ) external;
+    function unregisterOperatorVault(address vault) external;
 }

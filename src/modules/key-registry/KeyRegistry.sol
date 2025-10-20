@@ -47,9 +47,7 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
         }
     }
 
-    function __KeyRegistry_init(
-        KeyRegistryInitParams memory keyRegistryInitParams
-    ) public virtual onlyInitializing {
+    function __KeyRegistry_init(KeyRegistryInitParams memory keyRegistryInitParams) public virtual onlyInitializing {
         __OzEIP712_init(keyRegistryInitParams.ozEip712InitParams);
     }
 
@@ -84,9 +82,7 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
     /**
      * @inheritdoc IKeyRegistry
      */
-    function getOperator(
-        bytes memory key
-    ) public view virtual returns (address) {
+    function getOperator(bytes memory key) public view virtual returns (address) {
         return _getKeyRegistryStorage()._operatorByKeyHash[keccak256(key)];
     }
 
@@ -104,9 +100,7 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
     /**
      * @inheritdoc IKeyRegistry
      */
-    function getKeys(
-        address operator
-    ) public view virtual returns (Key[] memory keys) {
+    function getKeys(address operator) public view virtual returns (Key[] memory keys) {
         uint8[] memory keyTags = _getKeyTags(operator);
         keys = new Key[](keyTags.length);
         for (uint256 i; i < keyTags.length; ++i) {
@@ -117,9 +111,7 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
     /**
      * @inheritdoc IKeyRegistry
      */
-    function getKeysAt(
-        uint48 timestamp
-    ) public view virtual returns (OperatorWithKeys[] memory operatorsKeys) {
+    function getKeysAt(uint48 timestamp) public view virtual returns (OperatorWithKeys[] memory operatorsKeys) {
         address[] memory operators = getKeysOperatorsAt(timestamp);
         operatorsKeys = new IKeyRegistry.OperatorWithKeys[](operators.length);
         for (uint256 i; i < operators.length; ++i) {
@@ -150,9 +142,7 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
     /**
      * @inheritdoc IKeyRegistry
      */
-    function getKeysOperatorsAt(
-        uint48 timestamp
-    ) public view virtual returns (address[] memory) {
+    function getKeysOperatorsAt(uint48 timestamp) public view virtual returns (address[] memory) {
         return _getKeyRegistryStorage()._operators.valuesAt(timestamp);
     }
 
@@ -167,9 +157,7 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
         return uint128(_getKeyRegistryStorage()._operatorKeyTags[operator].upperLookupRecent(timestamp)).deserialize();
     }
 
-    function _getKeyTags(
-        address operator
-    ) internal view virtual returns (uint8[] memory) {
+    function _getKeyTags(address operator) internal view virtual returns (uint8[] memory) {
         return uint128(_getKeyRegistryStorage()._operatorKeyTags[operator].latest()).deserialize();
     }
 
@@ -180,25 +168,20 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
         _setKey(msg.sender, tag, key, signature, extraData);
     }
 
-    function _setKey(
-        address operator,
-        uint8 tag,
-        bytes memory key,
-        bytes memory signature,
-        bytes memory extraData
-    ) internal virtual {
+    function _setKey(address operator, uint8 tag, bytes memory key, bytes memory signature, bytes memory extraData)
+        internal
+        virtual
+    {
         IKeyRegistry.KeyRegistryStorage storage $ = _getKeyRegistryStorage();
 
         bytes32 keyHash = keccak256(key);
-        if (
-            !_verifyKey(
+        if (!_verifyKey(
                 tag,
                 key,
                 signature,
                 extraData,
                 abi.encode(hashTypedDataV4(keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, operator, keyHash))))
-            )
-        ) {
+            )) {
             revert IKeyRegistry.KeyRegistry_InvalidKeySignature();
         }
 
@@ -224,9 +207,8 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
         $._operatorByTagAndKeyHash[tag][keyHash] = operator;
 
         $._operators.add(uint48(block.timestamp), operator);
-        $._operatorKeyTags[operator].push(
-            uint48(block.timestamp), uint128($._operatorKeyTags[operator].latest()).add(tag)
-        );
+        $._operatorKeyTags[operator]
+        .push(uint48(block.timestamp), uint128($._operatorKeyTags[operator].latest()).add(tag));
         _setKey(operator, tag, key);
 
         emit IKeyRegistry.SetKey(operator, tag, key, extraData);
@@ -252,9 +234,8 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
 
     function _setKey64(address operator, uint8 tag, bytes memory key) internal {
         (bytes32 compressedKey1, bytes32 compressedKey2) = abi.decode(key, (bytes32, bytes32));
-        _getKeyRegistryStorage()._keys64[operator][tag].push(
-            uint48(block.timestamp), [uint256(compressedKey1), uint256(compressedKey2)]
-        );
+        _getKeyRegistryStorage()._keys64[operator][tag]
+        .push(uint48(block.timestamp), [uint256(compressedKey1), uint256(compressedKey2)]);
     }
 
     function _verifyKey(

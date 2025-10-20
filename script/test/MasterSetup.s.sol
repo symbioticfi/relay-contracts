@@ -66,9 +66,7 @@ contract MasterSetupScript is InitSetupScript {
         IValSetDriver.QuorumThreshold[] quorumThresholds;
     }
 
-    function run(
-        uint256 seed
-    ) public virtual override {
+    function run(uint256 seed) public virtual override {
         SYMBIOTIC_CORE_PROJECT_ROOT = "lib/core/";
         SymbioticInit.run(seed);
 
@@ -94,22 +92,22 @@ contract MasterSetupScript is InitSetupScript {
         masterSetupParams.votingPowerProvider = new VotingPowerProviderSemiFull(
             address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory)
         );
-        masterSetupParams.votingPowerProvider.initialize(
-            IVotingPowerProvider.VotingPowerProviderInitParams({
-                networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
-                    network: vars.network.addr,
-                    subnetworkId: networkSetupParams.SUBNETWORK_ID
+        masterSetupParams.votingPowerProvider
+            .initialize(
+                IVotingPowerProvider.VotingPowerProviderInitParams({
+                    networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
+                        network: vars.network.addr, subnetworkId: networkSetupParams.SUBNETWORK_ID
+                    }),
+                    ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "VotingPowerProvider", version: "1"}),
+                    requireSlasher: true,
+                    minVaultEpochDuration: networkSetupParams.SLASHING_WINDOW,
+                    token: initSetupParams.masterChain.tokens[0]
                 }),
-                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "VotingPowerProvider", version: "1"}),
-                requireSlasher: true,
-                minVaultEpochDuration: networkSetupParams.SLASHING_WINDOW,
-                token: initSetupParams.masterChain.tokens[0]
-            }),
-            IOzOwnable.OzOwnableInitParams({owner: vars.network.addr}),
-            IOperatorsWhitelist.OperatorsWhitelistInitParams({isWhitelistEnabled: false}),
-            IBaseSlashing.BaseSlashingInitParams({slasher: address(1)}),
-            IBaseRewards.BaseRewardsInitParams({rewarder: address(1)})
-        );
+                IOzOwnable.OzOwnableInitParams({owner: vars.network.addr}),
+                IOperatorsWhitelist.OperatorsWhitelistInitParams({isWhitelistEnabled: false}),
+                IBaseSlashing.BaseSlashingInitParams({slasher: address(1)}),
+                IBaseRewards.BaseRewardsInitParams({rewarder: address(1)})
+            );
         vm.stopBroadcast();
         vm.serializeAddress(obj, "votingPowerProvider", address(masterSetupParams.votingPowerProvider));
 
@@ -158,17 +156,17 @@ contract MasterSetupScript is InitSetupScript {
                 revert("Invalid verification type");
             }
 
-            masterSetupParams.settlement.initialize(
-                ISettlement.SettlementInitParams({
-                    networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
-                        network: vars.network.addr,
-                        subnetworkId: networkSetupParams.SUBNETWORK_ID
+            masterSetupParams.settlement
+                .initialize(
+                    ISettlement.SettlementInitParams({
+                        networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
+                            network: vars.network.addr, subnetworkId: networkSetupParams.SUBNETWORK_ID
+                        }),
+                        ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
+                        sigVerifier: localVars.sigVerifier
                     }),
-                    ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
-                    sigVerifier: localVars.sigVerifier
-                }),
-                vars.deployer.addr
-            );
+                    vars.deployer.addr
+                );
         }
         vm.stopBroadcast();
         vm.serializeAddress(obj, "settlement", address(masterSetupParams.settlement));
@@ -188,13 +186,11 @@ contract MasterSetupScript is InitSetupScript {
             });
 
             localVars.keysProvider = IValSetDriver.CrossChainAddress({
-                addr: address(masterSetupParams.keyRegistry),
-                chainId: uint64(initSetupParams.masterChain.chainId)
+                addr: address(masterSetupParams.keyRegistry), chainId: uint64(initSetupParams.masterChain.chainId)
             });
             localVars.settlements = new IValSetDriver.CrossChainAddress[](1);
             localVars.settlements[0] = IValSetDriver.CrossChainAddress({
-                addr: address(masterSetupParams.settlement),
-                chainId: uint64(initSetupParams.masterChain.chainId)
+                addr: address(masterSetupParams.settlement), chainId: uint64(initSetupParams.masterChain.chainId)
             });
 
             localVars.quorumThresholds = new IValSetDriver.QuorumThreshold[](localVars.requiredKeyTags.length);
@@ -205,31 +201,33 @@ contract MasterSetupScript is InitSetupScript {
                 });
             }
 
-            masterSetupParams.valSetDriver.initialize(
-                IValSetDriver.ValSetDriverInitParams({
-                    networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
-                        network: vars.network.addr,
-                        subnetworkId: networkSetupParams.SUBNETWORK_ID
+            masterSetupParams.valSetDriver
+                .initialize(
+                    IValSetDriver.ValSetDriverInitParams({
+                        networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
+                            network: vars.network.addr, subnetworkId: networkSetupParams.SUBNETWORK_ID
+                        }),
+                        epochManagerInitParams: IEpochManager.EpochManagerInitParams({
+                            epochDuration: networkSetupParams.EPOCH_DURATION,
+                            epochDurationTimestamp: uint48(
+                                vm.getBlockTimestamp() + vm.envOr("DEPLOYMENT_BUFFER", uint256(600))
+                            )
+                        }),
+                        numAggregators: 1,
+                        numCommitters: 1,
+                        votingPowerProviders: localVars.votingPowerProviders,
+                        keysProvider: localVars.keysProvider,
+                        settlements: localVars.settlements,
+                        maxVotingPower: 1e36,
+                        minInclusionVotingPower: 0,
+                        maxValidatorsCount: 99_999_999,
+                        requiredKeyTags: localVars.requiredKeyTags,
+                        quorumThresholds: localVars.quorumThresholds,
+                        requiredHeaderKeyTag: localVars.requiredKeyTags[0],
+                        verificationType: networkSetupParams.VERIFICATION_TYPE
                     }),
-                    epochManagerInitParams: IEpochManager.EpochManagerInitParams({
-                        epochDuration: networkSetupParams.EPOCH_DURATION,
-                        epochDurationTimestamp: uint48(vm.getBlockTimestamp() + vm.envOr("DEPLOYMENT_BUFFER", uint256(600)))
-                    }),
-                    numAggregators: 1,
-                    numCommitters: 1,
-                    votingPowerProviders: localVars.votingPowerProviders,
-                    keysProvider: localVars.keysProvider,
-                    settlements: localVars.settlements,
-                    maxVotingPower: 1e36,
-                    minInclusionVotingPower: 0,
-                    maxValidatorsCount: 99_999_999,
-                    requiredKeyTags: localVars.requiredKeyTags,
-                    quorumThresholds: localVars.quorumThresholds,
-                    requiredHeaderKeyTag: localVars.requiredKeyTags[0],
-                    verificationType: networkSetupParams.VERIFICATION_TYPE
-                }),
-                vars.deployer.addr
-            );
+                    vars.deployer.addr
+                );
         }
         vm.stopBroadcast();
         finalJson = vm.serializeAddress(obj, "valSetDriver", address(masterSetupParams.valSetDriver));

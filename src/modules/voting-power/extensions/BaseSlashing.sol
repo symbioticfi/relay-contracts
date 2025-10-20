@@ -34,9 +34,7 @@ abstract contract BaseSlashing is VotingPowerProvider, IBaseSlashing {
         }
     }
 
-    function __BaseSlashing_init(
-        BaseSlashingInitParams memory initParams
-    ) internal virtual onlyInitializing {
+    function __BaseSlashing_init(BaseSlashingInitParams memory initParams) internal virtual onlyInitializing {
         _setSlasher(initParams.slasher);
     }
 
@@ -50,13 +48,11 @@ abstract contract BaseSlashing is VotingPowerProvider, IBaseSlashing {
     /**
      * @inheritdoc IBaseSlashing
      */
-    function slashVault(
-        uint48 timestamp,
-        address vault,
-        address operator,
-        uint256 amount,
-        bytes memory hints
-    ) public virtual returns (bool success, bytes memory response) {
+    function slashVault(uint48 timestamp, address vault, address operator, uint256 amount, bytes memory hints)
+        public
+        virtual
+        returns (bool success, bytes memory response)
+    {
         _checkSlasher();
         return BaseSlashingLogic.slashVault(timestamp, vault, operator, amount, hints);
     }
@@ -64,11 +60,11 @@ abstract contract BaseSlashing is VotingPowerProvider, IBaseSlashing {
     /**
      * @inheritdoc IBaseSlashing
      */
-    function executeSlashVault(
-        address vault,
-        uint256 slashIndex,
-        bytes memory hints
-    ) public virtual returns (bool success, uint256 slashedAmount) {
+    function executeSlashVault(address vault, uint256 slashIndex, bytes memory hints)
+        public
+        virtual
+        returns (bool success, uint256 slashedAmount)
+    {
         _checkSlasher();
         return BaseSlashingLogic.executeSlashVault(vault, slashIndex, hints);
     }
@@ -76,15 +72,11 @@ abstract contract BaseSlashing is VotingPowerProvider, IBaseSlashing {
     /**
      * @inheritdoc IBaseSlashing
      */
-    function setSlasher(
-        address slasher
-    ) public virtual checkPermission {
+    function setSlasher(address slasher) public virtual checkPermission {
         _setSlasher(slasher);
     }
 
-    function _setSlasher(
-        address slasher
-    ) internal virtual {
+    function _setSlasher(address slasher) internal virtual {
         _getBaseSlashingStorage()._slasher = slasher;
         emit SetSlasher(slasher);
     }

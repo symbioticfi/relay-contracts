@@ -40,26 +40,20 @@ contract KeyEcdsaSecp256k1Test is Test {
         assertEq(rawKey, unwrapped.value);
     }
 
-    function test_FuzzWrapUnwrap(
-        address rawKey
-    ) public {
+    function test_FuzzWrapUnwrap(address rawKey) public {
         KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1 memory wrapped = KeyEcdsaSecp256k1.wrap(rawKey);
         address unwrapped = KeyEcdsaSecp256k1.unwrap(wrapped);
         assertEq(rawKey, unwrapped);
     }
 
-    function test_FuzzSerializeDeserialize(
-        address rawKey
-    ) public {
+    function test_FuzzSerializeDeserialize(address rawKey) public {
         KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1 memory wrapped = KeyEcdsaSecp256k1.wrap(rawKey);
         bytes memory serialized = KeyEcdsaSecp256k1.serialize(wrapped);
         KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1 memory deserialized = KeyEcdsaSecp256k1.deserialize(serialized);
         assertEq(rawKey, deserialized.value);
     }
 
-    function test_FuzzToBytesFromBytes(
-        address rawKey
-    ) public {
+    function test_FuzzToBytesFromBytes(address rawKey) public {
         KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1 memory wrapped = KeyEcdsaSecp256k1.wrap(rawKey);
         bytes memory keyBytes = KeyEcdsaSecp256k1.toBytes(wrapped);
         KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1 memory unwrapped = KeyEcdsaSecp256k1.fromBytes(keyBytes);

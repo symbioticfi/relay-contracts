@@ -89,12 +89,11 @@ contract SigEcdsaSecp256k1Test is Test {
         assertFalse(result);
     }
 
-    function verify(
-        bytes memory keyBytes,
-        bytes memory message,
-        bytes memory signature,
-        bytes memory extraData
-    ) public view returns (bool) {
+    function verify(bytes memory keyBytes, bytes memory message, bytes memory signature, bytes memory extraData)
+        public
+        view
+        returns (bool)
+    {
         return SigEcdsaSecp256k1.verify(keyBytes, message, signature, extraData);
     }
 

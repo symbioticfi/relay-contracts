@@ -23,10 +23,11 @@ contract ValSetVerifierMock {
         return ValSetVerifier.verifyValidatorRootLocal(validatorRootProof, validatorRootLocalIndex, validatorSetRoot);
     }
 
-    function verifyValidatorOperatorLocal(
-        ValSetVerifier.SszProof calldata operatorRootProof,
-        bytes32 validatorSetRoot
-    ) public view returns (bool) {
+    function verifyValidatorOperatorLocal(ValSetVerifier.SszProof calldata operatorRootProof, bytes32 validatorSetRoot)
+        public
+        view
+        returns (bool)
+    {
         return ValSetVerifier.verifyValidatorOperatorLocal(operatorRootProof, validatorSetRoot);
     }
 
@@ -38,10 +39,11 @@ contract ValSetVerifierMock {
         return ValSetVerifier.verifyValidatorVaultRootLocal(vaultRootProof, vaultRootLocalIndex, validatorRoot);
     }
 
-    function verifyVaultVotingPowerLocal(
-        ValSetVerifier.SszProof calldata vaultVotingPowerProof,
-        bytes32 vaultRoot
-    ) public view returns (bool) {
+    function verifyVaultVotingPowerLocal(ValSetVerifier.SszProof calldata vaultVotingPowerProof, bytes32 vaultRoot)
+        public
+        view
+        returns (bool)
+    {
         return ValSetVerifier.verifyVaultVotingPowerLocal(vaultVotingPowerProof, vaultRoot);
     }
 }

@@ -20,15 +20,14 @@ import {InitSetupTest} from "../../../InitSetup.sol";
 contract TestOperatorsJail is OperatorsJail, NoPermissionManager, EqualStakeVPCalc, MultiToken, OperatorVaults {
     constructor(address operatorRegistry, address vaultFactory) VotingPowerProvider(operatorRegistry, vaultFactory) {}
 
-    function initialize(
-        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit
-    ) external initializer {
+    function initialize(IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit)
+        external
+        initializer
+    {
         __VotingPowerProvider_init(votingPowerProviderInit);
     }
 
-    function _registerOperatorImpl(
-        address operator
-    ) internal override(OperatorsJail, VotingPowerProvider) {
+    function _registerOperatorImpl(address operator) internal override(OperatorsJail, VotingPowerProvider) {
         super._registerOperatorImpl(operator);
     }
 }
@@ -46,14 +45,14 @@ contract OperatorsJailTest is InitSetupTest {
         INetworkManager.NetworkManagerInitParams memory netInit =
             INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkId: IDENTIFIER});
 
-        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
-            .VotingPowerProviderInitParams({
-            networkManagerInitParams: netInit,
-            ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
-            requireSlasher: true,
-            minVaultEpochDuration: 100,
-            token: initSetupParams.masterChain.tokens[0]
-        });
+        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit =
+            IVotingPowerProvider.VotingPowerProviderInitParams({
+                networkManagerInitParams: netInit,
+                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
+                requireSlasher: true,
+                minVaultEpochDuration: 100,
+                token: initSetupParams.masterChain.tokens[0]
+            });
 
         jailOps.initialize(votingPowerProviderInit);
 

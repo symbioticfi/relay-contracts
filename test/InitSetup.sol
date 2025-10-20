@@ -70,14 +70,14 @@ contract InitSetupTest is SymbioticCoreInit {
         SYMBIOTIC_CORE_MAX_VETO_DURATION = 3 hours;
 
         SYMBIOTIC_CORE_TOKENS_TO_SET_TIMES_1e18 = 0.03 * 1e18;
-        SYMBIOTIC_CORE_MIN_TOKENS_TO_DEPOSIT_TIMES_1e18 = 0.00001 * 1e18;
+        SYMBIOTIC_CORE_MIN_TOKENS_TO_DEPOSIT_TIMES_1e18 = 0.000_01 * 1e18;
         SYMBIOTIC_CORE_MAX_TOKENS_TO_DEPOSIT_TIMES_1e18 = 0.001 * 1e18;
 
         SYMBIOTIC_CORE_MIN_MAX_NETWORK_LIMIT_TIMES_1e18 = 0.0001 * 1e18;
         SYMBIOTIC_CORE_MAX_MAX_NETWORK_LIMIT_TIMES_1e18 = 0.001 * 1e18;
-        SYMBIOTIC_CORE_MIN_NETWORK_LIMIT_TIMES_1e18 = 0.00001 * 1e18;
+        SYMBIOTIC_CORE_MIN_NETWORK_LIMIT_TIMES_1e18 = 0.000_01 * 1e18;
         SYMBIOTIC_CORE_MAX_NETWORK_LIMIT_TIMES_1e18 = 0.001 * 1e18;
-        SYMBIOTIC_CORE_MIN_OPERATOR_NETWORK_LIMIT_TIMES_1e18 = 0.00001 * 1e18;
+        SYMBIOTIC_CORE_MIN_OPERATOR_NETWORK_LIMIT_TIMES_1e18 = 0.000_01 * 1e18;
         SYMBIOTIC_CORE_MAX_OPERATOR_NETWORK_LIMIT_TIMES_1e18 = 0.001 * 1e18;
 
         SYMBIOTIC_CORE_DELEGATOR_TYPES = [0];
@@ -214,27 +214,23 @@ contract InitSetupTest is SymbioticCoreInit {
                     staker.addr,
                     initSetupParams.masterChain.vaults[j],
                     _normalizeForToken_Symbiotic(
-                        SYMBIOTIC_CORE_MIN_TOKENS_TO_DEPOSIT_TIMES_1e18 * SYMBIOTIC_CORE_NUMBER_OF_OPERATORS,
-                        initSetupParams.masterChain.tokens[0]
-                    ) * (i + 1) + j
+                            SYMBIOTIC_CORE_MIN_TOKENS_TO_DEPOSIT_TIMES_1e18 * SYMBIOTIC_CORE_NUMBER_OF_OPERATORS,
+                            initSetupParams.masterChain.tokens[0]
+                        ) * (i + 1) + j
                 );
                 console2.log("Staker ", staker.addr, " deposited to vault ", initSetupParams.masterChain.vaults[j]);
             }
         }
     }
 
-    function getOperator(
-        uint256 index
-    ) public returns (Vm.Wallet memory operator) {
+    function getOperator(uint256 index) public returns (Vm.Wallet memory operator) {
         // deterministic operator private key
         operator = vm.createWallet(1e18 + index);
         vm.rememberKey(operator.privateKey);
         return operator;
     }
 
-    function getStaker(
-        uint256 index
-    ) public returns (Vm.Wallet memory staker) {
+    function getStaker(uint256 index) public returns (Vm.Wallet memory staker) {
         // deterministic operator private key
         staker = vm.createWallet(STAKER_PRIVATE_KEY_OFFSET + index);
         vm.rememberKey(staker.privateKey);
@@ -253,9 +249,7 @@ contract InitSetupTest is SymbioticCoreInit {
         return deployer;
     }
 
-    function getG2Key(
-        uint256 privateKey
-    ) public view returns (BN254.G2Point memory) {
+    function getG2Key(uint256 privateKey) public view returns (BN254.G2Point memory) {
         BN254.G2Point memory G2 = BN254.generatorG2();
         (uint256 x1, uint256 x2, uint256 y1, uint256 y2) =
             BN254G2.ECTwistMul(privateKey, G2.X[1], G2.X[0], G2.Y[1], G2.Y[0]);

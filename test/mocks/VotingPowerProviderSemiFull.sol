@@ -41,9 +41,10 @@ contract VotingPowerProviderSemiFull is
         __BaseRewards_init(baseRewardsInitParams);
     }
 
-    function _registerOperatorImpl(
-        address operator
-    ) internal override(OperatorsBlacklist, OperatorsWhitelist, VotingPowerProvider) {
+    function _registerOperatorImpl(address operator)
+        internal
+        override(OperatorsBlacklist, OperatorsWhitelist, VotingPowerProvider)
+    {
         super._registerOperatorImpl(operator);
     }
 }

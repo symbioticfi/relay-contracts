@@ -10,12 +10,10 @@ interface IVotingPowerCalcManager {
      * @param timestamp The timestamp.
      * @return The voting power given a `stake` amount of `vault`'s collateral at the certain vault at the given timestamp.
      */
-    function stakeToVotingPowerAt(
-        address vault,
-        uint256 stake,
-        bytes memory extraData,
-        uint48 timestamp
-    ) external view returns (uint256);
+    function stakeToVotingPowerAt(address vault, uint256 stake, bytes memory extraData, uint48 timestamp)
+        external
+        view
+        returns (uint256);
 
     /**
      * @notice Returns the voting power given a `stake` amount of `vault`'s collateral at the certain vault.

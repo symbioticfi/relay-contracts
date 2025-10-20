@@ -17,15 +17,14 @@ import "../../../InitSetup.sol";
 contract TestSharedVaults is SharedVaults, NoPermissionManager, EqualStakeVPCalc {
     constructor(address operatorRegistry, address vaultFactory) VotingPowerProvider(operatorRegistry, vaultFactory) {}
 
-    function initialize(
-        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit
-    ) external initializer {
+    function initialize(IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit)
+        external
+        initializer
+    {
         __VotingPowerProvider_init(votingPowerProviderInit);
     }
 
-    function registerToken(
-        address token
-    ) public {
+    function registerToken(address token) public {
         _registerToken(token);
     }
 }
@@ -47,14 +46,14 @@ contract SharedVaultsTest is InitSetupTest {
         INetworkManager.NetworkManagerInitParams memory netInit =
             INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkId: IDENTIFIER});
 
-        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
-            .VotingPowerProviderInitParams({
-            networkManagerInitParams: netInit,
-            ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
-            requireSlasher: true,
-            minVaultEpochDuration: 100,
-            token: initSetupParams.masterChain.tokens[0]
-        });
+        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit =
+            IVotingPowerProvider.VotingPowerProviderInitParams({
+                networkManagerInitParams: netInit,
+                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
+                requireSlasher: true,
+                minVaultEpochDuration: 100,
+                token: initSetupParams.masterChain.tokens[0]
+            });
 
         sharedVaults.initialize(votingPowerProviderInit);
     }

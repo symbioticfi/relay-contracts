@@ -7,8 +7,9 @@ import {PermissionManager} from "../../../base/PermissionManager.sol";
 import {Checkpoints} from "../../../../libraries/structs/Checkpoints.sol";
 
 import {IVotingPowerCalcManager} from "../../../../interfaces/modules/voting-power/base/IVotingPowerCalcManager.sol";
-import {IWeightedVaultsVPCalc} from
-    "../../../../interfaces/modules/voting-power/common/voting-power-calc/IWeightedVaultsVPCalc.sol";
+import {
+    IWeightedVaultsVPCalc
+} from "../../../../interfaces/modules/voting-power/common/voting-power-calc/IWeightedVaultsVPCalc.sol";
 
 /**
  * @title WeightedVaultsVPCalc
@@ -45,9 +46,7 @@ abstract contract WeightedVaultsVPCalc is EqualStakeVPCalc, PermissionManager, I
     /**
      * @inheritdoc IWeightedVaultsVPCalc
      */
-    function getVaultWeight(
-        address vault
-    ) public view virtual returns (uint208) {
+    function getVaultWeight(address vault) public view virtual returns (uint208) {
         (bool exists,, uint208 weight) = _getWeightedVaultsVPCalcStorage()._vaultWeight[vault].latestCheckpoint();
         return exists ? weight : DEFAULT_VAULT_WEIGHT;
     }
@@ -55,23 +54,26 @@ abstract contract WeightedVaultsVPCalc is EqualStakeVPCalc, PermissionManager, I
     /**
      * @inheritdoc IVotingPowerCalcManager
      */
-    function stakeToVotingPowerAt(
-        address vault,
-        uint256 stake,
-        bytes memory extraData,
-        uint48 timestamp
-    ) public view virtual override returns (uint256) {
+    function stakeToVotingPowerAt(address vault, uint256 stake, bytes memory extraData, uint48 timestamp)
+        public
+        view
+        virtual
+        override
+        returns (uint256)
+    {
         return super.stakeToVotingPowerAt(vault, stake, extraData, timestamp) * getVaultWeightAt(vault, timestamp);
     }
 
     /**
      * @inheritdoc IVotingPowerCalcManager
      */
-    function stakeToVotingPower(
-        address vault,
-        uint256 stake,
-        bytes memory extraData
-    ) public view virtual override returns (uint256) {
+    function stakeToVotingPower(address vault, uint256 stake, bytes memory extraData)
+        public
+        view
+        virtual
+        override
+        returns (uint256)
+    {
         return super.stakeToVotingPower(vault, stake, extraData) * getVaultWeight(vault);
     }
 

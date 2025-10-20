@@ -34,9 +34,7 @@ abstract contract BaseRewards is VotingPowerProvider, IBaseRewards {
         }
     }
 
-    function __BaseRewards_init(
-        BaseRewardsInitParams memory initParams
-    ) internal virtual onlyInitializing {
+    function __BaseRewards_init(BaseRewardsInitParams memory initParams) internal virtual onlyInitializing {
         _setRewarder(initParams.rewarder);
     }
 
@@ -50,12 +48,10 @@ abstract contract BaseRewards is VotingPowerProvider, IBaseRewards {
     /**
      * @inheritdoc IBaseRewards
      */
-    function distributeStakerRewards(
-        address stakerRewards,
-        address token,
-        uint256 amount,
-        bytes memory data
-    ) public virtual {
+    function distributeStakerRewards(address stakerRewards, address token, uint256 amount, bytes memory data)
+        public
+        virtual
+    {
         _checkRewarder();
         BaseRewardsLogic.distributeStakerRewards(stakerRewards, token, amount, data);
     }
@@ -63,12 +59,10 @@ abstract contract BaseRewards is VotingPowerProvider, IBaseRewards {
     /**
      * @inheritdoc IBaseRewards
      */
-    function distributeOperatorRewards(
-        address operatorRewards,
-        address token,
-        uint256 amount,
-        bytes32 root
-    ) public virtual {
+    function distributeOperatorRewards(address operatorRewards, address token, uint256 amount, bytes32 root)
+        public
+        virtual
+    {
         _checkRewarder();
         BaseRewardsLogic.distributeOperatorRewards(operatorRewards, token, amount, root);
     }
@@ -76,15 +70,11 @@ abstract contract BaseRewards is VotingPowerProvider, IBaseRewards {
     /**
      * @inheritdoc IBaseRewards
      */
-    function setRewarder(
-        address rewarder
-    ) public virtual checkPermission {
+    function setRewarder(address rewarder) public virtual checkPermission {
         _setRewarder(rewarder);
     }
 
-    function _setRewarder(
-        address rewarder
-    ) internal virtual {
+    function _setRewarder(address rewarder) internal virtual {
         _getBaseRewardsStorage()._rewarder = rewarder;
         emit SetRewarder(rewarder);
     }

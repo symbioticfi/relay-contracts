@@ -16,9 +16,7 @@ import {Network} from "@symbioticfi/network/src/Network.sol";
 import {MyValSetDriver} from "../../examples/MyValSetDriver.sol";
 import {KeyEcdsaSecp256k1} from "../../src/libraries/keys/KeyEcdsaSecp256k1.sol";
 import {KeyBlsBn254, BN254} from "../../src/libraries/keys/KeyBlsBn254.sol";
-import {
-    KEY_TYPE_BLS_BN254, KEY_TYPE_ECDSA_SECP256K1
-} from "../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
+import {KEY_TYPE_BLS_BN254, KEY_TYPE_ECDSA_SECP256K1} from "../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
 import {BN254G2} from "../../test/helpers/BN254G2.sol";
 import {IOzEIP712} from "../../src/interfaces/modules/base/IOzEIP712.sol";
 import {IKeyRegistry} from "../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
@@ -60,9 +58,7 @@ contract InitSetupScript is SymbioticCoreInit {
         uint256 networkPrivateKey;
     }
 
-    function run(
-        uint256 seed
-    ) public virtual override {
+    function run(uint256 seed) public virtual override {
         SYMBIOTIC_CORE_PROJECT_ROOT = "lib/core/";
 
         SYMBIOTIC_CORE_MIN_EPOCH_DURATION = 1 days;
@@ -71,14 +67,14 @@ contract InitSetupScript is SymbioticCoreInit {
         SYMBIOTIC_CORE_MAX_VETO_DURATION = 3 hours;
 
         SYMBIOTIC_CORE_TOKENS_TO_SET_TIMES_1e18 = 0.03 * 1e18;
-        SYMBIOTIC_CORE_MIN_TOKENS_TO_DEPOSIT_TIMES_1e18 = 0.00001 * 1e18;
+        SYMBIOTIC_CORE_MIN_TOKENS_TO_DEPOSIT_TIMES_1e18 = 0.000_01 * 1e18;
         SYMBIOTIC_CORE_MAX_TOKENS_TO_DEPOSIT_TIMES_1e18 = 0.001 * 1e18;
 
         SYMBIOTIC_CORE_MIN_MAX_NETWORK_LIMIT_TIMES_1e18 = 0.0001 * 1e18;
         SYMBIOTIC_CORE_MAX_MAX_NETWORK_LIMIT_TIMES_1e18 = 0.001 * 1e18;
-        SYMBIOTIC_CORE_MIN_NETWORK_LIMIT_TIMES_1e18 = 0.00001 * 1e18;
+        SYMBIOTIC_CORE_MIN_NETWORK_LIMIT_TIMES_1e18 = 0.000_01 * 1e18;
         SYMBIOTIC_CORE_MAX_NETWORK_LIMIT_TIMES_1e18 = 0.001 * 1e18;
-        SYMBIOTIC_CORE_MIN_OPERATOR_NETWORK_LIMIT_TIMES_1e18 = 0.00001 * 1e18;
+        SYMBIOTIC_CORE_MIN_OPERATOR_NETWORK_LIMIT_TIMES_1e18 = 0.000_01 * 1e18;
         SYMBIOTIC_CORE_MAX_OPERATOR_NETWORK_LIMIT_TIMES_1e18 = 0.001 * 1e18;
 
         SYMBIOTIC_CORE_DELEGATOR_TYPES = [0];
@@ -222,9 +218,9 @@ contract InitSetupScript is SymbioticCoreInit {
                     staker.addr,
                     initSetupParams.masterChain.vaults[j],
                     _normalizeForToken_Symbiotic(
-                        SYMBIOTIC_CORE_MIN_TOKENS_TO_DEPOSIT_TIMES_1e18 * SYMBIOTIC_CORE_NUMBER_OF_OPERATORS,
-                        initSetupParams.masterChain.tokens[0]
-                    ) * (i + 1) + j
+                            SYMBIOTIC_CORE_MIN_TOKENS_TO_DEPOSIT_TIMES_1e18 * SYMBIOTIC_CORE_NUMBER_OF_OPERATORS,
+                            initSetupParams.masterChain.tokens[0]
+                        ) * (i + 1) + j
                 );
                 console2.log("Staker ", staker.addr, " deposited to vault ", initSetupParams.masterChain.vaults[j]);
             }
@@ -259,18 +255,14 @@ contract InitSetupScript is SymbioticCoreInit {
         vm.writeJson(finalJson, "script/test/data/init_setup_params.json");
     }
 
-    function getOperator(
-        uint256 index
-    ) public returns (Vm.Wallet memory operator) {
+    function getOperator(uint256 index) public returns (Vm.Wallet memory operator) {
         // deterministic operator private key
         operator = vm.createWallet(1e18 + index);
         vm.rememberKey(operator.privateKey);
         return operator;
     }
 
-    function getStaker(
-        uint256 index
-    ) public returns (Vm.Wallet memory staker) {
+    function getStaker(uint256 index) public returns (Vm.Wallet memory staker) {
         // deterministic operator private key
         staker = vm.createWallet(STAKER_PRIVATE_KEY_OFFSET + index);
         vm.rememberKey(staker.privateKey);
@@ -289,9 +281,7 @@ contract InitSetupScript is SymbioticCoreInit {
         return deployer;
     }
 
-    function getG2Key(
-        uint256 privateKey
-    ) public view returns (BN254.G2Point memory) {
+    function getG2Key(uint256 privateKey) public view returns (BN254.G2Point memory) {
         BN254.G2Point memory G2 = BN254.generatorG2();
         (uint256 x1, uint256 x2, uint256 y1, uint256 y2) =
             BN254G2.ECTwistMul(privateKey, G2.X[1], G2.X[0], G2.Y[1], G2.Y[0]);
