@@ -1,8 +1,8 @@
 # SharedVaults
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/voting-power/extensions/SharedVaults.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/modules/voting-power/extensions/SharedVaults.sol)
 
 **Inherits:**
-[VotingPowerProvider](/src/modules/voting-power/VotingPowerProvider.sol/abstract.VotingPowerProvider.md), [ISharedVaults](/src/interfaces/modules/voting-power/extensions/ISharedVaults.sol/interface.ISharedVaults.md)
+[VotingPowerProvider](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/VotingPowerProvider.sol/abstract.VotingPowerProvider.md), [ISharedVaults](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/extensions/ISharedVaults.sol/interface.ISharedVaults.md)
 
 Contract for registering and unregistering shared vaults.
 
@@ -19,13 +19,11 @@ function __SharedVaults_init() internal virtual onlyInitializing;
 
 Registers the shared vault.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function registerSharedVault(
-    address sharedVault
-) public virtual checkPermission;
+function registerSharedVault(address sharedVault) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -38,13 +36,11 @@ function registerSharedVault(
 
 Unregisters the shared vault.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function unregisterSharedVault(
-    address sharedVault
-) public virtual checkPermission;
+function unregisterSharedVault(address sharedVault) public virtual checkPermission;
 ```
 **Parameters**
 

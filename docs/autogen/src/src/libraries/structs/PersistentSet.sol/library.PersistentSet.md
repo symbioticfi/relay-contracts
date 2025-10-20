@@ -1,10 +1,10 @@
 # PersistentSet
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/libraries/structs/PersistentSet.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/libraries/structs/PersistentSet.sol)
 
 Library implementing a persistent set using Checkpoints.
 
-*The library is optimized towards "write" operations, so, in general, "read" batch operations
-like `values()` and `valuesAt()` should not be used on-chain.*
+The library is optimized towards "write" operations, so, in general, "read" batch operations
+like `values()` and `valuesAt()` should not be used on-chain.
 
 
 ## Functions
@@ -12,7 +12,7 @@ like `values()` and `valuesAt()` should not be used on-chain.*
 
 Adds an element to the set.
 
-*It is possible to add an element only at the same or greater key than the previous one for this value.*
+It is possible to add an element only at the same or greater key than the previous one for this value.
 
 
 ```solidity
@@ -37,7 +37,7 @@ function _add(Set storage set, uint48 key, bytes32 value) private returns (bool)
 
 Removes an element from the set.
 
-*It is possible to remove an element only at the same or greater key than the previous one for this value.*
+It is possible to remove an element only at the same or greater key than the previous one for this value.
 
 
 ```solidity
@@ -133,9 +133,7 @@ Returns the number of elements in the set.
 
 
 ```solidity
-function _length(
-    Set storage set
-) private view returns (uint256);
+function _length(Set storage set) private view returns (uint256);
 ```
 **Parameters**
 
@@ -178,9 +176,7 @@ Returns the elements in the set.
 
 
 ```solidity
-function _values(
-    Set storage set
-) private view returns (bytes32[] memory values_);
+function _values(Set storage set) private view returns (bytes32[] memory values_);
 ```
 **Parameters**
 
@@ -247,12 +243,10 @@ Checks if an element is in the set at a given key.
 
 
 ```solidity
-function containsAt(
-    Bytes32Set storage set,
-    uint48 key,
-    bytes32 value,
-    bytes memory hint
-) internal view returns (bool);
+function containsAt(Bytes32Set storage set, uint48 key, bytes32 value, bytes memory hint)
+    internal
+    view
+    returns (bool);
 ```
 **Parameters**
 
@@ -321,9 +315,7 @@ Returns the number of elements in the set.
 
 
 ```solidity
-function length(
-    Bytes32Set storage set
-) internal view returns (uint256);
+function length(Bytes32Set storage set) internal view returns (uint256);
 ```
 **Parameters**
 
@@ -366,9 +358,7 @@ Returns the elements in the set.
 
 
 ```solidity
-function values(
-    Bytes32Set storage set
-) internal view returns (bytes32[] memory result);
+function values(Bytes32Set storage set) internal view returns (bytes32[] memory result);
 ```
 **Parameters**
 
@@ -435,12 +425,10 @@ Checks if an element is in the set at a given key.
 
 
 ```solidity
-function containsAt(
-    AddressSet storage set,
-    uint48 key,
-    address value,
-    bytes memory hint
-) internal view returns (bool);
+function containsAt(AddressSet storage set, uint48 key, address value, bytes memory hint)
+    internal
+    view
+    returns (bool);
 ```
 **Parameters**
 
@@ -509,9 +497,7 @@ Returns the number of elements in the set.
 
 
 ```solidity
-function length(
-    AddressSet storage set
-) internal view returns (uint256);
+function length(AddressSet storage set) internal view returns (uint256);
 ```
 **Parameters**
 
@@ -554,9 +540,7 @@ Returns the elements in the set.
 
 
 ```solidity
-function values(
-    AddressSet storage set
-) internal view returns (address[] memory result);
+function values(AddressSet storage set) internal view returns (address[] memory result);
 ```
 **Parameters**
 

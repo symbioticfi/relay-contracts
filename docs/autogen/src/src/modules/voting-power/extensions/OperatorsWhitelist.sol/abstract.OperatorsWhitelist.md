@@ -1,8 +1,8 @@
 # OperatorsWhitelist
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/voting-power/extensions/OperatorsWhitelist.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/modules/voting-power/extensions/OperatorsWhitelist.sol)
 
 **Inherits:**
-[VotingPowerProvider](/src/modules/voting-power/VotingPowerProvider.sol/abstract.VotingPowerProvider.md), [IOperatorsWhitelist](/src/interfaces/modules/voting-power/extensions/IOperatorsWhitelist.sol/interface.IOperatorsWhitelist.md)
+[VotingPowerProvider](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/VotingPowerProvider.sol/abstract.VotingPowerProvider.md), [IOperatorsWhitelist](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/extensions/IOperatorsWhitelist.sol/interface.IOperatorsWhitelist.md)
 
 Contract for whitelisting operators.
 
@@ -12,7 +12,7 @@ Contract for whitelisting operators.
 
 ```solidity
 bytes32 private constant OperatorsWhitelistStorageLocation =
-    0x3fa7d7e58a4c604e915cc85c236f89892f2e36ec13dff506efa6b5ea5fafeb00;
+    0x3fa7d7e58a4c604e915cc85c236f89892f2e36ec13dff506efa6b5ea5fafeb00
 ```
 
 
@@ -28,9 +28,10 @@ function _getOperatorsWhitelistStorage() internal pure returns (OperatorsWhiteli
 
 
 ```solidity
-function __OperatorsWhitelist_init(
-    OperatorsWhitelistInitParams memory initParams
-) internal virtual onlyInitializing;
+function __OperatorsWhitelist_init(OperatorsWhitelistInitParams memory initParams)
+    internal
+    virtual
+    onlyInitializing;
 ```
 
 ### isWhitelistEnabled
@@ -54,9 +55,7 @@ Returns the whitelist status of the operator.
 
 
 ```solidity
-function isOperatorWhitelisted(
-    address operator
-) public view virtual returns (bool);
+function isOperatorWhitelisted(address operator) public view virtual returns (bool);
 ```
 **Parameters**
 
@@ -75,13 +74,11 @@ function isOperatorWhitelisted(
 
 Sets the whitelist status.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function setWhitelistStatus(
-    bool status
-) public virtual checkPermission;
+function setWhitelistStatus(bool status) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -94,13 +91,11 @@ function setWhitelistStatus(
 
 Whitelists the operator.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function whitelistOperator(
-    address operator
-) public virtual checkPermission;
+function whitelistOperator(address operator) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -113,14 +108,12 @@ function whitelistOperator(
 
 Unwhitelists the operator.
 
-*The caller must have the needed permission.
-The operator will be unregistered if currently registered and the whitelist is enabled.*
+The caller must have the needed permission.
+The operator will be unregistered if currently registered and the whitelist is enabled.
 
 
 ```solidity
-function unwhitelistOperator(
-    address operator
-) public virtual checkPermission;
+function unwhitelistOperator(address operator) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -133,17 +126,13 @@ function unwhitelistOperator(
 
 
 ```solidity
-function _registerOperatorImpl(
-    address operator
-) internal virtual override;
+function _registerOperatorImpl(address operator) internal virtual override;
 ```
 
 ### _setWhitelistStatus
 
 
 ```solidity
-function _setWhitelistStatus(
-    bool status
-) internal virtual;
+function _setWhitelistStatus(bool status) internal virtual;
 ```
 

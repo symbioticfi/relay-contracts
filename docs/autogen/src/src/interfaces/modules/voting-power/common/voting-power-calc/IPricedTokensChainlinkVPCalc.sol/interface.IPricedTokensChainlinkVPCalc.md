@@ -1,5 +1,5 @@
 # IPricedTokensChainlinkVPCalc
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/voting-power/common/voting-power-calc/IPricedTokensChainlinkVPCalc.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/interfaces/modules/voting-power/common/voting-power-calc/IPricedTokensChainlinkVPCalc.sol)
 
 
 ## Functions
@@ -9,10 +9,10 @@ Returns the price conversion hops for a token at a given timestamp.
 
 
 ```solidity
-function getTokenHopsAt(
-    address token,
-    uint48 timestamp
-) external view returns (address[2] memory, bool[2] memory, uint48[2] memory);
+function getTokenHopsAt(address token, uint48 timestamp)
+    external
+    view
+    returns (address[2] memory, bool[2] memory, uint48[2] memory);
 ```
 **Parameters**
 
@@ -36,9 +36,7 @@ Returns the price conversion hops for a token.
 
 
 ```solidity
-function getTokenHops(
-    address token
-) external view returns (address[2] memory, bool[2] memory, uint48[2] memory);
+function getTokenHops(address token) external view returns (address[2] memory, bool[2] memory, uint48[2] memory);
 ```
 **Parameters**
 
@@ -59,8 +57,8 @@ function getTokenHops(
 
 Returns the price for a token at a given timestamp.
 
-*Returns zero if the data is stale or unavailable.
-The price is normalized to the 18 decimals.*
+Returns zero if the data is stale or unavailable.
+The price is normalized to the 18 decimals.
 
 
 ```solidity
@@ -84,14 +82,12 @@ function getTokenPriceAt(address token, uint48 timestamp) external view returns 
 
 Returns the price for a token.
 
-*Returns zero if the data is stale or unavailable.
-The price is normalized to the 18 decimals.*
+Returns zero if the data is stale or unavailable.
+The price is normalized to the 18 decimals.
 
 
 ```solidity
-function getTokenPrice(
-    address token
-) external view returns (uint256);
+function getTokenPrice(address token) external view returns (uint256);
 ```
 **Parameters**
 

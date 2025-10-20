@@ -1,5 +1,5 @@
 # IBaseSlashing
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/voting-power/extensions/IBaseSlashing.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/interfaces/modules/voting-power/extensions/IBaseSlashing.sol)
 
 
 ## Functions
@@ -22,13 +22,11 @@ function getSlasher() external view returns (address);
 
 Sets the slasher.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function setSlasher(
-    address slasher
-) external;
+function setSlasher(address slasher) external;
 ```
 **Parameters**
 
@@ -41,17 +39,13 @@ function setSlasher(
 
 Slashes the vault.
 
-*The function doesn't check the registration statuses.*
+The function doesn't check the registration statuses.
 
 
 ```solidity
-function slashVault(
-    uint48 timestamp,
-    address vault,
-    address operator,
-    uint256 amount,
-    bytes memory hints
-) external returns (bool success, bytes memory response);
+function slashVault(uint48 timestamp, address vault, address operator, uint256 amount, bytes memory hints)
+    external
+    returns (bool success, bytes memory response);
 ```
 **Parameters**
 
@@ -77,11 +71,9 @@ Executes the slash of the vault.
 
 
 ```solidity
-function executeSlashVault(
-    address vault,
-    uint256 slashIndex,
-    bytes memory hints
-) external returns (bool success, uint256 slashedAmount);
+function executeSlashVault(address vault, uint256 slashIndex, bytes memory hints)
+    external
+    returns (bool success, uint256 slashedAmount);
 ```
 **Parameters**
 
@@ -153,7 +145,9 @@ Emitted when the slash is executed.
 
 
 ```solidity
-event ExecuteSlash(address indexed slasher, uint256 indexed slashIndex, bool indexed success, uint256 slashedAmount);
+event ExecuteSlash(
+    address indexed slasher, uint256 indexed slashIndex, bool indexed success, uint256 slashedAmount
+);
 ```
 
 **Parameters**

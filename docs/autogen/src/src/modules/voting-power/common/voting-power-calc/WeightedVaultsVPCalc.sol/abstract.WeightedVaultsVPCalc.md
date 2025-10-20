@@ -1,8 +1,8 @@
 # WeightedVaultsVPCalc
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/voting-power/common/voting-power-calc/WeightedVaultsVPCalc.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/modules/voting-power/common/voting-power-calc/WeightedVaultsVPCalc.sol)
 
 **Inherits:**
-[EqualStakeVPCalc](/src/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol/abstract.EqualStakeVPCalc.md), [PermissionManager](/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), [IWeightedVaultsVPCalc](/src/interfaces/modules/voting-power/common/voting-power-calc/IWeightedVaultsVPCalc.sol/interface.IWeightedVaultsVPCalc.md)
+[EqualStakeVPCalc](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol/abstract.EqualStakeVPCalc.md), [PermissionManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), [IWeightedVaultsVPCalc](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/common/voting-power-calc/IWeightedVaultsVPCalc.sol/interface.IWeightedVaultsVPCalc.md)
 
 Contract for calculating the voting power, weighting the vaults.
 
@@ -11,14 +11,14 @@ Contract for calculating the voting power, weighting the vaults.
 ### DEFAULT_VAULT_WEIGHT
 
 ```solidity
-uint208 internal constant DEFAULT_VAULT_WEIGHT = 1e4;
+uint208 internal constant DEFAULT_VAULT_WEIGHT = 1e4
 ```
 
 
 ### MAX_VAULT_WEIGHT_SCALE
 
 ```solidity
-uint208 internal constant MAX_VAULT_WEIGHT_SCALE = DEFAULT_VAULT_WEIGHT * DEFAULT_VAULT_WEIGHT;
+uint208 internal constant MAX_VAULT_WEIGHT_SCALE = DEFAULT_VAULT_WEIGHT * DEFAULT_VAULT_WEIGHT
 ```
 
 
@@ -26,7 +26,7 @@ uint208 internal constant MAX_VAULT_WEIGHT_SCALE = DEFAULT_VAULT_WEIGHT * DEFAUL
 
 ```solidity
 bytes32 private constant WeightedVaultsVPCalcStorageLocation =
-    0x939e246f03c984a4a087feb13b6dd8d9a00ff873e1061be489800f8d9c2cbf00;
+    0x939e246f03c984a4a087feb13b6dd8d9a00ff873e1061be489800f8d9c2cbf00
 ```
 
 
@@ -49,8 +49,8 @@ function __WeightedVaultsVPCalc_init() internal virtual onlyInitializing;
 
 Returns the weight for a vault at a given timestamp.
 
-*Returns 1e4 if the weight wasn't explicitly set yet.
-Can return non-zero weight for unregistered vaults.*
+Returns 1e4 if the weight wasn't explicitly set yet.
+Can return non-zero weight for unregistered vaults.
 
 
 ```solidity
@@ -74,14 +74,12 @@ function getVaultWeightAt(address vault, uint48 timestamp) public view virtual r
 
 Returns the weight for a vault.
 
-*Returns 1e4 if the weight wasn't explicitly set yet.
-Can return non-zero weight for unregistered vaults.*
+Returns 1e4 if the weight wasn't explicitly set yet.
+Can return non-zero weight for unregistered vaults.
 
 
 ```solidity
-function getVaultWeight(
-    address vault
-) public view virtual returns (uint208);
+function getVaultWeight(address vault) public view virtual returns (uint208);
 ```
 **Parameters**
 
@@ -102,12 +100,12 @@ Returns the voting power given a `stake` amount of `vault`'s collateral at the c
 
 
 ```solidity
-function stakeToVotingPowerAt(
-    address vault,
-    uint256 stake,
-    bytes memory extraData,
-    uint48 timestamp
-) public view virtual override returns (uint256);
+function stakeToVotingPowerAt(address vault, uint256 stake, bytes memory extraData, uint48 timestamp)
+    public
+    view
+    virtual
+    override
+    returns (uint256);
 ```
 **Parameters**
 
@@ -131,11 +129,12 @@ Returns the voting power given a `stake` amount of `vault`'s collateral at the c
 
 
 ```solidity
-function stakeToVotingPower(
-    address vault,
-    uint256 stake,
-    bytes memory extraData
-) public view virtual override returns (uint256);
+function stakeToVotingPower(address vault, uint256 stake, bytes memory extraData)
+    public
+    view
+    virtual
+    override
+    returns (uint256);
 ```
 **Parameters**
 

@@ -1,8 +1,8 @@
 # OzAccessManaged
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/common/permissions/OzAccessManaged.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/modules/common/permissions/OzAccessManaged.sol)
 
 **Inherits:**
-[PermissionManager](/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), AccessManagedUpgradeable, [IOzAccessManaged](/src/interfaces/modules/common/permissions/IOzAccessManaged.sol/interface.IOzAccessManaged.md)
+[PermissionManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), AccessManagedUpgradeable, [IOzAccessManaged](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/common/permissions/IOzAccessManaged.sol/interface.IOzAccessManaged.md)
 
 Contract for permission management based on OpenZeppelin's AccessManaged.
 
@@ -12,9 +12,7 @@ Contract for permission management based on OpenZeppelin's AccessManaged.
 
 
 ```solidity
-function __OzAccessManaged_init(
-    OzAccessManagedInitParams memory initParams
-) internal virtual onlyInitializing;
+function __OzAccessManaged_init(OzAccessManagedInitParams memory initParams) internal virtual onlyInitializing;
 ```
 
 ### _checkPermission

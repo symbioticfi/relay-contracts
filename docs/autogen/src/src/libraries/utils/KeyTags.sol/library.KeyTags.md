@@ -1,5 +1,5 @@
 # KeyTags
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/libraries/utils/KeyTags.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/libraries/utils/KeyTags.sol)
 
 Library for working with key tags which represent the keys' types and arbitrary purpose identifiers.
 
@@ -8,11 +8,11 @@ Library for working with key tags which represent the keys' types and arbitrary 
 ### TOTAL_KEY_TAGS
 The total number of key tags.
 
-*3 bits for type, 4 bits for tag*
+3 bits for type, 4 bits for tag
 
 
 ```solidity
-uint256 internal constant TOTAL_KEY_TAGS = 128;
+uint256 internal constant TOTAL_KEY_TAGS = 128
 ```
 
 
@@ -21,7 +21,7 @@ The maximum key type.
 
 
 ```solidity
-uint8 internal constant MAX_KEY_TYPE = 7;
+uint8 internal constant MAX_KEY_TYPE = 7
 ```
 
 
@@ -30,7 +30,7 @@ The maximum key tag.
 
 
 ```solidity
-uint8 internal constant MAX_KEY_TAG = 15;
+uint8 internal constant MAX_KEY_TAG = 15
 ```
 
 
@@ -41,9 +41,7 @@ Validates a key tag.
 
 
 ```solidity
-function validateKeyTag(
-    uint8 keyTag
-) internal pure;
+function validateKeyTag(uint8 keyTag) internal pure;
 ```
 **Parameters**
 
@@ -58,9 +56,7 @@ Validates a key type.
 
 
 ```solidity
-function validateType(
-    uint8 type_
-) internal pure;
+function validateType(uint8 type_) internal pure;
 ```
 **Parameters**
 
@@ -75,9 +71,7 @@ Validates a key tag identifier.
 
 
 ```solidity
-function validateTag(
-    uint8 tag
-) internal pure;
+function validateTag(uint8 tag) internal pure;
 ```
 **Parameters**
 
@@ -114,9 +108,7 @@ Returns a key type.
 
 
 ```solidity
-function getType(
-    uint8 keyTag
-) internal pure returns (uint8);
+function getType(uint8 keyTag) internal pure returns (uint8);
 ```
 **Parameters**
 
@@ -137,9 +129,7 @@ Returns a key tag identifier.
 
 
 ```solidity
-function getTag(
-    uint8 keyTag
-) internal pure returns (uint8);
+function getTag(uint8 keyTag) internal pure returns (uint8);
 ```
 **Parameters**
 
@@ -180,7 +170,7 @@ function contains(uint128 keyTagsSerialized, uint8 keyTag) internal pure returns
 
 Adds a key tag to the serialized key tags.
 
-*Doesn't revert when the key tag is already in the serialized key tags.*
+Doesn't revert when the key tag is already in the serialized key tags.
 
 
 ```solidity
@@ -204,7 +194,7 @@ function add(uint128 keyTagsSerialized, uint8 keyTag) internal pure returns (uin
 
 Removes a key tag from the serialized key tags.
 
-*Doesn't revert when the key tag is not in the serialized key tags.*
+Doesn't revert when the key tag is not in the serialized key tags.
 
 
 ```solidity
@@ -228,13 +218,11 @@ function remove(uint128 keyTagsSerialized, uint8 keyTag) internal pure returns (
 
 Serializes an array of key tags.
 
-*Reverts when the key tags are duplicated.*
+Reverts when the key tags are duplicated.
 
 
 ```solidity
-function serialize(
-    uint8[] memory keyTags
-) internal pure returns (uint128 keyTagsSerialized);
+function serialize(uint8[] memory keyTags) internal pure returns (uint128 keyTagsSerialized);
 ```
 **Parameters**
 
@@ -255,9 +243,7 @@ Deserializes a serialized key tags.
 
 
 ```solidity
-function deserialize(
-    uint128 keyTagsSerialized
-) internal pure returns (uint8[] memory keyTags);
+function deserialize(uint128 keyTagsSerialized) internal pure returns (uint8[] memory keyTags);
 ```
 **Parameters**
 

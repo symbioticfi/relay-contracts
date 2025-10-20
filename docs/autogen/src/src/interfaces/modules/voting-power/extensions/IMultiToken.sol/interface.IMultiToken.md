@@ -1,5 +1,5 @@
 # IMultiToken
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/voting-power/extensions/IMultiToken.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/interfaces/modules/voting-power/extensions/IMultiToken.sol)
 
 
 ## Functions
@@ -7,13 +7,11 @@
 
 Registers the token.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function registerToken(
-    address token
-) external;
+function registerToken(address token) external;
 ```
 **Parameters**
 
@@ -26,13 +24,11 @@ function registerToken(
 
 Unregisters the token.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function unregisterToken(
-    address token
-) external;
+function unregisterToken(address token) external;
 ```
 **Parameters**
 

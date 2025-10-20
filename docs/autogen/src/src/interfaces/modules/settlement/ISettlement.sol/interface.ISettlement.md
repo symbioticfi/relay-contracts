@@ -1,5 +1,5 @@
 # ISettlement
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/settlement/ISettlement.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/interfaces/modules/settlement/ISettlement.sol)
 
 
 ## Functions
@@ -76,9 +76,7 @@ Returns if the validator set header is committed at the given epoch.
 
 
 ```solidity
-function isValSetHeaderCommittedAt(
-    uint48 epoch
-) external view returns (bool);
+function isValSetHeaderCommittedAt(uint48 epoch) external view returns (bool);
 ```
 **Parameters**
 
@@ -99,9 +97,7 @@ Returns the hash of the validator set header at the given epoch.
 
 
 ```solidity
-function getValSetHeaderHashAt(
-    uint48 epoch
-) external view returns (bytes32);
+function getValSetHeaderHashAt(uint48 epoch) external view returns (bytes32);
 ```
 **Parameters**
 
@@ -137,9 +133,7 @@ Returns the validator set header at the given epoch.
 
 
 ```solidity
-function getValSetHeaderAt(
-    uint48 epoch
-) external view returns (ValSetHeader memory);
+function getValSetHeaderAt(uint48 epoch) external view returns (ValSetHeader memory);
 ```
 **Parameters**
 
@@ -175,9 +169,7 @@ Returns the version of the validator set header at the given epoch.
 
 
 ```solidity
-function getVersionFromValSetHeaderAt(
-    uint48 epoch
-) external view returns (uint8);
+function getVersionFromValSetHeaderAt(uint48 epoch) external view returns (uint8);
 ```
 **Parameters**
 
@@ -213,9 +205,7 @@ Returns the required key tag from the validator set header at the given epoch.
 
 
 ```solidity
-function getRequiredKeyTagFromValSetHeaderAt(
-    uint48 epoch
-) external view returns (uint8);
+function getRequiredKeyTagFromValSetHeaderAt(uint48 epoch) external view returns (uint8);
 ```
 **Parameters**
 
@@ -251,9 +241,7 @@ Returns the capture timestamp from the validator set header at the given epoch.
 
 
 ```solidity
-function getCaptureTimestampFromValSetHeaderAt(
-    uint48 epoch
-) external view returns (uint48);
+function getCaptureTimestampFromValSetHeaderAt(uint48 epoch) external view returns (uint48);
 ```
 **Parameters**
 
@@ -289,9 +277,7 @@ Returns the quorum threshold from the validator set header at the given epoch.
 
 
 ```solidity
-function getQuorumThresholdFromValSetHeaderAt(
-    uint48 epoch
-) external view returns (uint256);
+function getQuorumThresholdFromValSetHeaderAt(uint48 epoch) external view returns (uint256);
 ```
 **Parameters**
 
@@ -327,9 +313,7 @@ Returns the total voting power from the validator set header at the given epoch.
 
 
 ```solidity
-function getTotalVotingPowerFromValSetHeaderAt(
-    uint48 epoch
-) external view returns (uint256);
+function getTotalVotingPowerFromValSetHeaderAt(uint48 epoch) external view returns (uint256);
 ```
 **Parameters**
 
@@ -365,9 +349,7 @@ Returns the validator set SSZ root from the validator set header at the given ep
 
 
 ```solidity
-function getValidatorsSszMRootFromValSetHeaderAt(
-    uint48 epoch
-) external view returns (bytes32);
+function getValidatorsSszMRootFromValSetHeaderAt(uint48 epoch) external view returns (bytes32);
 ```
 **Parameters**
 
@@ -425,9 +407,7 @@ Returns the extra data from the last committed epoch for a certain key.
 
 
 ```solidity
-function getExtraData(
-    bytes32 key
-) external view returns (bytes32);
+function getExtraData(bytes32 key) external view returns (bytes32);
 ```
 **Parameters**
 
@@ -481,12 +461,10 @@ Returns the result of the quorum signature verification for the given message us
 
 
 ```solidity
-function verifyQuorumSig(
-    bytes memory message,
-    uint8 keyTag,
-    uint256 quorumThreshold,
-    bytes calldata proof
-) external view returns (bool);
+function verifyQuorumSig(bytes memory message, uint8 keyTag, uint256 quorumThreshold, bytes calldata proof)
+    external
+    view
+    returns (bool);
 ```
 **Parameters**
 
@@ -508,15 +486,13 @@ function verifyQuorumSig(
 
 Sets the quorum signature verifier.
 
-*The new verifier will be "committed" only in the next epoch.*
+The new verifier will be "committed" only in the next epoch.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function setSigVerifier(
-    address sigVerifier
-) external;
+function setSigVerifier(address sigVerifier) external;
 ```
 **Parameters**
 
@@ -529,8 +505,8 @@ function setSigVerifier(
 
 Sets the genesis validator set header and its extra data.
 
-*The caller must have the needed permission.
-Can be called multiple times.*
+The caller must have the needed permission.
+Can be called multiple times.
 
 
 ```solidity
@@ -548,15 +524,12 @@ function setGenesis(ValSetHeader calldata valSetHeader, ExtraData[] calldata ext
 
 Commits the validator set header and its extra data.
 
-*The caller can be anyone, the call is validated by verification of the validator set's attestation.*
+The caller can be anyone, the call is validated by verification of the validator set's attestation.
 
 
 ```solidity
-function commitValSetHeader(
-    ValSetHeader calldata header,
-    ExtraData[] calldata extraData,
-    bytes calldata proof
-) external;
+function commitValSetHeader(ValSetHeader calldata header, ExtraData[] calldata extraData, bytes calldata proof)
+    external;
 ```
 **Parameters**
 
@@ -585,7 +558,7 @@ event InitSigVerifier(address sigVerifier);
 ### SetSigVerifier
 Emitted when the quorum signature verifier is set.
 
-*The new verifier will be "committed" only in the next epoch.*
+The new verifier will be "committed" only in the next epoch.
 
 
 ```solidity
@@ -673,7 +646,7 @@ error Settlement_InvalidValidatorsSszMRoot();
 ### Settlement_InvalidVersion
 Reverts when the version to be committed is not the same as the version inside the contract.
 
-*Can be triggered during the upgrades.*
+Can be triggered during the upgrades.
 
 
 ```solidity
@@ -781,7 +754,7 @@ struct ValSetHeader {
 ### ExtraData
 The extra data.
 
-*This key-value storage is fully flexible and can be used to store any data (e.g., verification-specific aggregated data).*
+This key-value storage is fully flexible and can be used to store any data (e.g., verification-specific aggregated data).
 
 
 ```solidity

@@ -1,5 +1,5 @@
 # IOperatorVaults
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/voting-power/extensions/IOperatorVaults.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/interfaces/modules/voting-power/extensions/IOperatorVaults.sol)
 
 
 ## Functions
@@ -7,7 +7,7 @@
 
 Registers the operator vault.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
@@ -25,7 +25,7 @@ function registerOperatorVault(address operator, address vault) external;
 
 Unregisters the operator vault.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
@@ -43,13 +43,11 @@ function unregisterOperatorVault(address operator, address vault) external;
 
 Unregisters the operator vault.
 
-*The caller must be the operator of the vault.*
+The caller must be the operator of the vault.
 
 
 ```solidity
-function unregisterOperatorVault(
-    address vault
-) external;
+function unregisterOperatorVault(address vault) external;
 ```
 **Parameters**
 

@@ -1,8 +1,8 @@
 # OperatorsJail
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/voting-power/extensions/OperatorsJail.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/modules/voting-power/extensions/OperatorsJail.sol)
 
 **Inherits:**
-[VotingPowerProvider](/src/modules/voting-power/VotingPowerProvider.sol/abstract.VotingPowerProvider.md), [IOperatorsJail](/src/interfaces/modules/voting-power/extensions/IOperatorsJail.sol/interface.IOperatorsJail.md)
+[VotingPowerProvider](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/VotingPowerProvider.sol/abstract.VotingPowerProvider.md), [IOperatorsJail](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/extensions/IOperatorsJail.sol/interface.IOperatorsJail.md)
 
 Contract for jailing (unregistering and not allowing to register) operators for a given duration.
 
@@ -12,7 +12,7 @@ Contract for jailing (unregistering and not allowing to register) operators for 
 
 ```solidity
 bytes32 private constant OperatorsJailStorageLocation =
-    0xcf19420dad377ef849f2ba5fafa7311a71756e09aee8adb231516efd3d2b7b00;
+    0xcf19420dad377ef849f2ba5fafa7311a71756e09aee8adb231516efd3d2b7b00
 ```
 
 
@@ -37,9 +37,7 @@ Returns the jail status of the operator.
 
 
 ```solidity
-function isOperatorJailed(
-    address operator
-) public view virtual returns (bool);
+function isOperatorJailed(address operator) public view virtual returns (bool);
 ```
 **Parameters**
 
@@ -60,9 +58,7 @@ Returns the timestamp the operator is jailed until.
 
 
 ```solidity
-function getOperatorJailedUntil(
-    address operator
-) public view virtual returns (uint48);
+function getOperatorJailedUntil(address operator) public view virtual returns (uint48);
 ```
 **Parameters**
 
@@ -81,9 +77,9 @@ function getOperatorJailedUntil(
 
 Jails the operator.
 
-*The caller must have the needed permission.
+The caller must have the needed permission.
 The operator will be unregistered if currently registered.
-It is allowed only to extend the jail duration.*
+It is allowed only to extend the jail duration.
 
 
 ```solidity
@@ -101,13 +97,11 @@ function jailOperator(address operator, uint48 duration) public virtual checkPer
 
 Unjails the operator.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function unjailOperator(
-    address operator
-) public virtual checkPermission;
+function unjailOperator(address operator) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -120,8 +114,6 @@ function unjailOperator(
 
 
 ```solidity
-function _registerOperatorImpl(
-    address operator
-) internal virtual override;
+function _registerOperatorImpl(address operator) internal virtual override;
 ```
 

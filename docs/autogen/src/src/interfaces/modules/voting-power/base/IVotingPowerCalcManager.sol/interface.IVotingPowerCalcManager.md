@@ -1,5 +1,5 @@
 # IVotingPowerCalcManager
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/voting-power/base/IVotingPowerCalcManager.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/interfaces/modules/voting-power/base/IVotingPowerCalcManager.sol)
 
 
 ## Functions
@@ -9,12 +9,10 @@ Returns the voting power given a `stake` amount of `vault`'s collateral at the c
 
 
 ```solidity
-function stakeToVotingPowerAt(
-    address vault,
-    uint256 stake,
-    bytes memory extraData,
-    uint48 timestamp
-) external view returns (uint256);
+function stakeToVotingPowerAt(address vault, uint256 stake, bytes memory extraData, uint48 timestamp)
+    external
+    view
+    returns (uint256);
 ```
 **Parameters**
 

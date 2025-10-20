@@ -1,5 +1,5 @@
 # ValSetVerifier
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/libraries/utils/ValSetVerifier.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/libraries/utils/ValSetVerifier.sol)
 
 Library for verifying the validity of validator set elements.
 
@@ -8,163 +8,163 @@ Library for verifying the validity of validator set elements.
 ### VALIDATOR_SET_TREE_HEIGHT
 
 ```solidity
-uint256 internal constant VALIDATOR_SET_TREE_HEIGHT = 0;
+uint256 internal constant VALIDATOR_SET_TREE_HEIGHT = 0
 ```
 
 
 ### VALIDATORS_LIST_TREE_HEIGHT
 
 ```solidity
-uint256 internal constant VALIDATORS_LIST_TREE_HEIGHT = 20;
+uint256 internal constant VALIDATORS_LIST_TREE_HEIGHT = 20
 ```
 
 
 ### VALIDATORS_LIST_MAX_LENGTH
 
 ```solidity
-uint256 internal constant VALIDATORS_LIST_MAX_LENGTH = 1_048_576;
+uint256 internal constant VALIDATORS_LIST_MAX_LENGTH = 1_048_576
 ```
 
 
 ### VALIDATOR_TREE_HEIGHT
 
 ```solidity
-uint256 internal constant VALIDATOR_TREE_HEIGHT = 3;
+uint256 internal constant VALIDATOR_TREE_HEIGHT = 3
 ```
 
 
 ### KEY_LIST_TREE_HEIGHT
 
 ```solidity
-uint256 internal constant KEY_LIST_TREE_HEIGHT = 7;
+uint256 internal constant KEY_LIST_TREE_HEIGHT = 7
 ```
 
 
 ### KEY_LIST_MAX_LENGTH
 
 ```solidity
-uint256 internal constant KEY_LIST_MAX_LENGTH = 128;
+uint256 internal constant KEY_LIST_MAX_LENGTH = 128
 ```
 
 
 ### VAULT_LIST_TREE_HEIGHT
 
 ```solidity
-uint256 internal constant VAULT_LIST_TREE_HEIGHT = 10;
+uint256 internal constant VAULT_LIST_TREE_HEIGHT = 10
 ```
 
 
 ### VAULT_LIST_MAX_LENGTH
 
 ```solidity
-uint256 internal constant VAULT_LIST_MAX_LENGTH = 1024;
+uint256 internal constant VAULT_LIST_MAX_LENGTH = 1024
 ```
 
 
 ### KEY_TREE_HEIGHT
 
 ```solidity
-uint256 internal constant KEY_TREE_HEIGHT = 1;
+uint256 internal constant KEY_TREE_HEIGHT = 1
 ```
 
 
 ### VAULT_TREE_HEIGHT
 
 ```solidity
-uint256 internal constant VAULT_TREE_HEIGHT = 2;
+uint256 internal constant VAULT_TREE_HEIGHT = 2
 ```
 
 
 ### VALIDATOR_SET_VALIDATORS_BASE_INDEX
 
 ```solidity
-uint256 internal constant VALIDATOR_SET_VALIDATORS_BASE_INDEX = 0;
+uint256 internal constant VALIDATOR_SET_VALIDATORS_BASE_INDEX = 0
 ```
 
 
 ### VALIDATOR_OPERATOR_BASE_INDEX
 
 ```solidity
-uint256 internal constant VALIDATOR_OPERATOR_BASE_INDEX = 0;
+uint256 internal constant VALIDATOR_OPERATOR_BASE_INDEX = 0
 ```
 
 
 ### VALIDATOR_VOTING_POWER_BASE_INDEX
 
 ```solidity
-uint256 internal constant VALIDATOR_VOTING_POWER_BASE_INDEX = 1;
+uint256 internal constant VALIDATOR_VOTING_POWER_BASE_INDEX = 1
 ```
 
 
 ### VALIDATOR_IS_ACTIVE_BASE_INDEX
 
 ```solidity
-uint256 internal constant VALIDATOR_IS_ACTIVE_BASE_INDEX = 2;
+uint256 internal constant VALIDATOR_IS_ACTIVE_BASE_INDEX = 2
 ```
 
 
 ### VALIDATOR_KEYS_BASE_INDEX
 
 ```solidity
-uint256 internal constant VALIDATOR_KEYS_BASE_INDEX = 3;
+uint256 internal constant VALIDATOR_KEYS_BASE_INDEX = 3
 ```
 
 
 ### VALIDATOR_VAULTS_BASE_INDEX
 
 ```solidity
-uint256 internal constant VALIDATOR_VAULTS_BASE_INDEX = 4;
+uint256 internal constant VALIDATOR_VAULTS_BASE_INDEX = 4
 ```
 
 
 ### KEY_TAG_BASE_INDEX
 
 ```solidity
-uint256 internal constant KEY_TAG_BASE_INDEX = 0;
+uint256 internal constant KEY_TAG_BASE_INDEX = 0
 ```
 
 
 ### KEY_PAYLOAD_HASH_BASE_INDEX
 
 ```solidity
-uint256 internal constant KEY_PAYLOAD_HASH_BASE_INDEX = 1;
+uint256 internal constant KEY_PAYLOAD_HASH_BASE_INDEX = 1
 ```
 
 
 ### VAULT_CHAIN_ID_BASE_INDEX
 
 ```solidity
-uint256 internal constant VAULT_CHAIN_ID_BASE_INDEX = 0;
+uint256 internal constant VAULT_CHAIN_ID_BASE_INDEX = 0
 ```
 
 
 ### VAULT_VAULT_BASE_INDEX
 
 ```solidity
-uint256 internal constant VAULT_VAULT_BASE_INDEX = 1;
+uint256 internal constant VAULT_VAULT_BASE_INDEX = 1
 ```
 
 
 ### VAULT_VOTING_POWER_BASE_INDEX
 
 ```solidity
-uint256 internal constant VAULT_VOTING_POWER_BASE_INDEX = 2;
+uint256 internal constant VAULT_VOTING_POWER_BASE_INDEX = 2
 ```
 
 
 ### SHA256_PRECOMPILE
-*The precompile address for SHA-256*
+The precompile address for SHA-256
 
 
 ```solidity
-uint256 internal constant SHA256_PRECOMPILE = 0x02;
+uint256 internal constant SHA256_PRECOMPILE = 0x02
 ```
 
 
 ### VALIDATORS_LIST_LOCAL_INDEX
 
 ```solidity
-uint256 internal constant VALIDATORS_LIST_LOCAL_INDEX = VALIDATOR_SET_VALIDATORS_BASE_INDEX;
+uint256 internal constant VALIDATORS_LIST_LOCAL_INDEX = VALIDATOR_SET_VALIDATORS_BASE_INDEX
 ```
 
 
@@ -172,14 +172,15 @@ uint256 internal constant VALIDATORS_LIST_LOCAL_INDEX = VALIDATOR_SET_VALIDATORS
 
 ```solidity
 uint256 internal constant VALIDATOR_ROOT_MIN_LOCAL_INDEX =
-    VALIDATORS_LIST_LOCAL_INDEX << (1 + VALIDATORS_LIST_TREE_HEIGHT);
+    VALIDATORS_LIST_LOCAL_INDEX << (1 + VALIDATORS_LIST_TREE_HEIGHT)
 ```
 
 
 ### VALIDATOR_ROOT_MAX_LOCAL_INDEX
 
 ```solidity
-uint256 internal constant VALIDATOR_ROOT_MAX_LOCAL_INDEX = VALIDATOR_ROOT_MIN_LOCAL_INDEX + VALIDATORS_LIST_MAX_LENGTH;
+uint256 internal constant VALIDATOR_ROOT_MAX_LOCAL_INDEX =
+    VALIDATOR_ROOT_MIN_LOCAL_INDEX + VALIDATORS_LIST_MAX_LENGTH
 ```
 
 
@@ -187,175 +188,175 @@ uint256 internal constant VALIDATOR_ROOT_MAX_LOCAL_INDEX = VALIDATOR_ROOT_MIN_LO
 
 ```solidity
 uint256 internal constant VALIDATOR_ROOT_PROOF_EXPECTED_HEIGHT =
-    VALIDATOR_SET_TREE_HEIGHT + 1 + VALIDATORS_LIST_TREE_HEIGHT;
+    VALIDATOR_SET_TREE_HEIGHT + 1 + VALIDATORS_LIST_TREE_HEIGHT
 ```
 
 
 ### VALIDATOR_OPERATOR_LOCAL_INDEX
 
 ```solidity
-uint256 internal constant VALIDATOR_OPERATOR_LOCAL_INDEX = VALIDATOR_OPERATOR_BASE_INDEX;
+uint256 internal constant VALIDATOR_OPERATOR_LOCAL_INDEX = VALIDATOR_OPERATOR_BASE_INDEX
 ```
 
 
 ### VALIDATOR_OPERATOR_PROOF_EXPECTED_HEIGHT
 
 ```solidity
-uint256 internal constant VALIDATOR_OPERATOR_PROOF_EXPECTED_HEIGHT = VALIDATOR_TREE_HEIGHT;
+uint256 internal constant VALIDATOR_OPERATOR_PROOF_EXPECTED_HEIGHT = VALIDATOR_TREE_HEIGHT
 ```
 
 
 ### VALIDATOR_VOTING_POWER_LOCAL_INDEX
 
 ```solidity
-uint256 internal constant VALIDATOR_VOTING_POWER_LOCAL_INDEX = VALIDATOR_VOTING_POWER_BASE_INDEX;
+uint256 internal constant VALIDATOR_VOTING_POWER_LOCAL_INDEX = VALIDATOR_VOTING_POWER_BASE_INDEX
 ```
 
 
 ### VALIDATOR_VOTING_POWER_PROOF_EXPECTED_HEIGHT
 
 ```solidity
-uint256 internal constant VALIDATOR_VOTING_POWER_PROOF_EXPECTED_HEIGHT = VALIDATOR_TREE_HEIGHT;
+uint256 internal constant VALIDATOR_VOTING_POWER_PROOF_EXPECTED_HEIGHT = VALIDATOR_TREE_HEIGHT
 ```
 
 
 ### VALIDATOR_IS_ACTIVE_LOCAL_INDEX
 
 ```solidity
-uint256 internal constant VALIDATOR_IS_ACTIVE_LOCAL_INDEX = VALIDATOR_IS_ACTIVE_BASE_INDEX;
+uint256 internal constant VALIDATOR_IS_ACTIVE_LOCAL_INDEX = VALIDATOR_IS_ACTIVE_BASE_INDEX
 ```
 
 
 ### VALIDATOR_IS_ACTIVE_PROOF_EXPECTED_HEIGHT
 
 ```solidity
-uint256 internal constant VALIDATOR_IS_ACTIVE_PROOF_EXPECTED_HEIGHT = VALIDATOR_TREE_HEIGHT;
+uint256 internal constant VALIDATOR_IS_ACTIVE_PROOF_EXPECTED_HEIGHT = VALIDATOR_TREE_HEIGHT
 ```
 
 
 ### KEYS_LIST_LOCAL_INDEX
 
 ```solidity
-uint256 internal constant KEYS_LIST_LOCAL_INDEX = VALIDATOR_KEYS_BASE_INDEX;
+uint256 internal constant KEYS_LIST_LOCAL_INDEX = VALIDATOR_KEYS_BASE_INDEX
 ```
 
 
 ### KEY_ROOT_MIN_LOCAL_INDEX
 
 ```solidity
-uint256 internal constant KEY_ROOT_MIN_LOCAL_INDEX = KEYS_LIST_LOCAL_INDEX << (1 + KEY_LIST_TREE_HEIGHT);
+uint256 internal constant KEY_ROOT_MIN_LOCAL_INDEX = KEYS_LIST_LOCAL_INDEX << (1 + KEY_LIST_TREE_HEIGHT)
 ```
 
 
 ### KEY_ROOT_MAX_LOCAL_INDEX
 
 ```solidity
-uint256 internal constant KEY_ROOT_MAX_LOCAL_INDEX = KEY_ROOT_MIN_LOCAL_INDEX + KEY_LIST_MAX_LENGTH;
+uint256 internal constant KEY_ROOT_MAX_LOCAL_INDEX = KEY_ROOT_MIN_LOCAL_INDEX + KEY_LIST_MAX_LENGTH
 ```
 
 
 ### KEY_ROOT_PROOF_EXPECTED_HEIGHT
 
 ```solidity
-uint256 internal constant KEY_ROOT_PROOF_EXPECTED_HEIGHT = VALIDATOR_TREE_HEIGHT + 1 + KEY_LIST_TREE_HEIGHT;
+uint256 internal constant KEY_ROOT_PROOF_EXPECTED_HEIGHT = VALIDATOR_TREE_HEIGHT + 1 + KEY_LIST_TREE_HEIGHT
 ```
 
 
 ### VAULTS_LIST_LOCAL_INDEX
 
 ```solidity
-uint256 internal constant VAULTS_LIST_LOCAL_INDEX = VALIDATOR_VAULTS_BASE_INDEX;
+uint256 internal constant VAULTS_LIST_LOCAL_INDEX = VALIDATOR_VAULTS_BASE_INDEX
 ```
 
 
 ### VAULT_ROOT_MIN_LOCAL_INDEX
 
 ```solidity
-uint256 internal constant VAULT_ROOT_MIN_LOCAL_INDEX = VAULTS_LIST_LOCAL_INDEX << (1 + VAULT_LIST_TREE_HEIGHT);
+uint256 internal constant VAULT_ROOT_MIN_LOCAL_INDEX = VAULTS_LIST_LOCAL_INDEX << (1 + VAULT_LIST_TREE_HEIGHT)
 ```
 
 
 ### VAULT_ROOT_MAX_LOCAL_INDEX
 
 ```solidity
-uint256 internal constant VAULT_ROOT_MAX_LOCAL_INDEX = VAULT_ROOT_MIN_LOCAL_INDEX + VAULT_LIST_MAX_LENGTH;
+uint256 internal constant VAULT_ROOT_MAX_LOCAL_INDEX = VAULT_ROOT_MIN_LOCAL_INDEX + VAULT_LIST_MAX_LENGTH
 ```
 
 
 ### VAULT_ROOT_PROOF_EXPECTED_HEIGHT
 
 ```solidity
-uint256 internal constant VAULT_ROOT_PROOF_EXPECTED_HEIGHT = VALIDATOR_TREE_HEIGHT + 1 + VAULT_LIST_TREE_HEIGHT;
+uint256 internal constant VAULT_ROOT_PROOF_EXPECTED_HEIGHT = VALIDATOR_TREE_HEIGHT + 1 + VAULT_LIST_TREE_HEIGHT
 ```
 
 
 ### KEY_TAG_LOCAL_INDEX
 
 ```solidity
-uint256 internal constant KEY_TAG_LOCAL_INDEX = KEY_TAG_BASE_INDEX;
+uint256 internal constant KEY_TAG_LOCAL_INDEX = KEY_TAG_BASE_INDEX
 ```
 
 
 ### KEY_TAG_PROOF_EXPECTED_HEIGHT
 
 ```solidity
-uint256 internal constant KEY_TAG_PROOF_EXPECTED_HEIGHT = KEY_TREE_HEIGHT;
+uint256 internal constant KEY_TAG_PROOF_EXPECTED_HEIGHT = KEY_TREE_HEIGHT
 ```
 
 
 ### KEY_PAYLOAD_HASH_LOCAL_INDEX
 
 ```solidity
-uint256 internal constant KEY_PAYLOAD_HASH_LOCAL_INDEX = KEY_PAYLOAD_HASH_BASE_INDEX;
+uint256 internal constant KEY_PAYLOAD_HASH_LOCAL_INDEX = KEY_PAYLOAD_HASH_BASE_INDEX
 ```
 
 
 ### KEY_PAYLOAD_HASH_PROOF_EXPECTED_HEIGHT
 
 ```solidity
-uint256 internal constant KEY_PAYLOAD_HASH_PROOF_EXPECTED_HEIGHT = KEY_TREE_HEIGHT;
+uint256 internal constant KEY_PAYLOAD_HASH_PROOF_EXPECTED_HEIGHT = KEY_TREE_HEIGHT
 ```
 
 
 ### VAULT_CHAIN_ID_LOCAL_INDEX
 
 ```solidity
-uint256 internal constant VAULT_CHAIN_ID_LOCAL_INDEX = VAULT_CHAIN_ID_BASE_INDEX;
+uint256 internal constant VAULT_CHAIN_ID_LOCAL_INDEX = VAULT_CHAIN_ID_BASE_INDEX
 ```
 
 
 ### VAULT_CHAIN_ID_PROOF_EXPECTED_HEIGHT
 
 ```solidity
-uint256 internal constant VAULT_CHAIN_ID_PROOF_EXPECTED_HEIGHT = VAULT_TREE_HEIGHT;
+uint256 internal constant VAULT_CHAIN_ID_PROOF_EXPECTED_HEIGHT = VAULT_TREE_HEIGHT
 ```
 
 
 ### VAULT_VAULT_LOCAL_INDEX
 
 ```solidity
-uint256 internal constant VAULT_VAULT_LOCAL_INDEX = VAULT_VAULT_BASE_INDEX;
+uint256 internal constant VAULT_VAULT_LOCAL_INDEX = VAULT_VAULT_BASE_INDEX
 ```
 
 
 ### VAULT_VAULT_PROOF_EXPECTED_HEIGHT
 
 ```solidity
-uint256 internal constant VAULT_VAULT_PROOF_EXPECTED_HEIGHT = VAULT_TREE_HEIGHT;
+uint256 internal constant VAULT_VAULT_PROOF_EXPECTED_HEIGHT = VAULT_TREE_HEIGHT
 ```
 
 
 ### VAULT_VOTING_POWER_LOCAL_INDEX
 
 ```solidity
-uint256 internal constant VAULT_VOTING_POWER_LOCAL_INDEX = VAULT_VOTING_POWER_BASE_INDEX;
+uint256 internal constant VAULT_VOTING_POWER_LOCAL_INDEX = VAULT_VOTING_POWER_BASE_INDEX
 ```
 
 
 ### VAULT_VOTING_POWER_PROOF_EXPECTED_HEIGHT
 
 ```solidity
-uint256 internal constant VAULT_VOTING_POWER_PROOF_EXPECTED_HEIGHT = VAULT_TREE_HEIGHT;
+uint256 internal constant VAULT_VOTING_POWER_PROOF_EXPECTED_HEIGHT = VAULT_TREE_HEIGHT
 ```
 
 
@@ -552,10 +553,10 @@ Verifies that the operator address is in the validator.
 
 
 ```solidity
-function verifyValidatorOperatorLocal(
-    SszProof calldata validatorOperatorProof,
-    bytes32 validatorRoot
-) internal view returns (bool);
+function verifyValidatorOperatorLocal(SszProof calldata validatorOperatorProof, bytes32 validatorRoot)
+    internal
+    view
+    returns (bool);
 ```
 **Parameters**
 
@@ -577,10 +578,10 @@ Verifies that the validator's voting power is in the validator.
 
 
 ```solidity
-function verifyValidatorVotingPowerLocal(
-    SszProof calldata validatorVotingPowerProof,
-    bytes32 validatorRoot
-) internal view returns (bool);
+function verifyValidatorVotingPowerLocal(SszProof calldata validatorVotingPowerProof, bytes32 validatorRoot)
+    internal
+    view
+    returns (bool);
 ```
 **Parameters**
 
@@ -602,10 +603,10 @@ Verifies that the validator's activity status is in the validator.
 
 
 ```solidity
-function verifyValidatorIsActiveLocal(
-    SszProof calldata validatorIsActiveProof,
-    bytes32 validatorRoot
-) internal view returns (bool);
+function verifyValidatorIsActiveLocal(SszProof calldata validatorIsActiveProof, bytes32 validatorRoot)
+    internal
+    view
+    returns (bool);
 ```
 **Parameters**
 
@@ -725,7 +726,10 @@ Verifies that the vault's chain ID is in the vault.
 
 
 ```solidity
-function verifyVaultChainIdLocal(SszProof calldata vaultChainIdProof, bytes32 vaultRoot) internal view returns (bool);
+function verifyVaultChainIdLocal(SszProof calldata vaultChainIdProof, bytes32 vaultRoot)
+    internal
+    view
+    returns (bool);
 ```
 **Parameters**
 
@@ -769,10 +773,10 @@ Verifies that the vault's voting power is in the vault.
 
 
 ```solidity
-function verifyVaultVotingPowerLocal(
-    SszProof calldata vaultVotingPowerProof,
-    bytes32 vaultRoot
-) internal view returns (bool);
+function verifyVaultVotingPowerLocal(SszProof calldata vaultVotingPowerProof, bytes32 vaultRoot)
+    internal
+    view
+    returns (bool);
 ```
 **Parameters**
 
@@ -792,8 +796,8 @@ function verifyVaultVotingPowerLocal(
 
 Processes an inclusion proof with a SHA256 hash.
 
-*In case of an invalid proof length, we return false which is to be handled by the caller.
-In case of a failed SHA-256 call, we revert.*
+In case of an invalid proof length, we return false which is to be handled by the caller.
+In case of a failed SHA-256 call, we revert.
 
 
 ```solidity
@@ -864,7 +868,7 @@ struct Vault {
 ### Validator
 The validator.
 
-*The voting power may not be equal to the sum of the voting powers inside the vaults.*
+The voting power may not be equal to the sum of the voting powers inside the vaults.
 
 
 ```solidity

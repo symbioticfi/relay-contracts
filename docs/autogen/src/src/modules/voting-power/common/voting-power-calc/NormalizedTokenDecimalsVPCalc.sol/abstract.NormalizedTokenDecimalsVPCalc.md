@@ -1,8 +1,8 @@
 # NormalizedTokenDecimalsVPCalc
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.sol)
 
 **Inherits:**
-[EqualStakeVPCalc](/src/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol/abstract.EqualStakeVPCalc.md), [INormalizedTokenDecimalsVPCalc](/src/interfaces/modules/voting-power/common/voting-power-calc/INormalizedTokenDecimalsVPCalc.sol/interface.INormalizedTokenDecimalsVPCalc.md)
+[EqualStakeVPCalc](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol/abstract.EqualStakeVPCalc.md), [INormalizedTokenDecimalsVPCalc](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/common/voting-power-calc/INormalizedTokenDecimalsVPCalc.sol/interface.INormalizedTokenDecimalsVPCalc.md)
 
 Contract for calculating the voting power, normalizing the stakes in different tokens to the same decimals.
 
@@ -11,7 +11,7 @@ Contract for calculating the voting power, normalizing the stakes in different t
 ### BASE_DECIMALS
 
 ```solidity
-uint8 internal constant BASE_DECIMALS = 18;
+uint8 internal constant BASE_DECIMALS = 18
 ```
 
 
@@ -29,12 +29,12 @@ Returns the voting power given a `stake` amount of `vault`'s collateral at the c
 
 
 ```solidity
-function stakeToVotingPowerAt(
-    address vault,
-    uint256 stake,
-    bytes memory extraData,
-    uint48 timestamp
-) public view virtual override returns (uint256);
+function stakeToVotingPowerAt(address vault, uint256 stake, bytes memory extraData, uint48 timestamp)
+    public
+    view
+    virtual
+    override
+    returns (uint256);
 ```
 **Parameters**
 
@@ -58,11 +58,12 @@ Returns the voting power given a `stake` amount of `vault`'s collateral at the c
 
 
 ```solidity
-function stakeToVotingPower(
-    address vault,
-    uint256 stake,
-    bytes memory extraData
-) public view virtual override returns (uint256);
+function stakeToVotingPower(address vault, uint256 stake, bytes memory extraData)
+    public
+    view
+    virtual
+    override
+    returns (uint256);
 ```
 **Parameters**
 
@@ -83,9 +84,7 @@ function stakeToVotingPower(
 
 
 ```solidity
-function _getCollateral(
-    address vault
-) internal view virtual returns (address);
+function _getCollateral(address vault) internal view virtual returns (address);
 ```
 
 ### _normalizeVaultTokenDecimals

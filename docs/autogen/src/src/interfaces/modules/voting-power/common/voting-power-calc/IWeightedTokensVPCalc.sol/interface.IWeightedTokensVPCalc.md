@@ -1,5 +1,5 @@
 # IWeightedTokensVPCalc
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/voting-power/common/voting-power-calc/IWeightedTokensVPCalc.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/interfaces/modules/voting-power/common/voting-power-calc/IWeightedTokensVPCalc.sol)
 
 
 ## Functions
@@ -7,8 +7,8 @@
 
 Returns the weight for a token at a given timestamp.
 
-*Returns 1e12 if the weight wasn't explicitly set yet.
-Can return non-zero weight for unregistered tokens.*
+Returns 1e12 if the weight wasn't explicitly set yet.
+Can return non-zero weight for unregistered tokens.
 
 
 ```solidity
@@ -32,14 +32,12 @@ function getTokenWeightAt(address token, uint48 timestamp) external view returns
 
 Returns the weight for a token.
 
-*Returns 1e12 if the weight wasn't explicitly set yet.
-Can return non-zero weight for unregistered tokens.*
+Returns 1e12 if the weight wasn't explicitly set yet.
+Can return non-zero weight for unregistered tokens.
 
 
 ```solidity
-function getTokenWeight(
-    address token
-) external view returns (uint208);
+function getTokenWeight(address token) external view returns (uint208);
 ```
 **Parameters**
 

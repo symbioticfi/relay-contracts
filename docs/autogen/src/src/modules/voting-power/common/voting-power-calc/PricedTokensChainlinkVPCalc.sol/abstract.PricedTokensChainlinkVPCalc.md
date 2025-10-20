@@ -1,8 +1,8 @@
 # PricedTokensChainlinkVPCalc
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.sol)
 
 **Inherits:**
-[NormalizedTokenDecimalsVPCalc](/src/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.sol/abstract.NormalizedTokenDecimalsVPCalc.md), [PermissionManager](/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), [IPricedTokensChainlinkVPCalc](/src/interfaces/modules/voting-power/common/voting-power-calc/IPricedTokensChainlinkVPCalc.sol/interface.IPricedTokensChainlinkVPCalc.md)
+[NormalizedTokenDecimalsVPCalc](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.sol/abstract.NormalizedTokenDecimalsVPCalc.md), [PermissionManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), [IPricedTokensChainlinkVPCalc](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/common/voting-power-calc/IPricedTokensChainlinkVPCalc.sol/interface.IPricedTokensChainlinkVPCalc.md)
 
 Contract for calculating the voting power, pricing the tokens using Chainlink.
 
@@ -12,7 +12,7 @@ Contract for calculating the voting power, pricing the tokens using Chainlink.
 
 ```solidity
 bytes32 private constant PricedTokensChainlinkVPCalcStorageLocation =
-    0x3733a7bfa4de50ec8f69170bdfa9615f7ae85991d75509d95aa3fcefb58efe00;
+    0x3733a7bfa4de50ec8f69170bdfa9615f7ae85991d75509d95aa3fcefb58efe00
 ```
 
 
@@ -40,10 +40,12 @@ Returns the price conversion hops for a token at a given timestamp.
 
 
 ```solidity
-function getTokenHopsAt(
-    address token,
-    uint48 timestamp
-) public view virtual override returns (address[2] memory, bool[2] memory, uint48[2] memory);
+function getTokenHopsAt(address token, uint48 timestamp)
+    public
+    view
+    virtual
+    override
+    returns (address[2] memory, bool[2] memory, uint48[2] memory);
 ```
 **Parameters**
 
@@ -67,9 +69,12 @@ Returns the price conversion hops for a token.
 
 
 ```solidity
-function getTokenHops(
-    address token
-) public view virtual override returns (address[2] memory, bool[2] memory, uint48[2] memory);
+function getTokenHops(address token)
+    public
+    view
+    virtual
+    override
+    returns (address[2] memory, bool[2] memory, uint48[2] memory);
 ```
 **Parameters**
 
@@ -90,8 +95,8 @@ function getTokenHops(
 
 Returns the price for a token at a given timestamp.
 
-*Returns zero if the data is stale or unavailable.
-The price is normalized to the 18 decimals.*
+Returns zero if the data is stale or unavailable.
+The price is normalized to the 18 decimals.
 
 
 ```solidity
@@ -115,14 +120,12 @@ function getTokenPriceAt(address token, uint48 timestamp) public view virtual ov
 
 Returns the price for a token.
 
-*Returns zero if the data is stale or unavailable.
-The price is normalized to the 18 decimals.*
+Returns zero if the data is stale or unavailable.
+The price is normalized to the 18 decimals.
 
 
 ```solidity
-function getTokenPrice(
-    address token
-) public view virtual override returns (uint256);
+function getTokenPrice(address token) public view virtual override returns (uint256);
 ```
 **Parameters**
 
@@ -143,12 +146,12 @@ Returns the voting power given a `stake` amount of `vault`'s collateral at the c
 
 
 ```solidity
-function stakeToVotingPowerAt(
-    address vault,
-    uint256 stake,
-    bytes memory extraData,
-    uint48 timestamp
-) public view virtual override returns (uint256);
+function stakeToVotingPowerAt(address vault, uint256 stake, bytes memory extraData, uint48 timestamp)
+    public
+    view
+    virtual
+    override
+    returns (uint256);
 ```
 **Parameters**
 
@@ -172,11 +175,12 @@ Returns the voting power given a `stake` amount of `vault`'s collateral at the c
 
 
 ```solidity
-function stakeToVotingPower(
-    address vault,
-    uint256 stake,
-    bytes memory extraData
-) public view virtual override returns (uint256);
+function stakeToVotingPower(address vault, uint256 stake, bytes memory extraData)
+    public
+    view
+    virtual
+    override
+    returns (uint256);
 ```
 **Parameters**
 
@@ -232,40 +236,40 @@ function _setTokenHops(
 
 
 ```solidity
-function _serializeHop(
-    address aggregator,
-    bool invert,
-    uint48 stalenessDuration
-) internal pure virtual returns (uint256);
+function _serializeHop(address aggregator, bool invert, uint48 stalenessDuration)
+    internal
+    pure
+    virtual
+    returns (uint256);
 ```
 
 ### _serializeHops
 
 
 ```solidity
-function _serializeHops(
-    address[2] memory aggregators,
-    bool[2] memory inverts,
-    uint48[2] memory stalenessDurations
-) internal pure virtual returns (uint256[2] memory hops);
+function _serializeHops(address[2] memory aggregators, bool[2] memory inverts, uint48[2] memory stalenessDurations)
+    internal
+    pure
+    virtual
+    returns (uint256[2] memory hops);
 ```
 
 ### _deserializeHop
 
 
 ```solidity
-function _deserializeHop(
-    uint256 hop
-) internal pure virtual returns (address aggregator, bool invert, uint48 stalenessDuration);
+function _deserializeHop(uint256 hop)
+    internal
+    pure
+    virtual
+    returns (address aggregator, bool invert, uint48 stalenessDuration);
 ```
 
 ### _deserializeHops
 
 
 ```solidity
-function _deserializeHops(
-    uint256[2] memory hops
-)
+function _deserializeHops(uint256[2] memory hops)
     internal
     pure
     virtual

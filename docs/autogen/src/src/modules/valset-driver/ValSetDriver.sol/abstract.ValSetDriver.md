@@ -1,8 +1,8 @@
 # ValSetDriver
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/valset-driver/ValSetDriver.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/modules/valset-driver/ValSetDriver.sol)
 
 **Inherits:**
-[EpochManager](/src/modules/valset-driver/EpochManager.sol/abstract.EpochManager.md), [NetworkManager](/src/modules/base/NetworkManager.sol/abstract.NetworkManager.md), MulticallUpgradeable, [IValSetDriver](/src/interfaces/modules/valset-driver/IValSetDriver.sol/interface.IValSetDriver.md)
+[EpochManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/valset-driver/EpochManager.sol/abstract.EpochManager.md), [NetworkManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/NetworkManager.sol/abstract.NetworkManager.md), MulticallUpgradeable, [IValSetDriver](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/valset-driver/IValSetDriver.sol/interface.IValSetDriver.md)
 
 Contract for providing various configs and driving data for off-chain services.
 
@@ -11,11 +11,11 @@ Contract for providing various configs and driving data for off-chain services.
 ### MAX_QUORUM_THRESHOLD
 Returns the maximum quorum threshold.
 
-*The maximum quorum threshold is 1e18 = 100%.*
+The maximum quorum threshold is 1e18 = 100%.
 
 
 ```solidity
-uint248 public constant MAX_QUORUM_THRESHOLD = 10 ** 18;
+uint248 public constant MAX_QUORUM_THRESHOLD = 10 ** 18
 ```
 
 
@@ -23,7 +23,7 @@ uint248 public constant MAX_QUORUM_THRESHOLD = 10 ** 18;
 
 ```solidity
 bytes32 private constant ValSetDriverStorageLocation =
-    0x1bdf637a86d66983203bb31f20408fc8a4c8b9248a23572df8a2016148669f00;
+    0x1bdf637a86d66983203bb31f20408fc8a4c8b9248a23572df8a2016148669f00
 ```
 
 
@@ -39,9 +39,10 @@ function _getValSetDriverStorage() internal pure returns (ValSetDriverStorage st
 
 
 ```solidity
-function __ValSetDriver_init(
-    ValSetDriverInitParams memory valSetDriverInitParams
-) internal virtual onlyInitializing;
+function __ValSetDriver_init(ValSetDriverInitParams memory valSetDriverInitParams)
+    internal
+    virtual
+    onlyInitializing;
 ```
 
 ### getConfigAt
@@ -50,9 +51,7 @@ Returns the configuration at the given timestamp.
 
 
 ```solidity
-function getConfigAt(
-    uint48 timestamp
-) public view virtual returns (Config memory);
+function getConfigAt(uint48 timestamp) public view virtual returns (Config memory);
 ```
 **Parameters**
 
@@ -89,9 +88,7 @@ and produce the proof for the verification) at the given timestamp.
 
 
 ```solidity
-function getNumAggregatorsAt(
-    uint48 timestamp
-) public view virtual returns (uint208);
+function getNumAggregatorsAt(uint48 timestamp) public view virtual returns (uint208);
 ```
 **Parameters**
 
@@ -129,9 +126,7 @@ to on-chain) at the given timestamp.
 
 
 ```solidity
-function getNumCommittersAt(
-    uint48 timestamp
-) public view virtual returns (uint208);
+function getNumCommittersAt(uint48 timestamp) public view virtual returns (uint208);
 ```
 **Parameters**
 
@@ -168,10 +163,11 @@ Returns if the voting power provider is registered at the given timestamp.
 
 
 ```solidity
-function isVotingPowerProviderRegisteredAt(
-    CrossChainAddress memory votingPowerProvider,
-    uint48 timestamp
-) public view virtual returns (bool);
+function isVotingPowerProviderRegisteredAt(CrossChainAddress memory votingPowerProvider, uint48 timestamp)
+    public
+    view
+    virtual
+    returns (bool);
 ```
 **Parameters**
 
@@ -193,9 +189,11 @@ Returns if the voting power provider is registered.
 
 
 ```solidity
-function isVotingPowerProviderRegistered(
-    CrossChainAddress memory votingPowerProvider
-) public view virtual returns (bool);
+function isVotingPowerProviderRegistered(CrossChainAddress memory votingPowerProvider)
+    public
+    view
+    virtual
+    returns (bool);
 ```
 **Parameters**
 
@@ -216,9 +214,11 @@ Returns the voting power providers at the given timestamp.
 
 
 ```solidity
-function getVotingPowerProvidersAt(
-    uint48 timestamp
-) public view virtual returns (CrossChainAddress[] memory votingPowerProviders);
+function getVotingPowerProvidersAt(uint48 timestamp)
+    public
+    view
+    virtual
+    returns (CrossChainAddress[] memory votingPowerProviders);
 ```
 **Parameters**
 
@@ -254,9 +254,7 @@ Returns the keys provider at the given timestamp.
 
 
 ```solidity
-function getKeysProviderAt(
-    uint48 timestamp
-) public view virtual returns (CrossChainAddress memory);
+function getKeysProviderAt(uint48 timestamp) public view virtual returns (CrossChainAddress memory);
 ```
 **Parameters**
 
@@ -292,10 +290,11 @@ Returns if the settlement is registered at the given timestamp.
 
 
 ```solidity
-function isSettlementRegisteredAt(
-    CrossChainAddress memory settlement,
-    uint48 timestamp
-) public view virtual returns (bool);
+function isSettlementRegisteredAt(CrossChainAddress memory settlement, uint48 timestamp)
+    public
+    view
+    virtual
+    returns (bool);
 ```
 **Parameters**
 
@@ -317,9 +316,7 @@ Returns if the settlement is registered.
 
 
 ```solidity
-function isSettlementRegistered(
-    CrossChainAddress memory settlement
-) public view virtual returns (bool);
+function isSettlementRegistered(CrossChainAddress memory settlement) public view virtual returns (bool);
 ```
 **Parameters**
 
@@ -340,9 +337,7 @@ Returns the settlements at the given timestamp.
 
 
 ```solidity
-function getSettlementsAt(
-    uint48 timestamp
-) public view virtual returns (CrossChainAddress[] memory settlements);
+function getSettlementsAt(uint48 timestamp) public view virtual returns (CrossChainAddress[] memory settlements);
 ```
 **Parameters**
 
@@ -378,9 +373,7 @@ Returns the maximum voting power at the given timestamp.
 
 
 ```solidity
-function getMaxVotingPowerAt(
-    uint48 timestamp
-) public view virtual returns (uint256);
+function getMaxVotingPowerAt(uint48 timestamp) public view virtual returns (uint256);
 ```
 **Parameters**
 
@@ -416,9 +409,7 @@ Returns the minimum inclusion voting power at the given timestamp.
 
 
 ```solidity
-function getMinInclusionVotingPowerAt(
-    uint48 timestamp
-) public view virtual returns (uint256);
+function getMinInclusionVotingPowerAt(uint48 timestamp) public view virtual returns (uint256);
 ```
 **Parameters**
 
@@ -454,9 +445,7 @@ Returns the maximum active validators count at the given timestamp.
 
 
 ```solidity
-function getMaxValidatorsCountAt(
-    uint48 timestamp
-) public view virtual returns (uint208);
+function getMaxValidatorsCountAt(uint48 timestamp) public view virtual returns (uint208);
 ```
 **Parameters**
 
@@ -492,9 +481,7 @@ Returns the required key tags at the given timestamp.
 
 
 ```solidity
-function getRequiredKeyTagsAt(
-    uint48 timestamp
-) public view virtual returns (uint8[] memory requiredKeyTags);
+function getRequiredKeyTagsAt(uint48 timestamp) public view virtual returns (uint8[] memory requiredKeyTags);
 ```
 **Parameters**
 
@@ -530,10 +517,11 @@ Returns if the quorum threshold is registered at the given timestamp.
 
 
 ```solidity
-function isQuorumThresholdRegisteredAt(
-    QuorumThreshold memory quorumThreshold,
-    uint48 timestamp
-) public view virtual returns (bool);
+function isQuorumThresholdRegisteredAt(QuorumThreshold memory quorumThreshold, uint48 timestamp)
+    public
+    view
+    virtual
+    returns (bool);
 ```
 **Parameters**
 
@@ -555,9 +543,7 @@ Returns if the quorum threshold is registered.
 
 
 ```solidity
-function isQuorumThresholdRegistered(
-    QuorumThreshold memory quorumThreshold
-) public view virtual returns (bool);
+function isQuorumThresholdRegistered(QuorumThreshold memory quorumThreshold) public view virtual returns (bool);
 ```
 **Parameters**
 
@@ -578,9 +564,11 @@ Returns the quorum thresholds at the given timestamp.
 
 
 ```solidity
-function getQuorumThresholdsAt(
-    uint48 timestamp
-) public view virtual returns (QuorumThreshold[] memory quorumThresholds);
+function getQuorumThresholdsAt(uint48 timestamp)
+    public
+    view
+    virtual
+    returns (QuorumThreshold[] memory quorumThresholds);
 ```
 **Parameters**
 
@@ -616,9 +604,7 @@ Returns the required header key tag at the given timestamp.
 
 
 ```solidity
-function getRequiredHeaderKeyTagAt(
-    uint48 timestamp
-) public view virtual returns (uint8);
+function getRequiredHeaderKeyTagAt(uint48 timestamp) public view virtual returns (uint8);
 ```
 **Parameters**
 
@@ -654,9 +640,7 @@ Returns the verification type at the given timestamp.
 
 
 ```solidity
-function getVerificationTypeAt(
-    uint48 timestamp
-) public view virtual returns (uint32);
+function getVerificationTypeAt(uint48 timestamp) public view virtual returns (uint32);
 ```
 **Parameters**
 
@@ -691,13 +675,11 @@ function getVerificationType() public view virtual returns (uint32);
 Sets the number of aggregators (those who aggregate the validators' signatures
 and produce the proof for the verification).
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function setNumAggregators(
-    uint208 numAggregators
-) public virtual checkPermission;
+function setNumAggregators(uint208 numAggregators) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -711,13 +693,11 @@ function setNumAggregators(
 Sets the number of committers (those who commit some data (e.g., ValSetHeader)
 to on-chain).
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function setNumCommitters(
-    uint208 numCommitters
-) public virtual checkPermission;
+function setNumCommitters(uint208 numCommitters) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -730,13 +710,11 @@ function setNumCommitters(
 
 Adds a voting power provider.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function addVotingPowerProvider(
-    CrossChainAddress memory votingPowerProvider
-) public virtual checkPermission;
+function addVotingPowerProvider(CrossChainAddress memory votingPowerProvider) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -749,13 +727,11 @@ function addVotingPowerProvider(
 
 Removes a voting power provider.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function removeVotingPowerProvider(
-    CrossChainAddress memory votingPowerProvider
-) public virtual checkPermission;
+function removeVotingPowerProvider(CrossChainAddress memory votingPowerProvider) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -768,13 +744,11 @@ function removeVotingPowerProvider(
 
 Sets the keys provider.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function setKeysProvider(
-    CrossChainAddress memory keysProvider
-) public virtual checkPermission;
+function setKeysProvider(CrossChainAddress memory keysProvider) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -787,13 +761,11 @@ function setKeysProvider(
 
 Adds a settlement.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function addSettlement(
-    CrossChainAddress memory settlement
-) public virtual checkPermission;
+function addSettlement(CrossChainAddress memory settlement) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -806,13 +778,11 @@ function addSettlement(
 
 Removes a settlement.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function removeSettlement(
-    CrossChainAddress memory settlement
-) public virtual checkPermission;
+function removeSettlement(CrossChainAddress memory settlement) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -825,13 +795,11 @@ function removeSettlement(
 
 Sets the maximum voting power.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function setMaxVotingPower(
-    uint256 maxVotingPower
-) public virtual checkPermission;
+function setMaxVotingPower(uint256 maxVotingPower) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -844,13 +812,11 @@ function setMaxVotingPower(
 
 Sets the minimum inclusion voting power.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function setMinInclusionVotingPower(
-    uint256 minInclusionVotingPower
-) public virtual checkPermission;
+function setMinInclusionVotingPower(uint256 minInclusionVotingPower) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -863,13 +829,11 @@ function setMinInclusionVotingPower(
 
 Sets the maximum active validators count.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function setMaxValidatorsCount(
-    uint208 maxValidatorsCount
-) public virtual checkPermission;
+function setMaxValidatorsCount(uint208 maxValidatorsCount) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -882,13 +846,11 @@ function setMaxValidatorsCount(
 
 Sets the required key tags.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function setRequiredKeyTags(
-    uint8[] memory requiredKeyTags
-) public virtual checkPermission;
+function setRequiredKeyTags(uint8[] memory requiredKeyTags) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -901,13 +863,11 @@ function setRequiredKeyTags(
 
 Adds a quorum threshold.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function addQuorumThreshold(
-    QuorumThreshold memory quorumThreshold
-) public virtual checkPermission;
+function addQuorumThreshold(QuorumThreshold memory quorumThreshold) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -920,13 +880,11 @@ function addQuorumThreshold(
 
 Removes a quorum threshold.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function removeQuorumThreshold(
-    QuorumThreshold memory quorumThreshold
-) public virtual checkPermission;
+function removeQuorumThreshold(QuorumThreshold memory quorumThreshold) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -939,13 +897,11 @@ function removeQuorumThreshold(
 
 Sets the required header key tag.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function setRequiredHeaderKeyTag(
-    uint8 requiredHeaderKeyTag
-) public virtual checkPermission;
+function setRequiredHeaderKeyTag(uint8 requiredHeaderKeyTag) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -958,13 +914,11 @@ function setRequiredHeaderKeyTag(
 
 Sets the verification type.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function setVerificationType(
-    uint32 verificationType
-) public virtual checkPermission;
+function setVerificationType(uint32 verificationType) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -977,179 +931,151 @@ function setVerificationType(
 
 
 ```solidity
-function _setNumAggregators(
-    uint208 numAggregators
-) internal virtual;
+function _setNumAggregators(uint208 numAggregators) internal virtual;
 ```
 
 ### _setNumCommitters
 
 
 ```solidity
-function _setNumCommitters(
-    uint208 numCommitters
-) internal virtual;
+function _setNumCommitters(uint208 numCommitters) internal virtual;
 ```
 
 ### _addVotingPowerProvider
 
 
 ```solidity
-function _addVotingPowerProvider(
-    CrossChainAddress memory votingPowerProvider
-) internal virtual;
+function _addVotingPowerProvider(CrossChainAddress memory votingPowerProvider) internal virtual;
 ```
 
 ### _removeVotingPowerProvider
 
 
 ```solidity
-function _removeVotingPowerProvider(
-    CrossChainAddress memory votingPowerProvider
-) internal virtual;
+function _removeVotingPowerProvider(CrossChainAddress memory votingPowerProvider) internal virtual;
 ```
 
 ### _setKeysProvider
 
 
 ```solidity
-function _setKeysProvider(
-    CrossChainAddress memory keysProvider
-) internal virtual;
+function _setKeysProvider(CrossChainAddress memory keysProvider) internal virtual;
 ```
 
 ### _addSettlement
 
 
 ```solidity
-function _addSettlement(
-    CrossChainAddress memory settlement
-) internal virtual;
+function _addSettlement(CrossChainAddress memory settlement) internal virtual;
 ```
 
 ### _removeSettlement
 
 
 ```solidity
-function _removeSettlement(
-    CrossChainAddress memory settlement
-) internal virtual;
+function _removeSettlement(CrossChainAddress memory settlement) internal virtual;
 ```
 
 ### _setMaxVotingPower
 
 
 ```solidity
-function _setMaxVotingPower(
-    uint256 maxVotingPower
-) internal virtual;
+function _setMaxVotingPower(uint256 maxVotingPower) internal virtual;
 ```
 
 ### _setMinInclusionVotingPower
 
 
 ```solidity
-function _setMinInclusionVotingPower(
-    uint256 minInclusionVotingPower
-) internal virtual;
+function _setMinInclusionVotingPower(uint256 minInclusionVotingPower) internal virtual;
 ```
 
 ### _setMaxValidatorsCount
 
 
 ```solidity
-function _setMaxValidatorsCount(
-    uint208 maxValidatorsCount
-) internal virtual;
+function _setMaxValidatorsCount(uint208 maxValidatorsCount) internal virtual;
 ```
 
 ### _setRequiredKeyTags
 
 
 ```solidity
-function _setRequiredKeyTags(
-    uint8[] memory requiredKeyTags
-) internal virtual;
+function _setRequiredKeyTags(uint8[] memory requiredKeyTags) internal virtual;
 ```
 
 ### _addQuorumThreshold
 
 
 ```solidity
-function _addQuorumThreshold(
-    QuorumThreshold memory quorumThreshold
-) internal virtual;
+function _addQuorumThreshold(QuorumThreshold memory quorumThreshold) internal virtual;
 ```
 
 ### _removeQuorumThreshold
 
 
 ```solidity
-function _removeQuorumThreshold(
-    QuorumThreshold memory quorumThreshold
-) internal virtual;
+function _removeQuorumThreshold(QuorumThreshold memory quorumThreshold) internal virtual;
 ```
 
 ### _setRequiredHeaderKeyTag
 
 
 ```solidity
-function _setRequiredHeaderKeyTag(
-    uint8 requiredHeaderKeyTag
-) internal virtual;
+function _setRequiredHeaderKeyTag(uint8 requiredHeaderKeyTag) internal virtual;
 ```
 
 ### _setVerificationType
 
 
 ```solidity
-function _setVerificationType(
-    uint32 verificationType
-) internal virtual;
+function _setVerificationType(uint32 verificationType) internal virtual;
 ```
 
 ### _validateCrossChainAddress
 
 
 ```solidity
-function _validateCrossChainAddress(
-    CrossChainAddress memory crossChainAddress
-) internal pure virtual;
+function _validateCrossChainAddress(CrossChainAddress memory crossChainAddress) internal pure virtual;
 ```
 
 ### _serializeCrossChainAddress
 
 
 ```solidity
-function _serializeCrossChainAddress(
-    CrossChainAddress memory crossChainAddress
-) internal pure virtual returns (bytes32);
+function _serializeCrossChainAddress(CrossChainAddress memory crossChainAddress)
+    internal
+    pure
+    virtual
+    returns (bytes32);
 ```
 
 ### _deserializeCrossChainAddress
 
 
 ```solidity
-function _deserializeCrossChainAddress(
-    bytes32 compressedAddress
-) internal pure virtual returns (CrossChainAddress memory);
+function _deserializeCrossChainAddress(bytes32 compressedAddress)
+    internal
+    pure
+    virtual
+    returns (CrossChainAddress memory);
 ```
 
 ### _serializeQuorumThreshold
 
 
 ```solidity
-function _serializeQuorumThreshold(
-    QuorumThreshold memory quorumThreshold
-) internal pure virtual returns (bytes32);
+function _serializeQuorumThreshold(QuorumThreshold memory quorumThreshold) internal pure virtual returns (bytes32);
 ```
 
 ### _deserializeQuorumThreshold
 
 
 ```solidity
-function _deserializeQuorumThreshold(
-    bytes32 compressedQuorumThreshold
-) internal pure virtual returns (QuorumThreshold memory);
+function _deserializeQuorumThreshold(bytes32 compressedQuorumThreshold)
+    internal
+    pure
+    virtual
+    returns (QuorumThreshold memory);
 ```
 

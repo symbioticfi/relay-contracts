@@ -1,5 +1,5 @@
 # ISharedVaults
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/voting-power/extensions/ISharedVaults.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/interfaces/modules/voting-power/extensions/ISharedVaults.sol)
 
 
 ## Functions
@@ -7,13 +7,11 @@
 
 Registers the shared vault.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function registerSharedVault(
-    address sharedVault
-) external;
+function registerSharedVault(address sharedVault) external;
 ```
 **Parameters**
 
@@ -26,13 +24,11 @@ function registerSharedVault(
 
 Unregisters the shared vault.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function unregisterSharedVault(
-    address sharedVault
-) external;
+function unregisterSharedVault(address sharedVault) external;
 ```
 **Parameters**
 

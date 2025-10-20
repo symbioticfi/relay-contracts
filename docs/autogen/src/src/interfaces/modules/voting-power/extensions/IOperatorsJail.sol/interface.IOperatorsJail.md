@@ -1,5 +1,5 @@
 # IOperatorsJail
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/voting-power/extensions/IOperatorsJail.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/interfaces/modules/voting-power/extensions/IOperatorsJail.sol)
 
 
 ## Functions
@@ -9,9 +9,7 @@ Returns the jail status of the operator.
 
 
 ```solidity
-function isOperatorJailed(
-    address operator
-) external view returns (bool);
+function isOperatorJailed(address operator) external view returns (bool);
 ```
 **Parameters**
 
@@ -32,9 +30,7 @@ Returns the timestamp the operator is jailed until.
 
 
 ```solidity
-function getOperatorJailedUntil(
-    address operator
-) external view returns (uint48);
+function getOperatorJailedUntil(address operator) external view returns (uint48);
 ```
 **Parameters**
 
@@ -53,9 +49,9 @@ function getOperatorJailedUntil(
 
 Jails the operator.
 
-*The caller must have the needed permission.
+The caller must have the needed permission.
 The operator will be unregistered if currently registered.
-It is allowed only to extend the jail duration.*
+It is allowed only to extend the jail duration.
 
 
 ```solidity
@@ -73,13 +69,11 @@ function jailOperator(address operator, uint48 duration) external;
 
 Unjails the operator.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function unjailOperator(
-    address operator
-) external;
+function unjailOperator(address operator) external;
 ```
 **Parameters**
 

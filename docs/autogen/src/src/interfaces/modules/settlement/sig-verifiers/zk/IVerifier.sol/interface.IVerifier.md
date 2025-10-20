@@ -1,5 +1,5 @@
 # IVerifier
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/settlement/sig-verifiers/zk/IVerifier.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/interfaces/modules/settlement/sig-verifiers/zk/IVerifier.sol)
 
 
 ## Functions
@@ -7,7 +7,7 @@
 
 Verifies a ZK proof for the given input.
 
-*Reverts if the proof is invalid.*
+Reverts if the proof is invalid.
 
 
 ```solidity

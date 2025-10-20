@@ -1,8 +1,8 @@
 # EpochManager
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/valset-driver/EpochManager.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/modules/valset-driver/EpochManager.sol)
 
 **Inherits:**
-[PermissionManager](/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), [IEpochManager](/src/interfaces/modules/valset-driver/IEpochManager.sol/interface.IEpochManager.md)
+[PermissionManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), [IEpochManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/valset-driver/IEpochManager.sol/interface.IEpochManager.md)
 
 Contract for managing the epochs state machine.
 
@@ -12,7 +12,7 @@ Contract for managing the epochs state machine.
 
 ```solidity
 bytes32 private constant EpochManagerStorageLocation =
-    0xab930e9b836b4d72502da14061937ab080936446173403910135ea983863d400;
+    0xab930e9b836b4d72502da14061937ab080936446173403910135ea983863d400
 ```
 
 
@@ -28,9 +28,7 @@ function _getEpochManagerStorage() internal pure returns (EpochManagerStorage st
 
 
 ```solidity
-function __EpochManager_init(
-    EpochManagerInitParams memory initParams
-) internal virtual onlyInitializing;
+function __EpochManager_init(EpochManagerInitParams memory initParams) internal virtual onlyInitializing;
 ```
 
 ### getCurrentEpoch
@@ -129,9 +127,7 @@ Returns the epoch index at the given timestamp.
 
 
 ```solidity
-function getEpochIndex(
-    uint48 timestamp
-) public view virtual returns (uint48);
+function getEpochIndex(uint48 timestamp) public view virtual returns (uint48);
 ```
 **Parameters**
 
@@ -152,9 +148,7 @@ Returns the epoch duration of the given epoch.
 
 
 ```solidity
-function getEpochDuration(
-    uint48 epoch
-) public view virtual returns (uint48 epochDuration);
+function getEpochDuration(uint48 epoch) public view virtual returns (uint48 epochDuration);
 ```
 **Parameters**
 
@@ -175,9 +169,7 @@ Returns the epoch start of the given epoch.
 
 
 ```solidity
-function getEpochStart(
-    uint48 epoch
-) public view virtual returns (uint48);
+function getEpochStart(uint48 epoch) public view virtual returns (uint48);
 ```
 **Parameters**
 
@@ -196,14 +188,12 @@ function getEpochStart(
 
 Sets the epoch duration.
 
-*The new duration will be "committed" only in the next epoch.
-The caller must have the needed permission.*
+The new duration will be "committed" only in the next epoch.
+The caller must have the needed permission.
 
 
 ```solidity
-function setEpochDuration(
-    uint48 epochDuration
-) public virtual checkPermission;
+function setEpochDuration(uint48 epochDuration) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -216,38 +206,30 @@ function setEpochDuration(
 
 
 ```solidity
-function _setEpochDuration(
-    uint48 epochDuration
-) internal virtual;
+function _setEpochDuration(uint48 epochDuration) internal virtual;
 ```
 
 ### _setEpochDuration
 
 
 ```solidity
-function _setEpochDuration(
-    uint48 epochDuration,
-    uint48 epochDurationTimestamp,
-    uint48 epochDurationIndex
-) internal virtual;
+function _setEpochDuration(uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex)
+    internal
+    virtual;
 ```
 
 ### _getEpochDurationDataByTimestamp
 
 
 ```solidity
-function _getEpochDurationDataByTimestamp(
-    uint48 timestamp
-) internal view virtual returns (uint48, uint48, uint48);
+function _getEpochDurationDataByTimestamp(uint48 timestamp) internal view virtual returns (uint48, uint48, uint48);
 ```
 
 ### _getEpochDurationDataByIndex
 
 
 ```solidity
-function _getEpochDurationDataByIndex(
-    uint48 index
-) internal view virtual returns (uint48, uint48, uint48);
+function _getEpochDurationDataByIndex(uint48 index) internal view virtual returns (uint48, uint48, uint48);
 ```
 
 ### _getCurrentEpochDurationData
@@ -279,18 +261,21 @@ function _serializeEpochDurationData(
 
 
 ```solidity
-function _deserializeEpochDurationData(
-    uint208 epochDurationData
-) internal pure virtual returns (uint48, uint48, uint48);
+function _deserializeEpochDurationData(uint208 epochDurationData)
+    internal
+    pure
+    virtual
+    returns (uint48, uint48, uint48);
 ```
 
 ### _getCurrentValue
 
 
 ```solidity
-function _getCurrentValue(
-    Checkpoints.Trace208 storage trace,
-    uint48 currentTimepoint
-) internal view virtual returns (uint208);
+function _getCurrentValue(Checkpoints.Trace208 storage trace, uint48 currentTimepoint)
+    internal
+    view
+    virtual
+    returns (uint208);
 ```
 

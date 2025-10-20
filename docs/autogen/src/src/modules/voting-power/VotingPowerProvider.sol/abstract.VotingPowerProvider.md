@@ -1,8 +1,8 @@
 # VotingPowerProvider
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/voting-power/VotingPowerProvider.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/modules/voting-power/VotingPowerProvider.sol)
 
 **Inherits:**
-[NetworkManager](/src/modules/base/NetworkManager.sol/abstract.NetworkManager.md), [VotingPowerCalcManager](/src/modules/voting-power/base/VotingPowerCalcManager.sol/abstract.VotingPowerCalcManager.md), [OzEIP712](/src/modules/base/OzEIP712.sol/abstract.OzEIP712.md), [PermissionManager](/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), NoncesUpgradeable, MulticallUpgradeable, [IVotingPowerProvider](/src/interfaces/modules/voting-power/IVotingPowerProvider.sol/interface.IVotingPowerProvider.md)
+[NetworkManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/NetworkManager.sol/abstract.NetworkManager.md), [VotingPowerCalcManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/base/VotingPowerCalcManager.sol/abstract.VotingPowerCalcManager.md), [OzEIP712](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/OzEIP712.sol/abstract.OzEIP712.md), [PermissionManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), NoncesUpgradeable, MulticallUpgradeable, [IVotingPowerProvider](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/IVotingPowerProvider.sol/interface.IVotingPowerProvider.md)
 
 Contract for managing tokens, operators, vaults, and their voting powers.
 
@@ -13,7 +13,7 @@ Returns the address of the OperatorRegistry contract.
 
 
 ```solidity
-address public immutable OPERATOR_REGISTRY;
+address public immutable OPERATOR_REGISTRY
 ```
 
 
@@ -22,21 +22,22 @@ Returns the address of the VaultFactory contract.
 
 
 ```solidity
-address public immutable VAULT_FACTORY;
+address public immutable VAULT_FACTORY
 ```
 
 
 ### REGISTER_OPERATOR_TYPEHASH
 
 ```solidity
-bytes32 private constant REGISTER_OPERATOR_TYPEHASH = keccak256("RegisterOperator(address operator,uint256 nonce)");
+bytes32 private constant REGISTER_OPERATOR_TYPEHASH = keccak256("RegisterOperator(address operator,uint256 nonce)")
 ```
 
 
 ### UNREGISTER_OPERATOR_TYPEHASH
 
 ```solidity
-bytes32 private constant UNREGISTER_OPERATOR_TYPEHASH = keccak256("UnregisterOperator(address operator,uint256 nonce)");
+bytes32 private constant UNREGISTER_OPERATOR_TYPEHASH =
+    keccak256("UnregisterOperator(address operator,uint256 nonce)")
 ```
 
 
@@ -45,16 +46,17 @@ bytes32 private constant UNREGISTER_OPERATOR_TYPEHASH = keccak256("UnregisterOpe
 
 
 ```solidity
-constructor(address operatorRegistry, address vaultFactory);
+constructor(address operatorRegistry, address vaultFactory) ;
 ```
 
 ### __VotingPowerProvider_init
 
 
 ```solidity
-function __VotingPowerProvider_init(
-    VotingPowerProviderInitParams memory votingPowerProviderInitParams
-) internal virtual onlyInitializing;
+function __VotingPowerProvider_init(VotingPowerProviderInitParams memory votingPowerProviderInitParams)
+    internal
+    virtual
+    onlyInitializing;
 ```
 
 ### getSlashingDataAt
@@ -124,9 +126,7 @@ Returns the status of the token registration.
 
 
 ```solidity
-function isTokenRegistered(
-    address token
-) public view virtual returns (bool);
+function isTokenRegistered(address token) public view virtual returns (bool);
 ```
 **Parameters**
 
@@ -147,9 +147,7 @@ Returns the tokens at a specific timestamp.
 
 
 ```solidity
-function getTokensAt(
-    uint48 timestamp
-) public view virtual returns (address[] memory);
+function getTokensAt(uint48 timestamp) public view virtual returns (address[] memory);
 ```
 **Parameters**
 
@@ -207,9 +205,7 @@ Returns the status of the operator registration.
 
 
 ```solidity
-function isOperatorRegistered(
-    address operator
-) public view virtual returns (bool);
+function isOperatorRegistered(address operator) public view virtual returns (bool);
 ```
 **Parameters**
 
@@ -230,9 +226,7 @@ Returns the operators at a specific timestamp.
 
 
 ```solidity
-function getOperatorsAt(
-    uint48 timestamp
-) public view virtual returns (address[] memory);
+function getOperatorsAt(uint48 timestamp) public view virtual returns (address[] memory);
 ```
 **Parameters**
 
@@ -290,9 +284,7 @@ Returns the status of the shared vault registration.
 
 
 ```solidity
-function isSharedVaultRegistered(
-    address vault
-) public view virtual returns (bool);
+function isSharedVaultRegistered(address vault) public view virtual returns (bool);
 ```
 **Parameters**
 
@@ -313,9 +305,7 @@ Returns the shared vaults at a specific timestamp.
 
 
 ```solidity
-function getSharedVaultsAt(
-    uint48 timestamp
-) public view virtual returns (address[] memory);
+function getSharedVaultsAt(uint48 timestamp) public view virtual returns (address[] memory);
 ```
 **Parameters**
 
@@ -373,9 +363,7 @@ Returns the status of the operator vault registration.
 
 
 ```solidity
-function isOperatorVaultRegistered(
-    address vault
-) public view virtual returns (bool);
+function isOperatorVaultRegistered(address vault) public view virtual returns (bool);
 ```
 **Parameters**
 
@@ -396,11 +384,11 @@ Returns the status of the operator vault registration.
 
 
 ```solidity
-function isOperatorVaultRegisteredAt(
-    address operator,
-    address vault,
-    uint48 timestamp
-) public view virtual returns (bool);
+function isOperatorVaultRegisteredAt(address operator, address vault, uint48 timestamp)
+    public
+    view
+    virtual
+    returns (bool);
 ```
 **Parameters**
 
@@ -467,9 +455,7 @@ Returns the operator vaults.
 
 
 ```solidity
-function getOperatorVaults(
-    address operator
-) public view virtual returns (address[] memory);
+function getOperatorVaults(address operator) public view virtual returns (address[] memory);
 ```
 **Parameters**
 
@@ -512,9 +498,7 @@ Returns the vaults with stakes of the operator.
 
 
 ```solidity
-function getOperatorStakes(
-    address operator
-) public view virtual returns (VaultValue[] memory);
+function getOperatorStakes(address operator) public view virtual returns (VaultValue[] memory);
 ```
 **Parameters**
 
@@ -535,11 +519,11 @@ Returns the vaults with voting powers of the operator at a specific timestamp.
 
 
 ```solidity
-function getOperatorVotingPowersAt(
-    address operator,
-    bytes memory extraData,
-    uint48 timestamp
-) public view virtual returns (VaultValue[] memory);
+function getOperatorVotingPowersAt(address operator, bytes memory extraData, uint48 timestamp)
+    public
+    view
+    virtual
+    returns (VaultValue[] memory);
 ```
 **Parameters**
 
@@ -562,10 +546,11 @@ Returns the vaults with voting powers of the operator.
 
 
 ```solidity
-function getOperatorVotingPowers(
-    address operator,
-    bytes memory extraData
-) public view virtual returns (VaultValue[] memory);
+function getOperatorVotingPowers(address operator, bytes memory extraData)
+    public
+    view
+    virtual
+    returns (VaultValue[] memory);
 ```
 **Parameters**
 
@@ -587,10 +572,11 @@ Returns operators and their vaults with voting powers at a specific timestamp.
 
 
 ```solidity
-function getVotingPowersAt(
-    bytes[] memory extraData,
-    uint48 timestamp
-) public view virtual returns (OperatorVotingPower[] memory);
+function getVotingPowersAt(bytes[] memory extraData, uint48 timestamp)
+    public
+    view
+    virtual
+    returns (OperatorVotingPower[] memory);
 ```
 **Parameters**
 
@@ -612,9 +598,7 @@ Returns operators and their vaults with voting powers.
 
 
 ```solidity
-function getVotingPowers(
-    bytes[] memory extraData
-) public view virtual returns (OperatorVotingPower[] memory);
+function getVotingPowers(bytes[] memory extraData) public view virtual returns (OperatorVotingPower[] memory);
 ```
 **Parameters**
 
@@ -680,9 +664,7 @@ Returns the length of the operator vaults.
 
 
 ```solidity
-function _getOperatorVaultsLength(
-    address operator
-) internal view virtual returns (uint256);
+function _getOperatorVaultsLength(address operator) internal view virtual returns (uint256);
 ```
 **Parameters**
 
@@ -703,11 +685,11 @@ Returns the stake of the operator at a specific timestamp.
 
 
 ```solidity
-function _getOperatorStakeAt(
-    address operator,
-    address vault,
-    uint48 timestamp
-) internal view virtual returns (uint256);
+function _getOperatorStakeAt(address operator, address vault, uint48 timestamp)
+    internal
+    view
+    virtual
+    returns (uint256);
 ```
 **Parameters**
 
@@ -752,12 +734,11 @@ Returns the voting power of the operator at a specific timestamp.
 
 
 ```solidity
-function _getOperatorVotingPowerAt(
-    address operator,
-    address vault,
-    bytes memory extraData,
-    uint48 timestamp
-) internal view virtual returns (uint256);
+function _getOperatorVotingPowerAt(address operator, address vault, bytes memory extraData, uint48 timestamp)
+    internal
+    view
+    virtual
+    returns (uint256);
 ```
 **Parameters**
 
@@ -781,11 +762,11 @@ Returns the voting power of the operator.
 
 
 ```solidity
-function _getOperatorVotingPower(
-    address operator,
-    address vault,
-    bytes memory extraData
-) internal view virtual returns (uint256);
+function _getOperatorVotingPower(address operator, address vault, bytes memory extraData)
+    internal
+    view
+    virtual
+    returns (uint256);
 ```
 **Parameters**
 
@@ -806,7 +787,7 @@ function _getOperatorVotingPower(
 
 Registers the caller as an operator.
 
-*The caller can be anyone.*
+The caller can be anyone.
 
 
 ```solidity
@@ -817,7 +798,7 @@ function registerOperator() public virtual;
 
 Registers the operator with a signature.
 
-*The caller can be anyone.*
+The caller can be anyone.
 
 
 ```solidity
@@ -835,7 +816,7 @@ function registerOperatorWithSignature(address operator, bytes memory signature)
 
 Unregisters the operator.
 
-*The caller can be anyone.*
+The caller can be anyone.
 
 
 ```solidity
@@ -846,7 +827,7 @@ function unregisterOperator() public virtual;
 
 Unregisters the operator with a signature.
 
-*The caller can be anyone.*
+The caller can be anyone.
 
 
 ```solidity
@@ -864,8 +845,8 @@ function unregisterOperatorWithSignature(address operator, bytes memory signatur
 
 Invalidates the old signatures of the caller.
 
-*The caller can be anyone.
-Increases the signatures' nonce by one.*
+The caller can be anyone.
+Increases the signatures' nonce by one.
 
 
 ```solidity
@@ -883,45 +864,35 @@ function _setSlashingData(bool requireSlasher, uint48 minVaultEpochDuration) int
 
 
 ```solidity
-function _registerToken(
-    address token
-) internal virtual;
+function _registerToken(address token) internal virtual;
 ```
 
 ### _unregisterToken
 
 
 ```solidity
-function _unregisterToken(
-    address token
-) internal virtual;
+function _unregisterToken(address token) internal virtual;
 ```
 
 ### _registerOperator
 
 
 ```solidity
-function _registerOperator(
-    address operator
-) internal virtual;
+function _registerOperator(address operator) internal virtual;
 ```
 
 ### _unregisterOperator
 
 
 ```solidity
-function _unregisterOperator(
-    address operator
-) internal virtual;
+function _unregisterOperator(address operator) internal virtual;
 ```
 
 ### _registerSharedVault
 
 
 ```solidity
-function _registerSharedVault(
-    address vault
-) internal virtual;
+function _registerSharedVault(address vault) internal virtual;
 ```
 
 ### _registerOperatorVault
@@ -935,9 +906,7 @@ function _registerOperatorVault(address operator, address vault) internal virtua
 
 
 ```solidity
-function _unregisterSharedVault(
-    address vault
-) internal virtual;
+function _unregisterSharedVault(address vault) internal virtual;
 ```
 
 ### _unregisterOperatorVault
@@ -951,18 +920,14 @@ function _unregisterOperatorVault(address operator, address vault) internal virt
 
 
 ```solidity
-function _registerOperatorImpl(
-    address operator
-) internal virtual;
+function _registerOperatorImpl(address operator) internal virtual;
 ```
 
 ### _unregisterOperatorImpl
 
 
 ```solidity
-function _unregisterOperatorImpl(
-    address operator
-) internal virtual;
+function _unregisterOperatorImpl(address operator) internal virtual;
 ```
 
 ### _registerOperatorVaultImpl

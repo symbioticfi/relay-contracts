@@ -1,5 +1,5 @@
 # IOperatorsBlacklist
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/voting-power/extensions/IOperatorsBlacklist.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/interfaces/modules/voting-power/extensions/IOperatorsBlacklist.sol)
 
 
 ## Functions
@@ -9,9 +9,7 @@ Returns the blacklist status of the operator.
 
 
 ```solidity
-function isOperatorBlacklisted(
-    address operator
-) external view returns (bool);
+function isOperatorBlacklisted(address operator) external view returns (bool);
 ```
 **Parameters**
 
@@ -30,14 +28,12 @@ function isOperatorBlacklisted(
 
 Blacklists the operator.
 
-*The caller must have the needed permission.
-The operator will be unregistered if currently registered.*
+The caller must have the needed permission.
+The operator will be unregistered if currently registered.
 
 
 ```solidity
-function blacklistOperator(
-    address operator
-) external;
+function blacklistOperator(address operator) external;
 ```
 **Parameters**
 
@@ -50,13 +46,11 @@ function blacklistOperator(
 
 Unblacklists the operator.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function unblacklistOperator(
-    address operator
-) external;
+function unblacklistOperator(address operator) external;
 ```
 **Parameters**
 

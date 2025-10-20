@@ -20,10 +20,11 @@ contract MyValSetDriver is ValSetDriver, OzAccessControl {
     bytes32 public constant SET_REQUIRED_HEADER_KEY_TAG_ROLE = keccak256("SET_REQUIRED_HEADER_KEY_TAG_ROLE");
     bytes32 public constant MANAGE_QUORUM_THRESHOLDS_ROLE = keccak256("MANAGE_QUORUM_THRESHOLDS_ROLE");
 
-    function initialize(
-        ValSetDriverInitParams memory valSetDriverInitParams,
-        address defaultAdmin
-    ) public virtual initializer {
+    function initialize(ValSetDriverInitParams memory valSetDriverInitParams, address defaultAdmin)
+        public
+        virtual
+        initializer
+    {
         __ValSetDriver_init(valSetDriverInitParams);
 
         _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);

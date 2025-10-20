@@ -1,8 +1,8 @@
 # OpNetVaultAutoDeploy
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/voting-power/extensions/OpNetVaultAutoDeploy.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/modules/voting-power/extensions/OpNetVaultAutoDeploy.sol)
 
 **Inherits:**
-[VotingPowerProvider](/src/modules/voting-power/VotingPowerProvider.sol/abstract.VotingPowerProvider.md), [IOpNetVaultAutoDeploy](/src/interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol/interface.IOpNetVaultAutoDeploy.md)
+[VotingPowerProvider](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/VotingPowerProvider.sol/abstract.VotingPowerProvider.md), [IOpNetVaultAutoDeploy](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol/interface.IOpNetVaultAutoDeploy.md)
 
 Contract for auto-deploying vaults for operators on their registration.
 
@@ -13,7 +13,7 @@ Returns the address of the vault configurator.
 
 
 ```solidity
-address public immutable VAULT_CONFIGURATOR;
+address public immutable VAULT_CONFIGURATOR
 ```
 
 
@@ -22,20 +22,19 @@ address public immutable VAULT_CONFIGURATOR;
 
 
 ```solidity
-constructor(
-    address vaultConfigurator
-);
+constructor(address vaultConfigurator) ;
 ```
 
 ### __OpNetVaultAutoDeploy_init
 
-*Must be called after __VotingPowerProvider_init().*
+Must be called after __VotingPowerProvider_init().
 
 
 ```solidity
-function __OpNetVaultAutoDeploy_init(
-    OpNetVaultAutoDeployInitParams memory initParams
-) internal virtual onlyInitializing;
+function __OpNetVaultAutoDeploy_init(OpNetVaultAutoDeployInitParams memory initParams)
+    internal
+    virtual
+    onlyInitializing;
 ```
 
 ### isAutoDeployEnabled
@@ -59,9 +58,7 @@ Returns the address of the auto deployed vault of the operator.
 
 
 ```solidity
-function getAutoDeployedVault(
-    address operator
-) public view virtual returns (address);
+function getAutoDeployedVault(address operator) public view virtual returns (address);
 ```
 **Parameters**
 
@@ -110,13 +107,11 @@ function isSetMaxNetworkLimitHookEnabled() public view virtual returns (bool);
 
 Sets the status of the auto deploy.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function setAutoDeployStatus(
-    bool status
-) public virtual checkPermission;
+function setAutoDeployStatus(bool status) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -129,13 +124,11 @@ function setAutoDeployStatus(
 
 Sets the configuration of the auto deploy.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function setAutoDeployConfig(
-    AutoDeployConfig memory config
-) public virtual checkPermission;
+function setAutoDeployConfig(AutoDeployConfig memory config) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -148,13 +141,11 @@ function setAutoDeployConfig(
 
 Sets the status of the set max network limit hook.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function setSetMaxNetworkLimitHookStatus(
-    bool status
-) public virtual checkPermission;
+function setSetMaxNetworkLimitHookStatus(bool status) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -167,9 +158,7 @@ function setSetMaxNetworkLimitHookStatus(
 
 
 ```solidity
-function _registerOperatorImpl(
-    address operator
-) internal virtual override;
+function _registerOperatorImpl(address operator) internal virtual override;
 ```
 
 ### _unregisterOperatorVaultImpl

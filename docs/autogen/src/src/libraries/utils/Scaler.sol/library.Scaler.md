@@ -1,5 +1,5 @@
 # Scaler
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/libraries/utils/Scaler.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/libraries/utils/Scaler.sol)
 
 Library for scaling values between different decimals and inverting them.
 
@@ -32,7 +32,7 @@ function scale(uint256 value, uint8 decimals, uint8 targetDecimals) internal pur
 
 Inverts a value given its decimals.
 
-*Reverts if the value is zero.*
+Reverts if the value is zero.
 
 
 ```solidity

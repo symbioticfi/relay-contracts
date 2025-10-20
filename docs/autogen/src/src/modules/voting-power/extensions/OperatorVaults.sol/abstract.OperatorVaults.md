@@ -1,8 +1,8 @@
 # OperatorVaults
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/voting-power/extensions/OperatorVaults.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/modules/voting-power/extensions/OperatorVaults.sol)
 
 **Inherits:**
-[VotingPowerProvider](/src/modules/voting-power/VotingPowerProvider.sol/abstract.VotingPowerProvider.md), [IOperatorVaults](/src/interfaces/modules/voting-power/extensions/IOperatorVaults.sol/interface.IOperatorVaults.md)
+[VotingPowerProvider](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/VotingPowerProvider.sol/abstract.VotingPowerProvider.md), [IOperatorVaults](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/extensions/IOperatorVaults.sol/interface.IOperatorVaults.md)
 
 Contract for registering and unregistering operator vaults.
 
@@ -19,7 +19,7 @@ function __OperatorVaults_init() internal virtual onlyInitializing;
 
 Registers the operator vault.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
@@ -37,7 +37,7 @@ function registerOperatorVault(address operator, address vault) public virtual c
 
 Unregisters the operator vault.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
@@ -55,13 +55,11 @@ function unregisterOperatorVault(address operator, address vault) public virtual
 
 Unregisters the operator vault.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function unregisterOperatorVault(
-    address vault
-) public virtual;
+function unregisterOperatorVault(address vault) public virtual;
 ```
 **Parameters**
 

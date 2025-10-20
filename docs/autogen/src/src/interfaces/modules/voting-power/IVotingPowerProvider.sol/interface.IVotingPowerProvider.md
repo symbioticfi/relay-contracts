@@ -1,5 +1,5 @@
 # IVotingPowerProvider
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/voting-power/IVotingPowerProvider.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/interfaces/modules/voting-power/IVotingPowerProvider.sol)
 
 
 ## Functions
@@ -39,10 +39,10 @@ Returns the slashing data at a specific timestamp.
 
 
 ```solidity
-function getSlashingDataAt(
-    uint48 timestamp,
-    bytes memory hint
-) external view returns (bool requireSlasher, uint48 minVaultEpochDuration);
+function getSlashingDataAt(uint48 timestamp, bytes memory hint)
+    external
+    view
+    returns (bool requireSlasher, uint48 minVaultEpochDuration);
 ```
 **Parameters**
 
@@ -103,9 +103,7 @@ Returns the status of the token registration.
 
 
 ```solidity
-function isTokenRegistered(
-    address token
-) external view returns (bool);
+function isTokenRegistered(address token) external view returns (bool);
 ```
 **Parameters**
 
@@ -126,9 +124,7 @@ Returns the tokens at a specific timestamp.
 
 
 ```solidity
-function getTokensAt(
-    uint48 timestamp
-) external view returns (address[] memory);
+function getTokensAt(uint48 timestamp) external view returns (address[] memory);
 ```
 **Parameters**
 
@@ -164,9 +160,7 @@ Returns the status of the operator registration.
 
 
 ```solidity
-function isOperatorRegistered(
-    address operator
-) external view returns (bool);
+function isOperatorRegistered(address operator) external view returns (bool);
 ```
 **Parameters**
 
@@ -209,9 +203,7 @@ Returns the operators at a specific timestamp.
 
 
 ```solidity
-function getOperatorsAt(
-    uint48 timestamp
-) external view returns (address[] memory);
+function getOperatorsAt(uint48 timestamp) external view returns (address[] memory);
 ```
 **Parameters**
 
@@ -247,9 +239,7 @@ Returns the status of the shared vault registration.
 
 
 ```solidity
-function isSharedVaultRegistered(
-    address vault
-) external view returns (bool);
+function isSharedVaultRegistered(address vault) external view returns (bool);
 ```
 **Parameters**
 
@@ -292,9 +282,7 @@ Returns the shared vaults at a specific timestamp.
 
 
 ```solidity
-function getSharedVaultsAt(
-    uint48 timestamp
-) external view returns (address[] memory);
+function getSharedVaultsAt(uint48 timestamp) external view returns (address[] memory);
 ```
 **Parameters**
 
@@ -352,9 +340,7 @@ Returns the status of the operator vault registration.
 
 
 ```solidity
-function isOperatorVaultRegistered(
-    address vault
-) external view returns (bool);
+function isOperatorVaultRegistered(address vault) external view returns (bool);
 ```
 **Parameters**
 
@@ -442,9 +428,7 @@ Returns the operator vaults.
 
 
 ```solidity
-function getOperatorVaults(
-    address operator
-) external view returns (address[] memory);
+function getOperatorVaults(address operator) external view returns (address[] memory);
 ```
 **Parameters**
 
@@ -487,9 +471,7 @@ Returns the vaults with stakes of the operator.
 
 
 ```solidity
-function getOperatorStakes(
-    address operator
-) external view returns (VaultValue[] memory);
+function getOperatorStakes(address operator) external view returns (VaultValue[] memory);
 ```
 **Parameters**
 
@@ -510,11 +492,10 @@ Returns the vaults with voting powers of the operator at a specific timestamp.
 
 
 ```solidity
-function getOperatorVotingPowersAt(
-    address operator,
-    bytes memory extraData,
-    uint48 timestamp
-) external view returns (VaultValue[] memory);
+function getOperatorVotingPowersAt(address operator, bytes memory extraData, uint48 timestamp)
+    external
+    view
+    returns (VaultValue[] memory);
 ```
 **Parameters**
 
@@ -537,10 +518,10 @@ Returns the vaults with voting powers of the operator.
 
 
 ```solidity
-function getOperatorVotingPowers(
-    address operator,
-    bytes memory extraData
-) external view returns (VaultValue[] memory);
+function getOperatorVotingPowers(address operator, bytes memory extraData)
+    external
+    view
+    returns (VaultValue[] memory);
 ```
 **Parameters**
 
@@ -562,10 +543,10 @@ Returns operators and their vaults with voting powers at a specific timestamp.
 
 
 ```solidity
-function getVotingPowersAt(
-    bytes[] memory extraData,
-    uint48 timestamp
-) external view returns (OperatorVotingPower[] memory);
+function getVotingPowersAt(bytes[] memory extraData, uint48 timestamp)
+    external
+    view
+    returns (OperatorVotingPower[] memory);
 ```
 **Parameters**
 
@@ -587,9 +568,7 @@ Returns operators and their vaults with voting powers.
 
 
 ```solidity
-function getVotingPowers(
-    bytes[] memory extraData
-) external view returns (OperatorVotingPower[] memory);
+function getVotingPowers(bytes[] memory extraData) external view returns (OperatorVotingPower[] memory);
 ```
 **Parameters**
 
@@ -608,7 +587,7 @@ function getVotingPowers(
 
 Registers the caller as an operator.
 
-*The caller can be anyone.*
+The caller can be anyone.
 
 
 ```solidity
@@ -619,7 +598,7 @@ function registerOperator() external;
 
 Registers the operator with a signature.
 
-*The caller can be anyone.*
+The caller can be anyone.
 
 
 ```solidity
@@ -637,7 +616,7 @@ function registerOperatorWithSignature(address operator, bytes memory signature)
 
 Unregisters the operator.
 
-*The caller can be anyone.*
+The caller can be anyone.
 
 
 ```solidity
@@ -648,7 +627,7 @@ function unregisterOperator() external;
 
 Unregisters the operator with a signature.
 
-*The caller can be anyone.*
+The caller can be anyone.
 
 
 ```solidity
@@ -666,8 +645,8 @@ function unregisterOperatorWithSignature(address operator, bytes memory signatur
 
 Invalidates the old signatures of the caller.
 
-*The caller can be anyone.
-Increases the signatures' nonce by one.*
+The caller can be anyone.
+Increases the signatures' nonce by one.
 
 
 ```solidity
@@ -678,7 +657,7 @@ function invalidateOldSignatures() external;
 ### SetSlashingData
 Emitted when the slashing data is set.
 
-*It doesn't force non-suitable vaults to unregister.*
+It doesn't force non-suitable vaults to unregister.
 
 
 ```solidity

@@ -1,8 +1,8 @@
 # OperatorsBlacklist
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/voting-power/extensions/OperatorsBlacklist.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/modules/voting-power/extensions/OperatorsBlacklist.sol)
 
 **Inherits:**
-[VotingPowerProvider](/src/modules/voting-power/VotingPowerProvider.sol/abstract.VotingPowerProvider.md), [IOperatorsBlacklist](/src/interfaces/modules/voting-power/extensions/IOperatorsBlacklist.sol/interface.IOperatorsBlacklist.md)
+[VotingPowerProvider](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/VotingPowerProvider.sol/abstract.VotingPowerProvider.md), [IOperatorsBlacklist](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/extensions/IOperatorsBlacklist.sol/interface.IOperatorsBlacklist.md)
 
 Contract for blacklisting operators.
 
@@ -12,7 +12,7 @@ Contract for blacklisting operators.
 
 ```solidity
 bytes32 private constant OperatorsBlacklistStorageLocation =
-    0x23ffaefb5f6b29c7a77ac2a8c6e8b7a8cb63a59ee84629217d13308576dcc800;
+    0x23ffaefb5f6b29c7a77ac2a8c6e8b7a8cb63a59ee84629217d13308576dcc800
 ```
 
 
@@ -37,9 +37,7 @@ Returns the blacklist status of the operator.
 
 
 ```solidity
-function isOperatorBlacklisted(
-    address operator
-) public view virtual returns (bool);
+function isOperatorBlacklisted(address operator) public view virtual returns (bool);
 ```
 **Parameters**
 
@@ -58,14 +56,12 @@ function isOperatorBlacklisted(
 
 Blacklists the operator.
 
-*The caller must have the needed permission.
-The operator will be unregistered if currently registered.*
+The caller must have the needed permission.
+The operator will be unregistered if currently registered.
 
 
 ```solidity
-function blacklistOperator(
-    address operator
-) public virtual checkPermission;
+function blacklistOperator(address operator) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -78,13 +74,11 @@ function blacklistOperator(
 
 Unblacklists the operator.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function unblacklistOperator(
-    address operator
-) public virtual checkPermission;
+function unblacklistOperator(address operator) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -97,8 +91,6 @@ function unblacklistOperator(
 
 
 ```solidity
-function _registerOperatorImpl(
-    address operator
-) internal virtual override;
+function _registerOperatorImpl(address operator) internal virtual override;
 ```
 

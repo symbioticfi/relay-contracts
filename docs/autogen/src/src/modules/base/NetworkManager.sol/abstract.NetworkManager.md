@@ -1,8 +1,8 @@
 # NetworkManager
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/base/NetworkManager.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/modules/base/NetworkManager.sol)
 
 **Inherits:**
-Initializable, StaticDelegateCallable, [INetworkManager](/src/interfaces/modules/base/INetworkManager.sol/interface.INetworkManager.md)
+Initializable, StaticDelegateCallable, [INetworkManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/base/INetworkManager.sol/interface.INetworkManager.md)
 
 Contract for managing the network and subnetwork getters.
 
@@ -11,7 +11,8 @@ Contract for managing the network and subnetwork getters.
 ### NetworkManagerLocation
 
 ```solidity
-bytes32 private constant NetworkManagerLocation = 0x779150488f5e984d1f840ba606e388ada6c73b44f261274c3595c61a30023e00;
+bytes32 private constant NetworkManagerLocation =
+    0x779150488f5e984d1f840ba606e388ada6c73b44f261274c3595c61a30023e00
 ```
 
 
@@ -27,9 +28,7 @@ function _getNetworkManagerStorage() internal pure returns (INetworkManager.Netw
 
 
 ```solidity
-function __NetworkManager_init(
-    NetworkManagerInitParams memory initParams
-) internal virtual onlyInitializing;
+function __NetworkManager_init(NetworkManagerInitParams memory initParams) internal virtual onlyInitializing;
 ```
 
 ### NETWORK

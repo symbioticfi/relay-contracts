@@ -1,5 +1,5 @@
 # IOpNetVaultAutoDeploy
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol)
 
 
 ## Functions
@@ -39,9 +39,7 @@ Returns the address of the auto deployed vault of the operator.
 
 
 ```solidity
-function getAutoDeployedVault(
-    address operator
-) external view returns (address);
+function getAutoDeployedVault(address operator) external view returns (address);
 ```
 **Parameters**
 
@@ -90,13 +88,11 @@ function isSetMaxNetworkLimitHookEnabled() external view returns (bool);
 
 Sets the status of the auto deploy.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function setAutoDeployStatus(
-    bool status
-) external;
+function setAutoDeployStatus(bool status) external;
 ```
 **Parameters**
 
@@ -109,13 +105,11 @@ function setAutoDeployStatus(
 
 Sets the configuration of the auto deploy.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function setAutoDeployConfig(
-    AutoDeployConfig memory config
-) external;
+function setAutoDeployConfig(AutoDeployConfig memory config) external;
 ```
 **Parameters**
 
@@ -128,13 +122,11 @@ function setAutoDeployConfig(
 
 Sets the status of the set max network limit hook.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function setSetMaxNetworkLimitHookStatus(
-    bool status
-) external;
+function setSetMaxNetworkLimitHookStatus(bool status) external;
 ```
 **Parameters**
 

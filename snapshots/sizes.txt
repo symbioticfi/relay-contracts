@@ -1,5 +1,5 @@
-Compiling 269 files with Solc 0.8.28
-Solc 0.8.28 finished in 41.83s
+Compiling 286 files with Solc 0.8.28
+Solc 0.8.28 finished in 39.49s
 Compiler run successful with warnings:
 Warning (6321): Unnamed return variable can remain unassigned. Add an explicit return with value to all non-reverting code paths or name the variable.
    --> src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:231:84:
@@ -8,99 +8,105 @@ Warning (6321): Unnamed return variable can remain unassigned. Add an explicit r
     |                                                                                    ^^^^
 
 Warning (6321): Unnamed return variable can remain unassigned. Add an explicit return with value to all non-reverting code paths or name the variable.
-   --> src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:339:28:
+   --> src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol:337:74:
     |
-339 |     ) public view returns (bool, RoundData memory roundData) {
-    |                            ^^^^
+337 |     function getLatestRoundData(address aggregator) public view returns (bool, RoundData memory roundData) {
+    |                                                                          ^^^^
 
 Warning (2018): Function state mutability can be restricted to pure
   --> src/libraries/keys/KeyBlsBn254.sol:64:5:
    |
-64 |     function unwrap(
+64 |     function unwrap(KEY_BLS_BN254 memory key) internal view returns (BN254.G1Point memory keyRaw) {
    |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-   --> src/libraries/keys/KeyBlsBn254.sol:112:5:
+   --> src/libraries/keys/KeyBlsBn254.sol:106:5:
     |
-112 |     function toBytes(
+106 |     function toBytes(KEY_BLS_BN254 memory key) internal view returns (bytes memory keyBytes) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/libraries/keys/KeyBlsBn254.sol:126:5:
+    |
+126 |     function zeroKey() internal view returns (KEY_BLS_BN254 memory key) {
     |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
    --> src/libraries/keys/KeyBlsBn254.sol:136:5:
     |
-136 |     function zeroKey() internal view returns (KEY_BLS_BN254 memory key) {
+136 |     function equal(KEY_BLS_BN254 memory key1, KEY_BLS_BN254 memory key2) internal view returns (bool) {
     |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-   --> src/libraries/keys/KeyBlsBn254.sol:146:5:
-    |
-146 |     function equal(KEY_BLS_BN254 memory key1, KEY_BLS_BN254 memory key2) internal view returns (bool) {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:46:5:
+  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:44:5:
    |
-46 |     function unwrap(
+44 |     function unwrap(KEY_ECDSA_SECP256K1 memory key) internal view returns (address keyRaw) {
    |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:58:5:
+  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:54:5:
    |
-58 |     function serialize(
+54 |     function serialize(KEY_ECDSA_SECP256K1 memory key) internal view returns (bytes memory keySerialized) {
    |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:69:5:
+  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:63:5:
    |
-69 |     function deserialize(
+63 |     function deserialize(bytes memory keySerialized) internal view returns (KEY_ECDSA_SECP256K1 memory key) {
    |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:81:5:
+  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:73:5:
    |
-81 |     function toBytes(
+73 |     function toBytes(KEY_ECDSA_SECP256K1 memory key) internal view returns (bytes memory keyBytes) {
    |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-   --> src/libraries/keys/KeyEcdsaSecp256k1.sol:105:5:
-    |
-105 |     function zeroKey() internal view returns (KEY_ECDSA_SECP256K1 memory key) {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-   --> src/libraries/keys/KeyEcdsaSecp256k1.sol:115:5:
-    |
-115 |     function equal(KEY_ECDSA_SECP256K1 memory key1, KEY_ECDSA_SECP256K1 memory key2) internal view returns (bool) {
-    |     ^ (Relevant source part starts here and spans across multiple lines).
-
-Warning (2018): Function state mutability can be restricted to pure
-  --> src/libraries/sigs/SigEcdsaSecp256k1.sol:53:5:
+  --> src/libraries/keys/KeyEcdsaSecp256k1.sol:93:5:
    |
-53 |     function verify(address key, bytes32 message, bytes memory signature) internal view returns (bool) {
+93 |     function zeroKey() internal view returns (KEY_ECDSA_SECP256K1 memory key) {
    |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:179:5:
+   --> src/libraries/keys/KeyEcdsaSecp256k1.sol:103:5:
     |
-179 |     function getVaultParams(
+103 |     function equal(KEY_ECDSA_SECP256K1 memory key1, KEY_ECDSA_SECP256K1 memory key2) internal view returns (bool) {
     |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:193:5:
+  --> src/libraries/sigs/SigEcdsaSecp256k1.sol:57:5:
+   |
+57 |     function verify(address key, bytes32 message, bytes memory signature) internal view returns (bool) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> lib/core/test/integration/SymbioticCoreConstants.sol:468:5:
     |
-193 |     function getVaultTokenizedParams(
+468 |     function allTokens() internal view returns (string[] memory result) {
     |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:241:5:
+   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:174:5:
     |
-241 |     function getSlasherParams(
+174 |     function getVaultParams(IVault.InitParams memory params) public view returns (uint64, bytes memory) {
     |     ^ (Relevant source part starts here and spans across multiple lines).
 
 Warning (2018): Function state mutability can be restricted to pure
-   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:258:5:
+   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:186:5:
     |
-258 |     function getVetoSlasherParams(
+186 |     function getVaultTokenizedParams(IVault.InitParams memory baseParams, string memory name, string memory symbol)
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:232:5:
+    |
+232 |     function getSlasherParams(bool isBurnerHook) public view returns (uint64, bytes memory) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol:247:5:
+    |
+247 |     function getVetoSlasherParams(bool isBurnerHook, uint48 vetoDuration, uint256 resolverSetEpochsDelay)
     |     ^ (Relevant source part starts here and spans across multiple lines).
 
 
@@ -129,7 +135,17 @@ Warning (2018): Function state mutability can be restricted to pure
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Checkpoints (src/libraries/structs/Checkpoints.sol)                                                              | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
+| CoreContractsProvider                                                                                            | 44               | 94                | 24,532             | 49,058              |
+|------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
+| Create2                                                                                                          | 44               | 94                | 24,532             | 49,058              |
+|------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
+| CreateXWrapper                                                                                                   | 2,764            | 2,792             | 21,812             | 46,360              |
+|------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | ECDSA                                                                                                            | 44               | 94                | 24,532             | 49,058              |
+|------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
+| ERC1967Proxy                                                                                                     | 122              | 935               | 24,454             | 48,217              |
+|------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
+| ERC1967Utils                                                                                                     | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | ERC4626Math                                                                                                      | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -156,6 +172,8 @@ Warning (2018): Function state mutability can be restricted to pure
 | KeyRegistryWithKey64                                                                                             | 16,359           | 16,387            | 8,217              | 32,765              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | KeyTags                                                                                                          | 44               | 94                | 24,532             | 49,058              |
+|------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
+| Logs                                                                                                             | 758              | 810               | 23,818             | 48,342              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Math                                                                                                             | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -185,6 +203,8 @@ Warning (2018): Function state mutability can be restricted to pure
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | PersistentSet                                                                                                    | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
+| ProxyAdmin                                                                                                       | 977              | 1,213             | 23,599             | 47,939              |
+|------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | RewarderMock                                                                                                     | 730              | 758               | 23,846             | 48,394              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | SafeCast                                                                                                         | 44               | 94                | 24,532             | 49,058              |
@@ -211,11 +231,15 @@ Warning (2018): Function state mutability can be restricted to pure
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | SlasherMock                                                                                                      | 1,264            | 1,292             | 23,312             | 47,860              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
+| StorageSlot                                                                                                      | 44               | 94                | 24,532             | 49,058              |
+|------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Strings                                                                                                          | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Subnetwork                                                                                                       | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
-| SymbioticCoreConstants                                                                                           | 44               | 94                | 24,532             | 49,058              |
+| SymbioticCoreConstants (lib/core/test/integration/SymbioticCoreConstants.sol)                                    | 44               | 94                | 24,532             | 49,058              |
+|------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
+| SymbioticCoreConstants (test/integration/SymbioticCoreConstants.sol)                                             | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | SymbioticCounter                                                                                                 | 21               | 47                | 24,555             | 49,105              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
@@ -272,6 +296,8 @@ Warning (2018): Function state mutability can be restricted to pure
 | TimelockControllerUpgradeable                                                                                    | 7,683            | 7,711             | 16,893             | 41,441              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | Token                                                                                                            | 1,723            | 3,065             | 22,853             | 46,087              |
+|------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
+| TransparentUpgradeableProxy                                                                                      | 1,074            | 3,447             | 23,502             | 45,705              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|
 | ValSetVerifier                                                                                                   | 44               | 94                | 24,532             | 49,058              |
 |------------------------------------------------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------|

@@ -1,5 +1,5 @@
 # SigBlsBn254
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/libraries/sigs/SigBlsBn254.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/b47510b803cc7bdc2bd336dbdbf5918993c63228/src/libraries/sigs/SigBlsBn254.sol)
 
 Library for verifying BLS signatures on the BN254 curve.
 
@@ -9,17 +9,15 @@ Library for verifying BLS signatures on the BN254 curve.
 
 Verify a BLS signature.
 
-*Burns the whole gas if pairing precompile fails.
-Returns false if the key is zero G1 point.*
+Burns the whole gas if pairing precompile fails.
+Returns false if the key is zero G1 point.
 
 
 ```solidity
-function verify(
-    bytes memory keyBytes,
-    bytes memory message,
-    bytes memory signature,
-    bytes memory extraData
-) internal view returns (bool);
+function verify(bytes memory keyBytes, bytes memory message, bytes memory signature, bytes memory extraData)
+    internal
+    view
+    returns (bool);
 ```
 **Parameters**
 
@@ -41,8 +39,8 @@ function verify(
 
 Verify a BLS signature.
 
-*Burns the whole gas if pairing precompile fails.
-Returns false if the key is zero G1 point.*
+Burns the whole gas if pairing precompile fails.
+Returns false if the key is zero G1 point.
 
 
 ```solidity
