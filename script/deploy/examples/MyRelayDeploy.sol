@@ -18,25 +18,17 @@ import {IEpochManager} from "../../../src/interfaces/modules/valset-driver/IEpoc
 import {MySettlement} from "../../../examples/MySettlement.sol";
 import {ISettlement} from "../../../src/interfaces/modules/settlement/ISettlement.sol";
 
-/**
- * @notice Example script to deploy the relay contracts.
- * @dev First deploy the voting power provider, key registry, settlement using run() function.
- * Settlement and VotingPowerProvider can be deployed multiple times on different chains.
- * Contract addresses along with the chain id are saved to the relay_contracts.json file.
- * The driver is deployed using runDeployDriver() function last utilizing the addresses from the file.
- */
 contract MyRelayDeploy is RelayDeploy {
-    address public constant OWNER = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
-    // Voting power provider parameters
+    address public constant OWNER = address(1);
+    address public constant NETWORK_ADDRESS = address(1);
+
+    // Voting power parameters
     string public constant VOTING_POWER_PROVIDER_NAME = "MyVotingPowerProvider";
     string public constant VOTING_POWER_PROVIDER_VERSION = "1";
-    address public constant NETWORK_ADDRESS = 0xEa0F2EA61998346aD39dddeF7513ae90915AFb3c;
-    uint96 public constant SUBNETWORK_ID = 1;
+    uint96 public constant SUBNETWORK_ID = 0;
     bool public constant REQUIRE_SLASHER = false;
     uint48 public constant MIN_VAULT_EPOCH_DURATION = 86_400;
-    address public constant TOKEN_ADDRESS = 0x8c1BEd5b9a0928467c9B1341Da1D7BD5e10b6549;
-    address public constant OPERATOR_REGISTRY_ADDRESS = 0xAd817a6Bc954F678451A71363f04150FDD81Af9F;
-    address public constant VAULT_FACTORY_ADDRESS = 0xAEb6bdd95c502390db8f52c8909F703E9Af6a346;
+    address public constant TOKEN_ADDRESS = address(0);
 
     // Key registry parameters
     string public constant KEY_REGISTRY_NAME = "MyKeyRegistry";
@@ -54,59 +46,19 @@ contract MyRelayDeploy is RelayDeploy {
     uint8 public constant REQUIRED_HEADER_KEY_TAG = 15;
     uint32 public constant VERIFICATION_TYPE = 0;
     uint248 public constant QUORUM_THRESHOLD = 6667;
-    uint64 public constant CHAIN_ID = 1;
 
     // Settlement parameters
     string public constant SETTLEMENT_NAME = "MySettlement";
     string public constant SETTLEMENT_VERSION = "1";
+    address public constant SIG_VERIFIER_ADDRESS = address(0);
 
-    function runDeploySettlement() public {
-        (address implementation, bytes memory initData) = _settlementParams();
-        deploySettlement({
-            proxyOwner: OWNER,
-            isDeployerGuarded: true,
-            implementation: implementation,
-            initData: initData
-        });
-    }
+    constructor() RelayDeploy("./script/deploy/examples/deploy-config.toml") {}
 
-    function runDeployVotingPowerProvider() public {
-        (address implementation, bytes memory initData) = _votingPowerProviderParams();
-        deployVotingPowerProvider({
-            proxyOwner: OWNER,
-            isDeployerGuarded: true,
-            implementation: implementation,
-            initData: initData
-        });
-    }
 
-    function runDeployKeyRegistry() public {
-        (address implementation, bytes memory initData) = _keyRegistryParams();
-        deployKeyRegistry({
-            proxyOwner: OWNER,
-            isDeployerGuarded: true,
-            implementation: implementation,
-            initData: initData
-        });
-    }
-
-    function runDeployValSetDriver(
-        IValSetDriver.CrossChainAddress memory keyRegistry,
-        IValSetDriver.CrossChainAddress[] memory settlements,
-        IValSetDriver.CrossChainAddress[] memory votingPowerProviders
-    ) public {
-        (address implementation, bytes memory initData) =
-            _valSetDriverParams(keyRegistry, settlements, votingPowerProviders);
-        deployValSetDriver({
-            proxyOwner: OWNER,
-            isDeployerGuarded: true,
-            implementation: implementation,
-            initData: initData
-        });
-    }
-
-    function _votingPowerProviderParams() internal returns (address implementation, bytes memory initData) {
-        implementation = address(new MyVotingPowerProvider(OPERATOR_REGISTRY_ADDRESS, VAULT_FACTORY_ADDRESS));
+    function _votingPowerProviderParams() internal override returns (address implementation, bytes memory initData) {
+        vm.startBroadcast();
+        implementation = address(new MyVotingPowerProvider(address(getCore().operatorRegistry), address(getCore().vaultFactory)));
+        vm.stopBroadcast();
 
         initData = abi.encodeCall(
             MyVotingPowerProvider.initialize,
@@ -129,7 +81,8 @@ contract MyRelayDeploy is RelayDeploy {
         );
     }
 
-    function _keyRegistryParams() internal returns (address implementation, bytes memory initData) {
+    function _keyRegistryParams() internal override returns (address implementation, bytes memory initData) {
+        vm.broadcast();
         implementation = address(new MyKeyRegistry());
 
         initData = abi.encodeCall(
@@ -145,11 +98,30 @@ contract MyRelayDeploy is RelayDeploy {
         );
     }
 
-    function _valSetDriverParams(
-        IValSetDriver.CrossChainAddress memory keyRegistry,
-        IValSetDriver.CrossChainAddress[] memory settlements,
-        IValSetDriver.CrossChainAddress[] memory votingPowerProviders
-    ) internal returns (address implementation, bytes memory initData) {
+
+    function _settlementParams() internal override returns (address implementation, bytes memory initData) {
+        vm.broadcast();
+        implementation = address(new MySettlement());
+
+        initData = abi.encodeCall(
+            MySettlement.initialize,
+            (
+                ISettlement.SettlementInitParams({
+                    networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
+                        network: NETWORK_ADDRESS,
+                        subnetworkId: SUBNETWORK_ID
+                    }),
+                    ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: SETTLEMENT_NAME, version: SETTLEMENT_VERSION}),
+                    sigVerifier: address(new SigVerifierBlsBn254Simple())
+                }),
+                OWNER
+            )
+        );
+    }
+
+
+    function _valSetDriverParams() internal override returns (address implementation, bytes memory initData) {
+        vm.broadcast();
         implementation = address(new MyValSetDriver());
 
         uint8[] memory requiredKeyTags = new uint8[](1);
@@ -173,9 +145,9 @@ contract MyRelayDeploy is RelayDeploy {
                     }),
                     numAggregators: NUM_AGGREGATORS,
                     numCommitters: NUM_COMMITTERS,
-                    votingPowerProviders: votingPowerProviders,
-                    keysProvider: keyRegistry,
-                    settlements: settlements,
+                    votingPowerProviders: getVotingPowerProviders(),
+                    keysProvider: getKeyRegistry(),
+                    settlements: getSettlements(),
                     maxVotingPower: MAX_VOTING_POWER,
                     minInclusionVotingPower: MIN_INCLUSION_VOTING_POWER,
                     maxValidatorsCount: MAX_VALIDATORS_COUNT,
@@ -189,22 +161,20 @@ contract MyRelayDeploy is RelayDeploy {
         );
     }
 
-    function _settlementParams() internal returns (address implementation, bytes memory initData) {
-        implementation = address(new MySettlement());
 
-        initData = abi.encodeCall(
-            MySettlement.initialize,
-            (
-                ISettlement.SettlementInitParams({
-                    networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
-                        network: NETWORK_ADDRESS,
-                        subnetworkId: SUBNETWORK_ID
-                    }),
-                    ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: SETTLEMENT_NAME, version: SETTLEMENT_VERSION}),
-                    sigVerifier: address(new SigVerifierBlsBn254Simple())
-                }),
-                OWNER
-            )
-        );
+    function runDeployVotingPowerProvider() public override {
+        deployVotingPowerProvider({proxyOwner: OWNER, isDeployerGuarded: true});
+    }
+
+    function runDeployKeyRegistry() public override {
+        deployKeyRegistry({proxyOwner: OWNER, isDeployerGuarded: true});
+    }
+
+    function runDeploySettlement() public override {
+        deploySettlement({proxyOwner: OWNER, isDeployerGuarded: true});
+    }
+
+    function runDeployValSetDriver() public override {
+        deployValSetDriver({proxyOwner: OWNER, isDeployerGuarded: true});
     }
 }
