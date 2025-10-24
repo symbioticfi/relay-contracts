@@ -3,10 +3,10 @@ pragma solidity ^0.8.25;
 
 import {INetworkManager} from "../../interfaces/modules/base/INetworkManager.sol";
 
+import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+
 import {StaticDelegateCallable} from "@symbioticfi/core/src/contracts/common/StaticDelegateCallable.sol";
 import {Subnetwork} from "@symbioticfi/core/src/contracts/libraries/Subnetwork.sol";
-
-import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 /**
  * @title NetworkManager

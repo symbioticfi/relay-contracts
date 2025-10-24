@@ -10,9 +10,9 @@ import {
 } from "../../../../interfaces/modules/voting-power/common/voting-power-calc/INormalizedTokenDecimalsVPCalc.sol";
 import {IVotingPowerCalcManager} from "../../../../interfaces/modules/voting-power/base/IVotingPowerCalcManager.sol";
 
-import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
-
 import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+
+import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
 
 /**
  * @title NormalizedTokenDecimalsVPCalc

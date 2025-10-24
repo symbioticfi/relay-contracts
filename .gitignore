@@ -6,6 +6,7 @@ yarn-error.log
 # Ignore build outputs
 dist
 out
+**/__pycache__
 
 # Ignore environment files
 .env

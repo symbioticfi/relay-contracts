@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {ValSetDriver} from "../src/modules/valset-driver/ValSetDriver.sol";
 import {OzAccessControl} from "../src/modules/common/permissions/OzAccessControl.sol";
+import {ValSetDriver} from "../src/modules/valset-driver/ValSetDriver.sol";
 
 import {IEpochManager} from "../src/interfaces/modules/valset-driver/IEpochManager.sol";
 import {IValSetDriver} from "../src/interfaces/modules/valset-driver/IValSetDriver.sol";

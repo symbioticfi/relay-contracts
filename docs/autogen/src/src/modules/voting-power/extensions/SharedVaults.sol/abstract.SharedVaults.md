@@ -1,5 +1,5 @@
 # SharedVaults
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/7eb78caa6fd861b172d3fcd10e873a8e342caffb/src/modules/voting-power/extensions/SharedVaults.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/8d840e69f50494357ea5358debcd4c2abd1b4f2b/src/modules/voting-power/extensions/SharedVaults.sol)
 
 **Inherits:**
 [VotingPowerProvider](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/VotingPowerProvider.sol/abstract.VotingPowerProvider.md), [ISharedVaults](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/extensions/ISharedVaults.sol/interface.ISharedVaults.md)

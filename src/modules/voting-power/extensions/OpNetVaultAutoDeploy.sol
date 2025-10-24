@@ -6,6 +6,7 @@ import {VotingPowerProvider} from "../VotingPowerProvider.sol";
 import {OpNetVaultAutoDeployLogic} from "./logic/OpNetVaultAutoDeployLogic.sol";
 
 import {IOpNetVaultAutoDeploy} from "../../../interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol";
+
 import {ISetMaxNetworkLimitHook} from "@symbioticfi/network/src/interfaces/ISetMaxNetworkLimitHook.sol";
 
 /**

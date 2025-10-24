@@ -1,5 +1,5 @@
 # InputNormalizer
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/7eb78caa6fd861b172d3fcd10e873a8e342caffb/src/libraries/utils/InputNormalizer.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/8d840e69f50494357ea5358debcd4c2abd1b4f2b/src/libraries/utils/InputNormalizer.sol)
 
 Library for normalizing input arrays to a given length.
 

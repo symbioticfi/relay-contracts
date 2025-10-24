@@ -1,5 +1,5 @@
 # ValSetVerifier
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/7eb78caa6fd861b172d3fcd10e873a8e342caffb/src/libraries/utils/ValSetVerifier.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/8d840e69f50494357ea5358debcd4c2abd1b4f2b/src/libraries/utils/ValSetVerifier.sol)
 
 Library for verifying the validity of validator set elements.
 
