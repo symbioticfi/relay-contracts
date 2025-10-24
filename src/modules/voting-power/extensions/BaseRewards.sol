@@ -7,10 +7,8 @@ import {BaseRewardsLogic} from "./logic/BaseRewardsLogic.sol";
 
 import {IBaseRewards} from "../../../interfaces/modules/voting-power/extensions/IBaseRewards.sol";
 
-/**
- * @title BaseRewards
- * @notice Base contract for distributing rewards to stakers and operators.
- */
+/// @title BaseRewards
+/// @notice Base contract for distributing rewards to stakers and operators.
 abstract contract BaseRewards is VotingPowerProvider, IBaseRewards {
     modifier onlyRewarder() {
         _checkRewarder();
@@ -38,16 +36,12 @@ abstract contract BaseRewards is VotingPowerProvider, IBaseRewards {
         _setRewarder(initParams.rewarder);
     }
 
-    /**
-     * @inheritdoc IBaseRewards
-     */
+    /// @inheritdoc IBaseRewards
     function getRewarder() public view virtual returns (address) {
         return _getBaseRewardsStorage()._rewarder;
     }
 
-    /**
-     * @inheritdoc IBaseRewards
-     */
+    /// @inheritdoc IBaseRewards
     function distributeStakerRewards(address stakerRewards, address token, uint256 amount, bytes memory data)
         public
         virtual
@@ -56,9 +50,7 @@ abstract contract BaseRewards is VotingPowerProvider, IBaseRewards {
         BaseRewardsLogic.distributeStakerRewards(stakerRewards, token, amount, data);
     }
 
-    /**
-     * @inheritdoc IBaseRewards
-     */
+    /// @inheritdoc IBaseRewards
     function distributeOperatorRewards(address operatorRewards, address token, uint256 amount, bytes32 root)
         public
         virtual
@@ -67,9 +59,7 @@ abstract contract BaseRewards is VotingPowerProvider, IBaseRewards {
         BaseRewardsLogic.distributeOperatorRewards(operatorRewards, token, amount, root);
     }
 
-    /**
-     * @inheritdoc IBaseRewards
-     */
+    /// @inheritdoc IBaseRewards
     function setRewarder(address rewarder) public virtual checkPermission {
         _setRewarder(rewarder);
     }

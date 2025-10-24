@@ -3,6 +3,10 @@ pragma solidity ^0.8.0;
 
 import {IERC5267} from "@openzeppelin/contracts/interfaces/IERC5267.sol";
 
+/**
+ * @title IOzEIP712
+ * @notice Interface for the OzEIP712 contract.
+ */
 interface IOzEIP712 is IERC5267 {
     /**
      * @notice The parameters for the initialization of the OzEIP712 contract.

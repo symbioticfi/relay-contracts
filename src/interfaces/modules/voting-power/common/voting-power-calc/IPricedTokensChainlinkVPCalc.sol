@@ -3,6 +3,10 @@ pragma solidity ^0.8.0;
 
 import {Checkpoints} from "../../../../../libraries/structs/Checkpoints.sol";
 
+/**
+ * @title IPricedTokensChainlinkVPCalc
+ * @notice Interface for the PricedTokensChainlinkVPCalc contract.
+ */
 interface IPricedTokensChainlinkVPCalc {
     /**
      * @notice Reverts when the aggregator is zero address.

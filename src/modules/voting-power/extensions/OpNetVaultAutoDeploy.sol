@@ -9,23 +9,17 @@ import {IOpNetVaultAutoDeploy} from "../../../interfaces/modules/voting-power/ex
 
 import {ISetMaxNetworkLimitHook} from "@symbioticfi/network/src/interfaces/ISetMaxNetworkLimitHook.sol";
 
-/**
- * @title OpNetVaultAutoDeploy
- * @notice Contract for auto-deploying vaults for operators on their registration.
- */
+/// @title OpNetVaultAutoDeploy
+/// @notice Contract for auto-deploying vaults for operators on their registration.
 abstract contract OpNetVaultAutoDeploy is VotingPowerProvider, IOpNetVaultAutoDeploy {
-    /**
-     * @inheritdoc IOpNetVaultAutoDeploy
-     */
+    /// @inheritdoc IOpNetVaultAutoDeploy
     address public immutable VAULT_CONFIGURATOR;
 
     constructor(address vaultConfigurator) {
         VAULT_CONFIGURATOR = vaultConfigurator;
     }
 
-    /**
-     * @dev Must be called after __VotingPowerProvider_init().
-     */
+    /// @dev Must be called after __VotingPowerProvider_init().
     function __OpNetVaultAutoDeploy_init(OpNetVaultAutoDeployInitParams memory initParams)
         internal
         virtual
@@ -34,51 +28,37 @@ abstract contract OpNetVaultAutoDeploy is VotingPowerProvider, IOpNetVaultAutoDe
         OpNetVaultAutoDeployLogic.initialize(initParams);
     }
 
-    /**
-     * @inheritdoc IOpNetVaultAutoDeploy
-     */
+    /// @inheritdoc IOpNetVaultAutoDeploy
     function isAutoDeployEnabled() public view virtual returns (bool) {
         return OpNetVaultAutoDeployLogic.isAutoDeployEnabled();
     }
 
-    /**
-     * @inheritdoc IOpNetVaultAutoDeploy
-     */
+    /// @inheritdoc IOpNetVaultAutoDeploy
     function getAutoDeployedVault(address operator) public view virtual returns (address) {
         return OpNetVaultAutoDeployLogic.getAutoDeployedVault(operator);
     }
 
-    /**
-     * @inheritdoc IOpNetVaultAutoDeploy
-     */
+    /// @inheritdoc IOpNetVaultAutoDeploy
     function getAutoDeployConfig() public view virtual returns (AutoDeployConfig memory) {
         return OpNetVaultAutoDeployLogic.getAutoDeployConfig();
     }
 
-    /**
-     * @inheritdoc IOpNetVaultAutoDeploy
-     */
+    /// @inheritdoc IOpNetVaultAutoDeploy
     function isSetMaxNetworkLimitHookEnabled() public view virtual returns (bool) {
         return OpNetVaultAutoDeployLogic.isSetMaxNetworkLimitHookEnabled();
     }
 
-    /**
-     * @inheritdoc IOpNetVaultAutoDeploy
-     */
+    /// @inheritdoc IOpNetVaultAutoDeploy
     function setAutoDeployStatus(bool status) public virtual checkPermission {
         OpNetVaultAutoDeployLogic.setAutoDeployStatus(status);
     }
 
-    /**
-     * @inheritdoc IOpNetVaultAutoDeploy
-     */
+    /// @inheritdoc IOpNetVaultAutoDeploy
     function setAutoDeployConfig(AutoDeployConfig memory config) public virtual checkPermission {
         OpNetVaultAutoDeployLogic.setAutoDeployConfig(config);
     }
 
-    /**
-     * @inheritdoc IOpNetVaultAutoDeploy
-     */
+    /// @inheritdoc IOpNetVaultAutoDeploy
     function setSetMaxNetworkLimitHookStatus(bool status) public virtual checkPermission {
         OpNetVaultAutoDeployLogic.setSetMaxNetworkLimitHookStatus(status);
     }

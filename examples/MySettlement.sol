@@ -6,6 +6,8 @@ import {Settlement} from "../src/modules/settlement/Settlement.sol";
 
 import {ISettlement} from "../src/interfaces/modules/settlement/ISettlement.sol";
 
+/// @title MySettlement
+/// @notice Example implementation of the Settlement contract.
 contract MySettlement is Settlement, OzAccessControl {
     bytes32 public constant SET_SIG_VERIFIER_ROLE = keccak256("SET_SIG_VERIFIER_ROLE");
     bytes32 public constant SET_GENESIS_ROLE = keccak256("SET_GENESIS_ROLE");

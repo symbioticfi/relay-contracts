@@ -3,6 +3,10 @@ pragma solidity ^0.8.0;
 
 import {IVotingPowerProvider} from "../IVotingPowerProvider.sol";
 
+/**
+ * @title IOperatorsBlacklist
+ * @notice Interface for the OperatorsBlacklist contract.
+ */
 interface IOperatorsBlacklist {
     /**
      * @notice Reverts when the operator is not blacklisted.

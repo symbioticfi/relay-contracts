@@ -3,6 +3,10 @@ pragma solidity ^0.8.0;
 
 import {IVotingPowerProvider} from "../IVotingPowerProvider.sol";
 
+/**
+ * @title IOperatorsWhitelist
+ * @notice Interface for the OperatorsWhitelist contract.
+ */
 interface IOperatorsWhitelist {
     /**
      * @notice Reverts when the whitelist status is already set.

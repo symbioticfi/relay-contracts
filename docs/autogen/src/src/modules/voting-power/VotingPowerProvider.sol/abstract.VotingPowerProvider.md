@@ -1,5 +1,5 @@
 # VotingPowerProvider
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/8d840e69f50494357ea5358debcd4c2abd1b4f2b/src/modules/voting-power/VotingPowerProvider.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/a628ce262ee9e6c40296d23589814df8e1ae8606/src/modules/voting-power/VotingPowerProvider.sol)
 
 **Inherits:**
 [NetworkManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/NetworkManager.sol/abstract.NetworkManager.md), [VotingPowerCalcManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/base/VotingPowerCalcManager.sol/abstract.VotingPowerCalcManager.md), [OzEIP712](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/OzEIP712.sol/abstract.OzEIP712.md), [PermissionManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), NoncesUpgradeable, MulticallUpgradeable, [IVotingPowerProvider](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/IVotingPowerProvider.sol/interface.IVotingPowerProvider.md)
@@ -621,12 +621,6 @@ Returns the length of the tokens.
 ```solidity
 function _getTokensLength() internal view virtual returns (uint256);
 ```
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`<none>`|`uint256`|The length of the tokens.|
-
 
 ### _getOperatorsLength
 
@@ -636,12 +630,6 @@ Returns the length of the operators.
 ```solidity
 function _getOperatorsLength() internal view virtual returns (uint256);
 ```
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`<none>`|`uint256`|The length of the operators.|
-
 
 ### _getSharedVaultsLength
 
@@ -651,12 +639,6 @@ Returns the length of the shared vaults.
 ```solidity
 function _getSharedVaultsLength() internal view virtual returns (uint256);
 ```
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`<none>`|`uint256`|The length of the shared vaults.|
-
 
 ### _getOperatorVaultsLength
 
@@ -666,18 +648,6 @@ Returns the length of the operator vaults.
 ```solidity
 function _getOperatorVaultsLength(address operator) internal view virtual returns (uint256);
 ```
-**Parameters**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`operator`|`address`|The operator.|
-
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`<none>`|`uint256`|The length of the operator vaults.|
-
 
 ### _getOperatorStakeAt
 
@@ -691,20 +661,6 @@ function _getOperatorStakeAt(address operator, address vault, uint48 timestamp)
     virtual
     returns (uint256);
 ```
-**Parameters**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`operator`|`address`|The operator.|
-|`vault`|`address`|The vault.|
-|`timestamp`|`uint48`|The timestamp.|
-
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`<none>`|`uint256`|The stake of the operator.|
-
 
 ### _getOperatorStake
 
@@ -714,19 +670,6 @@ Returns the stake of the operator.
 ```solidity
 function _getOperatorStake(address operator, address vault) internal view virtual returns (uint256);
 ```
-**Parameters**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`operator`|`address`|The operator.|
-|`vault`|`address`|The vault.|
-
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`<none>`|`uint256`|The stake of the operator.|
-
 
 ### _getOperatorVotingPowerAt
 
@@ -740,21 +683,6 @@ function _getOperatorVotingPowerAt(address operator, address vault, bytes memory
     virtual
     returns (uint256);
 ```
-**Parameters**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`operator`|`address`|The operator.|
-|`vault`|`address`|The vault.|
-|`extraData`|`bytes`|The extra data.|
-|`timestamp`|`uint48`|The timestamp.|
-
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`<none>`|`uint256`|The voting power of the operator.|
-
 
 ### _getOperatorVotingPower
 
@@ -768,20 +696,6 @@ function _getOperatorVotingPower(address operator, address vault, bytes memory e
     virtual
     returns (uint256);
 ```
-**Parameters**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`operator`|`address`|The operator.|
-|`vault`|`address`|The vault.|
-|`extraData`|`bytes`|The extra data.|
-
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`<none>`|`uint256`|The voting power of the operator.|
-
 
 ### registerOperator
 

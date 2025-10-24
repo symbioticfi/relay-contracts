@@ -7,10 +7,8 @@ import {BaseSlashingLogic} from "./logic/BaseSlashingLogic.sol";
 
 import {IBaseSlashing} from "../../../interfaces/modules/voting-power/extensions/IBaseSlashing.sol";
 
-/**
- * @title BaseSlashing
- * @notice Base contract for slashing vaults.
- */
+/// @title BaseSlashing
+/// @notice Base contract for slashing vaults.
 abstract contract BaseSlashing is VotingPowerProvider, IBaseSlashing {
     modifier onlySlasher() {
         _checkSlasher();
@@ -38,16 +36,12 @@ abstract contract BaseSlashing is VotingPowerProvider, IBaseSlashing {
         _setSlasher(initParams.slasher);
     }
 
-    /**
-     * @inheritdoc IBaseSlashing
-     */
+    /// @inheritdoc IBaseSlashing
     function getSlasher() public view virtual returns (address) {
         return _getBaseSlashingStorage()._slasher;
     }
 
-    /**
-     * @inheritdoc IBaseSlashing
-     */
+    /// @inheritdoc IBaseSlashing
     function slashVault(uint48 timestamp, address vault, address operator, uint256 amount, bytes memory hints)
         public
         virtual
@@ -57,9 +51,7 @@ abstract contract BaseSlashing is VotingPowerProvider, IBaseSlashing {
         return BaseSlashingLogic.slashVault(timestamp, vault, operator, amount, hints);
     }
 
-    /**
-     * @inheritdoc IBaseSlashing
-     */
+    /// @inheritdoc IBaseSlashing
     function executeSlashVault(address vault, uint256 slashIndex, bytes memory hints)
         public
         virtual
@@ -69,9 +61,7 @@ abstract contract BaseSlashing is VotingPowerProvider, IBaseSlashing {
         return BaseSlashingLogic.executeSlashVault(vault, slashIndex, hints);
     }
 
-    /**
-     * @inheritdoc IBaseSlashing
-     */
+    /// @inheritdoc IBaseSlashing
     function setSlasher(address slasher) public virtual checkPermission {
         _setSlasher(slasher);
     }

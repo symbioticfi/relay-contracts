@@ -3,6 +3,10 @@ pragma solidity ^0.8.0;
 
 import {ISigVerifier} from "./ISigVerifier.sol";
 
+/**
+ * @title ISigVerifierBlsBn254Simple
+ * @notice Interface for the SigVerifierBlsBn254Simple contract.
+ */
 interface ISigVerifierBlsBn254Simple is ISigVerifier {
     /**
      * @notice Reverts when the message length is invalid.

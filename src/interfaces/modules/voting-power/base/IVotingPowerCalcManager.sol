@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+/**
+ * @title IVotingPowerCalcManager
+ * @notice Interface for the VotingPowerCalcManager contract.
+ */
 interface IVotingPowerCalcManager {
     /**
      * @notice Returns the voting power given a `stake` amount of `vault`'s collateral at the certain vault at the given timestamp.

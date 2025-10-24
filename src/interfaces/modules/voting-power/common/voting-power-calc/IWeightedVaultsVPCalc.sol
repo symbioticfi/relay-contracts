@@ -3,6 +3,10 @@ pragma solidity ^0.8.0;
 
 import {Checkpoints} from "../../../../../libraries/structs/Checkpoints.sol";
 
+/**
+ * @title IWeightedVaultsVPCalc
+ * @notice Interface for the WeightedVaultsVPCalc contract.
+ */
 interface IWeightedVaultsVPCalc {
     /**
      * @notice Reverts when the weight is too large.

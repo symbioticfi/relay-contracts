@@ -6,6 +6,8 @@ import {OperatorVaults} from "../src/modules/voting-power/extensions/OperatorVau
 import {OzOwnable} from "../src/modules/common/permissions/OzOwnable.sol";
 import {VotingPowerProvider} from "../src/modules/voting-power/VotingPowerProvider.sol";
 
+/// @title MyVotingPowerProvider
+/// @notice Example implementation of the VotingPowerProvider contract.
 contract MyVotingPowerProvider is VotingPowerProvider, OzOwnable, EqualStakeVPCalc, OperatorVaults {
     constructor(address operatorRegistry, address vaultFactory) VotingPowerProvider(operatorRegistry, vaultFactory) {}
 

@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+/**
+ * @title IBaseSlashing
+ * @notice Interface for the BaseSlashing contract.
+ */
 interface IBaseSlashing {
     /**
      * @notice Reverts when the vault doesn't have a slasher.

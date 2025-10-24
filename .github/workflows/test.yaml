@@ -38,7 +38,7 @@ jobs:
 
       - name: Run Forge coverage
         run: |
-          forge coverage --report lcov
+          forge coverage --ir-minimum --report lcov
         id: coverage
         env:
           COVERAGE: true

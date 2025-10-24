@@ -3,6 +3,10 @@ pragma solidity ^0.8.0;
 
 import {IVotingPowerProvider} from "../IVotingPowerProvider.sol";
 
+/**
+ * @title IOpNetVaultAutoDeploy
+ * @notice Interface for the OpNetVaultAutoDeploy contract.
+ */
 interface IOpNetVaultAutoDeploy {
     /**
      * @notice Reverts when the burner hook is enabled but the slasher is not.

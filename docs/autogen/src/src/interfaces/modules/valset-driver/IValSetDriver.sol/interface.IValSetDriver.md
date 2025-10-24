@@ -1,5 +1,7 @@
 # IValSetDriver
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/8d840e69f50494357ea5358debcd4c2abd1b4f2b/src/interfaces/modules/valset-driver/IValSetDriver.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/a628ce262ee9e6c40296d23589814df8e1ae8606/src/interfaces/modules/valset-driver/IValSetDriver.sol)
+
+Interface for the ValSetDriver contract.
 
 
 ## Functions
@@ -1170,7 +1172,7 @@ error ValSetDriver_ZeroNumCommitters();
 The storage of the ValSetDriver contract.
 
 **Note:**
-storage-location: erc7201:symbiotic.storage.ValSetDriver
+storage-location: ERC-7201 slot: erc7201:symbiotic.storage.ValSetDriver.
 
 
 ```solidity

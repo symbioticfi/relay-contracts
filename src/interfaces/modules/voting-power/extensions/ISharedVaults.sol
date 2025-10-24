@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+/**
+ * @title ISharedVaults
+ * @notice Interface for the SharedVaults contract.
+ */
 interface ISharedVaults {
     /**
      * @notice Registers the shared vault.

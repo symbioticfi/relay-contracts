@@ -1,5 +1,5 @@
 # KeyEcdsaSecp256k1
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/8d840e69f50494357ea5358debcd4c2abd1b4f2b/src/libraries/keys/KeyEcdsaSecp256k1.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/a628ce262ee9e6c40296d23589814df8e1ae8606/src/libraries/keys/KeyEcdsaSecp256k1.sol)
 
 Library for interacting with ECDSA public keys on the secp256k1 curve, including validation and serialization.
 

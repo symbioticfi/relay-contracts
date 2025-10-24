@@ -8,16 +8,12 @@ import {
 } from "../../../../interfaces/modules/voting-power/common/voting-power-calc/IEqualStakeVPCalc.sol";
 import {IVotingPowerCalcManager} from "../../../../interfaces/modules/voting-power/base/IVotingPowerCalcManager.sol";
 
-/**
- * @title EqualStakeVPCalc
- * @notice Contract for calculating the voting power, making it equal to the stake.
- */
+/// @title EqualStakeVPCalc
+/// @notice Contract for calculating the voting power, making it equal to the stake.
 abstract contract EqualStakeVPCalc is VotingPowerCalcManager, IEqualStakeVPCalc {
     function __EqualStakeVPCalc_init() internal virtual onlyInitializing {}
 
-    /**
-     * @inheritdoc IVotingPowerCalcManager
-     */
+    /// @inheritdoc IVotingPowerCalcManager
     function stakeToVotingPowerAt(
         address, /* vault */
         uint256 stake,
@@ -33,9 +29,7 @@ abstract contract EqualStakeVPCalc is VotingPowerCalcManager, IEqualStakeVPCalc 
         return stake;
     }
 
-    /**
-     * @inheritdoc IVotingPowerCalcManager
-     */
+    /// @inheritdoc IVotingPowerCalcManager
     function stakeToVotingPower(
         address, /* vault */
         uint256 stake,

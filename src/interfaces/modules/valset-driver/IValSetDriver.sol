@@ -7,6 +7,10 @@ import {INetworkManager} from "../../modules/base/INetworkManager.sol";
 import {Checkpoints} from "../../../libraries/structs/Checkpoints.sol";
 import {PersistentSet} from "../../../libraries/structs/PersistentSet.sol";
 
+/**
+ * @title IValSetDriver
+ * @notice Interface for the ValSetDriver contract.
+ */
 interface IValSetDriver {
     /**
      * @notice Reverts when the cross-chain address with the same chain ID is already added.
@@ -66,7 +70,7 @@ interface IValSetDriver {
      * @param _quorumThresholds The set of the quorum thresholds.
      * @param _numAggregators The checkpoint of the number of aggregators.
      * @param _numCommitters The checkpoint of the number of committers.
-     * @custom:storage-location erc7201:symbiotic.storage.ValSetDriver
+     * @custom:storage-location ERC-7201 slot: erc7201:symbiotic.storage.ValSetDriver.
      */
     struct ValSetDriverStorage {
         mapping(uint64 chainId => bool isAdded) _isVotingPowerProviderChainAdded;

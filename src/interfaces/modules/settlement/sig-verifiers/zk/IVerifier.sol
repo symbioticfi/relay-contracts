@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+/**
+ * @title IVerifier
+ * @notice Interface for the gnark verifier contracts.
+ */
 interface IVerifier {
     /**
      * @notice Verifies a ZK proof for the given input.

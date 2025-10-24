@@ -11,38 +11,26 @@ import {ISigVerifier} from "../../../interfaces/modules/settlement/sig-verifiers
 import {IVerifier} from "../../../interfaces/modules/settlement/sig-verifiers/zk/IVerifier.sol";
 import {KEY_TYPE_BLS_BN254} from "../../../interfaces/modules/key-registry/IKeyRegistry.sol";
 
-/**
- * @title SigVerifierBlsBn254ZK
- * @notice Contract for verifying validator's set attestations based on BLS signatures on the BN254 curve
- *         by decompressing the whole validator set using ZK.
- */
+/// @title SigVerifierBlsBn254ZK
+/// @notice Contract for verifying validator's set attestations based on BLS signatures on the BN254 curve
+/// by decompressing the whole validator set using ZK.
 contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
     using ExtraDataStorageHelper for uint32;
     using KeyTags for uint8;
 
-    /**
-     * @inheritdoc ISigVerifier
-     */
+    /// @inheritdoc ISigVerifier
     uint32 public constant VERIFICATION_TYPE = 0;
 
-    /**
-     * @inheritdoc ISigVerifierBlsBn254ZK
-     */
+    /// @inheritdoc ISigVerifierBlsBn254ZK
     bytes32 public constant TOTAL_ACTIVE_VALIDATORS_HASH = keccak256("totalActiveValidators");
 
-    /**
-     * @inheritdoc ISigVerifierBlsBn254ZK
-     */
+    /// @inheritdoc ISigVerifierBlsBn254ZK
     bytes32 public constant VALIDATOR_SET_HASH_MIMC_HASH = keccak256("validatorSetHashMimc");
 
-    /**
-     * @inheritdoc ISigVerifierBlsBn254ZK
-     */
+    /// @inheritdoc ISigVerifierBlsBn254ZK
     address[] public verifiers;
 
-    /**
-     * @inheritdoc ISigVerifierBlsBn254ZK
-     */
+    /// @inheritdoc ISigVerifierBlsBn254ZK
     uint256[] public maxValidators;
 
     constructor(address[] memory verifiers_, uint256[] memory maxValidators_) {
@@ -69,9 +57,7 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
         maxValidators = maxValidators_;
     }
 
-    /**
-     * @inheritdoc ISigVerifier
-     */
+    /// @inheritdoc ISigVerifier
     function verifyQuorumSig(
         address settlement,
         uint48 epoch,

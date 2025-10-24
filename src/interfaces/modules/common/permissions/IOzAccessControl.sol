@@ -5,6 +5,10 @@ import {IPermissionManager} from "../../../modules/base/IPermissionManager.sol";
 
 import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
 
+/**
+ * @title IOzAccessControl
+ * @notice Interface for the OzAccessControl contract.
+ */
 interface IOzAccessControl {
     /**
      * @notice The storage of the OzAccessControl contract.

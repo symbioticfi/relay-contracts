@@ -11,10 +11,8 @@ import {
     IWeightedVaultsVPCalc
 } from "../../../../interfaces/modules/voting-power/common/voting-power-calc/IWeightedVaultsVPCalc.sol";
 
-/**
- * @title WeightedVaultsVPCalc
- * @notice Contract for calculating the voting power, weighting the vaults.
- */
+/// @title WeightedVaultsVPCalc
+/// @notice Contract for calculating the voting power, weighting the vaults.
 abstract contract WeightedVaultsVPCalc is EqualStakeVPCalc, PermissionManager, IWeightedVaultsVPCalc {
     using Checkpoints for Checkpoints.Trace208;
 
@@ -34,26 +32,20 @@ abstract contract WeightedVaultsVPCalc is EqualStakeVPCalc, PermissionManager, I
 
     function __WeightedVaultsVPCalc_init() internal virtual onlyInitializing {}
 
-    /**
-     * @inheritdoc IWeightedVaultsVPCalc
-     */
+    /// @inheritdoc IWeightedVaultsVPCalc
     function getVaultWeightAt(address vault, uint48 timestamp) public view virtual returns (uint208) {
         (bool exists,, uint208 weight,) =
             _getWeightedVaultsVPCalcStorage()._vaultWeight[vault].upperLookupRecentCheckpoint(timestamp);
         return exists ? weight : DEFAULT_VAULT_WEIGHT;
     }
 
-    /**
-     * @inheritdoc IWeightedVaultsVPCalc
-     */
+    /// @inheritdoc IWeightedVaultsVPCalc
     function getVaultWeight(address vault) public view virtual returns (uint208) {
         (bool exists,, uint208 weight) = _getWeightedVaultsVPCalcStorage()._vaultWeight[vault].latestCheckpoint();
         return exists ? weight : DEFAULT_VAULT_WEIGHT;
     }
 
-    /**
-     * @inheritdoc IVotingPowerCalcManager
-     */
+    /// @inheritdoc IVotingPowerCalcManager
     function stakeToVotingPowerAt(address vault, uint256 stake, bytes memory extraData, uint48 timestamp)
         public
         view
@@ -64,9 +56,7 @@ abstract contract WeightedVaultsVPCalc is EqualStakeVPCalc, PermissionManager, I
         return super.stakeToVotingPowerAt(vault, stake, extraData, timestamp) * getVaultWeightAt(vault, timestamp);
     }
 
-    /**
-     * @inheritdoc IVotingPowerCalcManager
-     */
+    /// @inheritdoc IVotingPowerCalcManager
     function stakeToVotingPower(address vault, uint256 stake, bytes memory extraData)
         public
         view
@@ -77,9 +67,7 @@ abstract contract WeightedVaultsVPCalc is EqualStakeVPCalc, PermissionManager, I
         return super.stakeToVotingPower(vault, stake, extraData) * getVaultWeight(vault);
     }
 
-    /**
-     * @inheritdoc IWeightedVaultsVPCalc
-     */
+    /// @inheritdoc IWeightedVaultsVPCalc
     function setVaultWeight(address vault, uint208 weight) public virtual checkPermission {
         _setVaultWeight(vault, weight);
     }

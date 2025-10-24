@@ -8,10 +8,8 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 import {StaticDelegateCallable} from "@symbioticfi/core/src/contracts/common/StaticDelegateCallable.sol";
 import {Subnetwork} from "@symbioticfi/core/src/contracts/libraries/Subnetwork.sol";
 
-/**
- * @title NetworkManager
- * @notice Contract for managing the network and subnetwork getters.
- */
+/// @title NetworkManager
+/// @notice Contract for managing the network and subnetwork getters.
 abstract contract NetworkManager is Initializable, StaticDelegateCallable, INetworkManager {
     using Subnetwork for address;
 
@@ -35,23 +33,17 @@ abstract contract NetworkManager is Initializable, StaticDelegateCallable, INetw
         emit INetworkManager.InitSubnetwork(initParams.network, initParams.subnetworkId);
     }
 
-    /**
-     * @inheritdoc INetworkManager
-     */
+    /// @inheritdoc INetworkManager
     function NETWORK() public view virtual returns (address) {
         return _getNetworkManagerStorage()._network;
     }
 
-    /**
-     * @inheritdoc INetworkManager
-     */
+    /// @inheritdoc INetworkManager
     function SUBNETWORK_IDENTIFIER() public view virtual returns (uint96) {
         return _getNetworkManagerStorage()._subnetworkID;
     }
 
-    /**
-     * @inheritdoc INetworkManager
-     */
+    /// @inheritdoc INetworkManager
     function SUBNETWORK() public view virtual returns (bytes32) {
         return NETWORK().subnetwork(SUBNETWORK_IDENTIFIER());
     }

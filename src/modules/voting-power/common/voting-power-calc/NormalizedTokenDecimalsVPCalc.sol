@@ -14,10 +14,8 @@ import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IER
 
 import {IVault} from "@symbioticfi/core/src/interfaces/vault/IVault.sol";
 
-/**
- * @title NormalizedTokenDecimalsVPCalc
- * @notice Contract for calculating the voting power, normalizing the stakes in different tokens to the same decimals.
- */
+/// @title NormalizedTokenDecimalsVPCalc
+/// @notice Contract for calculating the voting power, normalizing the stakes in different tokens to the same decimals.
 abstract contract NormalizedTokenDecimalsVPCalc is EqualStakeVPCalc, INormalizedTokenDecimalsVPCalc {
     using Scaler for uint256;
 
@@ -25,9 +23,7 @@ abstract contract NormalizedTokenDecimalsVPCalc is EqualStakeVPCalc, INormalized
 
     function __NormalizedTokenDecimalsVPCalc_init() internal virtual onlyInitializing {}
 
-    /**
-     * @inheritdoc IVotingPowerCalcManager
-     */
+    /// @inheritdoc IVotingPowerCalcManager
     function stakeToVotingPowerAt(address vault, uint256 stake, bytes memory extraData, uint48 timestamp)
         public
         view
@@ -38,9 +34,7 @@ abstract contract NormalizedTokenDecimalsVPCalc is EqualStakeVPCalc, INormalized
         return _normalizeVaultTokenDecimals(vault, super.stakeToVotingPowerAt(vault, stake, extraData, timestamp));
     }
 
-    /**
-     * @inheritdoc IVotingPowerCalcManager
-     */
+    /// @inheritdoc IVotingPowerCalcManager
     function stakeToVotingPower(address vault, uint256 stake, bytes memory extraData)
         public
         view

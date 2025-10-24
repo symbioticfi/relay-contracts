@@ -1,5 +1,7 @@
 # IWeightedTokensVPCalc
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/8d840e69f50494357ea5358debcd4c2abd1b4f2b/src/interfaces/modules/voting-power/common/voting-power-calc/IWeightedTokensVPCalc.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/a628ce262ee9e6c40296d23589814df8e1ae8606/src/interfaces/modules/voting-power/common/voting-power-calc/IWeightedTokensVPCalc.sol)
+
+Interface for the WeightedTokensVPCalc contract.
 
 
 ## Functions

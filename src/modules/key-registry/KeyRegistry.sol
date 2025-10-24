@@ -19,13 +19,11 @@ import {
 
 import {MulticallUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
 
-/**
- * @title KeyRegistry
- * @notice Contract for operators' keys management.
- * @dev It supports:
- *       - BLS public keys on BN254
- *       - ECDSA public keys on secp256k1
- */
+/// @title KeyRegistry
+/// @notice Contract for operators' keys management.
+/// @dev It supports:
+/// - BLS public keys on BN254
+/// - ECDSA public keys on secp256k1
 contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
     using Checkpoints for Checkpoints.Trace208;
     using Checkpoints for Checkpoints.Trace256;
@@ -51,9 +49,7 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
         __OzEIP712_init(keyRegistryInitParams.ozEip712InitParams);
     }
 
-    /**
-     * @inheritdoc IKeyRegistry
-     */
+    /// @inheritdoc IKeyRegistry
     function getKeyAt(address operator, uint8 tag, uint48 timestamp) public view virtual returns (bytes memory) {
         uint8 keyType = tag.getType();
         if (keyType == KEY_TYPE_BLS_BN254) {
@@ -65,9 +61,7 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
         revert IKeyRegistry.KeyRegistry_InvalidKeyType();
     }
 
-    /**
-     * @inheritdoc IKeyRegistry
-     */
+    /// @inheritdoc IKeyRegistry
     function getKey(address operator, uint8 tag) public view virtual returns (bytes memory) {
         uint8 keyType = tag.getType();
         if (keyType == KEY_TYPE_BLS_BN254) {
@@ -79,16 +73,12 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
         revert IKeyRegistry.KeyRegistry_InvalidKeyType();
     }
 
-    /**
-     * @inheritdoc IKeyRegistry
-     */
+    /// @inheritdoc IKeyRegistry
     function getOperator(bytes memory key) public view virtual returns (address) {
         return _getKeyRegistryStorage()._operatorByKeyHash[keccak256(key)];
     }
 
-    /**
-     * @inheritdoc IKeyRegistry
-     */
+    /// @inheritdoc IKeyRegistry
     function getKeysAt(address operator, uint48 timestamp) public view virtual returns (Key[] memory keys) {
         uint8[] memory keyTags = _getKeyTagsAt(operator, timestamp);
         keys = new Key[](keyTags.length);
@@ -97,9 +87,7 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
         }
     }
 
-    /**
-     * @inheritdoc IKeyRegistry
-     */
+    /// @inheritdoc IKeyRegistry
     function getKeys(address operator) public view virtual returns (Key[] memory keys) {
         uint8[] memory keyTags = _getKeyTags(operator);
         keys = new Key[](keyTags.length);
@@ -108,9 +96,7 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
         }
     }
 
-    /**
-     * @inheritdoc IKeyRegistry
-     */
+    /// @inheritdoc IKeyRegistry
     function getKeysAt(uint48 timestamp) public view virtual returns (OperatorWithKeys[] memory operatorsKeys) {
         address[] memory operators = getKeysOperatorsAt(timestamp);
         operatorsKeys = new IKeyRegistry.OperatorWithKeys[](operators.length);
@@ -120,9 +106,7 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
         }
     }
 
-    /**
-     * @inheritdoc IKeyRegistry
-     */
+    /// @inheritdoc IKeyRegistry
     function getKeys() public view virtual returns (OperatorWithKeys[] memory operatorsKeys) {
         address[] memory operators = getKeysOperators();
         operatorsKeys = new OperatorWithKeys[](operators.length);
@@ -132,23 +116,17 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
         }
     }
 
-    /**
-     * @inheritdoc IKeyRegistry
-     */
+    /// @inheritdoc IKeyRegistry
     function getKeysOperatorsLength() public view virtual returns (uint256) {
         return _getKeyRegistryStorage()._operators.length();
     }
 
-    /**
-     * @inheritdoc IKeyRegistry
-     */
+    /// @inheritdoc IKeyRegistry
     function getKeysOperatorsAt(uint48 timestamp) public view virtual returns (address[] memory) {
         return _getKeyRegistryStorage()._operators.valuesAt(timestamp);
     }
 
-    /**
-     * @inheritdoc IKeyRegistry
-     */
+    /// @inheritdoc IKeyRegistry
     function getKeysOperators() public view virtual returns (address[] memory) {
         return _getKeyRegistryStorage()._operators.values();
     }
@@ -161,9 +139,7 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
         return uint128(_getKeyRegistryStorage()._operatorKeyTags[operator].latest()).deserialize();
     }
 
-    /**
-     * @inheritdoc IKeyRegistry
-     */
+    /// @inheritdoc IKeyRegistry
     function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memory extraData) public virtual {
         _setKey(msg.sender, tag, key, signature, extraData);
     }

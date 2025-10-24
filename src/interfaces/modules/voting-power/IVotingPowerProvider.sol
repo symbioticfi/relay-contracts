@@ -7,6 +7,10 @@ import {IOzEIP712} from "../base/IOzEIP712.sol";
 import {Checkpoints} from "../../../libraries/structs/Checkpoints.sol";
 import {PersistentSet} from "../../../libraries/structs/PersistentSet.sol";
 
+/**
+ * @title IVotingPowerProvider
+ * @notice Interface for the VotingPowerProvider contract.
+ */
 interface IVotingPowerProvider {
     /**
      * @notice Reverts when the operator is not registered in the OperatorRegistry.

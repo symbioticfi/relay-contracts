@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+/**
+ * @title IBaseRewards
+ * @notice Interface for the BaseRewards contract.
+ */
 interface IBaseRewards {
     /**
      * @notice Reverts when the caller is not the rewarder.

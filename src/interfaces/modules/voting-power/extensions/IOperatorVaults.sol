@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+/**
+ * @title IOperatorVaults
+ * @notice Interface for the OperatorVaults contract.
+ */
 interface IOperatorVaults {
     /**
      * @notice Registers the operator vault.

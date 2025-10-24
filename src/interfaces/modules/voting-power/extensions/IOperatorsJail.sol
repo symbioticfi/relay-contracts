@@ -3,6 +3,10 @@ pragma solidity ^0.8.0;
 
 import {IVotingPowerProvider} from "../IVotingPowerProvider.sol";
 
+/**
+ * @title IOperatorsJail
+ * @notice Interface for the OperatorsJail contract.
+ */
 interface IOperatorsJail {
     /**
      * @notice Reverts when the operator is already jailed.

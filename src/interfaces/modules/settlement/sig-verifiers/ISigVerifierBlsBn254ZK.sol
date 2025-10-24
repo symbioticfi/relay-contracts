@@ -3,6 +3,10 @@ pragma solidity ^0.8.0;
 
 import {ISigVerifier} from "./ISigVerifier.sol";
 
+/**
+ * @title ISigVerifierBlsBn254ZK
+ * @notice Interface for the SigVerifierBlsBn254ZK contract.
+ */
 interface ISigVerifierBlsBn254ZK is ISigVerifier {
     /**
      * @notice Reverts when the number of verifiers and max validators is not the same or zero.

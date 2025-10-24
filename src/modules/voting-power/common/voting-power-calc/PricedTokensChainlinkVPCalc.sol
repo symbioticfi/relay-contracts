@@ -12,10 +12,8 @@ import {
 } from "../../../../interfaces/modules/voting-power/common/voting-power-calc/IPricedTokensChainlinkVPCalc.sol";
 import {IVotingPowerCalcManager} from "../../../../interfaces/modules/voting-power/base/IVotingPowerCalcManager.sol";
 
-/**
- * @title PricedTokensChainlinkVPCalc
- * @notice Contract for calculating the voting power, pricing the tokens using Chainlink.
- */
+/// @title PricedTokensChainlinkVPCalc
+/// @notice Contract for calculating the voting power, pricing the tokens using Chainlink.
 abstract contract PricedTokensChainlinkVPCalc is
     NormalizedTokenDecimalsVPCalc,
     PermissionManager,
@@ -40,9 +38,7 @@ abstract contract PricedTokensChainlinkVPCalc is
 
     function __PricedTokensChainlinkVPCalc_init() internal virtual onlyInitializing {}
 
-    /**
-     * @inheritdoc IPricedTokensChainlinkVPCalc
-     */
+    /// @inheritdoc IPricedTokensChainlinkVPCalc
     function getTokenHopsAt(address token, uint48 timestamp)
         public
         view
@@ -53,9 +49,7 @@ abstract contract PricedTokensChainlinkVPCalc is
         return _deserializeHops(_getPricedTokensChainlinkVPCalcStorage()._tokenHops[token].upperLookupRecent(timestamp));
     }
 
-    /**
-     * @inheritdoc IPricedTokensChainlinkVPCalc
-     */
+    /// @inheritdoc IPricedTokensChainlinkVPCalc
     function getTokenHops(address token)
         public
         view
@@ -66,27 +60,21 @@ abstract contract PricedTokensChainlinkVPCalc is
         return _deserializeHops(_getPricedTokensChainlinkVPCalcStorage()._tokenHops[token].latest());
     }
 
-    /**
-     * @inheritdoc IPricedTokensChainlinkVPCalc
-     */
+    /// @inheritdoc IPricedTokensChainlinkVPCalc
     function getTokenPriceAt(address token, uint48 timestamp) public view virtual override returns (uint256) {
         (address[2] memory aggregators, bool[2] memory inverts, uint48[2] memory stalenessDurations) =
             getTokenHopsAt(token, timestamp);
         return ChainlinkPriceFeed.getPriceAt(aggregators, timestamp, inverts, stalenessDurations);
     }
 
-    /**
-     * @inheritdoc IPricedTokensChainlinkVPCalc
-     */
+    /// @inheritdoc IPricedTokensChainlinkVPCalc
     function getTokenPrice(address token) public view virtual override returns (uint256) {
         (address[2] memory aggregators, bool[2] memory inverts, uint48[2] memory stalenessDurations) =
             getTokenHops(token);
         return ChainlinkPriceFeed.getLatestPrice(aggregators, inverts, stalenessDurations);
     }
 
-    /**
-     * @inheritdoc IVotingPowerCalcManager
-     */
+    /// @inheritdoc IVotingPowerCalcManager
     function stakeToVotingPowerAt(address vault, uint256 stake, bytes memory extraData, uint48 timestamp)
         public
         view
@@ -98,9 +86,7 @@ abstract contract PricedTokensChainlinkVPCalc is
             * getTokenPriceAt(_getCollateral(vault), timestamp);
     }
 
-    /**
-     * @inheritdoc IVotingPowerCalcManager
-     */
+    /// @inheritdoc IVotingPowerCalcManager
     function stakeToVotingPower(address vault, uint256 stake, bytes memory extraData)
         public
         view
@@ -111,9 +97,7 @@ abstract contract PricedTokensChainlinkVPCalc is
         return super.stakeToVotingPower(vault, stake, extraData) * getTokenPrice(_getCollateral(vault));
     }
 
-    /**
-     * @inheritdoc IPricedTokensChainlinkVPCalc
-     */
+    /// @inheritdoc IPricedTokensChainlinkVPCalc
     function setTokenHops(
         address token,
         address[2] memory aggregators,

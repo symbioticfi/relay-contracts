@@ -6,6 +6,10 @@ import {IOzEIP712} from "../../modules/base/IOzEIP712.sol";
 
 import {Checkpoints} from "../../../libraries/structs/Checkpoints.sol";
 
+/**
+ * @title ISettlement
+ * @notice Interface for the Settlement contract.
+ */
 interface ISettlement {
     /**
      * @notice Reverts when the extra data key is duplicated.
@@ -60,7 +64,7 @@ interface ISettlement {
      * @param _sigVerifier The address of the quorum signature verifier.
      * @param _valSetHeader The mapping from the epoch to the validator set header.
      * @param _extraData The mapping from the epoch and the key to the extra data.
-     * @custom:storage-location erc7201:symbiotic.storage.Settlement
+     * @custom:storage-location ERC-7201 slot: erc7201:symbiotic.storage.Settlement.
      */
     struct SettlementStorage {
         uint48 _lastCommittedHeaderEpoch;

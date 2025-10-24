@@ -11,10 +11,8 @@ import {
     IWeightedTokensVPCalc
 } from "../../../../interfaces/modules/voting-power/common/voting-power-calc/IWeightedTokensVPCalc.sol";
 
-/**
- * @title WeightedTokensVPCalc
- * @notice Contract for calculating the voting power, weighting the tokens.
- */
+/// @title WeightedTokensVPCalc
+/// @notice Contract for calculating the voting power, weighting the tokens.
 abstract contract WeightedTokensVPCalc is NormalizedTokenDecimalsVPCalc, PermissionManager, IWeightedTokensVPCalc {
     using Checkpoints for Checkpoints.Trace208;
 
@@ -34,26 +32,20 @@ abstract contract WeightedTokensVPCalc is NormalizedTokenDecimalsVPCalc, Permiss
 
     function __WeightedTokensVPCalc_init() internal virtual onlyInitializing {}
 
-    /**
-     * @inheritdoc IWeightedTokensVPCalc
-     */
+    /// @inheritdoc IWeightedTokensVPCalc
     function getTokenWeightAt(address token, uint48 timestamp) public view virtual returns (uint208) {
         (bool exists,, uint208 weight,) =
             _getWeightedTokensVPCalcStorage()._tokenWeight[token].upperLookupRecentCheckpoint(timestamp);
         return exists ? weight : DEFAULT_TOKEN_WEIGHT;
     }
 
-    /**
-     * @inheritdoc IWeightedTokensVPCalc
-     */
+    /// @inheritdoc IWeightedTokensVPCalc
     function getTokenWeight(address token) public view virtual returns (uint208) {
         (bool exists,, uint208 weight) = _getWeightedTokensVPCalcStorage()._tokenWeight[token].latestCheckpoint();
         return exists ? weight : DEFAULT_TOKEN_WEIGHT;
     }
 
-    /**
-     * @inheritdoc IVotingPowerCalcManager
-     */
+    /// @inheritdoc IVotingPowerCalcManager
     function stakeToVotingPowerAt(address vault, uint256 stake, bytes memory extraData, uint48 timestamp)
         public
         view
@@ -65,9 +57,7 @@ abstract contract WeightedTokensVPCalc is NormalizedTokenDecimalsVPCalc, Permiss
             * getTokenWeightAt(_getCollateral(vault), timestamp);
     }
 
-    /**
-     * @inheritdoc IVotingPowerCalcManager
-     */
+    /// @inheritdoc IVotingPowerCalcManager
     function stakeToVotingPower(address vault, uint256 stake, bytes memory extraData)
         public
         view
@@ -78,9 +68,7 @@ abstract contract WeightedTokensVPCalc is NormalizedTokenDecimalsVPCalc, Permiss
         return super.stakeToVotingPower(vault, stake, extraData) * getTokenWeight(_getCollateral(vault));
     }
 
-    /**
-     * @inheritdoc IWeightedTokensVPCalc
-     */
+    /// @inheritdoc IWeightedTokensVPCalc
     function setTokenWeight(address token, uint208 weight) public virtual checkPermission {
         _setTokenWeight(token, weight);
     }

@@ -1,5 +1,7 @@
 # ISettlement
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/8d840e69f50494357ea5358debcd4c2abd1b4f2b/src/interfaces/modules/settlement/ISettlement.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/a628ce262ee9e6c40296d23589814df8e1ae8606/src/interfaces/modules/settlement/ISettlement.sol)
+
+Interface for the Settlement contract.
 
 
 ## Functions
@@ -682,7 +684,7 @@ error Settlement_VerificationFailed();
 The storage of the Settlement contract.
 
 **Note:**
-storage-location: erc7201:symbiotic.storage.Settlement
+storage-location: ERC-7201 slot: erc7201:symbiotic.storage.Settlement.
 
 
 ```solidity

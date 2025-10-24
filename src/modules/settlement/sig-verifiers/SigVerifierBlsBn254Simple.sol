@@ -14,11 +14,9 @@ import {
 import {ISigVerifier} from "../../../interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol";
 import {KEY_TYPE_BLS_BN254} from "../../../interfaces/modules/key-registry/IKeyRegistry.sol";
 
-/**
- * @title SigVerifierBlsBn254Simple
- * @notice Contract for verifying validator's set attestations based on BLS signatures on the BN254 curve
- *         by decompressing the whole validator set on-chain.
- */
+/// @title SigVerifierBlsBn254Simple
+/// @notice Contract for verifying validator's set attestations based on BLS signatures on the BN254 curve
+/// by decompressing the whole validator set on-chain.
 contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
     using BN254 for BN254.G1Point;
     using ExtraDataStorageHelper for uint32;
@@ -26,29 +24,19 @@ contract SigVerifierBlsBn254Simple is ISigVerifierBlsBn254Simple {
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
     using KeyTags for uint8;
 
-    /**
-     * @inheritdoc ISigVerifier
-     */
+    /// @inheritdoc ISigVerifier
     uint32 public constant VERIFICATION_TYPE = 1;
 
-    /**
-     * @inheritdoc ISigVerifierBlsBn254Simple
-     */
+    /// @inheritdoc ISigVerifierBlsBn254Simple
     bytes32 public constant VALIDATOR_SET_HASH_KECCAK256_HASH = keccak256("validatorSetHashKeccak256");
 
-    /**
-     * @inheritdoc ISigVerifierBlsBn254Simple
-     */
+    /// @inheritdoc ISigVerifierBlsBn254Simple
     bytes32 public constant AGGREGATED_PUBLIC_KEY_G1_HASH = keccak256("aggPublicKeyG1");
 
-    /**
-     * @inheritdoc ISigVerifierBlsBn254Simple
-     */
+    /// @inheritdoc ISigVerifierBlsBn254Simple
     uint256 public constant MAX_VALIDATORS = 65_536;
 
-    /**
-     * @inheritdoc ISigVerifier
-     */
+    /// @inheritdoc ISigVerifier
     function verifyQuorumSig(
         address settlement,
         uint48 epoch,

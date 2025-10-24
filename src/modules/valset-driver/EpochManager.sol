@@ -7,10 +7,8 @@ import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
 
 import {IEpochManager} from "../../interfaces/modules/valset-driver/IEpochManager.sol";
 
-/**
- * @title EpochManager
- * @notice Contract for managing the epochs state machine.
- */
+/// @title EpochManager
+/// @notice Contract for managing the epochs state machine.
 abstract contract EpochManager is PermissionManager, IEpochManager {
     using Checkpoints for Checkpoints.Trace208;
 
@@ -35,34 +33,26 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
         emit InitEpochDuration(initParams.epochDuration, initParams.epochDurationTimestamp);
     }
 
-    /**
-     * @inheritdoc IEpochManager
-     */
+    /// @inheritdoc IEpochManager
     function getCurrentEpoch() public view virtual returns (uint48) {
         (uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex) =
             _getCurrentEpochDurationData();
         return epochDurationIndex + (uint48(block.timestamp) - epochDurationTimestamp) / epochDuration;
     }
 
-    /**
-     * @inheritdoc IEpochManager
-     */
+    /// @inheritdoc IEpochManager
     function getCurrentEpochDuration() public view virtual returns (uint48 epochDuration) {
         (epochDuration,,) = _getCurrentEpochDurationData();
     }
 
-    /**
-     * @inheritdoc IEpochManager
-     */
+    /// @inheritdoc IEpochManager
     function getCurrentEpochStart() public view virtual returns (uint48) {
         (uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex) =
             _getCurrentEpochDurationData();
         return epochDurationTimestamp + (getCurrentEpoch() - epochDurationIndex) * epochDuration;
     }
 
-    /**
-     * @inheritdoc IEpochManager
-     */
+    /// @inheritdoc IEpochManager
     function getNextEpoch() public view virtual returns (uint48) {
         (, uint48 epochDurationTimestamp,) = _getFirstEpochDurationData();
         if (block.timestamp < epochDurationTimestamp) {
@@ -71,9 +61,7 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
         return getCurrentEpoch() + 1;
     }
 
-    /**
-     * @inheritdoc IEpochManager
-     */
+    /// @inheritdoc IEpochManager
     function getNextEpochDuration() public view virtual returns (uint48) {
         (uint48 epochDuration, uint48 epochDurationTimestamp,) = _getFirstEpochDurationData();
         if (block.timestamp < epochDurationTimestamp) {
@@ -84,9 +72,7 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
         return epochDuration;
     }
 
-    /**
-     * @inheritdoc IEpochManager
-     */
+    /// @inheritdoc IEpochManager
     function getNextEpochStart() public view virtual returns (uint48) {
         (, uint48 epochDurationTimestamp,) = _getFirstEpochDurationData();
         if (block.timestamp < epochDurationTimestamp) {
@@ -95,9 +81,7 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
         return getCurrentEpochStart() + getCurrentEpochDuration();
     }
 
-    /**
-     * @inheritdoc IEpochManager
-     */
+    /// @inheritdoc IEpochManager
     function getEpochIndex(uint48 timestamp) public view virtual returns (uint48) {
         (uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex) =
             _getEpochDurationDataByTimestamp(timestamp);
@@ -107,25 +91,19 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
         return epochDurationIndex + (timestamp - epochDurationTimestamp) / epochDuration;
     }
 
-    /**
-     * @inheritdoc IEpochManager
-     */
+    /// @inheritdoc IEpochManager
     function getEpochDuration(uint48 epoch) public view virtual returns (uint48 epochDuration) {
         (epochDuration,,) = _getEpochDurationDataByIndex(epoch);
     }
 
-    /**
-     * @inheritdoc IEpochManager
-     */
+    /// @inheritdoc IEpochManager
     function getEpochStart(uint48 epoch) public view virtual returns (uint48) {
         (uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex) =
             _getEpochDurationDataByIndex(epoch);
         return epochDurationTimestamp + (epoch - epochDurationIndex) * epochDuration;
     }
 
-    /**
-     * @inheritdoc IEpochManager
-     */
+    /// @inheritdoc IEpochManager
     function setEpochDuration(uint48 epochDuration) public virtual checkPermission {
         _setEpochDuration(epochDuration);
     }

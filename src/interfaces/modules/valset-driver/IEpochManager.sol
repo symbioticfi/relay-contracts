@@ -3,6 +3,10 @@ pragma solidity ^0.8.0;
 
 import {Checkpoints} from "../../../libraries/structs/Checkpoints.sol";
 
+/**
+ * @title IEpochManager
+ * @notice Interface for the EpochManager contract.
+ */
 interface IEpochManager {
     /**
      * @notice Reverts when the epoch duration is zero.
