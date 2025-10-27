@@ -1,5 +1,5 @@
 # WeightedVaultsVPCalc
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/25bc077b00bc288b74df9d5ae2fb3db3e29bdbad/src/modules/voting-power/common/voting-power-calc/WeightedVaultsVPCalc.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/3e174a9e69da2b5866055084b62455d579b3d0af/src/modules/voting-power/common/voting-power-calc/WeightedVaultsVPCalc.sol)
 
 **Inherits:**
 [EqualStakeVPCalc](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol/abstract.EqualStakeVPCalc.md), [PermissionManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), [IWeightedVaultsVPCalc](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/common/voting-power-calc/IWeightedVaultsVPCalc.sol/interface.IWeightedVaultsVPCalc.md)

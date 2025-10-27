@@ -1,5 +1,5 @@
 # SigEcdsaSecp256k1
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/25bc077b00bc288b74df9d5ae2fb3db3e29bdbad/src/libraries/sigs/SigEcdsaSecp256k1.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/3e174a9e69da2b5866055084b62455d579b3d0af/src/libraries/sigs/SigEcdsaSecp256k1.sol)
 
 Library for verifying ECDSA signatures on the secp256k1 curve.
 

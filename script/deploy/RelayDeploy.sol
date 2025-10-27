@@ -241,7 +241,7 @@ abstract contract RelayDeploy is SymbioticCoreInit, Config, CreateXWrapper {
         returns (address)
     {
         (address implementation, bytes memory initData) = _keyRegistryParams();
-        address newContract = _deployContract(salt, implementation, initData, proxyOwner, isDeployerGuarded);
+        address newContract = _deployContract(salt, implementation, true, initData, proxyOwner, isDeployerGuarded);
         Logs.log(string.concat("KeyRegistry deployed at: ", vm.toString(newContract)));
         config.set("key_registry", newContract);
         return newContract;
@@ -262,7 +262,7 @@ abstract contract RelayDeploy is SymbioticCoreInit, Config, CreateXWrapper {
         returns (address)
     {
         (address implementation, bytes memory initData) = _votingPowerProviderParams();
-        address newContract = _deployContract(salt, implementation, initData, proxyOwner, isDeployerGuarded);
+        address newContract = _deployContract(salt, implementation, true, initData, proxyOwner, isDeployerGuarded);
 
         if (SymbioticCoreConstants.coreSupported()) {
             // Validate deployment
@@ -304,7 +304,7 @@ abstract contract RelayDeploy is SymbioticCoreInit, Config, CreateXWrapper {
         returns (address)
     {
         (address implementation, bytes memory initData) = _settlementParams();
-        address newContract = _deployContract(salt, implementation, initData, proxyOwner, isDeployerGuarded);
+        address newContract = _deployContract(salt, implementation, true, initData, proxyOwner, isDeployerGuarded);
         Logs.log(string.concat("Settlement deployed at: ", vm.toString(newContract)));
         config.set("settlement", newContract);
         return newContract;
@@ -325,7 +325,7 @@ abstract contract RelayDeploy is SymbioticCoreInit, Config, CreateXWrapper {
         returns (address)
     {
         (address implementation, bytes memory initData) = _valSetDriverParams();
-        address newContract = _deployContract(salt, implementation, initData, proxyOwner, isDeployerGuarded);
+        address newContract = _deployContract(salt, implementation, true, initData, proxyOwner, isDeployerGuarded);
         Logs.log(string.concat("ValSetDriver deployed at: ", vm.toString(newContract)));
         config.set("val_set_driver", newContract);
         return newContract;
@@ -344,6 +344,7 @@ abstract contract RelayDeploy is SymbioticCoreInit, Config, CreateXWrapper {
     function _deployContract(
         bytes11 salt,
         address implementation,
+        bool hasInitData,
         bytes memory initData,
         address owner,
         bool isDeployerGuarded
@@ -354,9 +355,14 @@ abstract contract RelayDeploy is SymbioticCoreInit, Config, CreateXWrapper {
 
         (,, address deployer) = vm.readCallers();
 
-        newContract = isDeployerGuarded
-            ? deployCreate3AndInitWithGuardedSalt(deployer, salt, proxyInitCode, initData)
-            : deployCreate3AndInit(bytes32(salt), proxyInitCode, initData);
-        return newContract;
+        if (hasInitData) {
+            newContract = isDeployerGuarded
+                ? deployCreate3AndInitWithGuardedSalt(deployer, salt, proxyInitCode, initData)
+                : deployCreate3AndInit(bytes32(salt), proxyInitCode, initData);
+        } else {
+            newContract = isDeployerGuarded
+                ? deployCreate3WithGuardedSalt(deployer, salt, proxyInitCode)
+                : deployCreate3(bytes32(salt), proxyInitCode);
+        }
     }
 }
