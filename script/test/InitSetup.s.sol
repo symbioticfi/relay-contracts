@@ -3,7 +3,7 @@ pragma solidity ^0.8.25;
 
 import {Script, console2} from "forge-std/Script.sol";
 
-import "../../script/integration/SymbioticCoreInit.sol";
+import "@symbioticfi/core/script/integration/SymbioticCoreInit.sol";
 
 import {Token} from "@symbioticfi/core/test/mocks/Token.sol";
 
@@ -59,8 +59,6 @@ contract InitSetupScript is SymbioticCoreInit {
     }
 
     function run(uint256 seed) public virtual override {
-        SYMBIOTIC_CORE_PROJECT_ROOT = "lib/core/";
-
         SYMBIOTIC_CORE_MIN_EPOCH_DURATION = 1 days;
         SYMBIOTIC_CORE_MAX_EPOCH_DURATION = 21 days;
         SYMBIOTIC_CORE_MIN_VETO_DURATION = 1 hours;

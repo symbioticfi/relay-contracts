@@ -1,10 +1,6 @@
 [submodule "lib/forge-std"]
 	path = lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
-[submodule "lib/core"]
-	path = lib/core
-	url = https://github.com/symbioticfi/core
-	branch = script-utils
 [submodule "lib/crypto-lib"]
 	path = lib/crypto-lib
 	url = https://github.com/get-smooth/crypto-lib
@@ -23,3 +19,7 @@
 [submodule "lib/network"]
 	path = lib/network
 	url = https://github.com/symbioticfi/network
+[submodule "lib/core"]
+	path = lib/core
+	url = https://github.com/symbioticfi/core
+	branch = integration-refactoring

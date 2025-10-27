@@ -22,7 +22,6 @@ import {SlasherMock} from "../../../../test/mocks/SlasherMock.sol";
 
 contract BaseSlashingTest is MasterSetupTest {
     function setUp() public override {
-        SYMBIOTIC_CORE_PROJECT_ROOT = "lib/core/";
         MasterSetupTest.setUp();
     }
 

@@ -1,5 +1,5 @@
 # Settlement
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/a628ce262ee9e6c40296d23589814df8e1ae8606/src/modules/settlement/Settlement.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/9c2decd1cd56d3927487a3807080a922ba8b3a31/src/modules/settlement/Settlement.sol)
 
 **Inherits:**
 [NetworkManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/NetworkManager.sol/abstract.NetworkManager.md), [OzEIP712](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/OzEIP712.sol/abstract.OzEIP712.md), [PermissionManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), [ISettlement](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/settlement/ISettlement.sol/interface.ISettlement.md)

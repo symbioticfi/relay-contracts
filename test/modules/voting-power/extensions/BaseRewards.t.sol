@@ -28,7 +28,6 @@ contract BaseRewardsTest is MasterSetupTest, SymbioticRewardsBindings {
     ISymbioticDefaultOperatorRewardsFactory public symbioticDefaultOperatorRewardsFactory;
 
     function setUp() public override {
-        SYMBIOTIC_CORE_PROJECT_ROOT = "lib/core/";
         SYMBIOTIC_REWARDS_PROJECT_ROOT = "lib/rewards/";
         MasterSetupTest.setUp();
         _initRewards_SymbioticRewards();

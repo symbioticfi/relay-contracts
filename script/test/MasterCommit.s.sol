@@ -26,7 +26,6 @@ contract MasterCommitScript is MasterGenesisSetupScript {
     }
 
     function run(uint256 seed) public virtual override {
-        SYMBIOTIC_CORE_PROJECT_ROOT = "lib/core/";
         SymbioticInit.run(seed);
 
         (, Vars memory vars) = loadInitSetupParamsAndVars();

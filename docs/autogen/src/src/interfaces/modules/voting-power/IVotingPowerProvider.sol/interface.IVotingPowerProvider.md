@@ -1,5 +1,5 @@
 # IVotingPowerProvider
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/a628ce262ee9e6c40296d23589814df8e1ae8606/src/interfaces/modules/voting-power/IVotingPowerProvider.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/9c2decd1cd56d3927487a3807080a922ba8b3a31/src/interfaces/modules/voting-power/IVotingPowerProvider.sol)
 
 Interface for the VotingPowerProvider contract.
 

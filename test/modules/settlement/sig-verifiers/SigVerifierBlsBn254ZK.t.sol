@@ -53,7 +53,6 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetupTest {
         SYMBIOTIC_CORE_NUMBER_OF_OPERATORS = 20;
         VERIFICATION_TYPE = 0;
 
-        SYMBIOTIC_CORE_PROJECT_ROOT = "lib/core/";
         MasterSetupTest.setUp();
 
         vm.warp(masterSetupParams.valSetDriver.getEpochStart(0) + 1);

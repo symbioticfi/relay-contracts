@@ -1,5 +1,5 @@
 # OperatorVaults
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/a628ce262ee9e6c40296d23589814df8e1ae8606/src/modules/voting-power/extensions/OperatorVaults.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/9c2decd1cd56d3927487a3807080a922ba8b3a31/src/modules/voting-power/extensions/OperatorVaults.sol)
 
 **Inherits:**
 [VotingPowerProvider](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/VotingPowerProvider.sol/abstract.VotingPowerProvider.md), [IOperatorVaults](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/extensions/IOperatorVaults.sol/interface.IOperatorVaults.md)

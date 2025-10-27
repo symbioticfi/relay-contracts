@@ -3,7 +3,7 @@ set -euo pipefail
 
 usage() {
   cat <<'USAGE'
-Usage: deploy.sh <script-path> <config-path> [forge-script-args...]
+Usage: relay-deploy.sh <script-path> <config-path> [forge-script-args...]
 
 Arguments:
   <script-path>    Path to the Forge deployment script (.s.sol)

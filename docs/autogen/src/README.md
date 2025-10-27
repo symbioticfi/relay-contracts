@@ -38,7 +38,6 @@ To achieve that, Symbiotic provides a set of predefined smart contracts, in gene
 - [Settlement](./src/modules/settlement/) - requires a compressed validator set (header) to be committed each epoch, but allows verifying signatures made by the validator set; currently, it supports the following verification mechanics:
   - [SimpleVerifier](./src/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol) - requires the whole validator set to be inputted on the verification, but in a compressed and efficient way, so that it is the best choice to use up to around 125 validators
   - [ZKVerifier](./src/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol) - uses ZK verification made with [gnark](https://github.com/Consensys/gnark), allowing larger validator sets with an almost constant verification gas cost
-- [Network](./src/modules/network/) - a standard contract that can be used as a "network" address across the Symbiotic ecosystem, it enables verifiability of delays for different actions (e.g., change of the middleware or change of the resolver)
 
 ## Examples
 

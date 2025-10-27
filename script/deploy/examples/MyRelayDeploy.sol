@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {Network} from "@symbioticfi/network/src/Network.sol";
-
 import {SigVerifierBlsBn254Simple} from "../../../src/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol";
 import {RelayDeploy} from "../RelayDeploy.sol";
 import {IVotingPowerProvider} from "../../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
@@ -18,11 +16,16 @@ import {IEpochManager} from "../../../src/interfaces/modules/valset-driver/IEpoc
 import {MySettlement} from "../../../examples/MySettlement.sol";
 import {ISettlement} from "../../../src/interfaces/modules/settlement/ISettlement.sol";
 
-// ./script/deploy/deploy.sh ./script/deploy/examples/MyRelayDeploy.sol ./script/deploy/examples/my-relay-deploy.toml --broadcast
+// ./script/deploy/relay-deploy.sh ./script/deploy/examples/MyRelayDeploy.sol ./script/deploy/examples/my-relay-deploy.toml --broadcast
 
 contract MyRelayDeploy is RelayDeploy {
     address public constant OWNER = address(1);
     address public constant NETWORK_ADDRESS = address(1);
+
+    // Key registry parameters
+    string public constant KEY_REGISTRY_NAME = "MyKeyRegistry";
+    string public constant KEY_REGISTRY_VERSION = "1";
+    bytes11 public constant KEY_REGISTRY_SALT = "KeyRegistry";
 
     // Voting power parameters
     string public constant VOTING_POWER_PROVIDER_NAME = "MyVotingPowerProvider";
@@ -31,10 +34,13 @@ contract MyRelayDeploy is RelayDeploy {
     bool public constant REQUIRE_SLASHER = false;
     uint48 public constant MIN_VAULT_EPOCH_DURATION = 86_400;
     address public constant TOKEN_ADDRESS = address(0);
+    bytes11 public constant VOTING_POWER_PROVIDER_SALT = "VPProvider";
 
-    // Key registry parameters
-    string public constant KEY_REGISTRY_NAME = "MyKeyRegistry";
-    string public constant KEY_REGISTRY_VERSION = "1";
+    // Settlement parameters
+    string public constant SETTLEMENT_NAME = "MySettlement";
+    string public constant SETTLEMENT_VERSION = "1";
+    address public constant SIG_VERIFIER_ADDRESS = address(0);
+    bytes11 public constant SETTLEMENT_SALT = "Settlement";
 
     // ValSet driver parameters
     string public constant VALSET_DRIVER_NAME = "MyValSetDriver";
@@ -48,13 +54,23 @@ contract MyRelayDeploy is RelayDeploy {
     uint8 public constant REQUIRED_HEADER_KEY_TAG = 15;
     uint32 public constant VERIFICATION_TYPE = 0;
     uint248 public constant QUORUM_THRESHOLD = 6667;
+    bytes11 public constant VALSET_DRIVER_SALT = "VSDriver";
 
-    // Settlement parameters
-    string public constant SETTLEMENT_NAME = "MySettlement";
-    string public constant SETTLEMENT_VERSION = "1";
-    address public constant SIG_VERIFIER_ADDRESS = address(0);
+    constructor() RelayDeploy("./script/deploy/examples/my-relay-deploy.toml") {}
 
-    constructor() RelayDeploy("./script/deploy/examples/deploy-config.toml") {}
+    function _keyRegistryParams() internal override returns (address implementation, bytes memory initData) {
+        vm.broadcast();
+        implementation = address(new MyKeyRegistry());
+
+        initData = abi.encodeCall(
+            MyKeyRegistry.initialize,
+            (IKeyRegistry.KeyRegistryInitParams({
+                    ozEip712InitParams: IOzEIP712.OzEIP712InitParams({
+                        name: KEY_REGISTRY_NAME, version: KEY_REGISTRY_VERSION
+                    })
+                }))
+        );
+    }
 
     function _votingPowerProviderParams() internal override returns (address implementation, bytes memory initData) {
         vm.startBroadcast();
@@ -78,20 +94,6 @@ contract MyRelayDeploy is RelayDeploy {
                 }),
                 IOzOwnable.OzOwnableInitParams({owner: OWNER})
             )
-        );
-    }
-
-    function _keyRegistryParams() internal override returns (address implementation, bytes memory initData) {
-        vm.broadcast();
-        implementation = address(new MyKeyRegistry());
-
-        initData = abi.encodeCall(
-            MyKeyRegistry.initialize,
-            (IKeyRegistry.KeyRegistryInitParams({
-                    ozEip712InitParams: IOzEIP712.OzEIP712InitParams({
-                        name: KEY_REGISTRY_NAME, version: KEY_REGISTRY_VERSION
-                    })
-                }))
         );
     }
 
@@ -155,19 +157,19 @@ contract MyRelayDeploy is RelayDeploy {
         );
     }
 
-    function runDeployVotingPowerProvider() public override {
-        deployVotingPowerProvider({proxyOwner: OWNER, isDeployerGuarded: true});
+    function runDeployKeyRegistry() public override {
+        deployKeyRegistry({proxyOwner: OWNER, isDeployerGuarded: true, salt: KEY_REGISTRY_SALT});
     }
 
-    function runDeployKeyRegistry() public override {
-        deployKeyRegistry({proxyOwner: OWNER, isDeployerGuarded: true});
+    function runDeployVotingPowerProvider() public override {
+        deployVotingPowerProvider({proxyOwner: OWNER, isDeployerGuarded: true, salt: VOTING_POWER_PROVIDER_SALT});
     }
 
     function runDeploySettlement() public override {
-        deploySettlement({proxyOwner: OWNER, isDeployerGuarded: true});
+        deploySettlement({proxyOwner: OWNER, isDeployerGuarded: true, salt: SETTLEMENT_SALT});
     }
 
     function runDeployValSetDriver() public override {
-        deployValSetDriver({proxyOwner: OWNER, isDeployerGuarded: true});
+        deployValSetDriver({proxyOwner: OWNER, isDeployerGuarded: true, salt: VALSET_DRIVER_SALT});
     }
 }

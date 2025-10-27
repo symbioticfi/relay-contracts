@@ -74,7 +74,6 @@ contract MasterSetupTest is InitSetupTest {
     MasterSetupParams public masterSetupParams;
 
     function setUp() public virtual override {
-        SYMBIOTIC_CORE_PROJECT_ROOT = "lib/core/";
         InitSetupTest.setUp();
 
         networkSetupParams.OPERATORS_TO_REGISTER = SYMBIOTIC_CORE_NUMBER_OF_OPERATORS;
