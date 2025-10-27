@@ -1,5 +1,5 @@
 # KeyTags
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/aa502a4be47c86d613c9f5ee2cc50ded6e2cee52/src/libraries/utils/KeyTags.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/c51cd9989857900b620b563b6be0ac3f1fdb0ce4/src/libraries/utils/KeyTags.sol)
 
 Library for working with key tags which represent the keys' types and arbitrary purpose identifiers.
 
