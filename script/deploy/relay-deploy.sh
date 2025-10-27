@@ -46,10 +46,7 @@ get_contract_chains() {
   python3 - "$config_file" "$contract_key" <<'PY'
 import sys
 
-try:
-    import tomllib  # Python 3.11+
-except ModuleNotFoundError:  # pragma: no cover - fallback for older versions
-    import tomli as tomllib
+import tomllib  # Python 3.11+
 
 config_path, contract_key = sys.argv[1:3]
 with open(config_path, "rb") as fh:

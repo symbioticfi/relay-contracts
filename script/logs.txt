@@ -1,0 +1,61 @@
+KeyRegistry deployed at: 0x2cDE75aa7Dc418EFaA0314dd22bF89dA2883cEE3
+
+VotingPowerProvider deployed at: 0xa7D1ACdBdb22Dbd660c1B45b06C8B81ee1ec9A91
+
+KeyRegistry deployed at: 0x2cDE75aa7Dc418EFaA0314dd22bF89dA2883cEE3
+
+VotingPowerProvider deployed at: 0xa7D1ACdBdb22Dbd660c1B45b06C8B81ee1ec9A91
+
+Settlement deployed at: 0x9A5bcFe47845bAb272216e2aA505FA972b4f83aD
+
+Settlement deployed at: 0x9A5bcFe47845bAb272216e2aA505FA972b4f83aD
+
+ValSetDriver deployed at: 0x2b2AB35d96a0CF90fe7841c8BB23633279d29B15
+
+KeyRegistry deployed at: 0x2cDE75aa7Dc418EFaA0314dd22bF89dA2883cEE3
+
+VotingPowerProvider deployed at: 0xa7D1ACdBdb22Dbd660c1B45b06C8B81ee1ec9A91
+
+Settlement deployed at: 0x9A5bcFe47845bAb272216e2aA505FA972b4f83aD
+
+Settlement deployed at: 0x9A5bcFe47845bAb272216e2aA505FA972b4f83aD
+
+ValSetDriver deployed at: 0x2b2AB35d96a0CF90fe7841c8BB23633279d29B15
+
+KeyRegistry deployed at: 0x2cDE75aa7Dc418EFaA0314dd22bF89dA2883cEE3
+
+VotingPowerProvider deployed at: 0xa7D1ACdBdb22Dbd660c1B45b06C8B81ee1ec9A91
+
+KeyRegistry deployed at: 0x2cDE75aa7Dc418EFaA0314dd22bF89dA2883cEE3
+
+VotingPowerProvider deployed at: 0xa7D1ACdBdb22Dbd660c1B45b06C8B81ee1ec9A91
+
+KeyRegistry deployed at: 0x2cDE75aa7Dc418EFaA0314dd22bF89dA2883cEE3
+
+VotingPowerProvider deployed at: 0xa7D1ACdBdb22Dbd660c1B45b06C8B81ee1ec9A91
+
+KeyRegistry deployed at: 0x2cDE75aa7Dc418EFaA0314dd22bF89dA2883cEE3
+
+VotingPowerProvider deployed at: 0xa7D1ACdBdb22Dbd660c1B45b06C8B81ee1ec9A91
+
+KeyRegistry deployed at: 0x2cDE75aa7Dc418EFaA0314dd22bF89dA2883cEE3
+
+VotingPowerProvider deployed at: 0xa7D1ACdBdb22Dbd660c1B45b06C8B81ee1ec9A91
+
+KeyRegistry deployed at: 0x2cDE75aa7Dc418EFaA0314dd22bF89dA2883cEE3
+
+VotingPowerProvider deployed at: 0xa7D1ACdBdb22Dbd660c1B45b06C8B81ee1ec9A91
+
+KeyRegistry deployed at: 0x2cDE75aa7Dc418EFaA0314dd22bF89dA2883cEE3
+
+VotingPowerProvider deployed at: 0xa7D1ACdBdb22Dbd660c1B45b06C8B81ee1ec9A91
+
+KeyRegistry deployed at: 0x2cDE75aa7Dc418EFaA0314dd22bF89dA2883cEE3
+
+VotingPowerProvider deployed at: 0xa7D1ACdBdb22Dbd660c1B45b06C8B81ee1ec9A91
+
+Settlement deployed at: 0x9A5bcFe47845bAb272216e2aA505FA972b4f83aD
+
+Settlement deployed at: 0x9A5bcFe47845bAb272216e2aA505FA972b4f83aD
+
+ValSetDriver deployed at: 0x2b2AB35d96a0CF90fe7841c8BB23633279d29B15

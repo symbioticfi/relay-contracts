@@ -63,9 +63,13 @@ git clone --recurse-submodules https://github.com/symbioticfi/relay-contracts.gi
 The deployment tooling can be found at [`script/deploy/`](./script/deploy/) folder. It consists of [`RelayDeploy.sol`](./script/deploy/RelayDeploy.sol) Foundry script template [`relay-deploy.sh`](./script//deploy/relay-deploy.sh) bash script (the Relay smart contracts use external libraries for their implementations, so that it's not currently possible to use solely Foundry script for multi-chain deployment).
 
 - [`RelayDeploy.sol`](./script/deploy/RelayDeploy.sol) - abstract base that wires common Symbiotic core helpers and exposes the four deployment hooks: KeyRegistry, VotingPowerProvider, Settlement, and ValVetDriver
-- [`relay-deploy.sh`](./script//deploy/relay-deploy.sh) - orchestrates per-contract multi-chain deployments
+- [`relay-deploy.sh`](./script//deploy/relay-deploy.sh) - orchestrates per-contract multi-chain deployments (uses Python inside to parse `toml` file)
 
 The script deploys Relay modules under [OZ's TransparentUpgradeableProxy](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/proxy/transparent/TransparentUpgradeableProxy.sol) using [CreateX](https://github.com/pcaversaccio/createx) (it provides better control for production deployments and more simplified approaches for development).
+
+#### Dependencies
+
+- Python ([installation](https://www.python.org/downloads/))
 
 #### Deployment
 
