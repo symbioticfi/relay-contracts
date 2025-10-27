@@ -266,20 +266,20 @@ abstract contract RelayDeploy is SymbioticCoreInit, Config, CreateXWrapper {
 
         if (SymbioticCoreConstants.coreSupported()) {
             // Validate deployment
-            SymbioticCoreConstants.Core memory symbioticCore = SymbioticCoreConstants.core();
+            SymbioticCoreConstants.Core memory core = SymbioticCoreConstants.core();
             require(
-                VotingPowerProvider(newContract).OPERATOR_REGISTRY() == address(symbioticCore.operatorRegistry),
+                VotingPowerProvider(newContract).OPERATOR_REGISTRY() == address(core.operatorRegistry),
                 "VotingPowerProvider.OPERATOR_REGISTRY() has incorrect value"
             );
             require(
-                VotingPowerProvider(newContract).VAULT_FACTORY() == address(symbioticCore.vaultFactory),
+                VotingPowerProvider(newContract).VAULT_FACTORY() == address(core.vaultFactory),
                 "VotingPowerProvider.VAULT_FACTORY() has incorrect value"
             );
             (bool success, bytes memory data) =
                 newContract.call(abi.encodeWithSelector(IOpNetVaultAutoDeploy.VAULT_CONFIGURATOR.selector));
             if (success) {
                 require(
-                    abi.decode(data, (address)) == address(symbioticCore.vaultConfigurator),
+                    abi.decode(data, (address)) == address(core.vaultConfigurator),
                     "VotingPowerProvider.VAULT_CONFIGURATOR() has incorrect value"
                 );
             }

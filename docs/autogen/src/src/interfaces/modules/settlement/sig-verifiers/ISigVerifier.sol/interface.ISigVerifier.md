@@ -1,5 +1,5 @@
 # ISigVerifier
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/3e174a9e69da2b5866055084b62455d579b3d0af/src/interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/140d36e839baf722c6672300f13ab7489a8ea2bc/src/interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol)
 
 Interface for the signature verifier contracts.
 
