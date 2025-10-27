@@ -1,9 +1,6 @@
 [31337]
 endpoint_url = "http://127.0.0.1:8545"
 
-[31337.address]
-key_registry = "0xC712c1897606818e0Ac684f55CaBD6Ca26e9FAF8"
-
 [31338]
 endpoint_url = "http://127.0.0.1:8546"
 

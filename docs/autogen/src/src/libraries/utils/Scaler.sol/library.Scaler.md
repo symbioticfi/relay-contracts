@@ -1,5 +1,5 @@
 # Scaler
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/9c2decd1cd56d3927487a3807080a922ba8b3a31/src/libraries/utils/Scaler.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/aa502a4be47c86d613c9f5ee2cc50ded6e2cee52/src/libraries/utils/Scaler.sol)
 
 Library for scaling values between different decimals and inverting them.
 
