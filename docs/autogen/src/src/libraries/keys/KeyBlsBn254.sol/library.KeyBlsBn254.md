@@ -1,5 +1,5 @@
 # KeyBlsBn254
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1c9bc3270564dc748a583cc328831cb866937b71/src/libraries/keys/KeyBlsBn254.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/79659f66a6349a5ecb86c9437ba656cf1fdf5fe5/src/libraries/keys/KeyBlsBn254.sol)
 
 Library for interacting with BLS public keys on the BN254 curve, including validation, serialization, and compression.
 

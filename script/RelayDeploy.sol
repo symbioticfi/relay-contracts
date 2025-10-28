@@ -13,11 +13,10 @@ import {SymbioticCoreInit} from "@symbioticfi/core/script/integration/SymbioticC
 import "@symbioticfi/core/test/integration/SymbioticCoreImports.sol";
 
 import {TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
-import {Create2} from "@openzeppelin/contracts/utils/Create2.sol";
 
-import {IOpNetVaultAutoDeploy} from "../../src/interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol";
-import {VotingPowerProvider} from "../../src/modules/voting-power/VotingPowerProvider.sol";
-import {IValSetDriver} from "../../src/interfaces/modules/valset-driver/IValSetDriver.sol";
+import {IOpNetVaultAutoDeploy} from "../src/interfaces/modules/voting-power/extensions/IOpNetVaultAutoDeploy.sol";
+import {VotingPowerProvider} from "../src/modules/voting-power/VotingPowerProvider.sol";
+import {IValSetDriver} from "../src/interfaces/modules/valset-driver/IValSetDriver.sol";
 
 /**
  * @title RelayDeploy

@@ -60,10 +60,10 @@ git clone --recurse-submodules https://github.com/symbioticfi/relay-contracts.gi
 
 ### Deploy Your Relay
 
-The deployment tooling can be found at [`script/deploy/`](./script/deploy/) folder. It consists of [`RelayDeploy.sol`](./script/deploy/RelayDeploy.sol) Foundry script template [`relay-deploy.sh`](./script//deploy/relay-deploy.sh) bash script (the Relay smart contracts use external libraries for their implementations, so that it's not currently possible to use solely Foundry script for multi-chain deployment).
+The deployment tooling can be found at [`script/`](./script/) folder. It consists of [`RelayDeploy.sol`](./script/RelayDeploy.sol) Foundry script template [`relay-deploy.sh`](./script/relay-deploy.sh) bash script (the Relay smart contracts use external libraries for their implementations, so that it's not currently possible to use solely Foundry script for multi-chain deployment).
 
-- [`RelayDeploy.sol`](./script/deploy/RelayDeploy.sol) - abstract base that wires common Symbiotic core helpers and exposes the four deployment hooks: KeyRegistry, VotingPowerProvider, Settlement, and ValVetDriver
-- [`relay-deploy.sh`](./script//deploy/relay-deploy.sh) - orchestrates per-contract multi-chain deployments (uses Python inside to parse `toml` file)
+- [`RelayDeploy.sol`](./script/RelayDeploy.sol) - abstract base that wires common Symbiotic core helpers and exposes the four deployment hooks: KeyRegistry, VotingPowerProvider, Settlement, and ValVetDriver
+- [`relay-deploy.sh`](./script/relay-deploy.sh) - orchestrates per-contract multi-chain deployments (uses Python inside to parse `toml` file)
 
 The script deploys Relay modules under [OZ's TransparentUpgradeableProxy](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/proxy/transparent/TransparentUpgradeableProxy.sol) using [CreateX](https://github.com/pcaversaccio/createx) (it provides better control for production deployments and more simplified approaches for development).
 
@@ -73,13 +73,13 @@ The script deploys Relay modules under [OZ's TransparentUpgradeableProxy](https:
 
 #### Deployment
 
-1. Implement your `MyRelayDeploy.sol` ([see example](./script/deploy/examples/MyRelayDeploy.sol)) - this Foundry script should include the deployment configuration of your Relay modules
+1. Implement your `MyRelayDeploy.sol` ([see example](./script/examples/MyRelayDeploy.sol)) - this Foundry script should include the deployment configuration of your Relay modules
 
    - you need to implement all virtual functions of `RelayDeploy.sol`
    - in constructor, need to input the path of the `toml` file
-   - you are provided with additional helpers such as `getCore()`, `getKeyRegistry()`, `getVotingPowerProvider()`, etc. (see full list in [`RelayDeploy.sol`](./script/deploy/RelayDeploy.sol))
+   - you are provided with additional helpers such as `getCore()`, `getKeyRegistry()`, `getVotingPowerProvider()`, etc. (see full list in [`RelayDeploy.sol`](./script/RelayDeploy.sol))
 
-2. Implement your `my-relay-deploy.toml` ([see example](./script/deploy/examples/my-relay-deploy.toml)) - this configuration file should include RPC URLs that will be needed for the deployment, and which modules should be deployed on which chains
+2. Implement your `my-relay-deploy.toml` ([see example](./script/examples/my-relay-deploy.toml)) - this configuration file should include RPC URLs that will be needed for the deployment, and which modules should be deployed on which chains
 
    - **do not replace [1234567890] placeholder with endpoint_url = ""**
    - the contracts are deployed in such order:
@@ -91,10 +91,10 @@ The script deploys Relay modules under [OZ's TransparentUpgradeableProxy](https:
 3. Execute the deployment script, e.g.:
 
    ```bash
-   ./script/deploy/relay-deploy.sh ./script/deploy/examples/MyRelayDeploy.sol ./script/deploy/examples/my-relay-deploy.toml --broadcast --ledger
+   ./script/relay-deploy.sh ./script/examples/MyRelayDeploy.sol ./script/examples/my-relay-deploy.toml --broadcast --ledger
    ```
 
-   _Basic form is `./script/deploy/relay-deploy.sh <FoundryScript> <TomlConfig> <Any Foundry Flags>`_
+   _Basic form is `./script/relay-deploy.sh <FoundryScript> <TomlConfig> <Any Foundry Flags>`_
 
 At the end, your `toml` file will contain the addresses of the deployed Relay modules.
 

@@ -1,5 +1,5 @@
 # Constants
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1c9bc3270564dc748a583cc328831cb866937b71/src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/79659f66a6349a5ecb86c9437ba656cf1fdf5fe5/src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol)
 
 ### BASE_VAULT_VERSION
 

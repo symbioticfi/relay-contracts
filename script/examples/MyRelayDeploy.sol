@@ -1,22 +1,22 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {SigVerifierBlsBn254Simple} from "../../../src/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol";
+import {SigVerifierBlsBn254Simple} from "../../src/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol";
 import {RelayDeploy} from "../RelayDeploy.sol";
-import {IVotingPowerProvider} from "../../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
-import {INetworkManager} from "../../../src/interfaces/modules/base/INetworkManager.sol";
-import {IOzEIP712} from "../../../src/interfaces/modules/base/IOzEIP712.sol";
-import {IOzOwnable} from "../../../src/interfaces/modules/common/permissions/IOzOwnable.sol";
-import {MyVotingPowerProvider} from "../../../examples/MyVotingPowerProvider.sol";
-import {MyKeyRegistry} from "../../../examples/MyKeyRegistry.sol";
-import {IKeyRegistry} from "../../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
-import {MyValSetDriver} from "../../../examples/MyValSetDriver.sol";
-import {IValSetDriver} from "../../../src/interfaces/modules/valset-driver/IValSetDriver.sol";
-import {IEpochManager} from "../../../src/interfaces/modules/valset-driver/IEpochManager.sol";
-import {MySettlement} from "../../../examples/MySettlement.sol";
-import {ISettlement} from "../../../src/interfaces/modules/settlement/ISettlement.sol";
+import {IVotingPowerProvider} from "../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
+import {INetworkManager} from "../../src/interfaces/modules/base/INetworkManager.sol";
+import {IOzEIP712} from "../../src/interfaces/modules/base/IOzEIP712.sol";
+import {IOzOwnable} from "../../src/interfaces/modules/common/permissions/IOzOwnable.sol";
+import {MyVotingPowerProvider} from "../../examples/MyVotingPowerProvider.sol";
+import {MyKeyRegistry} from "../../examples/MyKeyRegistry.sol";
+import {IKeyRegistry} from "../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
+import {MyValSetDriver} from "../../examples/MyValSetDriver.sol";
+import {IValSetDriver} from "../../src/interfaces/modules/valset-driver/IValSetDriver.sol";
+import {IEpochManager} from "../../src/interfaces/modules/valset-driver/IEpochManager.sol";
+import {MySettlement} from "../../examples/MySettlement.sol";
+import {ISettlement} from "../../src/interfaces/modules/settlement/ISettlement.sol";
 
-// ./script/deploy/relay-deploy.sh ./script/deploy/examples/MyRelayDeploy.sol ./script/deploy/examples/my-relay-deploy.toml --broadcast
+// ./script/relay-deploy.sh ./script/examples/MyRelayDeploy.sol ./script/examples/my-relay-deploy.toml --broadcast
 
 contract MyRelayDeploy is RelayDeploy {
     address public constant OWNER = address(1);
@@ -56,7 +56,7 @@ contract MyRelayDeploy is RelayDeploy {
     uint248 public constant QUORUM_THRESHOLD = 6667;
     bytes11 public constant VALSET_DRIVER_SALT = "VSDriver";
 
-    constructor() RelayDeploy("./script/deploy/examples/my-relay-deploy.toml") {}
+    constructor() RelayDeploy("./script/examples/my-relay-deploy.toml") {}
 
     function _keyRegistryParams() internal override returns (address implementation, bytes memory initData) {
         vm.broadcast();

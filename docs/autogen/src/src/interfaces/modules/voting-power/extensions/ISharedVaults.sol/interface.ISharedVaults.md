@@ -1,5 +1,5 @@
 # ISharedVaults
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1c9bc3270564dc748a583cc328831cb866937b71/src/interfaces/modules/voting-power/extensions/ISharedVaults.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/79659f66a6349a5ecb86c9437ba656cf1fdf5fe5/src/interfaces/modules/voting-power/extensions/ISharedVaults.sol)
 
 Interface for the SharedVaults contract.
 

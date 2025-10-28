@@ -1,5 +1,5 @@
 # AggregatorV3Interface
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1c9bc3270564dc748a583cc328831cb866937b71/src/interfaces/modules/voting-power/common/voting-power-calc/libraries/AggregatorV3Interface.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/79659f66a6349a5ecb86c9437ba656cf1fdf5fe5/src/interfaces/modules/voting-power/common/voting-power-calc/libraries/AggregatorV3Interface.sol)
 
 
 ## Functions
