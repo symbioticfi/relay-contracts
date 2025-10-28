@@ -1,5 +1,5 @@
 # EpochManager
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/140d36e839baf722c6672300f13ab7489a8ea2bc/src/modules/valset-driver/EpochManager.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1c9bc3270564dc748a583cc328831cb866937b71/src/modules/valset-driver/EpochManager.sol)
 
 **Inherits:**
 [PermissionManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), [IEpochManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/valset-driver/IEpochManager.sol/interface.IEpochManager.md)
