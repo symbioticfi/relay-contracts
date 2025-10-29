@@ -5,7 +5,7 @@
   "lib/core": {
     "branch": {
       "name": "integration-refactoring",
-      "rev": "848bb8217e31ef132f6220b094642cd7555514ea"
+      "rev": "6576290dff54d324eff79f8b45190307ef3cca29"
     }
   },
   "lib/crypto-lib": {
