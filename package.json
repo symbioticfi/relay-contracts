@@ -10,8 +10,7 @@
         "examples/**/*",
         "src/**/*",
         "script/**/*",
-        "test/mocks/**/*",
-        "out/**/*"
+        "test/mocks/**/*"
     ],
     "repository": {
         "type": "git",
@@ -31,7 +30,7 @@
         "ethers": "^6.11.1",
         "@openzeppelin/contracts": "5.2.0",
         "@openzeppelin/contracts-upgradeable": "5.2.0",
-        "@symbioticfi/core": "1.0.1",
+        "@symbioticfi/core": "1.0.3",
         "@symbioticfi/rewards": "2.0.0"
     },
     "engines": {

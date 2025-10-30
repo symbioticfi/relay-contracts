@@ -1,5 +1,5 @@
 # IVerifier
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/79659f66a6349a5ecb86c9437ba656cf1fdf5fe5/src/interfaces/modules/settlement/sig-verifiers/zk/IVerifier.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/interfaces/modules/settlement/sig-verifiers/zk/IVerifier.sol)
 
 Interface for the gnark verifier contracts.
 
