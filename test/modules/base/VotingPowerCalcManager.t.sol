@@ -11,20 +11,21 @@ contract TestVotingPowerCalcManager is VotingPowerCalcManager {
         initialized = true;
     }
 
-    function stakeToVotingPowerAt(
-        address vault,
-        uint256 stake,
-        bytes memory extraData,
-        uint48 timestamp
-    ) public view override returns (uint256 power) {
+    function stakeToVotingPowerAt(address vault, uint256 stake, bytes memory extraData, uint48 timestamp)
+        public
+        view
+        override
+        returns (uint256 power)
+    {
         return stake / 10;
     }
 
-    function stakeToVotingPower(
-        address vault,
-        uint256 stake,
-        bytes memory extraData
-    ) public view override returns (uint256 power) {
+    function stakeToVotingPower(address vault, uint256 stake, bytes memory extraData)
+        public
+        view
+        override
+        returns (uint256 power)
+    {
         return stake / 10;
     }
 }

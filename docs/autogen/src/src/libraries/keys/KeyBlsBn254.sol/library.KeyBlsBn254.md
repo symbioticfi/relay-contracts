@@ -1,9 +1,9 @@
 # KeyBlsBn254
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/libraries/keys/KeyBlsBn254.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/libraries/keys/KeyBlsBn254.sol)
 
 Library for interacting with BLS public keys on the BN254 curve, including validation, serialization, and compression.
 
-*The keys are represented as G1 points on the BN254 curve.*
+The keys are represented as G1 points on the BN254 curve.
 
 
 ## Functions
@@ -11,13 +11,11 @@ Library for interacting with BLS public keys on the BN254 curve, including valid
 
 Wraps a G1 public key.
 
-*Allows to wrap zero G1 point.*
+Allows to wrap zero G1 point.
 
 
 ```solidity
-function wrap(
-    BN254.G1Point memory keyRaw
-) internal view returns (KEY_BLS_BN254 memory key);
+function wrap(BN254.G1Point memory keyRaw) internal view returns (KEY_BLS_BN254 memory key);
 ```
 **Parameters**
 
@@ -38,9 +36,7 @@ Unwraps a key.
 
 
 ```solidity
-function unwrap(
-    KEY_BLS_BN254 memory key
-) internal view returns (BN254.G1Point memory keyRaw);
+function unwrap(KEY_BLS_BN254 memory key) internal view returns (BN254.G1Point memory keyRaw);
 ```
 **Parameters**
 
@@ -59,13 +55,11 @@ function unwrap(
 
 Serializes a key.
 
-*Compresses G1 point to 32 bytes (255 bits).*
+Compresses G1 point to 32 bytes (255 bits).
 
 
 ```solidity
-function serialize(
-    KEY_BLS_BN254 memory key
-) internal view returns (bytes memory keySerialized);
+function serialize(KEY_BLS_BN254 memory key) internal view returns (bytes memory keySerialized);
 ```
 **Parameters**
 
@@ -86,9 +80,7 @@ Deserializes a serialized key.
 
 
 ```solidity
-function deserialize(
-    bytes memory keySerialized
-) internal view returns (KEY_BLS_BN254 memory key);
+function deserialize(bytes memory keySerialized) internal view returns (KEY_BLS_BN254 memory key);
 ```
 **Parameters**
 
@@ -107,13 +99,11 @@ function deserialize(
 
 Converts a key to bytes.
 
-*It is a bytes representation of the underlying key itself.*
+It is a bytes representation of the underlying key itself.
 
 
 ```solidity
-function toBytes(
-    KEY_BLS_BN254 memory key
-) internal view returns (bytes memory keyBytes);
+function toBytes(KEY_BLS_BN254 memory key) internal view returns (bytes memory keyBytes);
 ```
 **Parameters**
 
@@ -134,9 +124,7 @@ Converts bytes to a key.
 
 
 ```solidity
-function fromBytes(
-    bytes memory keyBytes
-) internal view returns (KEY_BLS_BN254 memory key);
+function fromBytes(bytes memory keyBytes) internal view returns (KEY_BLS_BN254 memory key);
 ```
 **Parameters**
 

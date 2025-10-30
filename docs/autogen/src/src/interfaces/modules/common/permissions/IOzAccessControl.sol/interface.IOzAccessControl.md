@@ -1,5 +1,7 @@
 # IOzAccessControl
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/common/permissions/IOzAccessControl.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/interfaces/modules/common/permissions/IOzAccessControl.sol)
+
+Interface for the OzAccessControl contract.
 
 
 ## Functions
@@ -9,9 +11,7 @@ Returns the required role for a selector.
 
 
 ```solidity
-function getRole(
-    bytes4 selector
-) external view returns (bytes32);
+function getRole(bytes4 selector) external view returns (bytes32);
 ```
 **Parameters**
 

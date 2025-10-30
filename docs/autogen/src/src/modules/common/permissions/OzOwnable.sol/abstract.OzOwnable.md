@@ -1,8 +1,8 @@
 # OzOwnable
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/common/permissions/OzOwnable.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/modules/common/permissions/OzOwnable.sol)
 
 **Inherits:**
-[PermissionManager](/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), OwnableUpgradeable, [IOzOwnable](/src/interfaces/modules/common/permissions/IOzOwnable.sol/interface.IOzOwnable.md)
+[PermissionManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), OwnableUpgradeable, [IOzOwnable](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/common/permissions/IOzOwnable.sol/interface.IOzOwnable.md)
 
 Contract for permission management based on OpenZeppelin's Ownable.
 
@@ -12,9 +12,7 @@ Contract for permission management based on OpenZeppelin's Ownable.
 
 
 ```solidity
-function __OzOwnable_init(
-    OzOwnableInitParams memory initParams
-) internal virtual onlyInitializing;
+function __OzOwnable_init(OzOwnableInitParams memory initParams) internal virtual onlyInitializing;
 ```
 
 ### _checkPermission

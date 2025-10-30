@@ -7,13 +7,12 @@ import {PermissionManager} from "../../../base/PermissionManager.sol";
 import {Checkpoints} from "../../../../libraries/structs/Checkpoints.sol";
 
 import {IVotingPowerCalcManager} from "../../../../interfaces/modules/voting-power/base/IVotingPowerCalcManager.sol";
-import {IWeightedVaultsVPCalc} from
-    "../../../../interfaces/modules/voting-power/common/voting-power-calc/IWeightedVaultsVPCalc.sol";
+import {
+    IWeightedVaultsVPCalc
+} from "../../../../interfaces/modules/voting-power/common/voting-power-calc/IWeightedVaultsVPCalc.sol";
 
-/**
- * @title WeightedVaultsVPCalc
- * @notice Contract for calculating the voting power, weighting the vaults.
- */
+/// @title WeightedVaultsVPCalc
+/// @notice Contract for calculating the voting power, weighting the vaults.
 abstract contract WeightedVaultsVPCalc is EqualStakeVPCalc, PermissionManager, IWeightedVaultsVPCalc {
     using Checkpoints for Checkpoints.Trace208;
 
@@ -33,51 +32,42 @@ abstract contract WeightedVaultsVPCalc is EqualStakeVPCalc, PermissionManager, I
 
     function __WeightedVaultsVPCalc_init() internal virtual onlyInitializing {}
 
-    /**
-     * @inheritdoc IWeightedVaultsVPCalc
-     */
+    /// @inheritdoc IWeightedVaultsVPCalc
     function getVaultWeightAt(address vault, uint48 timestamp) public view virtual returns (uint208) {
         (bool exists,, uint208 weight,) =
             _getWeightedVaultsVPCalcStorage()._vaultWeight[vault].upperLookupRecentCheckpoint(timestamp);
         return exists ? weight : DEFAULT_VAULT_WEIGHT;
     }
 
-    /**
-     * @inheritdoc IWeightedVaultsVPCalc
-     */
-    function getVaultWeight(
-        address vault
-    ) public view virtual returns (uint208) {
+    /// @inheritdoc IWeightedVaultsVPCalc
+    function getVaultWeight(address vault) public view virtual returns (uint208) {
         (bool exists,, uint208 weight) = _getWeightedVaultsVPCalcStorage()._vaultWeight[vault].latestCheckpoint();
         return exists ? weight : DEFAULT_VAULT_WEIGHT;
     }
 
-    /**
-     * @inheritdoc IVotingPowerCalcManager
-     */
-    function stakeToVotingPowerAt(
-        address vault,
-        uint256 stake,
-        bytes memory extraData,
-        uint48 timestamp
-    ) public view virtual override returns (uint256) {
+    /// @inheritdoc IVotingPowerCalcManager
+    function stakeToVotingPowerAt(address vault, uint256 stake, bytes memory extraData, uint48 timestamp)
+        public
+        view
+        virtual
+        override
+        returns (uint256)
+    {
         return super.stakeToVotingPowerAt(vault, stake, extraData, timestamp) * getVaultWeightAt(vault, timestamp);
     }
 
-    /**
-     * @inheritdoc IVotingPowerCalcManager
-     */
-    function stakeToVotingPower(
-        address vault,
-        uint256 stake,
-        bytes memory extraData
-    ) public view virtual override returns (uint256) {
+    /// @inheritdoc IVotingPowerCalcManager
+    function stakeToVotingPower(address vault, uint256 stake, bytes memory extraData)
+        public
+        view
+        virtual
+        override
+        returns (uint256)
+    {
         return super.stakeToVotingPower(vault, stake, extraData) * getVaultWeight(vault);
     }
 
-    /**
-     * @inheritdoc IWeightedVaultsVPCalc
-     */
+    /// @inheritdoc IWeightedVaultsVPCalc
     function setVaultWeight(address vault, uint208 weight) public virtual checkPermission {
         _setVaultWeight(vault, weight);
     }

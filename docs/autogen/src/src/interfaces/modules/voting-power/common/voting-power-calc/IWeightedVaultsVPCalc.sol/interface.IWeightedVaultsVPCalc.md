@@ -1,5 +1,7 @@
 # IWeightedVaultsVPCalc
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/voting-power/common/voting-power-calc/IWeightedVaultsVPCalc.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/interfaces/modules/voting-power/common/voting-power-calc/IWeightedVaultsVPCalc.sol)
+
+Interface for the WeightedVaultsVPCalc contract.
 
 
 ## Functions
@@ -7,8 +9,8 @@
 
 Returns the weight for a vault at a given timestamp.
 
-*Returns 1e4 if the weight wasn't explicitly set yet.
-Can return non-zero weight for unregistered vaults.*
+Returns 1e4 if the weight wasn't explicitly set yet.
+Can return non-zero weight for unregistered vaults.
 
 
 ```solidity
@@ -32,14 +34,12 @@ function getVaultWeightAt(address vault, uint48 timestamp) external view returns
 
 Returns the weight for a vault.
 
-*Returns 1e4 if the weight wasn't explicitly set yet.
-Can return non-zero weight for unregistered vaults.*
+Returns 1e4 if the weight wasn't explicitly set yet.
+Can return non-zero weight for unregistered vaults.
 
 
 ```solidity
-function getVaultWeight(
-    address vault
-) external view returns (uint208);
+function getVaultWeight(address vault) external view returns (uint208);
 ```
 **Parameters**
 

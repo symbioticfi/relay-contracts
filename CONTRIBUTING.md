@@ -43,8 +43,10 @@ This repo includes the following pre-commit hooks that are defined in the `.pre-
 - `check-merge-conflict`: Fails when Git merge conflict markers are present to avoid committing unresolved conflicts.
 - `check-json`: Validates JSON files and fails fast on malformed syntax.
 - `check-yaml`: Parses YAML files to verify they are syntactically valid.
+- `sort-imports`: Normalises and sorts imports according to the rules mentioned in the [Code Style](#code-style) below.
+- `sort-errors`: Sorts errors according to the rules mentioned in the [Code Style](#code-style) below.
 - `format`: This hook uses `forge fmt` to format all Solidity files.
-- `doc`: This hook uses `forge doc` to automatically generate documentation for all Solidity files whenever the NatSpec documentation changes. The `script/util/doc_gen.sh` script is used to generate documentation. Forge updates the commit hash in the documentation automatically. To only generate new documentation when the documentation has actually changed, the script checks whether more than just the hash has changed in the documentation and discard all changes if only the hash has changed.
+- `doc`: This hook uses `forge doc` to generate the Solidity documentation. Commit the generated files whenever the documentation changes.
 - `prettier`: All remaining files are formatted using prettier.
 
 ## Requirements for merge
@@ -104,14 +106,13 @@ The repo follows the official [Solidity Style Guide](https://docs.soliditylang.o
   interface IERC777 {
   ```
 
-- Contracts not intended to be used standalone should be marked abstract
-  so they are required to be inherited to other contracts.
+- Contracts not intended to be used standalone should be marked abstract, so they are required to be inherited by other contracts.
 
   ```solidity
   abstract contract AccessControl is ..., {
   ```
 
-- Unchecked arithmetic blocks should contain comments explaining why overflow is guaranteed not to happen or permissible. If the reason is immediately apparent from the line above the unchecked block, the comment may be omitted.
+- Unchecked arithmetic blocks should contain comments explaining why overflow is guaranteed not to happen or is permissible. If the reason is immediately apparent from the line above the unchecked block, the comment may be omitted.
 
 Also, such exceptions/additions exist:
 
@@ -131,7 +132,7 @@ Also, such exceptions/additions exist:
 
   7. fallback function (if exists)
 
-- Each contract should virtually be divided into sections by using such separators:
+- Each contract should be virtually divided into sections by using such separators:
 
   1. /\* CONSTANTS \*/
   2. /\* IMMUTABLES \*/
@@ -145,7 +146,7 @@ Also, such exceptions/additions exist:
   10. /\* RECEIVE FUNCTION \*/
   11. /\* FALLBACK FUNCTION \*/
 
-- Each interface should virtually be divided into sections by using such separators:
+- Each interface should be virtually divided into sections by using such separators:
 
   1. /\* ERRORS \*/
   2. /\* STRUCTS \*/
@@ -156,7 +157,7 @@ Also, such exceptions/additions exist:
 
 - Events should generally be emitted immediately after the state change that they
   represent, and should be named the same as the function's name. Some exceptions may be made for gas
-  efficiency if the result doesn't affect observable ordering of events.
+  efficiency if the result doesn't affect the observable ordering of events.
 
   ```solidity
   function _burn(address who, uint256 value) internal {
@@ -185,8 +186,8 @@ Also, such exceptions/additions exist:
   import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
   import {KeyTags} from "../../libraries/utils/KeyTags.sol";
 
-  import {ISettlement} from "../../interfaces/modules/settlement/ISettlement.sol";
-  import {ISigVerifier} from "../../interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol";
+  import {ISettlement} from "../interfaces/modules/settlement/ISettlement.sol";
+  import {ISigVerifier} from "../interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol";
 
   import {StaticDelegateCallable} from "@symbioticfi/core/src/contracts/common/StaticDelegateCallable.sol";
   import {Subnetwork} from "@symbioticfi/core/src/contracts/libraries/Subnetwork.sol";
@@ -199,9 +200,17 @@ Also, such exceptions/additions exist:
   ```solidity
   modifier onlyOwner() internal {
       if (owner != msg.sender) {
-        revert();
+        revert NotOwner();
       }
   }
+  ```
+
+- Errors should be ordered alphabetically ascending.
+
+  ```solidity
+  error InsufficientFunds();
+  error NoAccess();
+  error NotOwner();
   ```
 
 ### Solidity Versioning
@@ -222,11 +231,28 @@ Libraries and abstract contracts using functionality introduced in newer version
 
 ### Interfaces
 
-Every contract MUST implement their corresponding interface that includes all externally callable functions, errors and events.
+Every contract MUST implement its corresponding interface that includes all externally callable functions, errors and events.
 
 ### NatSpec & Comments
 
-Interfaces should be the entrypoint for all contracts. When exploring the a contract within the repository, the interface MUST contain all relevant information to understand the functionality of the contract in the form of NatSpec comments. This includes all externally callable functions, errors and events. The NatSpec documentation MUST be added to the functions, errors and events within the interface. This allows a reader to understand the functionality of a function before moving on to the implementation. The implementing functions MUST point to the NatSpec documentation in the interface using `@inheritdoc`. Internal and private functions shouldn't have NatSpec documentation except for `@dev` comments, whenever more context is needed. Additional comments within a function should only be used to give more context to more complex operations, otherwise the code should be kept readable and self-explanatory. Single line NatSpec comments should use a triple slash (`///`) to ensure compact documentation.
+Interfaces should be the entry point for all contracts. When exploring a contract within the repository, the interface MUST contain all relevant information to understand the functionality of the contract in the form of NatSpec comments. This includes all externally callable functions, structs, errors and events. The NatSpec documentation MUST be added to the functions, structs, errors and events within the interface. This allows a reader to understand the functionality of a function before moving on to the implementation. The implementing functions MUST point to the NatSpec documentation in the interface using `@inheritdoc`. Internal and private functions shouldn't have NatSpec documentation except for `@dev` comments, whenever more context is needed. Additional comments within a function should only be used to give more context to more complex operations; otherwise, the code should be kept readable and self-explanatory. NatSpec comments in contracts should use a triple slash (`///`) to bring less noise to the implementation, while libraries and interfaces should use `/* */` wrappers.
+
+The comments should respect the following rules:
+
+- For read functions: `@notice Returns <...>`
+- For write functions: `@notice <What it does, starts with verb>`
+- For structs: `@notice <What it is>`
+- For errors: `@notice Raised when <...>`
+- For events: `@notice Emitted when <...>`
+
+Each contract/library/interface should have a title comment that should follow such a structure:
+
+1. `@title <Name>` (e.g., `Vault`)
+2. `@notice Contract/Library/Interface for <...>.` - also, other variations are possible, e.g.:
+   - `@notice Interface for the Vault contract.`
+   - `@notice Base contract for <...>.`
+   - `@notice Library-logic for <...>.`
+3. `@dev <...>` (optional)
 
 ## Testing
 
@@ -246,8 +272,8 @@ All contracts and tests should be compilable without IR whenever possible.
 
 ### Gas Metering
 
-Gas for function calls should be metered using the built in `vm.snapshotGasLastCall` function in forge. To meter across multiple calls `vm.startSnapshotGas` and `vm.stopSnapshotGas` can be used. Tests that measure gas should be annotated with `/// forge-config: default.isolate = true` and not be fuzzed to ensure that the gas snapshot is accurate and consistent for CI verification. All external functions should have a gas snapshot test, diverging paths within a function should have appropriate gas snapshot tests.
-For more information on gas metering see the [Forge cheatcodes reference](https://getfoundry.sh/reference/cheatcodes/gas-snapshots/#snapshotgas-cheatcodes).
+Gas for function calls should be metered using the built-in `vm.snapshotGasLastCall` function in forge. To meter across multiple calls `vm.startSnapshotGas` and `vm.stopSnapshotGas` can be used. Tests that measure gas should be annotated with `/// forge-config: default.isolate = true` and not be fuzzed to ensure that the gas snapshot is accurate and consistent for CI verification. All external functions should have a gas snapshot test, and diverging paths within a function should have appropriate gas snapshot tests.
+For more information on gas metering, see the [Forge cheatcodes reference](https://getfoundry.sh/reference/cheatcodes/gas-snapshots/#snapshotgas-cheatcodes).
 
 ### Bytecode Hash
 
@@ -259,4 +285,4 @@ The preferred way to manage dependencies is using [`forge install`](https://book
 
 ## Releases
 
-Every deployment and changes made to contracts after deployment should be accompanied by a tag and release on GitHub.
+Every deployment and change made to contracts after deployment should be accompanied by a tag and release on GitHub.

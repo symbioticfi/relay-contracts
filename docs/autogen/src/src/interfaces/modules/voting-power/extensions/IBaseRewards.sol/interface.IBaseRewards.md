@@ -1,5 +1,7 @@
 # IBaseRewards
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/voting-power/extensions/IBaseRewards.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/interfaces/modules/voting-power/extensions/IBaseRewards.sol)
+
+Interface for the BaseRewards contract.
 
 
 ## Functions
@@ -22,13 +24,11 @@ function getRewarder() external view returns (address);
 
 Sets the rewarder.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function setRewarder(
-    address rewarder
-) external;
+function setRewarder(address rewarder) external;
 ```
 **Parameters**
 
@@ -41,8 +41,8 @@ function setRewarder(
 
 Distributes the staker rewards.
 
-*Only the rewarder can call this function.
-The funds should be transferred to this contract separately before the call.*
+Only the rewarder can call this function.
+The funds should be transferred to this contract separately before the call.
 
 
 ```solidity
@@ -62,8 +62,8 @@ function distributeStakerRewards(address stakerRewards, address token, uint256 a
 
 Distributes the operator rewards.
 
-*Only the rewarder can call this function.
-The funds should be transferred to this contract separately before the call.*
+Only the rewarder can call this function.
+The funds should be transferred to this contract separately before the call.
 
 
 ```solidity
@@ -116,7 +116,9 @@ Emitted when the operator rewards are distributed.
 
 
 ```solidity
-event DistributeOperatorRewards(address indexed operatorRewards, address indexed token, uint256 amount, bytes32 root);
+event DistributeOperatorRewards(
+    address indexed operatorRewards, address indexed token, uint256 amount, bytes32 root
+);
 ```
 
 **Parameters**

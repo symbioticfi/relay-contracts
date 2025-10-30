@@ -1,5 +1,5 @@
 # BaseSlashingLogic
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/voting-power/extensions/logic/BaseSlashingLogic.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/modules/voting-power/extensions/logic/BaseSlashingLogic.sol)
 
 Library with bindings for slashing vaults.
 
@@ -9,18 +9,14 @@ Library with bindings for slashing vaults.
 
 Slashes a vault.
 
-*It checks if the slashing was required at the given capture timestamp,
-and if the slashing request is not stale regarding set `minEpochDuration`.*
+It checks if the slashing was required at the given capture timestamp,
+and if the slashing request is not stale regarding set `minEpochDuration`.
 
 
 ```solidity
-function slashVault(
-    uint48 timestamp,
-    address vault,
-    address operator,
-    uint256 amount,
-    bytes memory hints
-) public returns (bool success, bytes memory response);
+function slashVault(uint48 timestamp, address vault, address operator, uint256 amount, bytes memory hints)
+    public
+    returns (bool success, bytes memory response);
 ```
 **Parameters**
 
@@ -37,18 +33,14 @@ function slashVault(
 
 Slashes a vault.
 
-*It checks if the slashing was required at the given capture timestamp,
-and if the slashing request is not stale regarding set `minEpochDuration`.*
+It checks if the slashing was required at the given capture timestamp,
+and if the slashing request is not stale regarding set `minEpochDuration`.
 
 
 ```solidity
-function slash(
-    uint48 timestamp,
-    address slasher,
-    address operator,
-    uint256 amount,
-    bytes memory hints
-) public returns (bool success, bytes memory response);
+function slash(uint48 timestamp, address slasher, address operator, uint256 amount, bytes memory hints)
+    public
+    returns (bool success, bytes memory response);
 ```
 **Parameters**
 
@@ -67,13 +59,9 @@ Slashes a vault.
 
 
 ```solidity
-function slashUnsafe(
-    uint48 timestamp,
-    address slasher,
-    address operator,
-    uint256 amount,
-    bytes memory hints
-) public returns (bool success, bytes memory response);
+function slashUnsafe(uint48 timestamp, address slasher, address operator, uint256 amount, bytes memory hints)
+    public
+    returns (bool success, bytes memory response);
 ```
 **Parameters**
 
@@ -90,15 +78,13 @@ function slashUnsafe(
 
 Executes a slash request.
 
-*It checks if the slashing request is not stale regarding set `minEpochDuration`.*
+It checks if the slashing request is not stale regarding set `minEpochDuration`.
 
 
 ```solidity
-function executeSlashVault(
-    address vault,
-    uint256 slashIndex,
-    bytes memory hints
-) public returns (bool success, uint256 slashedAmount);
+function executeSlashVault(address vault, uint256 slashIndex, bytes memory hints)
+    public
+    returns (bool success, uint256 slashedAmount);
 ```
 **Parameters**
 
@@ -113,15 +99,13 @@ function executeSlashVault(
 
 Executes a slash request.
 
-*It checks if the slashing request is not stale regarding set `minEpochDuration`.*
+It checks if the slashing request is not stale regarding set `minEpochDuration`.
 
 
 ```solidity
-function executeSlash(
-    address slasher,
-    uint256 slashIndex,
-    bytes memory hints
-) public returns (bool success, uint256 slashedAmount);
+function executeSlash(address slasher, uint256 slashIndex, bytes memory hints)
+    public
+    returns (bool success, uint256 slashedAmount);
 ```
 **Parameters**
 
@@ -138,11 +122,9 @@ Executes a slash request.
 
 
 ```solidity
-function executeSlashUnsafe(
-    address slasher,
-    uint256 slashIndex,
-    bytes memory hints
-) public returns (bool success, uint256 slashedAmount);
+function executeSlashUnsafe(address slasher, uint256 slashIndex, bytes memory hints)
+    public
+    returns (bool success, uint256 slashedAmount);
 ```
 **Parameters**
 

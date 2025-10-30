@@ -8,9 +8,7 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 contract TestPermissionManager is PermissionManager {
     address public owner;
 
-    function initialize(
-        address _owner
-    ) external initializer {
+    function initialize(address _owner) external initializer {
         owner = _owner;
     }
 

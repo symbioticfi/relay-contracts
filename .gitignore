@@ -6,13 +6,14 @@ yarn-error.log
 # Ignore build outputs
 dist
 out
+**/__pycache__
 
 # Ignore environment files
 .env
 
 # Ignore version control files
-.git
-.gitignore
+docs/autogen/.git
+docs/autogen/.gitignore
 
 # Ignore editor and OS-specific files
 *.swp
@@ -28,6 +29,7 @@ out/
 broadcast/
 deployments/
 
+script/logs.txt
 lcov.info
 /target
 /coverage

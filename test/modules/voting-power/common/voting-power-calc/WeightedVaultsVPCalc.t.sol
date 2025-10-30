@@ -11,14 +11,17 @@ import {INetworkManager} from "../../../../../src/interfaces/modules/base/INetwo
 import {IOzEIP712} from "../../../../../src/interfaces/modules/base/IOzEIP712.sol";
 import {NoPermissionManager} from "../../../../../test/mocks/NoPermissionManager.sol";
 import {EqualStakeVPCalc} from "../../../../../src/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol";
-import {NormalizedTokenDecimalsVPCalc} from
-    "../../../../../src/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.sol";
-import {WeightedVaultsVPCalc} from
-    "../../../../../src/modules/voting-power/common/voting-power-calc/WeightedVaultsVPCalc.sol";
+import {
+    NormalizedTokenDecimalsVPCalc
+} from "../../../../../src/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.sol";
+import {
+    WeightedVaultsVPCalc
+} from "../../../../../src/modules/voting-power/common/voting-power-calc/WeightedVaultsVPCalc.sol";
 import {OperatorVaults} from "../../../../../src/modules/voting-power/extensions/OperatorVaults.sol";
 
-import {IWeightedVaultsVPCalc} from
-    "../../../../../src/interfaces/modules/voting-power/common/voting-power-calc/IWeightedVaultsVPCalc.sol";
+import {
+    IWeightedVaultsVPCalc
+} from "../../../../../src/interfaces/modules/voting-power/common/voting-power-calc/IWeightedVaultsVPCalc.sol";
 
 import {BN254} from "../../../../../src/libraries/utils/BN254.sol";
 import "../../../../InitSetup.sol";
@@ -39,9 +42,10 @@ contract MockToken is ERC20 {
 contract TestVotingPowerProvider is VotingPowerProvider, WeightedVaultsVPCalc, NoPermissionManager {
     constructor(address operatorRegistry, address vaultFactory) VotingPowerProvider(operatorRegistry, vaultFactory) {}
 
-    function initialize(
-        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit
-    ) external initializer {
+    function initialize(IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit)
+        external
+        initializer
+    {
         __VotingPowerProvider_init(votingPowerProviderInit);
     }
 
@@ -57,9 +61,7 @@ contract TestVotingPowerProvider is VotingPowerProvider, WeightedVaultsVPCalc, N
         return _getSharedVaultsLength();
     }
 
-    function getOperatorVaultsLength(
-        address operator
-    ) external view returns (uint256) {
+    function getOperatorVaultsLength(address operator) external view returns (uint256) {
         return _getOperatorVaultsLength(operator);
     }
 
@@ -71,32 +73,27 @@ contract TestVotingPowerProvider is VotingPowerProvider, WeightedVaultsVPCalc, N
         return _getOperatorStake(operator, vault);
     }
 
-    function getOperatorVotingPowerAt(
-        address operator,
-        address vault,
-        bytes memory extraData,
-        uint48 timestamp
-    ) external view returns (uint256) {
+    function getOperatorVotingPowerAt(address operator, address vault, bytes memory extraData, uint48 timestamp)
+        external
+        view
+        returns (uint256)
+    {
         return _getOperatorVotingPowerAt(operator, vault, extraData, timestamp);
     }
 
-    function getOperatorVotingPower(
-        address operator,
-        address vault,
-        bytes memory extraData
-    ) external view returns (uint256) {
+    function getOperatorVotingPower(address operator, address vault, bytes memory extraData)
+        external
+        view
+        returns (uint256)
+    {
         return _getOperatorVotingPower(operator, vault, extraData);
     }
 
-    function registerOperator(
-        address operator
-    ) external {
+    function registerOperator(address operator) external {
         _registerOperator(operator);
     }
 
-    function unregisterOperator(
-        address operator
-    ) external {
+    function unregisterOperator(address operator) external {
         _unregisterOperator(operator);
     }
 
@@ -104,27 +101,19 @@ contract TestVotingPowerProvider is VotingPowerProvider, WeightedVaultsVPCalc, N
         _setSlashingData(requireSlasher, minVaultEpochDuration);
     }
 
-    function registerToken(
-        address token
-    ) external {
+    function registerToken(address token) external {
         _registerToken(token);
     }
 
-    function unregisterToken(
-        address token
-    ) external {
+    function unregisterToken(address token) external {
         _unregisterToken(token);
     }
 
-    function registerSharedVault(
-        address vault
-    ) external {
+    function registerSharedVault(address vault) external {
         _registerSharedVault(vault);
     }
 
-    function unregisterSharedVault(
-        address vault
-    ) external {
+    function unregisterSharedVault(address vault) external {
         _unregisterSharedVault(vault);
     }
 
@@ -136,15 +125,11 @@ contract TestVotingPowerProvider is VotingPowerProvider, WeightedVaultsVPCalc, N
         _unregisterOperatorVault(operator, vault);
     }
 
-    function validateVault(
-        address vault
-    ) external view returns (bool) {
+    function validateVault(address vault) external view returns (bool) {
         return VotingPowerProviderLogic._validateVault(vault);
     }
 
-    function validateSharedVault(
-        address vault
-    ) external view returns (bool) {
+    function validateSharedVault(address vault) external view returns (bool) {
         return VotingPowerProviderLogic._validateSharedVault(vault);
     }
 
@@ -152,9 +137,7 @@ contract TestVotingPowerProvider is VotingPowerProvider, WeightedVaultsVPCalc, N
         return VotingPowerProviderLogic._validateOperatorVault(operator, vault);
     }
 
-    function validateVaultSlashing(
-        address vault
-    ) external view returns (bool) {
+    function validateVaultSlashing(address vault) external view returns (bool) {
         return VotingPowerProviderLogic._validateVaultSlashing(vault);
     }
 }
@@ -179,14 +162,14 @@ contract WeightedVaultsVPCalcTest is InitSetupTest {
         INetworkManager.NetworkManagerInitParams memory netInit =
             INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkId: IDENTIFIER});
 
-        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
-            .VotingPowerProviderInitParams({
-            networkManagerInitParams: netInit,
-            ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
-            requireSlasher: true,
-            minVaultEpochDuration: 100,
-            token: address(0)
-        });
+        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit =
+            IVotingPowerProvider.VotingPowerProviderInitParams({
+                networkManagerInitParams: netInit,
+                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
+                requireSlasher: true,
+                minVaultEpochDuration: 100,
+                token: address(0)
+            });
 
         votingPowerProvider.initialize(votingPowerProviderInit);
 
@@ -207,14 +190,14 @@ contract WeightedVaultsVPCalcTest is InitSetupTest {
 
         MockToken mockToken = new MockToken("MockToken", "MTK", 18);
 
-        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
-            .VotingPowerProviderInitParams({
-            networkManagerInitParams: netInit,
-            ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
-            requireSlasher: true,
-            minVaultEpochDuration: 100,
-            token: address(mockToken)
-        });
+        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit =
+            IVotingPowerProvider.VotingPowerProviderInitParams({
+                networkManagerInitParams: netInit,
+                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
+                requireSlasher: true,
+                minVaultEpochDuration: 100,
+                token: address(mockToken)
+            });
 
         votingPowerProvider.initialize(votingPowerProviderInit);
 
@@ -300,14 +283,14 @@ contract WeightedVaultsVPCalcTest is InitSetupTest {
 
         MockToken mockToken = new MockToken("MockToken", "MTK", 18);
 
-        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
-            .VotingPowerProviderInitParams({
-            networkManagerInitParams: netInit,
-            ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
-            requireSlasher: true,
-            minVaultEpochDuration: 100,
-            token: address(mockToken)
-        });
+        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit =
+            IVotingPowerProvider.VotingPowerProviderInitParams({
+                networkManagerInitParams: netInit,
+                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
+                requireSlasher: true,
+                minVaultEpochDuration: 100,
+                token: address(mockToken)
+            });
 
         votingPowerProvider.initialize(votingPowerProviderInit);
 
@@ -382,14 +365,14 @@ contract WeightedVaultsVPCalcTest is InitSetupTest {
 
         MockToken mockToken = new MockToken("MockToken", "MTK", 18);
 
-        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
-            .VotingPowerProviderInitParams({
-            networkManagerInitParams: netInit,
-            ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
-            requireSlasher: true,
-            minVaultEpochDuration: 100,
-            token: address(mockToken)
-        });
+        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit =
+            IVotingPowerProvider.VotingPowerProviderInitParams({
+                networkManagerInitParams: netInit,
+                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
+                requireSlasher: true,
+                minVaultEpochDuration: 100,
+                token: address(mockToken)
+            });
 
         votingPowerProvider.initialize(votingPowerProviderInit);
 

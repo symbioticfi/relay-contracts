@@ -1,5 +1,5 @@
 # ExtraDataStorageHelper
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/settlement/sig-verifiers/libraries/ExtraDataStorageHelper.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/modules/settlement/sig-verifiers/libraries/ExtraDataStorageHelper.sol)
 
 Library for convenient and safe extra data storage slots derivation.
 
@@ -8,7 +8,7 @@ Library for convenient and safe extra data storage slots derivation.
 ### KEY_TAG_PREFIX_HASH
 
 ```solidity
-bytes32 public constant KEY_TAG_PREFIX_HASH = keccak256("keyTag.");
+bytes32 public constant KEY_TAG_PREFIX_HASH = keccak256("keyTag.")
 ```
 
 
@@ -17,13 +17,11 @@ bytes32 public constant KEY_TAG_PREFIX_HASH = keccak256("keyTag.");
 
 Derives a key from a name hash.
 
-*It can be used, e.g., to store some global data like number of validators.*
+It can be used, e.g., to store some global data like number of validators.
 
 
 ```solidity
-function getKeyGlobal(
-    bytes32 nameHash
-) internal pure returns (bytes32);
+function getKeyGlobal(bytes32 nameHash) internal pure returns (bytes32);
 ```
 **Parameters**
 
@@ -42,7 +40,7 @@ function getKeyGlobal(
 
 Derives a key from a key tag and a name hash.
 
-*It can be used, e.g., to store some data dependent on the key tag like quorum threshold.*
+It can be used, e.g., to store some data dependent on the key tag like quorum threshold.
 
 
 ```solidity
@@ -66,8 +64,8 @@ function getKeyGlobal(uint8 keyTag, bytes32 nameHash) internal pure returns (byt
 
 Derives a key from a key tag, a name hash and an index.
 
-*It can be used, e.g., to store some data dependent on the key tag, which needs more than 1 storage slot (32 bytes),
-like aggregated BLS12-381 public key.*
+It can be used, e.g., to store some data dependent on the key tag, which needs more than 1 storage slot (32 bytes),
+like aggregated BLS12-381 public key.
 
 
 ```solidity
@@ -92,8 +90,8 @@ function getKeyGlobal(uint8 keyTag, bytes32 nameHash, uint256 index) internal pu
 
 Derives a key from a verification type and a name hash.
 
-*It can be used, e.g., to store some data dependent on the verification type like number of validators
-with a possibility to have multiple verification types simultaneously without collisions.*
+It can be used, e.g., to store some data dependent on the verification type like number of validators
+with a possibility to have multiple verification types simultaneously without collisions.
 
 
 ```solidity
@@ -117,8 +115,8 @@ function getKey(uint32 verificationType, bytes32 nameHash) internal pure returns
 
 Derives a key from a verification type, a key tag and a name hash.
 
-*It can be used, e.g., to store some data dependent on the verification type and the key tag like quorum threshold
-with a possibility to have multiple verification types simultaneously without collisions.*
+It can be used, e.g., to store some data dependent on the verification type and the key tag like quorum threshold
+with a possibility to have multiple verification types simultaneously without collisions.
 
 
 ```solidity
@@ -143,18 +141,16 @@ function getKey(uint32 verificationType, uint8 keyTag, bytes32 nameHash) interna
 
 Derives a key from a verification type, a key tag, a name hash and an index.
 
-*It can be used, e.g., to store some data dependent on the verification type and the key tag,
+It can be used, e.g., to store some data dependent on the verification type and the key tag,
 which needs more than 1 storage slot (32 bytes), like aggregated BLS12-381 public key
-with a possibility to have multiple verification types simultaneously without collisions.*
+with a possibility to have multiple verification types simultaneously without collisions.
 
 
 ```solidity
-function getKey(
-    uint32 verificationType,
-    uint8 keyTag,
-    bytes32 nameHash,
-    uint256 index
-) internal pure returns (bytes32);
+function getKey(uint32 verificationType, uint8 keyTag, bytes32 nameHash, uint256 index)
+    internal
+    pure
+    returns (bytes32);
 ```
 **Parameters**
 

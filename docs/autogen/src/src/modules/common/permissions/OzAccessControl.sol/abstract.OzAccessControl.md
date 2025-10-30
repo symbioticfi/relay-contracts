@@ -1,8 +1,8 @@
 # OzAccessControl
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/common/permissions/OzAccessControl.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/modules/common/permissions/OzAccessControl.sol)
 
 **Inherits:**
-[PermissionManager](/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), AccessControlUpgradeable, [IOzAccessControl](/src/interfaces/modules/common/permissions/IOzAccessControl.sol/interface.IOzAccessControl.md)
+[PermissionManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), AccessControlUpgradeable, [IOzAccessControl](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/common/permissions/IOzAccessControl.sol/interface.IOzAccessControl.md)
 
 Contract for permission management based on OpenZeppelin's AccessControl.
 
@@ -12,7 +12,7 @@ Contract for permission management based on OpenZeppelin's AccessControl.
 
 ```solidity
 bytes32 private constant OzAccessControlStorageLocation =
-    0xbe09a78a256419d2b885312b60a13e8082d8ab3c36c463fff4fbb086f1e96f00;
+    0xbe09a78a256419d2b885312b60a13e8082d8ab3c36c463fff4fbb086f1e96f00
 ```
 
 
@@ -37,9 +37,7 @@ Returns the required role for a selector.
 
 
 ```solidity
-function getRole(
-    bytes4 selector
-) public view virtual returns (bytes32);
+function getRole(bytes4 selector) public view virtual returns (bytes32);
 ```
 **Parameters**
 

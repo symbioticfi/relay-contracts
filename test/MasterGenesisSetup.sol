@@ -29,7 +29,6 @@ contract MasterGenesisSetupTest is MasterSetupTest {
     }
 
     function setUp() public virtual override {
-        SYMBIOTIC_CORE_PROJECT_ROOT = "lib/core/";
         MasterSetupTest.setUp();
 
         vm.warp(masterSetupParams.valSetDriver.getEpochStart(0) + 1);

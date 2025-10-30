@@ -15,12 +15,10 @@ contract SlasherMock {
         return IBaseSlashing(middleware).slashVault(timestamp, vault, operator, amount, hints);
     }
 
-    function executeSlashVault(
-        address middleware,
-        address vault,
-        uint256 slashIndex,
-        bytes memory hints
-    ) external returns (bool success, uint256 slashedAmount) {
+    function executeSlashVault(address middleware, address vault, uint256 slashIndex, bytes memory hints)
+        external
+        returns (bool success, uint256 slashedAmount)
+    {
         return IBaseSlashing(middleware).executeSlashVault(vault, slashIndex, hints);
     }
 }

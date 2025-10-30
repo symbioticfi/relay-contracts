@@ -1,9 +1,9 @@
 # KeyEcdsaSecp256k1
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/libraries/keys/KeyEcdsaSecp256k1.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/libraries/keys/KeyEcdsaSecp256k1.sol)
 
 Library for interacting with ECDSA public keys on the secp256k1 curve, including validation and serialization.
 
-*The keys are represented as addresses.*
+The keys are represented as addresses.
 
 
 ## Functions
@@ -11,13 +11,11 @@ Library for interacting with ECDSA public keys on the secp256k1 curve, including
 
 Wraps an address.
 
-*Allows to wrap zero address.*
+Allows to wrap zero address.
 
 
 ```solidity
-function wrap(
-    address keyRaw
-) internal view returns (KEY_ECDSA_SECP256K1 memory key);
+function wrap(address keyRaw) internal view returns (KEY_ECDSA_SECP256K1 memory key);
 ```
 **Parameters**
 
@@ -38,9 +36,7 @@ Unwraps a key.
 
 
 ```solidity
-function unwrap(
-    KEY_ECDSA_SECP256K1 memory key
-) internal view returns (address keyRaw);
+function unwrap(KEY_ECDSA_SECP256K1 memory key) internal view returns (address keyRaw);
 ```
 **Parameters**
 
@@ -59,13 +55,11 @@ function unwrap(
 
 Serializes a key.
 
-*Serializes address to 32 bytes.*
+Serializes address to 32 bytes.
 
 
 ```solidity
-function serialize(
-    KEY_ECDSA_SECP256K1 memory key
-) internal view returns (bytes memory keySerialized);
+function serialize(KEY_ECDSA_SECP256K1 memory key) internal view returns (bytes memory keySerialized);
 ```
 **Parameters**
 
@@ -86,9 +80,7 @@ Deserializes a serialized key.
 
 
 ```solidity
-function deserialize(
-    bytes memory keySerialized
-) internal view returns (KEY_ECDSA_SECP256K1 memory key);
+function deserialize(bytes memory keySerialized) internal view returns (KEY_ECDSA_SECP256K1 memory key);
 ```
 **Parameters**
 
@@ -107,13 +99,11 @@ function deserialize(
 
 Converts a key to bytes.
 
-*It is a bytes representation of the underlying key itself.*
+It is a bytes representation of the underlying key itself.
 
 
 ```solidity
-function toBytes(
-    KEY_ECDSA_SECP256K1 memory key
-) internal view returns (bytes memory keyBytes);
+function toBytes(KEY_ECDSA_SECP256K1 memory key) internal view returns (bytes memory keyBytes);
 ```
 **Parameters**
 
@@ -134,9 +124,7 @@ Converts bytes to a key.
 
 
 ```solidity
-function fromBytes(
-    bytes memory keyBytes
-) internal view returns (KEY_ECDSA_SECP256K1 memory key);
+function fromBytes(bytes memory keyBytes) internal view returns (KEY_ECDSA_SECP256K1 memory key);
 ```
 **Parameters**
 

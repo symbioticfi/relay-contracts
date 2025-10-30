@@ -7,10 +7,8 @@ import {IOzAccessControl} from "../../../interfaces/modules/common/permissions/I
 
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-/**
- * @title OzAccessControl
- * @notice Contract for permission management based on OpenZeppelin's AccessControl.
- */
+/// @title OzAccessControl
+/// @notice Contract for permission management based on OpenZeppelin's AccessControl.
 abstract contract OzAccessControl is PermissionManager, AccessControlUpgradeable, IOzAccessControl {
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OzAccessControl")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant OzAccessControlStorageLocation =
@@ -26,18 +24,12 @@ abstract contract OzAccessControl is PermissionManager, AccessControlUpgradeable
         __AccessControl_init();
     }
 
-    /**
-     * @inheritdoc IOzAccessControl
-     */
-    function getRole(
-        bytes4 selector
-    ) public view virtual returns (bytes32) {
+    /// @inheritdoc IOzAccessControl
+    function getRole(bytes4 selector) public view virtual returns (bytes32) {
         return _getOzAccessControlStorage()._selectorRoles[selector];
     }
 
-    /**
-     * @inheritdoc PermissionManager
-     */
+    /// @inheritdoc PermissionManager
     function _checkPermission() internal view virtual override {
         _checkRole(getRole(msg.sig));
     }

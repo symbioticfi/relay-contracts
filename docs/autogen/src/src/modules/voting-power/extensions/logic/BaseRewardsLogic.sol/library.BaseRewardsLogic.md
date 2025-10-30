@@ -1,5 +1,5 @@
 # BaseRewardsLogic
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/voting-power/extensions/logic/BaseRewardsLogic.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/modules/voting-power/extensions/logic/BaseRewardsLogic.sol)
 
 Library with bindings for distributing rewards to stakers and operators.
 
@@ -9,7 +9,7 @@ Library with bindings for distributing rewards to stakers and operators.
 
 Distributes staker rewards.
 
-*The funds should be transferred to this contract separately before the call.*
+The funds should be transferred to this contract separately before the call.
 
 
 ```solidity
@@ -29,7 +29,7 @@ function distributeStakerRewards(address stakerRewards, address token, uint256 a
 
 Distributes operator rewards.
 
-*The funds should be transferred to this contract separately before the call.*
+The funds should be transferred to this contract separately before the call.
 
 
 ```solidity

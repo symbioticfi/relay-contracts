@@ -1,8 +1,8 @@
 # VotingPowerCalcManager
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/voting-power/base/VotingPowerCalcManager.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/modules/voting-power/base/VotingPowerCalcManager.sol)
 
 **Inherits:**
-Initializable, [IVotingPowerCalcManager](/src/interfaces/modules/voting-power/base/IVotingPowerCalcManager.sol/interface.IVotingPowerCalcManager.md)
+Initializable, [IVotingPowerCalcManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/base/IVotingPowerCalcManager.sol/interface.IVotingPowerCalcManager.md)
 
 Base contract for voting power calculations.
 
@@ -14,12 +14,11 @@ Returns the voting power given a `stake` amount of `vault`'s collateral at the c
 
 
 ```solidity
-function stakeToVotingPowerAt(
-    address vault,
-    uint256 stake,
-    bytes memory extraData,
-    uint48 timestamp
-) public view virtual returns (uint256 power);
+function stakeToVotingPowerAt(address vault, uint256 stake, bytes memory extraData, uint48 timestamp)
+    public
+    view
+    virtual
+    returns (uint256 power);
 ```
 **Parameters**
 
@@ -43,11 +42,11 @@ Returns the voting power given a `stake` amount of `vault`'s collateral at the c
 
 
 ```solidity
-function stakeToVotingPower(
-    address vault,
-    uint256 stake,
-    bytes memory extraData
-) public view virtual returns (uint256 power);
+function stakeToVotingPower(address vault, uint256 stake, bytes memory extraData)
+    public
+    view
+    virtual
+    returns (uint256 power);
 ```
 **Parameters**
 

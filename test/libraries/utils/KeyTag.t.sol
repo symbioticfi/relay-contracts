@@ -59,9 +59,7 @@ contract KeyTagTest is Test {
         this.getType(invalid);
     }
 
-    function getType(
-        uint8 keyTag
-    ) public pure returns (uint8) {
+    function getType(uint8 keyTag) public pure returns (uint8) {
         return KeyTags.getType(keyTag);
     }
 
@@ -72,9 +70,7 @@ contract KeyTagTest is Test {
         this.getTag(invalid);
     }
 
-    function getTag(
-        uint8 keyTag
-    ) public pure returns (uint8) {
+    function getTag(uint8 keyTag) public pure returns (uint8) {
         return KeyTags.getTag(keyTag);
     }
 
@@ -125,9 +121,7 @@ contract KeyTagTest is Test {
         assertFalse(bitmask.contains(11));
     }
 
-    function serialize(
-        uint8[] memory tags
-    ) public pure returns (uint128) {
+    function serialize(uint8[] memory tags) public pure returns (uint128) {
         return KeyTags.serialize(tags);
     }
 

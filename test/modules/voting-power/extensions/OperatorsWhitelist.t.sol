@@ -34,9 +34,7 @@ contract TestOperatorsWhitelist is
         __OperatorsWhitelist_init(wlInit);
     }
 
-    function _registerOperatorImpl(
-        address operator
-    ) internal override(OperatorsWhitelist, VotingPowerProvider) {
+    function _registerOperatorImpl(address operator) internal override(OperatorsWhitelist, VotingPowerProvider) {
         super._registerOperatorImpl(operator);
     }
 }
@@ -62,14 +60,14 @@ contract OperatorsWhitelistTest is Test, InitSetupTest {
         IOperatorsWhitelist.OperatorsWhitelistInitParams memory wlInit =
             IOperatorsWhitelist.OperatorsWhitelistInitParams({isWhitelistEnabled: true});
 
-        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
-            .VotingPowerProviderInitParams({
-            networkManagerInitParams: netInit,
-            ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
-            requireSlasher: true,
-            minVaultEpochDuration: 100,
-            token: initSetupParams.masterChain.tokens[0]
-        });
+        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit =
+            IVotingPowerProvider.VotingPowerProviderInitParams({
+                networkManagerInitParams: netInit,
+                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
+                requireSlasher: true,
+                minVaultEpochDuration: 100,
+                token: initSetupParams.masterChain.tokens[0]
+            });
 
         whitelistOps.initialize(votingPowerProviderInit, wlInit);
 

@@ -19,9 +19,10 @@ import "../../InitSetup.sol";
 contract TestVotingPowerProvider is VotingPowerProvider, EqualStakeVPCalc, NoPermissionManager {
     constructor(address operatorRegistry, address vaultFactory) VotingPowerProvider(operatorRegistry, vaultFactory) {}
 
-    function initialize(
-        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit
-    ) external initializer {
+    function initialize(IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit)
+        external
+        initializer
+    {
         __VotingPowerProvider_init(votingPowerProviderInit);
     }
 
@@ -37,9 +38,7 @@ contract TestVotingPowerProvider is VotingPowerProvider, EqualStakeVPCalc, NoPer
         return _getSharedVaultsLength();
     }
 
-    function getOperatorVaultsLength(
-        address operator
-    ) external view returns (uint256) {
+    function getOperatorVaultsLength(address operator) external view returns (uint256) {
         return _getOperatorVaultsLength(operator);
     }
 
@@ -51,32 +50,27 @@ contract TestVotingPowerProvider is VotingPowerProvider, EqualStakeVPCalc, NoPer
         return _getOperatorStake(operator, vault);
     }
 
-    function getOperatorVotingPowerAt(
-        address operator,
-        address vault,
-        bytes memory extraData,
-        uint48 timestamp
-    ) external view returns (uint256) {
+    function getOperatorVotingPowerAt(address operator, address vault, bytes memory extraData, uint48 timestamp)
+        external
+        view
+        returns (uint256)
+    {
         return _getOperatorVotingPowerAt(operator, vault, extraData, timestamp);
     }
 
-    function getOperatorVotingPower(
-        address operator,
-        address vault,
-        bytes memory extraData
-    ) external view returns (uint256) {
+    function getOperatorVotingPower(address operator, address vault, bytes memory extraData)
+        external
+        view
+        returns (uint256)
+    {
         return _getOperatorVotingPower(operator, vault, extraData);
     }
 
-    function registerOperator(
-        address operator
-    ) external {
+    function registerOperator(address operator) external {
         _registerOperator(operator);
     }
 
-    function unregisterOperator(
-        address operator
-    ) external {
+    function unregisterOperator(address operator) external {
         _unregisterOperator(operator);
     }
 
@@ -84,27 +78,19 @@ contract TestVotingPowerProvider is VotingPowerProvider, EqualStakeVPCalc, NoPer
         _setSlashingData(requireSlasher, minVaultEpochDuration);
     }
 
-    function registerToken(
-        address token
-    ) external {
+    function registerToken(address token) external {
         _registerToken(token);
     }
 
-    function unregisterToken(
-        address token
-    ) external {
+    function unregisterToken(address token) external {
         _unregisterToken(token);
     }
 
-    function registerSharedVault(
-        address vault
-    ) external {
+    function registerSharedVault(address vault) external {
         _registerSharedVault(vault);
     }
 
-    function unregisterSharedVault(
-        address vault
-    ) external {
+    function unregisterSharedVault(address vault) external {
         _unregisterSharedVault(vault);
     }
 
@@ -116,15 +102,11 @@ contract TestVotingPowerProvider is VotingPowerProvider, EqualStakeVPCalc, NoPer
         _unregisterOperatorVault(operator, vault);
     }
 
-    function validateVault(
-        address vault
-    ) external view returns (bool) {
+    function validateVault(address vault) external view returns (bool) {
         return VotingPowerProviderLogic._validateVault(vault);
     }
 
-    function validateSharedVault(
-        address vault
-    ) external view returns (bool) {
+    function validateSharedVault(address vault) external view returns (bool) {
         return VotingPowerProviderLogic._validateSharedVault(vault);
     }
 
@@ -132,9 +114,7 @@ contract TestVotingPowerProvider is VotingPowerProvider, EqualStakeVPCalc, NoPer
         return VotingPowerProviderLogic._validateOperatorVault(operator, vault);
     }
 
-    function validateVaultEpochDuration(
-        address vault
-    ) external view returns (bool) {
+    function validateVaultEpochDuration(address vault) external view returns (bool) {
         return VotingPowerProviderLogic._validateVaultSlashing(vault);
     }
 }
@@ -167,7 +147,8 @@ contract VotingPowerProviderTest is InitSetupTest {
 
     bytes4 private ERR_INVALID_SHARED_VAULT = IVotingPowerProvider.VotingPowerProvider_InvalidSharedVault.selector;
     bytes4 private ERR_INVALID_OPERATOR_VAULT = IVotingPowerProvider.VotingPowerProvider_InvalidOperatorVault.selector;
-    bytes4 private ERR_OPERATOR_NOT_REGISTERED = IVotingPowerProvider.VotingPowerProvider_OperatorNotRegistered.selector;
+    bytes4 private ERR_OPERATOR_NOT_REGISTERED =
+        IVotingPowerProvider.VotingPowerProvider_OperatorNotRegistered.selector;
 
     function setUp() public override {
         InitSetupTest.setUp();
@@ -178,14 +159,14 @@ contract VotingPowerProviderTest is InitSetupTest {
         INetworkManager.NetworkManagerInitParams memory netInit =
             INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkId: IDENTIFIER});
 
-        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
-            .VotingPowerProviderInitParams({
-            networkManagerInitParams: netInit,
-            ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
-            requireSlasher: true,
-            minVaultEpochDuration: 100,
-            token: address(0)
-        });
+        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit =
+            IVotingPowerProvider.VotingPowerProviderInitParams({
+                networkManagerInitParams: netInit,
+                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
+                requireSlasher: true,
+                minVaultEpochDuration: 100,
+                token: address(0)
+            });
 
         votingPowerProvider.initialize(votingPowerProviderInit);
 
@@ -599,25 +580,26 @@ contract VotingPowerProviderTest is InitSetupTest {
         vm.expectRevert(ERR_OPERATOR_VAULT_ALREADY_registered);
         votingPowerProvider.registerOperatorVault(getOperator(0).addr, newVault);
 
-        newVault = ISymbioticVaultFactory(symbioticCore.vaultFactory).create(
-            1,
-            address(0),
-            abi.encode(
-                ISymbioticVault.InitParams({
-                    collateral: initSetupParams.masterChain.tokens[0],
-                    burner: 0x000000000000000000000000000000000000dEaD,
-                    epochDuration: minVaultEpochDuration,
-                    depositWhitelist: false,
-                    isDepositLimit: false,
-                    depositLimit: 0,
-                    defaultAdminRoleHolder: address(0),
-                    depositWhitelistSetRoleHolder: address(0),
-                    depositorWhitelistRoleHolder: address(0),
-                    isDepositLimitSetRoleHolder: address(0),
-                    depositLimitSetRoleHolder: address(0)
-                })
-            )
-        );
+        newVault = ISymbioticVaultFactory(symbioticCore.vaultFactory)
+            .create(
+                1,
+                address(0),
+                abi.encode(
+                    ISymbioticVault.InitParams({
+                        collateral: initSetupParams.masterChain.tokens[0],
+                        burner: 0x000000000000000000000000000000000000dEaD,
+                        epochDuration: minVaultEpochDuration,
+                        depositWhitelist: false,
+                        isDepositLimit: false,
+                        depositLimit: 0,
+                        defaultAdminRoleHolder: address(0),
+                        depositWhitelistSetRoleHolder: address(0),
+                        depositorWhitelistRoleHolder: address(0),
+                        isDepositLimitSetRoleHolder: address(0),
+                        depositLimitSetRoleHolder: address(0)
+                    })
+                )
+            );
 
         vm.expectRevert(ERR_INVALID_VAULT);
         votingPowerProvider.registerOperatorVault(getOperator(0).addr, newVault);
@@ -772,14 +754,14 @@ contract VotingPowerProviderTest is InitSetupTest {
         INetworkManager.NetworkManagerInitParams memory netInit =
             INetworkManager.NetworkManagerInitParams({network: vars.network.addr, subnetworkId: IDENTIFIER});
 
-        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit = IVotingPowerProvider
-            .VotingPowerProviderInitParams({
-            networkManagerInitParams: netInit,
-            ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
-            requireSlasher: true,
-            minVaultEpochDuration: 100,
-            token: initSetupParams.masterChain.tokens[0]
-        });
+        IVotingPowerProvider.VotingPowerProviderInitParams memory votingPowerProviderInit =
+            IVotingPowerProvider.VotingPowerProviderInitParams({
+                networkManagerInitParams: netInit,
+                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "MyVotingPowerProvider", version: "1"}),
+                requireSlasher: true,
+                minVaultEpochDuration: 100,
+                token: initSetupParams.masterChain.tokens[0]
+            });
 
         votingPowerProvider.initialize(votingPowerProviderInit);
 
@@ -869,8 +851,7 @@ contract VotingPowerProviderTest is InitSetupTest {
                         operator.addr,
                         abi.encode(
                             IVotingPowerProvider.OperatorVotingPowersExtraData({
-                                sharedVaultsExtraData: new bytes[](0),
-                                operatorVaultsExtraData: new bytes[](0)
+                                sharedVaultsExtraData: new bytes[](0), operatorVaultsExtraData: new bytes[](0)
                             })
                         ),
                         uint48(vm.getBlockTimestamp())
@@ -884,8 +865,7 @@ contract VotingPowerProviderTest is InitSetupTest {
                         operator.addr,
                         abi.encode(
                             IVotingPowerProvider.OperatorVotingPowersExtraData({
-                                sharedVaultsExtraData: new bytes[](0),
-                                operatorVaultsExtraData: new bytes[](0)
+                                sharedVaultsExtraData: new bytes[](0), operatorVaultsExtraData: new bytes[](0)
                             })
                         )
                     )
@@ -894,12 +874,12 @@ contract VotingPowerProviderTest is InitSetupTest {
 
             uint256 operatorStake;
             for (uint256 j; j < initSetupParams.masterChain.vaults.length; ++j) {
-                uint256 operatorVaultStake = (
-                    _normalizeForToken_Symbiotic(
-                        SYMBIOTIC_CORE_MIN_TOKENS_TO_DEPOSIT_TIMES_1e18 * SYMBIOTIC_CORE_NUMBER_OF_OPERATORS,
-                        initSetupParams.masterChain.tokens[0]
-                    ) + j
-                ) / SYMBIOTIC_CORE_NUMBER_OF_OPERATORS;
+                uint256 operatorVaultStake =
+                    (_normalizeForToken_Symbiotic(
+                                SYMBIOTIC_CORE_MIN_TOKENS_TO_DEPOSIT_TIMES_1e18 * SYMBIOTIC_CORE_NUMBER_OF_OPERATORS,
+                                initSetupParams.masterChain.tokens[0]
+                            )
+                            + j) / SYMBIOTIC_CORE_NUMBER_OF_OPERATORS;
                 assertEq(
                     votingPowerProvider.getOperatorStake(operator.addr, initSetupParams.masterChain.vaults[j]),
                     operatorVaultStake
@@ -928,7 +908,9 @@ contract VotingPowerProviderTest is InitSetupTest {
                     })
                 );
                 assertEq(
-                    votingPowerProvider.getOperatorVotingPower(operator.addr, initSetupParams.masterChain.vaults[j], ""),
+                    votingPowerProvider.getOperatorVotingPower(
+                        operator.addr, initSetupParams.masterChain.vaults[j], ""
+                    ),
                     operatorVaultStake
                 );
                 assertEq(votingPowerProvider.getOperatorVotingPower(operator.addr, vault, ""), 0);

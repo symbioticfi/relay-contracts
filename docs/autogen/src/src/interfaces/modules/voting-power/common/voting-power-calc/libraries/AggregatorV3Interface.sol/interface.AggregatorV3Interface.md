@@ -1,5 +1,5 @@
 # AggregatorV3Interface
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/voting-power/common/voting-power-calc/libraries/AggregatorV3Interface.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/interfaces/modules/voting-power/common/voting-power-calc/libraries/AggregatorV3Interface.sol)
 
 
 ## Functions
@@ -28,9 +28,10 @@ function version() external view returns (uint256);
 
 
 ```solidity
-function getRoundData(
-    uint80 _roundId
-) external view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound);
+function getRoundData(uint80 _roundId)
+    external
+    view
+    returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound);
 ```
 
 ### latestRoundData

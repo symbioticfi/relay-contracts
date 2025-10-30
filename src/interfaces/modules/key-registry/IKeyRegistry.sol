@@ -9,6 +9,10 @@ import {PersistentSet} from "../../../libraries/structs/PersistentSet.sol";
 uint8 constant KEY_TYPE_BLS_BN254 = 0;
 uint8 constant KEY_TYPE_ECDSA_SECP256K1 = 1;
 
+/**
+ * @title IKeyRegistry
+ * @notice Interface for the KeyRegistry contract.
+ */
 interface IKeyRegistry {
     /**
      * @notice Reverts when the key is already used by another operator or with another tag.
@@ -96,9 +100,7 @@ interface IKeyRegistry {
      * @param operator The address of the operator.
      * @return The operator's keys.
      */
-    function getKeys(
-        address operator
-    ) external view returns (Key[] memory);
+    function getKeys(address operator) external view returns (Key[] memory);
 
     /**
      * @notice Returns the key at a specific timestamp.
@@ -124,9 +126,7 @@ interface IKeyRegistry {
      * @param key The key.
      * @return The operator.
      */
-    function getOperator(
-        bytes memory key
-    ) external view returns (address);
+    function getOperator(bytes memory key) external view returns (address);
 
     /**
      * @notice Returns the operators with their keys at a specific timestamp.
@@ -134,9 +134,7 @@ interface IKeyRegistry {
      * @return The operators with their keys.
      * @dev Different operators may have different numbers of keys and their tags.
      */
-    function getKeysAt(
-        uint48 timestamp
-    ) external view returns (OperatorWithKeys[] memory);
+    function getKeysAt(uint48 timestamp) external view returns (OperatorWithKeys[] memory);
 
     /**
      * @notice Returns the current operators with their keys.
@@ -156,9 +154,7 @@ interface IKeyRegistry {
      * @param timestamp The timestamp.
      * @return The operators who registered any keys until a specific timestamp.
      */
-    function getKeysOperatorsAt(
-        uint48 timestamp
-    ) external view returns (address[] memory);
+    function getKeysOperatorsAt(uint48 timestamp) external view returns (address[] memory);
 
     /**
      * @notice Returns the operators who registered any keys.

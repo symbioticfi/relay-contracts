@@ -7,8 +7,9 @@ import {IVotingPowerProvider} from "../../../../interfaces/modules/voting-power/
 
 import {IBaseDelegator} from "@symbioticfi/core/src/interfaces/delegator/IBaseDelegator.sol";
 import {IBaseSlasher} from "@symbioticfi/core/src/interfaces/slasher/IBaseSlasher.sol";
-import {IOperatorNetworkSpecificDelegator} from
-    "@symbioticfi/core/src/interfaces/delegator/IOperatorNetworkSpecificDelegator.sol";
+import {
+    IOperatorNetworkSpecificDelegator
+} from "@symbioticfi/core/src/interfaces/delegator/IOperatorNetworkSpecificDelegator.sol";
 import {ISlasher} from "@symbioticfi/core/src/interfaces/slasher/ISlasher.sol";
 import {IVaultConfigurator} from "@symbioticfi/core/src/interfaces/IVaultConfigurator.sol";
 import {IVaultTokenized} from "@symbioticfi/core/src/interfaces/vault/IVaultTokenized.sol";
@@ -38,9 +39,7 @@ library OpNetVaultAutoDeployLogic {
         }
     }
 
-    function initialize(
-        IOpNetVaultAutoDeploy.OpNetVaultAutoDeployInitParams memory initParams
-    ) public {
+    function initialize(IOpNetVaultAutoDeploy.OpNetVaultAutoDeployInitParams memory initParams) public {
         setAutoDeployStatus(initParams.isAutoDeployEnabled);
         setAutoDeployConfig(initParams.config);
         setSetMaxNetworkLimitHookStatus(initParams.isSetMaxNetworkLimitHookEnabled);
@@ -50,9 +49,7 @@ library OpNetVaultAutoDeployLogic {
         return _getOpNetVaultAutoDeployStorage()._isAutoDeployEnabled;
     }
 
-    function getAutoDeployedVault(
-        address operator
-    ) public view returns (address) {
+    function getAutoDeployedVault(address operator) public view returns (address) {
         return _getOpNetVaultAutoDeployStorage()._autoDeployedVault[operator];
     }
 
@@ -64,31 +61,23 @@ library OpNetVaultAutoDeployLogic {
         return _getOpNetVaultAutoDeployStorage()._isSetMaxNetworkLimitHookEnabled;
     }
 
-    function setAutoDeployStatus(
-        bool status
-    ) public {
+    function setAutoDeployStatus(bool status) public {
         _getOpNetVaultAutoDeployStorage()._isAutoDeployEnabled = status;
         emit IOpNetVaultAutoDeploy.SetAutoDeployStatus(status);
     }
 
-    function setAutoDeployConfig(
-        IOpNetVaultAutoDeploy.AutoDeployConfig memory config
-    ) public {
+    function setAutoDeployConfig(IOpNetVaultAutoDeploy.AutoDeployConfig memory config) public {
         _validateConfig(config);
         _getOpNetVaultAutoDeployStorage()._config = config;
         emit IOpNetVaultAutoDeploy.SetAutoDeployConfig(config);
     }
 
-    function setSetMaxNetworkLimitHookStatus(
-        bool status
-    ) public {
+    function setSetMaxNetworkLimitHookStatus(bool status) public {
         _getOpNetVaultAutoDeployStorage()._isSetMaxNetworkLimitHookEnabled = status;
         emit IOpNetVaultAutoDeploy.SetSetMaxNetworkLimitHookStatus(status);
     }
 
-    function createVault(
-        address operator
-    ) public returns (address vault, address delegator, address slasher) {
+    function createVault(address operator) public returns (address vault, address delegator, address slasher) {
         IOpNetVaultAutoDeploy.AutoDeployConfig memory config = getAutoDeployConfig();
         (uint64 version, bytes memory vaultParams) = getVaultParams(config);
         (uint64 delegatorIndex, bytes memory delegatorParams) = getDelegatorParams(config, operator);
@@ -104,9 +93,11 @@ library OpNetVaultAutoDeployLogic {
         _getOpNetVaultAutoDeployStorage()._autoDeployedVault[operator] = vault;
     }
 
-    function getVaultParams(
-        IOpNetVaultAutoDeploy.AutoDeployConfig memory config
-    ) public view returns (uint64, bytes memory) {
+    function getVaultParams(IOpNetVaultAutoDeploy.AutoDeployConfig memory config)
+        public
+        view
+        returns (uint64, bytes memory)
+    {
         return getVaultParams(
             IVault.InitParams({
                 collateral: config.collateral,
@@ -127,13 +118,19 @@ library OpNetVaultAutoDeployLogic {
     function getDelegatorParams(
         IOpNetVaultAutoDeploy.AutoDeployConfig memory, /* config */
         address operator
-    ) public view returns (uint64, bytes memory) {
+    )
+        public
+        view
+        returns (uint64, bytes memory)
+    {
         return getOperatorNetworkSpecificDelegatorParams(operator, address(0), address(0), address(0));
     }
 
-    function getSlasherParams(
-        IOpNetVaultAutoDeploy.AutoDeployConfig memory config
-    ) public view returns (bool, uint64, bytes memory) {
+    function getSlasherParams(IOpNetVaultAutoDeploy.AutoDeployConfig memory config)
+        public
+        view
+        returns (bool, uint64, bytes memory)
+    {
         if (!config.withSlasher) {
             return (false, 0, new bytes(0));
         }
@@ -141,9 +138,7 @@ library OpNetVaultAutoDeployLogic {
         return (true, slasherIndex, slasherParams);
     }
 
-    function _validateConfig(
-        IOpNetVaultAutoDeploy.AutoDeployConfig memory config
-    ) public view {
+    function _validateConfig(IOpNetVaultAutoDeploy.AutoDeployConfig memory config) public view {
         if (config.collateral == address(0)) {
             revert IOpNetVaultAutoDeploy.OpNetVaultAutoDeploy_InvalidCollateral();
         }
@@ -176,9 +171,7 @@ library OpNetVaultAutoDeployLogic {
      * @return version The version of the vault.
      * @return params The encoded base vault params.
      */
-    function getVaultParams(
-        IVault.InitParams memory params
-    ) public view returns (uint64, bytes memory) {
+    function getVaultParams(IVault.InitParams memory params) public view returns (uint64, bytes memory) {
         return (BASE_VAULT_VERSION, abi.encode(params));
     }
 
@@ -190,11 +183,11 @@ library OpNetVaultAutoDeployLogic {
      * @return version The version of the vault.
      * @return params The encoded tokenized vault params.
      */
-    function getVaultTokenizedParams(
-        IVault.InitParams memory baseParams,
-        string memory name,
-        string memory symbol
-    ) public view returns (uint64, bytes memory) {
+    function getVaultTokenizedParams(IVault.InitParams memory baseParams, string memory name, string memory symbol)
+        public
+        view
+        returns (uint64, bytes memory)
+    {
         return (
             TOKENIZED_VAULT_VERSION,
             abi.encode(IVaultTokenized.InitParamsTokenized({baseParams: baseParams, name: name, symbol: symbol}))
@@ -221,9 +214,7 @@ library OpNetVaultAutoDeployLogic {
             abi.encode(
                 IOperatorNetworkSpecificDelegator.InitParams({
                     baseParams: IBaseDelegator.BaseParams({
-                        defaultAdminRoleHolder: defaultAdminRoleHolder,
-                        hook: hook,
-                        hookSetRoleHolder: hookSetRoleHolder
+                        defaultAdminRoleHolder: defaultAdminRoleHolder, hook: hook, hookSetRoleHolder: hookSetRoleHolder
                     }),
                     network: INetworkManager(address(this)).NETWORK(),
                     operator: operator
@@ -238,9 +229,7 @@ library OpNetVaultAutoDeployLogic {
      * @return version The version of the slasher.
      * @return params The encoded instant slasher params.
      */
-    function getSlasherParams(
-        bool isBurnerHook
-    ) public view returns (uint64, bytes memory) {
+    function getSlasherParams(bool isBurnerHook) public view returns (uint64, bytes memory) {
         return (
             uint64(IVotingPowerProvider.SlasherType.INSTANT),
             abi.encode(ISlasher.InitParams({baseParams: IBaseSlasher.BaseParams({isBurnerHook: isBurnerHook})}))
@@ -255,11 +244,11 @@ library OpNetVaultAutoDeployLogic {
      * @return version The version of the slasher.
      * @return params The encoded veto slasher params.
      */
-    function getVetoSlasherParams(
-        bool isBurnerHook,
-        uint48 vetoDuration,
-        uint256 resolverSetEpochsDelay
-    ) public view returns (uint64, bytes memory) {
+    function getVetoSlasherParams(bool isBurnerHook, uint48 vetoDuration, uint256 resolverSetEpochsDelay)
+        public
+        view
+        returns (uint64, bytes memory)
+    {
         return (
             uint64(IVotingPowerProvider.SlasherType.VETO),
             abi.encode(
@@ -296,17 +285,18 @@ library OpNetVaultAutoDeployLogic {
         uint64 slasherIndex,
         bytes memory slasherParams
     ) public returns (address, address, address) {
-        return IVaultConfigurator(IOpNetVaultAutoDeploy(address(this)).VAULT_CONFIGURATOR()).create(
-            IVaultConfigurator.InitParams({
-                version: version,
-                owner: owner,
-                vaultParams: vaultParams,
-                delegatorIndex: delegatorIndex,
-                delegatorParams: delegatorParams,
-                withSlasher: withSlasher,
-                slasherIndex: slasherIndex,
-                slasherParams: slasherParams
-            })
-        );
+        return IVaultConfigurator(IOpNetVaultAutoDeploy(address(this)).VAULT_CONFIGURATOR())
+            .create(
+                IVaultConfigurator.InitParams({
+                    version: version,
+                    owner: owner,
+                    vaultParams: vaultParams,
+                    delegatorIndex: delegatorIndex,
+                    delegatorParams: delegatorParams,
+                    withSlasher: withSlasher,
+                    slasherIndex: slasherIndex,
+                    slasherParams: slasherParams
+                })
+            );
     }
 }

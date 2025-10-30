@@ -1,8 +1,10 @@
 # ISigVerifierBlsBn254ZK
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254ZK.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254ZK.sol)
 
 **Inherits:**
-[ISigVerifier](/src/interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol/interface.ISigVerifier.md)
+[ISigVerifier](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol/interface.ISigVerifier.md)
+
+Interface for the SigVerifierBlsBn254ZK contract.
 
 
 ## Functions
@@ -42,9 +44,7 @@ Returns the verifier at the given index.
 
 
 ```solidity
-function verifiers(
-    uint256 index
-) external view returns (address);
+function verifiers(uint256 index) external view returns (address);
 ```
 **Parameters**
 
@@ -65,9 +65,7 @@ Returns the maximum supported number of validators for the verifier at the given
 
 
 ```solidity
-function maxValidators(
-    uint256 index
-) external view returns (uint256);
+function maxValidators(uint256 index) external view returns (uint256);
 ```
 **Parameters**
 
@@ -102,7 +100,7 @@ error SigVerifierBlsBn254ZK_InvalidMaxValidators();
 ### SigVerifierBlsBn254ZK_InvalidMaxValidatorsOrder
 Reverts when the maximum supported numbers of validators is not in the correct order.
 
-*The maximum supported numbers of validators must be in ascending order.*
+The maximum supported numbers of validators must be in ascending order.
 
 
 ```solidity

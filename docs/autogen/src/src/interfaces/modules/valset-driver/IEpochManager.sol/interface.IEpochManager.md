@@ -1,5 +1,7 @@
 # IEpochManager
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/valset-driver/IEpochManager.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/interfaces/modules/valset-driver/IEpochManager.sol)
+
+Interface for the EpochManager contract.
 
 
 ## Functions
@@ -99,9 +101,7 @@ Returns the epoch index at the given timestamp.
 
 
 ```solidity
-function getEpochIndex(
-    uint48 timestamp
-) external view returns (uint48);
+function getEpochIndex(uint48 timestamp) external view returns (uint48);
 ```
 **Parameters**
 
@@ -122,9 +122,7 @@ Returns the epoch duration of the given epoch.
 
 
 ```solidity
-function getEpochDuration(
-    uint48 epoch
-) external view returns (uint48);
+function getEpochDuration(uint48 epoch) external view returns (uint48);
 ```
 **Parameters**
 
@@ -145,9 +143,7 @@ Returns the epoch start of the given epoch.
 
 
 ```solidity
-function getEpochStart(
-    uint48 epoch
-) external view returns (uint48);
+function getEpochStart(uint48 epoch) external view returns (uint48);
 ```
 **Parameters**
 
@@ -166,14 +162,12 @@ function getEpochStart(
 
 Sets the epoch duration.
 
-*The new duration will be "committed" only in the next epoch.
-The caller must have the needed permission.*
+The new duration will be "committed" only in the next epoch.
+The caller must have the needed permission.
 
 
 ```solidity
-function setEpochDuration(
-    uint48 epochDuration
-) external;
+function setEpochDuration(uint48 epochDuration) external;
 ```
 **Parameters**
 
@@ -201,7 +195,7 @@ event InitEpochDuration(uint48 epochDuration, uint48 epochDurationTimestamp);
 ### SetEpochDuration
 Emitted when the epoch duration is set.
 
-*The new duration will be "committed" only in the next epoch.*
+The new duration will be "committed" only in the next epoch.
 
 
 ```solidity

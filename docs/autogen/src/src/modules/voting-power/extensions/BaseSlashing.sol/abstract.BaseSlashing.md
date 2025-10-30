@@ -1,8 +1,8 @@
 # BaseSlashing
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/voting-power/extensions/BaseSlashing.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/modules/voting-power/extensions/BaseSlashing.sol)
 
 **Inherits:**
-[VotingPowerProvider](/src/modules/voting-power/VotingPowerProvider.sol/abstract.VotingPowerProvider.md), [IBaseSlashing](/src/interfaces/modules/voting-power/extensions/IBaseSlashing.sol/interface.IBaseSlashing.md)
+[VotingPowerProvider](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/VotingPowerProvider.sol/abstract.VotingPowerProvider.md), [IBaseSlashing](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/extensions/IBaseSlashing.sol/interface.IBaseSlashing.md)
 
 Base contract for slashing vaults.
 
@@ -12,7 +12,7 @@ Base contract for slashing vaults.
 
 ```solidity
 bytes32 private constant BaseSlashingStorageLocation =
-    0xcd08f9337bf45f7ebac10e65ed25c2483d3efb012be3dbf2b4de227af3bf9400;
+    0xcd08f9337bf45f7ebac10e65ed25c2483d3efb012be3dbf2b4de227af3bf9400
 ```
 
 
@@ -21,7 +21,7 @@ bytes32 private constant BaseSlashingStorageLocation =
 
 
 ```solidity
-modifier onlySlasher();
+modifier onlySlasher() ;
 ```
 
 ### _checkSlasher
@@ -42,9 +42,7 @@ function _getBaseSlashingStorage() internal pure returns (IBaseSlashing.BaseSlas
 
 
 ```solidity
-function __BaseSlashing_init(
-    BaseSlashingInitParams memory initParams
-) internal virtual onlyInitializing;
+function __BaseSlashing_init(BaseSlashingInitParams memory initParams) internal virtual onlyInitializing;
 ```
 
 ### getSlasher
@@ -66,17 +64,14 @@ function getSlasher() public view virtual returns (address);
 
 Slashes the vault.
 
-*The function doesn't check the registration statuses.*
+The function doesn't check the registration statuses.
 
 
 ```solidity
-function slashVault(
-    uint48 timestamp,
-    address vault,
-    address operator,
-    uint256 amount,
-    bytes memory hints
-) public virtual returns (bool success, bytes memory response);
+function slashVault(uint48 timestamp, address vault, address operator, uint256 amount, bytes memory hints)
+    public
+    virtual
+    returns (bool success, bytes memory response);
 ```
 **Parameters**
 
@@ -102,11 +97,10 @@ Executes the slash of the vault.
 
 
 ```solidity
-function executeSlashVault(
-    address vault,
-    uint256 slashIndex,
-    bytes memory hints
-) public virtual returns (bool success, uint256 slashedAmount);
+function executeSlashVault(address vault, uint256 slashIndex, bytes memory hints)
+    public
+    virtual
+    returns (bool success, uint256 slashedAmount);
 ```
 **Parameters**
 
@@ -128,13 +122,11 @@ function executeSlashVault(
 
 Sets the slasher.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function setSlasher(
-    address slasher
-) public virtual checkPermission;
+function setSlasher(address slasher) public virtual checkPermission;
 ```
 **Parameters**
 
@@ -147,8 +139,6 @@ function setSlasher(
 
 
 ```solidity
-function _setSlasher(
-    address slasher
-) internal virtual;
+function _setSlasher(address slasher) internal virtual;
 ```
 

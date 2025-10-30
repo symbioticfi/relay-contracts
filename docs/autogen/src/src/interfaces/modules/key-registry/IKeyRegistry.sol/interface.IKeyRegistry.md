@@ -1,5 +1,7 @@
 # IKeyRegistry
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/key-registry/IKeyRegistry.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/interfaces/modules/key-registry/IKeyRegistry.sol)
+
+Interface for the KeyRegistry contract.
 
 
 ## Functions
@@ -31,9 +33,7 @@ Returns the current operator's keys.
 
 
 ```solidity
-function getKeys(
-    address operator
-) external view returns (Key[] memory);
+function getKeys(address operator) external view returns (Key[] memory);
 ```
 **Parameters**
 
@@ -52,7 +52,7 @@ function getKeys(
 
 Returns the key at a specific timestamp.
 
-*Will return a zero key if the key is not found (e.g., abi.encode(address(0)) for ECDSA keys).*
+Will return a zero key if the key is not found (e.g., abi.encode(address(0)) for ECDSA keys).
 
 
 ```solidity
@@ -77,7 +77,7 @@ function getKeyAt(address operator, uint8 tag, uint48 timestamp) external view r
 
 Returns the current key.
 
-*Will return a zero key if the key is not found (e.g., abi.encode(address(0)) for ECDSA keys).*
+Will return a zero key if the key is not found (e.g., abi.encode(address(0)) for ECDSA keys).
 
 
 ```solidity
@@ -103,9 +103,7 @@ Returns the operator by the key.
 
 
 ```solidity
-function getOperator(
-    bytes memory key
-) external view returns (address);
+function getOperator(bytes memory key) external view returns (address);
 ```
 **Parameters**
 
@@ -124,13 +122,11 @@ function getOperator(
 
 Returns the operators with their keys at a specific timestamp.
 
-*Different operators may have different numbers of keys and their tags.*
+Different operators may have different numbers of keys and their tags.
 
 
 ```solidity
-function getKeysAt(
-    uint48 timestamp
-) external view returns (OperatorWithKeys[] memory);
+function getKeysAt(uint48 timestamp) external view returns (OperatorWithKeys[] memory);
 ```
 **Parameters**
 
@@ -149,7 +145,7 @@ function getKeysAt(
 
 Returns the current operators with their keys.
 
-*Different operators may have different numbers of keys and their tags.*
+Different operators may have different numbers of keys and their tags.
 
 
 ```solidity
@@ -183,9 +179,7 @@ Returns the operators who registered any keys until a specific timestamp.
 
 
 ```solidity
-function getKeysOperatorsAt(
-    uint48 timestamp
-) external view returns (address[] memory);
+function getKeysOperatorsAt(uint48 timestamp) external view returns (address[] memory);
 ```
 **Parameters**
 

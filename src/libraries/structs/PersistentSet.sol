@@ -130,9 +130,7 @@ library PersistentSet {
      * @param set The set.
      * @return The number of elements in the set.
      */
-    function _length(
-        Set storage set
-    ) private view returns (uint256) {
+    function _length(Set storage set) private view returns (uint256) {
         return set._length;
     }
 
@@ -163,9 +161,7 @@ library PersistentSet {
      * @param set The set.
      * @return values_ The elements in the set.
      */
-    function _values(
-        Set storage set
-    ) private view returns (bytes32[] memory values_) {
+    function _values(Set storage set) private view returns (bytes32[] memory values_) {
         unchecked {
             uint256 totalLength = set._elements.length;
             values_ = new bytes32[](totalLength);
@@ -221,12 +217,11 @@ library PersistentSet {
      * @param hint The hint to use for the lookup.
      * @return If the element is in the set at the given key.
      */
-    function containsAt(
-        Bytes32Set storage set,
-        uint48 key,
-        bytes32 value,
-        bytes memory hint
-    ) internal view returns (bool) {
+    function containsAt(Bytes32Set storage set, uint48 key, bytes32 value, bytes memory hint)
+        internal
+        view
+        returns (bool)
+    {
         return _containsAt(set._inner, key, value, hint);
     }
 
@@ -256,9 +251,7 @@ library PersistentSet {
      * @param set The set.
      * @return The number of elements in the set.
      */
-    function length(
-        Bytes32Set storage set
-    ) internal view returns (uint256) {
+    function length(Bytes32Set storage set) internal view returns (uint256) {
         return _length(set._inner);
     }
 
@@ -280,9 +273,7 @@ library PersistentSet {
      * @param set The set.
      * @return result The elements in the set.
      */
-    function values(
-        Bytes32Set storage set
-    ) internal view returns (bytes32[] memory result) {
+    function values(Bytes32Set storage set) internal view returns (bytes32[] memory result) {
         bytes32[] memory store = _values(set._inner);
         assembly ("memory-safe") {
             result := store
@@ -329,12 +320,11 @@ library PersistentSet {
      * @param hint The hint to use for the lookup.
      * @return If the element is in the set at the given key.
      */
-    function containsAt(
-        AddressSet storage set,
-        uint48 key,
-        address value,
-        bytes memory hint
-    ) internal view returns (bool) {
+    function containsAt(AddressSet storage set, uint48 key, address value, bytes memory hint)
+        internal
+        view
+        returns (bool)
+    {
         return _containsAt(set._inner, key, bytes32(uint256(uint160(value))), hint);
     }
 
@@ -364,9 +354,7 @@ library PersistentSet {
      * @param set The set.
      * @return The number of elements in the set.
      */
-    function length(
-        AddressSet storage set
-    ) internal view returns (uint256) {
+    function length(AddressSet storage set) internal view returns (uint256) {
         return _length(set._inner);
     }
 
@@ -388,9 +376,7 @@ library PersistentSet {
      * @param set The set.
      * @return result The elements in the set.
      */
-    function values(
-        AddressSet storage set
-    ) internal view returns (address[] memory result) {
+    function values(AddressSet storage set) internal view returns (address[] memory result) {
         bytes32[] memory store = _values(set._inner);
         assembly ("memory-safe") {
             result := store

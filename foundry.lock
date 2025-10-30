@@ -3,13 +3,19 @@
     "rev": "448d48945910a0e1fcab5abff555c0f8f3d87070"
   },
   "lib/core": {
-    "rev": "9d18fda6202924a7857dc5bdb834da9f7dc90a39"
+    "tag": {
+      "name": "v1.0.3",
+      "rev": "74c0c6fbd5531a6065cdafdab07840b04a0d2039"
+    }
   },
   "lib/crypto-lib": {
     "rev": "f2c00ecced1df96fe81894d19a6b8ec754beedb9"
   },
   "lib/forge-std": {
-    "rev": "da591f56d8884c5824c0c1b3103fbcfd81123c4c"
+    "tag": {
+      "name": "v1.11.0",
+      "rev": "8e40513d678f392f398620b3ef2b418648b33e89"
+    }
   },
   "lib/network": {
     "rev": "8ee834279cb4fb45adfcb5fee4a405f06b3134ca"

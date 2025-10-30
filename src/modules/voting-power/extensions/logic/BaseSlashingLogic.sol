@@ -27,13 +27,10 @@ library BaseSlashingLogic {
      * @dev It checks if the slashing was required at the given capture timestamp,
      *      and if the slashing request is not stale regarding set `minEpochDuration`.
      */
-    function slashVault(
-        uint48 timestamp,
-        address vault,
-        address operator,
-        uint256 amount,
-        bytes memory hints
-    ) public returns (bool success, bytes memory response) {
+    function slashVault(uint48 timestamp, address vault, address operator, uint256 amount, bytes memory hints)
+        public
+        returns (bool success, bytes memory response)
+    {
         address slasher = IVault(vault).slasher();
         if (slasher == address(0)) {
             revert IBaseSlashing.BaseSlashing_NoSlasher();
@@ -52,13 +49,10 @@ library BaseSlashingLogic {
      * @dev It checks if the slashing was required at the given capture timestamp,
      *      and if the slashing request is not stale regarding set `minEpochDuration`.
      */
-    function slash(
-        uint48 timestamp,
-        address slasher,
-        address operator,
-        uint256 amount,
-        bytes memory hints
-    ) public returns (bool success, bytes memory response) {
+    function slash(uint48 timestamp, address slasher, address operator, uint256 amount, bytes memory hints)
+        public
+        returns (bool success, bytes memory response)
+    {
         IBaseSlashing.SlashHints memory slashHints;
         if (hints.length > 0) {
             slashHints = abi.decode(hints, (IBaseSlashing.SlashHints));
@@ -92,13 +86,10 @@ library BaseSlashingLogic {
      * @param amount The amount of the tokens to slash.
      * @param hints The hints to optimize gas usage.
      */
-    function slashUnsafe(
-        uint48 timestamp,
-        address slasher,
-        address operator,
-        uint256 amount,
-        bytes memory hints
-    ) public returns (bool success, bytes memory response) {
+    function slashUnsafe(uint48 timestamp, address slasher, address operator, uint256 amount, bytes memory hints)
+        public
+        returns (bool success, bytes memory response)
+    {
         uint64 slasherType = IEntity(slasher).TYPE();
         if (slasherType == uint64(IVotingPowerProvider.SlasherType.INSTANT)) {
             (success, response) = slasher.call(
@@ -128,11 +119,10 @@ library BaseSlashingLogic {
      * @param hints The hints to optimize gas usage.
      * @dev It checks if the slashing request is not stale regarding set `minEpochDuration`.
      */
-    function executeSlashVault(
-        address vault,
-        uint256 slashIndex,
-        bytes memory hints
-    ) public returns (bool success, uint256 slashedAmount) {
+    function executeSlashVault(address vault, uint256 slashIndex, bytes memory hints)
+        public
+        returns (bool success, uint256 slashedAmount)
+    {
         address slasher = IVault(vault).slasher();
         if (slasher == address(0)) {
             revert IBaseSlashing.BaseSlashing_NoSlasher();
@@ -148,11 +138,10 @@ library BaseSlashingLogic {
      * @param hints The hints to optimize gas usage.
      * @dev It checks if the slashing request is not stale regarding set `minEpochDuration`.
      */
-    function executeSlash(
-        address slasher,
-        uint256 slashIndex,
-        bytes memory hints
-    ) public returns (bool success, uint256 slashedAmount) {
+    function executeSlash(address slasher, uint256 slashIndex, bytes memory hints)
+        public
+        returns (bool success, uint256 slashedAmount)
+    {
         IBaseSlashing.ExecuteSlashHints memory executeSlashHints;
         if (hints.length > 0) {
             executeSlashHints = abi.decode(hints, (IBaseSlashing.ExecuteSlashHints));
@@ -178,11 +167,10 @@ library BaseSlashingLogic {
      * @param slashIndex The index of the slash request.
      * @param hints The hints to optimize gas usage.
      */
-    function executeSlashUnsafe(
-        address slasher,
-        uint256 slashIndex,
-        bytes memory hints
-    ) public returns (bool success, uint256 slashedAmount) {
+    function executeSlashUnsafe(address slasher, uint256 slashIndex, bytes memory hints)
+        public
+        returns (bool success, uint256 slashedAmount)
+    {
         uint64 slasherType = IEntity(slasher).TYPE();
         if (slasherType != uint64(IVotingPowerProvider.SlasherType.VETO)) {
             revert IBaseSlashing.BaseSlashing_NotVetoSlasher();

@@ -7,10 +7,8 @@ import {BaseRewardsLogic} from "./logic/BaseRewardsLogic.sol";
 
 import {IBaseRewards} from "../../../interfaces/modules/voting-power/extensions/IBaseRewards.sol";
 
-/**
- * @title BaseRewards
- * @notice Base contract for distributing rewards to stakers and operators.
- */
+/// @title BaseRewards
+/// @notice Base contract for distributing rewards to stakers and operators.
 abstract contract BaseRewards is VotingPowerProvider, IBaseRewards {
     modifier onlyRewarder() {
         _checkRewarder();
@@ -34,57 +32,39 @@ abstract contract BaseRewards is VotingPowerProvider, IBaseRewards {
         }
     }
 
-    function __BaseRewards_init(
-        BaseRewardsInitParams memory initParams
-    ) internal virtual onlyInitializing {
+    function __BaseRewards_init(BaseRewardsInitParams memory initParams) internal virtual onlyInitializing {
         _setRewarder(initParams.rewarder);
     }
 
-    /**
-     * @inheritdoc IBaseRewards
-     */
+    /// @inheritdoc IBaseRewards
     function getRewarder() public view virtual returns (address) {
         return _getBaseRewardsStorage()._rewarder;
     }
 
-    /**
-     * @inheritdoc IBaseRewards
-     */
-    function distributeStakerRewards(
-        address stakerRewards,
-        address token,
-        uint256 amount,
-        bytes memory data
-    ) public virtual {
+    /// @inheritdoc IBaseRewards
+    function distributeStakerRewards(address stakerRewards, address token, uint256 amount, bytes memory data)
+        public
+        virtual
+    {
         _checkRewarder();
         BaseRewardsLogic.distributeStakerRewards(stakerRewards, token, amount, data);
     }
 
-    /**
-     * @inheritdoc IBaseRewards
-     */
-    function distributeOperatorRewards(
-        address operatorRewards,
-        address token,
-        uint256 amount,
-        bytes32 root
-    ) public virtual {
+    /// @inheritdoc IBaseRewards
+    function distributeOperatorRewards(address operatorRewards, address token, uint256 amount, bytes32 root)
+        public
+        virtual
+    {
         _checkRewarder();
         BaseRewardsLogic.distributeOperatorRewards(operatorRewards, token, amount, root);
     }
 
-    /**
-     * @inheritdoc IBaseRewards
-     */
-    function setRewarder(
-        address rewarder
-    ) public virtual checkPermission {
+    /// @inheritdoc IBaseRewards
+    function setRewarder(address rewarder) public virtual checkPermission {
         _setRewarder(rewarder);
     }
 
-    function _setRewarder(
-        address rewarder
-    ) internal virtual {
+    function _setRewarder(address rewarder) internal virtual {
         _getBaseRewardsStorage()._rewarder = rewarder;
         emit SetRewarder(rewarder);
     }

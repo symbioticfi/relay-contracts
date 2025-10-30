@@ -9,8 +9,9 @@ import {
     KEY_TYPE_BLS_BN254,
     KEY_TYPE_ECDSA_SECP256K1
 } from "../../../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
-import {ExtraDataStorageHelper} from
-    "../../../../src/modules/settlement/sig-verifiers/libraries/ExtraDataStorageHelper.sol";
+import {
+    ExtraDataStorageHelper
+} from "../../../../src/modules/settlement/sig-verifiers/libraries/ExtraDataStorageHelper.sol";
 
 import {BN254G2} from "../../../helpers/BN254G2.sol";
 
@@ -20,15 +21,18 @@ import {INetworkManager} from "../../../../src/interfaces/modules/base/INetworkM
 import {IEpochManager} from "../../../../src/interfaces/modules/valset-driver/IEpochManager.sol";
 import {IOperatorsWhitelist} from "../../../../src/interfaces/modules/voting-power/extensions/IOperatorsWhitelist.sol";
 import {IOzEIP712} from "../../../../src/interfaces/modules/base/IOzEIP712.sol";
-import {ISigVerifierBlsBn254Simple} from
-    "../../../../src/interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254Simple.sol";
+import {
+    ISigVerifierBlsBn254Simple
+} from "../../../../src/interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254Simple.sol";
 import {IVotingPowerProvider} from "../../../../src/interfaces/modules/voting-power/IVotingPowerProvider.sol";
 
 import {MasterSetupTest} from "../../../MasterSetup.sol";
 
 import {console2} from "forge-std/console2.sol";
 
-import {SigVerifierBlsBn254Simple} from "../../../../src/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol";
+import {
+    SigVerifierBlsBn254Simple
+} from "../../../../src/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol";
 import "../../../InitSetup.sol";
 
 import {ISigVerifier} from "../../../../src/interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol";
@@ -382,12 +386,13 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
         }
 
         vm.expectRevert(ISigVerifierBlsBn254Simple.SigVerifierBlsBn254Simple_UnsupportedKeyTag.selector);
-        ISettlement(masterSetupParams.settlement).verifyQuorumSig(
-            abi.encode(messageHash),
-            KEY_TYPE_ECDSA_SECP256K1.getKeyTag(15),
-            Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
-            fullProof
-        );
+        ISettlement(masterSetupParams.settlement)
+            .verifyQuorumSig(
+                abi.encode(messageHash),
+                KEY_TYPE_ECDSA_SECP256K1.getKeyTag(15),
+                Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
+                fullProof
+            );
     }
 
     function test_RevertInvalidMessageLength() public {
@@ -450,12 +455,13 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
         }
 
         vm.expectRevert(ISigVerifierBlsBn254Simple.SigVerifierBlsBn254Simple_InvalidMessageLength.selector);
-        ISettlement(masterSetupParams.settlement).verifyQuorumSig(
-            abi.encode(messageHash, messageHash),
-            KEY_TYPE_BLS_BN254.getKeyTag(15),
-            Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
-            fullProof
-        );
+        ISettlement(masterSetupParams.settlement)
+            .verifyQuorumSig(
+                abi.encode(messageHash, messageHash),
+                KEY_TYPE_BLS_BN254.getKeyTag(15),
+                Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
+                fullProof
+            );
     }
 
     function test_RevertInvalidProofOffset() public {
@@ -596,12 +602,13 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
         }
 
         vm.expectRevert(ISigVerifierBlsBn254Simple.SigVerifierBlsBn254Simple_InvalidProofLength.selector);
-        ISettlement(masterSetupParams.settlement).verifyQuorumSig(
-            abi.encode(messageHash),
-            KEY_TYPE_BLS_BN254.getKeyTag(15),
-            Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
-            fullProof
-        );
+        ISettlement(masterSetupParams.settlement)
+            .verifyQuorumSig(
+                abi.encode(messageHash),
+                KEY_TYPE_BLS_BN254.getKeyTag(15),
+                Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
+                fullProof
+            );
     }
 
     function test_ZeroValidators() public {
@@ -652,12 +659,13 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
         }
 
         assertFalse(
-            ISettlement(masterSetupParams.settlement).verifyQuorumSig(
-                abi.encode(messageHash),
-                KEY_TYPE_BLS_BN254.getKeyTag(15),
-                Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
-                fullProof
-            )
+            ISettlement(masterSetupParams.settlement)
+                .verifyQuorumSig(
+                    abi.encode(messageHash),
+                    KEY_TYPE_BLS_BN254.getKeyTag(15),
+                    Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
+                    fullProof
+                )
         );
     }
 
@@ -725,12 +733,13 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
         }
 
         vm.expectRevert(ISigVerifierBlsBn254Simple.SigVerifierBlsBn254Simple_TooManyValidators.selector);
-        ISettlement(masterSetupParams.settlement).verifyQuorumSig(
-            abi.encode(messageHash),
-            KEY_TYPE_BLS_BN254.getKeyTag(15),
-            Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
-            fullProof
-        );
+        ISettlement(masterSetupParams.settlement)
+            .verifyQuorumSig(
+                abi.encode(messageHash),
+                KEY_TYPE_BLS_BN254.getKeyTag(15),
+                Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
+                fullProof
+            );
     }
 
     function test_RevertInvalidNonSignerIndex() public {
@@ -797,12 +806,13 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
         }
 
         vm.expectRevert(ISigVerifierBlsBn254Simple.SigVerifierBlsBn254Simple_InvalidProofLength.selector);
-        ISettlement(masterSetupParams.settlement).verifyQuorumSig(
-            abi.encode(messageHash),
-            KEY_TYPE_BLS_BN254.getKeyTag(15),
-            Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
-            fullProof
-        );
+        ISettlement(masterSetupParams.settlement)
+            .verifyQuorumSig(
+                abi.encode(messageHash),
+                KEY_TYPE_BLS_BN254.getKeyTag(15),
+                Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
+                fullProof
+            );
     }
 
     function test_RevertInvalidNonSignersOrder() public {
@@ -850,7 +860,8 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
         }
         assembly ("memory-safe") {
             mstore(
-                add(add(nonSigners, 32), mul(div(sub(mload(validatorsData), 1), 6), 2)), shl(240, mload(validatorsData))
+                add(add(nonSigners, 32), mul(div(sub(mload(validatorsData), 1), 6), 2)),
+                shl(240, mload(validatorsData))
             )
         }
         bytes memory fullProof = abi.encodePacked(
@@ -870,12 +881,13 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
         }
 
         vm.expectRevert(ISigVerifierBlsBn254Simple.SigVerifierBlsBn254Simple_InvalidNonSignerIndex.selector);
-        ISettlement(masterSetupParams.settlement).verifyQuorumSig(
-            abi.encode(messageHash),
-            KEY_TYPE_BLS_BN254.getKeyTag(15),
-            Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
-            fullProof
-        );
+        ISettlement(masterSetupParams.settlement)
+            .verifyQuorumSig(
+                abi.encode(messageHash),
+                KEY_TYPE_BLS_BN254.getKeyTag(15),
+                Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
+                fullProof
+            );
     }
 
     function test_FalseValidatorSet() public {
@@ -941,14 +953,15 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
         }
 
         assertFalse(
-            ISigVerifier(masterSetupParams.settlement.getSigVerifier()).verifyQuorumSig(
-                address(masterSetupParams.settlement),
-                masterSetupParams.settlement.getLastCommittedHeaderEpoch(),
-                abi.encode(messageHash),
-                KEY_TYPE_BLS_BN254.getKeyTag(15),
-                Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
-                fullProof
-            )
+            ISigVerifier(masterSetupParams.settlement.getSigVerifier())
+                .verifyQuorumSig(
+                    address(masterSetupParams.settlement),
+                    masterSetupParams.settlement.getLastCommittedHeaderEpoch(),
+                    abi.encode(messageHash),
+                    KEY_TYPE_BLS_BN254.getKeyTag(15),
+                    Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
+                    fullProof
+                )
         );
     }
 
@@ -1019,14 +1032,15 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
         address sigVerifier = masterSetupParams.settlement.getSigVerifier();
         uint48 epoch = masterSetupParams.settlement.getLastCommittedHeaderEpoch();
         vm.expectRevert(ISigVerifierBlsBn254Simple.SigVerifierBlsBn254Simple_InvalidNonSignersOrder.selector);
-        ISigVerifier(sigVerifier).verifyQuorumSig(
-            address(masterSetupParams.settlement),
-            epoch,
-            abi.encode(messageHash),
-            KEY_TYPE_BLS_BN254.getKeyTag(15),
-            Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
-            fullProof
-        );
+        ISigVerifier(sigVerifier)
+            .verifyQuorumSig(
+                address(masterSetupParams.settlement),
+                epoch,
+                abi.encode(messageHash),
+                KEY_TYPE_BLS_BN254.getKeyTag(15),
+                Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
+                fullProof
+            );
     }
 
     function test_FalseQuorumThreshold() public {
@@ -1099,14 +1113,15 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
             }
         }
         assertFalse(
-            ISigVerifier(masterSetupParams.settlement.getSigVerifier()).verifyQuorumSig(
-                address(masterSetupParams.settlement),
-                masterSetupParams.settlement.getLastCommittedHeaderEpoch(),
-                abi.encode(messageHash),
-                KEY_TYPE_BLS_BN254.getKeyTag(15),
-                Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
-                fullProof
-            )
+            ISigVerifier(masterSetupParams.settlement.getSigVerifier())
+                .verifyQuorumSig(
+                    address(masterSetupParams.settlement),
+                    masterSetupParams.settlement.getLastCommittedHeaderEpoch(),
+                    abi.encode(messageHash),
+                    KEY_TYPE_BLS_BN254.getKeyTag(15),
+                    Math.mulDiv(2, 1e18, 3, Math.Rounding.Ceil).mulDiv(totalVotingPower, 1e18) + 1,
+                    fullProof
+                )
         );
     }
 
@@ -1139,8 +1154,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
             (ValidatorData[] memory validatorsData,) = getValidatorsData();
             bytes32 validatorSetHash = keccak256(Bytes.slice(abi.encode(validatorsData), 32));
             extraData[0] = ISettlement.ExtraData({
-                key: uint32(1).getKey(15, sigVerifier.VALIDATOR_SET_HASH_KECCAK256_HASH()),
-                value: validatorSetHash
+                key: uint32(1).getKey(15, sigVerifier.VALIDATOR_SET_HASH_KECCAK256_HASH()), value: validatorSetHash
             });
         }
         {
@@ -1152,8 +1166,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
             bytes32 aggPublicKeyG1 = abi.decode(aggPublicKeyG1Raw.wrap().serialize(), (bytes32));
 
             extraData[1] = ISettlement.ExtraData({
-                key: uint32(1).getKey(15, sigVerifier.AGGREGATED_PUBLIC_KEY_G1_HASH()),
-                value: aggPublicKeyG1
+                key: uint32(1).getKey(15, sigVerifier.AGGREGATED_PUBLIC_KEY_G1_HASH()), value: aggPublicKeyG1
             });
         }
     }
@@ -1175,8 +1188,7 @@ contract SigVerifierBlsBn254SimpleTest is MasterSetupTest {
                 operatorVotingPower += votingPowers[j].value;
             }
             validatorsData[i] = ValidatorData({
-                keySerialized: abi.decode(keyG1.wrap().serialize(), (bytes32)),
-                votingPower: operatorVotingPower
+                keySerialized: abi.decode(keyG1.wrap().serialize(), (bytes32)), votingPower: operatorVotingPower
             });
             privateKeys[i] = getOperator(i).privateKey;
         }

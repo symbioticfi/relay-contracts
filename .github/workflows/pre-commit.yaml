@@ -15,8 +15,7 @@ env:
 
 jobs:
   pre-commit:
-    runs-on:
-      group: relay
+    runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - uses: bullfrogsec/bullfrog@1831f79cce8ad602eef14d2163873f27081ebfb3 # v0.8.4
@@ -38,4 +37,4 @@ jobs:
       - name: Run pre-commit
         run: pre-commit run --all-files --color always --show-diff-on-failure
         env:
-          SKIP: forge-snapshots
+          SKIP: forge-snapshots,doc

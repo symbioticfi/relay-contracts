@@ -1,5 +1,7 @@
 # IOperatorsWhitelist
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/voting-power/extensions/IOperatorsWhitelist.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/interfaces/modules/voting-power/extensions/IOperatorsWhitelist.sol)
+
+Interface for the OperatorsWhitelist contract.
 
 
 ## Functions
@@ -24,9 +26,7 @@ Returns the whitelist status of the operator.
 
 
 ```solidity
-function isOperatorWhitelisted(
-    address operator
-) external view returns (bool);
+function isOperatorWhitelisted(address operator) external view returns (bool);
 ```
 **Parameters**
 
@@ -45,13 +45,11 @@ function isOperatorWhitelisted(
 
 Sets the whitelist status.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function setWhitelistStatus(
-    bool status
-) external;
+function setWhitelistStatus(bool status) external;
 ```
 **Parameters**
 
@@ -64,13 +62,11 @@ function setWhitelistStatus(
 
 Whitelists the operator.
 
-*The caller must have the needed permission.*
+The caller must have the needed permission.
 
 
 ```solidity
-function whitelistOperator(
-    address operator
-) external;
+function whitelistOperator(address operator) external;
 ```
 **Parameters**
 
@@ -83,14 +79,12 @@ function whitelistOperator(
 
 Unwhitelists the operator.
 
-*The caller must have the needed permission.
-The operator will be unregistered if currently registered and the whitelist is enabled.*
+The caller must have the needed permission.
+The operator will be unregistered if currently registered and the whitelist is enabled.
 
 
 ```solidity
-function unwhitelistOperator(
-    address operator
-) external;
+function unwhitelistOperator(address operator) external;
 ```
 **Parameters**
 

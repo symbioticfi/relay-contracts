@@ -1,8 +1,8 @@
 # EqualStakeVPCalc
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol)
 
 **Inherits:**
-[VotingPowerCalcManager](/src/modules/voting-power/base/VotingPowerCalcManager.sol/abstract.VotingPowerCalcManager.md), [IEqualStakeVPCalc](/src/interfaces/modules/voting-power/common/voting-power-calc/IEqualStakeVPCalc.sol/interface.IEqualStakeVPCalc.md)
+[VotingPowerCalcManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/base/VotingPowerCalcManager.sol/abstract.VotingPowerCalcManager.md), [IEqualStakeVPCalc](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/common/voting-power-calc/IEqualStakeVPCalc.sol/interface.IEqualStakeVPCalc.md)
 
 Contract for calculating the voting power, making it equal to the stake.
 
@@ -22,11 +22,16 @@ Returns the voting power given a `stake` amount of `vault`'s collateral at the c
 
 ```solidity
 function stakeToVotingPowerAt(
-    address,
+    address, /* vault */
     uint256 stake,
-    bytes memory,
-    uint48
-) public view virtual override returns (uint256);
+    bytes memory, /* extraData */
+    uint48 /* timestamp */
+)
+    public
+    view
+    virtual
+    override
+    returns (uint256);
 ```
 **Parameters**
 
@@ -50,7 +55,16 @@ Returns the voting power given a `stake` amount of `vault`'s collateral at the c
 
 
 ```solidity
-function stakeToVotingPower(address, uint256 stake, bytes memory) public view virtual override returns (uint256);
+function stakeToVotingPower(
+    address, /* vault */
+    uint256 stake,
+    bytes memory /* extraData */
+)
+    public
+    view
+    virtual
+    override
+    returns (uint256);
 ```
 **Parameters**
 

@@ -1,8 +1,8 @@
 # WeightedTokensVPCalc
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/voting-power/common/voting-power-calc/WeightedTokensVPCalc.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/modules/voting-power/common/voting-power-calc/WeightedTokensVPCalc.sol)
 
 **Inherits:**
-[NormalizedTokenDecimalsVPCalc](/src/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.sol/abstract.NormalizedTokenDecimalsVPCalc.md), [PermissionManager](/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), [IWeightedTokensVPCalc](/src/interfaces/modules/voting-power/common/voting-power-calc/IWeightedTokensVPCalc.sol/interface.IWeightedTokensVPCalc.md)
+[NormalizedTokenDecimalsVPCalc](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.sol/abstract.NormalizedTokenDecimalsVPCalc.md), [PermissionManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), [IWeightedTokensVPCalc](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/common/voting-power-calc/IWeightedTokensVPCalc.sol/interface.IWeightedTokensVPCalc.md)
 
 Contract for calculating the voting power, weighting the tokens.
 
@@ -11,14 +11,14 @@ Contract for calculating the voting power, weighting the tokens.
 ### DEFAULT_TOKEN_WEIGHT
 
 ```solidity
-uint208 internal constant DEFAULT_TOKEN_WEIGHT = 1e12;
+uint208 internal constant DEFAULT_TOKEN_WEIGHT = 1e12
 ```
 
 
 ### MAX_TOKEN_WEIGHT_SCALE
 
 ```solidity
-uint208 internal constant MAX_TOKEN_WEIGHT_SCALE = DEFAULT_TOKEN_WEIGHT * DEFAULT_TOKEN_WEIGHT;
+uint208 internal constant MAX_TOKEN_WEIGHT_SCALE = DEFAULT_TOKEN_WEIGHT * DEFAULT_TOKEN_WEIGHT
 ```
 
 
@@ -26,7 +26,7 @@ uint208 internal constant MAX_TOKEN_WEIGHT_SCALE = DEFAULT_TOKEN_WEIGHT * DEFAUL
 
 ```solidity
 bytes32 private constant WeightedTokensVPCalcStorageLocation =
-    0xf5262741ca6f55e787f6eaf4de4fb0649de696baa9c333fb294f86e4baf7a100;
+    0xf5262741ca6f55e787f6eaf4de4fb0649de696baa9c333fb294f86e4baf7a100
 ```
 
 
@@ -49,8 +49,8 @@ function __WeightedTokensVPCalc_init() internal virtual onlyInitializing;
 
 Returns the weight for a token at a given timestamp.
 
-*Returns 1e12 if the weight wasn't explicitly set yet.
-Can return non-zero weight for unregistered tokens.*
+Returns 1e12 if the weight wasn't explicitly set yet.
+Can return non-zero weight for unregistered tokens.
 
 
 ```solidity
@@ -74,14 +74,12 @@ function getTokenWeightAt(address token, uint48 timestamp) public view virtual r
 
 Returns the weight for a token.
 
-*Returns 1e12 if the weight wasn't explicitly set yet.
-Can return non-zero weight for unregistered tokens.*
+Returns 1e12 if the weight wasn't explicitly set yet.
+Can return non-zero weight for unregistered tokens.
 
 
 ```solidity
-function getTokenWeight(
-    address token
-) public view virtual returns (uint208);
+function getTokenWeight(address token) public view virtual returns (uint208);
 ```
 **Parameters**
 
@@ -102,12 +100,12 @@ Returns the voting power given a `stake` amount of `vault`'s collateral at the c
 
 
 ```solidity
-function stakeToVotingPowerAt(
-    address vault,
-    uint256 stake,
-    bytes memory extraData,
-    uint48 timestamp
-) public view virtual override returns (uint256);
+function stakeToVotingPowerAt(address vault, uint256 stake, bytes memory extraData, uint48 timestamp)
+    public
+    view
+    virtual
+    override
+    returns (uint256);
 ```
 **Parameters**
 
@@ -131,11 +129,12 @@ Returns the voting power given a `stake` amount of `vault`'s collateral at the c
 
 
 ```solidity
-function stakeToVotingPower(
-    address vault,
-    uint256 stake,
-    bytes memory extraData
-) public view virtual override returns (uint256);
+function stakeToVotingPower(address vault, uint256 stake, bytes memory extraData)
+    public
+    view
+    virtual
+    override
+    returns (uint256);
 ```
 **Parameters**
 

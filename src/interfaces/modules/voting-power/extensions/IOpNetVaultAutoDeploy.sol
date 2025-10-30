@@ -3,6 +3,10 @@ pragma solidity ^0.8.0;
 
 import {IVotingPowerProvider} from "../IVotingPowerProvider.sol";
 
+/**
+ * @title IOpNetVaultAutoDeploy
+ * @notice Interface for the OpNetVaultAutoDeploy contract.
+ */
 interface IOpNetVaultAutoDeploy {
     /**
      * @notice Reverts when the burner hook is enabled but the slasher is not.
@@ -101,9 +105,7 @@ interface IOpNetVaultAutoDeploy {
      * @param operator The address of the operator.
      * @return The address of the auto deployed vault of the operator.
      */
-    function getAutoDeployedVault(
-        address operator
-    ) external view returns (address);
+    function getAutoDeployedVault(address operator) external view returns (address);
 
     /**
      * @notice Returns the configuration of the auto deploy.
@@ -122,25 +124,19 @@ interface IOpNetVaultAutoDeploy {
      * @param status The status of the auto deploy.
      * @dev The caller must have the needed permission.
      */
-    function setAutoDeployStatus(
-        bool status
-    ) external;
+    function setAutoDeployStatus(bool status) external;
 
     /**
      * @notice Sets the configuration of the auto deploy.
      * @param config The configuration of the auto deploy.
      * @dev The caller must have the needed permission.
      */
-    function setAutoDeployConfig(
-        AutoDeployConfig memory config
-    ) external;
+    function setAutoDeployConfig(AutoDeployConfig memory config) external;
 
     /**
      * @notice Sets the status of the set max network limit hook.
      * @param status The status of the set max network limit hook.
      * @dev The caller must have the needed permission.
      */
-    function setSetMaxNetworkLimitHookStatus(
-        bool status
-    ) external;
+    function setSetMaxNetworkLimitHookStatus(bool status) external;
 }

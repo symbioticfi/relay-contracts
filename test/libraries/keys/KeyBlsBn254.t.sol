@@ -104,9 +104,7 @@ contract KeyBlsBn254Test is Test {
         assertEq(finalPt.Y, y);
     }
 
-    function test_FuzzWrapUnwrap(
-        uint256 xIn
-    ) public {
+    function test_FuzzWrapUnwrap(uint256 xIn) public {
         xIn = xIn % BN254.FP_MODULUS;
         (uint256 beta, uint256 y) = BN254.findYFromX(xIn);
         if (mulmod(y, y, BN254.FP_MODULUS) != beta) {
@@ -119,9 +117,7 @@ contract KeyBlsBn254Test is Test {
         assertEq(unwrapped.Y, y);
     }
 
-    function test_FuzzSerializeDeserialize(
-        uint256 xIn
-    ) public {
+    function test_FuzzSerializeDeserialize(uint256 xIn) public {
         xIn = xIn % BN254.FP_MODULUS;
         (uint256 beta, uint256 y) = BN254.findYFromX(xIn);
         if (mulmod(y, y, BN254.FP_MODULUS) != beta) {
@@ -136,9 +132,7 @@ contract KeyBlsBn254Test is Test {
         assertEq(finalPt.Y, y);
     }
 
-    function test_FuzzSerializeDeserializeNonZeroNegate(
-        uint256 xIn
-    ) public {
+    function test_FuzzSerializeDeserializeNonZeroNegate(uint256 xIn) public {
         xIn = xIn % BN254.FP_MODULUS;
         (uint256 beta, uint256 y) = BN254.findYFromX(xIn);
         if (mulmod(y, y, BN254.FP_MODULUS) != beta) {
@@ -153,9 +147,7 @@ contract KeyBlsBn254Test is Test {
         assertEq(finalPt.Y, pt.Y);
     }
 
-    function test_FuzzToBytesFromBytes(
-        uint256 xIn
-    ) public {
+    function test_FuzzToBytesFromBytes(uint256 xIn) public {
         xIn = xIn % BN254.FP_MODULUS;
         (uint256 beta, uint256 y) = BN254.findYFromX(xIn);
         if (mulmod(y, y, BN254.FP_MODULUS) != beta) {
@@ -206,9 +198,7 @@ contract KeyBlsBn254Test is Test {
         mock.fromBytes(abi.encode(pt, 1));
     }
 
-    function test_WrapRevertsInvalidKey(
-        uint256 X
-    ) public {
+    function test_WrapRevertsInvalidKey(uint256 X) public {
         X = X % BN254.FP_MODULUS;
         (, uint256 Y) = BN254.findYFromX(1);
         BN254.G1Point memory pt = BN254.G1Point(X, Y + 1);

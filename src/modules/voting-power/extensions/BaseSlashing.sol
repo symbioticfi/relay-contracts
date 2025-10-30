@@ -7,10 +7,8 @@ import {BaseSlashingLogic} from "./logic/BaseSlashingLogic.sol";
 
 import {IBaseSlashing} from "../../../interfaces/modules/voting-power/extensions/IBaseSlashing.sol";
 
-/**
- * @title BaseSlashing
- * @notice Base contract for slashing vaults.
- */
+/// @title BaseSlashing
+/// @notice Base contract for slashing vaults.
 abstract contract BaseSlashing is VotingPowerProvider, IBaseSlashing {
     modifier onlySlasher() {
         _checkSlasher();
@@ -34,57 +32,41 @@ abstract contract BaseSlashing is VotingPowerProvider, IBaseSlashing {
         }
     }
 
-    function __BaseSlashing_init(
-        BaseSlashingInitParams memory initParams
-    ) internal virtual onlyInitializing {
+    function __BaseSlashing_init(BaseSlashingInitParams memory initParams) internal virtual onlyInitializing {
         _setSlasher(initParams.slasher);
     }
 
-    /**
-     * @inheritdoc IBaseSlashing
-     */
+    /// @inheritdoc IBaseSlashing
     function getSlasher() public view virtual returns (address) {
         return _getBaseSlashingStorage()._slasher;
     }
 
-    /**
-     * @inheritdoc IBaseSlashing
-     */
-    function slashVault(
-        uint48 timestamp,
-        address vault,
-        address operator,
-        uint256 amount,
-        bytes memory hints
-    ) public virtual returns (bool success, bytes memory response) {
+    /// @inheritdoc IBaseSlashing
+    function slashVault(uint48 timestamp, address vault, address operator, uint256 amount, bytes memory hints)
+        public
+        virtual
+        returns (bool success, bytes memory response)
+    {
         _checkSlasher();
         return BaseSlashingLogic.slashVault(timestamp, vault, operator, amount, hints);
     }
 
-    /**
-     * @inheritdoc IBaseSlashing
-     */
-    function executeSlashVault(
-        address vault,
-        uint256 slashIndex,
-        bytes memory hints
-    ) public virtual returns (bool success, uint256 slashedAmount) {
+    /// @inheritdoc IBaseSlashing
+    function executeSlashVault(address vault, uint256 slashIndex, bytes memory hints)
+        public
+        virtual
+        returns (bool success, uint256 slashedAmount)
+    {
         _checkSlasher();
         return BaseSlashingLogic.executeSlashVault(vault, slashIndex, hints);
     }
 
-    /**
-     * @inheritdoc IBaseSlashing
-     */
-    function setSlasher(
-        address slasher
-    ) public virtual checkPermission {
+    /// @inheritdoc IBaseSlashing
+    function setSlasher(address slasher) public virtual checkPermission {
         _setSlasher(slasher);
     }
 
-    function _setSlasher(
-        address slasher
-    ) internal virtual {
+    function _setSlasher(address slasher) internal virtual {
         _getBaseSlashingStorage()._slasher = slasher;
         emit SetSlasher(slasher);
     }

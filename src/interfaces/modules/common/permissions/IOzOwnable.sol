@@ -3,6 +3,10 @@ pragma solidity ^0.8.0;
 
 import {IPermissionManager} from "../../../modules/base/IPermissionManager.sol";
 
+/**
+ * @title IOzOwnable
+ * @notice Interface for the OzOwnable contract.
+ */
 interface IOzOwnable {
     /**
      * @notice The parameters for the initialization of the OzOwnable contract.

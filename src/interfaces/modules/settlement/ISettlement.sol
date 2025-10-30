@@ -6,6 +6,10 @@ import {IOzEIP712} from "../../modules/base/IOzEIP712.sol";
 
 import {Checkpoints} from "../../../libraries/structs/Checkpoints.sol";
 
+/**
+ * @title ISettlement
+ * @notice Interface for the Settlement contract.
+ */
 interface ISettlement {
     /**
      * @notice Reverts when the extra data key is duplicated.
@@ -60,7 +64,7 @@ interface ISettlement {
      * @param _sigVerifier The address of the quorum signature verifier.
      * @param _valSetHeader The mapping from the epoch to the validator set header.
      * @param _extraData The mapping from the epoch and the key to the extra data.
-     * @custom:storage-location erc7201:symbiotic.storage.Settlement
+     * @custom:storage-location ERC-7201 slot: erc7201:symbiotic.storage.Settlement.
      */
     struct SettlementStorage {
         uint48 _lastCommittedHeaderEpoch;
@@ -170,18 +174,14 @@ interface ISettlement {
      * @param epoch The epoch.
      * @return True if the validator set header is committed at the given epoch.
      */
-    function isValSetHeaderCommittedAt(
-        uint48 epoch
-    ) external view returns (bool);
+    function isValSetHeaderCommittedAt(uint48 epoch) external view returns (bool);
 
     /**
      * @notice Returns the hash of the validator set header at the given epoch.
      * @param epoch The epoch.
      * @return The hash of the validator set header at the given epoch.
      */
-    function getValSetHeaderHashAt(
-        uint48 epoch
-    ) external view returns (bytes32);
+    function getValSetHeaderHashAt(uint48 epoch) external view returns (bytes32);
 
     /**
      * @notice Returns the hash of the last committed validator set header.
@@ -194,9 +194,7 @@ interface ISettlement {
      * @param epoch The epoch.
      * @return The validator set header at the given epoch.
      */
-    function getValSetHeaderAt(
-        uint48 epoch
-    ) external view returns (ValSetHeader memory);
+    function getValSetHeaderAt(uint48 epoch) external view returns (ValSetHeader memory);
 
     /**
      * @notice Returns the last committed validator set header.
@@ -209,9 +207,7 @@ interface ISettlement {
      * @param epoch The epoch.
      * @return The version of the validator set header at the given epoch.
      */
-    function getVersionFromValSetHeaderAt(
-        uint48 epoch
-    ) external view returns (uint8);
+    function getVersionFromValSetHeaderAt(uint48 epoch) external view returns (uint8);
 
     /**
      * @notice Returns the version from the last committed validator set header.
@@ -224,9 +220,7 @@ interface ISettlement {
      * @param epoch The epoch.
      * @return The required key tag from the validator set header at the given epoch.
      */
-    function getRequiredKeyTagFromValSetHeaderAt(
-        uint48 epoch
-    ) external view returns (uint8);
+    function getRequiredKeyTagFromValSetHeaderAt(uint48 epoch) external view returns (uint8);
 
     /**
      * @notice Returns the required key tag from the last committed validator set header.
@@ -239,9 +233,7 @@ interface ISettlement {
      * @param epoch The epoch.
      * @return The capture timestamp from the validator set header at the given epoch.
      */
-    function getCaptureTimestampFromValSetHeaderAt(
-        uint48 epoch
-    ) external view returns (uint48);
+    function getCaptureTimestampFromValSetHeaderAt(uint48 epoch) external view returns (uint48);
 
     /**
      * @notice Returns the capture timestamp from the last committed validator set header.
@@ -254,9 +246,7 @@ interface ISettlement {
      * @param epoch The epoch.
      * @return The quorum threshold from the validator set header at the given epoch.
      */
-    function getQuorumThresholdFromValSetHeaderAt(
-        uint48 epoch
-    ) external view returns (uint256);
+    function getQuorumThresholdFromValSetHeaderAt(uint48 epoch) external view returns (uint256);
 
     /**
      * @notice Returns the quorum threshold from the last committed validator set header.
@@ -269,9 +259,7 @@ interface ISettlement {
      * @param epoch The epoch.
      * @return The total voting power from the validator set header at the given epoch.
      */
-    function getTotalVotingPowerFromValSetHeaderAt(
-        uint48 epoch
-    ) external view returns (uint256);
+    function getTotalVotingPowerFromValSetHeaderAt(uint48 epoch) external view returns (uint256);
 
     /**
      * @notice Returns the total voting power from the last committed validator set header.
@@ -284,9 +272,7 @@ interface ISettlement {
      * @param epoch The epoch.
      * @return The validator set SSZ root from the validator set header at the given epoch.
      */
-    function getValidatorsSszMRootFromValSetHeaderAt(
-        uint48 epoch
-    ) external view returns (bytes32);
+    function getValidatorsSszMRootFromValSetHeaderAt(uint48 epoch) external view returns (bytes32);
 
     /**
      * @notice Returns the validator set SSZ root from the last committed validator set header.
@@ -307,9 +293,7 @@ interface ISettlement {
      * @param key The key.
      * @return The extra data from the last committed epoch for a certain key.
      */
-    function getExtraData(
-        bytes32 key
-    ) external view returns (bytes32);
+    function getExtraData(bytes32 key) external view returns (bytes32);
 
     /**
      * @notice Returns the result of the quorum signature verification for the given message at the given epoch.
@@ -338,12 +322,10 @@ interface ISettlement {
      * @param proof The proof to verify the quorum signature.
      * @return The result of the quorum signature verification for the given message using the last committed validator set header.
      */
-    function verifyQuorumSig(
-        bytes memory message,
-        uint8 keyTag,
-        uint256 quorumThreshold,
-        bytes calldata proof
-    ) external view returns (bool);
+    function verifyQuorumSig(bytes memory message, uint8 keyTag, uint256 quorumThreshold, bytes calldata proof)
+        external
+        view
+        returns (bool);
 
     /**
      * @notice Sets the quorum signature verifier.
@@ -351,9 +333,7 @@ interface ISettlement {
      * @dev The new verifier will be "committed" only in the next epoch.
      * @dev The caller must have the needed permission.
      */
-    function setSigVerifier(
-        address sigVerifier
-    ) external;
+    function setSigVerifier(address sigVerifier) external;
 
     /**
      * @notice Sets the genesis validator set header and its extra data.
@@ -371,9 +351,6 @@ interface ISettlement {
      * @param proof The proof to verify the quorum signature.
      * @dev The caller can be anyone, the call is validated by verification of the validator set's attestation.
      */
-    function commitValSetHeader(
-        ValSetHeader calldata header,
-        ExtraData[] calldata extraData,
-        bytes calldata proof
-    ) external;
+    function commitValSetHeader(ValSetHeader calldata header, ExtraData[] calldata extraData, bytes calldata proof)
+        external;
 }

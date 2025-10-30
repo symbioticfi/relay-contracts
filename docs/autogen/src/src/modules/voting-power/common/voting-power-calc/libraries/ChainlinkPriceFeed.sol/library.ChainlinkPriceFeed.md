@@ -1,10 +1,10 @@
 # ChainlinkPriceFeed
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/modules/voting-power/common/voting-power-calc/libraries/ChainlinkPriceFeed.sol)
 
 Library for fetching prices from Chainlink in a historical manner.
 
-*It supports arbitrary aggregators' decimals, an arbitrary number of aggregator hops, and a possibility to invert prices.
-It supports most of Chainlink's aggregators through the whole history except the oldest ones not supporting `getRoundData()`.*
+It supports arbitrary aggregators' decimals, an arbitrary number of aggregator hops, and a possibility to invert prices.
+It supports most of Chainlink's aggregators through the whole history except the oldest ones not supporting `getRoundData()`.
 
 
 ## State Variables
@@ -13,7 +13,7 @@ The offset for the phase in the roundId.
 
 
 ```solidity
-uint256 internal constant PHASE_OFFSET = 64;
+uint256 internal constant PHASE_OFFSET = 64
 ```
 
 
@@ -22,7 +22,7 @@ The number of decimals to normalize the price to.
 
 
 ```solidity
-uint8 internal constant BASE_DECIMALS = 18;
+uint8 internal constant BASE_DECIMALS = 18
 ```
 
 
@@ -31,8 +31,8 @@ uint8 internal constant BASE_DECIMALS = 18;
 
 Returns the price at a given timestamp using one or two hops.
 
-*Returns zero if the data is stale or unavailable.
-The price is normalized to the 18 decimals.*
+Returns zero if the data is stale or unavailable.
+The price is normalized to the 18 decimals.
 
 
 ```solidity
@@ -63,8 +63,8 @@ function getPriceAt(
 
 Returns the price at a given timestamp using one or more hops.
 
-*Returns zero if the data is stale or unavailable.
-The price is normalized to the 18 decimals.*
+Returns zero if the data is stale or unavailable.
+The price is normalized to the 18 decimals.
 
 
 ```solidity
@@ -95,17 +95,15 @@ function getPriceAt(
 
 Returns the price at a given timestamp.
 
-*Returns zero if the data is stale or unavailable.
-The price is normalized to the 18 decimals.*
+Returns zero if the data is stale or unavailable.
+The price is normalized to the 18 decimals.
 
 
 ```solidity
-function getPriceAt(
-    address aggregator,
-    uint48 timestamp,
-    bool invert,
-    uint48 stalenessDuration
-) public view returns (uint256);
+function getPriceAt(address aggregator, uint48 timestamp, bool invert, uint48 stalenessDuration)
+    public
+    view
+    returns (uint256);
 ```
 **Parameters**
 
@@ -127,16 +125,14 @@ function getPriceAt(
 
 Returns the price data at a given timestamp.
 
-*The answer is normalized to the 18 decimals.*
+The answer is normalized to the 18 decimals.
 
 
 ```solidity
-function getPriceDataAt(
-    address aggregator,
-    uint48 timestamp,
-    bool invert,
-    uint48 stalenessDuration
-) public view returns (bool success, RoundData memory roundData);
+function getPriceDataAt(address aggregator, uint48 timestamp, bool invert, uint48 stalenessDuration)
+    public
+    view
+    returns (bool success, RoundData memory roundData);
 ```
 **Parameters**
 
@@ -161,7 +157,10 @@ Returns the round data at a given timestamp.
 
 
 ```solidity
-function getRoundDataAt(address aggregator, uint48 timestamp) public view returns (bool, RoundData memory roundData);
+function getRoundDataAt(address aggregator, uint48 timestamp)
+    public
+    view
+    returns (bool, RoundData memory roundData);
 ```
 **Parameters**
 
@@ -205,16 +204,15 @@ function getRoundData(address aggregator, uint80 roundId) public view returns (b
 
 Returns the latest price using one or two hops.
 
-*Returns zero if the data is stale or unavailable.
-The price is normalized to the 18 decimals.*
+Returns zero if the data is stale or unavailable.
+The price is normalized to the 18 decimals.
 
 
 ```solidity
-function getLatestPrice(
-    address[2] memory aggregators,
-    bool[2] memory inverts,
-    uint48[2] memory stalenessDurations
-) public view returns (uint256);
+function getLatestPrice(address[2] memory aggregators, bool[2] memory inverts, uint48[2] memory stalenessDurations)
+    public
+    view
+    returns (uint256);
 ```
 **Parameters**
 
@@ -235,16 +233,15 @@ function getLatestPrice(
 
 Returns the latest price using one or more hops.
 
-*Returns zero if the data is stale or unavailable.
-The price is normalized to the 18 decimals.*
+Returns zero if the data is stale or unavailable.
+The price is normalized to the 18 decimals.
 
 
 ```solidity
-function getLatestPrice(
-    address[] memory aggregators,
-    bool[] memory inverts,
-    uint48[] memory stalenessDurations
-) public view returns (uint256);
+function getLatestPrice(address[] memory aggregators, bool[] memory inverts, uint48[] memory stalenessDurations)
+    public
+    view
+    returns (uint256);
 ```
 **Parameters**
 
@@ -265,8 +262,8 @@ function getLatestPrice(
 
 Returns the latest price.
 
-*Returns zero if the data is stale or unavailable.
-The price is normalized to the 18 decimals.*
+Returns zero if the data is stale or unavailable.
+The price is normalized to the 18 decimals.
 
 
 ```solidity
@@ -291,15 +288,14 @@ function getLatestPrice(address aggregator, bool invert, uint48 stalenessDuratio
 
 Returns the latest price data.
 
-*The answer is normalized to the 18 decimals.*
+The answer is normalized to the 18 decimals.
 
 
 ```solidity
-function getLatestPriceData(
-    address aggregator,
-    bool invert,
-    uint48 stalenessDuration
-) public view returns (bool success, RoundData memory roundData);
+function getLatestPriceData(address aggregator, bool invert, uint48 stalenessDuration)
+    public
+    view
+    returns (bool success, RoundData memory roundData);
 ```
 **Parameters**
 
@@ -323,9 +319,7 @@ Returns the latest round data.
 
 
 ```solidity
-function getLatestRoundData(
-    address aggregator
-) public view returns (bool, RoundData memory roundData);
+function getLatestRoundData(address aggregator) public view returns (bool, RoundData memory roundData);
 ```
 **Parameters**
 
@@ -347,7 +341,10 @@ Returns if the round data is stale.
 
 
 ```solidity
-function isStale(uint48 timestamp, RoundData memory roundData, uint48 stalenessDuration) public pure returns (bool);
+function isStale(uint48 timestamp, RoundData memory roundData, uint48 stalenessDuration)
+    public
+    pure
+    returns (bool);
 ```
 **Parameters**
 
@@ -375,9 +372,7 @@ function serializeIds(uint16 phase, uint64 originalId) public pure returns (uint
 
 
 ```solidity
-function deserializeIds(
-    uint80 roundId
-) public pure returns (uint16, uint64);
+function deserializeIds(uint80 roundId) public pure returns (uint16, uint64);
 ```
 
 ### toDynamicArrays

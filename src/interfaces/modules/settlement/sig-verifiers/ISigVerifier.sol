@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+/**
+ * @title ISigVerifier
+ * @notice Interface for the signature verifier contracts.
+ */
 interface ISigVerifier {
     /**
      * @notice Returns the type of the signature verification.

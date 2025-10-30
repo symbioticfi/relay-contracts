@@ -19,7 +19,11 @@ contract SigVerifierFalseMock is ISigVerifier {
         uint8, /* keyTag */
         uint256, /* quorumThreshold */
         bytes calldata /* proof */
-    ) external view returns (bool) {
+    )
+        external
+        view
+        returns (bool)
+    {
         return false;
     }
 }

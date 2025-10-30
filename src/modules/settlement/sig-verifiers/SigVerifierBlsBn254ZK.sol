@@ -3,46 +3,34 @@ pragma solidity ^0.8.25;
 
 import {BN254} from "../../../libraries/utils/BN254.sol";
 import {ExtraDataStorageHelper} from "./libraries/ExtraDataStorageHelper.sol";
-import {KEY_TYPE_BLS_BN254} from "../../../interfaces/modules/key-registry/IKeyRegistry.sol";
 import {KeyTags} from "../../../libraries/utils/KeyTags.sol";
 
 import {ISettlement} from "../../../interfaces/modules/settlement/ISettlement.sol";
 import {ISigVerifierBlsBn254ZK} from "../../../interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254ZK.sol";
 import {ISigVerifier} from "../../../interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol";
 import {IVerifier} from "../../../interfaces/modules/settlement/sig-verifiers/zk/IVerifier.sol";
+import {KEY_TYPE_BLS_BN254} from "../../../interfaces/modules/key-registry/IKeyRegistry.sol";
 
-/**
- * @title SigVerifierBlsBn254ZK
- * @notice Contract for verifying validator's set attestations based on BLS signatures on the BN254 curve
- *         by decompressing the whole validator set using ZK.
- */
+/// @title SigVerifierBlsBn254ZK
+/// @notice Contract for verifying validator's set attestations based on BLS signatures on the BN254 curve
+/// by decompressing the whole validator set using ZK.
 contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
     using ExtraDataStorageHelper for uint32;
     using KeyTags for uint8;
 
-    /**
-     * @inheritdoc ISigVerifier
-     */
+    /// @inheritdoc ISigVerifier
     uint32 public constant VERIFICATION_TYPE = 0;
 
-    /**
-     * @inheritdoc ISigVerifierBlsBn254ZK
-     */
+    /// @inheritdoc ISigVerifierBlsBn254ZK
     bytes32 public constant TOTAL_ACTIVE_VALIDATORS_HASH = keccak256("totalActiveValidators");
 
-    /**
-     * @inheritdoc ISigVerifierBlsBn254ZK
-     */
+    /// @inheritdoc ISigVerifierBlsBn254ZK
     bytes32 public constant VALIDATOR_SET_HASH_MIMC_HASH = keccak256("validatorSetHashMimc");
 
-    /**
-     * @inheritdoc ISigVerifierBlsBn254ZK
-     */
+    /// @inheritdoc ISigVerifierBlsBn254ZK
     address[] public verifiers;
 
-    /**
-     * @inheritdoc ISigVerifierBlsBn254ZK
-     */
+    /// @inheritdoc ISigVerifierBlsBn254ZK
     uint256[] public maxValidators;
 
     constructor(address[] memory verifiers_, uint256[] memory maxValidators_) {
@@ -69,9 +57,7 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
         maxValidators = maxValidators_;
     }
 
-    /**
-     * @inheritdoc ISigVerifier
-     */
+    /// @inheritdoc ISigVerifier
     function verifyQuorumSig(
         address settlement,
         uint48 epoch,
@@ -131,9 +117,8 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
 
         uint256 inputHash;
         {
-            bytes32 validatorSetHash = ISettlement(settlement).getExtraDataAt(
-                epoch, VERIFICATION_TYPE.getKey(keyTag, VALIDATOR_SET_HASH_MIMC_HASH)
-            );
+            bytes32 validatorSetHash = ISettlement(settlement)
+                .getExtraDataAt(epoch, VERIFICATION_TYPE.getKey(keyTag, VALIDATOR_SET_HASH_MIMC_HASH));
             BN254.G1Point memory messageG1 = BN254.hashToG1(abi.decode(message, (bytes32)));
 
             inputHash =
@@ -141,17 +126,15 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
             inputHash &= 0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
         }
 
-        try IVerifier(_getVerifier(totalActiveValidators)).verifyProof(zkProof, commitments, commitmentPok, [inputHash])
-        {
+        try IVerifier(_getVerifier(totalActiveValidators))
+            .verifyProof(zkProof, commitments, commitmentPok, [inputHash]) {
             return true;
         } catch {
             return false;
         }
     }
 
-    function _getVerifier(
-        uint256 totalActiveValidators
-    ) internal view returns (address) {
+    function _getVerifier(uint256 totalActiveValidators) internal view returns (address) {
         for (uint256 i; i < maxValidators.length; ++i) {
             if (totalActiveValidators <= maxValidators[i]) {
                 return verifiers[i];

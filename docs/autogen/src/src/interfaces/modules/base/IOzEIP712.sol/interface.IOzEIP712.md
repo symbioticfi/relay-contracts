@@ -1,8 +1,10 @@
 # IOzEIP712
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/base/IOzEIP712.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/interfaces/modules/base/IOzEIP712.sol)
 
 **Inherits:**
 IERC5267
+
+Interface for the OzEIP712 contract.
 
 
 ## Functions
@@ -12,9 +14,7 @@ Returns the EIP712 hash of the typed data.
 
 
 ```solidity
-function hashTypedDataV4(
-    bytes32 structHash
-) external view returns (bytes32);
+function hashTypedDataV4(bytes32 structHash) external view returns (bytes32);
 ```
 **Parameters**
 
@@ -33,13 +33,11 @@ function hashTypedDataV4(
 
 Wraps the `structHash` to the EIP712 format for cross-chain usage.
 
-*It doesn't include `chainId` and `verifyingContract` fields for the domain separator.*
+It doesn't include `chainId` and `verifyingContract` fields for the domain separator.
 
 
 ```solidity
-function hashTypedDataV4CrossChain(
-    bytes32 structHash
-) external view returns (bytes32);
+function hashTypedDataV4CrossChain(bytes32 structHash) external view returns (bytes32);
 ```
 **Parameters**
 

@@ -1,8 +1,10 @@
 # ISigVerifierBlsBn254Simple
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254Simple.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254Simple.sol)
 
 **Inherits:**
-[ISigVerifier](/src/interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol/interface.ISigVerifier.md)
+[ISigVerifier](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol/interface.ISigVerifier.md)
+
+Interface for the SigVerifierBlsBn254Simple contract.
 
 
 ## Functions
@@ -25,7 +27,7 @@ function VALIDATOR_SET_HASH_KECCAK256_HASH() external view returns (bytes32);
 
 Returns the marker for extra data fetching of the aggregated public key G1.
 
-*The public key is compressed to one bytes32 slot.*
+The public key is compressed to one bytes32 slot.
 
 
 ```solidity
@@ -42,7 +44,7 @@ function AGGREGATED_PUBLIC_KEY_G1_HASH() external view returns (bytes32);
 
 Returns the maximum allowed number of validators for this verification mechanism.
 
-*The maximum exists because each non-signer's index is encoded as a 2 bytes value.*
+The maximum exists because each non-signer's index is encoded as a 2 bytes value.
 
 
 ```solidity
@@ -75,7 +77,7 @@ error SigVerifierBlsBn254Simple_InvalidNonSignerIndex();
 ### SigVerifierBlsBn254Simple_InvalidNonSignersOrder
 Reverts when the non-signers' indices are not in the correct order.
 
-*The indices must be sorted in ascending order.*
+The indices must be sorted in ascending order.
 
 
 ```solidity

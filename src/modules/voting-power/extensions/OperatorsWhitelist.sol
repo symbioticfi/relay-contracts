@@ -5,10 +5,8 @@ import {VotingPowerProvider} from "../VotingPowerProvider.sol";
 
 import {IOperatorsWhitelist} from "../../../interfaces/modules/voting-power/extensions/IOperatorsWhitelist.sol";
 
-/**
- * @title OperatorsWhitelist
- * @notice Contract for whitelisting operators.
- */
+/// @title OperatorsWhitelist
+/// @notice Contract for whitelisting operators.
 abstract contract OperatorsWhitelist is VotingPowerProvider, IOperatorsWhitelist {
     // keccak256(abi.encode(uint256(keccak256("symbiotic.storage.OperatorsWhitelist")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant OperatorsWhitelistStorageLocation =
@@ -21,46 +19,34 @@ abstract contract OperatorsWhitelist is VotingPowerProvider, IOperatorsWhitelist
         }
     }
 
-    function __OperatorsWhitelist_init(
-        OperatorsWhitelistInitParams memory initParams
-    ) internal virtual onlyInitializing {
+    function __OperatorsWhitelist_init(OperatorsWhitelistInitParams memory initParams)
+        internal
+        virtual
+        onlyInitializing
+    {
         _setWhitelistStatus(initParams.isWhitelistEnabled);
     }
 
-    /**
-     * @inheritdoc IOperatorsWhitelist
-     */
+    /// @inheritdoc IOperatorsWhitelist
     function isWhitelistEnabled() public view virtual returns (bool) {
         return _getOperatorsWhitelistStorage()._isWhitelistEnabled;
     }
 
-    /**
-     * @inheritdoc IOperatorsWhitelist
-     */
-    function isOperatorWhitelisted(
-        address operator
-    ) public view virtual returns (bool) {
+    /// @inheritdoc IOperatorsWhitelist
+    function isOperatorWhitelisted(address operator) public view virtual returns (bool) {
         return _getOperatorsWhitelistStorage()._whitelisted[operator];
     }
 
-    /**
-     * @inheritdoc IOperatorsWhitelist
-     */
-    function setWhitelistStatus(
-        bool status
-    ) public virtual checkPermission {
+    /// @inheritdoc IOperatorsWhitelist
+    function setWhitelistStatus(bool status) public virtual checkPermission {
         if (status == isWhitelistEnabled()) {
             revert OperatorsWhitelist_StatusAlreadySet();
         }
         _setWhitelistStatus(status);
     }
 
-    /**
-     * @inheritdoc IOperatorsWhitelist
-     */
-    function whitelistOperator(
-        address operator
-    ) public virtual checkPermission {
+    /// @inheritdoc IOperatorsWhitelist
+    function whitelistOperator(address operator) public virtual checkPermission {
         if (isOperatorWhitelisted(operator)) {
             revert OperatorsWhitelist_OperatorWhitelisted();
         }
@@ -68,12 +54,8 @@ abstract contract OperatorsWhitelist is VotingPowerProvider, IOperatorsWhitelist
         emit WhitelistOperator(operator);
     }
 
-    /**
-     * @inheritdoc IOperatorsWhitelist
-     */
-    function unwhitelistOperator(
-        address operator
-    ) public virtual checkPermission {
+    /// @inheritdoc IOperatorsWhitelist
+    function unwhitelistOperator(address operator) public virtual checkPermission {
         if (!isOperatorWhitelisted(operator)) {
             revert OperatorsWhitelist_OperatorNotWhitelisted();
         }
@@ -84,18 +66,14 @@ abstract contract OperatorsWhitelist is VotingPowerProvider, IOperatorsWhitelist
         emit UnwhitelistOperator(operator);
     }
 
-    function _registerOperatorImpl(
-        address operator
-    ) internal virtual override {
+    function _registerOperatorImpl(address operator) internal virtual override {
         if (isWhitelistEnabled() && !isOperatorWhitelisted(operator)) {
             revert OperatorsWhitelist_OperatorNotWhitelisted();
         }
         super._registerOperatorImpl(operator);
     }
 
-    function _setWhitelistStatus(
-        bool status
-    ) internal virtual {
+    function _setWhitelistStatus(bool status) internal virtual {
         _getOperatorsWhitelistStorage()._isWhitelistEnabled = status;
         emit SetWhitelistStatus(status);
     }

@@ -1,5 +1,5 @@
 # OpNetVaultAutoDeployLogic
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol)
 
 Library for auto-deploying vaults.
 
@@ -9,7 +9,7 @@ Library for auto-deploying vaults.
 
 ```solidity
 bytes32 private constant OpNetVaultAutoDeployStorageLocation =
-    0x85a64baaaf23c04aec63d80adaee49297f70e3944d69ec004fa7cee8ee6e8b00;
+    0x85a64baaaf23c04aec63d80adaee49297f70e3944d69ec004fa7cee8ee6e8b00
 ```
 
 
@@ -28,9 +28,7 @@ function _getOpNetVaultAutoDeployStorage()
 
 
 ```solidity
-function initialize(
-    IOpNetVaultAutoDeploy.OpNetVaultAutoDeployInitParams memory initParams
-) public;
+function initialize(IOpNetVaultAutoDeploy.OpNetVaultAutoDeployInitParams memory initParams) public;
 ```
 
 ### isAutoDeployEnabled
@@ -44,9 +42,7 @@ function isAutoDeployEnabled() public view returns (bool);
 
 
 ```solidity
-function getAutoDeployedVault(
-    address operator
-) public view returns (address);
+function getAutoDeployedVault(address operator) public view returns (address);
 ```
 
 ### getAutoDeployConfig
@@ -67,36 +63,28 @@ function isSetMaxNetworkLimitHookEnabled() public view returns (bool);
 
 
 ```solidity
-function setAutoDeployStatus(
-    bool status
-) public;
+function setAutoDeployStatus(bool status) public;
 ```
 
 ### setAutoDeployConfig
 
 
 ```solidity
-function setAutoDeployConfig(
-    IOpNetVaultAutoDeploy.AutoDeployConfig memory config
-) public;
+function setAutoDeployConfig(IOpNetVaultAutoDeploy.AutoDeployConfig memory config) public;
 ```
 
 ### setSetMaxNetworkLimitHookStatus
 
 
 ```solidity
-function setSetMaxNetworkLimitHookStatus(
-    bool status
-) public;
+function setSetMaxNetworkLimitHookStatus(bool status) public;
 ```
 
 ### createVault
 
 
 ```solidity
-function createVault(
-    address operator
-) public returns (address vault, address delegator, address slasher);
+function createVault(address operator) public returns (address vault, address delegator, address slasher);
 ```
 
 ### setAutoDeployedVault
@@ -110,9 +98,10 @@ function setAutoDeployedVault(address operator, address vault) public;
 
 
 ```solidity
-function getVaultParams(
-    IOpNetVaultAutoDeploy.AutoDeployConfig memory config
-) public view returns (uint64, bytes memory);
+function getVaultParams(IOpNetVaultAutoDeploy.AutoDeployConfig memory config)
+    public
+    view
+    returns (uint64, bytes memory);
 ```
 
 ### getDelegatorParams
@@ -120,27 +109,29 @@ function getVaultParams(
 
 ```solidity
 function getDelegatorParams(
-    IOpNetVaultAutoDeploy.AutoDeployConfig memory,
+    IOpNetVaultAutoDeploy.AutoDeployConfig memory, /* config */
     address operator
-) public view returns (uint64, bytes memory);
+)
+    public
+    view
+    returns (uint64, bytes memory);
 ```
 
 ### getSlasherParams
 
 
 ```solidity
-function getSlasherParams(
-    IOpNetVaultAutoDeploy.AutoDeployConfig memory config
-) public view returns (bool, uint64, bytes memory);
+function getSlasherParams(IOpNetVaultAutoDeploy.AutoDeployConfig memory config)
+    public
+    view
+    returns (bool, uint64, bytes memory);
 ```
 
 ### _validateConfig
 
 
 ```solidity
-function _validateConfig(
-    IOpNetVaultAutoDeploy.AutoDeployConfig memory config
-) public view;
+function _validateConfig(IOpNetVaultAutoDeploy.AutoDeployConfig memory config) public view;
 ```
 
 ### getVaultParams
@@ -149,9 +140,7 @@ Gets the encoded base vault params.
 
 
 ```solidity
-function getVaultParams(
-    IVault.InitParams memory params
-) public view returns (uint64, bytes memory);
+function getVaultParams(IVault.InitParams memory params) public view returns (uint64, bytes memory);
 ```
 **Parameters**
 
@@ -173,11 +162,10 @@ Gets the encoded tokenized vault params.
 
 
 ```solidity
-function getVaultTokenizedParams(
-    IVault.InitParams memory baseParams,
-    string memory name,
-    string memory symbol
-) public view returns (uint64, bytes memory);
+function getVaultTokenizedParams(IVault.InitParams memory baseParams, string memory name, string memory symbol)
+    public
+    view
+    returns (uint64, bytes memory);
 ```
 **Parameters**
 
@@ -231,9 +219,7 @@ Gets the encoded instant slasher params.
 
 
 ```solidity
-function getSlasherParams(
-    bool isBurnerHook
-) public view returns (uint64, bytes memory);
+function getSlasherParams(bool isBurnerHook) public view returns (uint64, bytes memory);
 ```
 **Parameters**
 
@@ -255,11 +241,10 @@ Gets the encoded veto slasher params.
 
 
 ```solidity
-function getVetoSlasherParams(
-    bool isBurnerHook,
-    uint48 vetoDuration,
-    uint256 resolverSetEpochsDelay
-) public view returns (uint64, bytes memory);
+function getVetoSlasherParams(bool isBurnerHook, uint48 vetoDuration, uint256 resolverSetEpochsDelay)
+    public
+    view
+    returns (uint64, bytes memory);
 ```
 **Parameters**
 

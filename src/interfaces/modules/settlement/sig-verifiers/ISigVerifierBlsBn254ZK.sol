@@ -3,6 +3,10 @@ pragma solidity ^0.8.0;
 
 import {ISigVerifier} from "./ISigVerifier.sol";
 
+/**
+ * @title ISigVerifierBlsBn254ZK
+ * @notice Interface for the SigVerifierBlsBn254ZK contract.
+ */
 interface ISigVerifierBlsBn254ZK is ISigVerifier {
     /**
      * @notice Reverts when the number of verifiers and max validators is not the same or zero.
@@ -67,16 +71,12 @@ interface ISigVerifierBlsBn254ZK is ISigVerifier {
      * @param index The index of the verifier.
      * @return The verifier at the given index.
      */
-    function verifiers(
-        uint256 index
-    ) external view returns (address);
+    function verifiers(uint256 index) external view returns (address);
 
     /**
      * @notice Returns the maximum supported number of validators for the verifier at the given index.
      * @param index The index of the verifier.
      * @return The maximum supported number of validators for the verifier at the given index.
      */
-    function maxValidators(
-        uint256 index
-    ) external view returns (uint256);
+    function maxValidators(uint256 index) external view returns (uint256);
 }

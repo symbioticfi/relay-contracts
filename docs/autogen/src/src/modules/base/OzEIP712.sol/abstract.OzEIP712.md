@@ -1,8 +1,8 @@
 # OzEIP712
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/base/OzEIP712.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/modules/base/OzEIP712.sol)
 
 **Inherits:**
-EIP712Upgradeable, [IOzEIP712](/src/interfaces/modules/base/IOzEIP712.sol/interface.IOzEIP712.md)
+EIP712Upgradeable, [IOzEIP712](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/base/IOzEIP712.sol/interface.IOzEIP712.md)
 
 Contract for EIP712 hashing.
 
@@ -11,7 +11,7 @@ Contract for EIP712 hashing.
 ### CROSS_CHAIN_TYPE_HASH
 
 ```solidity
-bytes32 private constant CROSS_CHAIN_TYPE_HASH = keccak256("EIP712Domain(string name,string version)");
+bytes32 private constant CROSS_CHAIN_TYPE_HASH = keccak256("EIP712Domain(string name,string version)")
 ```
 
 
@@ -20,9 +20,7 @@ bytes32 private constant CROSS_CHAIN_TYPE_HASH = keccak256("EIP712Domain(string 
 
 
 ```solidity
-function __OzEIP712_init(
-    OzEIP712InitParams memory initParams
-) internal virtual onlyInitializing;
+function __OzEIP712_init(OzEIP712InitParams memory initParams) internal virtual onlyInitializing;
 ```
 
 ### hashTypedDataV4
@@ -31,9 +29,7 @@ Returns the EIP712 hash of the typed data.
 
 
 ```solidity
-function hashTypedDataV4(
-    bytes32 structHash
-) public view returns (bytes32);
+function hashTypedDataV4(bytes32 structHash) public view returns (bytes32);
 ```
 **Parameters**
 
@@ -52,13 +48,11 @@ function hashTypedDataV4(
 
 Wraps the `structHash` to the EIP712 format for cross-chain usage.
 
-*It doesn't include `chainId` and `verifyingContract` fields for the domain separator.*
+It doesn't include `chainId` and `verifyingContract` fields for the domain separator.
 
 
 ```solidity
-function hashTypedDataV4CrossChain(
-    bytes32 structHash
-) public view virtual returns (bytes32);
+function hashTypedDataV4CrossChain(bytes32 structHash) public view virtual returns (bytes32);
 ```
 **Parameters**
 

@@ -942,16 +942,12 @@ contract CheckpointsTrace512Test is Test {
         return _safe48(bound(uint256(x), uint256(min), uint256(max)));
     }
 
-    function _safe48(
-        uint256 val
-    ) internal pure returns (uint48) {
+    function _safe48(uint256 val) internal pure returns (uint48) {
         require(val <= type(uint48).max, "overflow");
         return uint48(val);
     }
 
-    function _getCheckpointAt(
-        uint32 i
-    ) internal view returns (uint48, uint256[2] memory) {
+    function _getCheckpointAt(uint32 i) internal view returns (uint48, uint256[2] memory) {
         Checkpoints.Checkpoint512 memory ck = _ckpts.at(i);
         return (ck._key, ck._value);
     }

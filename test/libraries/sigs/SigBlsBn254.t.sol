@@ -12,9 +12,7 @@ contract SigBlsBn254Test is Test {
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
     using BN254 for BN254.G1Point;
 
-    function getG2Key(
-        uint256 privateKey
-    ) public view returns (BN254.G2Point memory) {
+    function getG2Key(uint256 privateKey) public view returns (BN254.G2Point memory) {
         BN254.G2Point memory G2 = BN254.generatorG2();
         (uint256 x1, uint256 x2, uint256 y1, uint256 y2) =
             BN254G2.ECTwistMul(privateKey, G2.X[1], G2.X[0], G2.Y[1], G2.Y[0]);
@@ -80,12 +78,11 @@ contract SigBlsBn254Test is Test {
         assertFalse(result);
     }
 
-    function verify(
-        bytes memory keyBytes,
-        bytes memory message,
-        bytes memory signature,
-        bytes memory extraData
-    ) public view returns (bool) {
+    function verify(bytes memory keyBytes, bytes memory message, bytes memory signature, bytes memory extraData)
+        public
+        view
+        returns (bool)
+    {
         return SigBlsBn254.verify(keyBytes, message, signature, extraData);
     }
 

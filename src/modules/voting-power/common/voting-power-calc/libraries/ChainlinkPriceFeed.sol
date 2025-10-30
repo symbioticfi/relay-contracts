@@ -3,8 +3,9 @@ pragma solidity ^0.8.25;
 
 import {Scaler} from "../../../../../libraries/utils/Scaler.sol";
 
-import {AggregatorV3Interface} from
-    "../../../../../interfaces/modules/voting-power/common/voting-power-calc/libraries/AggregatorV3Interface.sol";
+import {
+    AggregatorV3Interface
+} from "../../../../../interfaces/modules/voting-power/common/voting-power-calc/libraries/AggregatorV3Interface.sol";
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
@@ -117,12 +118,11 @@ library ChainlinkPriceFeed {
      * @dev Returns zero if the data is stale or unavailable.
      *      The price is normalized to the 18 decimals.
      */
-    function getPriceAt(
-        address aggregator,
-        uint48 timestamp,
-        bool invert,
-        uint48 stalenessDuration
-    ) public view returns (uint256) {
+    function getPriceAt(address aggregator, uint48 timestamp, bool invert, uint48 stalenessDuration)
+        public
+        view
+        returns (uint256)
+    {
         (bool success, RoundData memory roundData) = getPriceDataAt(aggregator, timestamp, invert, stalenessDuration);
         return success ? roundData.answer : 0;
     }
@@ -137,12 +137,11 @@ library ChainlinkPriceFeed {
      * @return roundData The round data.
      * @dev The answer is normalized to the 18 decimals.
      */
-    function getPriceDataAt(
-        address aggregator,
-        uint48 timestamp,
-        bool invert,
-        uint48 stalenessDuration
-    ) public view returns (bool success, RoundData memory roundData) {
+    function getPriceDataAt(address aggregator, uint48 timestamp, bool invert, uint48 stalenessDuration)
+        public
+        view
+        returns (bool success, RoundData memory roundData)
+    {
         (success, roundData) = getRoundDataAt(aggregator, timestamp);
         if (!success || isStale(timestamp, roundData, stalenessDuration)) {
             return (false, roundData);
@@ -160,10 +159,11 @@ library ChainlinkPriceFeed {
      * @return success If the data is available.
      * @return roundData The round data.
      */
-    function getRoundDataAt(
-        address aggregator,
-        uint48 timestamp
-    ) public view returns (bool, RoundData memory roundData) {
+    function getRoundDataAt(address aggregator, uint48 timestamp)
+        public
+        view
+        returns (bool, RoundData memory roundData)
+    {
         if (timestamp > block.timestamp) {
             return (false, roundData);
         }
@@ -252,11 +252,11 @@ library ChainlinkPriceFeed {
      * @dev Returns zero if the data is stale or unavailable.
      *      The price is normalized to the 18 decimals.
      */
-    function getLatestPrice(
-        address[2] memory aggregators,
-        bool[2] memory inverts,
-        uint48[2] memory stalenessDurations
-    ) public view returns (uint256) {
+    function getLatestPrice(address[2] memory aggregators, bool[2] memory inverts, uint48[2] memory stalenessDurations)
+        public
+        view
+        returns (uint256)
+    {
         (address[] memory dynamicAggregators, bool[] memory dynamicInverts, uint48[] memory dynamicStalenessDurations) =
             toDynamicArrays(aggregators, inverts, stalenessDurations);
         return getLatestPrice(dynamicAggregators, dynamicInverts, dynamicStalenessDurations);
@@ -271,11 +271,11 @@ library ChainlinkPriceFeed {
      * @dev Returns zero if the data is stale or unavailable.
      *      The price is normalized to the 18 decimals.
      */
-    function getLatestPrice(
-        address[] memory aggregators,
-        bool[] memory inverts,
-        uint48[] memory stalenessDurations
-    ) public view returns (uint256) {
+    function getLatestPrice(address[] memory aggregators, bool[] memory inverts, uint48[] memory stalenessDurations)
+        public
+        view
+        returns (uint256)
+    {
         uint256 length = aggregators.length;
         if (length == 0) {
             revert ZeroLength();
@@ -313,11 +313,11 @@ library ChainlinkPriceFeed {
      * @return roundData The round data.
      * @dev The answer is normalized to the 18 decimals.
      */
-    function getLatestPriceData(
-        address aggregator,
-        bool invert,
-        uint48 stalenessDuration
-    ) public view returns (bool success, RoundData memory roundData) {
+    function getLatestPriceData(address aggregator, bool invert, uint48 stalenessDuration)
+        public
+        view
+        returns (bool success, RoundData memory roundData)
+    {
         (success, roundData) = getLatestRoundData(aggregator);
         if (!success || isStale(uint48(block.timestamp), roundData, stalenessDuration)) {
             return (false, roundData);
@@ -334,9 +334,7 @@ library ChainlinkPriceFeed {
      * @return success If the data is available.
      * @return roundData The round data.
      */
-    function getLatestRoundData(
-        address aggregator
-    ) public view returns (bool, RoundData memory roundData) {
+    function getLatestRoundData(address aggregator) public view returns (bool, RoundData memory roundData) {
         try AggregatorV3Interface(aggregator).latestRoundData() returns (
             uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound
         ) {
@@ -358,11 +356,11 @@ library ChainlinkPriceFeed {
      * @param stalenessDuration The staleness duration (if too much time passed since the last update).
      * @return If the round data is stale.
      */
-    function isStale(
-        uint48 timestamp,
-        RoundData memory roundData,
-        uint48 stalenessDuration
-    ) public pure returns (bool) {
+    function isStale(uint48 timestamp, RoundData memory roundData, uint48 stalenessDuration)
+        public
+        pure
+        returns (bool)
+    {
         return roundData.answer == 0 || roundData.answer >= (1 << 255) || roundData.answeredInRound < roundData.roundId
             || roundData.updatedAt + stalenessDuration < timestamp;
     }
@@ -371,9 +369,7 @@ library ChainlinkPriceFeed {
         return uint80(uint256(phase) << PHASE_OFFSET | originalId);
     }
 
-    function deserializeIds(
-        uint80 roundId
-    ) public pure returns (uint16, uint64) {
+    function deserializeIds(uint80 roundId) public pure returns (uint16, uint64) {
         return (uint16(roundId >> PHASE_OFFSET), uint64(roundId));
     }
 

@@ -3,6 +3,10 @@ pragma solidity ^0.8.0;
 
 import {Checkpoints} from "../../../libraries/structs/Checkpoints.sol";
 
+/**
+ * @title IEpochManager
+ * @notice Interface for the EpochManager contract.
+ */
 interface IEpochManager {
     /**
      * @notice Reverts when the epoch duration is zero.
@@ -95,27 +99,21 @@ interface IEpochManager {
      * @param timestamp The timestamp.
      * @return The epoch index at the given timestamp.
      */
-    function getEpochIndex(
-        uint48 timestamp
-    ) external view returns (uint48);
+    function getEpochIndex(uint48 timestamp) external view returns (uint48);
 
     /**
      * @notice Returns the epoch duration of the given epoch.
      * @param epoch The epoch.
      * @return The epoch duration of the given epoch.
      */
-    function getEpochDuration(
-        uint48 epoch
-    ) external view returns (uint48);
+    function getEpochDuration(uint48 epoch) external view returns (uint48);
 
     /**
      * @notice Returns the epoch start of the given epoch.
      * @param epoch The epoch.
      * @return The epoch start of the given epoch.
      */
-    function getEpochStart(
-        uint48 epoch
-    ) external view returns (uint48);
+    function getEpochStart(uint48 epoch) external view returns (uint48);
 
     /**
      * @notice Sets the epoch duration.
@@ -123,7 +121,5 @@ interface IEpochManager {
      * @dev The new duration will be "committed" only in the next epoch.
      *      The caller must have the needed permission.
      */
-    function setEpochDuration(
-        uint48 epochDuration
-    ) external;
+    function setEpochDuration(uint48 epochDuration) external;
 }

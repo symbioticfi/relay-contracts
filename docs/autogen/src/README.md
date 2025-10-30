@@ -38,79 +38,83 @@ To achieve that, Symbiotic provides a set of predefined smart contracts, in gene
 - [Settlement](./src/modules/settlement/) - requires a compressed validator set (header) to be committed each epoch, but allows verifying signatures made by the validator set; currently, it supports the following verification mechanics:
   - [SimpleVerifier](./src/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol) - requires the whole validator set to be inputted on the verification, but in a compressed and efficient way, so that it is the best choice to use up to around 125 validators
   - [ZKVerifier](./src/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol) - uses ZK verification made with [gnark](https://github.com/Consensys/gnark), allowing larger validator sets with an almost constant verification gas cost
-- [Network](./src/modules/network/) - a standard contract that can be used as a "network" address across the Symbiotic ecosystem, it enables verifiability of delays for different actions (e.g., change of the middleware or change of the resolver)
 
 ## Examples
 
 Can be found [here](./examples/).
 
-## Security
+## Usage
 
-Security audits can be found [here](./audits).
+### Dependencies
 
-## Repo init
+- Git ([installation](https://git-scm.com/downloads))
+- Foundry ([installation](https://getfoundry.sh/introduction/installation/))
 
-Clone the repo:
+### Prerequisites
 
-```bash
+**Clone the repository**
+
+```
 git clone --recurse-submodules https://github.com/symbioticfi/relay-contracts.git
 ```
 
-## Create env configuration
+### Deploy Your Relay
 
-```bash
-cp .env.example .env
-```
+The deployment tooling can be found at [`script/`](./script/) folder. It consists of [`RelayDeploy.sol`](./script/RelayDeploy.sol) Foundry script template [`relay-deploy.sh`](./script/relay-deploy.sh) bash script (the Relay smart contracts use external libraries for their implementations, so that it's not currently possible to use solely Foundry script for multi-chain deployment).
 
-Key parameters:
+- [`RelayDeploy.sol`](./script/RelayDeploy.sol) - abstract base that wires common Symbiotic core helpers and exposes the four deployment hooks: KeyRegistry, VotingPowerProvider, Settlement, and ValVetDriver
+- [`relay-deploy.sh`](./script/relay-deploy.sh) - orchestrates per-contract multi-chain deployments (uses Python inside to parse `toml` file)
 
-- `OPERATORS` - number of operators in network
-- `VERIFICATION_TYPE` - signatures aggregation type, (0 for ZK, 1 for simple)
+The script deploys Relay modules under [OZ's TransparentUpgradeableProxy](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/proxy/transparent/TransparentUpgradeableProxy.sol) using [CreateX](https://github.com/pcaversaccio/createx) (it provides better control for production deployments and more simplified approaches for development).
 
-## On-chain setup
+#### Dependencies
 
-Before running off-chain nodes need to set up on-chain contract.
+- Python ([installation](https://www.python.org/downloads/))
 
-To simplify local development, we've prepared a Docker image with an Anvil node and deployed Symbiotic contracts.
+#### Deployment
 
-### Build Docker image
+1. Implement your `MyRelayDeploy.sol` ([see example](./script/examples/MyRelayDeploy.sol)) - this Foundry script should include the deployment configuration of your Relay modules
 
-```bash
-docker build -t symbiotic-anvil .
-```
+   - you need to implement all virtual functions of `RelayDeploy.sol`
+   - in constructor, need to input the path of the `toml` file
+   - you are provided with additional helpers such as `getCore()`, `getKeyRegistry()`, `getVotingPowerProvider()`, etc. (see full list in [`RelayDeploy.sol`](./script/RelayDeploy.sol))
 
-### Run anvil node
+2. Implement your `my-relay-deploy.toml` ([see example](./script/examples/my-relay-deploy.toml)) - this configuration file should include RPC URLs that will be needed for the deployment, and which modules should be deployed on which chains
 
-```bash
-docker run --rm -d -p 8545:8545 --env-file .env --name symbiotic-node symbiotic-anvil
-```
+   - **do not replace [1234567890] placeholder with endpoint_url = ""**
+   - the contracts are deployed in such order:
+     1. KeyRegistry
+     2. VotingPowerProvider
+     3. Settlement
+     4. ValSetDriver
 
-### Configure network
+3. Execute the deployment script, e.g.:
 
-Use the right `generate_genesis` file depending on your system [here](./script/test/utils/).
+   ```bash
+   ./script/relay-deploy.sh ./script/examples/MyRelayDeploy.sol ./script/examples/my-relay-deploy.toml --broadcast --ledger
+   ```
 
-```bash
-docker run --rm -it --env-file .env --network host symbiotic-anvil yarn deploy:network
-```
+   _Basic form is `./script/relay-deploy.sh <FoundryScript> <TomlConfig> <Any Foundry Flags>`_
 
-This command will execute a list of transactions to set up network contracts.
+At the end, your `toml` file will contain the addresses of the deployed Relay modules.
 
-In execution logs, you can see the deployed configuration and contract addresses.
-
-### Stop anvil node
-
-```bash
-docker stop symbiotic-node
-```
-
-## Tests
+### Build, Test, and Format
 
 ```
+forge build
 forge test
+forge fmt
 ```
 
-## Coverage
+**Configure environment**
+
+Create `.env` based on the template:
 
 ```
-forge coverage
+ETH_RPC_URL=
+ETHERSCAN_API_KEY=
 ```
+
+## Security
+
+Security audits can be found [here](./audits).

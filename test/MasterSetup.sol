@@ -74,7 +74,6 @@ contract MasterSetupTest is InitSetupTest {
     MasterSetupParams public masterSetupParams;
 
     function setUp() public virtual override {
-        SYMBIOTIC_CORE_PROJECT_ROOT = "lib/core/";
         InitSetupTest.setUp();
 
         networkSetupParams.OPERATORS_TO_REGISTER = SYMBIOTIC_CORE_NUMBER_OF_OPERATORS;
@@ -89,22 +88,22 @@ contract MasterSetupTest is InitSetupTest {
         masterSetupParams.votingPowerProvider = new VotingPowerProviderSemiFull(
             address(symbioticCore.operatorRegistry), address(symbioticCore.vaultFactory)
         );
-        masterSetupParams.votingPowerProvider.initialize(
-            IVotingPowerProvider.VotingPowerProviderInitParams({
-                networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
-                    network: vars.network.addr,
-                    subnetworkId: networkSetupParams.SUBNETWORK_ID
+        masterSetupParams.votingPowerProvider
+            .initialize(
+                IVotingPowerProvider.VotingPowerProviderInitParams({
+                    networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
+                        network: vars.network.addr, subnetworkId: networkSetupParams.SUBNETWORK_ID
+                    }),
+                    ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "VotingPowerProvider", version: "1"}),
+                    requireSlasher: true,
+                    minVaultEpochDuration: networkSetupParams.SLASHING_WINDOW,
+                    token: initSetupParams.masterChain.tokens[0]
                 }),
-                ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "VotingPowerProvider", version: "1"}),
-                requireSlasher: true,
-                minVaultEpochDuration: networkSetupParams.SLASHING_WINDOW,
-                token: initSetupParams.masterChain.tokens[0]
-            }),
-            IOzOwnable.OzOwnableInitParams({owner: vars.network.addr}),
-            IOperatorsWhitelist.OperatorsWhitelistInitParams({isWhitelistEnabled: false}),
-            IBaseSlashing.BaseSlashingInitParams({slasher: address(1)}),
-            IBaseRewards.BaseRewardsInitParams({rewarder: address(1)})
-        );
+                IOzOwnable.OzOwnableInitParams({owner: vars.network.addr}),
+                IOperatorsWhitelist.OperatorsWhitelistInitParams({isWhitelistEnabled: false}),
+                IBaseSlashing.BaseSlashingInitParams({slasher: address(1)}),
+                IBaseRewards.BaseRewardsInitParams({rewarder: address(1)})
+            );
         vm.stopPrank();
 
         _networkSetMiddleware_SymbioticCore(vars.network.addr, address(masterSetupParams.votingPowerProvider));
@@ -150,17 +149,17 @@ contract MasterSetupTest is InitSetupTest {
                 revert("Invalid verification type");
             }
 
-            masterSetupParams.settlement.initialize(
-                ISettlement.SettlementInitParams({
-                    networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
-                        network: vars.network.addr,
-                        subnetworkId: networkSetupParams.SUBNETWORK_ID
+            masterSetupParams.settlement
+                .initialize(
+                    ISettlement.SettlementInitParams({
+                        networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
+                            network: vars.network.addr, subnetworkId: networkSetupParams.SUBNETWORK_ID
+                        }),
+                        ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
+                        sigVerifier: localVars.sigVerifier
                     }),
-                    ozEip712InitParams: IOzEIP712.OzEIP712InitParams({name: "Middleware", version: "1"}),
-                    sigVerifier: localVars.sigVerifier
-                }),
-                vars.deployer.addr
-            );
+                    vars.deployer.addr
+                );
         }
 
         masterSetupParams.settlement.grantRole(masterSetupParams.settlement.SET_GENESIS_ROLE(), vars.deployer.addr);
@@ -181,13 +180,11 @@ contract MasterSetupTest is InitSetupTest {
             });
 
             localVars.keysProvider = IValSetDriver.CrossChainAddress({
-                addr: address(masterSetupParams.keyRegistry),
-                chainId: uint64(initSetupParams.masterChain.chainId)
+                addr: address(masterSetupParams.keyRegistry), chainId: uint64(initSetupParams.masterChain.chainId)
             });
             localVars.settlements = new IValSetDriver.CrossChainAddress[](1);
             localVars.settlements[0] = IValSetDriver.CrossChainAddress({
-                addr: address(masterSetupParams.settlement),
-                chainId: uint64(initSetupParams.masterChain.chainId)
+                addr: address(masterSetupParams.settlement), chainId: uint64(initSetupParams.masterChain.chainId)
             });
 
             localVars.quorumThresholds = new IValSetDriver.QuorumThreshold[](localVars.requiredKeyTags.length);
@@ -198,31 +195,31 @@ contract MasterSetupTest is InitSetupTest {
                 });
             }
 
-            masterSetupParams.valSetDriver.initialize(
-                IValSetDriver.ValSetDriverInitParams({
-                    networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
-                        network: vars.network.addr,
-                        subnetworkId: networkSetupParams.SUBNETWORK_ID
+            masterSetupParams.valSetDriver
+                .initialize(
+                    IValSetDriver.ValSetDriverInitParams({
+                        networkManagerInitParams: INetworkManager.NetworkManagerInitParams({
+                            network: vars.network.addr, subnetworkId: networkSetupParams.SUBNETWORK_ID
+                        }),
+                        epochManagerInitParams: IEpochManager.EpochManagerInitParams({
+                            epochDuration: networkSetupParams.EPOCH_DURATION,
+                            epochDurationTimestamp: uint48(vm.getBlockTimestamp() + DEPLOYMENT_BUFFER)
+                        }),
+                        numAggregators: 1,
+                        numCommitters: 1,
+                        votingPowerProviders: localVars.votingPowerProviders,
+                        keysProvider: localVars.keysProvider,
+                        settlements: localVars.settlements,
+                        maxVotingPower: 1e36,
+                        minInclusionVotingPower: 0,
+                        maxValidatorsCount: 99_999_999,
+                        requiredKeyTags: localVars.requiredKeyTags,
+                        quorumThresholds: localVars.quorumThresholds,
+                        requiredHeaderKeyTag: localVars.requiredKeyTags[0],
+                        verificationType: networkSetupParams.VERIFICATION_TYPE
                     }),
-                    epochManagerInitParams: IEpochManager.EpochManagerInitParams({
-                        epochDuration: networkSetupParams.EPOCH_DURATION,
-                        epochDurationTimestamp: uint48(vm.getBlockTimestamp() + DEPLOYMENT_BUFFER)
-                    }),
-                    numAggregators: 1,
-                    numCommitters: 1,
-                    votingPowerProviders: localVars.votingPowerProviders,
-                    keysProvider: localVars.keysProvider,
-                    settlements: localVars.settlements,
-                    maxVotingPower: 1e36,
-                    minInclusionVotingPower: 0,
-                    maxValidatorsCount: 99_999_999,
-                    requiredKeyTags: localVars.requiredKeyTags,
-                    quorumThresholds: localVars.quorumThresholds,
-                    requiredHeaderKeyTag: localVars.requiredKeyTags[0],
-                    verificationType: networkSetupParams.VERIFICATION_TYPE
-                }),
-                vars.deployer.addr
-            );
+                    vars.deployer.addr
+                );
         }
         vm.stopPrank();
 

@@ -340,10 +340,11 @@ library ValSetVerifier {
      * @param validatorRoot The validator root.
      * @return isValid If the operator address is in the validator.
      */
-    function verifyValidatorOperatorLocal(
-        SszProof calldata validatorOperatorProof,
-        bytes32 validatorRoot
-    ) internal view returns (bool) {
+    function verifyValidatorOperatorLocal(SszProof calldata validatorOperatorProof, bytes32 validatorRoot)
+        internal
+        view
+        returns (bool)
+    {
         return processInclusionProofSha256(
             validatorOperatorProof.proof,
             validatorOperatorProof.leaf,
@@ -359,10 +360,11 @@ library ValSetVerifier {
      * @param validatorRoot The validator root.
      * @return isValid If the validator's voting power is in the validator.
      */
-    function verifyValidatorVotingPowerLocal(
-        SszProof calldata validatorVotingPowerProof,
-        bytes32 validatorRoot
-    ) internal view returns (bool) {
+    function verifyValidatorVotingPowerLocal(SszProof calldata validatorVotingPowerProof, bytes32 validatorRoot)
+        internal
+        view
+        returns (bool)
+    {
         return processInclusionProofSha256(
             validatorVotingPowerProof.proof,
             validatorVotingPowerProof.leaf,
@@ -378,10 +380,11 @@ library ValSetVerifier {
      * @param validatorRoot The validator root.
      * @return isValid If the validator's activity status is in the validator.
      */
-    function verifyValidatorIsActiveLocal(
-        SszProof calldata validatorIsActiveProof,
-        bytes32 validatorRoot
-    ) internal view returns (bool) {
+    function verifyValidatorIsActiveLocal(SszProof calldata validatorIsActiveProof, bytes32 validatorRoot)
+        internal
+        view
+        returns (bool)
+    {
         return processInclusionProofSha256(
             validatorIsActiveProof.proof,
             validatorIsActiveProof.leaf,
@@ -455,10 +458,7 @@ library ValSetVerifier {
      * @param keyRoot The key root.
      * @return isValid If the key hash is in the key.
      */
-    function verifyKeyPayloadHash(
-        SszProof calldata keyPayloadHashProof,
-        bytes32 keyRoot
-    ) internal view returns (bool) {
+    function verifyKeyPayloadHash(SszProof calldata keyPayloadHashProof, bytes32 keyRoot) internal view returns (bool) {
         return processInclusionProofSha256(
             keyPayloadHashProof.proof,
             keyPayloadHashProof.leaf,
@@ -474,10 +474,11 @@ library ValSetVerifier {
      * @param vaultRoot The vault root.
      * @return isValid If the vault's chain ID is in the vault.
      */
-    function verifyVaultChainIdLocal(
-        SszProof calldata vaultChainIdProof,
-        bytes32 vaultRoot
-    ) internal view returns (bool) {
+    function verifyVaultChainIdLocal(SszProof calldata vaultChainIdProof, bytes32 vaultRoot)
+        internal
+        view
+        returns (bool)
+    {
         return processInclusionProofSha256(
             vaultChainIdProof.proof,
             vaultChainIdProof.leaf,
@@ -509,10 +510,11 @@ library ValSetVerifier {
      * @param vaultRoot The vault root.
      * @return isValid If the vault's voting power is in the vault.
      */
-    function verifyVaultVotingPowerLocal(
-        SszProof calldata vaultVotingPowerProof,
-        bytes32 vaultRoot
-    ) internal view returns (bool) {
+    function verifyVaultVotingPowerLocal(SszProof calldata vaultVotingPowerProof, bytes32 vaultRoot)
+        internal
+        view
+        returns (bool)
+    {
         return processInclusionProofSha256(
             vaultVotingPowerProof.proof,
             vaultVotingPowerProof.leaf,

@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+/**
+ * @title INetworkManager
+ * @notice Interface for the NetworkManager contract.
+ */
 interface INetworkManager {
     /**
      * @notice Reverts when the network is zero address.

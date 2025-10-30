@@ -1,5 +1,5 @@
 # VotingPowerProviderLogic
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/voting-power/logic/VotingPowerProviderLogic.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/modules/voting-power/logic/VotingPowerProviderLogic.sol)
 
 Library-logic of the voting power provider contract.
 
@@ -9,7 +9,7 @@ Library-logic of the voting power provider contract.
 
 ```solidity
 bytes32 private constant VotingPowerProviderStorageLocation =
-    0x3671387af6738df83002b4d17260f89ef208ae15fe22fab69d817f0195c74800;
+    0x3671387af6738df83002b4d17260f89ef208ae15fe22fab69d817f0195c74800
 ```
 
 
@@ -28,9 +28,7 @@ function _getVotingPowerProviderStorage()
 
 
 ```solidity
-function initialize(
-    IVotingPowerProvider.VotingPowerProviderInitParams memory initParams
-) public;
+function initialize(IVotingPowerProvider.VotingPowerProviderInitParams memory initParams) public;
 ```
 
 ### getSlashingDataAt
@@ -58,18 +56,14 @@ function isTokenRegisteredAt(address token, uint48 timestamp) public view return
 
 
 ```solidity
-function isTokenRegistered(
-    address token
-) public view returns (bool);
+function isTokenRegistered(address token) public view returns (bool);
 ```
 
 ### getTokensAt
 
 
 ```solidity
-function getTokensAt(
-    uint48 timestamp
-) public view returns (address[] memory);
+function getTokensAt(uint48 timestamp) public view returns (address[] memory);
 ```
 
 ### getTokens
@@ -97,18 +91,14 @@ function isOperatorRegisteredAt(address operator, uint48 timestamp) public view 
 
 
 ```solidity
-function isOperatorRegistered(
-    address operator
-) public view returns (bool);
+function isOperatorRegistered(address operator) public view returns (bool);
 ```
 
 ### getOperatorsAt
 
 
 ```solidity
-function getOperatorsAt(
-    uint48 timestamp
-) public view returns (address[] memory);
+function getOperatorsAt(uint48 timestamp) public view returns (address[] memory);
 ```
 
 ### getOperators
@@ -136,18 +126,14 @@ function isSharedVaultRegisteredAt(address vault, uint48 timestamp) public view 
 
 
 ```solidity
-function isSharedVaultRegistered(
-    address vault
-) public view returns (bool);
+function isSharedVaultRegistered(address vault) public view returns (bool);
 ```
 
 ### getSharedVaultsAt
 
 
 ```solidity
-function getSharedVaultsAt(
-    uint48 timestamp
-) public view returns (address[] memory);
+function getSharedVaultsAt(uint48 timestamp) public view returns (address[] memory);
 ```
 
 ### getSharedVaults
@@ -175,9 +161,7 @@ function isOperatorVaultRegisteredAt(address vault, uint48 timestamp) public vie
 
 
 ```solidity
-function isOperatorVaultRegistered(
-    address vault
-) public view returns (bool);
+function isOperatorVaultRegistered(address vault) public view returns (bool);
 ```
 
 ### isOperatorVaultRegisteredAt
@@ -205,18 +189,14 @@ function getOperatorVaultsAt(address operator, uint48 timestamp) public view ret
 
 
 ```solidity
-function getOperatorVaults(
-    address operator
-) public view returns (address[] memory);
+function getOperatorVaults(address operator) public view returns (address[] memory);
 ```
 
 ### getOperatorVaultsLength
 
 
 ```solidity
-function getOperatorVaultsLength(
-    address operator
-) public view returns (uint256);
+function getOperatorVaultsLength(address operator) public view returns (uint256);
 ```
 
 ### getOperatorStakeAt
@@ -237,82 +217,80 @@ function getOperatorStake(address operator, address vault) public view returns (
 
 
 ```solidity
-function getOperatorStakesAt(
-    address operator,
-    uint48 timestamp
-) public view returns (IVotingPowerProvider.VaultValue[] memory vaultStakes);
+function getOperatorStakesAt(address operator, uint48 timestamp)
+    public
+    view
+    returns (IVotingPowerProvider.VaultValue[] memory vaultStakes);
 ```
 
 ### getOperatorStakes
 
 
 ```solidity
-function getOperatorStakes(
-    address operator
-) public view returns (IVotingPowerProvider.VaultValue[] memory vaultStakes);
+function getOperatorStakes(address operator)
+    public
+    view
+    returns (IVotingPowerProvider.VaultValue[] memory vaultStakes);
 ```
 
 ### getOperatorVotingPowerAt
 
 
 ```solidity
-function getOperatorVotingPowerAt(
-    address operator,
-    address vault,
-    bytes memory extraData,
-    uint48 timestamp
-) public view returns (uint256);
+function getOperatorVotingPowerAt(address operator, address vault, bytes memory extraData, uint48 timestamp)
+    public
+    view
+    returns (uint256);
 ```
 
 ### getOperatorVotingPower
 
 
 ```solidity
-function getOperatorVotingPower(
-    address operator,
-    address vault,
-    bytes memory extraData
-) public view returns (uint256);
+function getOperatorVotingPower(address operator, address vault, bytes memory extraData)
+    public
+    view
+    returns (uint256);
 ```
 
 ### getOperatorVotingPowersAt
 
 
 ```solidity
-function getOperatorVotingPowersAt(
-    address operator,
-    bytes memory extraData,
-    uint48 timestamp
-) public view returns (IVotingPowerProvider.VaultValue[] memory vaultVotingPowers);
+function getOperatorVotingPowersAt(address operator, bytes memory extraData, uint48 timestamp)
+    public
+    view
+    returns (IVotingPowerProvider.VaultValue[] memory vaultVotingPowers);
 ```
 
 ### getOperatorVotingPowers
 
 
 ```solidity
-function getOperatorVotingPowers(
-    address operator,
-    bytes memory extraData
-) public view returns (IVotingPowerProvider.VaultValue[] memory vaultVotingPowers);
+function getOperatorVotingPowers(address operator, bytes memory extraData)
+    public
+    view
+    returns (IVotingPowerProvider.VaultValue[] memory vaultVotingPowers);
 ```
 
 ### getVotingPowersAt
 
 
 ```solidity
-function getVotingPowersAt(
-    bytes[] memory extraData,
-    uint48 timestamp
-) public view returns (IVotingPowerProvider.OperatorVotingPower[] memory operatorVotingPowers);
+function getVotingPowersAt(bytes[] memory extraData, uint48 timestamp)
+    public
+    view
+    returns (IVotingPowerProvider.OperatorVotingPower[] memory operatorVotingPowers);
 ```
 
 ### getVotingPowers
 
 
 ```solidity
-function getVotingPowers(
-    bytes[] memory extraData
-) public view returns (IVotingPowerProvider.OperatorVotingPower[] memory operatorVotingPowers);
+function getVotingPowers(bytes[] memory extraData)
+    public
+    view
+    returns (IVotingPowerProvider.OperatorVotingPower[] memory operatorVotingPowers);
 ```
 
 ### setSlashingData
@@ -326,45 +304,35 @@ function setSlashingData(bool requireSlasher, uint48 minVaultEpochDuration) publ
 
 
 ```solidity
-function registerToken(
-    address token
-) public;
+function registerToken(address token) public;
 ```
 
 ### unregisterToken
 
 
 ```solidity
-function unregisterToken(
-    address token
-) public;
+function unregisterToken(address token) public;
 ```
 
 ### registerOperator
 
 
 ```solidity
-function registerOperator(
-    address operator
-) public;
+function registerOperator(address operator) public;
 ```
 
 ### unregisterOperator
 
 
 ```solidity
-function unregisterOperator(
-    address operator
-) public;
+function unregisterOperator(address operator) public;
 ```
 
 ### registerSharedVault
 
 
 ```solidity
-function registerSharedVault(
-    address vault
-) public;
+function registerSharedVault(address vault) public;
 ```
 
 ### registerOperatorVault
@@ -378,9 +346,7 @@ function registerOperatorVault(address operator, address vault) public;
 
 
 ```solidity
-function unregisterSharedVault(
-    address vault
-) public;
+function unregisterSharedVault(address vault) public;
 ```
 
 ### unregisterOperatorVault
@@ -401,36 +367,28 @@ function serializeSlashingData(bool requireSlasher, uint48 minVaultEpochDuration
 
 
 ```solidity
-function deserializeSlashingData(
-    uint208 slashingData
-) public pure returns (bool, uint48);
+function deserializeSlashingData(uint208 slashingData) public pure returns (bool, uint48);
 ```
 
 ### _validateOperator
 
 
 ```solidity
-function _validateOperator(
-    address operator
-) public view returns (bool);
+function _validateOperator(address operator) public view returns (bool);
 ```
 
 ### _validateVault
 
 
 ```solidity
-function _validateVault(
-    address vault
-) public view returns (bool);
+function _validateVault(address vault) public view returns (bool);
 ```
 
 ### _validateSharedVault
 
 
 ```solidity
-function _validateSharedVault(
-    address vault
-) public view returns (bool);
+function _validateSharedVault(address vault) public view returns (bool);
 ```
 
 ### _validateOperatorVault
@@ -444,8 +402,6 @@ function _validateOperatorVault(address operator, address vault) public view ret
 
 
 ```solidity
-function _validateVaultSlashing(
-    address vault
-) public view returns (bool);
+function _validateVaultSlashing(address vault) public view returns (bool);
 ```
 

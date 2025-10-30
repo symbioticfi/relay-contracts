@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {ValSetDriver} from "../src/modules/valset-driver/ValSetDriver.sol";
 import {OzAccessControl} from "../src/modules/common/permissions/OzAccessControl.sol";
+import {ValSetDriver} from "../src/modules/valset-driver/ValSetDriver.sol";
 
 import {IEpochManager} from "../src/interfaces/modules/valset-driver/IEpochManager.sol";
 import {IValSetDriver} from "../src/interfaces/modules/valset-driver/IValSetDriver.sol";
 
+/// @title MyValSetDriver
+/// @notice Example implementation of the ValSetDriver contract.
 contract MyValSetDriver is ValSetDriver, OzAccessControl {
     bytes32 public constant SET_EPOCH_DURATION_ROLE = keccak256("SET_EPOCH_DURATION_ROLE");
     bytes32 public constant MANAGE_VOTING_POWER_PROVIDERS_ROLE = keccak256("MANAGE_VOTING_POWER_PROVIDERS_ROLE");
@@ -20,10 +22,11 @@ contract MyValSetDriver is ValSetDriver, OzAccessControl {
     bytes32 public constant SET_REQUIRED_HEADER_KEY_TAG_ROLE = keccak256("SET_REQUIRED_HEADER_KEY_TAG_ROLE");
     bytes32 public constant MANAGE_QUORUM_THRESHOLDS_ROLE = keccak256("MANAGE_QUORUM_THRESHOLDS_ROLE");
 
-    function initialize(
-        ValSetDriverInitParams memory valSetDriverInitParams,
-        address defaultAdmin
-    ) public virtual initializer {
+    function initialize(ValSetDriverInitParams memory valSetDriverInitParams, address defaultAdmin)
+        public
+        virtual
+        initializer
+    {
         __ValSetDriver_init(valSetDriverInitParams);
 
         _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);

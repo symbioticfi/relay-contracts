@@ -5,10 +5,8 @@ import {IPermissionManager} from "../../interfaces/modules/base/IPermissionManag
 
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-/**
- * @title PermissionManager
- * @notice Base contract for managing permissions.
- */
+/// @title PermissionManager
+/// @notice Base contract for managing permissions.
 abstract contract PermissionManager is Initializable, IPermissionManager {
     modifier checkPermission() {
         _checkPermission();

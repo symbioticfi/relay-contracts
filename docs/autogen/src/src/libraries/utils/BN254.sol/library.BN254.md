@@ -1,5 +1,5 @@
 # BN254
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/libraries/utils/BN254.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/libraries/utils/BN254.sol)
 
 
 ## State Variables
@@ -7,7 +7,7 @@
 
 ```solidity
 uint256 internal constant FP_MODULUS =
-    21_888_242_871_839_275_222_246_405_745_257_275_088_696_311_157_297_823_662_689_037_894_645_226_208_583;
+    21_888_242_871_839_275_222_246_405_745_257_275_088_696_311_157_297_823_662_689_037_894_645_226_208_583
 ```
 
 
@@ -15,17 +15,17 @@ uint256 internal constant FP_MODULUS =
 
 ```solidity
 uint256 internal constant FR_MODULUS =
-    21_888_242_871_839_275_222_246_405_745_257_275_088_548_364_400_416_034_343_698_204_186_575_808_495_617;
+    21_888_242_871_839_275_222_246_405_745_257_275_088_548_364_400_416_034_343_698_204_186_575_808_495_617
 ```
 
 
 ### G2x1
-*Generator point in F_q2 is of the form: (x0 + ix1, y0 + iy1).*
+Generator point in F_q2 is of the form: (x0 + ix1, y0 + iy1).
 
 
 ```solidity
 uint256 internal constant G2x1 =
-    11_559_732_032_986_387_107_991_004_021_392_285_783_925_812_861_821_192_530_917_403_151_452_391_805_634;
+    11_559_732_032_986_387_107_991_004_021_392_285_783_925_812_861_821_192_530_917_403_151_452_391_805_634
 ```
 
 
@@ -33,7 +33,7 @@ uint256 internal constant G2x1 =
 
 ```solidity
 uint256 internal constant G2x0 =
-    10_857_046_999_023_057_135_944_570_762_232_829_481_370_756_359_578_518_086_990_519_993_285_655_852_781;
+    10_857_046_999_023_057_135_944_570_762_232_829_481_370_756_359_578_518_086_990_519_993_285_655_852_781
 ```
 
 
@@ -41,7 +41,7 @@ uint256 internal constant G2x0 =
 
 ```solidity
 uint256 internal constant G2y1 =
-    4_082_367_875_863_433_681_332_203_403_145_435_568_316_851_327_593_401_208_105_741_076_214_120_093_531;
+    4_082_367_875_863_433_681_332_203_403_145_435_568_316_851_327_593_401_208_105_741_076_214_120_093_531
 ```
 
 
@@ -49,17 +49,17 @@ uint256 internal constant G2y1 =
 
 ```solidity
 uint256 internal constant G2y0 =
-    8_495_653_923_123_431_417_604_973_247_489_272_438_418_190_587_263_600_148_770_280_649_306_958_101_930;
+    8_495_653_923_123_431_417_604_973_247_489_272_438_418_190_587_263_600_148_770_280_649_306_958_101_930
 ```
 
 
 ### nG2x1
-*Generator point in F_q2 is of the form: (x0 + ix1, y0 + iy1).*
+Generator point in F_q2 is of the form: (x0 + ix1, y0 + iy1).
 
 
 ```solidity
 uint256 internal constant nG2x1 =
-    11_559_732_032_986_387_107_991_004_021_392_285_783_925_812_861_821_192_530_917_403_151_452_391_805_634;
+    11_559_732_032_986_387_107_991_004_021_392_285_783_925_812_861_821_192_530_917_403_151_452_391_805_634
 ```
 
 
@@ -67,7 +67,7 @@ uint256 internal constant nG2x1 =
 
 ```solidity
 uint256 internal constant nG2x0 =
-    10_857_046_999_023_057_135_944_570_762_232_829_481_370_756_359_578_518_086_990_519_993_285_655_852_781;
+    10_857_046_999_023_057_135_944_570_762_232_829_481_370_756_359_578_518_086_990_519_993_285_655_852_781
 ```
 
 
@@ -75,7 +75,7 @@ uint256 internal constant nG2x0 =
 
 ```solidity
 uint256 internal constant nG2y1 =
-    17_805_874_995_975_841_540_914_202_342_111_839_520_379_459_829_704_422_454_583_296_818_431_106_115_052;
+    17_805_874_995_975_841_540_914_202_342_111_839_520_379_459_829_704_422_454_583_296_818_431_106_115_052
 ```
 
 
@@ -83,14 +83,15 @@ uint256 internal constant nG2y1 =
 
 ```solidity
 uint256 internal constant nG2y0 =
-    13_392_588_948_715_843_804_641_432_497_768_002_650_278_120_570_034_223_513_918_757_245_338_268_106_653;
+    13_392_588_948_715_843_804_641_432_497_768_002_650_278_120_570_034_223_513_918_757_245_338_268_106_653
 ```
 
 
 ### powersOfTauMerkleRoot
 
 ```solidity
-bytes32 internal constant powersOfTauMerkleRoot = 0x22c998e49752bbb1918ba87d6d59dd0e83620a311ba91dd4b2cc84990b31b56f;
+bytes32 internal constant powersOfTauMerkleRoot =
+    0x22c998e49752bbb1918ba87d6d59dd0e83620a311ba91dd4b2cc84990b31b56f
 ```
 
 
@@ -106,10 +107,10 @@ function generatorG1() internal pure returns (G1Point memory);
 
 returns the G2 generator
 
-*mind the ordering of the 1s and 0s!
+mind the ordering of the 1s and 0s!
 this is because of the (unknown to us) convention used in the bn254 pairing precompile contract
 "Elements a * i + b of F_p^2 are encoded as two elements of F_p, (a, b)."
-https://github.com/ethereum/EIPs/blob/master/EIPS/eip-197.md#encoding*
+https://github.com/ethereum/EIPs/blob/master/EIPS/eip-197.md#encoding
 
 
 ```solidity
@@ -127,9 +128,7 @@ function negGeneratorG2() internal pure returns (G2Point memory);
 
 
 ```solidity
-function negate(
-    G1Point memory p
-) internal pure returns (G1Point memory);
+function negate(G1Point memory p) internal pure returns (G1Point memory);
 ```
 **Parameters**
 
@@ -161,7 +160,7 @@ function plus(G1Point memory p1, G1Point memory p2) internal view returns (G1Poi
 
 an optimized ecMul implementation that takes O(log_2(s)) ecAdds
 
-*this function is only safe to use if the scalar is 9 bits or less*
+this function is only safe to use if the scalar is 9 bits or less
 
 
 ```solidity
@@ -192,12 +191,10 @@ function scalar_mul(G1Point memory p, uint256 s) internal view returns (G1Point 
 
 
 ```solidity
-function pairing(
-    G1Point memory a1,
-    G2Point memory a2,
-    G1Point memory b1,
-    G2Point memory b2
-) internal view returns (bool);
+function pairing(G1Point memory a1, G2Point memory a2, G1Point memory b1, G2Point memory b2)
+    internal
+    view
+    returns (bool);
 ```
 **Returns**
 
@@ -224,13 +221,11 @@ function safePairing(
 
 ### hashG1Point
 
-*used for BLS signatures*
+used for BLS signatures
 
 
 ```solidity
-function hashG1Point(
-    BN254.G1Point memory pk
-) internal pure returns (bytes32 hashedG1);
+function hashG1Point(BN254.G1Point memory pk) internal pure returns (bytes32 hashedG1);
 ```
 **Returns**
 
@@ -241,13 +236,11 @@ function hashG1Point(
 
 ### hashG2Point
 
-*used for BLS signatures*
+used for BLS signatures
 
 
 ```solidity
-function hashG2Point(
-    BN254.G2Point memory pk
-) internal pure returns (bytes32);
+function hashG2Point(BN254.G2Point memory pk) internal pure returns (bytes32);
 ```
 **Returns**
 
@@ -262,9 +255,7 @@ adapted from https://github.com/HarryR/solcrypto/blob/master/altbn128.sol
 
 
 ```solidity
-function hashToG1(
-    bytes32 _x
-) internal view returns (G1Point memory);
+function hashToG1(bytes32 _x) internal view returns (G1Point memory);
 ```
 
 ### findYFromX
@@ -275,9 +266,7 @@ Returns: (x^3 + b), y
 
 
 ```solidity
-function findYFromX(
-    uint256 x
-) internal view returns (uint256, uint256);
+function findYFromX(uint256 x) internal view returns (uint256, uint256);
 ```
 
 ### expMod

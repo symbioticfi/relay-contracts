@@ -1,5 +1,7 @@
 # INetworkManager
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/base/INetworkManager.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/interfaces/modules/base/INetworkManager.sol)
+
+Interface for the NetworkManager contract.
 
 
 ## Functions
@@ -77,7 +79,7 @@ error NetworkManager_InvalidNetwork();
 ### NetworkManagerStorage
 The storage of the NetworkManager contract.
 
-*The whole set of contracts supports only a single subnetwork per network.*
+The whole set of contracts supports only a single subnetwork per network.
 
 **Note:**
 storage-location: erc7201:symbiotic.storage.NetworkManager
@@ -100,7 +102,7 @@ struct NetworkManagerStorage {
 ### NetworkManagerInitParams
 The parameters for the initialization of the NetworkManager contract.
 
-*`network` is not obligated to be registered in NetworkRegistry contract, it can be any non-zero address.*
+`network` is not obligated to be registered in NetworkRegistry contract, it can be any non-zero address.
 
 
 ```solidity

@@ -1,28 +1,28 @@
 # KeyRegistry
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/modules/key-registry/KeyRegistry.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/modules/key-registry/KeyRegistry.sol)
 
 **Inherits:**
-MulticallUpgradeable, [OzEIP712](/src/modules/base/OzEIP712.sol/abstract.OzEIP712.md), [IKeyRegistry](/src/interfaces/modules/key-registry/IKeyRegistry.sol/interface.IKeyRegistry.md)
+MulticallUpgradeable, [OzEIP712](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/OzEIP712.sol/abstract.OzEIP712.md), [IKeyRegistry](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/key-registry/IKeyRegistry.sol/interface.IKeyRegistry.md)
 
 Contract for operators' keys management.
 
-*It supports:
+It supports:
 - BLS public keys on BN254
-- ECDSA public keys on secp256k1*
+- ECDSA public keys on secp256k1
 
 
 ## State Variables
 ### KEY_OWNERSHIP_TYPEHASH
 
 ```solidity
-bytes32 internal constant KEY_OWNERSHIP_TYPEHASH = keccak256("KeyOwnership(address operator,bytes key)");
+bytes32 internal constant KEY_OWNERSHIP_TYPEHASH = keccak256("KeyOwnership(address operator,bytes key)")
 ```
 
 
 ### KeyRegistryLocation
 
 ```solidity
-bytes32 private constant KeyRegistryLocation = 0x79440bf5b0cb104c925971e1cca11d9e1557cbe9fa7533e7b0652d40728ecf00;
+bytes32 private constant KeyRegistryLocation = 0x79440bf5b0cb104c925971e1cca11d9e1557cbe9fa7533e7b0652d40728ecf00
 ```
 
 
@@ -38,16 +38,14 @@ function _getKeyRegistryStorage() internal pure returns (KeyRegistryStorage stor
 
 
 ```solidity
-function __KeyRegistry_init(
-    KeyRegistryInitParams memory keyRegistryInitParams
-) public virtual onlyInitializing;
+function __KeyRegistry_init(KeyRegistryInitParams memory keyRegistryInitParams) public virtual onlyInitializing;
 ```
 
 ### getKeyAt
 
 Returns the key at a specific timestamp.
 
-*Will return a zero key if the key is not found (e.g., abi.encode(address(0)) for ECDSA keys).*
+Will return a zero key if the key is not found (e.g., abi.encode(address(0)) for ECDSA keys).
 
 
 ```solidity
@@ -72,7 +70,7 @@ function getKeyAt(address operator, uint8 tag, uint48 timestamp) public view vir
 
 Returns the current key.
 
-*Will return a zero key if the key is not found (e.g., abi.encode(address(0)) for ECDSA keys).*
+Will return a zero key if the key is not found (e.g., abi.encode(address(0)) for ECDSA keys).
 
 
 ```solidity
@@ -98,9 +96,7 @@ Returns the operator by the key.
 
 
 ```solidity
-function getOperator(
-    bytes memory key
-) public view virtual returns (address);
+function getOperator(bytes memory key) public view virtual returns (address);
 ```
 **Parameters**
 
@@ -143,9 +139,7 @@ Returns the current operator's keys.
 
 
 ```solidity
-function getKeys(
-    address operator
-) public view virtual returns (Key[] memory keys);
+function getKeys(address operator) public view virtual returns (Key[] memory keys);
 ```
 **Parameters**
 
@@ -166,9 +160,7 @@ Returns the operator's keys at a specific timestamp.
 
 
 ```solidity
-function getKeysAt(
-    uint48 timestamp
-) public view virtual returns (OperatorWithKeys[] memory operatorsKeys);
+function getKeysAt(uint48 timestamp) public view virtual returns (OperatorWithKeys[] memory operatorsKeys);
 ```
 **Parameters**
 
@@ -219,9 +211,7 @@ Returns the operators who registered any keys until a specific timestamp.
 
 
 ```solidity
-function getKeysOperatorsAt(
-    uint48 timestamp
-) public view virtual returns (address[] memory);
+function getKeysOperatorsAt(uint48 timestamp) public view virtual returns (address[] memory);
 ```
 **Parameters**
 
@@ -262,9 +252,7 @@ function _getKeyTagsAt(address operator, uint48 timestamp) internal view virtual
 
 
 ```solidity
-function _getKeyTags(
-    address operator
-) internal view virtual returns (uint8[] memory);
+function _getKeyTags(address operator) internal view virtual returns (uint8[] memory);
 ```
 
 ### setKey
@@ -289,13 +277,9 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
 
 
 ```solidity
-function _setKey(
-    address operator,
-    uint8 tag,
-    bytes memory key,
-    bytes memory signature,
-    bytes memory extraData
-) internal virtual;
+function _setKey(address operator, uint8 tag, bytes memory key, bytes memory signature, bytes memory extraData)
+    internal
+    virtual;
 ```
 
 ### _setKey

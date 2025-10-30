@@ -3,6 +3,10 @@ pragma solidity ^0.8.0;
 
 import {Checkpoints} from "../../../../../libraries/structs/Checkpoints.sol";
 
+/**
+ * @title IWeightedTokensVPCalc
+ * @notice Interface for the WeightedTokensVPCalc contract.
+ */
 interface IWeightedTokensVPCalc {
     /**
      * @notice Reverts when the weight is too large.
@@ -41,9 +45,7 @@ interface IWeightedTokensVPCalc {
      * @dev Returns 1e12 if the weight wasn't explicitly set yet.
      *      Can return non-zero weight for unregistered tokens.
      */
-    function getTokenWeight(
-        address token
-    ) external view returns (uint208);
+    function getTokenWeight(address token) external view returns (uint208);
 
     /**
      * @notice Sets the weight for a token.

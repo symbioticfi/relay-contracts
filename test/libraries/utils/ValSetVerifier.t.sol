@@ -132,8 +132,7 @@ contract ValSetVerifierDataTest is Test {
         validatorRootProofArr[20] = 0x0400000000000000000000000000000000000000000000000000000000000000;
 
         ValSetVerifier.SszProof memory validatorRootProof = ValSetVerifier.SszProof({
-            leaf: 0xc25d22a1fb9429b489654db1907bbe717d85c462ad2a9b17e59e53c3faac19fa,
-            proof: validatorRootProofArr
+            leaf: 0xc25d22a1fb9429b489654db1907bbe717d85c462ad2a9b17e59e53c3faac19fa, proof: validatorRootProofArr
         });
 
         bytes32[] memory operatorProofArr = new bytes32[](3);
@@ -197,8 +196,7 @@ contract ValSetVerifierDataTest is Test {
         validatorRootProofArr[20] = 0x0400000000000000000000000000000000000000000000000000000000000000;
 
         ValSetVerifier.SszProof memory validatorRootProof = ValSetVerifier.SszProof({
-            leaf: 0xc25d22a1fb9429b489654db1907bbe717d85c462ad2a9b17e59e53c3faac19fa,
-            proof: validatorRootProofArr
+            leaf: 0xc25d22a1fb9429b489654db1907bbe717d85c462ad2a9b17e59e53c3faac19fa, proof: validatorRootProofArr
         });
 
         bytes32[] memory votingPowerArr = new bytes32[](3);
@@ -263,8 +261,7 @@ contract ValSetVerifierDataTest is Test {
         validatorRootProofArr[20] = 0x0400000000000000000000000000000000000000000000000000000000000000;
 
         ValSetVerifier.SszProof memory validatorRootProof = ValSetVerifier.SszProof({
-            leaf: 0xc25d22a1fb9429b489654db1907bbe717d85c462ad2a9b17e59e53c3faac19fa,
-            proof: validatorRootProofArr
+            leaf: 0xc25d22a1fb9429b489654db1907bbe717d85c462ad2a9b17e59e53c3faac19fa, proof: validatorRootProofArr
         });
 
         bytes32[] memory isActiveArr = new bytes32[](3);
@@ -326,8 +323,7 @@ contract ValSetVerifierDataTest is Test {
         validatorRootProofArr[20] = 0x0400000000000000000000000000000000000000000000000000000000000000;
 
         ValSetVerifier.SszProof memory validatorRootProof = ValSetVerifier.SszProof({
-            leaf: 0xc25d22a1fb9429b489654db1907bbe717d85c462ad2a9b17e59e53c3faac19fa,
-            proof: validatorRootProofArr
+            leaf: 0xc25d22a1fb9429b489654db1907bbe717d85c462ad2a9b17e59e53c3faac19fa, proof: validatorRootProofArr
         });
 
         bytes32[] memory keyRootArr = new bytes32[](11);
@@ -356,8 +352,7 @@ contract ValSetVerifierDataTest is Test {
         payloadArr[0] = 0x0f00000000000000000000000000000000000000000000000000000000000000;
 
         ValSetVerifier.SszProof memory payloadProof = ValSetVerifier.SszProof({
-            leaf: 0x07f1063c1c69798bd34c3cb06174d886b142b7840035b516d8f40c73a3eed745,
-            proof: payloadArr
+            leaf: 0x07f1063c1c69798bd34c3cb06174d886b142b7840035b516d8f40c73a3eed745, proof: payloadArr
         });
 
         assertTrue(
@@ -428,8 +423,7 @@ contract ValSetVerifierDataTest is Test {
         validatorRootProofArr[20] = 0x0400000000000000000000000000000000000000000000000000000000000000;
 
         ValSetVerifier.SszProof memory validatorRootProof = ValSetVerifier.SszProof({
-            leaf: 0xc25d22a1fb9429b489654db1907bbe717d85c462ad2a9b17e59e53c3faac19fa,
-            proof: validatorRootProofArr
+            leaf: 0xc25d22a1fb9429b489654db1907bbe717d85c462ad2a9b17e59e53c3faac19fa, proof: validatorRootProofArr
         });
 
         bytes32[] memory vaultRootArr = new bytes32[](14);
@@ -449,8 +443,7 @@ contract ValSetVerifierDataTest is Test {
         vaultRootArr[13] = 0x45dbecaa5000a2996a3f63b86e235d8a02a9a00f6d21c294bc0435832e5fa39c;
 
         ValSetVerifier.SszProof memory vaultRootProof = ValSetVerifier.SszProof({
-            leaf: 0x14847a632846b9dcf0c1379f1f17834f3caa6f8b3a1289ef058ab1532cae4a6d,
-            proof: vaultRootArr
+            leaf: 0x14847a632846b9dcf0c1379f1f17834f3caa6f8b3a1289ef058ab1532cae4a6d, proof: vaultRootArr
         });
 
         bytes32[] memory vaultChainIdArr = new bytes32[](2);

@@ -1,5 +1,5 @@
 # SigEcdsaSecp256k1
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/libraries/sigs/SigEcdsaSecp256k1.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/libraries/sigs/SigEcdsaSecp256k1.sol)
 
 Library for verifying ECDSA signatures on the secp256k1 curve.
 
@@ -9,7 +9,7 @@ Library for verifying ECDSA signatures on the secp256k1 curve.
 
 Verify an ECDSA signature.
 
-*Returns false if the key is zero address.*
+Returns false if the key is zero address.
 
 
 ```solidity
@@ -17,8 +17,11 @@ function verify(
     bytes memory keyBytes,
     bytes memory message,
     bytes memory signature,
-    bytes memory
-) internal view returns (bool);
+    bytes memory /* extraData */
+)
+    internal
+    view
+    returns (bool);
 ```
 **Parameters**
 
@@ -40,7 +43,7 @@ function verify(
 
 Verify an ECDSA signature.
 
-*Returns false if the key is zero address.*
+Returns false if the key is zero address.
 
 
 ```solidity

@@ -3,6 +3,10 @@ pragma solidity ^0.8.0;
 
 import {Checkpoints} from "../../../../../libraries/structs/Checkpoints.sol";
 
+/**
+ * @title IWeightedVaultsVPCalc
+ * @notice Interface for the WeightedVaultsVPCalc contract.
+ */
 interface IWeightedVaultsVPCalc {
     /**
      * @notice Reverts when the weight is too large.
@@ -41,9 +45,7 @@ interface IWeightedVaultsVPCalc {
      * @dev Returns 1e4 if the weight wasn't explicitly set yet.
      *      Can return non-zero weight for unregistered vaults.
      */
-    function getVaultWeight(
-        address vault
-    ) external view returns (uint208);
+    function getVaultWeight(address vault) external view returns (uint208);
 
     /**
      * @notice Sets the weight for a vault.

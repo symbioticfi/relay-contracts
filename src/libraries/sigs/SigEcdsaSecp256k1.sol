@@ -31,7 +31,11 @@ library SigEcdsaSecp256k1 {
         bytes memory message,
         bytes memory signature,
         bytes memory /* extraData */
-    ) internal view returns (bool) {
+    )
+        internal
+        view
+        returns (bool)
+    {
         if (message.length != 32) {
             revert SigEcdsaSecp256k1_InvalidMessageLength();
         }

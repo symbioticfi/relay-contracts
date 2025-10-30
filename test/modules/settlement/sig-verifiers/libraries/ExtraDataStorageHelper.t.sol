@@ -5,9 +5,7 @@ import {Test} from "forge-std/Test.sol";
 import {ExtraDataStorageHelper} from "src/modules/settlement/sig-verifiers/libraries/ExtraDataStorageHelper.sol";
 
 contract ExtraDataStorageHelperTest is Test {
-    function _randomNameHash(
-        string memory seed
-    ) internal pure returns (bytes32) {
+    function _randomNameHash(string memory seed) internal pure returns (bytes32) {
         return keccak256(abi.encodePacked(seed));
     }
 

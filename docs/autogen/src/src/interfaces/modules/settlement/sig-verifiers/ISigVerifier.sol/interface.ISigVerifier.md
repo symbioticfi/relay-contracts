@@ -1,5 +1,7 @@
 # ISigVerifier
-[Git Source](https://github.com/symbioticfi/middleware-sdk/blob/884279eec0093e42a1a4da847149bdd39176d7f2/src/interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol)
+
+Interface for the signature verifier contracts.
 
 
 ## Functions
