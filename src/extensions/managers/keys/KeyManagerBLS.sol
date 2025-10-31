@@ -129,13 +129,13 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig, IKeyManagerBLS {
         uint48 timestamp = _now();
         uint256 compressedKey = $._aggregatedKey.latest();
         BN254.G1Point memory aggregatedKey;
-        uint256 derivedY;
         if (compressedKey != 0) {
             uint256 X = uint256(compressedKey) >> 1;
-            (derivedY,) = BN254.findYFromX(X);
-            aggregatedKey = (compressedKey & 1) == 1
-                ? BN254.negate(BN254.G1Point({X: X, Y: derivedY}))
-                : BN254.G1Point({X: X, Y: derivedY});
+            (, uint256 derivedY) = BN254.findYFromX(X);
+            aggregatedKey = BN254.G1Point({X: X, Y: derivedY});
+            if (uint256(compressedKey) & 1 > 0) {
+                aggregatedKey = BN254.negate(aggregatedKey);
+            }
         }
         BN254.G1Point memory prevKey = $._prevKey[operator];
         BN254.G1Point memory currentKey = $._key[operator];
@@ -168,27 +168,27 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig, IKeyManagerBLS {
         if (currentKey.X == 0 && currentKey.Y == 0 && (key.X != 0 || key.Y != 0)) {
             aggregatedKey = aggregatedKey.plus(key);
             $._keyMerkle.insert(bytes32(key.X));
-            $._keyMerkleRoot.push(_now(), uint256($._keyMerkle.root()));
-            $._aggregatedKey.push(_now(), (aggregatedKey.X << 1) | (derivedY == aggregatedKey.Y ? 0 : 1));
-            return;
-        }
-        bytes32[16] memory proof;
-        uint256 index;
-        assembly {
-            proof := add(key_, 96)
-            index := mload(add(key_, 608)) // 32 + 64 + (16 * 32)
-        }
-
-        // remove current key from merkle tree and aggregated key when new key is zero else update
-        aggregatedKey = aggregatedKey.plus(currentKey.negate());
-        if (key.X == 0 && key.Y == 0) {
-            $._keyMerkle.remove(bytes32(currentKey.X), proof, index);
         } else {
-            aggregatedKey = aggregatedKey.plus(key);
-            $._keyMerkle.update(bytes32(key.X), bytes32(currentKey.X), proof, index, false);
+            bytes32[16] memory proof;
+            uint256 index;
+            assembly {
+                proof := add(key_, 96)
+                index := mload(add(key_, 608)) // 32 + 64 + (16 * 32)
+            }
+
+            // remove current key from merkle tree and aggregated key when new key is zero else update
+            aggregatedKey = aggregatedKey.plus(currentKey.negate());
+            if (key.X == 0 && key.Y == 0) {
+                $._keyMerkle.remove(bytes32(currentKey.X), proof, index);
+            } else {
+                aggregatedKey = aggregatedKey.plus(key);
+                $._keyMerkle.update(bytes32(key.X), bytes32(currentKey.X), proof, index, false);
+            }
+
         }
 
-        $._aggregatedKey.push(_now(), aggregatedKey.X);
+        (, uint256 derivedY) = BN254.findYFromX(aggregatedKey.X);
+        $._aggregatedKey.push(_now(), (aggregatedKey.X << 1) | (derivedY == aggregatedKey.Y ? 0 : 1));
         $._keyMerkleRoot.push(_now(), uint256($._keyMerkle.root()));
 
         emit UpdateKey(operator, key_);
