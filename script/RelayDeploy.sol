@@ -168,7 +168,7 @@ abstract contract RelayDeploy is SymbioticCoreInit, Config, CreateXWrapper {
         for (uint256 i; i < configChainIds.length; ++i) {
             Variable memory votingPowerProvider = config.get(configChainIds[i], "voting_power_provider");
             if (votingPowerProvider.data.length > 0) {
-                votingPowerProviders[i] = IValSetDriver.CrossChainAddress({
+                votingPowerProviders[length] = IValSetDriver.CrossChainAddress({
                     chainId: uint64(configChainIds[i]), addr: votingPowerProvider.toAddress()
                 });
                 ++length;
@@ -196,7 +196,7 @@ abstract contract RelayDeploy is SymbioticCoreInit, Config, CreateXWrapper {
         for (uint256 i; i < configChainIds.length; ++i) {
             Variable memory settlement = config.get(configChainIds[i], "settlement");
             if (settlement.data.length > 0) {
-                settlements[i] =
+                settlements[length] =
                     IValSetDriver.CrossChainAddress({chainId: uint64(configChainIds[i]), addr: settlement.toAddress()});
                 ++length;
             }
