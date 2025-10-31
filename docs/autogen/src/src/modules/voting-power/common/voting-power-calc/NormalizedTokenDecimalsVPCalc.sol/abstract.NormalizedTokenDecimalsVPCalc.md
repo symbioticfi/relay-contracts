@@ -1,5 +1,5 @@
 # NormalizedTokenDecimalsVPCalc
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/90b476bb8f01dc59dc602dcd0b4e541b7aed48d5/src/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.sol)
 
 **Inherits:**
 [EqualStakeVPCalc](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol/abstract.EqualStakeVPCalc.md), [INormalizedTokenDecimalsVPCalc](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/common/voting-power-calc/INormalizedTokenDecimalsVPCalc.sol/interface.INormalizedTokenDecimalsVPCalc.md)

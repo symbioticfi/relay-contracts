@@ -1,5 +1,5 @@
 # PricedTokensChainlinkVPCalc
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/70dc1ae21bdebf08e2f01246a42e31aee6a1c39d/src/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/90b476bb8f01dc59dc602dcd0b4e541b7aed48d5/src/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.sol)
 
 **Inherits:**
 [NormalizedTokenDecimalsVPCalc](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.sol/abstract.NormalizedTokenDecimalsVPCalc.md), [PermissionManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), [IPricedTokensChainlinkVPCalc](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/common/voting-power-calc/IPricedTokensChainlinkVPCalc.sol/interface.IPricedTokensChainlinkVPCalc.md)
