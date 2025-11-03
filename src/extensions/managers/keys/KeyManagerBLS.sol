@@ -60,14 +60,25 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig, IKeyManagerBLS {
     ) public view returns (bool) {
         KeyManagerBLSStorage storage $ = _getKeyManagerBLSStorage();
         // verify that the aggregated key is the same as the one at the timestamp
-        uint256 x = $._aggregatedKey.upperLookupRecent(timestamp, aggregatedKeyHint);
-        bytes32 root = bytes32($._keyMerkleRoot.upperLookupRecent(timestamp, keyMerkleHint));
-        if (aggregateG1Key.X != x) {
+        BN254.G1Point memory aggregatedKey;
+        {
+            uint256 compressedKey = $._aggregatedKey.upperLookupRecent(timestamp, aggregatedKeyHint);
+            if (compressedKey != 0) {
+                uint256 X = uint256(compressedKey) >> 1;
+                (, uint256 derivedY) = BN254.findYFromX(X);
+                aggregatedKey = BN254.G1Point({X: X, Y: derivedY});
+                if (uint256(compressedKey) & 1 > 0) {
+                    aggregatedKey = BN254.negate(aggregatedKey);
+                }
+            }
+        }
+        if (aggregateG1Key.X != aggregatedKey.X || aggregateG1Key.Y != aggregatedKey.Y) {
             return false;
         }
 
-        BN254.G1Point memory aggregatedNonSigningKey = BN254.G1Point(0, 0);
-        for (uint256 i = 0; i < nonSigningKeys.length; i++) {
+        bytes32 root = bytes32($._keyMerkleRoot.upperLookupRecent(timestamp, keyMerkleHint));
+        BN254.G1Point memory aggregatedNonSigningKey;
+        for (uint256 i; i < nonSigningKeys.length; ++i) {
             if (
                 MerkleLib.branchRoot(
                     bytes32(nonSigningKeys[i].X), nonSigningKeyMerkleProofs[i], nonSigningKeyIndices[i]
@@ -129,9 +140,10 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig, IKeyManagerBLS {
         uint48 timestamp = _now();
         uint256 compressedKey = $._aggregatedKey.latest();
         BN254.G1Point memory aggregatedKey;
+        uint256 derivedY;
         if (compressedKey != 0) {
             uint256 X = uint256(compressedKey) >> 1;
-            (, uint256 derivedY) = BN254.findYFromX(X);
+            (, derivedY) = BN254.findYFromX(X);
             aggregatedKey = BN254.G1Point({X: X, Y: derivedY});
             if (uint256(compressedKey) & 1 > 0) {
                 aggregatedKey = BN254.negate(aggregatedKey);
@@ -184,10 +196,9 @@ abstract contract KeyManagerBLS is KeyManager, BLSSig, IKeyManagerBLS {
                 aggregatedKey = aggregatedKey.plus(key);
                 $._keyMerkle.update(bytes32(key.X), bytes32(currentKey.X), proof, index, false);
             }
-
         }
 
-        (, uint256 derivedY) = BN254.findYFromX(aggregatedKey.X);
+        (, derivedY) = BN254.findYFromX(aggregatedKey.X);
         $._aggregatedKey.push(_now(), (aggregatedKey.X << 1) | (derivedY == aggregatedKey.Y ? 0 : 1));
         $._keyMerkleRoot.push(_now(), uint256($._keyMerkle.root()));
 
