@@ -6,14 +6,17 @@ import {OzEIP712} from "../base/OzEIP712.sol";
 import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
 import {KeyBlsBn254} from "../../libraries/keys/KeyBlsBn254.sol";
 import {KeyEcdsaSecp256k1} from "../../libraries/keys/KeyEcdsaSecp256k1.sol";
+import {KeyBlsBn12381} from "../../libraries/keys/KeyBlsBn12381.sol";
 import {KeyTags} from "../../libraries/utils/KeyTags.sol";
 import {PersistentSet} from "../../libraries/structs/PersistentSet.sol";
 import {SigBlsBn254} from "../../libraries/sigs/SigBlsBn254.sol";
 import {SigEcdsaSecp256k1} from "../../libraries/sigs/SigEcdsaSecp256k1.sol";
+import {SigBlsBn12381} from "../../libraries/sigs/SigBlsBn12381.sol";
 
 import {
     IKeyRegistry,
     KEY_TYPE_BLS_BN254,
+    KEY_TYPE_BLS_BN12381,
     KEY_TYPE_ECDSA_SECP256K1
 } from "../../interfaces/modules/key-registry/IKeyRegistry.sol";
 
@@ -30,6 +33,7 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
     using Checkpoints for Checkpoints.Trace512;
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
     using KeyEcdsaSecp256k1 for KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1;
+    using KeyBlsBn12381 for KeyBlsBn12381.KEY_BLS_BN12381;
     using KeyTags for uint8;
     using KeyTags for uint128;
     using PersistentSet for PersistentSet.AddressSet;
@@ -58,6 +62,9 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
         if (keyType == KEY_TYPE_ECDSA_SECP256K1) {
             return KeyEcdsaSecp256k1.deserialize(_getKey32At(operator, tag, timestamp)).toBytes();
         }
+        if (keyType == KEY_TYPE_BLS_BN12381) {
+            return KeyBlsBn12381.deserialize(_getKey64At(operator, tag, timestamp)).toBytes();
+        }
         revert IKeyRegistry.KeyRegistry_InvalidKeyType();
     }
 
@@ -69,6 +76,9 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
         }
         if (keyType == KEY_TYPE_ECDSA_SECP256K1) {
             return KeyEcdsaSecp256k1.deserialize(_getKey32(operator, tag)).toBytes();
+        }
+        if (keyType == KEY_TYPE_BLS_BN12381) {
+            return KeyBlsBn12381.deserialize(_getKey64(operator, tag)).toBytes();
         }
         revert IKeyRegistry.KeyRegistry_InvalidKeyType();
     }
@@ -200,6 +210,10 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
             _setKey32(operator, tag, KeyEcdsaSecp256k1.fromBytes(key).serialize());
             return;
         }
+        if (type_ == KEY_TYPE_BLS_BN12381) {
+            _setKey64(operator, tag, KeyBlsBn12381.fromBytes(key).serialize());
+            return;
+        }
         revert IKeyRegistry.KeyRegistry_InvalidKeyType();
     }
 
@@ -227,6 +241,9 @@ contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
         }
         if (type_ == KEY_TYPE_ECDSA_SECP256K1) {
             return SigEcdsaSecp256k1.verify(key, message, signature, extraData);
+        }
+        if (type_ == KEY_TYPE_BLS_BN12381) {
+            return SigBlsBn12381.verify(key, message, signature, extraData);
         }
         revert IKeyRegistry.KeyRegistry_InvalidKeyType();
     }

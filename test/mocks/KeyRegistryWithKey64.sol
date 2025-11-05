@@ -20,7 +20,7 @@ import {KeyEcdsaSecp256k1} from "../../src/libraries/keys/KeyEcdsaSecp256k1.sol"
 import {SigBlsBn254} from "../../src/libraries/sigs/SigBlsBn254.sol";
 import {SigEcdsaSecp256k1} from "../../src/libraries/sigs/SigEcdsaSecp256k1.sol";
 
-uint8 constant KEY_TYPE_KEY64 = 2;
+uint8 constant KEY_TYPE_KEY64 = 3;
 
 contract KeyRegistryWithKey64 is KeyRegistry {
     using KeyTags for uint8;

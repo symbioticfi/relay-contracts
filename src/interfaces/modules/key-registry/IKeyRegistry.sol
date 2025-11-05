@@ -8,6 +8,7 @@ import {PersistentSet} from "../../../libraries/structs/PersistentSet.sol";
 
 uint8 constant KEY_TYPE_BLS_BN254 = 0;
 uint8 constant KEY_TYPE_ECDSA_SECP256K1 = 1;
+uint8 constant KEY_TYPE_BLS_BN12381 = 2;
 
 /**
  * @title IKeyRegistry
