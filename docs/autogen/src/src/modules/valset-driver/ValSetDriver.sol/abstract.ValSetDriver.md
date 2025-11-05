@@ -1,5 +1,5 @@
 # ValSetDriver
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/90b476bb8f01dc59dc602dcd0b4e541b7aed48d5/src/modules/valset-driver/ValSetDriver.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/773ae3c4e705581f92fbc339ac410d52ee1220ab/src/modules/valset-driver/ValSetDriver.sol)
 
 **Inherits:**
 [EpochManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/valset-driver/EpochManager.sol/abstract.EpochManager.md), [NetworkManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/NetworkManager.sol/abstract.NetworkManager.md), MulticallUpgradeable, [IValSetDriver](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/valset-driver/IValSetDriver.sol/interface.IValSetDriver.md)
@@ -155,6 +155,42 @@ function getNumCommitters() public view virtual returns (uint208);
 |Name|Type|Description|
 |----|----|-----------|
 |`<none>`|`uint208`|The number of committers.|
+
+
+### getCommitterSlotDurationAt
+
+Returns the committer slot duration at the given timestamp.
+
+
+```solidity
+function getCommitterSlotDurationAt(uint48 timestamp) public view virtual returns (uint48);
+```
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`timestamp`|`uint48`|The timestamp.|
+
+**Returns**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`<none>`|`uint48`|The committer slot duration.|
+
+
+### getCommitterSlotDuration
+
+Returns the committer slot duration.
+
+
+```solidity
+function getCommitterSlotDuration() public view virtual returns (uint48);
+```
+**Returns**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`<none>`|`uint48`|The committer slot duration.|
 
 
 ### isVotingPowerProviderRegisteredAt
@@ -706,6 +742,23 @@ function setNumCommitters(uint208 numCommitters) public virtual checkPermission;
 |`numCommitters`|`uint208`|The number of committers.|
 
 
+### setCommitterSlotDuration
+
+Sets the committer slot duration (determines how often the committers are switched).
+
+The caller must have the needed permission.
+
+
+```solidity
+function setCommitterSlotDuration(uint48 slotDuration) public virtual checkPermission;
+```
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`slotDuration`|`uint48`|The committer slot duration.|
+
+
 ### addVotingPowerProvider
 
 Adds a voting power provider.
@@ -939,6 +992,13 @@ function _setNumAggregators(uint208 numAggregators) internal virtual;
 
 ```solidity
 function _setNumCommitters(uint208 numCommitters) internal virtual;
+```
+
+### _setCommitterSlotDuration
+
+
+```solidity
+function _setCommitterSlotDuration(uint48 slotDuration) internal virtual;
 ```
 
 ### _addVotingPowerProvider

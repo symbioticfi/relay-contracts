@@ -4,14 +4,14 @@ pragma solidity ^0.8.25;
 import {OzEIP712} from "../base/OzEIP712.sol";
 
 import {Checkpoints} from "../../libraries/structs/Checkpoints.sol";
+import {KeyBlsBn12381} from "../../libraries/keys/KeyBlsBn12381.sol";
 import {KeyBlsBn254} from "../../libraries/keys/KeyBlsBn254.sol";
 import {KeyEcdsaSecp256k1} from "../../libraries/keys/KeyEcdsaSecp256k1.sol";
-import {KeyBlsBn12381} from "../../libraries/keys/KeyBlsBn12381.sol";
 import {KeyTags} from "../../libraries/utils/KeyTags.sol";
 import {PersistentSet} from "../../libraries/structs/PersistentSet.sol";
+import {SigBlsBn12381} from "../../libraries/sigs/SigBlsBn12381.sol";
 import {SigBlsBn254} from "../../libraries/sigs/SigBlsBn254.sol";
 import {SigEcdsaSecp256k1} from "../../libraries/sigs/SigEcdsaSecp256k1.sol";
-import {SigBlsBn12381} from "../../libraries/sigs/SigBlsBn12381.sol";
 
 import {
     IKeyRegistry,

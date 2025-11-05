@@ -1,5 +1,5 @@
 # IValSetDriver
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/90b476bb8f01dc59dc602dcd0b4e541b7aed48d5/src/interfaces/modules/valset-driver/IValSetDriver.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/773ae3c4e705581f92fbc339ac410d52ee1220ab/src/interfaces/modules/valset-driver/IValSetDriver.sol)
 
 Interface for the ValSetDriver contract.
 
@@ -132,6 +132,42 @@ function getNumCommitters() external view returns (uint208);
 |Name|Type|Description|
 |----|----|-----------|
 |`<none>`|`uint208`|The number of committers.|
+
+
+### getCommitterSlotDurationAt
+
+Returns the committer slot duration at the given timestamp.
+
+
+```solidity
+function getCommitterSlotDurationAt(uint48 timestamp) external view returns (uint48);
+```
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`timestamp`|`uint48`|The timestamp.|
+
+**Returns**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`<none>`|`uint48`|The committer slot duration.|
+
+
+### getCommitterSlotDuration
+
+Returns the committer slot duration.
+
+
+```solidity
+function getCommitterSlotDuration() external view returns (uint48);
+```
+**Returns**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`<none>`|`uint48`|The committer slot duration.|
 
 
 ### isVotingPowerProviderRegisteredAt
@@ -668,6 +704,23 @@ function setNumCommitters(uint208 numCommitters) external;
 |`numCommitters`|`uint208`|The number of committers.|
 
 
+### setCommitterSlotDuration
+
+Sets the committer slot duration (determines how often the committers are switched).
+
+The caller must have the needed permission.
+
+
+```solidity
+function setCommitterSlotDuration(uint48 slotDuration) external;
+```
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`slotDuration`|`uint48`|The committer slot duration.|
+
+
 ### addVotingPowerProvider
 
 Adds a voting power provider.
@@ -918,6 +971,20 @@ event SetNumCommitters(uint208 numCommitters);
 |----|----|-----------|
 |`numCommitters`|`uint208`|The number of committers (those who commit some data (e.g., ValSetHeader) to on-chain).|
 
+### SetCommitterSlotDuration
+Emitted when the committer slot duration is set.
+
+
+```solidity
+event SetCommitterSlotDuration(uint48 committerSlotDuration);
+```
+
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`committerSlotDuration`|`uint48`|The committer slot duration.|
+
 ### AddVotingPowerProvider
 Emitted when the voting power provider is added.
 
@@ -1151,6 +1218,14 @@ Reverts when the subject is not added but was tried to be removed.
 error ValSetDriver_NotAdded();
 ```
 
+### ValSetDriver_ZeroCommitterSlotDuration
+Reverts when the committer slot duration is zero.
+
+
+```solidity
+error ValSetDriver_ZeroCommitterSlotDuration();
+```
+
 ### ValSetDriver_ZeroNumAggregators
 Reverts when the number of aggregators is zero.
 
@@ -1177,21 +1252,22 @@ storage-location: ERC-7201 slot: erc7201:symbiotic.storage.ValSetDriver.
 
 ```solidity
 struct ValSetDriverStorage {
+    Checkpoints.Trace208 _numAggregators;
+    Checkpoints.Trace208 _numCommitters;
+    Checkpoints.Trace208 _committerSlotDuration;
     mapping(uint64 chainId => bool isAdded) _isVotingPowerProviderChainAdded;
     PersistentSet.Bytes32Set _votingPowerProviders;
     Checkpoints.Trace256 _keysProvider;
     mapping(uint64 chainId => bool isAdded) _isSettlementChainAdded;
     PersistentSet.Bytes32Set _settlements;
-    Checkpoints.Trace208 _verificationType;
     Checkpoints.Trace256 _maxVotingPower;
     Checkpoints.Trace256 _minInclusionVotingPower;
     Checkpoints.Trace208 _maxValidatorsCount;
     Checkpoints.Trace208 _requiredKeyTags;
-    Checkpoints.Trace208 _requiredHeaderKeyTag;
     mapping(uint8 keyTag => bool isAdded) _isQuorumThresholdKeyTagAdded;
     PersistentSet.Bytes32Set _quorumThresholds;
-    Checkpoints.Trace208 _numAggregators;
-    Checkpoints.Trace208 _numCommitters;
+    Checkpoints.Trace208 _requiredHeaderKeyTag;
+    Checkpoints.Trace208 _verificationType;
 }
 ```
 
@@ -1199,21 +1275,22 @@ struct ValSetDriverStorage {
 
 |Name|Type|Description|
 |----|----|-----------|
+|`_numAggregators`|`Checkpoints.Trace208`|The checkpoint of the number of aggregators.|
+|`_numCommitters`|`Checkpoints.Trace208`|The checkpoint of the number of committers.|
+|`_committerSlotDuration`|`Checkpoints.Trace208`|The checkpoint of the committer slot duration.|
 |`_isVotingPowerProviderChainAdded`|`mapping(uint64 chainId => bool isAdded)`|The mapping from the chain ID to the voting power provider chain added status.|
 |`_votingPowerProviders`|`PersistentSet.Bytes32Set`|The set of the voting power providers.|
 |`_keysProvider`|`Checkpoints.Trace256`|The checkpoint of the keys provider.|
 |`_isSettlementChainAdded`|`mapping(uint64 chainId => bool isAdded)`|The mapping from the chain ID to the settlement chain added status.|
 |`_settlements`|`PersistentSet.Bytes32Set`|The set of the settlements.|
-|`_verificationType`|`Checkpoints.Trace208`|The checkpoint of the verification type.|
 |`_maxVotingPower`|`Checkpoints.Trace256`|The checkpoint of the maximum voting power.|
 |`_minInclusionVotingPower`|`Checkpoints.Trace256`|The checkpoint of the minimum inclusion voting power.|
 |`_maxValidatorsCount`|`Checkpoints.Trace208`|The checkpoint of the maximum active validators count.|
 |`_requiredKeyTags`|`Checkpoints.Trace208`|The checkpoint of the required key tags.|
-|`_requiredHeaderKeyTag`|`Checkpoints.Trace208`|The checkpoint of the required header key tag.|
 |`_isQuorumThresholdKeyTagAdded`|`mapping(uint8 keyTag => bool isAdded)`|The mapping from the key tag to the quorum threshold key tag added status.|
 |`_quorumThresholds`|`PersistentSet.Bytes32Set`|The set of the quorum thresholds.|
-|`_numAggregators`|`Checkpoints.Trace208`|The checkpoint of the number of aggregators.|
-|`_numCommitters`|`Checkpoints.Trace208`|The checkpoint of the number of committers.|
+|`_requiredHeaderKeyTag`|`Checkpoints.Trace208`|The checkpoint of the required header key tag.|
+|`_verificationType`|`Checkpoints.Trace208`|The checkpoint of the verification type.|
 
 ### ValSetDriverInitParams
 The parameters for the initialization of the ValSetDriver contract.
@@ -1225,6 +1302,7 @@ struct ValSetDriverInitParams {
     IEpochManager.EpochManagerInitParams epochManagerInitParams;
     uint208 numAggregators;
     uint208 numCommitters;
+    uint48 committerSlotDuration;
     CrossChainAddress[] votingPowerProviders;
     CrossChainAddress keysProvider;
     CrossChainAddress[] settlements;
@@ -1246,6 +1324,7 @@ struct ValSetDriverInitParams {
 |`epochManagerInitParams`|`IEpochManager.EpochManagerInitParams`|The parameters for the initialization of the EpochManager contract.|
 |`numAggregators`|`uint208`|The number of aggregators (those who aggregate the validators' signatures and produce the proof for the verification) at the genesis.|
 |`numCommitters`|`uint208`|The number of committers (those who commit some data (e.g., ValSetHeader) to on-chain) at the genesis.|
+|`committerSlotDuration`|`uint48`|The committer slot duration (determines how often the committers are switched) at the genesis.|
 |`votingPowerProviders`|`CrossChainAddress[]`|The voting power providers (contracts that provide the voting powers of the operators on different chains).|
 |`keysProvider`|`CrossChainAddress`|The keys provider (contract that provides the keys of the operators).|
 |`settlements`|`CrossChainAddress[]`|The settlements (contracts that enable a verification of the validator set's attestations on different chains).|
@@ -1301,6 +1380,7 @@ The configuration.
 struct Config {
     uint208 numAggregators;
     uint208 numCommitters;
+    uint48 committerSlotDuration;
     CrossChainAddress[] votingPowerProviders;
     CrossChainAddress keysProvider;
     CrossChainAddress[] settlements;
@@ -1320,6 +1400,7 @@ struct Config {
 |----|----|-----------|
 |`numAggregators`|`uint208`|The number of aggregators (those who aggregate the validators' signatures and produce the proof for the verification).|
 |`numCommitters`|`uint208`|The number of committers (those who commit some data (e.g., ValSetHeader) to on-chain).|
+|`committerSlotDuration`|`uint48`|The committer slot duration (determines how often the committers are switched).|
 |`votingPowerProviders`|`CrossChainAddress[]`|The voting power providers (contracts that provide the voting powers of the operators on different chains).|
 |`keysProvider`|`CrossChainAddress`|The keys provider (contract that provides the keys of the operators).|
 |`settlements`|`CrossChainAddress[]`|The settlements (contracts that enable a verification of the validator set's attestations on different chains).|
