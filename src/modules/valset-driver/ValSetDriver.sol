@@ -46,6 +46,7 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
 
         _setNumAggregators(valSetDriverInitParams.numAggregators);
         _setNumCommitters(valSetDriverInitParams.numCommitters);
+        _setCommitterSlotDuration(valSetDriverInitParams.committerSlotDuration);
         for (uint256 i; i < valSetDriverInitParams.votingPowerProviders.length; ++i) {
             _addVotingPowerProvider(valSetDriverInitParams.votingPowerProviders[i]);
         }
@@ -69,6 +70,7 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         return Config({
             numAggregators: getNumAggregatorsAt(timestamp),
             numCommitters: getNumCommittersAt(timestamp),
+            committerSlotDuration: getCommitterSlotDurationAt(timestamp),
             votingPowerProviders: getVotingPowerProvidersAt(timestamp),
             keysProvider: getKeysProviderAt(timestamp),
             settlements: getSettlementsAt(timestamp),
@@ -87,6 +89,7 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         return Config({
             numAggregators: getNumAggregators(),
             numCommitters: getNumCommitters(),
+            committerSlotDuration: getCommitterSlotDuration(),
             votingPowerProviders: getVotingPowerProviders(),
             keysProvider: getKeysProvider(),
             settlements: getSettlements(),
@@ -118,6 +121,16 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     /// @inheritdoc IValSetDriver
     function getNumCommitters() public view virtual returns (uint208) {
         return _getValSetDriverStorage()._numCommitters.latest();
+    }
+
+    /// @inheritdoc IValSetDriver
+    function getCommitterSlotDurationAt(uint48 timestamp) public view virtual returns (uint48) {
+        return uint48(_getValSetDriverStorage()._committerSlotDuration.upperLookupRecent(timestamp));
+    }
+
+    /// @inheritdoc IValSetDriver
+    function getCommitterSlotDuration() public view virtual returns (uint48) {
+        return uint48(_getValSetDriverStorage()._committerSlotDuration.latest());
     }
 
     /// @inheritdoc IValSetDriver
@@ -319,6 +332,11 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     }
 
     /// @inheritdoc IValSetDriver
+    function setCommitterSlotDuration(uint48 slotDuration) public virtual checkPermission {
+        _setCommitterSlotDuration(slotDuration);
+    }
+
+    /// @inheritdoc IValSetDriver
     function addVotingPowerProvider(CrossChainAddress memory votingPowerProvider) public virtual checkPermission {
         _addVotingPowerProvider(votingPowerProvider);
     }
@@ -397,6 +415,14 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         }
         _getValSetDriverStorage()._numCommitters.push(uint48(block.timestamp), numCommitters);
         emit SetNumCommitters(numCommitters);
+    }
+
+    function _setCommitterSlotDuration(uint48 slotDuration) internal virtual {
+        if (slotDuration == 0) {
+            revert ValSetDriver_ZeroCommitterSlotDuration();
+        }
+        _getValSetDriverStorage()._committerSlotDuration.push(uint48(block.timestamp), slotDuration);
+        emit SetCommitterSlotDuration(slotDuration);
     }
 
     function _addVotingPowerProvider(CrossChainAddress memory votingPowerProvider) internal virtual {

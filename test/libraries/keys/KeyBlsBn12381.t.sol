@@ -16,14 +16,11 @@ contract KeyBlsBn12381Test is Test {
 
     address private constant MODEXP = address(0x05);
     uint256 private constant P_A = 0x1a0111ea397fe69a4b1ba7b6434bacd7;
-    uint256 private constant P_B =
-        0x64774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaaab;
+    uint256 private constant P_B = 0x64774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaaab;
     uint256 private constant P_PLUS_ONE_SLASH_2_A = 0x0680447a8e5ff9a692c6e9ed90d2eb35;
-    uint256 private constant P_PLUS_ONE_SLASH_2_B =
-        0xd91dd2e13ce144afd9cc34a83dac3d8907aaffffac54ffffee7fbfffffffeaab;
+    uint256 private constant P_PLUS_ONE_SLASH_2_B = 0xd91dd2e13ce144afd9cc34a83dac3d8907aaffffac54ffffee7fbfffffffeaab;
     uint256 private constant PRE_BRANCH_LOW = type(uint256).max - 3;
-    uint256 private constant POST_BRANCH_LOW =
-        0x9b88b47b0c7aed4098cf2d5f094f09dbe15400014eac00004601000000005556;
+    uint256 private constant POST_BRANCH_LOW = 0x9b88b47b0c7aed4098cf2d5f094f09dbe15400014eac00004601000000005556;
 
     function setUp() public {
         mock = new KeyBlsBn12381Mock();
@@ -203,10 +200,7 @@ contract KeyBlsBn12381Test is Test {
     function test_SerializeTriggersXCubedPlus4CarryBranch() public {
         KeyBlsBn12381.KEY_BLS_BN12381 memory key = KeyBlsBn12381.KEY_BLS_BN12381(
             BN12381.G1Point({
-                x_a: bytes32(P_A),
-                x_b: bytes32(PRE_BRANCH_LOW),
-                y_a: bytes32(0),
-                y_b: bytes32(POST_BRANCH_LOW)
+                x_a: bytes32(P_A), x_b: bytes32(PRE_BRANCH_LOW), y_a: bytes32(0), y_b: bytes32(POST_BRANCH_LOW)
             })
         );
 

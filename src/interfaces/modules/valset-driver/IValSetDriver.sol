@@ -44,6 +44,11 @@ interface IValSetDriver {
     error ValSetDriver_NotAdded();
 
     /**
+     * @notice Reverts when the committer slot duration is zero.
+     */
+    error ValSetDriver_ZeroCommitterSlotDuration();
+
+    /**
      * @notice Reverts when the number of aggregators is zero.
      */
     error ValSetDriver_ZeroNumAggregators();
@@ -55,39 +60,41 @@ interface IValSetDriver {
 
     /**
      * @notice The storage of the ValSetDriver contract.
+     * @param _numAggregators The checkpoint of the number of aggregators.
+     * @param _numCommitters The checkpoint of the number of committers.
+     * @param _committerSlotDuration The checkpoint of the committer slot duration.
      * @param _isVotingPowerProviderChainAdded The mapping from the chain ID to the voting power provider chain added status.
      * @param _votingPowerProviders The set of the voting power providers.
      * @param _keysProvider The checkpoint of the keys provider.
      * @param _isSettlementChainAdded The mapping from the chain ID to the settlement chain added status.
      * @param _settlements The set of the settlements.
-     * @param _verificationType The checkpoint of the verification type.
      * @param _maxVotingPower The checkpoint of the maximum voting power.
      * @param _minInclusionVotingPower The checkpoint of the minimum inclusion voting power.
      * @param _maxValidatorsCount The checkpoint of the maximum active validators count.
      * @param _requiredKeyTags The checkpoint of the required key tags.
-     * @param _requiredHeaderKeyTag The checkpoint of the required header key tag.
      * @param _isQuorumThresholdKeyTagAdded The mapping from the key tag to the quorum threshold key tag added status.
      * @param _quorumThresholds The set of the quorum thresholds.
-     * @param _numAggregators The checkpoint of the number of aggregators.
-     * @param _numCommitters The checkpoint of the number of committers.
+     * @param _requiredHeaderKeyTag The checkpoint of the required header key tag.
+     * @param _verificationType The checkpoint of the verification type.
      * @custom:storage-location ERC-7201 slot: erc7201:symbiotic.storage.ValSetDriver.
      */
     struct ValSetDriverStorage {
+        Checkpoints.Trace208 _numAggregators;
+        Checkpoints.Trace208 _numCommitters;
+        Checkpoints.Trace208 _committerSlotDuration;
         mapping(uint64 chainId => bool isAdded) _isVotingPowerProviderChainAdded;
         PersistentSet.Bytes32Set _votingPowerProviders;
         Checkpoints.Trace256 _keysProvider;
         mapping(uint64 chainId => bool isAdded) _isSettlementChainAdded;
         PersistentSet.Bytes32Set _settlements;
-        Checkpoints.Trace208 _verificationType;
         Checkpoints.Trace256 _maxVotingPower;
         Checkpoints.Trace256 _minInclusionVotingPower;
         Checkpoints.Trace208 _maxValidatorsCount;
         Checkpoints.Trace208 _requiredKeyTags;
-        Checkpoints.Trace208 _requiredHeaderKeyTag;
         mapping(uint8 keyTag => bool isAdded) _isQuorumThresholdKeyTagAdded;
         PersistentSet.Bytes32Set _quorumThresholds;
-        Checkpoints.Trace208 _numAggregators;
-        Checkpoints.Trace208 _numCommitters;
+        Checkpoints.Trace208 _requiredHeaderKeyTag;
+        Checkpoints.Trace208 _verificationType;
     }
 
     /**
@@ -98,6 +105,7 @@ interface IValSetDriver {
      *         and produce the proof for the verification) at the genesis.
      * @param numCommitters The number of committers (those who commit some data (e.g., ValSetHeader)
      *         to on-chain) at the genesis.
+     * @param committerSlotDuration The committer slot duration (determines how often the committers are switched) at the genesis.
      * @param votingPowerProviders The voting power providers (contracts that provide the voting powers of the operators on different chains).
      * @param keysProvider The keys provider (contract that provides the keys of the operators).
      * @param settlements The settlements (contracts that enable a verification of the validator set's attestations on different chains).
@@ -114,6 +122,7 @@ interface IValSetDriver {
         IEpochManager.EpochManagerInitParams epochManagerInitParams;
         uint208 numAggregators;
         uint208 numCommitters;
+        uint48 committerSlotDuration;
         CrossChainAddress[] votingPowerProviders;
         CrossChainAddress keysProvider;
         CrossChainAddress[] settlements;
@@ -152,6 +161,7 @@ interface IValSetDriver {
      *         and produce the proof for the verification).
      * @param numCommitters The number of committers (those who commit some data (e.g., ValSetHeader)
      *         to on-chain).
+     * @param committerSlotDuration The committer slot duration (determines how often the committers are switched).
      * @param votingPowerProviders The voting power providers (contracts that provide the voting powers of the operators on different chains).
      * @param keysProvider The keys provider (contract that provides the keys of the operators).
      * @param settlements The settlements (contracts that enable a verification of the validator set's attestations on different chains).
@@ -166,6 +176,7 @@ interface IValSetDriver {
     struct Config {
         uint208 numAggregators;
         uint208 numCommitters;
+        uint48 committerSlotDuration;
         CrossChainAddress[] votingPowerProviders;
         CrossChainAddress keysProvider;
         CrossChainAddress[] settlements;
@@ -191,6 +202,12 @@ interface IValSetDriver {
      *         to on-chain).
      */
     event SetNumCommitters(uint208 numCommitters);
+
+    /**
+     * @notice Emitted when the committer slot duration is set.
+     * @param committerSlotDuration The committer slot duration.
+     */
+    event SetCommitterSlotDuration(uint48 committerSlotDuration);
 
     /**
      * @notice Emitted when the voting power provider is added.
@@ -319,6 +336,19 @@ interface IValSetDriver {
      * @return The number of committers.
      */
     function getNumCommitters() external view returns (uint208);
+
+    /**
+     * @notice Returns the committer slot duration at the given timestamp.
+     * @param timestamp The timestamp.
+     * @return The committer slot duration.
+     */
+    function getCommitterSlotDurationAt(uint48 timestamp) external view returns (uint48);
+
+    /**
+     * @notice Returns the committer slot duration.
+     * @return The committer slot duration.
+     */
+    function getCommitterSlotDuration() external view returns (uint48);
 
     /**
      * @notice Returns if the voting power provider is registered at the given timestamp.
@@ -519,6 +549,13 @@ interface IValSetDriver {
      * @dev The caller must have the needed permission.
      */
     function setNumCommitters(uint208 numCommitters) external;
+
+    /**
+     * @notice Sets the committer slot duration (determines how often the committers are switched).
+     * @param slotDuration The committer slot duration.
+     * @dev The caller must have the needed permission.
+     */
+    function setCommitterSlotDuration(uint48 slotDuration) external;
 
     /**
      * @notice Adds a voting power provider.

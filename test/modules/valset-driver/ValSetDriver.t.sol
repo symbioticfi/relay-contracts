@@ -59,6 +59,7 @@ contract ValSetDriverTest is Test {
             }),
             numAggregators: 1,
             numCommitters: 1,
+            committerSlotDuration: 200,
             votingPowerProviders: vpps,
             keysProvider: keysProv,
             settlements: settls,
@@ -121,10 +122,13 @@ contract ValSetDriverTest is Test {
 
         assertEq(testMCP.getNumAggregators(), 1, "numAggregators mismatch");
         assertEq(testMCP.getNumCommitters(), 1, "numCommitters mismatch");
+        assertEq(testMCP.getCommitterSlotDuration(), 200, "committerSlotDuration mismatch");
+        assertEq(testMCP.getCommitterSlotDurationAt(uint48(vm.getBlockTimestamp())), 200, "slot duration at mismatch");
 
         IValSetDriver.Config memory mc = testMCP.getConfig();
         assertEq(mc.numAggregators, 1);
         assertEq(mc.numCommitters, 1);
+        assertEq(mc.committerSlotDuration, 200);
         assertEq(mc.votingPowerProviders.length, 2);
         assertEq(mc.votingPowerProviders[0].addr, address(0xAA01));
         assertEq(mc.keysProvider.addr, address(444));
@@ -397,6 +401,32 @@ contract ValSetDriverTest is Test {
         assertEq(testMCP.getConfigAt(uint48(vm.getBlockTimestamp() - 1)).numCommitters, 1);
     }
 
+    function test_SetCommitterSlotDuration() public {
+        vm.prank(nonOwner);
+        vm.expectRevert("Not authorized");
+        testMCP.setCommitterSlotDuration(300);
+
+        vm.prank(owner);
+        testMCP.setCommitterSlotDuration(300);
+        assertEq(testMCP.getCommitterSlotDuration(), 300);
+
+        vm.prank(owner);
+        vm.expectRevert(IValSetDriver.ValSetDriver_ZeroCommitterSlotDuration.selector);
+        testMCP.setCommitterSlotDuration(0);
+
+        vm.warp(vm.getBlockTimestamp() + 100);
+
+        vm.prank(owner);
+        testMCP.setCommitterSlotDuration(400);
+
+        assertEq(testMCP.getCommitterSlotDurationAt(uint48(vm.getBlockTimestamp() - 1)), 300);
+        assertEq(testMCP.getCommitterSlotDurationAt(uint48(vm.getBlockTimestamp())), 400);
+
+        assertEq(testMCP.getConfig().committerSlotDuration, 400);
+        assertEq(testMCP.getConfigAt(uint48(vm.getBlockTimestamp())).committerSlotDuration, 400);
+        assertEq(testMCP.getConfigAt(uint48(vm.getBlockTimestamp() - 1)).committerSlotDuration, 300);
+    }
+
     function test_Location() public {
         bytes32 location =
             keccak256(abi.encode(uint256(keccak256("symbiotic.storage.ValSetDriver")) - 1)) & ~bytes32(uint256(0xff));
@@ -491,6 +521,7 @@ contract ValSetDriverTest is Test {
         assertEq(cfg.maxVotingPower, 1e36, "maxVotingPower mismatch");
         assertEq(cfg.minInclusionVotingPower, 0, "minInclusion mismatch");
         assertEq(cfg.maxValidatorsCount, 100, "maxValidators mismatch");
+        assertEq(cfg.committerSlotDuration, 200, "committer slot mismatch");
         assertEq(cfg.requiredKeyTags.length, 1, "tags length mismatch");
         assertEq(cfg.requiredKeyTags[0], 0x2A, "tag mismatch");
     }

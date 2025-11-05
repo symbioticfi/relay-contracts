@@ -207,6 +207,7 @@ contract MasterSetupTest is InitSetupTest {
                         }),
                         numAggregators: 1,
                         numCommitters: 1,
+                        committerSlotDuration: networkSetupParams.EPOCH_DURATION,
                         votingPowerProviders: localVars.votingPowerProviders,
                         keysProvider: localVars.keysProvider,
                         settlements: localVars.settlements,
