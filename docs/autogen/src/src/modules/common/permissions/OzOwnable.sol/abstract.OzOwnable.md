@@ -1,5 +1,5 @@
 # OzOwnable
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/773ae3c4e705581f92fbc339ac410d52ee1220ab/src/modules/common/permissions/OzOwnable.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1e5359cf6070a0b4aae5d36e84302fa6de3a57c7/src/modules/common/permissions/OzOwnable.sol)
 
 **Inherits:**
 [PermissionManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), OwnableUpgradeable, [IOzOwnable](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/common/permissions/IOzOwnable.sol/interface.IOzOwnable.md)

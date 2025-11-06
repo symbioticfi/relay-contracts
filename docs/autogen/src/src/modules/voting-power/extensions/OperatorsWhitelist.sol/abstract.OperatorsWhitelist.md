@@ -1,5 +1,5 @@
 # OperatorsWhitelist
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/773ae3c4e705581f92fbc339ac410d52ee1220ab/src/modules/voting-power/extensions/OperatorsWhitelist.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1e5359cf6070a0b4aae5d36e84302fa6de3a57c7/src/modules/voting-power/extensions/OperatorsWhitelist.sol)
 
 **Inherits:**
 [VotingPowerProvider](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/VotingPowerProvider.sol/abstract.VotingPowerProvider.md), [IOperatorsWhitelist](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/extensions/IOperatorsWhitelist.sol/interface.IOperatorsWhitelist.md)

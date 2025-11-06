@@ -21,6 +21,8 @@ contract KeyBlsBn12381Test is Test {
     uint256 private constant P_PLUS_ONE_SLASH_2_B = 0xd91dd2e13ce144afd9cc34a83dac3d8907aaffffac54ffffee7fbfffffffeaab;
     uint256 private constant PRE_BRANCH_LOW = type(uint256).max - 3;
     uint256 private constant POST_BRANCH_LOW = 0x9b88b47b0c7aed4098cf2d5f094f09dbe15400014eac00004601000000005556;
+    bytes32 private constant G1_SUBGROUP_ORDER = 0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000001;
+    address private constant G1_MSM_PRECOMPILE = address(0x0c);
 
     function setUp() public {
         mock = new KeyBlsBn12381Mock();
@@ -195,6 +197,17 @@ contract KeyBlsBn12381Test is Test {
         BN12381.G1Point memory torsion = _nonSubgroupPoint();
         vm.expectRevert(BN12381.G1MSMFailed.selector);
         mock.wrap(torsion);
+    }
+
+    function test_WrapRevertsWhenSubgroupCheckReturnsNonZero() public {
+        BN12381.G1Point memory pt = _generator();
+        bytes memory callData = abi.encodePacked(pt.x_a, pt.x_b, pt.y_a, pt.y_b, G1_SUBGROUP_ORDER);
+        bytes memory nonZeroResult =
+            abi.encodePacked(bytes32(uint256(1)), bytes32(uint256(2)), bytes32(uint256(3)), bytes32(uint256(4)));
+        vm.mockCall(G1_MSM_PRECOMPILE, callData, nonZeroResult);
+        vm.expectRevert(KeyBlsBn12381.KeyBlsBn12381_InvalidKey.selector);
+        mock.wrap(pt);
+        vm.clearMockedCalls();
     }
 
     function test_SerializeTriggersXCubedPlus4CarryBranch() public {
