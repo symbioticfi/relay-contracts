@@ -13,6 +13,10 @@ contract BN12381Harness {
     function xCubePlus4(uint256 x_a, uint256 x_b) external view returns (uint256, uint256) {
         return BN12381._xCubePlus4(x_a, x_b);
     }
+
+    function findYFromX(uint256 x_a, uint256 x_b) external view returns (uint256, uint256) {
+        return BN12381.findYFromX(x_a, x_b);
+    }
 }
 
 contract BN12381UtilsTest is Test {
@@ -68,6 +72,18 @@ contract BN12381UtilsTest is Test {
         assertEq(resultB, 2);
 
         vm.clearMockedCalls();
+    }
+
+    function test_FindYFromX_RevertsForNonResidue() public {
+        vm.expectRevert(BN12381.InvalidPoint.selector);
+        harness.findYFromX(0, 1);
+    }
+
+    function test_FindYFromX_ReturnsValidRoot() public {
+        BN12381.G1Point memory generator = BN12381.negate(BN12381.negGeneratorG1());
+        (uint256 y_a, uint256 y_b) = harness.findYFromX(uint256(generator.x_a), uint256(generator.x_b));
+        assertEq(y_a, uint256(generator.y_a));
+        assertEq(y_b, uint256(generator.y_b));
     }
 
     function _buildModexpCallData(uint256 x_a, uint256 x_b) internal pure returns (bytes memory callData) {

@@ -135,6 +135,9 @@ library BN12381 {
     /// @dev The MapFpToG2 operation failed.
     error MapFp2ToG2Failed();
 
+    /// @dev The provided X coordinate does not correspond to a valid point on G1.
+    error InvalidPoint();
+
     /*´:°•.°+.*•´.*:˚.°*.˚•´.°:°•.°•.*•´.*:˚.°*.˚•´.°:°•.°+.*•´.*:*/
     /*                         OPERATIONS                         */
     /*.•°:°.´+˚.*°.˚:*.´•*.+°.•°:´*.´•*.•°.•°:°.´:•˚°.*°.˚:*.´+°.•*/
@@ -354,8 +357,29 @@ library BN12381 {
             mstore(add(buf, 0x100), P_A)
             mstore(add(buf, 0x120), P_B)
             modfield(add(buf, 0x20), add(buf, 0x20))
+
+            let rhs_a_ := y_a
+            let rhs_b_ := y_b
             y_a := mload(add(buf, 0x20))
             y_b := mload(add(buf, 0x40))
+
+            // Square the candidate y and ensure it matches x^3 + 4.
+            mstore(add(buf, 0x20), 0x40)
+            mstore(add(buf, 0x40), 0x40)
+            mstore(add(buf, 0x60), 0x40)
+            mstore(add(buf, 0x80), y_a)
+            mstore(add(buf, 0xa0), y_b)
+            mstore(add(buf, 0xc0), 0)
+            mstore(add(buf, 0xe0), 2)
+            mstore(add(buf, 0x100), P_A)
+            mstore(add(buf, 0x120), P_B)
+            modfield(add(buf, 0x20), add(buf, 0x20))
+
+            // Compare with the original RHS (x^3 + 4).
+            if iszero(and(eq(mload(add(buf, 0x20)), rhs_a_), eq(mload(add(buf, 0x40)), rhs_b_))) {
+                mstore(0x00, 0xb8fedf87) // `InvalidPoint()`.
+                revert(0x1c, 0x04)
+            }
         }
     }
 
