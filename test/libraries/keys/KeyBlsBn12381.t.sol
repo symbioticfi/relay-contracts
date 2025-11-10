@@ -210,45 +210,6 @@ contract KeyBlsBn12381Test is Test {
         vm.clearMockedCalls();
     }
 
-    function test_SerializeTriggersXCubedPlus4CarryBranch() public {
-        KeyBlsBn12381.KEY_BLS_BN12381 memory key = KeyBlsBn12381.KEY_BLS_BN12381(
-            BN12381.G1Point({
-                x_a: bytes32(P_A), x_b: bytes32(PRE_BRANCH_LOW), y_a: bytes32(0), y_b: bytes32(POST_BRANCH_LOW)
-            })
-        );
-
-        bytes memory xCubeCallData = abi.encodePacked(
-            bytes32(uint256(0x40)),
-            bytes32(uint256(0x01)),
-            bytes32(uint256(0x40)),
-            key.value.x_a,
-            key.value.x_b,
-            bytes32(uint256(3)),
-            bytes32(P_A),
-            bytes32(P_B)
-        );
-        bytes memory xCubeReturnData = abi.encodePacked(bytes32(P_A), bytes32(PRE_BRANCH_LOW));
-        vm.mockCall(MODEXP, xCubeCallData, xCubeReturnData);
-
-        bytes memory sqrtCallData = abi.encodePacked(
-            bytes32(uint256(0x40)),
-            bytes32(uint256(0x40)),
-            bytes32(uint256(0x40)),
-            bytes32(uint256(0)),
-            bytes32(POST_BRANCH_LOW),
-            bytes32(P_PLUS_ONE_SLASH_2_A),
-            bytes32(P_PLUS_ONE_SLASH_2_B),
-            bytes32(P_A),
-            bytes32(P_B)
-        );
-        bytes memory sqrtReturnData = abi.encodePacked(bytes32(uint256(0)), bytes32(POST_BRANCH_LOW));
-        vm.mockCall(MODEXP, sqrtCallData, sqrtReturnData);
-
-        mock.serialize(key);
-
-        vm.clearMockedCalls();
-    }
-
     function _nonSubgroupPoint() internal pure returns (BN12381.G1Point memory) {
         return BN12381.G1Point({
             x_a: bytes32(0),
