@@ -1,5 +1,5 @@
 # BN12381
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1e5359cf6070a0b4aae5d36e84302fa6de3a57c7/src/libraries/utils/BN12381.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/f15b7f1298f3e89ef5f17b3ef10b20d2dc6845d4/src/libraries/utils/BN12381.sol)
 
 **Authors:**
 Solady (https://github.com/vectorized/solady/blob/main/src/utils/BLS.sol), Ithaca (https://github.com/ithacaxyz/odyssey-examples/blob/main/chapter1/contracts/src/libraries/BLS.sol)
@@ -306,6 +306,14 @@ The MapFpToG2 operation failed.
 
 ```solidity
 error MapFp2ToG2Failed();
+```
+
+### InvalidPoint
+The provided X coordinate does not correspond to a valid point on G1.
+
+
+```solidity
+error InvalidPoint();
 ```
 
 ## Structs

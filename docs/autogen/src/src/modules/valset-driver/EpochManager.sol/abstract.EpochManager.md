@@ -1,8 +1,8 @@
 # EpochManager
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1e5359cf6070a0b4aae5d36e84302fa6de3a57c7/src/modules/valset-driver/EpochManager.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/f15b7f1298f3e89ef5f17b3ef10b20d2dc6845d4/src/modules/valset-driver/EpochManager.sol)
 
 **Inherits:**
-[PermissionManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), [IEpochManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/valset-driver/IEpochManager.sol/interface.IEpochManager.md)
+[PermissionManager](/Users/sergey/Projects/Symbiotic/relay-contracts/docs/autogen/src/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), [IEpochManager](/Users/sergey/Projects/Symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/valset-driver/IEpochManager.sol/interface.IEpochManager.md)
 
 Contract for managing the epochs state machine.
 
