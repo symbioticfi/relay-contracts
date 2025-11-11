@@ -38,6 +38,154 @@ repos:
         files: '\.sol$'
         exclude: "^lib/"
         pass_filenames: true
+      - id: generate-abis
+        name: Generate ABI artifacts
+        description: Compile contracts and sync their ABIs into ./abis
+        language: system
+        entry: python3 script/utils/generate_abis.py
+        pass_filenames: false
+      - id: generate-bindings-rust-alloy
+        name: Generate Rust bindings (alloy)
+        description: Produce Rust alloy bindings from ABI files
+        language: system
+        entry: >
+          bash -lc '
+            set -euo pipefail
+            if [ ! -d abis ]; then
+              echo "abis directory missing; run the ABI generation hook first" >&2
+              exit 1
+            fi
+            mapfile -t ABI_FILES < <(find abis -type f -name "*.abi.json" | sort)
+            if [ ${#ABI_FILES[@]} -eq 0 ]; then
+              echo "no ABI files found under abis/" >&2
+              exit 1
+            fi
+            if ! command -v forge >/dev/null 2>&1; then
+              echo "forge CLI not found (install Foundry)" >&2
+              exit 1
+            fi
+            rm -rf bindings/rust-alloy
+            mkdir -p bindings
+            forge_args=(forge bind --bindings-path bindings/rust-alloy --overwrite --skip-build)
+            for abi in "${ABI_FILES[@]}"; do
+              name=$(basename "$abi" .abi.json)
+              forge_args+=(--select "$name")
+            done
+            "${forge_args[@]}"
+          '
+        pass_filenames: false
+      - id: generate-bindings-ts-viem
+        name: Generate TypeScript bindings (viem)
+        description: Produce TypeScript viem bindings from ABI files
+        language: system
+        entry: >
+          bash -lc '
+            set -euo pipefail
+            if [ ! -d abis ]; then
+              echo "abis directory missing; run the ABI generation hook first" >&2
+              exit 1
+            fi
+            mapfile -t ABI_FILES < <(find abis -type f -name "*.abi.json" | sort)
+            if [ ${#ABI_FILES[@]} -eq 0 ]; then
+              echo "no ABI files found under abis/" >&2
+              exit 1
+            fi
+            if ! command -v npx >/dev/null 2>&1; then
+              echo "npx CLI not found (install Node.js)" >&2
+              exit 1
+            fi
+            mkdir -p bindings/ts-viem
+            rm -f bindings/ts-viem/generated.ts
+            npx --yes wagmi@latest generate --config bindings/ts-viem/wagmi.config.mjs
+          '
+        pass_filenames: false
+      - id: generate-bindings-go-go-ethereum
+        name: Generate Go bindings (go-ethereum)
+        description: Produce Go bindings with abigen from ABI files
+        language: system
+        entry: >
+          bash -lc '
+            set -euo pipefail
+            if [ ! -d abis ]; then
+              echo "abis directory missing; run the ABI generation hook first" >&2
+              exit 1
+            fi
+            mapfile -t ABI_FILES < <(find abis -type f -name "*.abi.json" | sort)
+            if [ ${#ABI_FILES[@]} -eq 0 ]; then
+              echo "no ABI files found under abis/" >&2
+              exit 1
+            fi
+            if ! command -v abigen >/dev/null 2>&1; then
+              echo "abigen CLI not found (install go-ethereum abigen)" >&2
+              exit 1
+            fi
+            rm -rf bindings/go-go-ethereum
+            mkdir -p bindings/go-go-ethereum
+            pkg=${ABIGEN_PACKAGE:-relaycontracts}
+            for abi in "${ABI_FILES[@]}"; do
+              name=$(basename "$abi" .abi.json)
+              go_file=$(python3 - "$name" <<'PY'
+import re, sys
+name = sys.argv[1]
+s1 = re.sub(r'(.)([A-Z][a-z]+)', r'\1_\2', name)
+snake = re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+snake = re.sub(r'[^0-9a-z_]', "_", snake)
+print(snake)
+PY
+)
+              abigen --abi "$abi" --pkg "$pkg" --type "$name" --out "bindings/go-go-ethereum/${go_file}.go"
+            done
+          '
+        pass_filenames: false
+      - id: generate-bindings-java-web3j
+        name: Generate Java bindings (web3j)
+        description: Produce Java bindings with web3j from ABI files
+        language: system
+        entry: >
+          bash -lc '
+            set -euo pipefail
+            if [ ! -d abis ]; then
+              echo "abis directory missing; run the ABI generation hook first" >&2
+              exit 1
+            fi
+            mapfile -t ABI_FILES < <(find abis -type f -name "*.abi.json" | sort)
+            if [ ${#ABI_FILES[@]} -eq 0 ]; then
+              echo "no ABI files found under abis/" >&2
+              exit 1
+            fi
+            if ! command -v web3j >/dev/null 2>&1; then
+              echo "web3j CLI not found (install the web3j command line tools)" >&2
+              exit 1
+            fi
+            rm -rf bindings/java-web3j
+            mkdir -p bindings/java-web3j
+            package_name=${WEB3J_PACKAGE:-fi.symbiotic.relay}
+            for abi in "${ABI_FILES[@]}"; do
+              web3j generate solidity -a "$abi" -o bindings/java-web3j -p "$package_name"
+            done
+          '
+        pass_filenames: false
+      - id: generate-bindings-dotnet-nethereum
+        name: Generate .NET bindings (Nethereum)
+        description: Produce .NET bindings with Nethereum from ABI files
+        language: system
+        entry: >
+          bash -lc '
+            set -euo pipefail
+            if [ ! -d abis ]; then
+              echo "abis directory missing; run the ABI generation hook first" >&2
+              exit 1
+            fi
+            if ! command -v Nethereum.Generator.Console >/dev/null 2>&1; then
+              echo "Nethereum.Generator.Console not found (install the dotnet tool)" >&2
+              exit 1
+            fi
+            rm -rf bindings/.net-nethereum
+            mkdir -p bindings/.net-nethereum
+            namespace=${NETHEREUM_NAMESPACE:-Symbiotic.Relay}
+            Nethereum.Generator.Console generate from-abi --abi-path "abis" --output-path "bindings/.net-nethereum" --namespace "$namespace"
+          '
+        pass_filenames: false
       - id: doc
         name: Generate documentation
         description: Generate docs with `forge doc`
