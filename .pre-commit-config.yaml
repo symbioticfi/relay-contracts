@@ -55,7 +55,10 @@ repos:
               echo "abis directory missing; run the ABI generation hook first" >&2
               exit 1
             fi
-            mapfile -t ABI_FILES < <(find abis -type f -name "*.abi.json" | sort)
+            ABI_FILES=()
+            while IFS= read -r file; do
+              ABI_FILES+=("$file")
+            done < <(find abis -type f -name "*.abi.json" | sort)
             if [ ${#ABI_FILES[@]} -eq 0 ]; then
               echo "no ABI files found under abis/" >&2
               exit 1
@@ -81,11 +84,15 @@ repos:
         entry: >
           bash -lc '
             set -euo pipefail
+            exec > /dev/null
             if [ ! -d abis ]; then
               echo "abis directory missing; run the ABI generation hook first" >&2
               exit 1
             fi
-            mapfile -t ABI_FILES < <(find abis -type f -name "*.abi.json" | sort)
+            ABI_FILES=()
+            while IFS= read -r file; do
+              ABI_FILES+=("$file")
+            done < <(find abis -type f -name "*.abi.json" | sort)
             if [ ${#ABI_FILES[@]} -eq 0 ]; then
               echo "no ABI files found under abis/" >&2
               exit 1
@@ -110,7 +117,10 @@ repos:
               echo "abis directory missing; run the ABI generation hook first" >&2
               exit 1
             fi
-            mapfile -t ABI_FILES < <(find abis -type f -name "*.abi.json" | sort)
+            ABI_FILES=()
+            while IFS= read -r file; do
+              ABI_FILES+=("$file")
+            done < <(find abis -type f -name "*.abi.json" | sort)
             if [ ${#ABI_FILES[@]} -eq 0 ]; then
               echo "no ABI files found under abis/" >&2
               exit 1
@@ -140,7 +150,10 @@ repos:
               echo "abis directory missing; run the ABI generation hook first" >&2
               exit 1
             fi
-            mapfile -t ABI_FILES < <(find abis -type f -name "*.abi.json" | sort)
+            ABI_FILES=()
+            while IFS= read -r file; do
+              ABI_FILES+=("$file")
+            done < <(find abis -type f -name "*.abi.json" | sort)
             if [ ${#ABI_FILES[@]} -eq 0 ]; then
               echo "no ABI files found under abis/" >&2
               exit 1
@@ -172,7 +185,10 @@ repos:
               echo "Nethereum.Generator.Console not found (install the dotnet tool)" >&2
               exit 1
             fi
-            mapfile -t ABI_FILES < <(find abis -type f -name "*.abi.json" | sort)
+            ABI_FILES=()
+            while IFS= read -r file; do
+              ABI_FILES+=("$file")
+            done < <(find abis -type f -name "*.abi.json" | sort)
             if [ ${#ABI_FILES[@]} -eq 0 ]; then
               echo "no ABI files found under abis/" >&2
               exit 1
