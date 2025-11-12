@@ -218,3 +218,4 @@ repos:
       - id: prettier
         name: Format non-solidity files with prettier
         exclude: "^(docs/autogen|snapshots/)"
+        language_version: system
