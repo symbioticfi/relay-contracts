@@ -69,8 +69,19 @@ library BN12381 {
     uint128 private constant P_PLUS_ONE_SLASH_2_A = 0x0680447a8e5ff9a692c6e9ed90d2eb35;
     uint256 private constant P_PLUS_ONE_SLASH_2_B = 0xd91dd2e13ce144afd9cc34a83dac3d8907aaffffac54ffffee7fbfffffffeaab;
     bytes32 private constant G1_SUBGROUP_ORDER = 0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000001;
+    uint256 internal constant FR_MODULUS = 0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000001;
 
-    /// @dev Referenced from https://eips.ethereum.org/EIPS/eip-2537#curve-parameters
+    /// @notice Returns the canonical G1 generator.
+    function generatorG1() internal pure returns (G1Point memory) {
+        return G1Point({
+            x_a: bytes32(0x0000000000000000000000000000000017f1d3a73197d7942695638c4fa9ac0f),
+            x_b: bytes32(0xc3688c4f9774b905a14e3a3f171bac586c55e83ff97a1aeffb3af00adb22c6bb),
+            y_a: bytes32(0x0000000000000000000000000000000008b3f481e3aaa0f1a09e30ed741d8ae4),
+            y_b: bytes32(0xfcf5e095d5d00af600db18cb2c04b3edd03cc744a2888ae40caa232946c5e7e1)
+        });
+    }
+
+    /// @notice Returns the negated G1 generator (useful for pairings expecting -G1).
     function negGeneratorG1() internal pure returns (G1Point memory) {
         return G1Point({
             x_a: bytes32(0x0000000000000000000000000000000017f1d3a73197d7942695638c4fa9ac0f),
@@ -221,6 +232,15 @@ library BN12381 {
         }
     }
 
+    /// @dev Scalar multiplication of a G1 point with a scalar. Returns a new G1 point.
+    function scalarMulG1(G1Point memory point, uint256 scalar) internal view returns (G1Point memory result) {
+        G1Point[] memory points = new G1Point[](1);
+        bytes32[] memory scalars = new bytes32[](1);
+        points[0] = point;
+        scalars[0] = bytes32(scalar);
+        result = msm(points, scalars);
+    }
+
     /// @dev Adds two G2 points. Returns a new G2 point.
     function add(G2Point memory point0, G2Point memory point1) internal view returns (G2Point memory result) {
         assembly ("memory-safe") {
@@ -254,6 +274,21 @@ library BN12381 {
                 revert(0x1c, 0x04)
             }
         }
+    }
+
+    /// @dev Convenience overload mirroring BN254's pairing signature.
+    function pairing(G1Point memory a1, G2Point memory a2, G1Point memory b1, G2Point memory b2)
+        internal
+        view
+        returns (bool)
+    {
+        G1Point[] memory g1Points = new G1Point[](2);
+        G2Point[] memory g2Points = new G2Point[](2);
+        g1Points[0] = a1;
+        g1Points[1] = b1;
+        g2Points[0] = a2;
+        g2Points[1] = b2;
+        return pairing(g1Points, g2Points);
     }
 
     /// @dev Checks the pairing of G1 points with G2 points. Returns whether the pairing is valid.

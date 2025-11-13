@@ -12,7 +12,6 @@ library SigBlsBn12381 {
     using BN12381 for BN12381.G1Point;
     using KeyBlsBn12381 for KeyBlsBn12381.KEY_BLS_BN12381;
 
-    uint256 internal constant FR_MODULUS = 0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000001;
     bytes internal constant DST_G1 = "BLS_SIG_BLS12381G1_XMD:SHA-256_SSWU_RO_NUL_";
 
     /**
@@ -72,33 +71,14 @@ library SigBlsBn12381 {
             return false;
         }
         BN12381.G1Point memory messageG1 = BN12381.hashToG1(DST_G1, abi.encodePacked(messageHash));
-        uint256 alpha = uint256(keccak256(abi.encode(signatureG1, keyG1, keyG2, messageG1))) % FR_MODULUS;
+        uint256 alpha = uint256(keccak256(abi.encode(signatureG1, keyG1, keyG2, messageG1))) % BN12381.FR_MODULUS;
 
-        BN12381.G1Point memory signatureTerm = BN12381.add(signatureG1, _scalarMulG1(keyG1, alpha));
-        BN12381.G1Point memory messageTerm = BN12381.add(messageG1, _scalarMulG1(_generatorG1(), alpha));
-
-        BN12381.G1Point[] memory g1Points = new BN12381.G1Point[](2);
-        g1Points[0] = signatureTerm;
-        g1Points[1] = messageTerm;
-        BN12381.G2Point[] memory g2Points = new BN12381.G2Point[](2);
-        g2Points[0] = BN12381.negGeneratorG2();
-        g2Points[1] = keyG2;
-        return BN12381.pairing(g1Points, g2Points);
+        return BN12381.pairing(
+            signatureG1.add(keyG1.scalarMulG1(alpha)),
+            BN12381.negGeneratorG2(),
+            messageG1.add(BN12381.generatorG1().scalarMulG1(alpha)),
+            keyG2
+        );
     }
 
-    function _scalarMulG1(BN12381.G1Point memory point, uint256 scalar)
-        private
-        view
-        returns (BN12381.G1Point memory result)
-    {
-        BN12381.G1Point[] memory points = new BN12381.G1Point[](1);
-        bytes32[] memory scalars = new bytes32[](1);
-        points[0] = point;
-        scalars[0] = bytes32(scalar);
-        result = BN12381.msm(points, scalars);
-    }
-
-    function _generatorG1() private pure returns (BN12381.G1Point memory) {
-        return BN12381.negate(BN12381.negGeneratorG1());
-    }
 }
