@@ -80,6 +80,50 @@ library BN12381 {
         });
     }
 
+    // Generator coordinates sourced from https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-bls-signature-05#section-4.2.3.
+    bytes32 internal constant G2_X_C0_A = 0x00000000000000000000000000000000024aa2b2f08f0a91260805272dc51051;
+    bytes32 internal constant G2_X_C0_B = 0xc6e47ad4fa403b02b4510b647ae3d1770bac0326a805bbefd48056c8c121bdb8;
+    bytes32 internal constant G2_X_C1_A = 0x0000000000000000000000000000000013e02b6052719f607dacd3a088274f65;
+    bytes32 internal constant G2_X_C1_B = 0x596bd0d09920b61ab5da61bbdc7f5049334cf11213945d57e5ac7d055d042b7e;
+    bytes32 internal constant G2_Y_C0_A = 0x000000000000000000000000000000000ce5d527727d6e118cc9cdc6da2e351a;
+    bytes32 internal constant G2_Y_C0_B = 0xadfd9baa8cbdd3a76d429a695160d12c923ac9cc3baca289e193548608b82801;
+    bytes32 internal constant G2_Y_C1_A = 0x000000000000000000000000000000000606c4a02ea734cc32acd2b02bc28b99;
+    bytes32 internal constant G2_Y_C1_B = 0xcb3e287e85a763af267492ab572e99ab3f370d275cec1da1aaa9075ff05f79be;
+
+    // Negated generator coordinates (y -> -y mod p) using the same encoding as G2.
+    bytes32 internal constant NEG_G2_Y_C0_A = 0x000000000000000000000000000000000d1b3cc2c7027888be51d9ef691d77bc;
+    bytes32 internal constant NEG_G2_Y_C0_B = 0xb679afda66c73f17f9ee3837a55024f78c71363275a75d75d86bab79f74782aa;
+    bytes32 internal constant NEG_G2_Y_C1_A = 0x0000000000000000000000000000000013fa4d4a0ad8b1ce186ed5061789213d;
+    bytes32 internal constant NEG_G2_Y_C1_B = 0x993923066dddaf1040bc3ff59f825c78df74f2d75467e25e0f55f8a00fa030ed;
+
+    /// @notice Returns the canonical G2 generator.
+    function generatorG2() internal pure returns (G2Point memory) {
+        return G2Point({
+            x_c0_a: G2_X_C0_A,
+            x_c0_b: G2_X_C0_B,
+            x_c1_a: G2_X_C1_A,
+            x_c1_b: G2_X_C1_B,
+            y_c0_a: G2_Y_C0_A,
+            y_c0_b: G2_Y_C0_B,
+            y_c1_a: G2_Y_C1_A,
+            y_c1_b: G2_Y_C1_B
+        });
+    }
+
+    /// @notice Returns the negated G2 generator (useful for pairings expecting -G2).
+    function negGeneratorG2() internal pure returns (G2Point memory) {
+        return G2Point({
+            x_c0_a: G2_X_C0_A,
+            x_c0_b: G2_X_C0_B,
+            x_c1_a: G2_X_C1_A,
+            x_c1_b: G2_X_C1_B,
+            y_c0_a: NEG_G2_Y_C0_A,
+            y_c0_b: NEG_G2_Y_C0_B,
+            y_c1_a: NEG_G2_Y_C1_A,
+            y_c1_b: NEG_G2_Y_C1_B
+        });
+    }
+
     /*´:°•.°+.*•´.*:˚.°*.˚•´.°:°•.°•.*•´.*:˚.°*.˚•´.°:°•.°+.*•´.*:*/
     /*                    PRECOMPILE ADDRESSES                    */
     /*.•°:°.´+˚.*°.˚:*.´•*.+°.•°:´*.´•*.•°.•°:°.´:•˚°.*°.˚:*.´+°.•*/
@@ -134,6 +178,9 @@ library BN12381 {
 
     /// @dev The MapFpToG2 operation failed.
     error MapFp2ToG2Failed();
+
+    /// @dev The DST length is too long.
+    error InvalidDSTLength(bytes);
 
     /*´:°•.°+.*•´.*:˚.°*.˚•´.°:°•.°•.*•´.*:˚.°*.˚•´.°:°•.°+.*•´.*:*/
     /*                         OPERATIONS                         */
@@ -258,77 +305,80 @@ library BN12381 {
         }
     }
 
-    /// @dev Computes a point in G2 from a message.
-    function hashToG2(bytes memory message) internal view returns (G2Point memory result) {
-        assembly ("memory-safe") {
-            function dstPrime(o_, i_) -> _o {
-                mstore8(o_, i_) // 1.
-                mstore(add(o_, 0x01), "BLS_SIG_BLS12381G2_XMD:SHA-256_S") // 32.
-                mstore(add(o_, 0x21), "SWU_RO_NUL_\x2b") // 12.
-                _o := add(0x2d, o_)
+    /// @dev Computes a point in G1 from a message.
+    function hashToG1(bytes memory dst, bytes memory message) internal view returns (G1Point memory out) {
+        bytes memory uniform_bytes = expandMsg(dst, message, 128);
+        bytes memory buf = new bytes(225);
+        bytes memory buf2 = new bytes(256);
+        bool ok;
+        for (uint256 i = 0; i < 2; i++) {
+            assembly {
+                // inplace mod in uniform_bytes[64*i]
+                let p := add(32, uniform_bytes)
+                let q := add(32, buf)
+
+                p := add(p, mul(64, i))
+                mstore(q, 64) // length of base
+                q := add(q, 32)
+                mstore(q, 1) // length of exponent 1
+                q := add(q, 32)
+                mstore(q, 64) // length of modulus
+                q := add(q, 32)
+                mcopy(q, p, 64) // copy base
+                q := add(q, 64)
+                mstore8(q, 1) // exponent
+                q := add(q, 1)
+                mstore(q, P_A)
+                q := add(q, 32)
+                mstore(q, P_B)
+                ok := staticcall(gas(), 5, add(32, buf), 225, p, 64)
+
+                // EIP-2537 map_fp_to_g1
+                let r := add(32, buf2)
+                r := add(r, mul(128, i))
+                ok := and(ok, staticcall(gas(), BLS12_MAP_FP_TO_G1, p, 64, r, 128))
             }
-
-            function sha2(data_, n_) -> _h {
-                if iszero(and(eq(returndatasize(), 0x20), staticcall(gas(), 2, data_, n_, 0x00, 0x20))) {
-                    revert(calldatasize(), 0x00)
-                }
-                _h := mload(0x00)
-            }
-
-            function modfield(s_, b_) {
-                mcopy(add(s_, 0x60), b_, 0x40)
-                if iszero(and(eq(returndatasize(), 0x40), staticcall(gas(), 5, s_, 0x100, b_, 0x40))) {
-                    revert(calldatasize(), 0x00)
-                }
-            }
-
-            function mapToG2(s_, r_) {
-                if iszero(
-                    and(eq(returndatasize(), 0x100), staticcall(gas(), BLS12_MAP_FP2_TO_G2, s_, 0x80, r_, 0x100))
-                ) {
-                    mstore(0x00, 0x89083b91) // `MapFp2ToG2Failed()`.
-                    revert(0x1c, 0x04)
-                }
-            }
-
-            let b := mload(0x40)
-            let s := add(b, 0x100)
-            calldatacopy(s, calldatasize(), 0x40)
-            mcopy(add(0x40, s), add(0x20, message), mload(message))
-            let o := add(add(0x40, s), mload(message))
-            mstore(o, shl(240, 256))
-            let b0 := sha2(s, sub(dstPrime(add(0x02, o), 0), s))
-            mstore(0x20, b0)
-            mstore(s, b0)
-            mstore(b, sha2(s, sub(dstPrime(add(0x20, s), 1), s)))
-            let j := b
-            for { let i := 2 } 1 {} {
-                mstore(s, xor(b0, mload(j)))
-                j := add(j, 0x20)
-                mstore(j, sha2(s, sub(dstPrime(add(0x20, s), i), s)))
-                i := add(i, 1)
-                if eq(i, 9) { break }
-            }
-
-            mstore(add(s, 0x00), 0x40)
-            mstore(add(s, 0x20), 0x20)
-            mstore(add(s, 0x40), 0x40)
-            mstore(add(s, 0xa0), 1)
-            mstore(add(s, 0xc0), P_A)
-            mstore(add(s, 0xe0), P_B)
-            modfield(s, add(b, 0x00))
-            modfield(s, add(b, 0x40))
-            modfield(s, add(b, 0x80))
-            modfield(s, add(b, 0xc0))
-
-            mapToG2(b, result)
-            mapToG2(add(0x80, b), add(0x100, result))
-
-            if iszero(and(eq(returndatasize(), 0x100), staticcall(gas(), BLS12_G2ADD, result, 0x200, result, 0x100))) {
-                mstore(0x00, 0xc55e5e33) // `G2AddFailed()`.
-                revert(0x1c, 0x04)
-            }
+            require(ok);
         }
+        assembly {
+            ok := staticcall(gas(), BLS12_G1ADD, add(buf2, 32), 256, out, 128)
+        }
+        require(ok, "g1add failed");
+    }
+
+    /// @notice Expand arbitrary message to n bytes, as described
+    ///     in rfc9380 section 5.3.1, using H = sha256.
+    /// @param DST Domain separation tag
+    /// @param message The message to expand
+    /// @param n_bytes The number of bytes to extend to
+    function expandMsg(bytes memory DST, bytes memory message, uint8 n_bytes) internal pure returns (bytes memory) {
+        uint256 domainLen = DST.length;
+        if (domainLen > 255) {
+            revert InvalidDSTLength(DST);
+        }
+        bytes memory zpad = new bytes(64);
+        bytes memory b_0 = abi.encodePacked(zpad, message, uint8(0), n_bytes, uint8(0), DST, uint8(domainLen));
+        bytes32 b0 = sha256(b_0);
+
+        bytes memory b_i = abi.encodePacked(b0, uint8(1), DST, uint8(domainLen));
+        bytes32 bi = sha256(b_i);
+        bytes memory out = new bytes(n_bytes);
+        uint256 ell = (n_bytes + uint256(31)) >> 5;
+        for (uint256 i = 1; i < ell; i++) {
+            b_i = abi.encodePacked(b0 ^ bi, uint8(1 + i), DST, uint8(domainLen));
+            assembly {
+                let p := add(32, out)
+                p := add(p, mul(32, sub(i, 1)))
+                mstore(p, bi)
+            }
+            bi = sha256(b_i);
+        }
+        assembly {
+            let p := add(32, out)
+            p := add(p, mul(32, sub(ell, 1)))
+            mstore(p, bi)
+        }
+        return out;
     }
 
     function findYFromX(uint256 x_a, uint256 x_b) internal view returns (uint256 y_a, uint256 y_b) {

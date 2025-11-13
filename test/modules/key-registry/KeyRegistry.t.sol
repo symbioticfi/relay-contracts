@@ -63,6 +63,7 @@ contract KeyRegistryTest is Test {
     address ecdsaUser = vm.createWallet(ecdsaUserPrivateKey).addr;
 
     uint256 blsUserSk = 0x12345;
+    bytes internal constant BN12381_DST_G1 = "BLS_SIG_BLS12381G1_XMD:SHA-256_SSWU_RO_NUL_";
 
     function getG2Key(uint256 privateKey) internal view returns (BN254.G2Point memory) {
         BN254.G2Point memory G2 = BN254.generatorG2();
@@ -196,15 +197,16 @@ contract KeyRegistryTest is Test {
 
         BN12381.G1Point memory generator = _bn12381Generator();
         BN12381.G1Point memory keyG1 = _bn12381G1Mul(generator, bytes32(blsUserSk));
+        BN12381.G2Point memory keyG2 = _bn12381G2Mul(BN12381.generatorG2(), bytes32(blsUserSk));
         bytes memory keyBytes = KeyBlsBn12381.wrap(keyG1).toBytes();
 
         bytes32 structHash = keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, operator, keccak256(keyBytes)));
         bytes32 digest = keyRegistry.hashTypedDataV4(structHash);
-        BN12381.G2Point memory messageG2 = BN12381.hashToG2(abi.encodePacked(digest));
-        BN12381.G2Point memory signature = _bn12381G2Mul(messageG2, bytes32(blsUserSk));
+        BN12381.G1Point memory messageG1 = BN12381.hashToG1(BN12381_DST_G1, abi.encodePacked(digest));
+        BN12381.G1Point memory signature = _bn12381G1Mul(messageG1, bytes32(blsUserSk));
 
         vm.startPrank(operator);
-        keyRegistry.setKey(keyTag, keyBytes, abi.encode(signature), new bytes(0));
+        keyRegistry.setKey(keyTag, keyBytes, abi.encode(signature), abi.encode(keyG2));
         vm.stopPrank();
 
         assertEq(keyRegistry.getOperator(keyBytes), operator, "Operator mismatch for BN12381 key");
@@ -230,16 +232,17 @@ contract KeyRegistryTest is Test {
 
         BN12381.G1Point memory generator = _bn12381Generator();
         BN12381.G1Point memory keyG1 = _bn12381G1Mul(generator, bytes32(blsUserSk));
+        BN12381.G2Point memory keyG2 = _bn12381G2Mul(BN12381.generatorG2(), bytes32(blsUserSk));
         bytes memory keyBytes = KeyBlsBn12381.wrap(keyG1).toBytes();
 
         bytes32 structHash = keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, operator, keccak256(keyBytes)));
         bytes32 digest = keyRegistry.hashTypedDataV4(structHash);
-        BN12381.G2Point memory messageG2 = BN12381.hashToG2(abi.encodePacked(digest));
-        BN12381.G2Point memory invalidSignature = _bn12381G2Mul(messageG2, bytes32(blsUserSk + 1));
+        BN12381.G1Point memory messageG1 = BN12381.hashToG1(BN12381_DST_G1, abi.encodePacked(digest));
+        BN12381.G1Point memory invalidSignature = _bn12381G1Mul(messageG1, bytes32(blsUserSk + 1));
 
         vm.startPrank(operator);
         vm.expectRevert(IKeyRegistry.KeyRegistry_InvalidKeySignature.selector);
-        keyRegistry.setKey(keyTag, keyBytes, abi.encode(invalidSignature), new bytes(0));
+        keyRegistry.setKey(keyTag, keyBytes, abi.encode(invalidSignature), abi.encode(keyG2));
         vm.stopPrank();
     }
 
