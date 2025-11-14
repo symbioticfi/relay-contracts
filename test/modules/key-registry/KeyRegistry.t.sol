@@ -6,16 +6,16 @@ import "forge-std/Test.sol";
 import {KeyRegistry} from "../../../src/modules/key-registry/KeyRegistry.sol";
 import {IKeyRegistry} from "../../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
 
-import {KeyBlsBn12381} from "../../../src/libraries/keys/KeyBlsBn12381.sol";
+import {KeyBlsBls12381} from "../../../src/libraries/keys/KeyBlsBls12381.sol";
 import {KeyBlsBn254} from "../../../src/libraries/keys/KeyBlsBn254.sol";
 import {KeyEcdsaSecp256k1} from "../../../src/libraries/keys/KeyEcdsaSecp256k1.sol";
-import {BN12381} from "../../../src/libraries/utils/BN12381.sol";
+import {BLS12381} from "../../../src/libraries/utils/BLS12381.sol";
 import {BN254} from "../../../src/libraries/utils/BN254.sol";
 import {BN254G2} from "../../helpers/BN254G2.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {
     KEY_TYPE_BLS_BN254,
-    KEY_TYPE_BLS_BN12381,
+    KEY_TYPE_BLS_BLS12381,
     KEY_TYPE_ECDSA_SECP256K1
 } from "../../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
 
@@ -43,7 +43,7 @@ contract TestKeyRegistry is KeyRegistryWithKey64 {
 }
 
 contract KeyRegistryTest is Test {
-    using KeyBlsBn12381 for KeyBlsBn12381.KEY_BLS_BN12381;
+    using KeyBlsBls12381 for KeyBlsBls12381.KEY_BLS_BLS12381;
     using KeyBlsBn254 for BN254.G1Point;
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
     using KeyBlsBn254 for bytes;
@@ -63,7 +63,7 @@ contract KeyRegistryTest is Test {
     address ecdsaUser = vm.createWallet(ecdsaUserPrivateKey).addr;
 
     uint256 blsUserSk = 0x12345;
-    bytes internal constant BN12381_DST_G1 = "BLS_SIG_BLS12381G1_XMD:SHA-256_SSWU_RO_NUL_";
+    bytes internal constant BLS12381_DST_G1 = "BLS_SIG_BLS12381G1_XMD:SHA-256_SSWU_RO_NUL_";
 
     function getG2Key(uint256 privateKey) internal view returns (BN254.G2Point memory) {
         BN254.G2Point memory G2 = BN254.generatorG2();
@@ -72,32 +72,32 @@ contract KeyRegistryTest is Test {
         return BN254.G2Point([x2, x1], [y2, y1]);
     }
 
-    function _bn12381Generator() internal pure returns (BN12381.G1Point memory) {
-        return BN12381.negate(BN12381.negGeneratorG1());
+    function _bls12381Generator() internal pure returns (BLS12381.G1Point memory) {
+        return BLS12381.negate(BLS12381.negGeneratorG1());
     }
 
-    function _bn12381G1Mul(BN12381.G1Point memory point, bytes32 scalar)
+    function _bls12381G1Mul(BLS12381.G1Point memory point, bytes32 scalar)
         internal
         view
-        returns (BN12381.G1Point memory result)
+        returns (BLS12381.G1Point memory result)
     {
-        BN12381.G1Point[] memory points = new BN12381.G1Point[](1);
+        BLS12381.G1Point[] memory points = new BLS12381.G1Point[](1);
         bytes32[] memory scalars = new bytes32[](1);
         points[0] = point;
         scalars[0] = scalar;
-        result = BN12381.msm(points, scalars);
+        result = BLS12381.msm(points, scalars);
     }
 
-    function _bn12381G2Mul(BN12381.G2Point memory point, bytes32 scalar)
+    function _bls12381G2Mul(BLS12381.G2Point memory point, bytes32 scalar)
         internal
         view
-        returns (BN12381.G2Point memory result)
+        returns (BLS12381.G2Point memory result)
     {
-        BN12381.G2Point[] memory points = new BN12381.G2Point[](1);
+        BLS12381.G2Point[] memory points = new BLS12381.G2Point[](1);
         bytes32[] memory scalars = new bytes32[](1);
         points[0] = point;
         scalars[0] = scalar;
-        result = BN12381.msm(points, scalars);
+        result = BLS12381.msm(points, scalars);
     }
 
     function setUp() public {
@@ -191,31 +191,31 @@ contract KeyRegistryTest is Test {
         assertEq(keyTagsAt[0], KEY_TYPE_BLS_BN254.getKeyTag(15), "Key tag mismatch");
     }
 
-    function test_SetBlsBn12381Key() public {
+    function test_SetBlsBls12381Key() public {
         address operator = address(0xBEEF);
-        uint8 keyTag = KEY_TYPE_BLS_BN12381.getKeyTag(3);
+        uint8 keyTag = KEY_TYPE_BLS_BLS12381.getKeyTag(3);
 
-        BN12381.G1Point memory generator = _bn12381Generator();
-        BN12381.G1Point memory keyG1 = _bn12381G1Mul(generator, bytes32(blsUserSk));
-        BN12381.G2Point memory keyG2 = _bn12381G2Mul(BN12381.generatorG2(), bytes32(blsUserSk));
-        bytes memory keyBytes = KeyBlsBn12381.wrap(keyG1).toBytes();
+        BLS12381.G1Point memory generator = _bls12381Generator();
+        BLS12381.G1Point memory keyG1 = _bls12381G1Mul(generator, bytes32(blsUserSk));
+        BLS12381.G2Point memory keyG2 = _bls12381G2Mul(BLS12381.generatorG2(), bytes32(blsUserSk));
+        bytes memory keyBytes = KeyBlsBls12381.wrap(keyG1).toBytes();
 
         bytes32 structHash = keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, operator, keccak256(keyBytes)));
         bytes32 digest = keyRegistry.hashTypedDataV4(structHash);
-        BN12381.G1Point memory messageG1 = BN12381.hashToG1(BN12381_DST_G1, abi.encodePacked(digest));
-        BN12381.G1Point memory signature = _bn12381G1Mul(messageG1, bytes32(blsUserSk));
+        BLS12381.G1Point memory messageG1 = BLS12381.hashToG1(BLS12381_DST_G1, abi.encodePacked(digest));
+        BLS12381.G1Point memory signature = _bls12381G1Mul(messageG1, bytes32(blsUserSk));
 
         vm.startPrank(operator);
         keyRegistry.setKey(keyTag, keyBytes, abi.encode(signature), abi.encode(keyG2));
         vm.stopPrank();
 
-        assertEq(keyRegistry.getOperator(keyBytes), operator, "Operator mismatch for BN12381 key");
+        assertEq(keyRegistry.getOperator(keyBytes), operator, "Operator mismatch for BLS12381 key");
 
         bytes memory storedKey = keyRegistry.getKey(operator, keyTag);
-        assertEq(keccak256(storedKey), keccak256(keyBytes), "BN12381 key mismatch");
+        assertEq(keccak256(storedKey), keccak256(keyBytes), "BLS12381 key mismatch");
 
         bytes memory storedKeyAt = keyRegistry.getKeyAt(operator, keyTag, uint48(vm.getBlockTimestamp()));
-        assertEq(keccak256(storedKeyAt), keccak256(keyBytes), "BN12381 key mismatch");
+        assertEq(keccak256(storedKeyAt), keccak256(keyBytes), "BLS12381 key mismatch");
 
         uint8[] memory keyTags = keyRegistry.getKeyTags(operator);
         assertEq(keyTags.length, 1, "Should have 1 key tag");
@@ -226,19 +226,19 @@ contract KeyRegistryTest is Test {
         assertEq(keyTagsAt[0], keyTag, "Key tag mismatch");
     }
 
-    function test_SetBlsBn12381Key_RevertInvalidSignature() public {
+    function test_SetBlsBls12381Key_RevertInvalidSignature() public {
         address operator = address(0xBEE1);
-        uint8 keyTag = KEY_TYPE_BLS_BN12381.getKeyTag(4);
+        uint8 keyTag = KEY_TYPE_BLS_BLS12381.getKeyTag(4);
 
-        BN12381.G1Point memory generator = _bn12381Generator();
-        BN12381.G1Point memory keyG1 = _bn12381G1Mul(generator, bytes32(blsUserSk));
-        BN12381.G2Point memory keyG2 = _bn12381G2Mul(BN12381.generatorG2(), bytes32(blsUserSk));
-        bytes memory keyBytes = KeyBlsBn12381.wrap(keyG1).toBytes();
+        BLS12381.G1Point memory generator = _bls12381Generator();
+        BLS12381.G1Point memory keyG1 = _bls12381G1Mul(generator, bytes32(blsUserSk));
+        BLS12381.G2Point memory keyG2 = _bls12381G2Mul(BLS12381.generatorG2(), bytes32(blsUserSk));
+        bytes memory keyBytes = KeyBlsBls12381.wrap(keyG1).toBytes();
 
         bytes32 structHash = keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, operator, keccak256(keyBytes)));
         bytes32 digest = keyRegistry.hashTypedDataV4(structHash);
-        BN12381.G1Point memory messageG1 = BN12381.hashToG1(BN12381_DST_G1, abi.encodePacked(digest));
-        BN12381.G1Point memory invalidSignature = _bn12381G1Mul(messageG1, bytes32(blsUserSk + 1));
+        BLS12381.G1Point memory messageG1 = BLS12381.hashToG1(BLS12381_DST_G1, abi.encodePacked(digest));
+        BLS12381.G1Point memory invalidSignature = _bls12381G1Mul(messageG1, bytes32(blsUserSk + 1));
 
         vm.startPrank(operator);
         vm.expectRevert(IKeyRegistry.KeyRegistry_InvalidKeySignature.selector);

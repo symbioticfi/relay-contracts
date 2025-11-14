@@ -9,7 +9,6 @@
 # - Go
 # - abigen
 
-
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
@@ -63,22 +62,10 @@ repos:
         entry: >
           bash -lc '
             set -euo pipefail
-            if [ ! -d abis ]; then
-              echo "abis directory missing; run the ABI generation hook first" >&2
-              exit 1
-            fi
             ABI_FILES=()
             while IFS= read -r file; do
               ABI_FILES+=("$file")
             done < <(find abis -type f -name "*.abi.json" | sort)
-            if [ ${#ABI_FILES[@]} -eq 0 ]; then
-              echo "no ABI files found under abis/" >&2
-              exit 1
-            fi
-            if ! command -v forge >/dev/null 2>&1; then
-              echo "forge CLI not found (install Foundry)" >&2
-              exit 1
-            fi
             rm -rf bindings/rust-alloy
             mkdir -p bindings
             forge_args=(forge bind --bindings-path bindings/rust-alloy --overwrite --skip-build)
@@ -97,22 +84,10 @@ repos:
           bash -lc '
             set -euo pipefail
             exec > /dev/null
-            if [ ! -d abis ]; then
-              echo "abis directory missing; run the ABI generation hook first" >&2
-              exit 1
-            fi
             ABI_FILES=()
             while IFS= read -r file; do
               ABI_FILES+=("$file")
             done < <(find abis -type f -name "*.abi.json" | sort)
-            if [ ${#ABI_FILES[@]} -eq 0 ]; then
-              echo "no ABI files found under abis/" >&2
-              exit 1
-            fi
-            if ! command -v npx >/dev/null 2>&1; then
-              echo "npx CLI not found (install Node.js)" >&2
-              exit 1
-            fi
             mkdir -p bindings/ts-viem
             rm -f bindings/ts-viem/generated.ts
             (
@@ -128,22 +103,10 @@ repos:
         entry: >
           bash -lc '
             set -euo pipefail
-            if [ ! -d abis ]; then
-              echo "abis directory missing; run the ABI generation hook first" >&2
-              exit 1
-            fi
             ABI_FILES=()
             while IFS= read -r file; do
               ABI_FILES+=("$file")
             done < <(find abis -type f -name "*.abi.json" | sort)
-            if [ ${#ABI_FILES[@]} -eq 0 ]; then
-              echo "no ABI files found under abis/" >&2
-              exit 1
-            fi
-            if ! command -v abigen >/dev/null 2>&1; then
-              echo "abigen CLI not found (install go-ethereum abigen)" >&2
-              exit 1
-            fi
             rm -rf bindings/go-go-ethereum
             mkdir -p bindings/go-go-ethereum
             pkg=${ABIGEN_PACKAGE:-relaycontracts}
@@ -161,22 +124,10 @@ repos:
         entry: >
           bash -lc '
             set -euo pipefail
-            if [ ! -d abis ]; then
-              echo "abis directory missing; run the ABI generation hook first" >&2
-              exit 1
-            fi
             ABI_FILES=()
             while IFS= read -r file; do
               ABI_FILES+=("$file")
             done < <(find abis -type f -name "*.abi.json" | sort)
-            if [ ${#ABI_FILES[@]} -eq 0 ]; then
-              echo "no ABI files found under abis/" >&2
-              exit 1
-            fi
-            if ! command -v web3j >/dev/null 2>&1; then
-              echo "web3j CLI not found (install the web3j command line tools)" >&2
-              exit 1
-            fi
             rm -rf bindings/java-web3j
             mkdir -p bindings/java-web3j
             package_name=${WEB3J_PACKAGE:-fi.symbiotic.relay}
@@ -192,22 +143,10 @@ repos:
         entry: >
           bash -lc '
             set -euo pipefail
-            if [ ! -d abis ]; then
-              echo "abis directory missing; run the ABI generation hook first" >&2
-              exit 1
-            fi
-            if ! command -v Nethereum.Generator.Console >/dev/null 2>&1; then
-              echo "Nethereum.Generator.Console not found (install the dotnet tool)" >&2
-              exit 1
-            fi
             ABI_FILES=()
             while IFS= read -r file; do
               ABI_FILES+=("$file")
             done < <(find abis -type f -name "*.abi.json" | sort)
-            if [ ${#ABI_FILES[@]} -eq 0 ]; then
-              echo "no ABI files found under abis/" >&2
-              exit 1
-            fi
             rm -rf bindings/.net-nethereum
             mkdir -p bindings/.net-nethereum
             namespace=${NETHEREUM_NAMESPACE:-Symbiotic.Relay}

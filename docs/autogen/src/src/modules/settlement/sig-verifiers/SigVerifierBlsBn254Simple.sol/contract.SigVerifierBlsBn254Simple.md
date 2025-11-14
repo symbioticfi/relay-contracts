@@ -1,8 +1,8 @@
 # SigVerifierBlsBn254Simple
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/f15b7f1298f3e89ef5f17b3ef10b20d2dc6845d4/src/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/40791731b80bf5666d350907bfe7f142e3c6d70c/src/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol)
 
 **Inherits:**
-[ISigVerifierBlsBn254Simple](/Users/sergey/Projects/Symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254Simple.sol/interface.ISigVerifierBlsBn254Simple.md)
+[ISigVerifierBlsBn254Simple](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254Simple.sol/interface.ISigVerifierBlsBn254Simple.md)
 
 Contract for verifying validator's set attestations based on BLS signatures on the BN254 curve
 by decompressing the whole validator set on-chain.

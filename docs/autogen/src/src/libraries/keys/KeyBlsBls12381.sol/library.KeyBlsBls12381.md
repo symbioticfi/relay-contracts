@@ -1,9 +1,9 @@
-# KeyBlsBn12381
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/f15b7f1298f3e89ef5f17b3ef10b20d2dc6845d4/src/libraries/keys/KeyBlsBn12381.sol)
+# KeyBlsBls12381
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/40791731b80bf5666d350907bfe7f142e3c6d70c/src/libraries/keys/KeyBlsBls12381.sol)
 
-Library for interacting with BLS public keys on the BN12381 curve, including validation, serialization, and compression.
+Library for interacting with BLS public keys on the BLS12381 curve, including validation, serialization, and compression.
 
-The keys are represented as G1 points on the BN12381 curve.
+The keys are represented as G1 points on the BLS12381 curve.
 
 
 ## Functions
@@ -15,19 +15,19 @@ Allows to wrap zero G1 point.
 
 
 ```solidity
-function wrap(BN12381.G1Point memory keyRaw) internal view returns (KEY_BLS_BN12381 memory key);
+function wrap(BLS12381.G1Point memory keyRaw) internal view returns (KEY_BLS_BLS12381 memory key);
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`keyRaw`|`BN12381.G1Point`|The G1 public key.|
+|`keyRaw`|`BLS12381.G1Point`|The G1 public key.|
 
 **Returns**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`key`|`KEY_BLS_BN12381`|The wrapped key.|
+|`key`|`KEY_BLS_BLS12381`|The wrapped key.|
 
 
 ### unwrap
@@ -36,19 +36,19 @@ Unwraps a key.
 
 
 ```solidity
-function unwrap(KEY_BLS_BN12381 memory key) internal view returns (BN12381.G1Point memory keyRaw);
+function unwrap(KEY_BLS_BLS12381 memory key) internal view returns (BLS12381.G1Point memory keyRaw);
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`key`|`KEY_BLS_BN12381`|The key.|
+|`key`|`KEY_BLS_BLS12381`|The key.|
 
 **Returns**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`keyRaw`|`BN12381.G1Point`|The G1 public key.|
+|`keyRaw`|`BLS12381.G1Point`|The G1 public key.|
 
 
 ### serialize
@@ -59,13 +59,13 @@ Compresses G1 point to 48 bytes (two 32 bytes words).
 
 
 ```solidity
-function serialize(KEY_BLS_BN12381 memory key) internal view returns (bytes memory keySerialized);
+function serialize(KEY_BLS_BLS12381 memory key) internal view returns (bytes memory keySerialized);
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`key`|`KEY_BLS_BN12381`|The key.|
+|`key`|`KEY_BLS_BLS12381`|The key.|
 
 **Returns**
 
@@ -80,7 +80,7 @@ Deserializes a serialized key.
 
 
 ```solidity
-function deserialize(bytes memory keySerialized) internal view returns (KEY_BLS_BN12381 memory key);
+function deserialize(bytes memory keySerialized) internal view returns (KEY_BLS_BLS12381 memory key);
 ```
 **Parameters**
 
@@ -92,7 +92,7 @@ function deserialize(bytes memory keySerialized) internal view returns (KEY_BLS_
 
 |Name|Type|Description|
 |----|----|-----------|
-|`key`|`KEY_BLS_BN12381`|The key.|
+|`key`|`KEY_BLS_BLS12381`|The key.|
 
 
 ### toBytes
@@ -103,13 +103,13 @@ It is a bytes representation of the underlying key itself.
 
 
 ```solidity
-function toBytes(KEY_BLS_BN12381 memory key) internal view returns (bytes memory keyBytes);
+function toBytes(KEY_BLS_BLS12381 memory key) internal view returns (bytes memory keyBytes);
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`key`|`KEY_BLS_BN12381`|The key.|
+|`key`|`KEY_BLS_BLS12381`|The key.|
 
 **Returns**
 
@@ -124,7 +124,7 @@ Converts bytes to a key.
 
 
 ```solidity
-function fromBytes(bytes memory keyBytes) internal view returns (KEY_BLS_BN12381 memory key);
+function fromBytes(bytes memory keyBytes) internal view returns (KEY_BLS_BLS12381 memory key);
 ```
 **Parameters**
 
@@ -136,7 +136,7 @@ function fromBytes(bytes memory keyBytes) internal view returns (KEY_BLS_BN12381
 
 |Name|Type|Description|
 |----|----|-----------|
-|`key`|`KEY_BLS_BN12381`|The key.|
+|`key`|`KEY_BLS_BLS12381`|The key.|
 
 
 ### zeroKey
@@ -145,13 +145,13 @@ Returns a zero key.
 
 
 ```solidity
-function zeroKey() internal view returns (KEY_BLS_BN12381 memory key);
+function zeroKey() internal view returns (KEY_BLS_BLS12381 memory key);
 ```
 **Returns**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`key`|`KEY_BLS_BN12381`|The zero key.|
+|`key`|`KEY_BLS_BLS12381`|The zero key.|
 
 
 ### equal
@@ -160,14 +160,14 @@ Checks if two keys are equal.
 
 
 ```solidity
-function equal(KEY_BLS_BN12381 memory key1, KEY_BLS_BN12381 memory key2) internal view returns (bool);
+function equal(KEY_BLS_BLS12381 memory key1, KEY_BLS_BLS12381 memory key2) internal view returns (bool);
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`key1`|`KEY_BLS_BN12381`|The first key.|
-|`key2`|`KEY_BLS_BN12381`|The second key.|
+|`key1`|`KEY_BLS_BLS12381`|The first key.|
+|`key2`|`KEY_BLS_BLS12381`|The second key.|
 
 **Returns**
 
@@ -177,30 +177,30 @@ function equal(KEY_BLS_BN12381 memory key1, KEY_BLS_BN12381 memory key2) interna
 
 
 ## Errors
-### KeyBlsBn12381_InvalidBytes
+### KeyBlsBls12381_InvalidBytes
 Reverts when the key bytes are invalid.
 
 
 ```solidity
-error KeyBlsBn12381_InvalidBytes();
+error KeyBlsBls12381_InvalidBytes();
 ```
 
-### KeyBlsBn12381_InvalidKey
+### KeyBlsBls12381_InvalidKey
 Reverts when the key is invalid.
 
 
 ```solidity
-error KeyBlsBn12381_InvalidKey();
+error KeyBlsBls12381_InvalidKey();
 ```
 
 ## Structs
-### KEY_BLS_BN12381
+### KEY_BLS_BLS12381
 The key wrapper.
 
 
 ```solidity
-struct KEY_BLS_BN12381 {
-    BN12381.G1Point value;
+struct KEY_BLS_BLS12381 {
+    BLS12381.G1Point value;
 }
 ```
 
@@ -208,5 +208,5 @@ struct KEY_BLS_BN12381 {
 
 |Name|Type|Description|
 |----|----|-----------|
-|`value`|`BN12381.G1Point`|The G1 public key.|
+|`value`|`BLS12381.G1Point`|The G1 public key.|
 

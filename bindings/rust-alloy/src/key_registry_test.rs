@@ -838,9 +838,10 @@ library StdInvariant {
 }
 
 interface KeyRegistryTest {
+    error InvalidDSTLength(bytes);
     error InvalidKeyTag();
     error InvalidKeyType();
-    error KeyBlsBn12381_InvalidKey();
+    error KeyBlsBls12381_InvalidKey();
     error KeyBlsBn254_InvalidKey();
 
     event log(string);
@@ -884,8 +885,8 @@ interface KeyRegistryTest {
     function test_GetOperator_UnknownKey() external;
     function test_Location() external;
     function test_SetBLSKey() external;
-    function test_SetBlsBn12381Key() external;
-    function test_SetBlsBn12381Key_RevertInvalidSignature() external;
+    function test_SetBlsBls12381Key() external;
+    function test_SetBlsBls12381Key_RevertInvalidSignature() external;
     function test_SetECDSAKey() external;
     function test_SetECDSAKey_RevertOnInvalidSignature() external;
     function test_SetKey64() external;
@@ -1147,14 +1148,14 @@ interface KeyRegistryTest {
   },
   {
     "type": "function",
-    "name": "test_SetBlsBn12381Key",
+    "name": "test_SetBlsBls12381Key",
     "inputs": [],
     "outputs": [],
     "stateMutability": "nonpayable"
   },
   {
     "type": "function",
-    "name": "test_SetBlsBn12381Key_RevertInvalidSignature",
+    "name": "test_SetBlsBls12381Key_RevertInvalidSignature",
     "inputs": [],
     "outputs": [],
     "stateMutability": "nonpayable"
@@ -1574,6 +1575,17 @@ interface KeyRegistryTest {
   },
   {
     "type": "error",
+    "name": "InvalidDSTLength",
+    "inputs": [
+      {
+        "name": "",
+        "type": "bytes",
+        "internalType": "bytes"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "InvalidKeyTag",
     "inputs": []
   },
@@ -1584,7 +1596,7 @@ interface KeyRegistryTest {
   },
   {
     "type": "error",
-    "name": "KeyBlsBn12381_InvalidKey",
+    "name": "KeyBlsBls12381_InvalidKey",
     "inputs": []
   },
   {
@@ -1604,6 +1616,84 @@ interface KeyRegistryTest {
 pub mod KeyRegistryTest {
     use super::*;
     use alloy::sol_types as alloy_sol_types;
+    #[derive(serde::Serialize, serde::Deserialize)]
+    #[derive(Default, Debug, PartialEq, Eq, Hash)]
+    /**Custom error with signature `InvalidDSTLength(bytes)` and selector `0x26e4f9ba`.
+```solidity
+error InvalidDSTLength(bytes);
+```*/
+    #[allow(non_camel_case_types, non_snake_case, clippy::pub_underscore_fields)]
+    #[derive(Clone)]
+    pub struct InvalidDSTLength(pub alloy::sol_types::private::Bytes);
+    #[allow(
+        non_camel_case_types,
+        non_snake_case,
+        clippy::pub_underscore_fields,
+        clippy::style
+    )]
+    const _: () = {
+        use alloy::sol_types as alloy_sol_types;
+        #[doc(hidden)]
+        #[allow(dead_code)]
+        type UnderlyingSolTuple<'a> = (alloy::sol_types::sol_data::Bytes,);
+        #[doc(hidden)]
+        type UnderlyingRustTuple<'a> = (alloy::sol_types::private::Bytes,);
+        #[cfg(test)]
+        #[allow(dead_code, unreachable_patterns)]
+        fn _type_assertion(
+            _t: alloy_sol_types::private::AssertTypeEq<UnderlyingRustTuple>,
+        ) {
+            match _t {
+                alloy_sol_types::private::AssertTypeEq::<
+                    <UnderlyingSolTuple as alloy_sol_types::SolType>::RustType,
+                >(_) => {}
+            }
+        }
+        #[automatically_derived]
+        #[doc(hidden)]
+        impl ::core::convert::From<InvalidDSTLength> for UnderlyingRustTuple<'_> {
+            fn from(value: InvalidDSTLength) -> Self {
+                (value.0,)
+            }
+        }
+        #[automatically_derived]
+        #[doc(hidden)]
+        impl ::core::convert::From<UnderlyingRustTuple<'_>> for InvalidDSTLength {
+            fn from(tuple: UnderlyingRustTuple<'_>) -> Self {
+                Self(tuple.0)
+            }
+        }
+        #[automatically_derived]
+        impl alloy_sol_types::SolError for InvalidDSTLength {
+            type Parameters<'a> = UnderlyingSolTuple<'a>;
+            type Token<'a> = <Self::Parameters<
+                'a,
+            > as alloy_sol_types::SolType>::Token<'a>;
+            const SIGNATURE: &'static str = "InvalidDSTLength(bytes)";
+            const SELECTOR: [u8; 4] = [38u8, 228u8, 249u8, 186u8];
+            #[inline]
+            fn new<'a>(
+                tuple: <Self::Parameters<'a> as alloy_sol_types::SolType>::RustType,
+            ) -> Self {
+                tuple.into()
+            }
+            #[inline]
+            fn tokenize(&self) -> Self::Token<'_> {
+                (
+                    <alloy::sol_types::sol_data::Bytes as alloy_sol_types::SolType>::tokenize(
+                        &self.0,
+                    ),
+                )
+            }
+            #[inline]
+            fn abi_decode_raw_validate(data: &[u8]) -> alloy_sol_types::Result<Self> {
+                <Self::Parameters<
+                    '_,
+                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
+                    .map(Self::new)
+            }
+        }
+    };
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Default, Debug, PartialEq, Eq, Hash)]
     /**Custom error with signature `InvalidKeyTag()` and selector `0xdb67b913`.
@@ -1754,13 +1844,13 @@ error InvalidKeyType();
     };
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Default, Debug, PartialEq, Eq, Hash)]
-    /**Custom error with signature `KeyBlsBn12381_InvalidKey()` and selector `0x9b83cbb9`.
+    /**Custom error with signature `KeyBlsBls12381_InvalidKey()` and selector `0x20645294`.
 ```solidity
-error KeyBlsBn12381_InvalidKey();
+error KeyBlsBls12381_InvalidKey();
 ```*/
     #[allow(non_camel_case_types, non_snake_case, clippy::pub_underscore_fields)]
     #[derive(Clone)]
-    pub struct KeyBlsBn12381_InvalidKey;
+    pub struct KeyBlsBls12381_InvalidKey;
     #[allow(
         non_camel_case_types,
         non_snake_case,
@@ -1787,28 +1877,28 @@ error KeyBlsBn12381_InvalidKey();
         }
         #[automatically_derived]
         #[doc(hidden)]
-        impl ::core::convert::From<KeyBlsBn12381_InvalidKey>
+        impl ::core::convert::From<KeyBlsBls12381_InvalidKey>
         for UnderlyingRustTuple<'_> {
-            fn from(value: KeyBlsBn12381_InvalidKey) -> Self {
+            fn from(value: KeyBlsBls12381_InvalidKey) -> Self {
                 ()
             }
         }
         #[automatically_derived]
         #[doc(hidden)]
         impl ::core::convert::From<UnderlyingRustTuple<'_>>
-        for KeyBlsBn12381_InvalidKey {
+        for KeyBlsBls12381_InvalidKey {
             fn from(tuple: UnderlyingRustTuple<'_>) -> Self {
                 Self
             }
         }
         #[automatically_derived]
-        impl alloy_sol_types::SolError for KeyBlsBn12381_InvalidKey {
+        impl alloy_sol_types::SolError for KeyBlsBls12381_InvalidKey {
             type Parameters<'a> = UnderlyingSolTuple<'a>;
             type Token<'a> = <Self::Parameters<
                 'a,
             > as alloy_sol_types::SolType>::Token<'a>;
-            const SIGNATURE: &'static str = "KeyBlsBn12381_InvalidKey()";
-            const SELECTOR: [u8; 4] = [155u8, 131u8, 203u8, 185u8];
+            const SIGNATURE: &'static str = "KeyBlsBls12381_InvalidKey()";
+            const SELECTOR: [u8; 4] = [32u8, 100u8, 82u8, 148u8];
             #[inline]
             fn new<'a>(
                 tuple: <Self::Parameters<'a> as alloy_sol_types::SolType>::RustType,
@@ -7070,17 +7160,17 @@ function test_SetBLSKey() external;
     };
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Default, Debug, PartialEq, Eq, Hash)]
-    /**Function with signature `test_SetBlsBn12381Key()` and selector `0x6fb28389`.
+    /**Function with signature `test_SetBlsBls12381Key()` and selector `0x11f601b7`.
 ```solidity
-function test_SetBlsBn12381Key() external;
+function test_SetBlsBls12381Key() external;
 ```*/
     #[allow(non_camel_case_types, non_snake_case, clippy::pub_underscore_fields)]
     #[derive(Clone)]
-    pub struct test_SetBlsBn12381KeyCall;
-    ///Container type for the return parameters of the [`test_SetBlsBn12381Key()`](test_SetBlsBn12381KeyCall) function.
+    pub struct test_SetBlsBls12381KeyCall;
+    ///Container type for the return parameters of the [`test_SetBlsBls12381Key()`](test_SetBlsBls12381KeyCall) function.
     #[allow(non_camel_case_types, non_snake_case, clippy::pub_underscore_fields)]
     #[derive(Clone)]
-    pub struct test_SetBlsBn12381KeyReturn {}
+    pub struct test_SetBlsBls12381KeyReturn {}
     #[allow(
         non_camel_case_types,
         non_snake_case,
@@ -7108,16 +7198,16 @@ function test_SetBlsBn12381Key() external;
             }
             #[automatically_derived]
             #[doc(hidden)]
-            impl ::core::convert::From<test_SetBlsBn12381KeyCall>
+            impl ::core::convert::From<test_SetBlsBls12381KeyCall>
             for UnderlyingRustTuple<'_> {
-                fn from(value: test_SetBlsBn12381KeyCall) -> Self {
+                fn from(value: test_SetBlsBls12381KeyCall) -> Self {
                     ()
                 }
             }
             #[automatically_derived]
             #[doc(hidden)]
             impl ::core::convert::From<UnderlyingRustTuple<'_>>
-            for test_SetBlsBn12381KeyCall {
+            for test_SetBlsBls12381KeyCall {
                 fn from(tuple: UnderlyingRustTuple<'_>) -> Self {
                     Self
                 }
@@ -7142,43 +7232,43 @@ function test_SetBlsBn12381Key() external;
             }
             #[automatically_derived]
             #[doc(hidden)]
-            impl ::core::convert::From<test_SetBlsBn12381KeyReturn>
+            impl ::core::convert::From<test_SetBlsBls12381KeyReturn>
             for UnderlyingRustTuple<'_> {
-                fn from(value: test_SetBlsBn12381KeyReturn) -> Self {
+                fn from(value: test_SetBlsBls12381KeyReturn) -> Self {
                     ()
                 }
             }
             #[automatically_derived]
             #[doc(hidden)]
             impl ::core::convert::From<UnderlyingRustTuple<'_>>
-            for test_SetBlsBn12381KeyReturn {
+            for test_SetBlsBls12381KeyReturn {
                 fn from(tuple: UnderlyingRustTuple<'_>) -> Self {
                     Self {}
                 }
             }
         }
-        impl test_SetBlsBn12381KeyReturn {
+        impl test_SetBlsBls12381KeyReturn {
             fn _tokenize(
                 &self,
-            ) -> <test_SetBlsBn12381KeyCall as alloy_sol_types::SolCall>::ReturnToken<
+            ) -> <test_SetBlsBls12381KeyCall as alloy_sol_types::SolCall>::ReturnToken<
                 '_,
             > {
                 ()
             }
         }
         #[automatically_derived]
-        impl alloy_sol_types::SolCall for test_SetBlsBn12381KeyCall {
+        impl alloy_sol_types::SolCall for test_SetBlsBls12381KeyCall {
             type Parameters<'a> = ();
             type Token<'a> = <Self::Parameters<
                 'a,
             > as alloy_sol_types::SolType>::Token<'a>;
-            type Return = test_SetBlsBn12381KeyReturn;
+            type Return = test_SetBlsBls12381KeyReturn;
             type ReturnTuple<'a> = ();
             type ReturnToken<'a> = <Self::ReturnTuple<
                 'a,
             > as alloy_sol_types::SolType>::Token<'a>;
-            const SIGNATURE: &'static str = "test_SetBlsBn12381Key()";
-            const SELECTOR: [u8; 4] = [111u8, 178u8, 131u8, 137u8];
+            const SIGNATURE: &'static str = "test_SetBlsBls12381Key()";
+            const SELECTOR: [u8; 4] = [17u8, 246u8, 1u8, 183u8];
             #[inline]
             fn new<'a>(
                 tuple: <Self::Parameters<'a> as alloy_sol_types::SolType>::RustType,
@@ -7191,7 +7281,7 @@ function test_SetBlsBn12381Key() external;
             }
             #[inline]
             fn tokenize_returns(ret: &Self::Return) -> Self::ReturnToken<'_> {
-                test_SetBlsBn12381KeyReturn::_tokenize(ret)
+                test_SetBlsBls12381KeyReturn::_tokenize(ret)
             }
             #[inline]
             fn abi_decode_returns(data: &[u8]) -> alloy_sol_types::Result<Self::Return> {
@@ -7213,17 +7303,17 @@ function test_SetBlsBn12381Key() external;
     };
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Default, Debug, PartialEq, Eq, Hash)]
-    /**Function with signature `test_SetBlsBn12381Key_RevertInvalidSignature()` and selector `0xd53e6145`.
+    /**Function with signature `test_SetBlsBls12381Key_RevertInvalidSignature()` and selector `0x60093fdd`.
 ```solidity
-function test_SetBlsBn12381Key_RevertInvalidSignature() external;
+function test_SetBlsBls12381Key_RevertInvalidSignature() external;
 ```*/
     #[allow(non_camel_case_types, non_snake_case, clippy::pub_underscore_fields)]
     #[derive(Clone)]
-    pub struct test_SetBlsBn12381Key_RevertInvalidSignatureCall;
-    ///Container type for the return parameters of the [`test_SetBlsBn12381Key_RevertInvalidSignature()`](test_SetBlsBn12381Key_RevertInvalidSignatureCall) function.
+    pub struct test_SetBlsBls12381Key_RevertInvalidSignatureCall;
+    ///Container type for the return parameters of the [`test_SetBlsBls12381Key_RevertInvalidSignature()`](test_SetBlsBls12381Key_RevertInvalidSignatureCall) function.
     #[allow(non_camel_case_types, non_snake_case, clippy::pub_underscore_fields)]
     #[derive(Clone)]
-    pub struct test_SetBlsBn12381Key_RevertInvalidSignatureReturn {}
+    pub struct test_SetBlsBls12381Key_RevertInvalidSignatureReturn {}
     #[allow(
         non_camel_case_types,
         non_snake_case,
@@ -7251,10 +7341,10 @@ function test_SetBlsBn12381Key_RevertInvalidSignature() external;
             }
             #[automatically_derived]
             #[doc(hidden)]
-            impl ::core::convert::From<test_SetBlsBn12381Key_RevertInvalidSignatureCall>
+            impl ::core::convert::From<test_SetBlsBls12381Key_RevertInvalidSignatureCall>
             for UnderlyingRustTuple<'_> {
                 fn from(
-                    value: test_SetBlsBn12381Key_RevertInvalidSignatureCall,
+                    value: test_SetBlsBls12381Key_RevertInvalidSignatureCall,
                 ) -> Self {
                     ()
                 }
@@ -7262,7 +7352,7 @@ function test_SetBlsBn12381Key_RevertInvalidSignature() external;
             #[automatically_derived]
             #[doc(hidden)]
             impl ::core::convert::From<UnderlyingRustTuple<'_>>
-            for test_SetBlsBn12381Key_RevertInvalidSignatureCall {
+            for test_SetBlsBls12381Key_RevertInvalidSignatureCall {
                 fn from(tuple: UnderlyingRustTuple<'_>) -> Self {
                     Self
                 }
@@ -7288,10 +7378,10 @@ function test_SetBlsBn12381Key_RevertInvalidSignature() external;
             #[automatically_derived]
             #[doc(hidden)]
             impl ::core::convert::From<
-                test_SetBlsBn12381Key_RevertInvalidSignatureReturn,
+                test_SetBlsBls12381Key_RevertInvalidSignatureReturn,
             > for UnderlyingRustTuple<'_> {
                 fn from(
-                    value: test_SetBlsBn12381Key_RevertInvalidSignatureReturn,
+                    value: test_SetBlsBls12381Key_RevertInvalidSignatureReturn,
                 ) -> Self {
                     ()
                 }
@@ -7299,16 +7389,16 @@ function test_SetBlsBn12381Key_RevertInvalidSignature() external;
             #[automatically_derived]
             #[doc(hidden)]
             impl ::core::convert::From<UnderlyingRustTuple<'_>>
-            for test_SetBlsBn12381Key_RevertInvalidSignatureReturn {
+            for test_SetBlsBls12381Key_RevertInvalidSignatureReturn {
                 fn from(tuple: UnderlyingRustTuple<'_>) -> Self {
                     Self {}
                 }
             }
         }
-        impl test_SetBlsBn12381Key_RevertInvalidSignatureReturn {
+        impl test_SetBlsBls12381Key_RevertInvalidSignatureReturn {
             fn _tokenize(
                 &self,
-            ) -> <test_SetBlsBn12381Key_RevertInvalidSignatureCall as alloy_sol_types::SolCall>::ReturnToken<
+            ) -> <test_SetBlsBls12381Key_RevertInvalidSignatureCall as alloy_sol_types::SolCall>::ReturnToken<
                 '_,
             > {
                 ()
@@ -7316,18 +7406,18 @@ function test_SetBlsBn12381Key_RevertInvalidSignature() external;
         }
         #[automatically_derived]
         impl alloy_sol_types::SolCall
-        for test_SetBlsBn12381Key_RevertInvalidSignatureCall {
+        for test_SetBlsBls12381Key_RevertInvalidSignatureCall {
             type Parameters<'a> = ();
             type Token<'a> = <Self::Parameters<
                 'a,
             > as alloy_sol_types::SolType>::Token<'a>;
-            type Return = test_SetBlsBn12381Key_RevertInvalidSignatureReturn;
+            type Return = test_SetBlsBls12381Key_RevertInvalidSignatureReturn;
             type ReturnTuple<'a> = ();
             type ReturnToken<'a> = <Self::ReturnTuple<
                 'a,
             > as alloy_sol_types::SolType>::Token<'a>;
-            const SIGNATURE: &'static str = "test_SetBlsBn12381Key_RevertInvalidSignature()";
-            const SELECTOR: [u8; 4] = [213u8, 62u8, 97u8, 69u8];
+            const SIGNATURE: &'static str = "test_SetBlsBls12381Key_RevertInvalidSignature()";
+            const SELECTOR: [u8; 4] = [96u8, 9u8, 63u8, 221u8];
             #[inline]
             fn new<'a>(
                 tuple: <Self::Parameters<'a> as alloy_sol_types::SolType>::RustType,
@@ -7340,7 +7430,7 @@ function test_SetBlsBn12381Key_RevertInvalidSignature() external;
             }
             #[inline]
             fn tokenize_returns(ret: &Self::Return) -> Self::ReturnToken<'_> {
-                test_SetBlsBn12381Key_RevertInvalidSignatureReturn::_tokenize(ret)
+                test_SetBlsBls12381Key_RevertInvalidSignatureReturn::_tokenize(ret)
             }
             #[inline]
             fn abi_decode_returns(data: &[u8]) -> alloy_sol_types::Result<Self::Return> {
@@ -8400,10 +8490,10 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
         #[allow(missing_docs)]
         test_SetBLSKey(test_SetBLSKeyCall),
         #[allow(missing_docs)]
-        test_SetBlsBn12381Key(test_SetBlsBn12381KeyCall),
+        test_SetBlsBls12381Key(test_SetBlsBls12381KeyCall),
         #[allow(missing_docs)]
-        test_SetBlsBn12381Key_RevertInvalidSignature(
-            test_SetBlsBn12381Key_RevertInvalidSignatureCall,
+        test_SetBlsBls12381Key_RevertInvalidSignature(
+            test_SetBlsBls12381Key_RevertInvalidSignatureCall,
         ),
         #[allow(missing_docs)]
         test_SetECDSAKey(test_SetECDSAKeyCall),
@@ -8435,6 +8525,7 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
         /// Prefer using `SolInterface` methods instead.
         pub const SELECTORS: &'static [[u8; 4usize]] = &[
             [10u8, 146u8, 84u8, 228u8],
+            [17u8, 246u8, 1u8, 183u8],
             [20u8, 99u8, 110u8, 25u8],
             [25u8, 236u8, 144u8, 31u8],
             [30u8, 215u8, 131u8, 28u8],
@@ -8442,8 +8533,8 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
             [42u8, 222u8, 56u8, 128u8],
             [62u8, 94u8, 60u8, 35u8],
             [63u8, 114u8, 134u8, 244u8],
+            [96u8, 9u8, 63u8, 221u8],
             [102u8, 217u8, 169u8, 160u8],
-            [111u8, 178u8, 131u8, 137u8],
             [113u8, 103u8, 159u8, 169u8],
             [114u8, 225u8, 74u8, 86u8],
             [133u8, 34u8, 108u8, 129u8],
@@ -8458,13 +8549,13 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
             [186u8, 65u8, 79u8, 166u8],
             [191u8, 243u8, 86u8, 32u8],
             [212u8, 118u8, 143u8, 192u8],
-            [213u8, 62u8, 97u8, 69u8],
             [226u8, 12u8, 159u8, 113u8],
             [250u8, 118u8, 38u8, 212u8],
         ];
         /// The names of the variants in the same order as `SELECTORS`.
         pub const VARIANT_NAMES: &'static [&'static str] = &[
             ::core::stringify!(setUp),
+            ::core::stringify!(test_SetBlsBls12381Key),
             ::core::stringify!(test_GetKeysOperators_MultipleOperators),
             ::core::stringify!(test_SetECDSAKey),
             ::core::stringify!(excludeSenders),
@@ -8472,8 +8563,8 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
             ::core::stringify!(targetInterfaces),
             ::core::stringify!(targetSenders),
             ::core::stringify!(targetContracts),
+            ::core::stringify!(test_SetBlsBls12381Key_RevertInvalidSignature),
             ::core::stringify!(targetArtifactSelectors),
-            ::core::stringify!(test_SetBlsBn12381Key),
             ::core::stringify!(test_SetBLSKey),
             ::core::stringify!(test_GetKeysAt_TimeCheckpoints),
             ::core::stringify!(targetArtifacts),
@@ -8488,13 +8579,13 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
             ::core::stringify!(failed),
             ::core::stringify!(test_SetECDSAKey_RevertOnInvalidSignature),
             ::core::stringify!(test_SetKey64),
-            ::core::stringify!(test_SetBlsBn12381Key_RevertInvalidSignature),
             ::core::stringify!(excludeContracts),
             ::core::stringify!(IS_TEST),
         ];
         /// The signatures in the same order as `SELECTORS`.
         pub const SIGNATURES: &'static [&'static str] = &[
             <setUpCall as alloy_sol_types::SolCall>::SIGNATURE,
+            <test_SetBlsBls12381KeyCall as alloy_sol_types::SolCall>::SIGNATURE,
             <test_GetKeysOperators_MultipleOperatorsCall as alloy_sol_types::SolCall>::SIGNATURE,
             <test_SetECDSAKeyCall as alloy_sol_types::SolCall>::SIGNATURE,
             <excludeSendersCall as alloy_sol_types::SolCall>::SIGNATURE,
@@ -8502,8 +8593,8 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
             <targetInterfacesCall as alloy_sol_types::SolCall>::SIGNATURE,
             <targetSendersCall as alloy_sol_types::SolCall>::SIGNATURE,
             <targetContractsCall as alloy_sol_types::SolCall>::SIGNATURE,
+            <test_SetBlsBls12381Key_RevertInvalidSignatureCall as alloy_sol_types::SolCall>::SIGNATURE,
             <targetArtifactSelectorsCall as alloy_sol_types::SolCall>::SIGNATURE,
-            <test_SetBlsBn12381KeyCall as alloy_sol_types::SolCall>::SIGNATURE,
             <test_SetBLSKeyCall as alloy_sol_types::SolCall>::SIGNATURE,
             <test_GetKeysAt_TimeCheckpointsCall as alloy_sol_types::SolCall>::SIGNATURE,
             <targetArtifactsCall as alloy_sol_types::SolCall>::SIGNATURE,
@@ -8518,7 +8609,6 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
             <failedCall as alloy_sol_types::SolCall>::SIGNATURE,
             <test_SetECDSAKey_RevertOnInvalidSignatureCall as alloy_sol_types::SolCall>::SIGNATURE,
             <test_SetKey64Call as alloy_sol_types::SolCall>::SIGNATURE,
-            <test_SetBlsBn12381Key_RevertInvalidSignatureCall as alloy_sol_types::SolCall>::SIGNATURE,
             <excludeContractsCall as alloy_sol_types::SolCall>::SIGNATURE,
             <IS_TESTCall as alloy_sol_types::SolCall>::SIGNATURE,
         ];
@@ -8599,11 +8689,11 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
                 Self::test_SetBLSKey(_) => {
                     <test_SetBLSKeyCall as alloy_sol_types::SolCall>::SELECTOR
                 }
-                Self::test_SetBlsBn12381Key(_) => {
-                    <test_SetBlsBn12381KeyCall as alloy_sol_types::SolCall>::SELECTOR
+                Self::test_SetBlsBls12381Key(_) => {
+                    <test_SetBlsBls12381KeyCall as alloy_sol_types::SolCall>::SELECTOR
                 }
-                Self::test_SetBlsBn12381Key_RevertInvalidSignature(_) => {
-                    <test_SetBlsBn12381Key_RevertInvalidSignatureCall as alloy_sol_types::SolCall>::SELECTOR
+                Self::test_SetBlsBls12381Key_RevertInvalidSignature(_) => {
+                    <test_SetBlsBls12381Key_RevertInvalidSignatureCall as alloy_sol_types::SolCall>::SELECTOR
                 }
                 Self::test_SetECDSAKey(_) => {
                     <test_SetECDSAKeyCall as alloy_sol_types::SolCall>::SELECTOR
@@ -8653,6 +8743,17 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
                             .map(KeyRegistryTestCalls::setUp)
                     }
                     setUp
+                },
+                {
+                    fn test_SetBlsBls12381Key(
+                        data: &[u8],
+                    ) -> alloy_sol_types::Result<KeyRegistryTestCalls> {
+                        <test_SetBlsBls12381KeyCall as alloy_sol_types::SolCall>::abi_decode_raw(
+                                data,
+                            )
+                            .map(KeyRegistryTestCalls::test_SetBlsBls12381Key)
+                    }
+                    test_SetBlsBls12381Key
                 },
                 {
                     fn test_GetKeysOperators_MultipleOperators(
@@ -8736,6 +8837,19 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
                     targetContracts
                 },
                 {
+                    fn test_SetBlsBls12381Key_RevertInvalidSignature(
+                        data: &[u8],
+                    ) -> alloy_sol_types::Result<KeyRegistryTestCalls> {
+                        <test_SetBlsBls12381Key_RevertInvalidSignatureCall as alloy_sol_types::SolCall>::abi_decode_raw(
+                                data,
+                            )
+                            .map(
+                                KeyRegistryTestCalls::test_SetBlsBls12381Key_RevertInvalidSignature,
+                            )
+                    }
+                    test_SetBlsBls12381Key_RevertInvalidSignature
+                },
+                {
                     fn targetArtifactSelectors(
                         data: &[u8],
                     ) -> alloy_sol_types::Result<KeyRegistryTestCalls> {
@@ -8745,17 +8859,6 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
                             .map(KeyRegistryTestCalls::targetArtifactSelectors)
                     }
                     targetArtifactSelectors
-                },
-                {
-                    fn test_SetBlsBn12381Key(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<KeyRegistryTestCalls> {
-                        <test_SetBlsBn12381KeyCall as alloy_sol_types::SolCall>::abi_decode_raw(
-                                data,
-                            )
-                            .map(KeyRegistryTestCalls::test_SetBlsBn12381Key)
-                    }
-                    test_SetBlsBn12381Key
                 },
                 {
                     fn test_SetBLSKey(
@@ -8918,19 +9021,6 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
                     test_SetKey64
                 },
                 {
-                    fn test_SetBlsBn12381Key_RevertInvalidSignature(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<KeyRegistryTestCalls> {
-                        <test_SetBlsBn12381Key_RevertInvalidSignatureCall as alloy_sol_types::SolCall>::abi_decode_raw(
-                                data,
-                            )
-                            .map(
-                                KeyRegistryTestCalls::test_SetBlsBn12381Key_RevertInvalidSignature,
-                            )
-                    }
-                    test_SetBlsBn12381Key_RevertInvalidSignature
-                },
-                {
                     fn excludeContracts(
                         data: &[u8],
                     ) -> alloy_sol_types::Result<KeyRegistryTestCalls> {
@@ -8980,6 +9070,17 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
                             .map(KeyRegistryTestCalls::setUp)
                     }
                     setUp
+                },
+                {
+                    fn test_SetBlsBls12381Key(
+                        data: &[u8],
+                    ) -> alloy_sol_types::Result<KeyRegistryTestCalls> {
+                        <test_SetBlsBls12381KeyCall as alloy_sol_types::SolCall>::abi_decode_raw_validate(
+                                data,
+                            )
+                            .map(KeyRegistryTestCalls::test_SetBlsBls12381Key)
+                    }
+                    test_SetBlsBls12381Key
                 },
                 {
                     fn test_GetKeysOperators_MultipleOperators(
@@ -9063,6 +9164,19 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
                     targetContracts
                 },
                 {
+                    fn test_SetBlsBls12381Key_RevertInvalidSignature(
+                        data: &[u8],
+                    ) -> alloy_sol_types::Result<KeyRegistryTestCalls> {
+                        <test_SetBlsBls12381Key_RevertInvalidSignatureCall as alloy_sol_types::SolCall>::abi_decode_raw_validate(
+                                data,
+                            )
+                            .map(
+                                KeyRegistryTestCalls::test_SetBlsBls12381Key_RevertInvalidSignature,
+                            )
+                    }
+                    test_SetBlsBls12381Key_RevertInvalidSignature
+                },
+                {
                     fn targetArtifactSelectors(
                         data: &[u8],
                     ) -> alloy_sol_types::Result<KeyRegistryTestCalls> {
@@ -9072,17 +9186,6 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
                             .map(KeyRegistryTestCalls::targetArtifactSelectors)
                     }
                     targetArtifactSelectors
-                },
-                {
-                    fn test_SetBlsBn12381Key(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<KeyRegistryTestCalls> {
-                        <test_SetBlsBn12381KeyCall as alloy_sol_types::SolCall>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(KeyRegistryTestCalls::test_SetBlsBn12381Key)
-                    }
-                    test_SetBlsBn12381Key
                 },
                 {
                     fn test_SetBLSKey(
@@ -9247,19 +9350,6 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
                     test_SetKey64
                 },
                 {
-                    fn test_SetBlsBn12381Key_RevertInvalidSignature(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<KeyRegistryTestCalls> {
-                        <test_SetBlsBn12381Key_RevertInvalidSignatureCall as alloy_sol_types::SolCall>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(
-                                KeyRegistryTestCalls::test_SetBlsBn12381Key_RevertInvalidSignature,
-                            )
-                    }
-                    test_SetBlsBn12381Key_RevertInvalidSignature
-                },
-                {
                     fn excludeContracts(
                         data: &[u8],
                     ) -> alloy_sol_types::Result<KeyRegistryTestCalls> {
@@ -9379,13 +9469,13 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
                         inner,
                     )
                 }
-                Self::test_SetBlsBn12381Key(inner) => {
-                    <test_SetBlsBn12381KeyCall as alloy_sol_types::SolCall>::abi_encoded_size(
+                Self::test_SetBlsBls12381Key(inner) => {
+                    <test_SetBlsBls12381KeyCall as alloy_sol_types::SolCall>::abi_encoded_size(
                         inner,
                     )
                 }
-                Self::test_SetBlsBn12381Key_RevertInvalidSignature(inner) => {
-                    <test_SetBlsBn12381Key_RevertInvalidSignatureCall as alloy_sol_types::SolCall>::abi_encoded_size(
+                Self::test_SetBlsBls12381Key_RevertInvalidSignature(inner) => {
+                    <test_SetBlsBls12381Key_RevertInvalidSignatureCall as alloy_sol_types::SolCall>::abi_encoded_size(
                         inner,
                     )
                 }
@@ -9528,14 +9618,14 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
                         out,
                     )
                 }
-                Self::test_SetBlsBn12381Key(inner) => {
-                    <test_SetBlsBn12381KeyCall as alloy_sol_types::SolCall>::abi_encode_raw(
+                Self::test_SetBlsBls12381Key(inner) => {
+                    <test_SetBlsBls12381KeyCall as alloy_sol_types::SolCall>::abi_encode_raw(
                         inner,
                         out,
                     )
                 }
-                Self::test_SetBlsBn12381Key_RevertInvalidSignature(inner) => {
-                    <test_SetBlsBn12381Key_RevertInvalidSignatureCall as alloy_sol_types::SolCall>::abi_encode_raw(
+                Self::test_SetBlsBls12381Key_RevertInvalidSignature(inner) => {
+                    <test_SetBlsBls12381Key_RevertInvalidSignatureCall as alloy_sol_types::SolCall>::abi_encode_raw(
                         inner,
                         out,
                     )
@@ -9591,11 +9681,13 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
     #[derive(Debug, PartialEq, Eq, Hash)]
     pub enum KeyRegistryTestErrors {
         #[allow(missing_docs)]
+        InvalidDSTLength(InvalidDSTLength),
+        #[allow(missing_docs)]
         InvalidKeyTag(InvalidKeyTag),
         #[allow(missing_docs)]
         InvalidKeyType(InvalidKeyType),
         #[allow(missing_docs)]
-        KeyBlsBn12381_InvalidKey(KeyBlsBn12381_InvalidKey),
+        KeyBlsBls12381_InvalidKey(KeyBlsBls12381_InvalidKey),
         #[allow(missing_docs)]
         KeyBlsBn254_InvalidKey(KeyBlsBn254_InvalidKey),
     }
@@ -9607,22 +9699,25 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
         ///
         /// Prefer using `SolInterface` methods instead.
         pub const SELECTORS: &'static [[u8; 4usize]] = &[
+            [32u8, 100u8, 82u8, 148u8],
+            [38u8, 228u8, 249u8, 186u8],
             [54u8, 220u8, 203u8, 68u8],
-            [155u8, 131u8, 203u8, 185u8],
             [219u8, 103u8, 185u8, 19u8],
             [245u8, 72u8, 175u8, 24u8],
         ];
         /// The names of the variants in the same order as `SELECTORS`.
         pub const VARIANT_NAMES: &'static [&'static str] = &[
+            ::core::stringify!(KeyBlsBls12381_InvalidKey),
+            ::core::stringify!(InvalidDSTLength),
             ::core::stringify!(InvalidKeyType),
-            ::core::stringify!(KeyBlsBn12381_InvalidKey),
             ::core::stringify!(InvalidKeyTag),
             ::core::stringify!(KeyBlsBn254_InvalidKey),
         ];
         /// The signatures in the same order as `SELECTORS`.
         pub const SIGNATURES: &'static [&'static str] = &[
+            <KeyBlsBls12381_InvalidKey as alloy_sol_types::SolError>::SIGNATURE,
+            <InvalidDSTLength as alloy_sol_types::SolError>::SIGNATURE,
             <InvalidKeyType as alloy_sol_types::SolError>::SIGNATURE,
-            <KeyBlsBn12381_InvalidKey as alloy_sol_types::SolError>::SIGNATURE,
             <InvalidKeyTag as alloy_sol_types::SolError>::SIGNATURE,
             <KeyBlsBn254_InvalidKey as alloy_sol_types::SolError>::SIGNATURE,
         ];
@@ -9651,18 +9746,21 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
     impl alloy_sol_types::SolInterface for KeyRegistryTestErrors {
         const NAME: &'static str = "KeyRegistryTestErrors";
         const MIN_DATA_LENGTH: usize = 0usize;
-        const COUNT: usize = 4usize;
+        const COUNT: usize = 5usize;
         #[inline]
         fn selector(&self) -> [u8; 4] {
             match self {
+                Self::InvalidDSTLength(_) => {
+                    <InvalidDSTLength as alloy_sol_types::SolError>::SELECTOR
+                }
                 Self::InvalidKeyTag(_) => {
                     <InvalidKeyTag as alloy_sol_types::SolError>::SELECTOR
                 }
                 Self::InvalidKeyType(_) => {
                     <InvalidKeyType as alloy_sol_types::SolError>::SELECTOR
                 }
-                Self::KeyBlsBn12381_InvalidKey(_) => {
-                    <KeyBlsBn12381_InvalidKey as alloy_sol_types::SolError>::SELECTOR
+                Self::KeyBlsBls12381_InvalidKey(_) => {
+                    <KeyBlsBls12381_InvalidKey as alloy_sol_types::SolError>::SELECTOR
                 }
                 Self::KeyBlsBn254_InvalidKey(_) => {
                     <KeyBlsBn254_InvalidKey as alloy_sol_types::SolError>::SELECTOR
@@ -9687,6 +9785,28 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
                 &[u8],
             ) -> alloy_sol_types::Result<KeyRegistryTestErrors>] = &[
                 {
+                    fn KeyBlsBls12381_InvalidKey(
+                        data: &[u8],
+                    ) -> alloy_sol_types::Result<KeyRegistryTestErrors> {
+                        <KeyBlsBls12381_InvalidKey as alloy_sol_types::SolError>::abi_decode_raw(
+                                data,
+                            )
+                            .map(KeyRegistryTestErrors::KeyBlsBls12381_InvalidKey)
+                    }
+                    KeyBlsBls12381_InvalidKey
+                },
+                {
+                    fn InvalidDSTLength(
+                        data: &[u8],
+                    ) -> alloy_sol_types::Result<KeyRegistryTestErrors> {
+                        <InvalidDSTLength as alloy_sol_types::SolError>::abi_decode_raw(
+                                data,
+                            )
+                            .map(KeyRegistryTestErrors::InvalidDSTLength)
+                    }
+                    InvalidDSTLength
+                },
+                {
                     fn InvalidKeyType(
                         data: &[u8],
                     ) -> alloy_sol_types::Result<KeyRegistryTestErrors> {
@@ -9696,17 +9816,6 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
                             .map(KeyRegistryTestErrors::InvalidKeyType)
                     }
                     InvalidKeyType
-                },
-                {
-                    fn KeyBlsBn12381_InvalidKey(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<KeyRegistryTestErrors> {
-                        <KeyBlsBn12381_InvalidKey as alloy_sol_types::SolError>::abi_decode_raw(
-                                data,
-                            )
-                            .map(KeyRegistryTestErrors::KeyBlsBn12381_InvalidKey)
-                    }
-                    KeyBlsBn12381_InvalidKey
                 },
                 {
                     fn InvalidKeyTag(
@@ -9751,6 +9860,28 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
                 &[u8],
             ) -> alloy_sol_types::Result<KeyRegistryTestErrors>] = &[
                 {
+                    fn KeyBlsBls12381_InvalidKey(
+                        data: &[u8],
+                    ) -> alloy_sol_types::Result<KeyRegistryTestErrors> {
+                        <KeyBlsBls12381_InvalidKey as alloy_sol_types::SolError>::abi_decode_raw_validate(
+                                data,
+                            )
+                            .map(KeyRegistryTestErrors::KeyBlsBls12381_InvalidKey)
+                    }
+                    KeyBlsBls12381_InvalidKey
+                },
+                {
+                    fn InvalidDSTLength(
+                        data: &[u8],
+                    ) -> alloy_sol_types::Result<KeyRegistryTestErrors> {
+                        <InvalidDSTLength as alloy_sol_types::SolError>::abi_decode_raw_validate(
+                                data,
+                            )
+                            .map(KeyRegistryTestErrors::InvalidDSTLength)
+                    }
+                    InvalidDSTLength
+                },
+                {
                     fn InvalidKeyType(
                         data: &[u8],
                     ) -> alloy_sol_types::Result<KeyRegistryTestErrors> {
@@ -9760,17 +9891,6 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
                             .map(KeyRegistryTestErrors::InvalidKeyType)
                     }
                     InvalidKeyType
-                },
-                {
-                    fn KeyBlsBn12381_InvalidKey(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<KeyRegistryTestErrors> {
-                        <KeyBlsBn12381_InvalidKey as alloy_sol_types::SolError>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(KeyRegistryTestErrors::KeyBlsBn12381_InvalidKey)
-                    }
-                    KeyBlsBn12381_InvalidKey
                 },
                 {
                     fn InvalidKeyTag(
@@ -9808,6 +9928,11 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
         #[inline]
         fn abi_encoded_size(&self) -> usize {
             match self {
+                Self::InvalidDSTLength(inner) => {
+                    <InvalidDSTLength as alloy_sol_types::SolError>::abi_encoded_size(
+                        inner,
+                    )
+                }
                 Self::InvalidKeyTag(inner) => {
                     <InvalidKeyTag as alloy_sol_types::SolError>::abi_encoded_size(inner)
                 }
@@ -9816,8 +9941,8 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
                         inner,
                     )
                 }
-                Self::KeyBlsBn12381_InvalidKey(inner) => {
-                    <KeyBlsBn12381_InvalidKey as alloy_sol_types::SolError>::abi_encoded_size(
+                Self::KeyBlsBls12381_InvalidKey(inner) => {
+                    <KeyBlsBls12381_InvalidKey as alloy_sol_types::SolError>::abi_encoded_size(
                         inner,
                     )
                 }
@@ -9831,6 +9956,12 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
         #[inline]
         fn abi_encode_raw(&self, out: &mut alloy_sol_types::private::Vec<u8>) {
             match self {
+                Self::InvalidDSTLength(inner) => {
+                    <InvalidDSTLength as alloy_sol_types::SolError>::abi_encode_raw(
+                        inner,
+                        out,
+                    )
+                }
                 Self::InvalidKeyTag(inner) => {
                     <InvalidKeyTag as alloy_sol_types::SolError>::abi_encode_raw(
                         inner,
@@ -9843,8 +9974,8 @@ function test_SetKey_SameOperatorSameTag_Overwrite() external;
                         out,
                     )
                 }
-                Self::KeyBlsBn12381_InvalidKey(inner) => {
-                    <KeyBlsBn12381_InvalidKey as alloy_sol_types::SolError>::abi_encode_raw(
+                Self::KeyBlsBls12381_InvalidKey(inner) => {
+                    <KeyBlsBls12381_InvalidKey as alloy_sol_types::SolError>::abi_encode_raw(
                         inner,
                         out,
                     )
@@ -10630,21 +10761,21 @@ See the [wrapper's documentation](`KeyRegistryTestInstance`) for more details.*/
         ) -> alloy_contract::SolCallBuilder<&P, test_SetBLSKeyCall, N> {
             self.call_builder(&test_SetBLSKeyCall)
         }
-        ///Creates a new call builder for the [`test_SetBlsBn12381Key`] function.
-        pub fn test_SetBlsBn12381Key(
+        ///Creates a new call builder for the [`test_SetBlsBls12381Key`] function.
+        pub fn test_SetBlsBls12381Key(
             &self,
-        ) -> alloy_contract::SolCallBuilder<&P, test_SetBlsBn12381KeyCall, N> {
-            self.call_builder(&test_SetBlsBn12381KeyCall)
+        ) -> alloy_contract::SolCallBuilder<&P, test_SetBlsBls12381KeyCall, N> {
+            self.call_builder(&test_SetBlsBls12381KeyCall)
         }
-        ///Creates a new call builder for the [`test_SetBlsBn12381Key_RevertInvalidSignature`] function.
-        pub fn test_SetBlsBn12381Key_RevertInvalidSignature(
+        ///Creates a new call builder for the [`test_SetBlsBls12381Key_RevertInvalidSignature`] function.
+        pub fn test_SetBlsBls12381Key_RevertInvalidSignature(
             &self,
         ) -> alloy_contract::SolCallBuilder<
             &P,
-            test_SetBlsBn12381Key_RevertInvalidSignatureCall,
+            test_SetBlsBls12381Key_RevertInvalidSignatureCall,
             N,
         > {
-            self.call_builder(&test_SetBlsBn12381Key_RevertInvalidSignatureCall)
+            self.call_builder(&test_SetBlsBls12381Key_RevertInvalidSignatureCall)
         }
         ///Creates a new call builder for the [`test_SetECDSAKey`] function.
         pub fn test_SetECDSAKey(

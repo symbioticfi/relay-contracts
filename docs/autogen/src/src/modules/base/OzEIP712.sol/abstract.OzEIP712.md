@@ -1,8 +1,8 @@
 # OzEIP712
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/f15b7f1298f3e89ef5f17b3ef10b20d2dc6845d4/src/modules/base/OzEIP712.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/40791731b80bf5666d350907bfe7f142e3c6d70c/src/modules/base/OzEIP712.sol)
 
 **Inherits:**
-EIP712Upgradeable, [IOzEIP712](/Users/sergey/Projects/Symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/base/IOzEIP712.sol/interface.IOzEIP712.md)
+EIP712Upgradeable, [IOzEIP712](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/base/IOzEIP712.sol/interface.IOzEIP712.md)
 
 Contract for EIP712 hashing.
 

@@ -373,11 +373,7 @@ library ChainlinkPriceFeed {
         return (uint16(roundId >> PHASE_OFFSET), uint64(roundId));
     }
 
-    function toDynamicArrays(
-        address[2] memory aggregators,
-        bool[2] memory inverts,
-        uint48[2] memory stalenessDurations
-    )
+    function toDynamicArrays(address[2] memory aggregators, bool[2] memory inverts, uint48[2] memory stalenessDurations)
         public
         pure
         returns (

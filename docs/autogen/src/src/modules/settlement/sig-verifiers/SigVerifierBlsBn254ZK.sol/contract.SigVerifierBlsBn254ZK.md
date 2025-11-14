@@ -1,8 +1,8 @@
 # SigVerifierBlsBn254ZK
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/f15b7f1298f3e89ef5f17b3ef10b20d2dc6845d4/src/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/40791731b80bf5666d350907bfe7f142e3c6d70c/src/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol)
 
 **Inherits:**
-[ISigVerifierBlsBn254ZK](/Users/sergey/Projects/Symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254ZK.sol/interface.ISigVerifierBlsBn254ZK.md)
+[ISigVerifierBlsBn254ZK](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254ZK.sol/interface.ISigVerifierBlsBn254ZK.md)
 
 Contract for verifying validator's set attestations based on BLS signatures on the BN254 curve
 by decompressing the whole validator set using ZK.

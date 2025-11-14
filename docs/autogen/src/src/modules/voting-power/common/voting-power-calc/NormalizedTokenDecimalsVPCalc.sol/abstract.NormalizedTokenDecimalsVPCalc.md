@@ -1,8 +1,8 @@
 # NormalizedTokenDecimalsVPCalc
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/f15b7f1298f3e89ef5f17b3ef10b20d2dc6845d4/src/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/40791731b80bf5666d350907bfe7f142e3c6d70c/src/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.sol)
 
 **Inherits:**
-[EqualStakeVPCalc](/Users/sergey/Projects/Symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol/abstract.EqualStakeVPCalc.md), [INormalizedTokenDecimalsVPCalc](/Users/sergey/Projects/Symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/common/voting-power-calc/INormalizedTokenDecimalsVPCalc.sol/interface.INormalizedTokenDecimalsVPCalc.md)
+[EqualStakeVPCalc](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol/abstract.EqualStakeVPCalc.md), [INormalizedTokenDecimalsVPCalc](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/common/voting-power-calc/INormalizedTokenDecimalsVPCalc.sol/interface.INormalizedTokenDecimalsVPCalc.md)
 
 Contract for calculating the voting power, normalizing the stakes in different tokens to the same decimals.
 

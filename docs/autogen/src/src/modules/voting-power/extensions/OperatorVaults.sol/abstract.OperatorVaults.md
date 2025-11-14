@@ -1,8 +1,8 @@
 # OperatorVaults
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/f15b7f1298f3e89ef5f17b3ef10b20d2dc6845d4/src/modules/voting-power/extensions/OperatorVaults.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/40791731b80bf5666d350907bfe7f142e3c6d70c/src/modules/voting-power/extensions/OperatorVaults.sol)
 
 **Inherits:**
-[VotingPowerProvider](/Users/sergey/Projects/Symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/VotingPowerProvider.sol/abstract.VotingPowerProvider.md), [IOperatorVaults](/Users/sergey/Projects/Symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/extensions/IOperatorVaults.sol/interface.IOperatorVaults.md)
+[VotingPowerProvider](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/VotingPowerProvider.sol/abstract.VotingPowerProvider.md), [IOperatorVaults](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/extensions/IOperatorVaults.sol/interface.IOperatorVaults.md)
 
 Contract for registering and unregistering operator vaults.
 

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-/// @notice BN12381 wrapper.
+/// @notice BLS12381 wrapper.
 /// @author Solady (https://github.com/vectorized/solady/blob/main/src/utils/BLS.sol)
 /// @author Ithaca (https://github.com/ithacaxyz/odyssey-examples/blob/main/chapter1/contracts/src/libraries/BLS.sol)
 ///
@@ -14,7 +14,7 @@ pragma solidity ^0.8.24;
 /// - For efficiency, we use the legacy `staticcall` to call the precompiles.
 ///   For the intended use case in an entry points that requires gas-introspection,
 ///   which requires legacy bytecode, this won't be a blocker.
-library BN12381 {
+library BLS12381 {
     /*´:°•.°+.*•´.*:˚.°*.˚•´.°:°•.°•.*•´.*:˚.°*.˚•´.°:°•.°+.*•´.*:*/
     /*                          STRUCTS                           */
     /*.•°:°.´+˚.*°.˚:*.´•*.+°.•°:´*.´•*.•°.•°:°.´:•˚°.*°.˚:*.´+°.•*/

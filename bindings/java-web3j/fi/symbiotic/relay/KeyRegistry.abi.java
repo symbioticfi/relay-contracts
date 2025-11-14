@@ -106,6 +106,10 @@ public class KeyRegistry.abi extends Contract {
             Arrays.<TypeReference<?>>asList());
     ;
 
+    public static final CustomError INVALIDDSTLENGTH_ERROR = new CustomError("InvalidDSTLength", 
+            Arrays.<TypeReference<?>>asList(new TypeReference<DynamicBytes>() {}));
+    ;
+
     public static final CustomError INVALIDINITIALIZATION_ERROR = new CustomError("InvalidInitialization", 
             Arrays.<TypeReference<?>>asList());
     ;
@@ -114,11 +118,11 @@ public class KeyRegistry.abi extends Contract {
             Arrays.<TypeReference<?>>asList());
     ;
 
-    public static final CustomError KEYBLSBN12381_INVALIDBYTES_ERROR = new CustomError("KeyBlsBn12381_InvalidBytes", 
+    public static final CustomError KEYBLSBLS12381_INVALIDBYTES_ERROR = new CustomError("KeyBlsBls12381_InvalidBytes", 
             Arrays.<TypeReference<?>>asList());
     ;
 
-    public static final CustomError KEYBLSBN12381_INVALIDKEY_ERROR = new CustomError("KeyBlsBn12381_InvalidKey", 
+    public static final CustomError KEYBLSBLS12381_INVALIDKEY_ERROR = new CustomError("KeyBlsBls12381_InvalidKey", 
             Arrays.<TypeReference<?>>asList());
     ;
 
@@ -150,7 +154,7 @@ public class KeyRegistry.abi extends Contract {
             Arrays.<TypeReference<?>>asList());
     ;
 
-    public static final CustomError SIGBLSBN12381_INVALIDMESSAGELENGTH_ERROR = new CustomError("SigBlsBn12381_InvalidMessageLength", 
+    public static final CustomError SIGBLSBLS12381_INVALIDMESSAGELENGTH_ERROR = new CustomError("SigBlsBls12381_InvalidMessageLength", 
             Arrays.<TypeReference<?>>asList());
     ;
 

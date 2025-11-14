@@ -1,8 +1,8 @@
 # VotingPowerProvider
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/f15b7f1298f3e89ef5f17b3ef10b20d2dc6845d4/src/modules/voting-power/VotingPowerProvider.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/40791731b80bf5666d350907bfe7f142e3c6d70c/src/modules/voting-power/VotingPowerProvider.sol)
 
 **Inherits:**
-[NetworkManager](/Users/sergey/Projects/Symbiotic/relay-contracts/docs/autogen/src/src/modules/base/NetworkManager.sol/abstract.NetworkManager.md), [VotingPowerCalcManager](/Users/sergey/Projects/Symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/base/VotingPowerCalcManager.sol/abstract.VotingPowerCalcManager.md), [OzEIP712](/Users/sergey/Projects/Symbiotic/relay-contracts/docs/autogen/src/src/modules/base/OzEIP712.sol/abstract.OzEIP712.md), [PermissionManager](/Users/sergey/Projects/Symbiotic/relay-contracts/docs/autogen/src/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), NoncesUpgradeable, MulticallUpgradeable, [IVotingPowerProvider](/Users/sergey/Projects/Symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/IVotingPowerProvider.sol/interface.IVotingPowerProvider.md)
+[NetworkManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/NetworkManager.sol/abstract.NetworkManager.md), [VotingPowerCalcManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/base/VotingPowerCalcManager.sol/abstract.VotingPowerCalcManager.md), [OzEIP712](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/OzEIP712.sol/abstract.OzEIP712.md), [PermissionManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), NoncesUpgradeable, MulticallUpgradeable, [IVotingPowerProvider](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/IVotingPowerProvider.sol/interface.IVotingPowerProvider.md)
 
 Contract for managing tokens, operators, vaults, and their voting powers.
 

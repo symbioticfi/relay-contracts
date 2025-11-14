@@ -340,10 +340,11 @@ namespace Symbiotic.Relay.KeyRegistry.abi
                 typeof(AddressEmptyCodeError),
                 typeof(CheckpointUnorderedInsertionError),
                 typeof(FailedCallError),
+                typeof(InvalidDSTLengthError),
                 typeof(InvalidInitializationError),
                 typeof(InvalidKeyTagError),
-                typeof(Keyblsbn12381InvalidbytesError),
-                typeof(Keyblsbn12381InvalidkeyError),
+                typeof(Keyblsbls12381InvalidbytesError),
+                typeof(Keyblsbls12381InvalidkeyError),
                 typeof(Keyblsbn254InvalidbytesError),
                 typeof(Keyblsbn254InvalidkeyError),
                 typeof(Keyecdsasecp256k1InvalidbytesError),
@@ -351,7 +352,7 @@ namespace Symbiotic.Relay.KeyRegistry.abi
                 typeof(KeyregistryInvalidkeysignatureError),
                 typeof(KeyregistryInvalidkeytypeError),
                 typeof(NotInitializingError),
-                typeof(Sigblsbn12381InvalidmessagelengthError),
+                typeof(Sigblsbls12381InvalidmessagelengthError),
                 typeof(Sigblsbn254InvalidmessagelengthError),
                 typeof(Sigecdsasecp256k1InvalidmessagelengthError)
             };

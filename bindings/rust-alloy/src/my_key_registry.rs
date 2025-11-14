@@ -1171,10 +1171,11 @@ interface MyKeyRegistry {
     error AddressEmptyCode(address target);
     error CheckpointUnorderedInsertion();
     error FailedCall();
+    error InvalidDSTLength(bytes);
     error InvalidInitialization();
     error InvalidKeyTag();
-    error KeyBlsBn12381_InvalidBytes();
-    error KeyBlsBn12381_InvalidKey();
+    error KeyBlsBls12381_InvalidBytes();
+    error KeyBlsBls12381_InvalidKey();
     error KeyBlsBn254_InvalidBytes();
     error KeyBlsBn254_InvalidKey();
     error KeyEcdsaSecp256k1_InvalidBytes();
@@ -1182,7 +1183,7 @@ interface MyKeyRegistry {
     error KeyRegistry_InvalidKeySignature();
     error KeyRegistry_InvalidKeyType();
     error NotInitializing();
-    error SigBlsBn12381_InvalidMessageLength();
+    error SigBlsBls12381_InvalidMessageLength();
     error SigBlsBn254_InvalidMessageLength();
     error SigEcdsaSecp256k1_InvalidMessageLength();
 
@@ -1762,6 +1763,17 @@ interface MyKeyRegistry {
   },
   {
     "type": "error",
+    "name": "InvalidDSTLength",
+    "inputs": [
+      {
+        "name": "",
+        "type": "bytes",
+        "internalType": "bytes"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "InvalidInitialization",
     "inputs": []
   },
@@ -1772,12 +1784,12 @@ interface MyKeyRegistry {
   },
   {
     "type": "error",
-    "name": "KeyBlsBn12381_InvalidBytes",
+    "name": "KeyBlsBls12381_InvalidBytes",
     "inputs": []
   },
   {
     "type": "error",
-    "name": "KeyBlsBn12381_InvalidKey",
+    "name": "KeyBlsBls12381_InvalidKey",
     "inputs": []
   },
   {
@@ -1817,7 +1829,7 @@ interface MyKeyRegistry {
   },
   {
     "type": "error",
-    "name": "SigBlsBn12381_InvalidMessageLength",
+    "name": "SigBlsBls12381_InvalidMessageLength",
     "inputs": []
   },
   {
@@ -2075,6 +2087,84 @@ error FailedCall();
     };
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Default, Debug, PartialEq, Eq, Hash)]
+    /**Custom error with signature `InvalidDSTLength(bytes)` and selector `0x26e4f9ba`.
+```solidity
+error InvalidDSTLength(bytes);
+```*/
+    #[allow(non_camel_case_types, non_snake_case, clippy::pub_underscore_fields)]
+    #[derive(Clone)]
+    pub struct InvalidDSTLength(pub alloy::sol_types::private::Bytes);
+    #[allow(
+        non_camel_case_types,
+        non_snake_case,
+        clippy::pub_underscore_fields,
+        clippy::style
+    )]
+    const _: () = {
+        use alloy::sol_types as alloy_sol_types;
+        #[doc(hidden)]
+        #[allow(dead_code)]
+        type UnderlyingSolTuple<'a> = (alloy::sol_types::sol_data::Bytes,);
+        #[doc(hidden)]
+        type UnderlyingRustTuple<'a> = (alloy::sol_types::private::Bytes,);
+        #[cfg(test)]
+        #[allow(dead_code, unreachable_patterns)]
+        fn _type_assertion(
+            _t: alloy_sol_types::private::AssertTypeEq<UnderlyingRustTuple>,
+        ) {
+            match _t {
+                alloy_sol_types::private::AssertTypeEq::<
+                    <UnderlyingSolTuple as alloy_sol_types::SolType>::RustType,
+                >(_) => {}
+            }
+        }
+        #[automatically_derived]
+        #[doc(hidden)]
+        impl ::core::convert::From<InvalidDSTLength> for UnderlyingRustTuple<'_> {
+            fn from(value: InvalidDSTLength) -> Self {
+                (value.0,)
+            }
+        }
+        #[automatically_derived]
+        #[doc(hidden)]
+        impl ::core::convert::From<UnderlyingRustTuple<'_>> for InvalidDSTLength {
+            fn from(tuple: UnderlyingRustTuple<'_>) -> Self {
+                Self(tuple.0)
+            }
+        }
+        #[automatically_derived]
+        impl alloy_sol_types::SolError for InvalidDSTLength {
+            type Parameters<'a> = UnderlyingSolTuple<'a>;
+            type Token<'a> = <Self::Parameters<
+                'a,
+            > as alloy_sol_types::SolType>::Token<'a>;
+            const SIGNATURE: &'static str = "InvalidDSTLength(bytes)";
+            const SELECTOR: [u8; 4] = [38u8, 228u8, 249u8, 186u8];
+            #[inline]
+            fn new<'a>(
+                tuple: <Self::Parameters<'a> as alloy_sol_types::SolType>::RustType,
+            ) -> Self {
+                tuple.into()
+            }
+            #[inline]
+            fn tokenize(&self) -> Self::Token<'_> {
+                (
+                    <alloy::sol_types::sol_data::Bytes as alloy_sol_types::SolType>::tokenize(
+                        &self.0,
+                    ),
+                )
+            }
+            #[inline]
+            fn abi_decode_raw_validate(data: &[u8]) -> alloy_sol_types::Result<Self> {
+                <Self::Parameters<
+                    '_,
+                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
+                    .map(Self::new)
+            }
+        }
+    };
+    #[derive(serde::Serialize, serde::Deserialize)]
+    #[derive(Default, Debug, PartialEq, Eq, Hash)]
     /**Custom error with signature `InvalidInitialization()` and selector `0xf92ee8a9`.
 ```solidity
 error InvalidInitialization();
@@ -2223,13 +2313,13 @@ error InvalidKeyTag();
     };
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Default, Debug, PartialEq, Eq, Hash)]
-    /**Custom error with signature `KeyBlsBn12381_InvalidBytes()` and selector `0x6f4cdef1`.
+    /**Custom error with signature `KeyBlsBls12381_InvalidBytes()` and selector `0x6fd50f1e`.
 ```solidity
-error KeyBlsBn12381_InvalidBytes();
+error KeyBlsBls12381_InvalidBytes();
 ```*/
     #[allow(non_camel_case_types, non_snake_case, clippy::pub_underscore_fields)]
     #[derive(Clone)]
-    pub struct KeyBlsBn12381_InvalidBytes;
+    pub struct KeyBlsBls12381_InvalidBytes;
     #[allow(
         non_camel_case_types,
         non_snake_case,
@@ -2256,28 +2346,28 @@ error KeyBlsBn12381_InvalidBytes();
         }
         #[automatically_derived]
         #[doc(hidden)]
-        impl ::core::convert::From<KeyBlsBn12381_InvalidBytes>
+        impl ::core::convert::From<KeyBlsBls12381_InvalidBytes>
         for UnderlyingRustTuple<'_> {
-            fn from(value: KeyBlsBn12381_InvalidBytes) -> Self {
+            fn from(value: KeyBlsBls12381_InvalidBytes) -> Self {
                 ()
             }
         }
         #[automatically_derived]
         #[doc(hidden)]
         impl ::core::convert::From<UnderlyingRustTuple<'_>>
-        for KeyBlsBn12381_InvalidBytes {
+        for KeyBlsBls12381_InvalidBytes {
             fn from(tuple: UnderlyingRustTuple<'_>) -> Self {
                 Self
             }
         }
         #[automatically_derived]
-        impl alloy_sol_types::SolError for KeyBlsBn12381_InvalidBytes {
+        impl alloy_sol_types::SolError for KeyBlsBls12381_InvalidBytes {
             type Parameters<'a> = UnderlyingSolTuple<'a>;
             type Token<'a> = <Self::Parameters<
                 'a,
             > as alloy_sol_types::SolType>::Token<'a>;
-            const SIGNATURE: &'static str = "KeyBlsBn12381_InvalidBytes()";
-            const SELECTOR: [u8; 4] = [111u8, 76u8, 222u8, 241u8];
+            const SIGNATURE: &'static str = "KeyBlsBls12381_InvalidBytes()";
+            const SELECTOR: [u8; 4] = [111u8, 213u8, 15u8, 30u8];
             #[inline]
             fn new<'a>(
                 tuple: <Self::Parameters<'a> as alloy_sol_types::SolType>::RustType,
@@ -2299,13 +2389,13 @@ error KeyBlsBn12381_InvalidBytes();
     };
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Default, Debug, PartialEq, Eq, Hash)]
-    /**Custom error with signature `KeyBlsBn12381_InvalidKey()` and selector `0x9b83cbb9`.
+    /**Custom error with signature `KeyBlsBls12381_InvalidKey()` and selector `0x20645294`.
 ```solidity
-error KeyBlsBn12381_InvalidKey();
+error KeyBlsBls12381_InvalidKey();
 ```*/
     #[allow(non_camel_case_types, non_snake_case, clippy::pub_underscore_fields)]
     #[derive(Clone)]
-    pub struct KeyBlsBn12381_InvalidKey;
+    pub struct KeyBlsBls12381_InvalidKey;
     #[allow(
         non_camel_case_types,
         non_snake_case,
@@ -2332,28 +2422,28 @@ error KeyBlsBn12381_InvalidKey();
         }
         #[automatically_derived]
         #[doc(hidden)]
-        impl ::core::convert::From<KeyBlsBn12381_InvalidKey>
+        impl ::core::convert::From<KeyBlsBls12381_InvalidKey>
         for UnderlyingRustTuple<'_> {
-            fn from(value: KeyBlsBn12381_InvalidKey) -> Self {
+            fn from(value: KeyBlsBls12381_InvalidKey) -> Self {
                 ()
             }
         }
         #[automatically_derived]
         #[doc(hidden)]
         impl ::core::convert::From<UnderlyingRustTuple<'_>>
-        for KeyBlsBn12381_InvalidKey {
+        for KeyBlsBls12381_InvalidKey {
             fn from(tuple: UnderlyingRustTuple<'_>) -> Self {
                 Self
             }
         }
         #[automatically_derived]
-        impl alloy_sol_types::SolError for KeyBlsBn12381_InvalidKey {
+        impl alloy_sol_types::SolError for KeyBlsBls12381_InvalidKey {
             type Parameters<'a> = UnderlyingSolTuple<'a>;
             type Token<'a> = <Self::Parameters<
                 'a,
             > as alloy_sol_types::SolType>::Token<'a>;
-            const SIGNATURE: &'static str = "KeyBlsBn12381_InvalidKey()";
-            const SELECTOR: [u8; 4] = [155u8, 131u8, 203u8, 185u8];
+            const SIGNATURE: &'static str = "KeyBlsBls12381_InvalidKey()";
+            const SELECTOR: [u8; 4] = [32u8, 100u8, 82u8, 148u8];
             #[inline]
             fn new<'a>(
                 tuple: <Self::Parameters<'a> as alloy_sol_types::SolType>::RustType,
@@ -2901,13 +2991,13 @@ error NotInitializing();
     };
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Default, Debug, PartialEq, Eq, Hash)]
-    /**Custom error with signature `SigBlsBn12381_InvalidMessageLength()` and selector `0x64dbc534`.
+    /**Custom error with signature `SigBlsBls12381_InvalidMessageLength()` and selector `0xdb1a79ff`.
 ```solidity
-error SigBlsBn12381_InvalidMessageLength();
+error SigBlsBls12381_InvalidMessageLength();
 ```*/
     #[allow(non_camel_case_types, non_snake_case, clippy::pub_underscore_fields)]
     #[derive(Clone)]
-    pub struct SigBlsBn12381_InvalidMessageLength;
+    pub struct SigBlsBls12381_InvalidMessageLength;
     #[allow(
         non_camel_case_types,
         non_snake_case,
@@ -2934,28 +3024,28 @@ error SigBlsBn12381_InvalidMessageLength();
         }
         #[automatically_derived]
         #[doc(hidden)]
-        impl ::core::convert::From<SigBlsBn12381_InvalidMessageLength>
+        impl ::core::convert::From<SigBlsBls12381_InvalidMessageLength>
         for UnderlyingRustTuple<'_> {
-            fn from(value: SigBlsBn12381_InvalidMessageLength) -> Self {
+            fn from(value: SigBlsBls12381_InvalidMessageLength) -> Self {
                 ()
             }
         }
         #[automatically_derived]
         #[doc(hidden)]
         impl ::core::convert::From<UnderlyingRustTuple<'_>>
-        for SigBlsBn12381_InvalidMessageLength {
+        for SigBlsBls12381_InvalidMessageLength {
             fn from(tuple: UnderlyingRustTuple<'_>) -> Self {
                 Self
             }
         }
         #[automatically_derived]
-        impl alloy_sol_types::SolError for SigBlsBn12381_InvalidMessageLength {
+        impl alloy_sol_types::SolError for SigBlsBls12381_InvalidMessageLength {
             type Parameters<'a> = UnderlyingSolTuple<'a>;
             type Token<'a> = <Self::Parameters<
                 'a,
             > as alloy_sol_types::SolType>::Token<'a>;
-            const SIGNATURE: &'static str = "SigBlsBn12381_InvalidMessageLength()";
-            const SELECTOR: [u8; 4] = [100u8, 219u8, 197u8, 52u8];
+            const SIGNATURE: &'static str = "SigBlsBls12381_InvalidMessageLength()";
+            const SELECTOR: [u8; 4] = [219u8, 26u8, 121u8, 255u8];
             #[inline]
             fn new<'a>(
                 tuple: <Self::Parameters<'a> as alloy_sol_types::SolType>::RustType,
@@ -7177,13 +7267,15 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
         #[allow(missing_docs)]
         FailedCall(FailedCall),
         #[allow(missing_docs)]
+        InvalidDSTLength(InvalidDSTLength),
+        #[allow(missing_docs)]
         InvalidInitialization(InvalidInitialization),
         #[allow(missing_docs)]
         InvalidKeyTag(InvalidKeyTag),
         #[allow(missing_docs)]
-        KeyBlsBn12381_InvalidBytes(KeyBlsBn12381_InvalidBytes),
+        KeyBlsBls12381_InvalidBytes(KeyBlsBls12381_InvalidBytes),
         #[allow(missing_docs)]
-        KeyBlsBn12381_InvalidKey(KeyBlsBn12381_InvalidKey),
+        KeyBlsBls12381_InvalidKey(KeyBlsBls12381_InvalidKey),
         #[allow(missing_docs)]
         KeyBlsBn254_InvalidBytes(KeyBlsBn254_InvalidBytes),
         #[allow(missing_docs)]
@@ -7199,7 +7291,7 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
         #[allow(missing_docs)]
         NotInitializing(NotInitializing),
         #[allow(missing_docs)]
-        SigBlsBn12381_InvalidMessageLength(SigBlsBn12381_InvalidMessageLength),
+        SigBlsBls12381_InvalidMessageLength(SigBlsBls12381_InvalidMessageLength),
         #[allow(missing_docs)]
         SigBlsBn254_InvalidMessageLength(SigBlsBn254_InvalidMessageLength),
         #[allow(missing_docs)]
@@ -7214,15 +7306,16 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
         /// Prefer using `SolInterface` methods instead.
         pub const SELECTORS: &'static [[u8; 4usize]] = &[
             [1u8, 188u8, 181u8, 12u8],
+            [32u8, 100u8, 82u8, 148u8],
             [37u8, 32u8, 96u8, 29u8],
+            [38u8, 228u8, 249u8, 186u8],
             [78u8, 43u8, 25u8, 194u8],
-            [100u8, 219u8, 197u8, 52u8],
-            [111u8, 76u8, 222u8, 241u8],
+            [111u8, 213u8, 15u8, 30u8],
             [153u8, 150u8, 179u8, 21u8],
-            [155u8, 131u8, 203u8, 185u8],
             [188u8, 110u8, 184u8, 110u8],
             [214u8, 189u8, 162u8, 117u8],
             [215u8, 230u8, 188u8, 248u8],
+            [219u8, 26u8, 121u8, 255u8],
             [219u8, 103u8, 185u8, 19u8],
             [221u8, 70u8, 159u8, 115u8],
             [221u8, 105u8, 251u8, 29u8],
@@ -7234,15 +7327,16 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
         /// The names of the variants in the same order as `SELECTORS`.
         pub const VARIANT_NAMES: &'static [&'static str] = &[
             ::core::stringify!(SigEcdsaSecp256k1_InvalidMessageLength),
+            ::core::stringify!(KeyBlsBls12381_InvalidKey),
             ::core::stringify!(CheckpointUnorderedInsertion),
+            ::core::stringify!(InvalidDSTLength),
             ::core::stringify!(KeyBlsBn254_InvalidBytes),
-            ::core::stringify!(SigBlsBn12381_InvalidMessageLength),
-            ::core::stringify!(KeyBlsBn12381_InvalidBytes),
+            ::core::stringify!(KeyBlsBls12381_InvalidBytes),
             ::core::stringify!(AddressEmptyCode),
-            ::core::stringify!(KeyBlsBn12381_InvalidKey),
             ::core::stringify!(KeyRegistry_InvalidKeySignature),
             ::core::stringify!(FailedCall),
             ::core::stringify!(NotInitializing),
+            ::core::stringify!(SigBlsBls12381_InvalidMessageLength),
             ::core::stringify!(InvalidKeyTag),
             ::core::stringify!(KeyEcdsaSecp256k1_InvalidBytes),
             ::core::stringify!(KeyRegistry_InvalidKeyType),
@@ -7254,15 +7348,16 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
         /// The signatures in the same order as `SELECTORS`.
         pub const SIGNATURES: &'static [&'static str] = &[
             <SigEcdsaSecp256k1_InvalidMessageLength as alloy_sol_types::SolError>::SIGNATURE,
+            <KeyBlsBls12381_InvalidKey as alloy_sol_types::SolError>::SIGNATURE,
             <CheckpointUnorderedInsertion as alloy_sol_types::SolError>::SIGNATURE,
+            <InvalidDSTLength as alloy_sol_types::SolError>::SIGNATURE,
             <KeyBlsBn254_InvalidBytes as alloy_sol_types::SolError>::SIGNATURE,
-            <SigBlsBn12381_InvalidMessageLength as alloy_sol_types::SolError>::SIGNATURE,
-            <KeyBlsBn12381_InvalidBytes as alloy_sol_types::SolError>::SIGNATURE,
+            <KeyBlsBls12381_InvalidBytes as alloy_sol_types::SolError>::SIGNATURE,
             <AddressEmptyCode as alloy_sol_types::SolError>::SIGNATURE,
-            <KeyBlsBn12381_InvalidKey as alloy_sol_types::SolError>::SIGNATURE,
             <KeyRegistry_InvalidKeySignature as alloy_sol_types::SolError>::SIGNATURE,
             <FailedCall as alloy_sol_types::SolError>::SIGNATURE,
             <NotInitializing as alloy_sol_types::SolError>::SIGNATURE,
+            <SigBlsBls12381_InvalidMessageLength as alloy_sol_types::SolError>::SIGNATURE,
             <InvalidKeyTag as alloy_sol_types::SolError>::SIGNATURE,
             <KeyEcdsaSecp256k1_InvalidBytes as alloy_sol_types::SolError>::SIGNATURE,
             <KeyRegistry_InvalidKeyType as alloy_sol_types::SolError>::SIGNATURE,
@@ -7296,7 +7391,7 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
     impl alloy_sol_types::SolInterface for MyKeyRegistryErrors {
         const NAME: &'static str = "MyKeyRegistryErrors";
         const MIN_DATA_LENGTH: usize = 0usize;
-        const COUNT: usize = 17usize;
+        const COUNT: usize = 18usize;
         #[inline]
         fn selector(&self) -> [u8; 4] {
             match self {
@@ -7309,17 +7404,20 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
                 Self::FailedCall(_) => {
                     <FailedCall as alloy_sol_types::SolError>::SELECTOR
                 }
+                Self::InvalidDSTLength(_) => {
+                    <InvalidDSTLength as alloy_sol_types::SolError>::SELECTOR
+                }
                 Self::InvalidInitialization(_) => {
                     <InvalidInitialization as alloy_sol_types::SolError>::SELECTOR
                 }
                 Self::InvalidKeyTag(_) => {
                     <InvalidKeyTag as alloy_sol_types::SolError>::SELECTOR
                 }
-                Self::KeyBlsBn12381_InvalidBytes(_) => {
-                    <KeyBlsBn12381_InvalidBytes as alloy_sol_types::SolError>::SELECTOR
+                Self::KeyBlsBls12381_InvalidBytes(_) => {
+                    <KeyBlsBls12381_InvalidBytes as alloy_sol_types::SolError>::SELECTOR
                 }
-                Self::KeyBlsBn12381_InvalidKey(_) => {
-                    <KeyBlsBn12381_InvalidKey as alloy_sol_types::SolError>::SELECTOR
+                Self::KeyBlsBls12381_InvalidKey(_) => {
+                    <KeyBlsBls12381_InvalidKey as alloy_sol_types::SolError>::SELECTOR
                 }
                 Self::KeyBlsBn254_InvalidBytes(_) => {
                     <KeyBlsBn254_InvalidBytes as alloy_sol_types::SolError>::SELECTOR
@@ -7342,8 +7440,8 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
                 Self::NotInitializing(_) => {
                     <NotInitializing as alloy_sol_types::SolError>::SELECTOR
                 }
-                Self::SigBlsBn12381_InvalidMessageLength(_) => {
-                    <SigBlsBn12381_InvalidMessageLength as alloy_sol_types::SolError>::SELECTOR
+                Self::SigBlsBls12381_InvalidMessageLength(_) => {
+                    <SigBlsBls12381_InvalidMessageLength as alloy_sol_types::SolError>::SELECTOR
                 }
                 Self::SigBlsBn254_InvalidMessageLength(_) => {
                     <SigBlsBn254_InvalidMessageLength as alloy_sol_types::SolError>::SELECTOR
@@ -7384,6 +7482,17 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
                     SigEcdsaSecp256k1_InvalidMessageLength
                 },
                 {
+                    fn KeyBlsBls12381_InvalidKey(
+                        data: &[u8],
+                    ) -> alloy_sol_types::Result<MyKeyRegistryErrors> {
+                        <KeyBlsBls12381_InvalidKey as alloy_sol_types::SolError>::abi_decode_raw(
+                                data,
+                            )
+                            .map(MyKeyRegistryErrors::KeyBlsBls12381_InvalidKey)
+                    }
+                    KeyBlsBls12381_InvalidKey
+                },
+                {
                     fn CheckpointUnorderedInsertion(
                         data: &[u8],
                     ) -> alloy_sol_types::Result<MyKeyRegistryErrors> {
@@ -7393,6 +7502,17 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
                             .map(MyKeyRegistryErrors::CheckpointUnorderedInsertion)
                     }
                     CheckpointUnorderedInsertion
+                },
+                {
+                    fn InvalidDSTLength(
+                        data: &[u8],
+                    ) -> alloy_sol_types::Result<MyKeyRegistryErrors> {
+                        <InvalidDSTLength as alloy_sol_types::SolError>::abi_decode_raw(
+                                data,
+                            )
+                            .map(MyKeyRegistryErrors::InvalidDSTLength)
+                    }
+                    InvalidDSTLength
                 },
                 {
                     fn KeyBlsBn254_InvalidBytes(
@@ -7406,26 +7526,15 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
                     KeyBlsBn254_InvalidBytes
                 },
                 {
-                    fn SigBlsBn12381_InvalidMessageLength(
+                    fn KeyBlsBls12381_InvalidBytes(
                         data: &[u8],
                     ) -> alloy_sol_types::Result<MyKeyRegistryErrors> {
-                        <SigBlsBn12381_InvalidMessageLength as alloy_sol_types::SolError>::abi_decode_raw(
+                        <KeyBlsBls12381_InvalidBytes as alloy_sol_types::SolError>::abi_decode_raw(
                                 data,
                             )
-                            .map(MyKeyRegistryErrors::SigBlsBn12381_InvalidMessageLength)
+                            .map(MyKeyRegistryErrors::KeyBlsBls12381_InvalidBytes)
                     }
-                    SigBlsBn12381_InvalidMessageLength
-                },
-                {
-                    fn KeyBlsBn12381_InvalidBytes(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<MyKeyRegistryErrors> {
-                        <KeyBlsBn12381_InvalidBytes as alloy_sol_types::SolError>::abi_decode_raw(
-                                data,
-                            )
-                            .map(MyKeyRegistryErrors::KeyBlsBn12381_InvalidBytes)
-                    }
-                    KeyBlsBn12381_InvalidBytes
+                    KeyBlsBls12381_InvalidBytes
                 },
                 {
                     fn AddressEmptyCode(
@@ -7437,17 +7546,6 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
                             .map(MyKeyRegistryErrors::AddressEmptyCode)
                     }
                     AddressEmptyCode
-                },
-                {
-                    fn KeyBlsBn12381_InvalidKey(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<MyKeyRegistryErrors> {
-                        <KeyBlsBn12381_InvalidKey as alloy_sol_types::SolError>::abi_decode_raw(
-                                data,
-                            )
-                            .map(MyKeyRegistryErrors::KeyBlsBn12381_InvalidKey)
-                    }
-                    KeyBlsBn12381_InvalidKey
                 },
                 {
                     fn KeyRegistry_InvalidKeySignature(
@@ -7479,6 +7577,19 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
                             .map(MyKeyRegistryErrors::NotInitializing)
                     }
                     NotInitializing
+                },
+                {
+                    fn SigBlsBls12381_InvalidMessageLength(
+                        data: &[u8],
+                    ) -> alloy_sol_types::Result<MyKeyRegistryErrors> {
+                        <SigBlsBls12381_InvalidMessageLength as alloy_sol_types::SolError>::abi_decode_raw(
+                                data,
+                            )
+                            .map(
+                                MyKeyRegistryErrors::SigBlsBls12381_InvalidMessageLength,
+                            )
+                    }
+                    SigBlsBls12381_InvalidMessageLength
                 },
                 {
                     fn InvalidKeyTag(
@@ -7591,6 +7702,17 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
                     SigEcdsaSecp256k1_InvalidMessageLength
                 },
                 {
+                    fn KeyBlsBls12381_InvalidKey(
+                        data: &[u8],
+                    ) -> alloy_sol_types::Result<MyKeyRegistryErrors> {
+                        <KeyBlsBls12381_InvalidKey as alloy_sol_types::SolError>::abi_decode_raw_validate(
+                                data,
+                            )
+                            .map(MyKeyRegistryErrors::KeyBlsBls12381_InvalidKey)
+                    }
+                    KeyBlsBls12381_InvalidKey
+                },
+                {
                     fn CheckpointUnorderedInsertion(
                         data: &[u8],
                     ) -> alloy_sol_types::Result<MyKeyRegistryErrors> {
@@ -7600,6 +7722,17 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
                             .map(MyKeyRegistryErrors::CheckpointUnorderedInsertion)
                     }
                     CheckpointUnorderedInsertion
+                },
+                {
+                    fn InvalidDSTLength(
+                        data: &[u8],
+                    ) -> alloy_sol_types::Result<MyKeyRegistryErrors> {
+                        <InvalidDSTLength as alloy_sol_types::SolError>::abi_decode_raw_validate(
+                                data,
+                            )
+                            .map(MyKeyRegistryErrors::InvalidDSTLength)
+                    }
+                    InvalidDSTLength
                 },
                 {
                     fn KeyBlsBn254_InvalidBytes(
@@ -7613,26 +7746,15 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
                     KeyBlsBn254_InvalidBytes
                 },
                 {
-                    fn SigBlsBn12381_InvalidMessageLength(
+                    fn KeyBlsBls12381_InvalidBytes(
                         data: &[u8],
                     ) -> alloy_sol_types::Result<MyKeyRegistryErrors> {
-                        <SigBlsBn12381_InvalidMessageLength as alloy_sol_types::SolError>::abi_decode_raw_validate(
+                        <KeyBlsBls12381_InvalidBytes as alloy_sol_types::SolError>::abi_decode_raw_validate(
                                 data,
                             )
-                            .map(MyKeyRegistryErrors::SigBlsBn12381_InvalidMessageLength)
+                            .map(MyKeyRegistryErrors::KeyBlsBls12381_InvalidBytes)
                     }
-                    SigBlsBn12381_InvalidMessageLength
-                },
-                {
-                    fn KeyBlsBn12381_InvalidBytes(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<MyKeyRegistryErrors> {
-                        <KeyBlsBn12381_InvalidBytes as alloy_sol_types::SolError>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(MyKeyRegistryErrors::KeyBlsBn12381_InvalidBytes)
-                    }
-                    KeyBlsBn12381_InvalidBytes
+                    KeyBlsBls12381_InvalidBytes
                 },
                 {
                     fn AddressEmptyCode(
@@ -7644,17 +7766,6 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
                             .map(MyKeyRegistryErrors::AddressEmptyCode)
                     }
                     AddressEmptyCode
-                },
-                {
-                    fn KeyBlsBn12381_InvalidKey(
-                        data: &[u8],
-                    ) -> alloy_sol_types::Result<MyKeyRegistryErrors> {
-                        <KeyBlsBn12381_InvalidKey as alloy_sol_types::SolError>::abi_decode_raw_validate(
-                                data,
-                            )
-                            .map(MyKeyRegistryErrors::KeyBlsBn12381_InvalidKey)
-                    }
-                    KeyBlsBn12381_InvalidKey
                 },
                 {
                     fn KeyRegistry_InvalidKeySignature(
@@ -7688,6 +7799,19 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
                             .map(MyKeyRegistryErrors::NotInitializing)
                     }
                     NotInitializing
+                },
+                {
+                    fn SigBlsBls12381_InvalidMessageLength(
+                        data: &[u8],
+                    ) -> alloy_sol_types::Result<MyKeyRegistryErrors> {
+                        <SigBlsBls12381_InvalidMessageLength as alloy_sol_types::SolError>::abi_decode_raw_validate(
+                                data,
+                            )
+                            .map(
+                                MyKeyRegistryErrors::SigBlsBls12381_InvalidMessageLength,
+                            )
+                    }
+                    SigBlsBls12381_InvalidMessageLength
                 },
                 {
                     fn InvalidKeyTag(
@@ -7793,6 +7917,11 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
                 Self::FailedCall(inner) => {
                     <FailedCall as alloy_sol_types::SolError>::abi_encoded_size(inner)
                 }
+                Self::InvalidDSTLength(inner) => {
+                    <InvalidDSTLength as alloy_sol_types::SolError>::abi_encoded_size(
+                        inner,
+                    )
+                }
                 Self::InvalidInitialization(inner) => {
                     <InvalidInitialization as alloy_sol_types::SolError>::abi_encoded_size(
                         inner,
@@ -7801,13 +7930,13 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
                 Self::InvalidKeyTag(inner) => {
                     <InvalidKeyTag as alloy_sol_types::SolError>::abi_encoded_size(inner)
                 }
-                Self::KeyBlsBn12381_InvalidBytes(inner) => {
-                    <KeyBlsBn12381_InvalidBytes as alloy_sol_types::SolError>::abi_encoded_size(
+                Self::KeyBlsBls12381_InvalidBytes(inner) => {
+                    <KeyBlsBls12381_InvalidBytes as alloy_sol_types::SolError>::abi_encoded_size(
                         inner,
                     )
                 }
-                Self::KeyBlsBn12381_InvalidKey(inner) => {
-                    <KeyBlsBn12381_InvalidKey as alloy_sol_types::SolError>::abi_encoded_size(
+                Self::KeyBlsBls12381_InvalidKey(inner) => {
+                    <KeyBlsBls12381_InvalidKey as alloy_sol_types::SolError>::abi_encoded_size(
                         inner,
                     )
                 }
@@ -7846,8 +7975,8 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
                         inner,
                     )
                 }
-                Self::SigBlsBn12381_InvalidMessageLength(inner) => {
-                    <SigBlsBn12381_InvalidMessageLength as alloy_sol_types::SolError>::abi_encoded_size(
+                Self::SigBlsBls12381_InvalidMessageLength(inner) => {
+                    <SigBlsBls12381_InvalidMessageLength as alloy_sol_types::SolError>::abi_encoded_size(
                         inner,
                     )
                 }
@@ -7881,6 +8010,12 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
                 Self::FailedCall(inner) => {
                     <FailedCall as alloy_sol_types::SolError>::abi_encode_raw(inner, out)
                 }
+                Self::InvalidDSTLength(inner) => {
+                    <InvalidDSTLength as alloy_sol_types::SolError>::abi_encode_raw(
+                        inner,
+                        out,
+                    )
+                }
                 Self::InvalidInitialization(inner) => {
                     <InvalidInitialization as alloy_sol_types::SolError>::abi_encode_raw(
                         inner,
@@ -7893,14 +8028,14 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
                         out,
                     )
                 }
-                Self::KeyBlsBn12381_InvalidBytes(inner) => {
-                    <KeyBlsBn12381_InvalidBytes as alloy_sol_types::SolError>::abi_encode_raw(
+                Self::KeyBlsBls12381_InvalidBytes(inner) => {
+                    <KeyBlsBls12381_InvalidBytes as alloy_sol_types::SolError>::abi_encode_raw(
                         inner,
                         out,
                     )
                 }
-                Self::KeyBlsBn12381_InvalidKey(inner) => {
-                    <KeyBlsBn12381_InvalidKey as alloy_sol_types::SolError>::abi_encode_raw(
+                Self::KeyBlsBls12381_InvalidKey(inner) => {
+                    <KeyBlsBls12381_InvalidKey as alloy_sol_types::SolError>::abi_encode_raw(
                         inner,
                         out,
                     )
@@ -7947,8 +8082,8 @@ function setKey(uint8 tag, bytes memory key, bytes memory signature, bytes memor
                         out,
                     )
                 }
-                Self::SigBlsBn12381_InvalidMessageLength(inner) => {
-                    <SigBlsBn12381_InvalidMessageLength as alloy_sol_types::SolError>::abi_encode_raw(
+                Self::SigBlsBls12381_InvalidMessageLength(inner) => {
+                    <SigBlsBls12381_InvalidMessageLength as alloy_sol_types::SolError>::abi_encode_raw(
                         inner,
                         out,
                     )

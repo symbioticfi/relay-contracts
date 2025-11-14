@@ -244,6 +244,15 @@ namespace Symbiotic.Relay.KeyRegistry.abi.ContractDefinition
     {
     }
 
+    public partial class InvalidDSTLengthError : InvalidDSTLengthErrorBase { }
+
+    [Error("InvalidDSTLength")]
+    public class InvalidDSTLengthErrorBase : IErrorDTO
+    {
+        [Parameter("bytes", "", 1)]
+        public virtual byte[] ReturnValue1 { get; set; }
+    }
+
     public partial class InvalidInitializationError : InvalidInitializationErrorBase { }
     [Error("InvalidInitialization")]
     public class InvalidInitializationErrorBase : IErrorDTO
@@ -256,15 +265,15 @@ namespace Symbiotic.Relay.KeyRegistry.abi.ContractDefinition
     {
     }
 
-    public partial class Keyblsbn12381InvalidbytesError : Keyblsbn12381InvalidbytesErrorBase { }
-    [Error("KeyBlsBn12381_InvalidBytes")]
-    public class Keyblsbn12381InvalidbytesErrorBase : IErrorDTO
+    public partial class Keyblsbls12381InvalidbytesError : Keyblsbls12381InvalidbytesErrorBase { }
+    [Error("KeyBlsBls12381_InvalidBytes")]
+    public class Keyblsbls12381InvalidbytesErrorBase : IErrorDTO
     {
     }
 
-    public partial class Keyblsbn12381InvalidkeyError : Keyblsbn12381InvalidkeyErrorBase { }
-    [Error("KeyBlsBn12381_InvalidKey")]
-    public class Keyblsbn12381InvalidkeyErrorBase : IErrorDTO
+    public partial class Keyblsbls12381InvalidkeyError : Keyblsbls12381InvalidkeyErrorBase { }
+    [Error("KeyBlsBls12381_InvalidKey")]
+    public class Keyblsbls12381InvalidkeyErrorBase : IErrorDTO
     {
     }
 
@@ -310,9 +319,9 @@ namespace Symbiotic.Relay.KeyRegistry.abi.ContractDefinition
     {
     }
 
-    public partial class Sigblsbn12381InvalidmessagelengthError : Sigblsbn12381InvalidmessagelengthErrorBase { }
-    [Error("SigBlsBn12381_InvalidMessageLength")]
-    public class Sigblsbn12381InvalidmessagelengthErrorBase : IErrorDTO
+    public partial class Sigblsbls12381InvalidmessagelengthError : Sigblsbls12381InvalidmessagelengthErrorBase { }
+    [Error("SigBlsBls12381_InvalidMessageLength")]
+    public class Sigblsbls12381InvalidmessagelengthErrorBase : IErrorDTO
     {
     }
 

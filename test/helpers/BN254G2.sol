@@ -189,11 +189,11 @@ library BN254G2 {
     function _ECTwistAddJacobian(_ECTwistAddJacobianArgs memory $) internal pure returns (uint256[6] memory pt3) {
         if ($.pt1zx == 0 && $.pt1zy == 0) {
             (pt3[PTXX], pt3[PTXY], pt3[PTYX], pt3[PTYY], pt3[PTZX], pt3[PTZY]) =
-                ($.pt2xx, $.pt2xy, $.pt2yx, $.pt2yy, $.pt2zx, $.pt2zy);
+            ($.pt2xx, $.pt2xy, $.pt2yx, $.pt2yy, $.pt2zx, $.pt2zy);
             return pt3;
         } else if ($.pt2zx == 0 && $.pt2zy == 0) {
             (pt3[PTXX], pt3[PTXY], pt3[PTYX], pt3[PTYY], pt3[PTZX], pt3[PTZY]) =
-                ($.pt1xx, $.pt1xy, $.pt1yx, $.pt1yy, $.pt1zx, $.pt1zy);
+            ($.pt1xx, $.pt1xy, $.pt1yx, $.pt1yy, $.pt1zx, $.pt1zy);
             return pt3;
         }
 

@@ -113,8 +113,8 @@ abstract contract PricedTokensChainlinkVPCalc is
         bool[2] memory inverts,
         uint48[2] memory stalenessDurations
     ) internal virtual {
-        _getPricedTokensChainlinkVPCalcStorage()._tokenHops[token]
-        .push(uint48(block.timestamp), _serializeHops(aggregators, inverts, stalenessDurations));
+        _getPricedTokensChainlinkVPCalcStorage()
+        ._tokenHops[token].push(uint48(block.timestamp), _serializeHops(aggregators, inverts, stalenessDurations));
         emit SetTokenHops(token, aggregators, inverts, stalenessDurations);
     }
 

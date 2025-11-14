@@ -1,10 +1,10 @@
-# BN12381
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/f15b7f1298f3e89ef5f17b3ef10b20d2dc6845d4/src/libraries/utils/BN12381.sol)
+# BLS12381
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/40791731b80bf5666d350907bfe7f142e3c6d70c/src/libraries/utils/BLS12381.sol)
 
 **Authors:**
 Solady (https://github.com/vectorized/solady/blob/main/src/utils/BLS.sol), Ithaca (https://github.com/ithacaxyz/odyssey-examples/blob/main/chapter1/contracts/src/libraries/BLS.sol)
 
-BN12381 wrapper.
+BLS12381 wrapper.
 
 Precompile addresses come from the BLS addresses submodule in AlphaNet, see
 See: (https://github.com/paradigmxyz/alphanet/blob/main/crates/precompile/src/addresses.rs)
@@ -49,6 +49,97 @@ uint256 private constant P_PLUS_ONE_SLASH_2_B = 0xd91dd2e13ce144afd9cc34a83dac3d
 
 ```solidity
 bytes32 private constant G1_SUBGROUP_ORDER = 0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000001
+```
+
+
+### FR_MODULUS
+
+```solidity
+uint256 internal constant FR_MODULUS = 0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000001
+```
+
+
+### G2_X_C0_A
+
+```solidity
+bytes32 internal constant G2_X_C0_A = 0x00000000000000000000000000000000024aa2b2f08f0a91260805272dc51051
+```
+
+
+### G2_X_C0_B
+
+```solidity
+bytes32 internal constant G2_X_C0_B = 0xc6e47ad4fa403b02b4510b647ae3d1770bac0326a805bbefd48056c8c121bdb8
+```
+
+
+### G2_X_C1_A
+
+```solidity
+bytes32 internal constant G2_X_C1_A = 0x0000000000000000000000000000000013e02b6052719f607dacd3a088274f65
+```
+
+
+### G2_X_C1_B
+
+```solidity
+bytes32 internal constant G2_X_C1_B = 0x596bd0d09920b61ab5da61bbdc7f5049334cf11213945d57e5ac7d055d042b7e
+```
+
+
+### G2_Y_C0_A
+
+```solidity
+bytes32 internal constant G2_Y_C0_A = 0x000000000000000000000000000000000ce5d527727d6e118cc9cdc6da2e351a
+```
+
+
+### G2_Y_C0_B
+
+```solidity
+bytes32 internal constant G2_Y_C0_B = 0xadfd9baa8cbdd3a76d429a695160d12c923ac9cc3baca289e193548608b82801
+```
+
+
+### G2_Y_C1_A
+
+```solidity
+bytes32 internal constant G2_Y_C1_A = 0x000000000000000000000000000000000606c4a02ea734cc32acd2b02bc28b99
+```
+
+
+### G2_Y_C1_B
+
+```solidity
+bytes32 internal constant G2_Y_C1_B = 0xcb3e287e85a763af267492ab572e99ab3f370d275cec1da1aaa9075ff05f79be
+```
+
+
+### NEG_G2_Y_C0_A
+
+```solidity
+bytes32 internal constant NEG_G2_Y_C0_A = 0x000000000000000000000000000000000d1b3cc2c7027888be51d9ef691d77bc
+```
+
+
+### NEG_G2_Y_C0_B
+
+```solidity
+bytes32 internal constant NEG_G2_Y_C0_B = 0xb679afda66c73f17f9ee3837a55024f78c71363275a75d75d86bab79f74782aa
+```
+
+
+### NEG_G2_Y_C1_A
+
+```solidity
+bytes32 internal constant NEG_G2_Y_C1_A = 0x0000000000000000000000000000000013fa4d4a0ad8b1ce186ed5061789213d
+```
+
+
+### NEG_G2_Y_C1_B
+
+```solidity
+bytes32 internal constant NEG_G2_Y_C1_B = 0x993923066dddaf1040bc3ff59f825c78df74f2d75467e25e0f55f8a00fa030ed
 ```
 
 
@@ -125,13 +216,40 @@ address internal constant BLS12_MAP_FP2_TO_G2 = 0x000000000000000000000000000000
 
 
 ## Functions
+### generatorG1
+
+Returns the canonical G1 generator.
+
+
+```solidity
+function generatorG1() internal pure returns (G1Point memory);
+```
+
 ### negGeneratorG1
 
-Referenced from https://eips.ethereum.org/EIPS/eip-2537#curve-parameters
+Returns the negated G1 generator (useful for pairings expecting -G1).
 
 
 ```solidity
 function negGeneratorG1() internal pure returns (G1Point memory);
+```
+
+### generatorG2
+
+Returns the canonical G2 generator.
+
+
+```solidity
+function generatorG2() internal pure returns (G2Point memory);
+```
+
+### negGeneratorG2
+
+Returns the negated G2 generator (useful for pairings expecting -G2).
+
+
+```solidity
+function negGeneratorG2() internal pure returns (G2Point memory);
 ```
 
 ### add
@@ -152,6 +270,15 @@ Multi-scalar multiplication of G1 points with scalars. Returns a new G1 point.
 function msm(G1Point[] memory points, bytes32[] memory scalars) internal view returns (G1Point memory result);
 ```
 
+### scalarMulG1
+
+Scalar multiplication of a G1 point with a scalar. Returns a new G1 point.
+
+
+```solidity
+function scalarMulG1(G1Point memory point, uint256 scalar) internal view returns (G1Point memory result);
+```
+
 ### add
 
 Adds two G2 points. Returns a new G2 point.
@@ -168,6 +295,18 @@ Multi-scalar multiplication of G2 points with scalars. Returns a new G2 point.
 
 ```solidity
 function msm(G2Point[] memory points, bytes32[] memory scalars) internal view returns (G2Point memory result);
+```
+
+### pairing
+
+Convenience overload mirroring BN254's pairing signature.
+
+
+```solidity
+function pairing(G1Point memory a1, G2Point memory a2, G1Point memory b1, G2Point memory b2)
+    internal
+    view
+    returns (bool);
 ```
 
 ### pairing
@@ -197,14 +336,32 @@ Maps a Fp2 element to a G2 point.
 function toG2(Fp2 memory element) internal view returns (G2Point memory result);
 ```
 
-### hashToG2
+### hashToG1
 
-Computes a point in G2 from a message.
+Computes a point in G1 from a message.
 
 
 ```solidity
-function hashToG2(bytes memory message) internal view returns (G2Point memory result);
+function hashToG1(bytes memory dst, bytes memory message) internal view returns (G1Point memory out);
 ```
+
+### expandMsg
+
+Expand arbitrary message to n bytes, as described
+in rfc9380 section 5.3.1, using H = sha256.
+
+
+```solidity
+function expandMsg(bytes memory DST, bytes memory message, uint8 n_bytes) internal pure returns (bytes memory);
+```
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`DST`|`bytes`|Domain separation tag|
+|`message`|`bytes`|The message to expand|
+|`n_bytes`|`uint8`|The number of bytes to extend to|
+
 
 ### findYFromX
 
@@ -308,12 +465,12 @@ The MapFpToG2 operation failed.
 error MapFp2ToG2Failed();
 ```
 
-### InvalidPoint
-The provided X coordinate does not correspond to a valid point on G1.
+### InvalidDSTLength
+The DST length is too long.
 
 
 ```solidity
-error InvalidPoint();
+error InvalidDSTLength(bytes);
 ```
 
 ## Structs

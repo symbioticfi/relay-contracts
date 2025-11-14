@@ -40,10 +40,11 @@ contract KeyEcdsaSecp256k1Mock {
         return KeyEcdsaSecp256k1.zeroKey();
     }
 
-    function equal(
-        KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1 memory key1,
-        KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1 memory key2
-    ) public view returns (bool) {
+    function equal(KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1 memory key1, KeyEcdsaSecp256k1.KEY_ECDSA_SECP256K1 memory key2)
+        public
+        view
+        returns (bool)
+    {
         return KeyEcdsaSecp256k1.equal(key1, key2);
     }
 }
