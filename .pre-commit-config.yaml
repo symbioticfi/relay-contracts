@@ -115,7 +115,10 @@ repos:
             fi
             mkdir -p bindings/ts-viem
             rm -f bindings/ts-viem/generated.ts
-            npx --yes @wagmi/cli@latest generate --config bindings/ts-viem/wagmi.config.mjs
+            (
+              cd bindings/ts-viem
+              npx --yes @wagmi/cli@latest generate --config wagmi.config.ts
+            )
           '
         pass_filenames: false
       - id: generate-bindings-go-go-ethereum
