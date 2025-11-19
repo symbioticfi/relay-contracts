@@ -12,6 +12,9 @@ contract SigBlsBls12381Test is Test {
 
     bytes internal constant DST_G1 = "BLS_SIG_BLS12381G1_XMD:SHA-256_SSWU_RO_NUL_";
 
+    address internal constant BLS12_G2ADD = 0x000000000000000000000000000000000000000d;
+    address internal constant BLS12_G2MSM = 0x000000000000000000000000000000000000000E;
+
     function test_VerifyValidSignature() public {
         uint256 privateKey = 0x123456789abcdef;
         bytes32 messageHash = keccak256("relay bls12381");
@@ -19,7 +22,7 @@ contract SigBlsBls12381Test is Test {
         BLS12381.G1Point memory generator = _g1Generator();
         BLS12381.G1Point memory keyG1 = _g1Mul(generator, bytes32(privateKey));
         BLS12381.G2Point memory keyG2 = _g2Mul(BLS12381.generatorG2(), bytes32(privateKey));
-        BLS12381.G1Point memory messageG1 = BLS12381.hashToG1(DST_G1, abi.encodePacked(messageHash));
+        BLS12381.G1Point memory messageG1 = BLS12381.hashToG1(abi.encodePacked(messageHash));
         BLS12381.G1Point memory signature = _g1Mul(messageG1, bytes32(privateKey));
 
         bytes memory keyBytes = KeyBlsBls12381.wrap(keyG1).toBytes();
@@ -35,7 +38,7 @@ contract SigBlsBls12381Test is Test {
         BLS12381.G1Point memory generator = _g1Generator();
         BLS12381.G1Point memory keyG1 = _g1Mul(generator, bytes32(privateKey));
         BLS12381.G2Point memory keyG2 = _g2Mul(BLS12381.generatorG2(), bytes32(privateKey));
-        BLS12381.G1Point memory messageG1 = BLS12381.hashToG1(DST_G1, abi.encodePacked(messageHash));
+        BLS12381.G1Point memory messageG1 = BLS12381.hashToG1(abi.encodePacked(messageHash));
         BLS12381.G1Point memory signature = _g1Mul(messageG1, bytes32(privateKey + 1));
 
         bytes memory keyBytes = KeyBlsBls12381.wrap(keyG1).toBytes();
@@ -46,7 +49,7 @@ contract SigBlsBls12381Test is Test {
 
     function test_VerifyZeroKey() public {
         bytes32 messageHash = keccak256("relay bls12381 zero");
-        BLS12381.G1Point memory messageG1 = BLS12381.hashToG1(DST_G1, abi.encodePacked(messageHash));
+        BLS12381.G1Point memory messageG1 = BLS12381.hashToG1(abi.encodePacked(messageHash));
         BLS12381.G1Point memory signature = messageG1;
         BLS12381.G2Point memory keyG2 = _zeroG2Point();
 
@@ -107,6 +110,49 @@ contract SigBlsBls12381Test is Test {
         bytes32[] memory scalars = new bytes32[](1);
         points[0] = point;
         scalars[0] = scalar;
-        result = BLS12381.msm(points, scalars);
+        result = _g2Msm(points, scalars);
+    }
+
+    /// @dev Adds two G2 points. Returns a new G2 point.
+    function _g2Add(BLS12381.G2Point memory point0, BLS12381.G2Point memory point1)
+        internal
+        view
+        returns (BLS12381.G2Point memory result)
+    {
+        assembly ("memory-safe") {
+            mcopy(result, point0, 0x100)
+            mcopy(add(result, 0x100), point1, 0x100)
+            if iszero(and(eq(returndatasize(), 0x100), staticcall(gas(), BLS12_G2ADD, result, 0x200, result, 0x100))) {
+                mstore(0x00, 0xc55e5e33) // `G2AddFailed()`.
+                revert(0x1c, 0x04)
+            }
+        }
+    }
+
+    /// @dev Multi-scalar multiplication of G2 points with scalars. Returns a new G2 point.
+    function _g2Msm(BLS12381.G2Point[] memory points, bytes32[] memory scalars)
+        internal
+        view
+        returns (BLS12381.G2Point memory result)
+    {
+        assembly ("memory-safe") {
+            let k := mload(points)
+            let d := sub(scalars, points)
+            for { let i := 0 } iszero(eq(i, k)) { i := add(i, 1) } {
+                points := add(points, 0x20)
+                let o := add(result, mul(0x120, i))
+                mcopy(o, mload(points), 0x100)
+                mstore(add(o, 0x100), mload(add(d, points)))
+            }
+            if iszero(
+                and(
+                    and(eq(k, mload(scalars)), eq(returndatasize(), 0x100)),
+                    staticcall(gas(), BLS12_G2MSM, result, mul(0x120, k), result, 0x100)
+                )
+            ) {
+                mstore(0x00, 0xe3dc5425) // `G2MSMFailed()`.
+                revert(0x1c, 0x04)
+            }
+        }
     }
 }

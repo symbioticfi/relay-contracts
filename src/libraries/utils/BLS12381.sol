@@ -1,19 +1,12 @@
 // SPDX-License-Identifier: MIT
+// Original code: https://github.com/Vectorized/solady/blob/main/src/utils/ext/ithaca/BLS.sol
+// Original code: https://github.com/Vectorized/solady/blob/main/src/utils/ext/ithaca/BLS.sol
 pragma solidity ^0.8.24;
 
-/// @notice BLS12381 wrapper.
-/// @author Solady (https://github.com/vectorized/solady/blob/main/src/utils/BLS.sol)
-/// @author Ithaca (https://github.com/ithacaxyz/odyssey-examples/blob/main/chapter1/contracts/src/libraries/BLS.sol)
-///
-/// @dev Precompile addresses come from the BLS addresses submodule in AlphaNet, see
-/// See: (https://github.com/paradigmxyz/alphanet/blob/main/crates/precompile/src/addresses.rs)
-///
-/// Note:
-/// - This implementation uses `mcopy`, since any chain that is edgy enough to
-///   implement the BLS precompiles will definitely have implemented cancun.
-/// - For efficiency, we use the legacy `staticcall` to call the precompiles.
-///   For the intended use case in an entry points that requires gas-introspection,
-///   which requires legacy bytecode, this won't be a blocker.
+/**
+ * @title BLS12381
+ * @notice Library for working with BLS12-381 precompiles.
+ */
 library BLS12381 {
     /*´:°•.°+.*•´.*:˚.°*.˚•´.°:°•.°•.*•´.*:˚.°*.˚•´.°:°•.°+.*•´.*:*/
     /*                          STRUCTS                           */
@@ -233,62 +226,12 @@ library BLS12381 {
     }
 
     /// @dev Scalar multiplication of a G1 point with a scalar. Returns a new G1 point.
-    function scalarMulG1(G1Point memory point, uint256 scalar) internal view returns (G1Point memory result) {
+    function scalar_mul(G1Point memory point, uint256 scalar) internal view returns (G1Point memory result) {
         G1Point[] memory points = new G1Point[](1);
-        bytes32[] memory scalars = new bytes32[](1);
         points[0] = point;
+        bytes32[] memory scalars = new bytes32[](1);
         scalars[0] = bytes32(scalar);
         result = msm(points, scalars);
-    }
-
-    /// @dev Adds two G2 points. Returns a new G2 point.
-    function add(G2Point memory point0, G2Point memory point1) internal view returns (G2Point memory result) {
-        assembly ("memory-safe") {
-            mcopy(result, point0, 0x100)
-            mcopy(add(result, 0x100), point1, 0x100)
-            if iszero(and(eq(returndatasize(), 0x100), staticcall(gas(), BLS12_G2ADD, result, 0x200, result, 0x100))) {
-                mstore(0x00, 0xc55e5e33) // `G2AddFailed()`.
-                revert(0x1c, 0x04)
-            }
-        }
-    }
-
-    /// @dev Multi-scalar multiplication of G2 points with scalars. Returns a new G2 point.
-    function msm(G2Point[] memory points, bytes32[] memory scalars) internal view returns (G2Point memory result) {
-        assembly ("memory-safe") {
-            let k := mload(points)
-            let d := sub(scalars, points)
-            for { let i := 0 } iszero(eq(i, k)) { i := add(i, 1) } {
-                points := add(points, 0x20)
-                let o := add(result, mul(0x120, i))
-                mcopy(o, mload(points), 0x100)
-                mstore(add(o, 0x100), mload(add(d, points)))
-            }
-            if iszero(
-                and(
-                    and(eq(k, mload(scalars)), eq(returndatasize(), 0x100)),
-                    staticcall(gas(), BLS12_G2MSM, result, mul(0x120, k), result, 0x100)
-                )
-            ) {
-                mstore(0x00, 0xe3dc5425) // `G2MSMFailed()`.
-                revert(0x1c, 0x04)
-            }
-        }
-    }
-
-    /// @dev Convenience overload mirroring BN254's pairing signature.
-    function pairing(G1Point memory a1, G2Point memory a2, G1Point memory b1, G2Point memory b2)
-        internal
-        view
-        returns (bool)
-    {
-        G1Point[] memory g1Points = new G1Point[](2);
-        G2Point[] memory g2Points = new G2Point[](2);
-        g1Points[0] = a1;
-        g1Points[1] = b1;
-        g2Points[0] = a2;
-        g2Points[1] = b2;
-        return pairing(g1Points, g2Points);
     }
 
     /// @dev Checks the pairing of G1 points with G2 points. Returns whether the pairing is valid.
@@ -316,69 +259,58 @@ library BLS12381 {
         }
     }
 
-    /// @dev Maps a Fp element to a G1 point.
-    function toG1(Fp memory element) internal view returns (G1Point memory result) {
-        assembly ("memory-safe") {
-            if iszero(
-                and(eq(returndatasize(), 0x80), staticcall(gas(), BLS12_MAP_FP_TO_G1, element, 0x40, result, 0x80))
-            ) {
-                mstore(0x00, 0x24a289fc) // `MapFpToG1Failed()`.
-                revert(0x1c, 0x04)
-            }
-        }
-    }
-
-    /// @dev Maps a Fp2 element to a G2 point.
-    function toG2(Fp2 memory element) internal view returns (G2Point memory result) {
-        assembly ("memory-safe") {
-            if iszero(
-                and(eq(returndatasize(), 0x100), staticcall(gas(), BLS12_MAP_FP2_TO_G2, element, 0x80, result, 0x100))
-            ) {
-                mstore(0x00, 0x89083b91) // `MapFp2ToG2Failed()`.
-                revert(0x1c, 0x04)
-            }
-        }
+    /// @dev Convenience overload mirroring BN254's pairing signature.
+    function pairing(G1Point memory a1, G2Point memory a2, G1Point memory b1, G2Point memory b2)
+        internal
+        view
+        returns (bool)
+    {
+        G1Point[] memory g1Points = new G1Point[](2);
+        g1Points[0] = a1;
+        g1Points[1] = b1;
+        G2Point[] memory g2Points = new G2Point[](2);
+        g2Points[0] = a2;
+        g2Points[1] = b2;
+        return pairing(g1Points, g2Points);
     }
 
     /// @dev Computes a point in G1 from a message.
-    function hashToG1(bytes memory dst, bytes memory message) internal view returns (G1Point memory out) {
-        bytes memory uniform_bytes = expandMsg(dst, message, 128);
+    function hashToG1(bytes memory message) internal view returns (G1Point memory result) {
+        bytes memory uniform_bytes = expandMsg("BLS_SIG_BLS12381G1_XMD:SHA-256_SSWU_RO_NUL_", message, 128);
         bytes memory buf = new bytes(225);
         bytes memory buf2 = new bytes(256);
-        bool ok;
-        for (uint256 i = 0; i < 2; i++) {
+        for (uint256 i; i < 2; ++i) {
             assembly {
                 // inplace mod in uniform_bytes[64*i]
-                let p := add(32, uniform_bytes)
-                let q := add(32, buf)
-
-                p := add(p, mul(64, i))
-                mstore(q, 64) // length of base
-                q := add(q, 32)
-                mstore(q, 1) // length of exponent 1
-                q := add(q, 32)
-                mstore(q, 64) // length of modulus
-                q := add(q, 32)
-                mcopy(q, p, 64) // copy base
-                q := add(q, 64)
-                mstore8(q, 1) // exponent
-                q := add(q, 1)
-                mstore(q, P_A)
-                q := add(q, 32)
-                mstore(q, P_B)
-                ok := staticcall(gas(), 5, add(32, buf), 225, p, 64)
+                let p := add(add(uniform_bytes, 0x20), mul(i, 0x40))
+                mstore(add(buf, 0x20), 64) // length of base
+                mstore(add(buf, 0x40), 1) // length of exponent 1
+                mstore(add(buf, 0x60), 64) // length of modulus
+                mcopy(add(buf, 0x80), p, 64) // copy base
+                mstore8(add(buf, 0xc0), 1) // exponent
+                mstore(add(buf, 0xc1), P_A)
+                mstore(add(buf, 0xe1), P_B)
+                if iszero(and(eq(returndatasize(), 0x40), staticcall(gas(), EXP_MOD, add(buf, 0x20), 0xe1, p, 0x40))) {
+                    revert(calldatasize(), 0x00)
+                }
 
                 // EIP-2537 map_fp_to_g1
                 let r := add(32, buf2)
                 r := add(r, mul(128, i))
-                ok := and(ok, staticcall(gas(), BLS12_MAP_FP_TO_G1, p, 64, r, 128))
+                if iszero(and(eq(returndatasize(), 0x80), staticcall(gas(), BLS12_MAP_FP_TO_G1, p, 0x40, r, 0x80))) {
+                    mstore(0x00, 0x24a289fc) // `MapFpToG1Failed()`.
+                    revert(0x1c, 0x04)
+                }
             }
-            require(ok);
         }
         assembly {
-            ok := staticcall(gas(), BLS12_G1ADD, add(buf2, 32), 256, out, 128)
+            if iszero(
+                and(eq(returndatasize(), 0x80), staticcall(gas(), BLS12_G1ADD, add(buf2, 0x20), 0x100, result, 0x80))
+            ) {
+                mstore(0x00, 0xd6cc76eb) // `G1AddFailed()`.
+                revert(0x1c, 0x04)
+            }
         }
-        require(ok, "g1add failed");
     }
 
     /// @notice Expand arbitrary message to n bytes, as described
@@ -424,7 +356,7 @@ library BLS12381 {
         bytes memory buf = new bytes(0x120);
         assembly ("memory-safe") {
             function modfield(s_, b_) {
-                if iszero(and(eq(returndatasize(), 0x40), staticcall(gas(), 5, s_, 0x120, b_, 0x40))) {
+                if iszero(and(eq(returndatasize(), 0x40), staticcall(gas(), EXP_MOD, s_, 0x120, b_, 0x40))) {
                     revert(calldatasize(), 0x00)
                 }
             }
@@ -471,7 +403,7 @@ library BLS12381 {
         bytes memory buf = new bytes(0xe1);
         assembly ("memory-safe") {
             function modfield(s_, b_) {
-                if iszero(and(eq(returndatasize(), 0x40), staticcall(gas(), 5, s_, 0xe1, b_, 0x40))) {
+                if iszero(and(eq(returndatasize(), 0x40), staticcall(gas(), EXP_MOD, s_, 0xe1, b_, 0x40))) {
                     revert(calldatasize(), 0x00)
                 }
             }
@@ -506,7 +438,7 @@ library BLS12381 {
         bytes memory buf = new bytes(0xe1);
         assembly ("memory-safe") {
             function modfield(s_, b_) {
-                if iszero(and(eq(returndatasize(), 0x40), staticcall(gas(), 5, s_, 0xe1, b_, 0x40))) {
+                if iszero(and(eq(returndatasize(), 0x40), staticcall(gas(), EXP_MOD, s_, 0xe1, b_, 0x40))) {
                     revert(calldatasize(), 0x00)
                 }
             }

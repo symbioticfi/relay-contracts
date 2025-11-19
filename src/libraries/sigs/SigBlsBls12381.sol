@@ -12,8 +12,6 @@ library SigBlsBls12381 {
     using BLS12381 for BLS12381.G1Point;
     using KeyBlsBls12381 for KeyBlsBls12381.KEY_BLS_BLS12381;
 
-    bytes internal constant DST_G1 = "BLS_SIG_BLS12381G1_XMD:SHA-256_SSWU_RO_NUL_";
-
     /**
      * @notice Reverts when the message length is invalid.
      */
@@ -65,13 +63,13 @@ library SigBlsBls12381 {
         if (keyG1.x_a == 0 && keyG1.x_b == 0 && keyG1.y_a == 0 && keyG1.y_b == 0) {
             return false;
         }
-        BLS12381.G1Point memory messageG1 = BLS12381.hashToG1(DST_G1, abi.encodePacked(messageHash));
+        BLS12381.G1Point memory messageG1 = BLS12381.hashToG1(abi.encodePacked(messageHash));
         uint256 alpha = uint256(keccak256(abi.encode(signatureG1, keyG1, keyG2, messageG1))) % BLS12381.FR_MODULUS;
 
         return BLS12381.pairing(
-            signatureG1.add(keyG1.scalarMulG1(alpha)),
+            signatureG1.add(keyG1.scalar_mul(alpha)),
             BLS12381.negGeneratorG2(),
-            messageG1.add(BLS12381.generatorG1().scalarMulG1(alpha)),
+            messageG1.add(BLS12381.generatorG1().scalar_mul(alpha)),
             keyG2
         );
     }

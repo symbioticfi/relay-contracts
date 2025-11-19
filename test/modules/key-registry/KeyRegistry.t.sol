@@ -65,6 +65,9 @@ contract KeyRegistryTest is Test {
     uint256 blsUserSk = 0x12345;
     bytes internal constant BLS12381_DST_G1 = "BLS_SIG_BLS12381G1_XMD:SHA-256_SSWU_RO_NUL_";
 
+    address internal constant BLS12_G2ADD = 0x000000000000000000000000000000000000000d;
+    address internal constant BLS12_G2MSM = 0x000000000000000000000000000000000000000E;
+
     function getG2Key(uint256 privateKey) internal view returns (BN254.G2Point memory) {
         BN254.G2Point memory G2 = BN254.generatorG2();
         (uint256 x1, uint256 x2, uint256 y1, uint256 y2) =
@@ -97,7 +100,7 @@ contract KeyRegistryTest is Test {
         bytes32[] memory scalars = new bytes32[](1);
         points[0] = point;
         scalars[0] = scalar;
-        result = BLS12381.msm(points, scalars);
+        result = _g2Msm(points, scalars);
     }
 
     function setUp() public {
@@ -202,7 +205,7 @@ contract KeyRegistryTest is Test {
 
         bytes32 structHash = keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, operator, keccak256(keyBytes)));
         bytes32 digest = keyRegistry.hashTypedDataV4(structHash);
-        BLS12381.G1Point memory messageG1 = BLS12381.hashToG1(BLS12381_DST_G1, abi.encodePacked(digest));
+        BLS12381.G1Point memory messageG1 = BLS12381.hashToG1(abi.encodePacked(digest));
         BLS12381.G1Point memory signature = _bls12381G1Mul(messageG1, bytes32(blsUserSk));
 
         vm.startPrank(operator);
@@ -237,7 +240,7 @@ contract KeyRegistryTest is Test {
 
         bytes32 structHash = keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, operator, keccak256(keyBytes)));
         bytes32 digest = keyRegistry.hashTypedDataV4(structHash);
-        BLS12381.G1Point memory messageG1 = BLS12381.hashToG1(BLS12381_DST_G1, abi.encodePacked(digest));
+        BLS12381.G1Point memory messageG1 = BLS12381.hashToG1(abi.encodePacked(digest));
         BLS12381.G1Point memory invalidSignature = _bls12381G1Mul(messageG1, bytes32(blsUserSk + 1));
 
         vm.startPrank(operator);
@@ -490,5 +493,48 @@ contract KeyRegistryTest is Test {
         bytes32 location =
             keccak256(abi.encode(uint256(keccak256("symbiotic.storage.KeyRegistry")) - 1)) & ~bytes32(uint256(0xff));
         assertEq(location, 0x79440bf5b0cb104c925971e1cca11d9e1557cbe9fa7533e7b0652d40728ecf00, "Location mismatch");
+    }
+
+    /// @dev Adds two G2 points. Returns a new G2 point.
+    function _g2Add(BLS12381.G2Point memory point0, BLS12381.G2Point memory point1)
+        internal
+        view
+        returns (BLS12381.G2Point memory result)
+    {
+        assembly ("memory-safe") {
+            mcopy(result, point0, 0x100)
+            mcopy(add(result, 0x100), point1, 0x100)
+            if iszero(and(eq(returndatasize(), 0x100), staticcall(gas(), BLS12_G2ADD, result, 0x200, result, 0x100))) {
+                mstore(0x00, 0xc55e5e33) // `G2AddFailed()`.
+                revert(0x1c, 0x04)
+            }
+        }
+    }
+
+    /// @dev Multi-scalar multiplication of G2 points with scalars. Returns a new G2 point.
+    function _g2Msm(BLS12381.G2Point[] memory points, bytes32[] memory scalars)
+        internal
+        view
+        returns (BLS12381.G2Point memory result)
+    {
+        assembly ("memory-safe") {
+            let k := mload(points)
+            let d := sub(scalars, points)
+            for { let i := 0 } iszero(eq(i, k)) { i := add(i, 1) } {
+                points := add(points, 0x20)
+                let o := add(result, mul(0x120, i))
+                mcopy(o, mload(points), 0x100)
+                mstore(add(o, 0x100), mload(add(d, points)))
+            }
+            if iszero(
+                and(
+                    and(eq(k, mload(scalars)), eq(returndatasize(), 0x100)),
+                    staticcall(gas(), BLS12_G2MSM, result, mul(0x120, k), result, 0x100)
+                )
+            ) {
+                mstore(0x00, 0xe3dc5425) // `G2MSMFailed()`.
+                revert(0x1c, 0x04)
+            }
+        }
     }
 }
