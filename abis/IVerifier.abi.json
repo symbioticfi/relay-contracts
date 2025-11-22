@@ -1,0 +1,30 @@
+[
+  {
+    "type": "function",
+    "name": "verifyProof",
+    "inputs": [
+      {
+        "name": "proof",
+        "type": "uint256[8]",
+        "internalType": "uint256[8]"
+      },
+      {
+        "name": "commitments",
+        "type": "uint256[2]",
+        "internalType": "uint256[2]"
+      },
+      {
+        "name": "commitmentPok",
+        "type": "uint256[2]",
+        "internalType": "uint256[2]"
+      },
+      {
+        "name": "input",
+        "type": "uint256[1]",
+        "internalType": "uint256[1]"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "view"
+  }
+]

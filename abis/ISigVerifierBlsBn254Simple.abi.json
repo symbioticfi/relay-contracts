@@ -1,0 +1,133 @@
+[
+  {
+    "type": "function",
+    "name": "AGGREGATED_PUBLIC_KEY_G1_HASH",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "MAX_VALIDATORS",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "VALIDATOR_SET_HASH_KECCAK256_HASH",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "VERIFICATION_TYPE",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint32",
+        "internalType": "uint32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "verifyQuorumSig",
+    "inputs": [
+      {
+        "name": "settlement",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "epoch",
+        "type": "uint48",
+        "internalType": "uint48"
+      },
+      {
+        "name": "message",
+        "type": "bytes",
+        "internalType": "bytes"
+      },
+      {
+        "name": "keyTag",
+        "type": "uint8",
+        "internalType": "uint8"
+      },
+      {
+        "name": "quorumThreshold",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "proof",
+        "type": "bytes",
+        "internalType": "bytes"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "error",
+    "name": "SigVerifierBlsBn254Simple_InvalidMessageLength",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SigVerifierBlsBn254Simple_InvalidNonSignerIndex",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SigVerifierBlsBn254Simple_InvalidNonSignersOrder",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SigVerifierBlsBn254Simple_InvalidProofLength",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SigVerifierBlsBn254Simple_InvalidProofOffset",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SigVerifierBlsBn254Simple_TooManyValidators",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SigVerifierBlsBn254Simple_UnsupportedKeyTag",
+    "inputs": []
+  }
+]

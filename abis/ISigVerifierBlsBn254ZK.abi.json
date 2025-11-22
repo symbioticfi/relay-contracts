@@ -1,0 +1,168 @@
+[
+  {
+    "type": "function",
+    "name": "TOTAL_ACTIVE_VALIDATORS_HASH",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "VALIDATOR_SET_HASH_MIMC_HASH",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "VERIFICATION_TYPE",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint32",
+        "internalType": "uint32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "maxValidators",
+    "inputs": [
+      {
+        "name": "index",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "verifiers",
+    "inputs": [
+      {
+        "name": "index",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "verifyQuorumSig",
+    "inputs": [
+      {
+        "name": "settlement",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "epoch",
+        "type": "uint48",
+        "internalType": "uint48"
+      },
+      {
+        "name": "message",
+        "type": "bytes",
+        "internalType": "bytes"
+      },
+      {
+        "name": "keyTag",
+        "type": "uint8",
+        "internalType": "uint8"
+      },
+      {
+        "name": "quorumThreshold",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "proof",
+        "type": "bytes",
+        "internalType": "bytes"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "error",
+    "name": "SigVerifierBlsBn254ZK_InvalidLength",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SigVerifierBlsBn254ZK_InvalidMaxValidators",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SigVerifierBlsBn254ZK_InvalidMaxValidatorsOrder",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SigVerifierBlsBn254ZK_InvalidMessageLength",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SigVerifierBlsBn254ZK_InvalidProofLength",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SigVerifierBlsBn254ZK_InvalidProofOffset",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SigVerifierBlsBn254ZK_InvalidTotalActiveValidators",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SigVerifierBlsBn254ZK_InvalidVerifier",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SigVerifierBlsBn254ZK_UnsupportedKeyTag",
+    "inputs": []
+  }
+]

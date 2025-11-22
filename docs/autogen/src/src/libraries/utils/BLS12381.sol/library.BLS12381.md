@@ -1,19 +1,7 @@
 # BLS12381
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/40791731b80bf5666d350907bfe7f142e3c6d70c/src/libraries/utils/BLS12381.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/48c012da16df2d3fd1ccae03176b04d180fbd59f/src/libraries/utils/BLS12381.sol)
 
-**Authors:**
-Solady (https://github.com/vectorized/solady/blob/main/src/utils/BLS.sol), Ithaca (https://github.com/ithacaxyz/odyssey-examples/blob/main/chapter1/contracts/src/libraries/BLS.sol)
-
-BLS12381 wrapper.
-
-Precompile addresses come from the BLS addresses submodule in AlphaNet, see
-See: (https://github.com/paradigmxyz/alphanet/blob/main/crates/precompile/src/addresses.rs)
-Note:
-- This implementation uses `mcopy`, since any chain that is edgy enough to
-implement the BLS precompiles will definitely have implemented cancun.
-- For efficiency, we use the legacy `staticcall` to call the precompiles.
-For the intended use case in an entry points that requires gas-introspection,
-which requires legacy bytecode, this won't be a blocker.
+Library for working with BLS12-381 precompiles.
 
 
 ## State Variables
@@ -270,31 +258,22 @@ Multi-scalar multiplication of G1 points with scalars. Returns a new G1 point.
 function msm(G1Point[] memory points, bytes32[] memory scalars) internal view returns (G1Point memory result);
 ```
 
-### scalarMulG1
+### scalar_mul
 
 Scalar multiplication of a G1 point with a scalar. Returns a new G1 point.
 
 
 ```solidity
-function scalarMulG1(G1Point memory point, uint256 scalar) internal view returns (G1Point memory result);
+function scalar_mul(G1Point memory point, uint256 scalar) internal view returns (G1Point memory result);
 ```
 
-### add
+### pairing
 
-Adds two G2 points. Returns a new G2 point.
+Checks the pairing of G1 points with G2 points. Returns whether the pairing is valid.
 
 
 ```solidity
-function add(G2Point memory point0, G2Point memory point1) internal view returns (G2Point memory result);
-```
-
-### msm
-
-Multi-scalar multiplication of G2 points with scalars. Returns a new G2 point.
-
-
-```solidity
-function msm(G2Point[] memory points, bytes32[] memory scalars) internal view returns (G2Point memory result);
+function pairing(G1Point[] memory g1Points, G2Point[] memory g2Points) internal view returns (bool result);
 ```
 
 ### pairing
@@ -309,40 +288,13 @@ function pairing(G1Point memory a1, G2Point memory a2, G1Point memory b1, G2Poin
     returns (bool);
 ```
 
-### pairing
-
-Checks the pairing of G1 points with G2 points. Returns whether the pairing is valid.
-
-
-```solidity
-function pairing(G1Point[] memory g1Points, G2Point[] memory g2Points) internal view returns (bool result);
-```
-
-### toG1
-
-Maps a Fp element to a G1 point.
-
-
-```solidity
-function toG1(Fp memory element) internal view returns (G1Point memory result);
-```
-
-### toG2
-
-Maps a Fp2 element to a G2 point.
-
-
-```solidity
-function toG2(Fp2 memory element) internal view returns (G2Point memory result);
-```
-
 ### hashToG1
 
 Computes a point in G1 from a message.
 
 
 ```solidity
-function hashToG1(bytes memory dst, bytes memory message) internal view returns (G1Point memory out);
+function hashToG1(bytes memory message) internal view returns (G1Point memory result);
 ```
 
 ### expandMsg

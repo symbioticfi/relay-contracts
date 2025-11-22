@@ -1,15 +1,7 @@
 # SigBlsBls12381
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/40791731b80bf5666d350907bfe7f142e3c6d70c/src/libraries/sigs/SigBlsBls12381.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/48c012da16df2d3fd1ccae03176b04d180fbd59f/src/libraries/sigs/SigBlsBls12381.sol)
 
 Library for verifying BLS signatures on the BLS12381 curve.
-
-
-## State Variables
-### DST_G1
-
-```solidity
-bytes internal constant DST_G1 = "BLS_SIG_BLS12381G1_XMD:SHA-256_SSWU_RO_NUL_"
-```
 
 
 ## Functions

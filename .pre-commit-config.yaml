@@ -147,11 +147,11 @@ repos:
             while IFS= read -r file; do
               ABI_FILES+=("$file")
             done < <(find abis -type f -name "*.abi.json" | sort)
-            rm -rf bindings/.net-nethereum
-            mkdir -p bindings/.net-nethereum
+            rm -rf bindings/dot-netnet-nethereum
+            mkdir -p bindings/dot-net-nethereum
             namespace=${NETHEREUM_NAMESPACE:-Symbiotic.Relay}
             for abi in "${ABI_FILES[@]}"; do
-              Nethereum.Generator.Console generate from-abi --abiPath "$abi" --outputPath "bindings/.net-nethereum" --namespace "$namespace"
+              Nethereum.Generator.Console generate from-abi --abiPath "$abi" --outputPath "bindings/dot-net-nethereum" --namespace "$namespace"
             done
           '
         pass_filenames: false

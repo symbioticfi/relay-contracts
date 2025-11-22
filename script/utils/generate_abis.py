@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate ABI artifacts for deployable contracts."""
+"""Generate ABI artifacts for deployable contracts and public interfaces."""
 
 from __future__ import annotations
 
@@ -13,12 +13,16 @@ ROOT = Path(__file__).resolve().parents[2]
 OUT_DIR = ROOT / "out"
 ABIS_DIR = ROOT / "abis"
 SRC_ROOT = Path("src")
+INTERFACES_ROOT = SRC_ROOT / "interfaces"
 
 
 def is_contract(source_path: str) -> bool:
-    """Return True if the source path represents a deployable contract."""
+    """Return True if the source path should produce an ABI artifact."""
     if not source_path.startswith(f"{SRC_ROOT}/"):
         return False
+
+    if source_path.startswith(f"{INTERFACES_ROOT}/"):
+        return True
 
     lower = source_path.lower()
     if "interfac" in lower or "librar" in lower or "logic" in lower:
