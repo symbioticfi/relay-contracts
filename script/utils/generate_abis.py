@@ -16,7 +16,7 @@ SRC_ROOT = Path("src")
 INTERFACES_ROOT = SRC_ROOT / "interfaces"
 
 
-def is_contract(source_path: str) -> bool:
+def is_abi_artifact(source_path: str) -> bool:
     """Return True if the source path should produce an ABI artifact."""
     if not source_path.startswith(f"{SRC_ROOT}/"):
         return False
@@ -24,11 +24,7 @@ def is_contract(source_path: str) -> bool:
     if source_path.startswith(f"{INTERFACES_ROOT}/"):
         return True
 
-    lower = source_path.lower()
-    if "interfac" in lower or "librar" in lower or "logic" in lower:
-        return False
-
-    return True
+    return False
 
 
 def run_forge_build() -> None:
@@ -80,7 +76,7 @@ def main() -> None:
             artifact_data = json.load(fh)
 
         source_path = load_source_path(artifact_data)
-        if not source_path or not is_contract(source_path):
+        if not source_path or not is_abi_artifact(source_path):
             continue
 
         abi_file = artifact_json.with_suffix(".abi.json")
