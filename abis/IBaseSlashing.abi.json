@@ -1,237 +1,237 @@
 [
-  {
-    "type": "function",
-    "name": "executeSlashVault",
-    "inputs": [
-      {
-        "name": "vault",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "slashIndex",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "hints",
-        "type": "bytes",
-        "internalType": "bytes"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "success",
-        "type": "bool",
-        "internalType": "bool"
-      },
-      {
-        "name": "slashedAmount",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "getSlasher",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "setSlasher",
-    "inputs": [
-      {
-        "name": "slasher",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "slashVault",
-    "inputs": [
-      {
-        "name": "timestamp",
-        "type": "uint48",
-        "internalType": "uint48"
-      },
-      {
-        "name": "vault",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "operator",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "amount",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "hints",
-        "type": "bytes",
-        "internalType": "bytes"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "success",
-        "type": "bool",
-        "internalType": "bool"
-      },
-      {
-        "name": "response",
-        "type": "bytes",
-        "internalType": "bytes"
-      }
-    ],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "event",
-    "name": "ExecuteSlash",
-    "inputs": [
-      {
-        "name": "slasher",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      },
-      {
-        "name": "slashIndex",
-        "type": "uint256",
-        "indexed": true,
-        "internalType": "uint256"
-      },
-      {
-        "name": "success",
-        "type": "bool",
-        "indexed": true,
-        "internalType": "bool"
-      },
-      {
-        "name": "slashedAmount",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
-      }
-    ],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "InstantSlash",
-    "inputs": [
-      {
-        "name": "slasher",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      },
-      {
-        "name": "operator",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      },
-      {
-        "name": "success",
-        "type": "bool",
-        "indexed": true,
-        "internalType": "bool"
-      },
-      {
-        "name": "slashedAmount",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
-      }
-    ],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "SetSlasher",
-    "inputs": [
-      {
-        "name": "slasher",
-        "type": "address",
-        "indexed": false,
-        "internalType": "address"
-      }
-    ],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "VetoSlash",
-    "inputs": [
-      {
-        "name": "slasher",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      },
-      {
-        "name": "operator",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      },
-      {
-        "name": "success",
-        "type": "bool",
-        "indexed": true,
-        "internalType": "bool"
-      },
-      {
-        "name": "slashIndex",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
-      }
-    ],
-    "anonymous": false
-  },
-  {
-    "type": "error",
-    "name": "BaseSlashing_NoSlasher",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "BaseSlashing_NoSlashing",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "BaseSlashing_NotSlasher",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "BaseSlashing_NotVetoSlasher",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "BaseSlashing_UnknownSlasherType",
-    "inputs": []
-  }
+    {
+        "type": "function",
+        "name": "executeSlashVault",
+        "inputs": [
+            {
+                "name": "vault",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "slashIndex",
+                "type": "uint256",
+                "internalType": "uint256"
+            },
+            {
+                "name": "hints",
+                "type": "bytes",
+                "internalType": "bytes"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "success",
+                "type": "bool",
+                "internalType": "bool"
+            },
+            {
+                "name": "slashedAmount",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "getSlasher",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "setSlasher",
+        "inputs": [
+            {
+                "name": "slasher",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "slashVault",
+        "inputs": [
+            {
+                "name": "timestamp",
+                "type": "uint48",
+                "internalType": "uint48"
+            },
+            {
+                "name": "vault",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "operator",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "amount",
+                "type": "uint256",
+                "internalType": "uint256"
+            },
+            {
+                "name": "hints",
+                "type": "bytes",
+                "internalType": "bytes"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "success",
+                "type": "bool",
+                "internalType": "bool"
+            },
+            {
+                "name": "response",
+                "type": "bytes",
+                "internalType": "bytes"
+            }
+        ],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "event",
+        "name": "ExecuteSlash",
+        "inputs": [
+            {
+                "name": "slasher",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "slashIndex",
+                "type": "uint256",
+                "indexed": true,
+                "internalType": "uint256"
+            },
+            {
+                "name": "success",
+                "type": "bool",
+                "indexed": true,
+                "internalType": "bool"
+            },
+            {
+                "name": "slashedAmount",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "event",
+        "name": "InstantSlash",
+        "inputs": [
+            {
+                "name": "slasher",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "operator",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "success",
+                "type": "bool",
+                "indexed": true,
+                "internalType": "bool"
+            },
+            {
+                "name": "slashedAmount",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "event",
+        "name": "SetSlasher",
+        "inputs": [
+            {
+                "name": "slasher",
+                "type": "address",
+                "indexed": false,
+                "internalType": "address"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "event",
+        "name": "VetoSlash",
+        "inputs": [
+            {
+                "name": "slasher",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "operator",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "success",
+                "type": "bool",
+                "indexed": true,
+                "internalType": "bool"
+            },
+            {
+                "name": "slashIndex",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "error",
+        "name": "BaseSlashing_NoSlasher",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "BaseSlashing_NoSlashing",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "BaseSlashing_NotSlasher",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "BaseSlashing_NotVetoSlasher",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "BaseSlashing_UnknownSlasherType",
+        "inputs": []
+    }
 ]

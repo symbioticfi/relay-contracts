@@ -70,6 +70,12 @@ contract BLS12381UtilsTest is Test {
         vm.clearMockedCalls();
     }
 
+    function test_XCubePlus4_ReducesModPrime() public {
+        (uint256 resultA, uint256 resultB) = harness.xCubePlus4(P_A, P_B - 1);
+        assertEq(resultA, 0);
+        assertEq(resultB, 3);
+    }
+
     function _buildModexpCallData(uint256 x_a, uint256 x_b) internal pure returns (bytes memory callData) {
         uint256 pA = P_A;
         uint256 pB = P_B;

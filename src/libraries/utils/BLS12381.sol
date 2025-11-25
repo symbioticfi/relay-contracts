@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Original code: https://github.com/Vectorized/solady/blob/main/src/utils/ext/ithaca/BLS.sol
-// Original code: https://github.com/Vectorized/solady/blob/main/src/utils/ext/ithaca/BLS.sol
+// Original code: https://github.com/randa-mu/bls-solidity/blob/main/src/libraries/BLS2.sol
 pragma solidity ^0.8.24;
 
 /**
@@ -15,23 +15,6 @@ library BLS12381 {
     // We use flattened structs to make encoding more efficient.
     // All structs use Big endian encoding.
     // See: https://eips.ethereum.org/EIPS/eip-2537
-
-    /// @dev A representation of a base field element (Fp) in the BLS12-381 curve.
-    /// Due to the size of `p`,
-    /// `0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaaab`
-    /// the top 16 bytes are always zeroes.
-    struct Fp {
-        bytes32 a; // Upper 32 bytes.
-        bytes32 b; // Lower 32 bytes.
-    }
-
-    /// @dev A representation of an extension field element (Fp2) in the BLS12-381 curve.
-    struct Fp2 {
-        bytes32 c0_a;
-        bytes32 c0_b;
-        bytes32 c1_a;
-        bytes32 c1_b;
-    }
 
     /// @dev A representation of a point on the G1 curve of BLS12-381.
     struct G1Point {
@@ -61,7 +44,7 @@ library BLS12381 {
     uint256 internal constant P_B = 0x64774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaaab;
     uint128 private constant P_PLUS_ONE_SLASH_2_A = 0x0680447a8e5ff9a692c6e9ed90d2eb35;
     uint256 private constant P_PLUS_ONE_SLASH_2_B = 0xd91dd2e13ce144afd9cc34a83dac3d8907aaffffac54ffffee7fbfffffffeaab;
-    bytes32 private constant G1_SUBGROUP_ORDER = 0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000001;
+    uint256 private constant G1_SUBGROUP_ORDER = 0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000001;
     uint256 internal constant FR_MODULUS = 0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000001;
 
     /// @notice Returns the canonical G1 generator.
@@ -74,7 +57,7 @@ library BLS12381 {
         });
     }
 
-    /// @notice Returns the negated G1 generator (useful for pairings expecting -G1).
+    /// @notice Returns the negated generator coordinates (y -> -y mod p) using the same encoding as G1.
     function negGeneratorG1() internal pure returns (G1Point memory) {
         return G1Point({
             x_a: bytes32(0x0000000000000000000000000000000017f1d3a73197d7942695638c4fa9ac0f),
@@ -84,47 +67,32 @@ library BLS12381 {
         });
     }
 
-    // Generator coordinates sourced from https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-bls-signature-05#section-4.2.3.
-    bytes32 internal constant G2_X_C0_A = 0x00000000000000000000000000000000024aa2b2f08f0a91260805272dc51051;
-    bytes32 internal constant G2_X_C0_B = 0xc6e47ad4fa403b02b4510b647ae3d1770bac0326a805bbefd48056c8c121bdb8;
-    bytes32 internal constant G2_X_C1_A = 0x0000000000000000000000000000000013e02b6052719f607dacd3a088274f65;
-    bytes32 internal constant G2_X_C1_B = 0x596bd0d09920b61ab5da61bbdc7f5049334cf11213945d57e5ac7d055d042b7e;
-    bytes32 internal constant G2_Y_C0_A = 0x000000000000000000000000000000000ce5d527727d6e118cc9cdc6da2e351a;
-    bytes32 internal constant G2_Y_C0_B = 0xadfd9baa8cbdd3a76d429a695160d12c923ac9cc3baca289e193548608b82801;
-    bytes32 internal constant G2_Y_C1_A = 0x000000000000000000000000000000000606c4a02ea734cc32acd2b02bc28b99;
-    bytes32 internal constant G2_Y_C1_B = 0xcb3e287e85a763af267492ab572e99ab3f370d275cec1da1aaa9075ff05f79be;
-
-    // Negated generator coordinates (y -> -y mod p) using the same encoding as G2.
-    bytes32 internal constant NEG_G2_Y_C0_A = 0x000000000000000000000000000000000d1b3cc2c7027888be51d9ef691d77bc;
-    bytes32 internal constant NEG_G2_Y_C0_B = 0xb679afda66c73f17f9ee3837a55024f78c71363275a75d75d86bab79f74782aa;
-    bytes32 internal constant NEG_G2_Y_C1_A = 0x0000000000000000000000000000000013fa4d4a0ad8b1ce186ed5061789213d;
-    bytes32 internal constant NEG_G2_Y_C1_B = 0x993923066dddaf1040bc3ff59f825c78df74f2d75467e25e0f55f8a00fa030ed;
-
     /// @notice Returns the canonical G2 generator.
+    /// @dev Sourced from https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-bls-signature-05#section-4.2.3.
     function generatorG2() internal pure returns (G2Point memory) {
         return G2Point({
-            x_c0_a: G2_X_C0_A,
-            x_c0_b: G2_X_C0_B,
-            x_c1_a: G2_X_C1_A,
-            x_c1_b: G2_X_C1_B,
-            y_c0_a: G2_Y_C0_A,
-            y_c0_b: G2_Y_C0_B,
-            y_c1_a: G2_Y_C1_A,
-            y_c1_b: G2_Y_C1_B
+            x_c0_a: 0x00000000000000000000000000000000024aa2b2f08f0a91260805272dc51051,
+            x_c0_b: 0xc6e47ad4fa403b02b4510b647ae3d1770bac0326a805bbefd48056c8c121bdb8,
+            x_c1_a: 0x0000000000000000000000000000000013e02b6052719f607dacd3a088274f65,
+            x_c1_b: 0x596bd0d09920b61ab5da61bbdc7f5049334cf11213945d57e5ac7d055d042b7e,
+            y_c0_a: 0x000000000000000000000000000000000ce5d527727d6e118cc9cdc6da2e351a,
+            y_c0_b: 0xadfd9baa8cbdd3a76d429a695160d12c923ac9cc3baca289e193548608b82801,
+            y_c1_a: 0x000000000000000000000000000000000606c4a02ea734cc32acd2b02bc28b99,
+            y_c1_b: 0xcb3e287e85a763af267492ab572e99ab3f370d275cec1da1aaa9075ff05f79be
         });
     }
 
-    /// @notice Returns the negated G2 generator (useful for pairings expecting -G2).
+    /// @notice Returns the negated generator coordinates (y -> -y mod p) using the same encoding as G2.
     function negGeneratorG2() internal pure returns (G2Point memory) {
         return G2Point({
-            x_c0_a: G2_X_C0_A,
-            x_c0_b: G2_X_C0_B,
-            x_c1_a: G2_X_C1_A,
-            x_c1_b: G2_X_C1_B,
-            y_c0_a: NEG_G2_Y_C0_A,
-            y_c0_b: NEG_G2_Y_C0_B,
-            y_c1_a: NEG_G2_Y_C1_A,
-            y_c1_b: NEG_G2_Y_C1_B
+            x_c0_a: 0x00000000000000000000000000000000024aa2b2f08f0a91260805272dc51051,
+            x_c0_b: 0xc6e47ad4fa403b02b4510b647ae3d1770bac0326a805bbefd48056c8c121bdb8,
+            x_c1_a: 0x0000000000000000000000000000000013e02b6052719f607dacd3a088274f65,
+            x_c1_b: 0x596bd0d09920b61ab5da61bbdc7f5049334cf11213945d57e5ac7d055d042b7e,
+            y_c0_a: 0x000000000000000000000000000000000d1b3cc2c7027888be51d9ef691d77bc,
+            y_c0_b: 0xb679afda66c73f17f9ee3837a55024f78c71363275a75d75d86bab79f74782aa,
+            y_c1_a: 0x000000000000000000000000000000000d1b3cc2c7027888be51d9ef691d77bc,
+            y_c1_b: 0x993923066dddaf1040bc3ff59f825c78df74f2d75467e25e0f55f8a00fa030ed
         });
     }
 
@@ -141,20 +109,11 @@ library BLS12381 {
     /// @dev For multi-scalar multiplication (MSM) on the BLS12-381 G1 curve.
     address internal constant BLS12_G1MSM = 0x000000000000000000000000000000000000000C;
 
-    /// @dev For addition of two points on the BLS12-381 G2 curve.
-    address internal constant BLS12_G2ADD = 0x000000000000000000000000000000000000000d;
-
-    /// @dev For multi-scalar multiplication (MSM) on the BLS12-381 G2 curve.
-    address internal constant BLS12_G2MSM = 0x000000000000000000000000000000000000000E;
-
     /// @dev For performing a pairing check on the BLS12-381 curve.
     address internal constant BLS12_PAIRING_CHECK = 0x000000000000000000000000000000000000000F;
 
     /// @dev For mapping a Fp to a point on the BLS12-381 G1 curve.
     address internal constant BLS12_MAP_FP_TO_G1 = 0x0000000000000000000000000000000000000010;
-
-    /// @dev For mapping a Fp2 to a point on the BLS12-381 G2 curve.
-    address internal constant BLS12_MAP_FP2_TO_G2 = 0x0000000000000000000000000000000000000011;
 
     /*´:°•.°+.*•´.*:˚.°*.˚•´.°:°•.°•.*•´.*:˚.°*.˚•´.°:°•.°+.*•´.*:*/
     /*                        CUSTOM ERRORS                       */
@@ -168,20 +127,11 @@ library BLS12381 {
     /// @dev The G1MSM operation failed.
     error G1MSMFailed();
 
-    /// @dev The G2Add operation failed.
-    error G2AddFailed();
-
-    /// @dev The G2MSM operation failed.
-    error G2MSMFailed();
-
     /// @dev The pairing operation failed.
     error PairingFailed();
 
     /// @dev The MapFpToG1 operation failed.
     error MapFpToG1Failed();
-
-    /// @dev The MapFpToG2 operation failed.
-    error MapFp2ToG2Failed();
 
     /// @dev The DST length is too long.
     error InvalidDSTLength(bytes);
@@ -202,76 +152,37 @@ library BLS12381 {
         }
     }
 
-    /// @dev Multi-scalar multiplication of G1 points with scalars. Returns a new G1 point.
-    function msm(G1Point[] memory points, bytes32[] memory scalars) internal view returns (G1Point memory result) {
+    /// @dev Scalar multiplication of a G1 point with a scalar. Returns a new G1 point.
+    function scalarMul(G1Point memory point, uint256 scalar) internal view returns (G1Point memory result) {
         assembly ("memory-safe") {
-            let k := mload(points)
-            let d := sub(scalars, points)
-            for { let i := 0 } iszero(eq(i, k)) { i := add(i, 1) } {
-                points := add(points, 0x20)
-                let o := add(result, mul(0xa0, i))
-                mcopy(o, mload(points), 0x80)
-                mstore(add(o, 0x80), mload(add(points, d)))
-            }
-            if iszero(
-                and(
-                    and(eq(k, mload(scalars)), eq(returndatasize(), 0x80)),
-                    staticcall(gas(), BLS12_G1MSM, result, mul(0xa0, k), result, 0x80)
-                )
-            ) {
+            let m := mload(0x40)
+            mcopy(result, point, 0x80)
+            mstore(add(result, 0x80), scalar)
+            if iszero(and(eq(returndatasize(), 0x80), staticcall(gas(), BLS12_G1MSM, result, 0xa0, result, 0x80))) {
                 mstore(0x00, 0x5f776986) // `G1MSMFailed()`.
                 revert(0x1c, 0x04)
             }
         }
     }
 
-    /// @dev Scalar multiplication of a G1 point with a scalar. Returns a new G1 point.
-    function scalar_mul(G1Point memory point, uint256 scalar) internal view returns (G1Point memory result) {
-        G1Point[] memory points = new G1Point[](1);
-        points[0] = point;
-        bytes32[] memory scalars = new bytes32[](1);
-        scalars[0] = bytes32(scalar);
-        result = msm(points, scalars);
-    }
-
     /// @dev Checks the pairing of G1 points with G2 points. Returns whether the pairing is valid.
-    function pairing(G1Point[] memory g1Points, G2Point[] memory g2Points) internal view returns (bool result) {
+    function pairing(G1Point memory a1, G2Point memory a2, G1Point memory b1, G2Point memory b2)
+        internal
+        view
+        returns (bool result)
+    {
         assembly ("memory-safe") {
-            let k := mload(g1Points)
             let m := mload(0x40)
-            let d := sub(g2Points, g1Points)
-            for { let i := 0 } iszero(eq(i, k)) { i := add(i, 1) } {
-                g1Points := add(g1Points, 0x20)
-                let o := add(m, mul(0x180, i))
-                mcopy(o, mload(g1Points), 0x80)
-                mcopy(add(o, 0x80), mload(add(d, g1Points)), 0x100)
-            }
-            if iszero(
-                and(
-                    and(eq(k, mload(g2Points)), eq(returndatasize(), 0x20)),
-                    staticcall(gas(), BLS12_PAIRING_CHECK, m, mul(0x180, k), 0x00, 0x20)
-                )
-            ) {
+            mcopy(m, a1, 0x80)
+            mcopy(add(m, 0x80), a2, 0x100)
+            mcopy(add(m, 0x180), b1, 0x80)
+            mcopy(add(m, 0x200), b2, 0x100)
+            if iszero(and(eq(returndatasize(), 0x20), staticcall(gas(), BLS12_PAIRING_CHECK, m, 0x300, 0x00, 0x20))) {
                 mstore(0x00, 0x4df45e2f) // `PairingFailed()`.
                 revert(0x1c, 0x04)
             }
             result := mload(0x00)
         }
-    }
-
-    /// @dev Convenience overload mirroring BN254's pairing signature.
-    function pairing(G1Point memory a1, G2Point memory a2, G1Point memory b1, G2Point memory b2)
-        internal
-        view
-        returns (bool)
-    {
-        G1Point[] memory g1Points = new G1Point[](2);
-        g1Points[0] = a1;
-        g1Points[1] = b1;
-        G2Point[] memory g2Points = new G2Point[](2);
-        g2Points[0] = a2;
-        g2Points[1] = b2;
-        return pairing(g1Points, g2Points);
     }
 
     /// @dev Computes a point in G1 from a message.
@@ -295,8 +206,7 @@ library BLS12381 {
                 }
 
                 // EIP-2537 map_fp_to_g1
-                let r := add(32, buf2)
-                r := add(r, mul(128, i))
+                let r := add(add(buf2, 0x20), mul(128, i))
                 if iszero(and(eq(returndatasize(), 0x80), staticcall(gas(), BLS12_MAP_FP_TO_G1, p, 0x40, r, 0x80))) {
                     mstore(0x00, 0x24a289fc) // `MapFpToG1Failed()`.
                     revert(0x1c, 0x04)
@@ -426,11 +336,7 @@ library BLS12381 {
     }
 
     function isInSubgroup(G1Point memory point) internal view returns (bool) {
-        G1Point[] memory points = new G1Point[](1);
-        points[0] = point;
-        bytes32[] memory scalars = new bytes32[](1);
-        scalars[0] = G1_SUBGROUP_ORDER;
-        G1Point memory result = msm(points, scalars);
+        G1Point memory result = scalarMul(point, G1_SUBGROUP_ORDER);
         return result.x_a == 0 && result.x_b == 0 && result.y_a == 0 && result.y_b == 0;
     }
 
@@ -458,12 +364,7 @@ library BLS12381 {
         unchecked {
             x_b += 4;
             if (x_b < 4) {
-                x_a += 1;
-            }
-            if (x_a > P_A || (x_a == P_A && x_b >= P_B)) {
-                uint256 borrow = x_b < P_B ? 1 : 0;
-                x_b = x_b - P_B;
-                x_a = x_a - P_A - borrow;
+                ++x_a;
             }
         }
         return (x_a, x_b);

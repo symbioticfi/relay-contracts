@@ -1,252 +1,252 @@
 [
-  {
-    "type": "function",
-    "name": "VAULT_CONFIGURATOR",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "getAutoDeployConfig",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "tuple",
-        "internalType": "struct IOpNetVaultAutoDeploy.AutoDeployConfig",
-        "components": [
-          {
-            "name": "epochDuration",
-            "type": "uint48",
-            "internalType": "uint48"
-          },
-          {
-            "name": "collateral",
-            "type": "address",
-            "internalType": "address"
-          },
-          {
-            "name": "burner",
-            "type": "address",
-            "internalType": "address"
-          },
-          {
-            "name": "withSlasher",
-            "type": "bool",
-            "internalType": "bool"
-          },
-          {
-            "name": "isBurnerHook",
-            "type": "bool",
-            "internalType": "bool"
-          }
-        ]
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "getAutoDeployedVault",
-    "inputs": [
-      {
-        "name": "operator",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "isAutoDeployEnabled",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "bool",
-        "internalType": "bool"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "isSetMaxNetworkLimitHookEnabled",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "bool",
-        "internalType": "bool"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "setAutoDeployConfig",
-    "inputs": [
-      {
-        "name": "config",
-        "type": "tuple",
-        "internalType": "struct IOpNetVaultAutoDeploy.AutoDeployConfig",
-        "components": [
-          {
-            "name": "epochDuration",
-            "type": "uint48",
-            "internalType": "uint48"
-          },
-          {
-            "name": "collateral",
-            "type": "address",
-            "internalType": "address"
-          },
-          {
-            "name": "burner",
-            "type": "address",
-            "internalType": "address"
-          },
-          {
-            "name": "withSlasher",
-            "type": "bool",
-            "internalType": "bool"
-          },
-          {
-            "name": "isBurnerHook",
-            "type": "bool",
-            "internalType": "bool"
-          }
-        ]
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "setAutoDeployStatus",
-    "inputs": [
-      {
-        "name": "status",
-        "type": "bool",
-        "internalType": "bool"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "setSetMaxNetworkLimitHookStatus",
-    "inputs": [
-      {
-        "name": "status",
-        "type": "bool",
-        "internalType": "bool"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "event",
-    "name": "SetAutoDeployConfig",
-    "inputs": [
-      {
-        "name": "config",
-        "type": "tuple",
-        "indexed": false,
-        "internalType": "struct IOpNetVaultAutoDeploy.AutoDeployConfig",
-        "components": [
-          {
-            "name": "epochDuration",
-            "type": "uint48",
-            "internalType": "uint48"
-          },
-          {
-            "name": "collateral",
-            "type": "address",
-            "internalType": "address"
-          },
-          {
-            "name": "burner",
-            "type": "address",
-            "internalType": "address"
-          },
-          {
-            "name": "withSlasher",
-            "type": "bool",
-            "internalType": "bool"
-          },
-          {
-            "name": "isBurnerHook",
-            "type": "bool",
-            "internalType": "bool"
-          }
-        ]
-      }
-    ],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "SetAutoDeployStatus",
-    "inputs": [
-      {
-        "name": "status",
-        "type": "bool",
-        "indexed": false,
-        "internalType": "bool"
-      }
-    ],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "SetSetMaxNetworkLimitHookStatus",
-    "inputs": [
-      {
-        "name": "status",
-        "type": "bool",
-        "indexed": false,
-        "internalType": "bool"
-      }
-    ],
-    "anonymous": false
-  },
-  {
-    "type": "error",
-    "name": "OpNetVaultAutoDeploy_InvalidBurnerHook",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "OpNetVaultAutoDeploy_InvalidCollateral",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "OpNetVaultAutoDeploy_InvalidEpochDuration",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "OpNetVaultAutoDeploy_InvalidWithSlasher",
-    "inputs": []
-  }
+    {
+        "type": "function",
+        "name": "VAULT_CONFIGURATOR",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "getAutoDeployConfig",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "tuple",
+                "internalType": "struct IOpNetVaultAutoDeploy.AutoDeployConfig",
+                "components": [
+                    {
+                        "name": "epochDuration",
+                        "type": "uint48",
+                        "internalType": "uint48"
+                    },
+                    {
+                        "name": "collateral",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "burner",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "withSlasher",
+                        "type": "bool",
+                        "internalType": "bool"
+                    },
+                    {
+                        "name": "isBurnerHook",
+                        "type": "bool",
+                        "internalType": "bool"
+                    }
+                ]
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "getAutoDeployedVault",
+        "inputs": [
+            {
+                "name": "operator",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "isAutoDeployEnabled",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool",
+                "internalType": "bool"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "isSetMaxNetworkLimitHookEnabled",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool",
+                "internalType": "bool"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "setAutoDeployConfig",
+        "inputs": [
+            {
+                "name": "config",
+                "type": "tuple",
+                "internalType": "struct IOpNetVaultAutoDeploy.AutoDeployConfig",
+                "components": [
+                    {
+                        "name": "epochDuration",
+                        "type": "uint48",
+                        "internalType": "uint48"
+                    },
+                    {
+                        "name": "collateral",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "burner",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "withSlasher",
+                        "type": "bool",
+                        "internalType": "bool"
+                    },
+                    {
+                        "name": "isBurnerHook",
+                        "type": "bool",
+                        "internalType": "bool"
+                    }
+                ]
+            }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "setAutoDeployStatus",
+        "inputs": [
+            {
+                "name": "status",
+                "type": "bool",
+                "internalType": "bool"
+            }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "setSetMaxNetworkLimitHookStatus",
+        "inputs": [
+            {
+                "name": "status",
+                "type": "bool",
+                "internalType": "bool"
+            }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "event",
+        "name": "SetAutoDeployConfig",
+        "inputs": [
+            {
+                "name": "config",
+                "type": "tuple",
+                "indexed": false,
+                "internalType": "struct IOpNetVaultAutoDeploy.AutoDeployConfig",
+                "components": [
+                    {
+                        "name": "epochDuration",
+                        "type": "uint48",
+                        "internalType": "uint48"
+                    },
+                    {
+                        "name": "collateral",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "burner",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "withSlasher",
+                        "type": "bool",
+                        "internalType": "bool"
+                    },
+                    {
+                        "name": "isBurnerHook",
+                        "type": "bool",
+                        "internalType": "bool"
+                    }
+                ]
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "event",
+        "name": "SetAutoDeployStatus",
+        "inputs": [
+            {
+                "name": "status",
+                "type": "bool",
+                "indexed": false,
+                "internalType": "bool"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "event",
+        "name": "SetSetMaxNetworkLimitHookStatus",
+        "inputs": [
+            {
+                "name": "status",
+                "type": "bool",
+                "indexed": false,
+                "internalType": "bool"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "error",
+        "name": "OpNetVaultAutoDeploy_InvalidBurnerHook",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "OpNetVaultAutoDeploy_InvalidCollateral",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "OpNetVaultAutoDeploy_InvalidEpochDuration",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "OpNetVaultAutoDeploy_InvalidWithSlasher",
+        "inputs": []
+    }
 ]

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import {IVotingPowerProvider} from "../IVotingPowerProvider.sol";
+
 /**
  * @title IMultiToken
  * @notice Interface for the MultiToken contract.

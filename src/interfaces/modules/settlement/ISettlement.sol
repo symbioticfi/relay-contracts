@@ -10,7 +10,7 @@ import {Checkpoints} from "../../../libraries/structs/Checkpoints.sol";
  * @title ISettlement
  * @notice Interface for the Settlement contract.
  */
-interface ISettlement {
+interface ISettlement is INetworkManager, IOzEIP712 {
     /**
      * @notice Reverts when the extra data key is duplicated.
      */

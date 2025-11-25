@@ -67,9 +67,9 @@ library SigBlsBls12381 {
         uint256 alpha = uint256(keccak256(abi.encode(signatureG1, keyG1, keyG2, messageG1))) % BLS12381.FR_MODULUS;
 
         return BLS12381.pairing(
-            signatureG1.add(keyG1.scalar_mul(alpha)),
+            signatureG1.add(keyG1.scalarMul(alpha)),
             BLS12381.negGeneratorG2(),
-            messageG1.add(BLS12381.generatorG1().scalar_mul(alpha)),
+            messageG1.add(BLS12381.generatorG1().scalarMul(alpha)),
             keyG2
         );
     }

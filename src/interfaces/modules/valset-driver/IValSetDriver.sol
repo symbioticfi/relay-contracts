@@ -11,7 +11,7 @@ import {PersistentSet} from "../../../libraries/structs/PersistentSet.sol";
  * @title IValSetDriver
  * @notice Interface for the ValSetDriver contract.
  */
-interface IValSetDriver {
+interface IValSetDriver is IEpochManager {
     /**
      * @notice Reverts when the cross-chain address with the same chain ID is already added.
      */

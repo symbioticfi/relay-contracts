@@ -14,7 +14,7 @@ uint8 constant KEY_TYPE_BLS_BLS12381 = 2;
  * @title IKeyRegistry
  * @notice Interface for the KeyRegistry contract.
  */
-interface IKeyRegistry {
+interface IKeyRegistry is IOzEIP712 {
     /**
      * @notice Reverts when the key is already used by another operator or with another tag.
      */

@@ -94,11 +94,7 @@ contract SigBlsBls12381Test is Test {
         view
         returns (BLS12381.G1Point memory result)
     {
-        BLS12381.G1Point[] memory points = new BLS12381.G1Point[](1);
-        bytes32[] memory scalars = new bytes32[](1);
-        points[0] = point;
-        scalars[0] = scalar;
-        result = BLS12381.msm(points, scalars);
+        result = BLS12381.scalarMul(point, uint256(scalar));
     }
 
     function _g2Mul(BLS12381.G2Point memory point, bytes32 scalar)

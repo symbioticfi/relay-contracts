@@ -1,5 +1,5 @@
 # KeyRegistry
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/9853e60a660dc25d05a02ef98e2b218dd40efcc4/src/modules/key-registry/KeyRegistry.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/35b4e6e0fb5f7d02cf4e232e387f5f2293cd8da7/src/modules/key-registry/KeyRegistry.sol)
 
 **Inherits:**
 MulticallUpgradeable, [OzEIP712](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/OzEIP712.sol/abstract.OzEIP712.md), [IKeyRegistry](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/key-registry/IKeyRegistry.sol/interface.IKeyRegistry.md)
