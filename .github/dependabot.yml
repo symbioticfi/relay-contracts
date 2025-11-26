@@ -9,7 +9,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    target-branch: "app-holesky-gprptest-net"
+    target-branch: "main"
     open-pull-requests-limit: 5
     assignees:
       - 1kresh
