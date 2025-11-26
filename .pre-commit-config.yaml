@@ -68,7 +68,7 @@ repos:
             done < <(find abis -type f -name "*.abi.json" | sort)
             rm -rf bindings/rust-alloy
             mkdir -p bindings
-            forge_args=(forge bind --bindings-path bindings/rust-alloy --overwrite --skip-build)
+            forge_args=(forge bind --bindings-path bindings/rust-alloy --overwrite --skip-build --crate-name symbiotic-relay-contracts --crate-description "Alloy bindings for Symbiotic Relay contracts" --crate-license MIT --crate-version 1.0.0-rc.2)
             for abi in "${ABI_FILES[@]}"; do
               name=$(basename "$abi" .abi.json)
               forge_args+=(--select "$name")
@@ -114,44 +114,6 @@ repos:
               name=$(basename "$abi" .abi.json)
               go_file=$(python3 -c "import re, sys; name = sys.argv[1]; s1 = re.sub(r\"(.)([A-Z][a-z]+)\", r\"\\1_\\2\", name); snake = re.sub(r\"([a-z0-9])([A-Z])\", r\"\\1_\\2\", s1).lower(); snake = re.sub(r\"[^0-9a-z_]\", \"_\", snake); print(snake)" "$name")
               abigen --abi "$abi" --pkg "$pkg" --type "$name" --out "bindings/go-go-ethereum/${go_file}.go"
-            done
-          '
-        pass_filenames: false
-      - id: generate-bindings-java-web3j
-        name: Generate Java bindings (web3j)
-        description: Produce Java bindings with web3j from ABI files
-        language: system
-        entry: >
-          bash -lc '
-            set -euo pipefail
-            ABI_FILES=()
-            while IFS= read -r file; do
-              ABI_FILES+=("$file")
-            done < <(find abis -type f -name "*.abi.json" | sort)
-            rm -rf bindings/java-web3j
-            mkdir -p bindings/java-web3j
-            package_name=${WEB3J_PACKAGE:-fi.symbiotic.relay}
-            for abi in "${ABI_FILES[@]}"; do
-              web3j generate solidity -a "$abi" -o bindings/java-web3j -p "$package_name"
-            done
-          '
-        pass_filenames: false
-      - id: generate-bindings-dotnet-nethereum
-        name: Generate .NET bindings (Nethereum)
-        description: Produce .NET bindings with Nethereum from ABI files
-        language: system
-        entry: >
-          bash -lc '
-            set -euo pipefail
-            ABI_FILES=()
-            while IFS= read -r file; do
-              ABI_FILES+=("$file")
-            done < <(find abis -type f -name "*.abi.json" | sort)
-            rm -rf bindings/dot-netnet-nethereum
-            mkdir -p bindings/dot-net-nethereum
-            namespace=${NETHEREUM_NAMESPACE:-Symbiotic.Relay}
-            for abi in "${ABI_FILES[@]}"; do
-              Nethereum.Generator.Console generate from-abi --abiPath "$abi" --outputPath "bindings/dot-net-nethereum" --namespace "$namespace"
             done
           '
         pass_filenames: false

@@ -464,8 +464,7 @@ library BLS12381 {
             x_b += 4;
             if (x_b < 4) {
                 ++x_a;
-            }
-            if (x_a == P_A && x_b >= P_B) {
+            } else if (x_a == P_A && x_b >= P_B) {
                 x_a = 0;
                 x_b -= P_B;
             }

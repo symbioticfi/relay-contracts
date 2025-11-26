@@ -1,5 +1,5 @@
 # IOzEIP712
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1eb6435a6ea47694d41a093f5c846d932f6a2f2b/src/interfaces/modules/base/IOzEIP712.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/e9e0e593c3de594113782553dc8090eb04204f16/src/interfaces/modules/base/IOzEIP712.sol)
 
 **Inherits:**
 IERC5267
