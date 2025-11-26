@@ -1,87 +1,87 @@
 [
-  {
-    "type": "function",
-    "name": "getTokenWeight",
-    "inputs": [
-      {
-        "name": "token",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint208",
-        "internalType": "uint208"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "getTokenWeightAt",
-    "inputs": [
-      {
-        "name": "token",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "timestamp",
-        "type": "uint48",
-        "internalType": "uint48"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint208",
-        "internalType": "uint208"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "setTokenWeight",
-    "inputs": [
-      {
-        "name": "token",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "weight",
-        "type": "uint208",
-        "internalType": "uint208"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "event",
-    "name": "SetTokenWeight",
-    "inputs": [
-      {
-        "name": "token",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      },
-      {
-        "name": "weight",
-        "type": "uint208",
-        "indexed": false,
-        "internalType": "uint208"
-      }
-    ],
-    "anonymous": false
-  },
-  {
-    "type": "error",
-    "name": "WeightedTokensVPCalc_TooLargeWeight",
-    "inputs": []
-  }
+    {
+        "type": "function",
+        "name": "getTokenWeight",
+        "inputs": [
+            {
+                "name": "token",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint208",
+                "internalType": "uint208"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "getTokenWeightAt",
+        "inputs": [
+            {
+                "name": "token",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "timestamp",
+                "type": "uint48",
+                "internalType": "uint48"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint208",
+                "internalType": "uint208"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "setTokenWeight",
+        "inputs": [
+            {
+                "name": "token",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "weight",
+                "type": "uint208",
+                "internalType": "uint208"
+            }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "event",
+        "name": "SetTokenWeight",
+        "inputs": [
+            {
+                "name": "token",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "weight",
+                "type": "uint208",
+                "indexed": false,
+                "internalType": "uint208"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "error",
+        "name": "WeightedTokensVPCalc_TooLargeWeight",
+        "inputs": []
+    }
 ]

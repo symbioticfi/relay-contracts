@@ -1,5 +1,5 @@
 # BLS12381
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/e9e0e593c3de594113782553dc8090eb04204f16/src/libraries/utils/BLS12381.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/3555af95a3dd521f0c0f40867fec8f48136f728e/src/libraries/utils/BLS12381.sol)
 
 Library for working with BLS12-381 precompiles.
 

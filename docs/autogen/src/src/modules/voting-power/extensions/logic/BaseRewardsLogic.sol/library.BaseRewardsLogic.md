@@ -1,5 +1,5 @@
 # BaseRewardsLogic
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/e9e0e593c3de594113782553dc8090eb04204f16/src/modules/voting-power/extensions/logic/BaseRewardsLogic.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/3555af95a3dd521f0c0f40867fec8f48136f728e/src/modules/voting-power/extensions/logic/BaseRewardsLogic.sol)
 
 Library with bindings for distributing rewards to stakers and operators.
 
