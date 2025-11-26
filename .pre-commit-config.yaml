@@ -1,11 +1,7 @@
 # Prerequisites:
 # - Foundry
 # - Python 3
-# - Node.js 20
-# - .NET 8
-# - Nethereum.Generator.Console
-# - Java 21
-# - web3j
+# - Node.js
 # - Go
 # - abigen
 
