@@ -91,7 +91,7 @@ library BLS12381 {
             x_c1_b: 0x596bd0d09920b61ab5da61bbdc7f5049334cf11213945d57e5ac7d055d042b7e,
             y_c0_a: 0x000000000000000000000000000000000d1b3cc2c7027888be51d9ef691d77bc,
             y_c0_b: 0xb679afda66c73f17f9ee3837a55024f78c71363275a75d75d86bab79f74782aa,
-            y_c1_a: 0x000000000000000000000000000000000d1b3cc2c7027888be51d9ef691d77bc,
+            y_c1_a: 0x0000000000000000000000000000000013fa4d4a0ad8b1ce186ed5061789213d,
             y_c1_b: 0x993923066dddaf1040bc3ff59f825c78df74f2d75467e25e0f55f8a00fa030ed
         });
     }
@@ -153,9 +153,8 @@ library BLS12381 {
     }
 
     /// @dev Scalar multiplication of a G1 point with a scalar. Returns a new G1 point.
-    function scalarMul(G1Point memory point, uint256 scalar) internal view returns (G1Point memory result) {
+    function scalar_mul(G1Point memory point, uint256 scalar) internal view returns (G1Point memory result) {
         assembly ("memory-safe") {
-            let m := mload(0x40)
             mcopy(result, point, 0x80)
             mstore(add(result, 0x80), scalar)
             if iszero(and(eq(returndatasize(), 0x80), staticcall(gas(), BLS12_G1MSM, result, 0xa0, result, 0x80))) {
@@ -185,38 +184,60 @@ library BLS12381 {
         }
     }
 
+    /**
+     * @notice Negates a G1 point, by reflecting it over the x-axis
+     * @dev Assumes that the Y coordinate is always less than the field modulus
+     * @param point The G1 point to negate
+     */
+    function negate(G1Point memory point) internal pure returns (G1Point memory) {
+        return P_B < uint256(point.y_b)
+            ? G1Point({
+                x_a: point.x_a,
+                x_b: point.x_b,
+                y_a: bytes32(P_A - uint256(point.y_a) - 1),
+                y_b: bytes32(type(uint256).max - (uint256(point.y_b) - P_B) + 1)
+            })
+            : G1Point({
+                x_a: point.x_a,
+                x_b: point.x_b,
+                y_a: bytes32(P_A - uint256(point.y_a)),
+                y_b: bytes32(P_B - uint256(point.y_b))
+            });
+    }
+
     /// @dev Computes a point in G1 from a message.
     function hashToG1(bytes memory message) internal view returns (G1Point memory result) {
-        bytes memory uniform_bytes = expandMsg("BLS_SIG_BLS12381G1_XMD:SHA-256_SSWU_RO_NUL_", message, 128);
-        bytes memory buf = new bytes(225);
-        bytes memory buf2 = new bytes(256);
-        for (uint256 i; i < 2; ++i) {
-            assembly {
+        bytes memory uniform_bytes = expandMsg("BLS_SIG_BLS12381G1_XMD:SHA-256_SSWU_RO_NUL_", message, 0x80);
+        assembly ("memory-safe") {
+            let m := mload(0x40)
+            for { let i := 0 } iszero(eq(i, 2)) { i := add(i, 1) } {
                 // inplace mod in uniform_bytes[64*i]
                 let p := add(add(uniform_bytes, 0x20), mul(i, 0x40))
-                mstore(add(buf, 0x20), 64) // length of base
-                mstore(add(buf, 0x40), 1) // length of exponent 1
-                mstore(add(buf, 0x60), 64) // length of modulus
-                mcopy(add(buf, 0x80), p, 64) // copy base
-                mstore8(add(buf, 0xc0), 1) // exponent
-                mstore(add(buf, 0xc1), P_A)
-                mstore(add(buf, 0xe1), P_B)
-                if iszero(and(eq(returndatasize(), 0x40), staticcall(gas(), EXP_MOD, add(buf, 0x20), 0xe1, p, 0x40))) {
+                mstore(m, 0x40) // length of base
+                mstore(add(m, 0x20), 0x01) // length of exponent 1
+                mstore(add(m, 0x40), 0x40) // length of modulus
+                mcopy(add(m, 0x60), p, 0x40) // copy base
+                mstore8(add(m, 0xa0), 1) // exponent
+                mstore(add(m, 0xa1), P_A)
+                mstore(add(m, 0xc1), P_B)
+                if iszero(and(eq(returndatasize(), 0x40), staticcall(gas(), EXP_MOD, m, 0xe1, p, 0x40))) {
                     revert(calldatasize(), 0x00)
                 }
 
                 // EIP-2537 map_fp_to_g1
-                let r := add(add(buf2, 0x20), mul(128, i))
-                if iszero(and(eq(returndatasize(), 0x80), staticcall(gas(), BLS12_MAP_FP_TO_G1, p, 0x40, r, 0x80))) {
+                if iszero(
+                    and(
+                        eq(returndatasize(), 0x80),
+                        staticcall(gas(), BLS12_MAP_FP_TO_G1, p, 0x40, add(result, mul(i, 0x80)), 0x80)
+                    )
+                ) {
                     mstore(0x00, 0x24a289fc) // `MapFpToG1Failed()`.
                     revert(0x1c, 0x04)
                 }
             }
         }
         assembly {
-            if iszero(
-                and(eq(returndatasize(), 0x80), staticcall(gas(), BLS12_G1ADD, add(buf2, 0x20), 0x100, result, 0x80))
-            ) {
+            if iszero(and(eq(returndatasize(), 0x80), staticcall(gas(), BLS12_G1ADD, result, 0x100, result, 0x80))) {
                 mstore(0x00, 0xd6cc76eb) // `G1AddFailed()`.
                 revert(0x1c, 0x04)
             }
@@ -230,36 +251,32 @@ library BLS12381 {
     /// @param n_bytes The number of bytes to extend to
     function expandMsg(bytes memory DST, bytes memory message, uint8 n_bytes) internal pure returns (bytes memory) {
         uint256 domainLen = DST.length;
-        if (domainLen > 255) {
+        if (domainLen > 0xff) {
             revert InvalidDSTLength(DST);
         }
-        bytes memory zpad = new bytes(64);
-        bytes memory b_0 = abi.encodePacked(zpad, message, uint8(0), n_bytes, uint8(0), DST, uint8(domainLen));
+        bytes memory zpad = new bytes(0x40);
+        bytes memory b_0 = abi.encodePacked(zpad, message, uint8(0x00), n_bytes, uint8(0x00), DST, uint8(domainLen));
         bytes32 b0 = sha256(b_0);
 
-        bytes memory b_i = abi.encodePacked(b0, uint8(1), DST, uint8(domainLen));
+        bytes memory b_i = abi.encodePacked(b0, uint8(0x01), DST, uint8(domainLen));
         bytes32 bi = sha256(b_i);
         bytes memory out = new bytes(n_bytes);
-        uint256 ell = (n_bytes + uint256(31)) >> 5;
-        for (uint256 i = 1; i < ell; i++) {
-            b_i = abi.encodePacked(b0 ^ bi, uint8(1 + i), DST, uint8(domainLen));
+        uint256 ell = (n_bytes + 0x1F) >> 5;
+        for (uint256 i = 1; i < ell; ++i) {
+            b_i = abi.encodePacked(b0 ^ bi, uint8(i + 1), DST, uint8(domainLen));
             assembly {
-                let p := add(32, out)
-                p := add(p, mul(32, sub(i, 1)))
-                mstore(p, bi)
+                mstore(add(add(out, 0x20), mul(sub(i, 1), 0x20)), bi)
             }
             bi = sha256(b_i);
         }
         assembly {
-            let p := add(32, out)
-            p := add(p, mul(32, sub(ell, 1)))
-            mstore(p, bi)
+            mstore(add(add(out, 0x20), mul(sub(ell, 1), 0x20)), bi)
         }
         return out;
     }
 
     function findYFromX(uint256 x_a, uint256 x_b) internal view returns (uint256 y_a, uint256 y_b) {
-        // compute x**3 mod p
+        // compute (x**3 + 4) mod p
         (y_a, y_b) = _xCubePlus4(x_a, x_b);
 
         // compute y = sqrt(x**3 + 4) mod p = (x**3 + 4)^(p+1)/2 mod p
@@ -284,27 +301,6 @@ library BLS12381 {
             y_a := mload(add(buf, 0x20))
             y_b := mload(add(buf, 0x40))
         }
-    }
-
-    /**
-     * @notice Negates a G1 point, by reflecting it over the x-axis
-     * @dev Assumes that the Y coordinate is always less than the field modulus
-     * @param point The G1 point to negate
-     */
-    function negate(G1Point memory point) internal pure returns (G1Point memory) {
-        return P_B < uint256(point.y_b)
-            ? G1Point({
-                x_a: point.x_a,
-                x_b: point.x_b,
-                y_a: bytes32(P_A - uint256(point.y_a) - 1),
-                y_b: bytes32(type(uint256).max - (uint256(point.y_b) - P_B) + 1)
-            })
-            : G1Point({
-                x_a: point.x_a,
-                x_b: point.x_b,
-                y_a: bytes32(P_A - uint256(point.y_a)),
-                y_b: bytes32(P_B - uint256(point.y_b))
-            });
     }
 
     function isOnCurve(G1Point memory point) internal view returns (bool) {
@@ -336,7 +332,7 @@ library BLS12381 {
     }
 
     function isInSubgroup(G1Point memory point) internal view returns (bool) {
-        G1Point memory result = scalarMul(point, G1_SUBGROUP_ORDER);
+        G1Point memory result = scalar_mul(point, G1_SUBGROUP_ORDER);
         return result.x_a == 0 && result.x_b == 0 && result.y_a == 0 && result.y_b == 0;
     }
 
@@ -361,10 +357,15 @@ library BLS12381 {
             x_a := mload(add(buf, 0x20))
             x_b := mload(add(buf, 0x40))
         }
+        // add 4 to x^3 and reduce modulo the field prime
         unchecked {
             x_b += 4;
             if (x_b < 4) {
                 ++x_a;
+            }
+            if (x_a == P_A && x_b >= P_B) {
+                x_a = 0;
+                x_b -= P_B;
             }
         }
         return (x_a, x_b);

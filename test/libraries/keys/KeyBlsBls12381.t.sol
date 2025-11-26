@@ -145,6 +145,13 @@ contract KeyBlsBls12381Test is Test {
         mock.fromBytes(abi.encode(pt, uint256(1)));
     }
 
+    function test_FromBytesRevertsInvalidKey() public {
+        BLS12381.G1Point memory invalid = _generator();
+        invalid.y_a = bytes32(uint256(invalid.y_a) + 1);
+        vm.expectRevert(KeyBlsBls12381.KeyBlsBls12381_InvalidKey.selector);
+        mock.fromBytes(abi.encode(invalid));
+    }
+
     function test_WrapRevertsInvalidKey() public {
         BLS12381.G1Point memory pt = _generator();
         pt.y_a = bytes32(uint256(pt.y_a) + 1);
@@ -208,6 +215,22 @@ contract KeyBlsBls12381Test is Test {
         vm.expectRevert(KeyBlsBls12381.KeyBlsBls12381_InvalidKey.selector);
         mock.wrap(pt);
         vm.clearMockedCalls();
+    }
+
+    function test_SerializeSetsSignBit() public {
+        BLS12381.G1Point memory positive = _generator();
+        BLS12381.G1Point memory negative = _negGenerator();
+
+        uint256[2] memory compressedPositive = abi.decode(KeyBlsBls12381.serialize(positive.wrap()), (uint256[2]));
+        uint256[2] memory compressedNegative = abi.decode(KeyBlsBls12381.serialize(negative.wrap()), (uint256[2]));
+
+        assertEq(compressedPositive[0] >> 1, uint256(positive.x_a));
+        assertEq(compressedPositive[1], uint256(positive.x_b));
+        assertEq(compressedPositive[0] & 1, 0);
+
+        assertEq(compressedNegative[0] >> 1, uint256(negative.x_a));
+        assertEq(compressedNegative[1], uint256(negative.x_b));
+        assertEq(compressedNegative[0] & 1, 1);
     }
 
     function _nonSubgroupPoint() internal pure returns (BLS12381.G1Point memory) {

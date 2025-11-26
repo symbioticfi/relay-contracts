@@ -3,6 +3,8 @@ pragma solidity ^0.8.25;
 
 import "forge-std/Test.sol";
 
+import {console2} from "forge-std/console2.sol";
+
 import {KeyRegistry} from "../../../src/modules/key-registry/KeyRegistry.sol";
 import {IKeyRegistry} from "../../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
 
@@ -84,7 +86,7 @@ contract KeyRegistryTest is Test {
         view
         returns (BLS12381.G1Point memory result)
     {
-        result = BLS12381.scalarMul(point, uint256(scalar));
+        result = BLS12381.scalar_mul(point, uint256(scalar));
     }
 
     function _bls12381G2Mul(BLS12381.G2Point memory point, bytes32 scalar)
@@ -190,7 +192,14 @@ contract KeyRegistryTest is Test {
         assertEq(keyTagsAt[0], KEY_TYPE_BLS_BN254.getKeyTag(15), "Key tag mismatch");
     }
 
-    function test_SetBlsBls12381Key() public {
+    function test_SetBlsBls12381Key1() public {
+        bytes32[] memory bytes32Array = new bytes32[](2);
+        bytes32Array[0] = bytes32(uint256(123));
+        bytes32Array[1] = bytes32(uint256(123));
+        console2.logBytes32(bytes32Array[0]);
+        console2.logBytes(abi.encode(bytes32Array));
+        console2.logBytes(abi.encodePacked(bytes32Array));
+
         address operator = address(0xBEEF);
         uint8 keyTag = KEY_TYPE_BLS_BLS12381.getKeyTag(3);
 

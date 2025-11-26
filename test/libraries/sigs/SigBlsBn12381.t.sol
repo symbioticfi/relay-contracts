@@ -47,6 +47,38 @@ contract SigBlsBls12381Test is Test {
         assertFalse(SigBlsBls12381.verify(keyG1, messageHash, signature, keyG2));
     }
 
+    function test_VerifyMismatchedG2() public {
+        uint256 privateKey = 0x123456789abcdef;
+        uint256 otherPrivateKey = privateKey + 5;
+        bytes32 messageHash = keccak256("relay bls12381 mismatched g2");
+
+        BLS12381.G1Point memory generator = _g1Generator();
+        BLS12381.G1Point memory keyG1 = _g1Mul(generator, bytes32(privateKey));
+        BLS12381.G2Point memory keyG2 = _g2Mul(BLS12381.generatorG2(), bytes32(otherPrivateKey));
+        BLS12381.G1Point memory messageG1 = BLS12381.hashToG1(abi.encodePacked(messageHash));
+        BLS12381.G1Point memory signature = _g1Mul(messageG1, bytes32(privateKey));
+
+        bytes memory keyBytes = KeyBlsBls12381.wrap(keyG1).toBytes();
+
+        assertFalse(SigBlsBls12381.verify(keyBytes, abi.encode(messageHash), abi.encode(signature), abi.encode(keyG2)));
+        assertFalse(SigBlsBls12381.verify(keyG1, messageHash, signature, keyG2));
+    }
+
+    function test_VerifyRejectsZeroSignature() public {
+        uint256 privateKey = 0x123456789abcdef;
+        bytes32 messageHash = keccak256("relay bls12381 zero signature");
+
+        BLS12381.G1Point memory generator = _g1Generator();
+        BLS12381.G1Point memory keyG1 = _g1Mul(generator, bytes32(privateKey));
+        BLS12381.G2Point memory keyG2 = _g2Mul(BLS12381.generatorG2(), bytes32(privateKey));
+        BLS12381.G1Point memory signature = _zeroPoint();
+
+        bytes memory keyBytes = KeyBlsBls12381.wrap(keyG1).toBytes();
+
+        assertFalse(SigBlsBls12381.verify(keyBytes, abi.encode(messageHash), abi.encode(signature), abi.encode(keyG2)));
+        assertFalse(SigBlsBls12381.verify(keyG1, messageHash, signature, keyG2));
+    }
+
     function test_VerifyZeroKey() public {
         bytes32 messageHash = keccak256("relay bls12381 zero");
         BLS12381.G1Point memory messageG1 = BLS12381.hashToG1(abi.encodePacked(messageHash));
@@ -94,7 +126,7 @@ contract SigBlsBls12381Test is Test {
         view
         returns (BLS12381.G1Point memory result)
     {
-        result = BLS12381.scalarMul(point, uint256(scalar));
+        result = BLS12381.scalar_mul(point, uint256(scalar));
     }
 
     function _g2Mul(BLS12381.G2Point memory point, bytes32 scalar)

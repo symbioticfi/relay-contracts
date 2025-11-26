@@ -63,13 +63,12 @@ library SigBlsBls12381 {
         if (keyG1.x_a == 0 && keyG1.x_b == 0 && keyG1.y_a == 0 && keyG1.y_b == 0) {
             return false;
         }
-        BLS12381.G1Point memory messageG1 = BLS12381.hashToG1(abi.encodePacked(messageHash));
+        BLS12381.G1Point memory messageG1 = BLS12381.hashToG1(abi.encode(messageHash));
         uint256 alpha = uint256(keccak256(abi.encode(signatureG1, keyG1, keyG2, messageG1))) % BLS12381.FR_MODULUS;
-
         return BLS12381.pairing(
-            signatureG1.add(keyG1.scalarMul(alpha)),
+            signatureG1.add(keyG1.scalar_mul(alpha)),
             BLS12381.negGeneratorG2(),
-            messageG1.add(BLS12381.generatorG1().scalarMul(alpha)),
+            messageG1.add(BLS12381.generatorG1().scalar_mul(alpha)),
             keyG2
         );
     }
