@@ -27,6 +27,30 @@ namespace Symbiotic.Relay.ISettlement.abi.ContractDefinition
 
     }
 
+    public partial class NetworkFunction : NetworkFunctionBase { }
+
+    [Function("NETWORK", "address")]
+    public class NetworkFunctionBase : FunctionMessage
+    {
+
+    }
+
+    public partial class SubnetworkFunction : SubnetworkFunctionBase { }
+
+    [Function("SUBNETWORK", "bytes32")]
+    public class SubnetworkFunctionBase : FunctionMessage
+    {
+
+    }
+
+    public partial class SubnetworkIdentifierFunction : SubnetworkIdentifierFunctionBase { }
+
+    [Function("SUBNETWORK_IDENTIFIER", "uint96")]
+    public class SubnetworkIdentifierFunctionBase : FunctionMessage
+    {
+
+    }
+
     public partial class ValidatorSetVersionFunction : ValidatorSetVersionFunctionBase { }
 
     [Function("VALIDATOR_SET_VERSION", "uint8")]
@@ -46,6 +70,14 @@ namespace Symbiotic.Relay.ISettlement.abi.ContractDefinition
         public virtual List<ExtraData> ExtraData { get; set; }
         [Parameter("bytes", "proof", 3)]
         public virtual byte[] Proof { get; set; }
+    }
+
+    public partial class Eip712DomainFunction : Eip712DomainFunctionBase { }
+
+    [Function("eip712Domain", typeof(Eip712DomainOutputDTO))]
+    public class Eip712DomainFunctionBase : FunctionMessage
+    {
+
     }
 
     public partial class GetCaptureTimestampFromValSetHeaderFunction : GetCaptureTimestampFromValSetHeaderFunctionBase { }
@@ -231,6 +263,24 @@ namespace Symbiotic.Relay.ISettlement.abi.ContractDefinition
         public virtual ulong Epoch { get; set; }
     }
 
+    public partial class HashTypedDataV4Function : HashTypedDataV4FunctionBase { }
+
+    [Function("hashTypedDataV4", "bytes32")]
+    public class HashTypedDataV4FunctionBase : FunctionMessage
+    {
+        [Parameter("bytes32", "structHash", 1)]
+        public virtual byte[] StructHash { get; set; }
+    }
+
+    public partial class HashTypedDataV4CrossChainFunction : HashTypedDataV4CrossChainFunctionBase { }
+
+    [Function("hashTypedDataV4CrossChain", "bytes32")]
+    public class HashTypedDataV4CrossChainFunctionBase : FunctionMessage
+    {
+        [Parameter("bytes32", "structHash", 1)]
+        public virtual byte[] StructHash { get; set; }
+    }
+
     public partial class IsValSetHeaderCommittedAtFunction : IsValSetHeaderCommittedAtFunctionBase { }
 
     [Function("isValSetHeaderCommittedAt", "bool")]
@@ -258,6 +308,17 @@ namespace Symbiotic.Relay.ISettlement.abi.ContractDefinition
     {
         [Parameter("address", "sigVerifier", 1)]
         public virtual string SigVerifier { get; set; }
+    }
+
+    public partial class StaticDelegateCallFunction : StaticDelegateCallFunctionBase { }
+
+    [Function("staticDelegateCall")]
+    public class StaticDelegateCallFunctionBase : FunctionMessage
+    {
+        [Parameter("address", "target", 1)]
+        public virtual string Target { get; set; }
+        [Parameter("bytes", "data", 2)]
+        public virtual byte[] Data { get; set; }
     }
 
     public partial class VerifyQuorumSigFunction : VerifyQuorumSigFunctionBase { }
@@ -305,6 +366,24 @@ namespace Symbiotic.Relay.ISettlement.abi.ContractDefinition
         public virtual List<ExtraData> ExtraData { get; set; }
     }
 
+    public partial class EIP712DomainChangedEventDTO : EIP712DomainChangedEventDTOBase { }
+
+    [Event("EIP712DomainChanged")]
+    public class EIP712DomainChangedEventDTOBase : IEventDTO
+    {
+    }
+
+    public partial class InitEIP712EventDTO : InitEIP712EventDTOBase { }
+
+    [Event("InitEIP712")]
+    public class InitEIP712EventDTOBase : IEventDTO
+    {
+        [Parameter("string", "name", 1, false )]
+        public virtual string Name { get; set; }
+        [Parameter("string", "version", 2, false )]
+        public virtual string Version { get; set; }
+    }
+
     public partial class InitSigVerifierEventDTO : InitSigVerifierEventDTOBase { }
 
     [Event("InitSigVerifier")]
@@ -312,6 +391,17 @@ namespace Symbiotic.Relay.ISettlement.abi.ContractDefinition
     {
         [Parameter("address", "sigVerifier", 1, false )]
         public virtual string SigVerifier { get; set; }
+    }
+
+    public partial class InitSubnetworkEventDTO : InitSubnetworkEventDTOBase { }
+
+    [Event("InitSubnetwork")]
+    public class InitSubnetworkEventDTOBase : IEventDTO
+    {
+        [Parameter("address", "network", 1, false )]
+        public virtual string Network { get; set; }
+        [Parameter("uint96", "subnetworkId", 2, false )]
+        public virtual BigInteger SubnetworkId { get; set; }
     }
 
     public partial class SetGenesisEventDTO : SetGenesisEventDTOBase { }
@@ -332,6 +422,12 @@ namespace Symbiotic.Relay.ISettlement.abi.ContractDefinition
     {
         [Parameter("address", "sigVerifier", 1, false )]
         public virtual string SigVerifier { get; set; }
+    }
+
+    public partial class NetworkmanagerInvalidnetworkError : NetworkmanagerInvalidnetworkErrorBase { }
+    [Error("NetworkManager_InvalidNetwork")]
+    public class NetworkmanagerInvalidnetworkErrorBase : IErrorDTO
+    {
     }
 
     public partial class SettlementDuplicateextradatakeyError : SettlementDuplicateextradatakeyErrorBase { }
@@ -388,6 +484,33 @@ namespace Symbiotic.Relay.ISettlement.abi.ContractDefinition
     {
     }
 
+    public partial class NetworkOutputDTO : NetworkOutputDTOBase { }
+
+    [FunctionOutput]
+    public class NetworkOutputDTOBase : IFunctionOutputDTO 
+    {
+        [Parameter("address", "", 1)]
+        public virtual string ReturnValue1 { get; set; }
+    }
+
+    public partial class SubnetworkOutputDTO : SubnetworkOutputDTOBase { }
+
+    [FunctionOutput]
+    public class SubnetworkOutputDTOBase : IFunctionOutputDTO 
+    {
+        [Parameter("bytes32", "", 1)]
+        public virtual byte[] ReturnValue1 { get; set; }
+    }
+
+    public partial class SubnetworkIdentifierOutputDTO : SubnetworkIdentifierOutputDTOBase { }
+
+    [FunctionOutput]
+    public class SubnetworkIdentifierOutputDTOBase : IFunctionOutputDTO 
+    {
+        [Parameter("uint96", "", 1)]
+        public virtual BigInteger ReturnValue1 { get; set; }
+    }
+
     public partial class ValidatorSetVersionOutputDTO : ValidatorSetVersionOutputDTOBase { }
 
     [FunctionOutput]
@@ -398,6 +521,27 @@ namespace Symbiotic.Relay.ISettlement.abi.ContractDefinition
     }
 
 
+
+    public partial class Eip712DomainOutputDTO : Eip712DomainOutputDTOBase { }
+
+    [FunctionOutput]
+    public class Eip712DomainOutputDTOBase : IFunctionOutputDTO 
+    {
+        [Parameter("bytes1", "fields", 1)]
+        public virtual byte[] Fields { get; set; }
+        [Parameter("string", "name", 2)]
+        public virtual string Name { get; set; }
+        [Parameter("string", "version", 3)]
+        public virtual string Version { get; set; }
+        [Parameter("uint256", "chainId", 4)]
+        public virtual BigInteger ChainId { get; set; }
+        [Parameter("address", "verifyingContract", 5)]
+        public virtual string VerifyingContract { get; set; }
+        [Parameter("bytes32", "salt", 6)]
+        public virtual byte[] Salt { get; set; }
+        [Parameter("uint256[]", "extensions", 7)]
+        public virtual List<BigInteger> Extensions { get; set; }
+    }
 
     public partial class GetCaptureTimestampFromValSetHeaderOutputDTO : GetCaptureTimestampFromValSetHeaderOutputDTOBase { }
 
@@ -588,6 +732,24 @@ namespace Symbiotic.Relay.ISettlement.abi.ContractDefinition
         public virtual byte ReturnValue1 { get; set; }
     }
 
+    public partial class HashTypedDataV4OutputDTO : HashTypedDataV4OutputDTOBase { }
+
+    [FunctionOutput]
+    public class HashTypedDataV4OutputDTOBase : IFunctionOutputDTO 
+    {
+        [Parameter("bytes32", "", 1)]
+        public virtual byte[] ReturnValue1 { get; set; }
+    }
+
+    public partial class HashTypedDataV4CrossChainOutputDTO : HashTypedDataV4CrossChainOutputDTOBase { }
+
+    [FunctionOutput]
+    public class HashTypedDataV4CrossChainOutputDTOBase : IFunctionOutputDTO 
+    {
+        [Parameter("bytes32", "", 1)]
+        public virtual byte[] ReturnValue1 { get; set; }
+    }
+
     public partial class IsValSetHeaderCommittedAtOutputDTO : IsValSetHeaderCommittedAtOutputDTOBase { }
 
     [FunctionOutput]
@@ -596,6 +758,8 @@ namespace Symbiotic.Relay.ISettlement.abi.ContractDefinition
         [Parameter("bool", "", 1)]
         public virtual bool ReturnValue1 { get; set; }
     }
+
+
 
 
 

@@ -35,6 +35,30 @@ namespace Symbiotic.Relay.IValSetDriver.abi.ContractDefinition
 
     }
 
+    public partial class NetworkFunction : NetworkFunctionBase { }
+
+    [Function("NETWORK", "address")]
+    public class NetworkFunctionBase : FunctionMessage
+    {
+
+    }
+
+    public partial class SubnetworkFunction : SubnetworkFunctionBase { }
+
+    [Function("SUBNETWORK", "bytes32")]
+    public class SubnetworkFunctionBase : FunctionMessage
+    {
+
+    }
+
+    public partial class SubnetworkIdentifierFunction : SubnetworkIdentifierFunctionBase { }
+
+    [Function("SUBNETWORK_IDENTIFIER", "uint96")]
+    public class SubnetworkIdentifierFunctionBase : FunctionMessage
+    {
+
+    }
+
     public partial class AddQuorumThresholdFunction : AddQuorumThresholdFunctionBase { }
 
     [Function("addQuorumThreshold")]
@@ -94,6 +118,57 @@ namespace Symbiotic.Relay.IValSetDriver.abi.ContractDefinition
     {
         [Parameter("uint48", "timestamp", 1)]
         public virtual ulong Timestamp { get; set; }
+    }
+
+    public partial class GetCurrentEpochFunction : GetCurrentEpochFunctionBase { }
+
+    [Function("getCurrentEpoch", "uint48")]
+    public class GetCurrentEpochFunctionBase : FunctionMessage
+    {
+
+    }
+
+    public partial class GetCurrentEpochDurationFunction : GetCurrentEpochDurationFunctionBase { }
+
+    [Function("getCurrentEpochDuration", "uint48")]
+    public class GetCurrentEpochDurationFunctionBase : FunctionMessage
+    {
+
+    }
+
+    public partial class GetCurrentEpochStartFunction : GetCurrentEpochStartFunctionBase { }
+
+    [Function("getCurrentEpochStart", "uint48")]
+    public class GetCurrentEpochStartFunctionBase : FunctionMessage
+    {
+
+    }
+
+    public partial class GetEpochDurationFunction : GetEpochDurationFunctionBase { }
+
+    [Function("getEpochDuration", "uint48")]
+    public class GetEpochDurationFunctionBase : FunctionMessage
+    {
+        [Parameter("uint48", "epoch", 1)]
+        public virtual ulong Epoch { get; set; }
+    }
+
+    public partial class GetEpochIndexFunction : GetEpochIndexFunctionBase { }
+
+    [Function("getEpochIndex", "uint48")]
+    public class GetEpochIndexFunctionBase : FunctionMessage
+    {
+        [Parameter("uint48", "timestamp", 1)]
+        public virtual ulong Timestamp { get; set; }
+    }
+
+    public partial class GetEpochStartFunction : GetEpochStartFunctionBase { }
+
+    [Function("getEpochStart", "uint48")]
+    public class GetEpochStartFunctionBase : FunctionMessage
+    {
+        [Parameter("uint48", "epoch", 1)]
+        public virtual ulong Epoch { get; set; }
     }
 
     public partial class GetKeysProviderFunction : GetKeysProviderFunctionBase { }
@@ -162,6 +237,30 @@ namespace Symbiotic.Relay.IValSetDriver.abi.ContractDefinition
     {
         [Parameter("uint48", "timestamp", 1)]
         public virtual ulong Timestamp { get; set; }
+    }
+
+    public partial class GetNextEpochFunction : GetNextEpochFunctionBase { }
+
+    [Function("getNextEpoch", "uint48")]
+    public class GetNextEpochFunctionBase : FunctionMessage
+    {
+
+    }
+
+    public partial class GetNextEpochDurationFunction : GetNextEpochDurationFunctionBase { }
+
+    [Function("getNextEpochDuration", "uint48")]
+    public class GetNextEpochDurationFunctionBase : FunctionMessage
+    {
+
+    }
+
+    public partial class GetNextEpochStartFunction : GetNextEpochStartFunctionBase { }
+
+    [Function("getNextEpochStart", "uint48")]
+    public class GetNextEpochStartFunctionBase : FunctionMessage
+    {
+
     }
 
     public partial class GetNumAggregatorsFunction : GetNumAggregatorsFunctionBase { }
@@ -396,6 +495,15 @@ namespace Symbiotic.Relay.IValSetDriver.abi.ContractDefinition
         public virtual ulong SlotDuration { get; set; }
     }
 
+    public partial class SetEpochDurationFunction : SetEpochDurationFunctionBase { }
+
+    [Function("setEpochDuration")]
+    public class SetEpochDurationFunctionBase : FunctionMessage
+    {
+        [Parameter("uint48", "epochDuration", 1)]
+        public virtual ulong EpochDuration { get; set; }
+    }
+
     public partial class SetKeysProviderFunction : SetKeysProviderFunctionBase { }
 
     [Function("setKeysProvider")]
@@ -477,6 +585,17 @@ namespace Symbiotic.Relay.IValSetDriver.abi.ContractDefinition
         public virtual uint VerificationType { get; set; }
     }
 
+    public partial class StaticDelegateCallFunction : StaticDelegateCallFunctionBase { }
+
+    [Function("staticDelegateCall")]
+    public class StaticDelegateCallFunctionBase : FunctionMessage
+    {
+        [Parameter("address", "target", 1)]
+        public virtual string Target { get; set; }
+        [Parameter("bytes", "data", 2)]
+        public virtual byte[] Data { get; set; }
+    }
+
     public partial class AddQuorumThresholdEventDTO : AddQuorumThresholdEventDTOBase { }
 
     [Event("AddQuorumThreshold")]
@@ -502,6 +621,28 @@ namespace Symbiotic.Relay.IValSetDriver.abi.ContractDefinition
     {
         [Parameter("tuple", "votingPowerProvider", 1, false )]
         public virtual CrossChainAddress VotingPowerProvider { get; set; }
+    }
+
+    public partial class InitEpochDurationEventDTO : InitEpochDurationEventDTOBase { }
+
+    [Event("InitEpochDuration")]
+    public class InitEpochDurationEventDTOBase : IEventDTO
+    {
+        [Parameter("uint48", "epochDuration", 1, false )]
+        public virtual ulong EpochDuration { get; set; }
+        [Parameter("uint48", "epochDurationTimestamp", 2, false )]
+        public virtual ulong EpochDurationTimestamp { get; set; }
+    }
+
+    public partial class InitSubnetworkEventDTO : InitSubnetworkEventDTOBase { }
+
+    [Event("InitSubnetwork")]
+    public class InitSubnetworkEventDTOBase : IEventDTO
+    {
+        [Parameter("address", "network", 1, false )]
+        public virtual string Network { get; set; }
+        [Parameter("uint96", "subnetworkId", 2, false )]
+        public virtual BigInteger SubnetworkId { get; set; }
     }
 
     public partial class RemoveQuorumThresholdEventDTO : RemoveQuorumThresholdEventDTOBase { }
@@ -538,6 +679,15 @@ namespace Symbiotic.Relay.IValSetDriver.abi.ContractDefinition
     {
         [Parameter("uint48", "committerSlotDuration", 1, false )]
         public virtual ulong CommitterSlotDuration { get; set; }
+    }
+
+    public partial class SetEpochDurationEventDTO : SetEpochDurationEventDTOBase { }
+
+    [Event("SetEpochDuration")]
+    public class SetEpochDurationEventDTOBase : IEventDTO
+    {
+        [Parameter("uint48", "epochDuration", 1, false )]
+        public virtual ulong EpochDuration { get; set; }
     }
 
     public partial class SetKeysProviderEventDTO : SetKeysProviderEventDTOBase { }
@@ -621,6 +771,30 @@ namespace Symbiotic.Relay.IValSetDriver.abi.ContractDefinition
         public virtual uint VerificationType { get; set; }
     }
 
+    public partial class EpochmanagerInvalidepochdurationError : EpochmanagerInvalidepochdurationErrorBase { }
+    [Error("EpochManager_InvalidEpochDuration")]
+    public class EpochmanagerInvalidepochdurationErrorBase : IErrorDTO
+    {
+    }
+
+    public partial class EpochmanagerInvalidepochdurationtimestampError : EpochmanagerInvalidepochdurationtimestampErrorBase { }
+    [Error("EpochManager_InvalidEpochDurationTimestamp")]
+    public class EpochmanagerInvalidepochdurationtimestampErrorBase : IErrorDTO
+    {
+    }
+
+    public partial class EpochmanagerToooldtimestampError : EpochmanagerToooldtimestampErrorBase { }
+    [Error("EpochManager_TooOldTimestamp")]
+    public class EpochmanagerToooldtimestampErrorBase : IErrorDTO
+    {
+    }
+
+    public partial class NetworkmanagerInvalidnetworkError : NetworkmanagerInvalidnetworkErrorBase { }
+    [Error("NetworkManager_InvalidNetwork")]
+    public class NetworkmanagerInvalidnetworkErrorBase : IErrorDTO
+    {
+    }
+
     public partial class ValsetdriverChainalreadyaddedError : ValsetdriverChainalreadyaddedErrorBase { }
     [Error("ValSetDriver_ChainAlreadyAdded")]
     public class ValsetdriverChainalreadyaddedErrorBase : IErrorDTO
@@ -684,6 +858,33 @@ namespace Symbiotic.Relay.IValSetDriver.abi.ContractDefinition
         public virtual BigInteger ReturnValue1 { get; set; }
     }
 
+    public partial class NetworkOutputDTO : NetworkOutputDTOBase { }
+
+    [FunctionOutput]
+    public class NetworkOutputDTOBase : IFunctionOutputDTO 
+    {
+        [Parameter("address", "", 1)]
+        public virtual string ReturnValue1 { get; set; }
+    }
+
+    public partial class SubnetworkOutputDTO : SubnetworkOutputDTOBase { }
+
+    [FunctionOutput]
+    public class SubnetworkOutputDTOBase : IFunctionOutputDTO 
+    {
+        [Parameter("bytes32", "", 1)]
+        public virtual byte[] ReturnValue1 { get; set; }
+    }
+
+    public partial class SubnetworkIdentifierOutputDTO : SubnetworkIdentifierOutputDTOBase { }
+
+    [FunctionOutput]
+    public class SubnetworkIdentifierOutputDTOBase : IFunctionOutputDTO 
+    {
+        [Parameter("uint96", "", 1)]
+        public virtual BigInteger ReturnValue1 { get; set; }
+    }
+
 
 
 
@@ -724,6 +925,60 @@ namespace Symbiotic.Relay.IValSetDriver.abi.ContractDefinition
     {
         [Parameter("tuple", "", 1)]
         public virtual Config ReturnValue1 { get; set; }
+    }
+
+    public partial class GetCurrentEpochOutputDTO : GetCurrentEpochOutputDTOBase { }
+
+    [FunctionOutput]
+    public class GetCurrentEpochOutputDTOBase : IFunctionOutputDTO 
+    {
+        [Parameter("uint48", "", 1)]
+        public virtual ulong ReturnValue1 { get; set; }
+    }
+
+    public partial class GetCurrentEpochDurationOutputDTO : GetCurrentEpochDurationOutputDTOBase { }
+
+    [FunctionOutput]
+    public class GetCurrentEpochDurationOutputDTOBase : IFunctionOutputDTO 
+    {
+        [Parameter("uint48", "", 1)]
+        public virtual ulong ReturnValue1 { get; set; }
+    }
+
+    public partial class GetCurrentEpochStartOutputDTO : GetCurrentEpochStartOutputDTOBase { }
+
+    [FunctionOutput]
+    public class GetCurrentEpochStartOutputDTOBase : IFunctionOutputDTO 
+    {
+        [Parameter("uint48", "", 1)]
+        public virtual ulong ReturnValue1 { get; set; }
+    }
+
+    public partial class GetEpochDurationOutputDTO : GetEpochDurationOutputDTOBase { }
+
+    [FunctionOutput]
+    public class GetEpochDurationOutputDTOBase : IFunctionOutputDTO 
+    {
+        [Parameter("uint48", "", 1)]
+        public virtual ulong ReturnValue1 { get; set; }
+    }
+
+    public partial class GetEpochIndexOutputDTO : GetEpochIndexOutputDTOBase { }
+
+    [FunctionOutput]
+    public class GetEpochIndexOutputDTOBase : IFunctionOutputDTO 
+    {
+        [Parameter("uint48", "", 1)]
+        public virtual ulong ReturnValue1 { get; set; }
+    }
+
+    public partial class GetEpochStartOutputDTO : GetEpochStartOutputDTOBase { }
+
+    [FunctionOutput]
+    public class GetEpochStartOutputDTOBase : IFunctionOutputDTO 
+    {
+        [Parameter("uint48", "", 1)]
+        public virtual ulong ReturnValue1 { get; set; }
     }
 
     public partial class GetKeysProviderOutputDTO : GetKeysProviderOutputDTOBase { }
@@ -796,6 +1051,33 @@ namespace Symbiotic.Relay.IValSetDriver.abi.ContractDefinition
     {
         [Parameter("uint256", "", 1)]
         public virtual BigInteger ReturnValue1 { get; set; }
+    }
+
+    public partial class GetNextEpochOutputDTO : GetNextEpochOutputDTOBase { }
+
+    [FunctionOutput]
+    public class GetNextEpochOutputDTOBase : IFunctionOutputDTO 
+    {
+        [Parameter("uint48", "", 1)]
+        public virtual ulong ReturnValue1 { get; set; }
+    }
+
+    public partial class GetNextEpochDurationOutputDTO : GetNextEpochDurationOutputDTOBase { }
+
+    [FunctionOutput]
+    public class GetNextEpochDurationOutputDTOBase : IFunctionOutputDTO 
+    {
+        [Parameter("uint48", "", 1)]
+        public virtual ulong ReturnValue1 { get; set; }
+    }
+
+    public partial class GetNextEpochStartOutputDTO : GetNextEpochStartOutputDTOBase { }
+
+    [FunctionOutput]
+    public class GetNextEpochStartOutputDTOBase : IFunctionOutputDTO 
+    {
+        [Parameter("uint48", "", 1)]
+        public virtual ulong ReturnValue1 { get; set; }
     }
 
     public partial class GetNumAggregatorsOutputDTO : GetNumAggregatorsOutputDTOBase { }
@@ -995,6 +1277,10 @@ namespace Symbiotic.Relay.IValSetDriver.abi.ContractDefinition
         [Parameter("bool", "", 1)]
         public virtual bool ReturnValue1 { get; set; }
     }
+
+
+
+
 
 
 

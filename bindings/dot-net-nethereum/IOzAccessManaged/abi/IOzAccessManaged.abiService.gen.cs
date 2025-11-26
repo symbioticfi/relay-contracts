@@ -46,11 +46,61 @@ namespace Symbiotic.Relay.IOzAccessManaged.abi
         {
         }
 
+        public Task<string> AuthorityQueryAsync(AuthorityFunction authorityFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<AuthorityFunction, string>(authorityFunction, blockParameter);
+        }
+
+        
+        public virtual Task<string> AuthorityQueryAsync(BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<AuthorityFunction, string>(null, blockParameter);
+        }
+
+        public Task<byte[]> IsConsumingScheduledOpQueryAsync(IsConsumingScheduledOpFunction isConsumingScheduledOpFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<IsConsumingScheduledOpFunction, byte[]>(isConsumingScheduledOpFunction, blockParameter);
+        }
+
+        
+        public virtual Task<byte[]> IsConsumingScheduledOpQueryAsync(BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<IsConsumingScheduledOpFunction, byte[]>(null, blockParameter);
+        }
+
+        public virtual Task<string> SetAuthorityRequestAsync(SetAuthorityFunction setAuthorityFunction)
+        {
+             return ContractHandler.SendRequestAsync(setAuthorityFunction);
+        }
+
+        public virtual Task<TransactionReceipt> SetAuthorityRequestAndWaitForReceiptAsync(SetAuthorityFunction setAuthorityFunction, CancellationTokenSource cancellationToken = null)
+        {
+             return ContractHandler.SendRequestAndWaitForReceiptAsync(setAuthorityFunction, cancellationToken);
+        }
+
+        public virtual Task<string> SetAuthorityRequestAsync(string returnValue1)
+        {
+            var setAuthorityFunction = new SetAuthorityFunction();
+                setAuthorityFunction.ReturnValue1 = returnValue1;
+            
+             return ContractHandler.SendRequestAsync(setAuthorityFunction);
+        }
+
+        public virtual Task<TransactionReceipt> SetAuthorityRequestAndWaitForReceiptAsync(string returnValue1, CancellationTokenSource cancellationToken = null)
+        {
+            var setAuthorityFunction = new SetAuthorityFunction();
+                setAuthorityFunction.ReturnValue1 = returnValue1;
+            
+             return ContractHandler.SendRequestAndWaitForReceiptAsync(setAuthorityFunction, cancellationToken);
+        }
+
         public override List<Type> GetAllFunctionTypes()
         {
             return new List<Type>
             {
-
+                typeof(AuthorityFunction),
+                typeof(IsConsumingScheduledOpFunction),
+                typeof(SetAuthorityFunction)
             };
         }
 
@@ -58,7 +108,7 @@ namespace Symbiotic.Relay.IOzAccessManaged.abi
         {
             return new List<Type>
             {
-
+                typeof(AuthorityUpdatedEventDTO)
             };
         }
 
@@ -66,7 +116,9 @@ namespace Symbiotic.Relay.IOzAccessManaged.abi
         {
             return new List<Type>
             {
-
+                typeof(AccessManagedInvalidAuthorityError),
+                typeof(AccessManagedRequiredDelayError),
+                typeof(AccessManagedUnauthorizedError)
             };
         }
     }

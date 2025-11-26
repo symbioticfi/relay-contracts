@@ -4,6 +4,7 @@ import io.reactivex.Flowable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.web3j.abi.EventEncoder;
 import org.web3j.abi.TypeReference;
@@ -44,6 +45,8 @@ public class INetworkManager.abi extends Contract {
     public static final String FUNC_SUBNETWORK = "SUBNETWORK";
 
     public static final String FUNC_SUBNETWORK_IDENTIFIER = "SUBNETWORK_IDENTIFIER";
+
+    public static final String FUNC_STATICDELEGATECALL = "staticDelegateCall";
 
     public static final Event INITSUBNETWORK_EVENT = new Event("InitSubnetwork", 
             Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {}, new TypeReference<Uint96>() {}));
@@ -94,6 +97,15 @@ public class INetworkManager.abi extends Contract {
                 Arrays.<Type>asList(), 
                 Arrays.<TypeReference<?>>asList(new TypeReference<Uint96>() {}));
         return executeRemoteCallSingleValueReturn(function, BigInteger.class);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> staticDelegateCall(String target, byte[] data) {
+        final Function function = new Function(
+                FUNC_STATICDELEGATECALL, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(160, target), 
+                new org.web3j.abi.datatypes.DynamicBytes(data)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
     }
 
     public static List<InitSubnetworkEventResponse> getInitSubnetworkEvents(

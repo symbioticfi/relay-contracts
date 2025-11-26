@@ -10,6 +10,7 @@ interface INetworkManager {
     function NETWORK() external view returns (address);
     function SUBNETWORK() external view returns (bytes32);
     function SUBNETWORK_IDENTIFIER() external view returns (uint96);
+    function staticDelegateCall(address target, bytes memory data) external;
 }
 ```
 
@@ -54,6 +55,24 @@ interface INetworkManager {
       }
     ],
     "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "staticDelegateCall",
+    "inputs": [
+      {
+        "name": "target",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "data",
+        "type": "bytes",
+        "internalType": "bytes"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
   },
   {
     "type": "event",
@@ -724,6 +743,171 @@ function SUBNETWORK_IDENTIFIER() external view returns (uint96);
             }
         }
     };
+    #[derive(serde::Serialize, serde::Deserialize)]
+    #[derive(Default, Debug, PartialEq, Eq, Hash)]
+    /**Function with signature `staticDelegateCall(address,bytes)` and selector `0x9f86fd85`.
+```solidity
+function staticDelegateCall(address target, bytes memory data) external;
+```*/
+    #[allow(non_camel_case_types, non_snake_case, clippy::pub_underscore_fields)]
+    #[derive(Clone)]
+    pub struct staticDelegateCallCall {
+        #[allow(missing_docs)]
+        pub target: alloy::sol_types::private::Address,
+        #[allow(missing_docs)]
+        pub data: alloy::sol_types::private::Bytes,
+    }
+    ///Container type for the return parameters of the [`staticDelegateCall(address,bytes)`](staticDelegateCallCall) function.
+    #[allow(non_camel_case_types, non_snake_case, clippy::pub_underscore_fields)]
+    #[derive(Clone)]
+    pub struct staticDelegateCallReturn {}
+    #[allow(
+        non_camel_case_types,
+        non_snake_case,
+        clippy::pub_underscore_fields,
+        clippy::style
+    )]
+    const _: () = {
+        use alloy::sol_types as alloy_sol_types;
+        {
+            #[doc(hidden)]
+            #[allow(dead_code)]
+            type UnderlyingSolTuple<'a> = (
+                alloy::sol_types::sol_data::Address,
+                alloy::sol_types::sol_data::Bytes,
+            );
+            #[doc(hidden)]
+            type UnderlyingRustTuple<'a> = (
+                alloy::sol_types::private::Address,
+                alloy::sol_types::private::Bytes,
+            );
+            #[cfg(test)]
+            #[allow(dead_code, unreachable_patterns)]
+            fn _type_assertion(
+                _t: alloy_sol_types::private::AssertTypeEq<UnderlyingRustTuple>,
+            ) {
+                match _t {
+                    alloy_sol_types::private::AssertTypeEq::<
+                        <UnderlyingSolTuple as alloy_sol_types::SolType>::RustType,
+                    >(_) => {}
+                }
+            }
+            #[automatically_derived]
+            #[doc(hidden)]
+            impl ::core::convert::From<staticDelegateCallCall>
+            for UnderlyingRustTuple<'_> {
+                fn from(value: staticDelegateCallCall) -> Self {
+                    (value.target, value.data)
+                }
+            }
+            #[automatically_derived]
+            #[doc(hidden)]
+            impl ::core::convert::From<UnderlyingRustTuple<'_>>
+            for staticDelegateCallCall {
+                fn from(tuple: UnderlyingRustTuple<'_>) -> Self {
+                    Self {
+                        target: tuple.0,
+                        data: tuple.1,
+                    }
+                }
+            }
+        }
+        {
+            #[doc(hidden)]
+            #[allow(dead_code)]
+            type UnderlyingSolTuple<'a> = ();
+            #[doc(hidden)]
+            type UnderlyingRustTuple<'a> = ();
+            #[cfg(test)]
+            #[allow(dead_code, unreachable_patterns)]
+            fn _type_assertion(
+                _t: alloy_sol_types::private::AssertTypeEq<UnderlyingRustTuple>,
+            ) {
+                match _t {
+                    alloy_sol_types::private::AssertTypeEq::<
+                        <UnderlyingSolTuple as alloy_sol_types::SolType>::RustType,
+                    >(_) => {}
+                }
+            }
+            #[automatically_derived]
+            #[doc(hidden)]
+            impl ::core::convert::From<staticDelegateCallReturn>
+            for UnderlyingRustTuple<'_> {
+                fn from(value: staticDelegateCallReturn) -> Self {
+                    ()
+                }
+            }
+            #[automatically_derived]
+            #[doc(hidden)]
+            impl ::core::convert::From<UnderlyingRustTuple<'_>>
+            for staticDelegateCallReturn {
+                fn from(tuple: UnderlyingRustTuple<'_>) -> Self {
+                    Self {}
+                }
+            }
+        }
+        impl staticDelegateCallReturn {
+            fn _tokenize(
+                &self,
+            ) -> <staticDelegateCallCall as alloy_sol_types::SolCall>::ReturnToken<'_> {
+                ()
+            }
+        }
+        #[automatically_derived]
+        impl alloy_sol_types::SolCall for staticDelegateCallCall {
+            type Parameters<'a> = (
+                alloy::sol_types::sol_data::Address,
+                alloy::sol_types::sol_data::Bytes,
+            );
+            type Token<'a> = <Self::Parameters<
+                'a,
+            > as alloy_sol_types::SolType>::Token<'a>;
+            type Return = staticDelegateCallReturn;
+            type ReturnTuple<'a> = ();
+            type ReturnToken<'a> = <Self::ReturnTuple<
+                'a,
+            > as alloy_sol_types::SolType>::Token<'a>;
+            const SIGNATURE: &'static str = "staticDelegateCall(address,bytes)";
+            const SELECTOR: [u8; 4] = [159u8, 134u8, 253u8, 133u8];
+            #[inline]
+            fn new<'a>(
+                tuple: <Self::Parameters<'a> as alloy_sol_types::SolType>::RustType,
+            ) -> Self {
+                tuple.into()
+            }
+            #[inline]
+            fn tokenize(&self) -> Self::Token<'_> {
+                (
+                    <alloy::sol_types::sol_data::Address as alloy_sol_types::SolType>::tokenize(
+                        &self.target,
+                    ),
+                    <alloy::sol_types::sol_data::Bytes as alloy_sol_types::SolType>::tokenize(
+                        &self.data,
+                    ),
+                )
+            }
+            #[inline]
+            fn tokenize_returns(ret: &Self::Return) -> Self::ReturnToken<'_> {
+                staticDelegateCallReturn::_tokenize(ret)
+            }
+            #[inline]
+            fn abi_decode_returns(data: &[u8]) -> alloy_sol_types::Result<Self::Return> {
+                <Self::ReturnTuple<
+                    '_,
+                > as alloy_sol_types::SolType>::abi_decode_sequence(data)
+                    .map(Into::into)
+            }
+            #[inline]
+            fn abi_decode_returns_validate(
+                data: &[u8],
+            ) -> alloy_sol_types::Result<Self::Return> {
+                <Self::ReturnTuple<
+                    '_,
+                > as alloy_sol_types::SolType>::abi_decode_sequence_validate(data)
+                    .map(Into::into)
+            }
+        }
+    };
     ///Container for all the [`INetworkManager`](self) function calls.
     #[derive(Clone)]
     #[derive(serde::Serialize, serde::Deserialize)]
@@ -735,6 +919,8 @@ function SUBNETWORK_IDENTIFIER() external view returns (uint96);
         SUBNETWORK(SUBNETWORKCall),
         #[allow(missing_docs)]
         SUBNETWORK_IDENTIFIER(SUBNETWORK_IDENTIFIERCall),
+        #[allow(missing_docs)]
+        staticDelegateCall(staticDelegateCallCall),
     }
     impl INetworkManagerCalls {
         /// All the selectors of this enum.
@@ -746,18 +932,21 @@ function SUBNETWORK_IDENTIFIER() external view returns (uint96);
         pub const SELECTORS: &'static [[u8; 4usize]] = &[
             [119u8, 62u8, 107u8, 84u8],
             [135u8, 89u8, 230u8, 209u8],
+            [159u8, 134u8, 253u8, 133u8],
             [171u8, 172u8, 184u8, 7u8],
         ];
         /// The names of the variants in the same order as `SELECTORS`.
         pub const VARIANT_NAMES: &'static [&'static str] = &[
             ::core::stringify!(SUBNETWORK),
             ::core::stringify!(NETWORK),
+            ::core::stringify!(staticDelegateCall),
             ::core::stringify!(SUBNETWORK_IDENTIFIER),
         ];
         /// The signatures in the same order as `SELECTORS`.
         pub const SIGNATURES: &'static [&'static str] = &[
             <SUBNETWORKCall as alloy_sol_types::SolCall>::SIGNATURE,
             <NETWORKCall as alloy_sol_types::SolCall>::SIGNATURE,
+            <staticDelegateCallCall as alloy_sol_types::SolCall>::SIGNATURE,
             <SUBNETWORK_IDENTIFIERCall as alloy_sol_types::SolCall>::SIGNATURE,
         ];
         /// Returns the signature for the given selector, if known.
@@ -785,7 +974,7 @@ function SUBNETWORK_IDENTIFIER() external view returns (uint96);
     impl alloy_sol_types::SolInterface for INetworkManagerCalls {
         const NAME: &'static str = "INetworkManagerCalls";
         const MIN_DATA_LENGTH: usize = 0usize;
-        const COUNT: usize = 3usize;
+        const COUNT: usize = 4usize;
         #[inline]
         fn selector(&self) -> [u8; 4] {
             match self {
@@ -795,6 +984,9 @@ function SUBNETWORK_IDENTIFIER() external view returns (uint96);
                 }
                 Self::SUBNETWORK_IDENTIFIER(_) => {
                     <SUBNETWORK_IDENTIFIERCall as alloy_sol_types::SolCall>::SELECTOR
+                }
+                Self::staticDelegateCall(_) => {
+                    <staticDelegateCallCall as alloy_sol_types::SolCall>::SELECTOR
                 }
             }
         }
@@ -834,6 +1026,17 @@ function SUBNETWORK_IDENTIFIER() external view returns (uint96);
                             .map(INetworkManagerCalls::NETWORK)
                     }
                     NETWORK
+                },
+                {
+                    fn staticDelegateCall(
+                        data: &[u8],
+                    ) -> alloy_sol_types::Result<INetworkManagerCalls> {
+                        <staticDelegateCallCall as alloy_sol_types::SolCall>::abi_decode_raw(
+                                data,
+                            )
+                            .map(INetworkManagerCalls::staticDelegateCall)
+                    }
+                    staticDelegateCall
                 },
                 {
                     fn SUBNETWORK_IDENTIFIER(
@@ -889,6 +1092,17 @@ function SUBNETWORK_IDENTIFIER() external view returns (uint96);
                     NETWORK
                 },
                 {
+                    fn staticDelegateCall(
+                        data: &[u8],
+                    ) -> alloy_sol_types::Result<INetworkManagerCalls> {
+                        <staticDelegateCallCall as alloy_sol_types::SolCall>::abi_decode_raw_validate(
+                                data,
+                            )
+                            .map(INetworkManagerCalls::staticDelegateCall)
+                    }
+                    staticDelegateCall
+                },
+                {
                     fn SUBNETWORK_IDENTIFIER(
                         data: &[u8],
                     ) -> alloy_sol_types::Result<INetworkManagerCalls> {
@@ -924,6 +1138,11 @@ function SUBNETWORK_IDENTIFIER() external view returns (uint96);
                         inner,
                     )
                 }
+                Self::staticDelegateCall(inner) => {
+                    <staticDelegateCallCall as alloy_sol_types::SolCall>::abi_encoded_size(
+                        inner,
+                    )
+                }
             }
         }
         #[inline]
@@ -940,6 +1159,12 @@ function SUBNETWORK_IDENTIFIER() external view returns (uint96);
                 }
                 Self::SUBNETWORK_IDENTIFIER(inner) => {
                     <SUBNETWORK_IDENTIFIERCall as alloy_sol_types::SolCall>::abi_encode_raw(
+                        inner,
+                        out,
+                    )
+                }
+                Self::staticDelegateCall(inner) => {
+                    <staticDelegateCallCall as alloy_sol_types::SolCall>::abi_encode_raw(
                         inner,
                         out,
                     )
@@ -1314,6 +1539,19 @@ See the [wrapper's documentation](`INetworkManagerInstance`) for more details.*/
             &self,
         ) -> alloy_contract::SolCallBuilder<&P, SUBNETWORK_IDENTIFIERCall, N> {
             self.call_builder(&SUBNETWORK_IDENTIFIERCall)
+        }
+        ///Creates a new call builder for the [`staticDelegateCall`] function.
+        pub fn staticDelegateCall(
+            &self,
+            target: alloy::sol_types::private::Address,
+            data: alloy::sol_types::private::Bytes,
+        ) -> alloy_contract::SolCallBuilder<&P, staticDelegateCallCall, N> {
+            self.call_builder(
+                &staticDelegateCallCall {
+                    target,
+                    data,
+                },
+            )
         }
     }
     /// Event filters.

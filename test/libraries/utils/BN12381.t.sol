@@ -33,10 +33,10 @@ contract BLS12381UtilsTest is Test {
 
     function test_IsInSubgroup_RevertsForTorsionPoint() public {
         BLS12381.G1Point memory torsion = BLS12381.G1Point({
-            x_a: bytes32(0),
-            x_b: bytes32(uint256(4)),
-            y_a: bytes32(uint256(0x000000000000000000000000000000000a989badd40d6212b33cffc3f3763e9b)),
-            y_b: bytes32(uint256(0xc760f988c9926b26da9dd85e928483446346b8ed00e1de5d5ea93e354abe706c))
+            x_a: 0,
+            x_b: 4,
+            y_a: 0x000000000000000000000000000000000a989badd40d6212b33cffc3f3763e9b,
+            y_b: 0xc760f988c9926b26da9dd85e928483446346b8ed00e1de5d5ea93e354abe706c
         });
 
         vm.expectRevert(BLS12381.G1MSMFailed.selector);
@@ -83,7 +83,7 @@ contract BLS12381UtilsTest is Test {
 
     function test_IsOnCurve_ReturnsFalseForTweakedPoint() public {
         BLS12381.G1Point memory tweaked = BLS12381.generatorG1();
-        tweaked.y_a = bytes32(uint256(tweaked.y_a) + 1);
+        tweaked.y_a += 1;
         assertFalse(BLS12381.isOnCurve(tweaked));
     }
 

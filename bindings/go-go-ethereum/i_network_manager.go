@@ -31,7 +31,7 @@ var (
 
 // INetworkManagerMetaData contains all meta data concerning the INetworkManager contract.
 var INetworkManagerMetaData = &bind.MetaData{
-	ABI: "[{\"type\":\"function\",\"name\":\"NETWORK\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"SUBNETWORK\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"SUBNETWORK_IDENTIFIER\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint96\",\"internalType\":\"uint96\"}],\"stateMutability\":\"view\"},{\"type\":\"event\",\"name\":\"InitSubnetwork\",\"inputs\":[{\"name\":\"network\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"},{\"name\":\"subnetworkId\",\"type\":\"uint96\",\"indexed\":false,\"internalType\":\"uint96\"}],\"anonymous\":false},{\"type\":\"error\",\"name\":\"NetworkManager_InvalidNetwork\",\"inputs\":[]}]",
+	ABI: "[{\"type\":\"function\",\"name\":\"NETWORK\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"SUBNETWORK\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"SUBNETWORK_IDENTIFIER\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint96\",\"internalType\":\"uint96\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"staticDelegateCall\",\"inputs\":[{\"name\":\"target\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"event\",\"name\":\"InitSubnetwork\",\"inputs\":[{\"name\":\"network\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"},{\"name\":\"subnetworkId\",\"type\":\"uint96\",\"indexed\":false,\"internalType\":\"uint96\"}],\"anonymous\":false},{\"type\":\"error\",\"name\":\"NetworkManager_InvalidNetwork\",\"inputs\":[]}]",
 }
 
 // INetworkManagerABI is the input ABI used to generate the binding from.
@@ -271,6 +271,27 @@ func (_INetworkManager *INetworkManagerSession) SUBNETWORKIDENTIFIER() (*big.Int
 // Solidity: function SUBNETWORK_IDENTIFIER() view returns(uint96)
 func (_INetworkManager *INetworkManagerCallerSession) SUBNETWORKIDENTIFIER() (*big.Int, error) {
 	return _INetworkManager.Contract.SUBNETWORKIDENTIFIER(&_INetworkManager.CallOpts)
+}
+
+// StaticDelegateCall is a paid mutator transaction binding the contract method 0x9f86fd85.
+//
+// Solidity: function staticDelegateCall(address target, bytes data) returns()
+func (_INetworkManager *INetworkManagerTransactor) StaticDelegateCall(opts *bind.TransactOpts, target common.Address, data []byte) (*types.Transaction, error) {
+	return _INetworkManager.contract.Transact(opts, "staticDelegateCall", target, data)
+}
+
+// StaticDelegateCall is a paid mutator transaction binding the contract method 0x9f86fd85.
+//
+// Solidity: function staticDelegateCall(address target, bytes data) returns()
+func (_INetworkManager *INetworkManagerSession) StaticDelegateCall(target common.Address, data []byte) (*types.Transaction, error) {
+	return _INetworkManager.Contract.StaticDelegateCall(&_INetworkManager.TransactOpts, target, data)
+}
+
+// StaticDelegateCall is a paid mutator transaction binding the contract method 0x9f86fd85.
+//
+// Solidity: function staticDelegateCall(address target, bytes data) returns()
+func (_INetworkManager *INetworkManagerTransactorSession) StaticDelegateCall(target common.Address, data []byte) (*types.Transaction, error) {
+	return _INetworkManager.Contract.StaticDelegateCall(&_INetworkManager.TransactOpts, target, data)
 }
 
 // INetworkManagerInitSubnetworkIterator is returned from FilterInitSubnetwork and is used to iterate over the raw logs and unpacked data for InitSubnetwork events raised by the INetworkManager contract.

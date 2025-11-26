@@ -57,6 +57,39 @@ namespace Symbiotic.Relay.IValSetDriver.abi
             return ContractHandler.QueryAsync<MaxQuorumThresholdFunction, BigInteger>(null, blockParameter);
         }
 
+        public Task<string> NetworkQueryAsync(NetworkFunction networkFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<NetworkFunction, string>(networkFunction, blockParameter);
+        }
+
+        
+        public virtual Task<string> NetworkQueryAsync(BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<NetworkFunction, string>(null, blockParameter);
+        }
+
+        public Task<byte[]> SubnetworkQueryAsync(SubnetworkFunction subnetworkFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<SubnetworkFunction, byte[]>(subnetworkFunction, blockParameter);
+        }
+
+        
+        public virtual Task<byte[]> SubnetworkQueryAsync(BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<SubnetworkFunction, byte[]>(null, blockParameter);
+        }
+
+        public Task<BigInteger> SubnetworkIdentifierQueryAsync(SubnetworkIdentifierFunction subnetworkIdentifierFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<SubnetworkIdentifierFunction, BigInteger>(subnetworkIdentifierFunction, blockParameter);
+        }
+
+        
+        public virtual Task<BigInteger> SubnetworkIdentifierQueryAsync(BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<SubnetworkIdentifierFunction, BigInteger>(null, blockParameter);
+        }
+
         public virtual Task<string> AddQuorumThresholdRequestAsync(AddQuorumThresholdFunction addQuorumThresholdFunction)
         {
              return ContractHandler.SendRequestAsync(addQuorumThresholdFunction);
@@ -183,6 +216,81 @@ namespace Symbiotic.Relay.IValSetDriver.abi
             return ContractHandler.QueryDeserializingToObjectAsync<GetConfigAtFunction, GetConfigAtOutputDTO>(getConfigAtFunction, blockParameter);
         }
 
+        public Task<ulong> GetCurrentEpochQueryAsync(GetCurrentEpochFunction getCurrentEpochFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<GetCurrentEpochFunction, ulong>(getCurrentEpochFunction, blockParameter);
+        }
+
+        
+        public virtual Task<ulong> GetCurrentEpochQueryAsync(BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<GetCurrentEpochFunction, ulong>(null, blockParameter);
+        }
+
+        public Task<ulong> GetCurrentEpochDurationQueryAsync(GetCurrentEpochDurationFunction getCurrentEpochDurationFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<GetCurrentEpochDurationFunction, ulong>(getCurrentEpochDurationFunction, blockParameter);
+        }
+
+        
+        public virtual Task<ulong> GetCurrentEpochDurationQueryAsync(BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<GetCurrentEpochDurationFunction, ulong>(null, blockParameter);
+        }
+
+        public Task<ulong> GetCurrentEpochStartQueryAsync(GetCurrentEpochStartFunction getCurrentEpochStartFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<GetCurrentEpochStartFunction, ulong>(getCurrentEpochStartFunction, blockParameter);
+        }
+
+        
+        public virtual Task<ulong> GetCurrentEpochStartQueryAsync(BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<GetCurrentEpochStartFunction, ulong>(null, blockParameter);
+        }
+
+        public Task<ulong> GetEpochDurationQueryAsync(GetEpochDurationFunction getEpochDurationFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<GetEpochDurationFunction, ulong>(getEpochDurationFunction, blockParameter);
+        }
+
+        
+        public virtual Task<ulong> GetEpochDurationQueryAsync(ulong epoch, BlockParameter blockParameter = null)
+        {
+            var getEpochDurationFunction = new GetEpochDurationFunction();
+                getEpochDurationFunction.Epoch = epoch;
+            
+            return ContractHandler.QueryAsync<GetEpochDurationFunction, ulong>(getEpochDurationFunction, blockParameter);
+        }
+
+        public Task<ulong> GetEpochIndexQueryAsync(GetEpochIndexFunction getEpochIndexFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<GetEpochIndexFunction, ulong>(getEpochIndexFunction, blockParameter);
+        }
+
+        
+        public virtual Task<ulong> GetEpochIndexQueryAsync(ulong timestamp, BlockParameter blockParameter = null)
+        {
+            var getEpochIndexFunction = new GetEpochIndexFunction();
+                getEpochIndexFunction.Timestamp = timestamp;
+            
+            return ContractHandler.QueryAsync<GetEpochIndexFunction, ulong>(getEpochIndexFunction, blockParameter);
+        }
+
+        public Task<ulong> GetEpochStartQueryAsync(GetEpochStartFunction getEpochStartFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<GetEpochStartFunction, ulong>(getEpochStartFunction, blockParameter);
+        }
+
+        
+        public virtual Task<ulong> GetEpochStartQueryAsync(ulong epoch, BlockParameter blockParameter = null)
+        {
+            var getEpochStartFunction = new GetEpochStartFunction();
+                getEpochStartFunction.Epoch = epoch;
+            
+            return ContractHandler.QueryAsync<GetEpochStartFunction, ulong>(getEpochStartFunction, blockParameter);
+        }
+
         public virtual Task<GetKeysProviderOutputDTO> GetKeysProviderQueryAsync(GetKeysProviderFunction getKeysProviderFunction, BlockParameter blockParameter = null)
         {
             return ContractHandler.QueryDeserializingToObjectAsync<GetKeysProviderFunction, GetKeysProviderOutputDTO>(getKeysProviderFunction, blockParameter);
@@ -279,6 +387,39 @@ namespace Symbiotic.Relay.IValSetDriver.abi
                 getMinInclusionVotingPowerAtFunction.Timestamp = timestamp;
             
             return ContractHandler.QueryAsync<GetMinInclusionVotingPowerAtFunction, BigInteger>(getMinInclusionVotingPowerAtFunction, blockParameter);
+        }
+
+        public Task<ulong> GetNextEpochQueryAsync(GetNextEpochFunction getNextEpochFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<GetNextEpochFunction, ulong>(getNextEpochFunction, blockParameter);
+        }
+
+        
+        public virtual Task<ulong> GetNextEpochQueryAsync(BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<GetNextEpochFunction, ulong>(null, blockParameter);
+        }
+
+        public Task<ulong> GetNextEpochDurationQueryAsync(GetNextEpochDurationFunction getNextEpochDurationFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<GetNextEpochDurationFunction, ulong>(getNextEpochDurationFunction, blockParameter);
+        }
+
+        
+        public virtual Task<ulong> GetNextEpochDurationQueryAsync(BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<GetNextEpochDurationFunction, ulong>(null, blockParameter);
+        }
+
+        public Task<ulong> GetNextEpochStartQueryAsync(GetNextEpochStartFunction getNextEpochStartFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<GetNextEpochStartFunction, ulong>(getNextEpochStartFunction, blockParameter);
+        }
+
+        
+        public virtual Task<ulong> GetNextEpochStartQueryAsync(BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<GetNextEpochStartFunction, ulong>(null, blockParameter);
         }
 
         public Task<BigInteger> GetNumAggregatorsQueryAsync(GetNumAggregatorsFunction getNumAggregatorsFunction, BlockParameter blockParameter = null)
@@ -666,6 +807,32 @@ namespace Symbiotic.Relay.IValSetDriver.abi
              return ContractHandler.SendRequestAndWaitForReceiptAsync(setCommitterSlotDurationFunction, cancellationToken);
         }
 
+        public virtual Task<string> SetEpochDurationRequestAsync(SetEpochDurationFunction setEpochDurationFunction)
+        {
+             return ContractHandler.SendRequestAsync(setEpochDurationFunction);
+        }
+
+        public virtual Task<TransactionReceipt> SetEpochDurationRequestAndWaitForReceiptAsync(SetEpochDurationFunction setEpochDurationFunction, CancellationTokenSource cancellationToken = null)
+        {
+             return ContractHandler.SendRequestAndWaitForReceiptAsync(setEpochDurationFunction, cancellationToken);
+        }
+
+        public virtual Task<string> SetEpochDurationRequestAsync(ulong epochDuration)
+        {
+            var setEpochDurationFunction = new SetEpochDurationFunction();
+                setEpochDurationFunction.EpochDuration = epochDuration;
+            
+             return ContractHandler.SendRequestAsync(setEpochDurationFunction);
+        }
+
+        public virtual Task<TransactionReceipt> SetEpochDurationRequestAndWaitForReceiptAsync(ulong epochDuration, CancellationTokenSource cancellationToken = null)
+        {
+            var setEpochDurationFunction = new SetEpochDurationFunction();
+                setEpochDurationFunction.EpochDuration = epochDuration;
+            
+             return ContractHandler.SendRequestAndWaitForReceiptAsync(setEpochDurationFunction, cancellationToken);
+        }
+
         public virtual Task<string> SetKeysProviderRequestAsync(SetKeysProviderFunction setKeysProviderFunction)
         {
              return ContractHandler.SendRequestAsync(setKeysProviderFunction);
@@ -900,11 +1067,42 @@ namespace Symbiotic.Relay.IValSetDriver.abi
              return ContractHandler.SendRequestAndWaitForReceiptAsync(setVerificationTypeFunction, cancellationToken);
         }
 
+        public virtual Task<string> StaticDelegateCallRequestAsync(StaticDelegateCallFunction staticDelegateCallFunction)
+        {
+             return ContractHandler.SendRequestAsync(staticDelegateCallFunction);
+        }
+
+        public virtual Task<TransactionReceipt> StaticDelegateCallRequestAndWaitForReceiptAsync(StaticDelegateCallFunction staticDelegateCallFunction, CancellationTokenSource cancellationToken = null)
+        {
+             return ContractHandler.SendRequestAndWaitForReceiptAsync(staticDelegateCallFunction, cancellationToken);
+        }
+
+        public virtual Task<string> StaticDelegateCallRequestAsync(string target, byte[] data)
+        {
+            var staticDelegateCallFunction = new StaticDelegateCallFunction();
+                staticDelegateCallFunction.Target = target;
+                staticDelegateCallFunction.Data = data;
+            
+             return ContractHandler.SendRequestAsync(staticDelegateCallFunction);
+        }
+
+        public virtual Task<TransactionReceipt> StaticDelegateCallRequestAndWaitForReceiptAsync(string target, byte[] data, CancellationTokenSource cancellationToken = null)
+        {
+            var staticDelegateCallFunction = new StaticDelegateCallFunction();
+                staticDelegateCallFunction.Target = target;
+                staticDelegateCallFunction.Data = data;
+            
+             return ContractHandler.SendRequestAndWaitForReceiptAsync(staticDelegateCallFunction, cancellationToken);
+        }
+
         public override List<Type> GetAllFunctionTypes()
         {
             return new List<Type>
             {
                 typeof(MaxQuorumThresholdFunction),
+                typeof(NetworkFunction),
+                typeof(SubnetworkFunction),
+                typeof(SubnetworkIdentifierFunction),
                 typeof(AddQuorumThresholdFunction),
                 typeof(AddSettlementFunction),
                 typeof(AddVotingPowerProviderFunction),
@@ -912,6 +1110,12 @@ namespace Symbiotic.Relay.IValSetDriver.abi
                 typeof(GetCommitterSlotDurationAtFunction),
                 typeof(GetConfigFunction),
                 typeof(GetConfigAtFunction),
+                typeof(GetCurrentEpochFunction),
+                typeof(GetCurrentEpochDurationFunction),
+                typeof(GetCurrentEpochStartFunction),
+                typeof(GetEpochDurationFunction),
+                typeof(GetEpochIndexFunction),
+                typeof(GetEpochStartFunction),
                 typeof(GetKeysProviderFunction),
                 typeof(GetKeysProviderAtFunction),
                 typeof(GetMaxValidatorsCountFunction),
@@ -920,6 +1124,9 @@ namespace Symbiotic.Relay.IValSetDriver.abi
                 typeof(GetMaxVotingPowerAtFunction),
                 typeof(GetMinInclusionVotingPowerFunction),
                 typeof(GetMinInclusionVotingPowerAtFunction),
+                typeof(GetNextEpochFunction),
+                typeof(GetNextEpochDurationFunction),
+                typeof(GetNextEpochStartFunction),
                 typeof(GetNumAggregatorsFunction),
                 typeof(GetNumAggregatorsAtFunction),
                 typeof(GetNumCommittersFunction),
@@ -946,6 +1153,7 @@ namespace Symbiotic.Relay.IValSetDriver.abi
                 typeof(RemoveSettlementFunction),
                 typeof(RemoveVotingPowerProviderFunction),
                 typeof(SetCommitterSlotDurationFunction),
+                typeof(SetEpochDurationFunction),
                 typeof(SetKeysProviderFunction),
                 typeof(SetMaxValidatorsCountFunction),
                 typeof(SetMaxVotingPowerFunction),
@@ -954,7 +1162,8 @@ namespace Symbiotic.Relay.IValSetDriver.abi
                 typeof(SetNumCommittersFunction),
                 typeof(SetRequiredHeaderKeyTagFunction),
                 typeof(SetRequiredKeyTagsFunction),
-                typeof(SetVerificationTypeFunction)
+                typeof(SetVerificationTypeFunction),
+                typeof(StaticDelegateCallFunction)
             };
         }
 
@@ -965,10 +1174,13 @@ namespace Symbiotic.Relay.IValSetDriver.abi
                 typeof(AddQuorumThresholdEventDTO),
                 typeof(AddSettlementEventDTO),
                 typeof(AddVotingPowerProviderEventDTO),
+                typeof(InitEpochDurationEventDTO),
+                typeof(InitSubnetworkEventDTO),
                 typeof(RemoveQuorumThresholdEventDTO),
                 typeof(RemoveSettlementEventDTO),
                 typeof(RemoveVotingPowerProviderEventDTO),
                 typeof(SetCommitterSlotDurationEventDTO),
+                typeof(SetEpochDurationEventDTO),
                 typeof(SetKeysProviderEventDTO),
                 typeof(SetMaxValidatorsCountEventDTO),
                 typeof(SetMaxVotingPowerEventDTO),
@@ -985,6 +1197,10 @@ namespace Symbiotic.Relay.IValSetDriver.abi
         {
             return new List<Type>
             {
+                typeof(EpochmanagerInvalidepochdurationError),
+                typeof(EpochmanagerInvalidepochdurationtimestampError),
+                typeof(EpochmanagerToooldtimestampError),
+                typeof(NetworkmanagerInvalidnetworkError),
                 typeof(ValsetdriverChainalreadyaddedError),
                 typeof(ValsetdriverInvalidcrosschainaddressError),
                 typeof(ValsetdriverInvalidmaxvalidatorscountError),

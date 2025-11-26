@@ -27,6 +27,14 @@ namespace Symbiotic.Relay.IKeyRegistry.abi.ContractDefinition
 
     }
 
+    public partial class Eip712DomainFunction : Eip712DomainFunctionBase { }
+
+    [Function("eip712Domain", typeof(Eip712DomainOutputDTO))]
+    public class Eip712DomainFunctionBase : FunctionMessage
+    {
+
+    }
+
     public partial class GetKeyFunction : GetKeyFunctionBase { }
 
     [Function("getKey", "bytes")]
@@ -122,6 +130,24 @@ namespace Symbiotic.Relay.IKeyRegistry.abi.ContractDefinition
         public virtual byte[] Key { get; set; }
     }
 
+    public partial class HashTypedDataV4Function : HashTypedDataV4FunctionBase { }
+
+    [Function("hashTypedDataV4", "bytes32")]
+    public class HashTypedDataV4FunctionBase : FunctionMessage
+    {
+        [Parameter("bytes32", "structHash", 1)]
+        public virtual byte[] StructHash { get; set; }
+    }
+
+    public partial class HashTypedDataV4CrossChainFunction : HashTypedDataV4CrossChainFunctionBase { }
+
+    [Function("hashTypedDataV4CrossChain", "bytes32")]
+    public class HashTypedDataV4CrossChainFunctionBase : FunctionMessage
+    {
+        [Parameter("bytes32", "structHash", 1)]
+        public virtual byte[] StructHash { get; set; }
+    }
+
     public partial class SetKeyFunction : SetKeyFunctionBase { }
 
     [Function("setKey")]
@@ -135,6 +161,24 @@ namespace Symbiotic.Relay.IKeyRegistry.abi.ContractDefinition
         public virtual byte[] Signature { get; set; }
         [Parameter("bytes", "extraData", 4)]
         public virtual byte[] ExtraData { get; set; }
+    }
+
+    public partial class EIP712DomainChangedEventDTO : EIP712DomainChangedEventDTOBase { }
+
+    [Event("EIP712DomainChanged")]
+    public class EIP712DomainChangedEventDTOBase : IEventDTO
+    {
+    }
+
+    public partial class InitEIP712EventDTO : InitEIP712EventDTOBase { }
+
+    [Event("InitEIP712")]
+    public class InitEIP712EventDTOBase : IEventDTO
+    {
+        [Parameter("string", "name", 1, false )]
+        public virtual string Name { get; set; }
+        [Parameter("string", "version", 2, false )]
+        public virtual string Version { get; set; }
     }
 
     public partial class SetKeyEventDTO : SetKeyEventDTOBase { }
@@ -168,6 +212,27 @@ namespace Symbiotic.Relay.IKeyRegistry.abi.ContractDefinition
     [Error("KeyRegistry_InvalidKeyType")]
     public class KeyregistryInvalidkeytypeErrorBase : IErrorDTO
     {
+    }
+
+    public partial class Eip712DomainOutputDTO : Eip712DomainOutputDTOBase { }
+
+    [FunctionOutput]
+    public class Eip712DomainOutputDTOBase : IFunctionOutputDTO 
+    {
+        [Parameter("bytes1", "fields", 1)]
+        public virtual byte[] Fields { get; set; }
+        [Parameter("string", "name", 2)]
+        public virtual string Name { get; set; }
+        [Parameter("string", "version", 3)]
+        public virtual string Version { get; set; }
+        [Parameter("uint256", "chainId", 4)]
+        public virtual BigInteger ChainId { get; set; }
+        [Parameter("address", "verifyingContract", 5)]
+        public virtual string VerifyingContract { get; set; }
+        [Parameter("bytes32", "salt", 6)]
+        public virtual byte[] Salt { get; set; }
+        [Parameter("uint256[]", "extensions", 7)]
+        public virtual List<BigInteger> Extensions { get; set; }
     }
 
     public partial class GetKeyOutputDTO : GetKeyOutputDTOBase { }
@@ -258,6 +323,24 @@ namespace Symbiotic.Relay.IKeyRegistry.abi.ContractDefinition
     {
         [Parameter("address", "", 1)]
         public virtual string ReturnValue1 { get; set; }
+    }
+
+    public partial class HashTypedDataV4OutputDTO : HashTypedDataV4OutputDTOBase { }
+
+    [FunctionOutput]
+    public class HashTypedDataV4OutputDTOBase : IFunctionOutputDTO 
+    {
+        [Parameter("bytes32", "", 1)]
+        public virtual byte[] ReturnValue1 { get; set; }
+    }
+
+    public partial class HashTypedDataV4CrossChainOutputDTO : HashTypedDataV4CrossChainOutputDTOBase { }
+
+    [FunctionOutput]
+    public class HashTypedDataV4CrossChainOutputDTOBase : IFunctionOutputDTO 
+    {
+        [Parameter("bytes32", "", 1)]
+        public virtual byte[] ReturnValue1 { get; set; }
     }
 
 

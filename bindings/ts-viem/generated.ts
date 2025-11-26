@@ -59,6 +59,20 @@ export const aggregatorV3InterfaceAbi = [
 export const iBaseRewardsAbi = [
   {
     type: "function",
+    inputs: [],
+    name: "OPERATOR_REGISTRY",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "VAULT_FACTORY",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [
       { name: "operatorRewards", internalType: "address", type: "address" },
       { name: "token", internalType: "address", type: "address" },
@@ -83,6 +97,115 @@ export const iBaseRewardsAbi = [
   },
   {
     type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "getOperatorStakes",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorStakesAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "getOperatorVaults",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorVaultsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "extraData", internalType: "bytes", type: "bytes" },
+    ],
+    name: "getOperatorVotingPowers",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "extraData", internalType: "bytes", type: "bytes" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorVotingPowersAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getOperators",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getOperatorsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [],
     name: "getRewarder",
     outputs: [{ name: "", internalType: "address", type: "address" }],
@@ -90,8 +213,224 @@ export const iBaseRewardsAbi = [
   },
   {
     type: "function",
+    inputs: [],
+    name: "getSharedVaults",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getSharedVaultsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getSlashingData",
+    outputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool" },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+      { name: "hint", internalType: "bytes", type: "bytes" },
+    ],
+    name: "getSlashingDataAt",
+    outputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool" },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getTokens",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getTokensAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "extraData", internalType: "bytes[]", type: "bytes[]" }],
+    name: "getVotingPowers",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.OperatorVotingPower[]",
+        type: "tuple[]",
+        components: [
+          { name: "operator", internalType: "address", type: "address" },
+          {
+            name: "vaults",
+            internalType: "struct IVotingPowerProvider.VaultValue[]",
+            type: "tuple[]",
+            components: [
+              { name: "vault", internalType: "address", type: "address" },
+              { name: "value", internalType: "uint256", type: "uint256" },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "extraData", internalType: "bytes[]", type: "bytes[]" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getVotingPowersAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.OperatorVotingPower[]",
+        type: "tuple[]",
+        components: [
+          { name: "operator", internalType: "address", type: "address" },
+          {
+            name: "vaults",
+            internalType: "struct IVotingPowerProvider.VaultValue[]",
+            type: "tuple[]",
+            components: [
+              { name: "vault", internalType: "address", type: "address" },
+              { name: "value", internalType: "uint256", type: "uint256" },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  { type: "function", inputs: [], name: "invalidateOldSignatures", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "isOperatorRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "vault", internalType: "address", type: "address" }],
+    name: "isOperatorVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "vault", internalType: "address", type: "address" },
+    ],
+    name: "isOperatorVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "vault", internalType: "address", type: "address" }],
+    name: "isSharedVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isSharedVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "isTokenRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "token", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isTokenRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  { type: "function", inputs: [], name: "registerOperator", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "signature", internalType: "bytes", type: "bytes" },
+    ],
+    name: "registerOperatorWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [{ name: "rewarder", internalType: "address", type: "address" }],
     name: "setRewarder",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  { type: "function", inputs: [], name: "unregisterOperator", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "signature", internalType: "bytes", type: "bytes" },
+    ],
+    name: "unregisterOperatorWithSignature",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -120,10 +459,87 @@ export const iBaseRewardsAbi = [
   {
     type: "event",
     anonymous: false,
+    inputs: [{ name: "operator", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterOperator",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "operator", internalType: "address", type: "address", indexed: true },
+      { name: "vault", internalType: "address", type: "address", indexed: true },
+    ],
+    name: "RegisterOperatorVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "vault", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterSharedVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "token", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterToken",
+  },
+  {
+    type: "event",
+    anonymous: false,
     inputs: [{ name: "rewarder", internalType: "address", type: "address", indexed: false }],
     name: "SetRewarder",
   },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool", indexed: false },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48", indexed: false },
+    ],
+    name: "SetSlashingData",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "operator", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterOperator",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "operator", internalType: "address", type: "address", indexed: true },
+      { name: "vault", internalType: "address", type: "address", indexed: true },
+    ],
+    name: "UnregisterOperatorVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "vault", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterSharedVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "token", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterToken",
+  },
   { type: "error", inputs: [], name: "BaseRewards_NotRewarder" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidOperator" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidOperatorVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidSharedVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidSignature" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidToken" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorAlreadyRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorVaultAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorVaultNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_SharedVaultAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_SharedVaultNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_TokenAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_TokenNotRegistered" },
 ] as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -131,6 +547,20 @@ export const iBaseRewardsAbi = [
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const iBaseSlashingAbi = [
+  {
+    type: "function",
+    inputs: [],
+    name: "OPERATOR_REGISTRY",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "VAULT_FACTORY",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
   {
     type: "function",
     inputs: [
@@ -147,10 +577,324 @@ export const iBaseSlashingAbi = [
   },
   {
     type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "getOperatorStakes",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorStakesAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "getOperatorVaults",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorVaultsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "extraData", internalType: "bytes", type: "bytes" },
+    ],
+    name: "getOperatorVotingPowers",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "extraData", internalType: "bytes", type: "bytes" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorVotingPowersAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getOperators",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getOperatorsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getSharedVaults",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getSharedVaultsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [],
     name: "getSlasher",
     outputs: [{ name: "", internalType: "address", type: "address" }],
     stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getSlashingData",
+    outputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool" },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+      { name: "hint", internalType: "bytes", type: "bytes" },
+    ],
+    name: "getSlashingDataAt",
+    outputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool" },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getTokens",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getTokensAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "extraData", internalType: "bytes[]", type: "bytes[]" }],
+    name: "getVotingPowers",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.OperatorVotingPower[]",
+        type: "tuple[]",
+        components: [
+          { name: "operator", internalType: "address", type: "address" },
+          {
+            name: "vaults",
+            internalType: "struct IVotingPowerProvider.VaultValue[]",
+            type: "tuple[]",
+            components: [
+              { name: "vault", internalType: "address", type: "address" },
+              { name: "value", internalType: "uint256", type: "uint256" },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "extraData", internalType: "bytes[]", type: "bytes[]" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getVotingPowersAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.OperatorVotingPower[]",
+        type: "tuple[]",
+        components: [
+          { name: "operator", internalType: "address", type: "address" },
+          {
+            name: "vaults",
+            internalType: "struct IVotingPowerProvider.VaultValue[]",
+            type: "tuple[]",
+            components: [
+              { name: "vault", internalType: "address", type: "address" },
+              { name: "value", internalType: "uint256", type: "uint256" },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  { type: "function", inputs: [], name: "invalidateOldSignatures", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "isOperatorRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "vault", internalType: "address", type: "address" }],
+    name: "isOperatorVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "vault", internalType: "address", type: "address" },
+    ],
+    name: "isOperatorVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "vault", internalType: "address", type: "address" }],
+    name: "isSharedVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isSharedVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "isTokenRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "token", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isTokenRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  { type: "function", inputs: [], name: "registerOperator", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "signature", internalType: "bytes", type: "bytes" },
+    ],
+    name: "registerOperatorWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
   },
   {
     type: "function",
@@ -173,6 +917,17 @@ export const iBaseSlashingAbi = [
       { name: "success", internalType: "bool", type: "bool" },
       { name: "response", internalType: "bytes", type: "bytes" },
     ],
+    stateMutability: "nonpayable",
+  },
+  { type: "function", inputs: [], name: "unregisterOperator", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "signature", internalType: "bytes", type: "bytes" },
+    ],
+    name: "unregisterOperatorWithSignature",
+    outputs: [],
     stateMutability: "nonpayable",
   },
   {
@@ -200,8 +955,71 @@ export const iBaseSlashingAbi = [
   {
     type: "event",
     anonymous: false,
+    inputs: [{ name: "operator", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterOperator",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "operator", internalType: "address", type: "address", indexed: true },
+      { name: "vault", internalType: "address", type: "address", indexed: true },
+    ],
+    name: "RegisterOperatorVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "vault", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterSharedVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "token", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterToken",
+  },
+  {
+    type: "event",
+    anonymous: false,
     inputs: [{ name: "slasher", internalType: "address", type: "address", indexed: false }],
     name: "SetSlasher",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool", indexed: false },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48", indexed: false },
+    ],
+    name: "SetSlashingData",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "operator", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterOperator",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "operator", internalType: "address", type: "address", indexed: true },
+      { name: "vault", internalType: "address", type: "address", indexed: true },
+    ],
+    name: "UnregisterOperatorVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "vault", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterSharedVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "token", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterToken",
   },
   {
     type: "event",
@@ -219,6 +1037,20 @@ export const iBaseSlashingAbi = [
   { type: "error", inputs: [], name: "BaseSlashing_NotSlasher" },
   { type: "error", inputs: [], name: "BaseSlashing_NotVetoSlasher" },
   { type: "error", inputs: [], name: "BaseSlashing_UnknownSlasherType" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidOperator" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidOperatorVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidSharedVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidSignature" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidToken" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorAlreadyRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorVaultAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorVaultNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_SharedVaultAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_SharedVaultNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_TokenAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_TokenNotRegistered" },
 ] as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -327,6 +1159,21 @@ export const iEqualStakeVpCalcAbi = [] as const;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const iKeyRegistryAbi = [
+  {
+    type: "function",
+    inputs: [],
+    name: "eip712Domain",
+    outputs: [
+      { name: "fields", internalType: "bytes1", type: "bytes1" },
+      { name: "name", internalType: "string", type: "string" },
+      { name: "version", internalType: "string", type: "string" },
+      { name: "chainId", internalType: "uint256", type: "uint256" },
+      { name: "verifyingContract", internalType: "address", type: "address" },
+      { name: "salt", internalType: "bytes32", type: "bytes32" },
+      { name: "extensions", internalType: "uint256[]", type: "uint256[]" },
+    ],
+    stateMutability: "view",
+  },
   {
     type: "function",
     inputs: [
@@ -465,6 +1312,20 @@ export const iKeyRegistryAbi = [
   },
   {
     type: "function",
+    inputs: [{ name: "structHash", internalType: "bytes32", type: "bytes32" }],
+    name: "hashTypedDataV4",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "structHash", internalType: "bytes32", type: "bytes32" }],
+    name: "hashTypedDataV4CrossChain",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [
       { name: "tag", internalType: "uint8", type: "uint8" },
       { name: "key", internalType: "bytes", type: "bytes" },
@@ -474,6 +1335,16 @@ export const iKeyRegistryAbi = [
     name: "setKey",
     outputs: [],
     stateMutability: "nonpayable",
+  },
+  { type: "event", anonymous: false, inputs: [], name: "EIP712DomainChanged" },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "name", internalType: "string", type: "string", indexed: false },
+      { name: "version", internalType: "string", type: "string", indexed: false },
+    ],
+    name: "InitEIP712",
   },
   {
     type: "event",
@@ -498,8 +1369,347 @@ export const iKeyRegistryAbi = [
 export const iMultiTokenAbi = [
   {
     type: "function",
+    inputs: [],
+    name: "OPERATOR_REGISTRY",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "VAULT_FACTORY",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "getOperatorStakes",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorStakesAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "getOperatorVaults",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorVaultsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "extraData", internalType: "bytes", type: "bytes" },
+    ],
+    name: "getOperatorVotingPowers",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "extraData", internalType: "bytes", type: "bytes" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorVotingPowersAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getOperators",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getOperatorsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getSharedVaults",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getSharedVaultsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getSlashingData",
+    outputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool" },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+      { name: "hint", internalType: "bytes", type: "bytes" },
+    ],
+    name: "getSlashingDataAt",
+    outputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool" },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getTokens",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getTokensAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "extraData", internalType: "bytes[]", type: "bytes[]" }],
+    name: "getVotingPowers",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.OperatorVotingPower[]",
+        type: "tuple[]",
+        components: [
+          { name: "operator", internalType: "address", type: "address" },
+          {
+            name: "vaults",
+            internalType: "struct IVotingPowerProvider.VaultValue[]",
+            type: "tuple[]",
+            components: [
+              { name: "vault", internalType: "address", type: "address" },
+              { name: "value", internalType: "uint256", type: "uint256" },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "extraData", internalType: "bytes[]", type: "bytes[]" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getVotingPowersAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.OperatorVotingPower[]",
+        type: "tuple[]",
+        components: [
+          { name: "operator", internalType: "address", type: "address" },
+          {
+            name: "vaults",
+            internalType: "struct IVotingPowerProvider.VaultValue[]",
+            type: "tuple[]",
+            components: [
+              { name: "vault", internalType: "address", type: "address" },
+              { name: "value", internalType: "uint256", type: "uint256" },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  { type: "function", inputs: [], name: "invalidateOldSignatures", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "isOperatorRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "vault", internalType: "address", type: "address" }],
+    name: "isOperatorVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "vault", internalType: "address", type: "address" },
+    ],
+    name: "isOperatorVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "vault", internalType: "address", type: "address" }],
+    name: "isSharedVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isSharedVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "isTokenRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "token", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isTokenRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  { type: "function", inputs: [], name: "registerOperator", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "signature", internalType: "bytes", type: "bytes" },
+    ],
+    name: "registerOperatorWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [{ name: "token", internalType: "address", type: "address" }],
     name: "registerToken",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  { type: "function", inputs: [], name: "unregisterOperator", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "signature", internalType: "bytes", type: "bytes" },
+    ],
+    name: "unregisterOperatorWithSignature",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -510,6 +1720,83 @@ export const iMultiTokenAbi = [
     outputs: [],
     stateMutability: "nonpayable",
   },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "operator", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterOperator",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "operator", internalType: "address", type: "address", indexed: true },
+      { name: "vault", internalType: "address", type: "address", indexed: true },
+    ],
+    name: "RegisterOperatorVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "vault", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterSharedVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "token", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterToken",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool", indexed: false },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48", indexed: false },
+    ],
+    name: "SetSlashingData",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "operator", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterOperator",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "operator", internalType: "address", type: "address", indexed: true },
+      { name: "vault", internalType: "address", type: "address", indexed: true },
+    ],
+    name: "UnregisterOperatorVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "vault", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterSharedVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "token", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterToken",
+  },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidOperator" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidOperatorVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidSharedVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidSignature" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidToken" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorAlreadyRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorVaultAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorVaultNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_SharedVaultAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_SharedVaultNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_TokenAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_TokenNotRegistered" },
 ] as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -539,6 +1826,16 @@ export const iNetworkManagerAbi = [
     stateMutability: "view",
   },
   {
+    type: "function",
+    inputs: [
+      { name: "target", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "staticDelegateCall",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
     type: "event",
     anonymous: false,
     inputs: [
@@ -564,7 +1861,21 @@ export const iOpNetVaultAutoDeployAbi = [
   {
     type: "function",
     inputs: [],
+    name: "OPERATOR_REGISTRY",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "VAULT_CONFIGURATOR",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "VAULT_FACTORY",
     outputs: [{ name: "", internalType: "address", type: "address" }],
     stateMutability: "view",
   },
@@ -597,8 +1908,277 @@ export const iOpNetVaultAutoDeployAbi = [
   },
   {
     type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "getOperatorStakes",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorStakesAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "getOperatorVaults",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorVaultsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "extraData", internalType: "bytes", type: "bytes" },
+    ],
+    name: "getOperatorVotingPowers",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "extraData", internalType: "bytes", type: "bytes" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorVotingPowersAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getOperators",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getOperatorsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getSharedVaults",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getSharedVaultsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getSlashingData",
+    outputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool" },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+      { name: "hint", internalType: "bytes", type: "bytes" },
+    ],
+    name: "getSlashingDataAt",
+    outputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool" },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getTokens",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getTokensAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "extraData", internalType: "bytes[]", type: "bytes[]" }],
+    name: "getVotingPowers",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.OperatorVotingPower[]",
+        type: "tuple[]",
+        components: [
+          { name: "operator", internalType: "address", type: "address" },
+          {
+            name: "vaults",
+            internalType: "struct IVotingPowerProvider.VaultValue[]",
+            type: "tuple[]",
+            components: [
+              { name: "vault", internalType: "address", type: "address" },
+              { name: "value", internalType: "uint256", type: "uint256" },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "extraData", internalType: "bytes[]", type: "bytes[]" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getVotingPowersAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.OperatorVotingPower[]",
+        type: "tuple[]",
+        components: [
+          { name: "operator", internalType: "address", type: "address" },
+          {
+            name: "vaults",
+            internalType: "struct IVotingPowerProvider.VaultValue[]",
+            type: "tuple[]",
+            components: [
+              { name: "vault", internalType: "address", type: "address" },
+              { name: "value", internalType: "uint256", type: "uint256" },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  { type: "function", inputs: [], name: "invalidateOldSignatures", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
     inputs: [],
     name: "isAutoDeployEnabled",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "isOperatorRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "vault", internalType: "address", type: "address" }],
+    name: "isOperatorVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "vault", internalType: "address", type: "address" },
+    ],
+    name: "isOperatorVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorVaultRegisteredAt",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
     stateMutability: "view",
   },
@@ -608,6 +2188,51 @@ export const iOpNetVaultAutoDeployAbi = [
     name: "isSetMaxNetworkLimitHookEnabled",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
     stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "vault", internalType: "address", type: "address" }],
+    name: "isSharedVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isSharedVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "isTokenRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "token", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isTokenRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  { type: "function", inputs: [], name: "registerOperator", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "signature", internalType: "bytes", type: "bytes" },
+    ],
+    name: "registerOperatorWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
   },
   {
     type: "function",
@@ -643,6 +2268,44 @@ export const iOpNetVaultAutoDeployAbi = [
     outputs: [],
     stateMutability: "nonpayable",
   },
+  { type: "function", inputs: [], name: "unregisterOperator", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "signature", internalType: "bytes", type: "bytes" },
+    ],
+    name: "unregisterOperatorWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "operator", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterOperator",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "operator", internalType: "address", type: "address", indexed: true },
+      { name: "vault", internalType: "address", type: "address", indexed: true },
+    ],
+    name: "RegisterOperatorVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "vault", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterSharedVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "token", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterToken",
+  },
   {
     type: "event",
     anonymous: false,
@@ -675,10 +2338,60 @@ export const iOpNetVaultAutoDeployAbi = [
     inputs: [{ name: "status", internalType: "bool", type: "bool", indexed: false }],
     name: "SetSetMaxNetworkLimitHookStatus",
   },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool", indexed: false },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48", indexed: false },
+    ],
+    name: "SetSlashingData",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "operator", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterOperator",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "operator", internalType: "address", type: "address", indexed: true },
+      { name: "vault", internalType: "address", type: "address", indexed: true },
+    ],
+    name: "UnregisterOperatorVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "vault", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterSharedVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "token", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterToken",
+  },
   { type: "error", inputs: [], name: "OpNetVaultAutoDeploy_InvalidBurnerHook" },
   { type: "error", inputs: [], name: "OpNetVaultAutoDeploy_InvalidCollateral" },
   { type: "error", inputs: [], name: "OpNetVaultAutoDeploy_InvalidEpochDuration" },
   { type: "error", inputs: [], name: "OpNetVaultAutoDeploy_InvalidWithSlasher" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidOperator" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidOperatorVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidSharedVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidSignature" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidToken" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorAlreadyRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorVaultAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorVaultNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_SharedVaultAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_SharedVaultNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_TokenAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_TokenNotRegistered" },
 ] as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -686,6 +2399,324 @@ export const iOpNetVaultAutoDeployAbi = [
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const iOperatorVaultsAbi = [
+  {
+    type: "function",
+    inputs: [],
+    name: "OPERATOR_REGISTRY",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "VAULT_FACTORY",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "getOperatorStakes",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorStakesAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "getOperatorVaults",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorVaultsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "extraData", internalType: "bytes", type: "bytes" },
+    ],
+    name: "getOperatorVotingPowers",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "extraData", internalType: "bytes", type: "bytes" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorVotingPowersAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getOperators",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getOperatorsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getSharedVaults",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getSharedVaultsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getSlashingData",
+    outputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool" },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+      { name: "hint", internalType: "bytes", type: "bytes" },
+    ],
+    name: "getSlashingDataAt",
+    outputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool" },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getTokens",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getTokensAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "extraData", internalType: "bytes[]", type: "bytes[]" }],
+    name: "getVotingPowers",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.OperatorVotingPower[]",
+        type: "tuple[]",
+        components: [
+          { name: "operator", internalType: "address", type: "address" },
+          {
+            name: "vaults",
+            internalType: "struct IVotingPowerProvider.VaultValue[]",
+            type: "tuple[]",
+            components: [
+              { name: "vault", internalType: "address", type: "address" },
+              { name: "value", internalType: "uint256", type: "uint256" },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "extraData", internalType: "bytes[]", type: "bytes[]" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getVotingPowersAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.OperatorVotingPower[]",
+        type: "tuple[]",
+        components: [
+          { name: "operator", internalType: "address", type: "address" },
+          {
+            name: "vaults",
+            internalType: "struct IVotingPowerProvider.VaultValue[]",
+            type: "tuple[]",
+            components: [
+              { name: "vault", internalType: "address", type: "address" },
+              { name: "value", internalType: "uint256", type: "uint256" },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  { type: "function", inputs: [], name: "invalidateOldSignatures", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "isOperatorRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "vault", internalType: "address", type: "address" }],
+    name: "isOperatorVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "vault", internalType: "address", type: "address" },
+    ],
+    name: "isOperatorVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "vault", internalType: "address", type: "address" }],
+    name: "isSharedVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isSharedVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "isTokenRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "token", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isTokenRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  { type: "function", inputs: [], name: "registerOperator", outputs: [], stateMutability: "nonpayable" },
   {
     type: "function",
     inputs: [
@@ -696,6 +2727,17 @@ export const iOperatorVaultsAbi = [
     outputs: [],
     stateMutability: "nonpayable",
   },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "signature", internalType: "bytes", type: "bytes" },
+    ],
+    name: "registerOperatorWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  { type: "function", inputs: [], name: "unregisterOperator", outputs: [], stateMutability: "nonpayable" },
   {
     type: "function",
     inputs: [{ name: "vault", internalType: "address", type: "address" }],
@@ -713,6 +2755,93 @@ export const iOperatorVaultsAbi = [
     outputs: [],
     stateMutability: "nonpayable",
   },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "signature", internalType: "bytes", type: "bytes" },
+    ],
+    name: "unregisterOperatorWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "operator", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterOperator",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "operator", internalType: "address", type: "address", indexed: true },
+      { name: "vault", internalType: "address", type: "address", indexed: true },
+    ],
+    name: "RegisterOperatorVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "vault", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterSharedVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "token", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterToken",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool", indexed: false },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48", indexed: false },
+    ],
+    name: "SetSlashingData",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "operator", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterOperator",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "operator", internalType: "address", type: "address", indexed: true },
+      { name: "vault", internalType: "address", type: "address", indexed: true },
+    ],
+    name: "UnregisterOperatorVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "vault", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterSharedVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "token", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterToken",
+  },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidOperator" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidOperatorVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidSharedVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidSignature" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidToken" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorAlreadyRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorVaultAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorVaultNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_SharedVaultAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_SharedVaultNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_TokenAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_TokenNotRegistered" },
 ] as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -720,6 +2849,20 @@ export const iOperatorVaultsAbi = [
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const iOperatorsBlacklistAbi = [
+  {
+    type: "function",
+    inputs: [],
+    name: "OPERATOR_REGISTRY",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "VAULT_FACTORY",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
   {
     type: "function",
     inputs: [{ name: "operator", internalType: "address", type: "address" }],
@@ -730,6 +2873,220 @@ export const iOperatorsBlacklistAbi = [
   {
     type: "function",
     inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "getOperatorStakes",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorStakesAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "getOperatorVaults",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorVaultsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "extraData", internalType: "bytes", type: "bytes" },
+    ],
+    name: "getOperatorVotingPowers",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "extraData", internalType: "bytes", type: "bytes" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorVotingPowersAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getOperators",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getOperatorsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getSharedVaults",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getSharedVaultsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getSlashingData",
+    outputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool" },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+      { name: "hint", internalType: "bytes", type: "bytes" },
+    ],
+    name: "getSlashingDataAt",
+    outputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool" },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getTokens",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getTokensAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "extraData", internalType: "bytes[]", type: "bytes[]" }],
+    name: "getVotingPowers",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.OperatorVotingPower[]",
+        type: "tuple[]",
+        components: [
+          { name: "operator", internalType: "address", type: "address" },
+          {
+            name: "vaults",
+            internalType: "struct IVotingPowerProvider.VaultValue[]",
+            type: "tuple[]",
+            components: [
+              { name: "vault", internalType: "address", type: "address" },
+              { name: "value", internalType: "uint256", type: "uint256" },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "extraData", internalType: "bytes[]", type: "bytes[]" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getVotingPowersAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.OperatorVotingPower[]",
+        type: "tuple[]",
+        components: [
+          { name: "operator", internalType: "address", type: "address" },
+          {
+            name: "vaults",
+            internalType: "struct IVotingPowerProvider.VaultValue[]",
+            type: "tuple[]",
+            components: [
+              { name: "vault", internalType: "address", type: "address" },
+              { name: "value", internalType: "uint256", type: "uint256" },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  { type: "function", inputs: [], name: "invalidateOldSignatures", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
     name: "isOperatorBlacklisted",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
     stateMutability: "view",
@@ -737,7 +3094,118 @@ export const iOperatorsBlacklistAbi = [
   {
     type: "function",
     inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "isOperatorRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "vault", internalType: "address", type: "address" }],
+    name: "isOperatorVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "vault", internalType: "address", type: "address" },
+    ],
+    name: "isOperatorVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "vault", internalType: "address", type: "address" }],
+    name: "isSharedVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isSharedVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "isTokenRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "token", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isTokenRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  { type: "function", inputs: [], name: "registerOperator", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "signature", internalType: "bytes", type: "bytes" },
+    ],
+    name: "registerOperatorWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
     name: "unblacklistOperator",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  { type: "function", inputs: [], name: "unregisterOperator", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "signature", internalType: "bytes", type: "bytes" },
+    ],
+    name: "unregisterOperatorWithSignature",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -751,10 +3219,87 @@ export const iOperatorsBlacklistAbi = [
     type: "event",
     anonymous: false,
     inputs: [{ name: "operator", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterOperator",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "operator", internalType: "address", type: "address", indexed: true },
+      { name: "vault", internalType: "address", type: "address", indexed: true },
+    ],
+    name: "RegisterOperatorVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "vault", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterSharedVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "token", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterToken",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool", indexed: false },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48", indexed: false },
+    ],
+    name: "SetSlashingData",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "operator", internalType: "address", type: "address", indexed: true }],
     name: "UnblacklistOperator",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "operator", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterOperator",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "operator", internalType: "address", type: "address", indexed: true },
+      { name: "vault", internalType: "address", type: "address", indexed: true },
+    ],
+    name: "UnregisterOperatorVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "vault", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterSharedVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "token", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterToken",
   },
   { type: "error", inputs: [], name: "OperatorsBlacklist_OperatorBlacklisted" },
   { type: "error", inputs: [], name: "OperatorsBlacklist_OperatorNotBlacklisted" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidOperator" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidOperatorVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidSharedVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidSignature" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidToken" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorAlreadyRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorVaultAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorVaultNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_SharedVaultAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_SharedVaultNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_TokenAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_TokenNotRegistered" },
 ] as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -762,6 +3307,20 @@ export const iOperatorsBlacklistAbi = [
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const iOperatorsJailAbi = [
+  {
+    type: "function",
+    inputs: [],
+    name: "OPERATOR_REGISTRY",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "VAULT_FACTORY",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
   {
     type: "function",
     inputs: [{ name: "operator", internalType: "address", type: "address" }],
@@ -772,7 +3331,310 @@ export const iOperatorsJailAbi = [
   {
     type: "function",
     inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "getOperatorStakes",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorStakesAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "getOperatorVaults",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorVaultsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "extraData", internalType: "bytes", type: "bytes" },
+    ],
+    name: "getOperatorVotingPowers",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "extraData", internalType: "bytes", type: "bytes" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorVotingPowersAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getOperators",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getOperatorsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getSharedVaults",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getSharedVaultsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getSlashingData",
+    outputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool" },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+      { name: "hint", internalType: "bytes", type: "bytes" },
+    ],
+    name: "getSlashingDataAt",
+    outputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool" },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getTokens",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getTokensAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "extraData", internalType: "bytes[]", type: "bytes[]" }],
+    name: "getVotingPowers",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.OperatorVotingPower[]",
+        type: "tuple[]",
+        components: [
+          { name: "operator", internalType: "address", type: "address" },
+          {
+            name: "vaults",
+            internalType: "struct IVotingPowerProvider.VaultValue[]",
+            type: "tuple[]",
+            components: [
+              { name: "vault", internalType: "address", type: "address" },
+              { name: "value", internalType: "uint256", type: "uint256" },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "extraData", internalType: "bytes[]", type: "bytes[]" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getVotingPowersAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.OperatorVotingPower[]",
+        type: "tuple[]",
+        components: [
+          { name: "operator", internalType: "address", type: "address" },
+          {
+            name: "vaults",
+            internalType: "struct IVotingPowerProvider.VaultValue[]",
+            type: "tuple[]",
+            components: [
+              { name: "vault", internalType: "address", type: "address" },
+              { name: "value", internalType: "uint256", type: "uint256" },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  { type: "function", inputs: [], name: "invalidateOldSignatures", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
     name: "isOperatorJailed",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "isOperatorRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "vault", internalType: "address", type: "address" }],
+    name: "isOperatorVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "vault", internalType: "address", type: "address" },
+    ],
+    name: "isOperatorVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "vault", internalType: "address", type: "address" }],
+    name: "isSharedVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isSharedVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "isTokenRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "token", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isTokenRegisteredAt",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
     stateMutability: "view",
   },
@@ -786,10 +3648,32 @@ export const iOperatorsJailAbi = [
     outputs: [],
     stateMutability: "nonpayable",
   },
+  { type: "function", inputs: [], name: "registerOperator", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "signature", internalType: "bytes", type: "bytes" },
+    ],
+    name: "registerOperatorWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
   {
     type: "function",
     inputs: [{ name: "operator", internalType: "address", type: "address" }],
     name: "unjailOperator",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  { type: "function", inputs: [], name: "unregisterOperator", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "signature", internalType: "bytes", type: "bytes" },
+    ],
+    name: "unregisterOperatorWithSignature",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -803,12 +3687,89 @@ export const iOperatorsJailAbi = [
     type: "event",
     anonymous: false,
     inputs: [{ name: "operator", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterOperator",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "operator", internalType: "address", type: "address", indexed: true },
+      { name: "vault", internalType: "address", type: "address", indexed: true },
+    ],
+    name: "RegisterOperatorVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "vault", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterSharedVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "token", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterToken",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool", indexed: false },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48", indexed: false },
+    ],
+    name: "SetSlashingData",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "operator", internalType: "address", type: "address", indexed: true }],
     name: "UnjailOperator",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "operator", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterOperator",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "operator", internalType: "address", type: "address", indexed: true },
+      { name: "vault", internalType: "address", type: "address", indexed: true },
+    ],
+    name: "UnregisterOperatorVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "vault", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterSharedVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "token", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterToken",
   },
   { type: "error", inputs: [], name: "OperatorsJail_AlreadyJailed" },
   { type: "error", inputs: [], name: "OperatorsJail_InvalidDuration" },
   { type: "error", inputs: [], name: "OperatorsJail_OperatorJailed" },
   { type: "error", inputs: [], name: "OperatorsJail_OperatorNotJailed" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidOperator" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidOperatorVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidSharedVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidSignature" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidToken" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorAlreadyRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorVaultAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorVaultNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_SharedVaultAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_SharedVaultNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_TokenAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_TokenNotRegistered" },
 ] as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -818,8 +3779,325 @@ export const iOperatorsJailAbi = [
 export const iOperatorsWhitelistAbi = [
   {
     type: "function",
+    inputs: [],
+    name: "OPERATOR_REGISTRY",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "VAULT_FACTORY",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "getOperatorStakes",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorStakesAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "getOperatorVaults",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorVaultsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "extraData", internalType: "bytes", type: "bytes" },
+    ],
+    name: "getOperatorVotingPowers",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "extraData", internalType: "bytes", type: "bytes" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorVotingPowersAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getOperators",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getOperatorsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getSharedVaults",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getSharedVaultsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getSlashingData",
+    outputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool" },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+      { name: "hint", internalType: "bytes", type: "bytes" },
+    ],
+    name: "getSlashingDataAt",
+    outputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool" },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getTokens",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getTokensAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "extraData", internalType: "bytes[]", type: "bytes[]" }],
+    name: "getVotingPowers",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.OperatorVotingPower[]",
+        type: "tuple[]",
+        components: [
+          { name: "operator", internalType: "address", type: "address" },
+          {
+            name: "vaults",
+            internalType: "struct IVotingPowerProvider.VaultValue[]",
+            type: "tuple[]",
+            components: [
+              { name: "vault", internalType: "address", type: "address" },
+              { name: "value", internalType: "uint256", type: "uint256" },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "extraData", internalType: "bytes[]", type: "bytes[]" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getVotingPowersAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.OperatorVotingPower[]",
+        type: "tuple[]",
+        components: [
+          { name: "operator", internalType: "address", type: "address" },
+          {
+            name: "vaults",
+            internalType: "struct IVotingPowerProvider.VaultValue[]",
+            type: "tuple[]",
+            components: [
+              { name: "vault", internalType: "address", type: "address" },
+              { name: "value", internalType: "uint256", type: "uint256" },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  { type: "function", inputs: [], name: "invalidateOldSignatures", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "isOperatorRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "vault", internalType: "address", type: "address" }],
+    name: "isOperatorVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "vault", internalType: "address", type: "address" },
+    ],
+    name: "isOperatorVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [{ name: "operator", internalType: "address", type: "address" }],
     name: "isOperatorWhitelisted",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "vault", internalType: "address", type: "address" }],
+    name: "isSharedVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isSharedVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "isTokenRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "token", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isTokenRegisteredAt",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
     stateMutability: "view",
   },
@@ -830,10 +4108,32 @@ export const iOperatorsWhitelistAbi = [
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
     stateMutability: "view",
   },
+  { type: "function", inputs: [], name: "registerOperator", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "signature", internalType: "bytes", type: "bytes" },
+    ],
+    name: "registerOperatorWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
   {
     type: "function",
     inputs: [{ name: "status", internalType: "bool", type: "bool" }],
     name: "setWhitelistStatus",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  { type: "function", inputs: [], name: "unregisterOperator", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "signature", internalType: "bytes", type: "bytes" },
+    ],
+    name: "unregisterOperatorWithSignature",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -854,8 +4154,71 @@ export const iOperatorsWhitelistAbi = [
   {
     type: "event",
     anonymous: false,
+    inputs: [{ name: "operator", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterOperator",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "operator", internalType: "address", type: "address", indexed: true },
+      { name: "vault", internalType: "address", type: "address", indexed: true },
+    ],
+    name: "RegisterOperatorVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "vault", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterSharedVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "token", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterToken",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool", indexed: false },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48", indexed: false },
+    ],
+    name: "SetSlashingData",
+  },
+  {
+    type: "event",
+    anonymous: false,
     inputs: [{ name: "status", internalType: "bool", type: "bool", indexed: false }],
     name: "SetWhitelistStatus",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "operator", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterOperator",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "operator", internalType: "address", type: "address", indexed: true },
+      { name: "vault", internalType: "address", type: "address", indexed: true },
+    ],
+    name: "UnregisterOperatorVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "vault", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterSharedVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "token", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterToken",
   },
   {
     type: "event",
@@ -872,6 +4235,20 @@ export const iOperatorsWhitelistAbi = [
   { type: "error", inputs: [], name: "OperatorsWhitelist_OperatorNotWhitelisted" },
   { type: "error", inputs: [], name: "OperatorsWhitelist_OperatorWhitelisted" },
   { type: "error", inputs: [], name: "OperatorsWhitelist_StatusAlreadySet" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidOperator" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidOperatorVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidSharedVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidSignature" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidToken" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorAlreadyRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorVaultAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorVaultNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_SharedVaultAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_SharedVaultNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_TokenAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_TokenNotRegistered" },
 ] as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -887,6 +4264,83 @@ export const iOzAccessControlAbi = [
     stateMutability: "view",
   },
   {
+    type: "function",
+    inputs: [{ name: "role", internalType: "bytes32", type: "bytes32" }],
+    name: "getRoleAdmin",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "role", internalType: "bytes32", type: "bytes32" },
+      { name: "account", internalType: "address", type: "address" },
+    ],
+    name: "grantRole",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "role", internalType: "bytes32", type: "bytes32" },
+      { name: "account", internalType: "address", type: "address" },
+    ],
+    name: "hasRole",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "role", internalType: "bytes32", type: "bytes32" },
+      { name: "callerConfirmation", internalType: "address", type: "address" },
+    ],
+    name: "renounceRole",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "role", internalType: "bytes32", type: "bytes32" },
+      { name: "account", internalType: "address", type: "address" },
+    ],
+    name: "revokeRole",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "role", internalType: "bytes32", type: "bytes32", indexed: true },
+      { name: "previousAdminRole", internalType: "bytes32", type: "bytes32", indexed: true },
+      { name: "newAdminRole", internalType: "bytes32", type: "bytes32", indexed: true },
+    ],
+    name: "RoleAdminChanged",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "role", internalType: "bytes32", type: "bytes32", indexed: true },
+      { name: "account", internalType: "address", type: "address", indexed: true },
+      { name: "sender", internalType: "address", type: "address", indexed: true },
+    ],
+    name: "RoleGranted",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "role", internalType: "bytes32", type: "bytes32", indexed: true },
+      { name: "account", internalType: "address", type: "address", indexed: true },
+      { name: "sender", internalType: "address", type: "address", indexed: true },
+    ],
+    name: "RoleRevoked",
+  },
+  {
     type: "event",
     anonymous: false,
     inputs: [
@@ -895,13 +4349,68 @@ export const iOzAccessControlAbi = [
     ],
     name: "SetSelectorRole",
   },
+  { type: "error", inputs: [], name: "AccessControlBadConfirmation" },
+  {
+    type: "error",
+    inputs: [
+      { name: "account", internalType: "address", type: "address" },
+      { name: "neededRole", internalType: "bytes32", type: "bytes32" },
+    ],
+    name: "AccessControlUnauthorizedAccount",
+  },
 ] as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // IOzAccessManaged
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export const iOzAccessManagedAbi = [] as const;
+export const iOzAccessManagedAbi = [
+  {
+    type: "function",
+    inputs: [],
+    name: "authority",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "isConsumingScheduledOp",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "", internalType: "address", type: "address" }],
+    name: "setAuthority",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "authority", internalType: "address", type: "address", indexed: false }],
+    name: "AuthorityUpdated",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "authority", internalType: "address", type: "address" }],
+    name: "AccessManagedInvalidAuthority",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "delay", internalType: "uint32", type: "uint32" },
+    ],
+    name: "AccessManagedRequiredDelay",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "caller", internalType: "address", type: "address" }],
+    name: "AccessManagedUnauthorized",
+  },
+] as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // IOzEIP712
@@ -1042,6 +4551,27 @@ export const iSettlementAbi = [
   {
     type: "function",
     inputs: [],
+    name: "NETWORK",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "SUBNETWORK",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "SUBNETWORK_IDENTIFIER",
+    outputs: [{ name: "", internalType: "uint96", type: "uint96" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "VALIDATOR_SET_VERSION",
     outputs: [{ name: "", internalType: "uint8", type: "uint8" }],
     stateMutability: "view",
@@ -1077,6 +4607,21 @@ export const iSettlementAbi = [
     name: "commitValSetHeader",
     outputs: [],
     stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "eip712Domain",
+    outputs: [
+      { name: "fields", internalType: "bytes1", type: "bytes1" },
+      { name: "name", internalType: "string", type: "string" },
+      { name: "version", internalType: "string", type: "string" },
+      { name: "chainId", internalType: "uint256", type: "uint256" },
+      { name: "verifyingContract", internalType: "address", type: "address" },
+      { name: "salt", internalType: "bytes32", type: "bytes32" },
+      { name: "extensions", internalType: "uint256[]", type: "uint256[]" },
+    ],
+    stateMutability: "view",
   },
   {
     type: "function",
@@ -1263,6 +4808,20 @@ export const iSettlementAbi = [
   },
   {
     type: "function",
+    inputs: [{ name: "structHash", internalType: "bytes32", type: "bytes32" }],
+    name: "hashTypedDataV4",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "structHash", internalType: "bytes32", type: "bytes32" }],
+    name: "hashTypedDataV4CrossChain",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [{ name: "epoch", internalType: "uint48", type: "uint48" }],
     name: "isValSetHeaderCommittedAt",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
@@ -1303,6 +4862,16 @@ export const iSettlementAbi = [
     type: "function",
     inputs: [{ name: "sigVerifier", internalType: "address", type: "address" }],
     name: "setSigVerifier",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "target", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "staticDelegateCall",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -1364,11 +4933,30 @@ export const iSettlementAbi = [
     ],
     name: "CommitValSetHeader",
   },
+  { type: "event", anonymous: false, inputs: [], name: "EIP712DomainChanged" },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "name", internalType: "string", type: "string", indexed: false },
+      { name: "version", internalType: "string", type: "string", indexed: false },
+    ],
+    name: "InitEIP712",
+  },
   {
     type: "event",
     anonymous: false,
     inputs: [{ name: "sigVerifier", internalType: "address", type: "address", indexed: false }],
     name: "InitSigVerifier",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "network", internalType: "address", type: "address", indexed: false },
+      { name: "subnetworkId", internalType: "uint96", type: "uint96", indexed: false },
+    ],
+    name: "InitSubnetwork",
   },
   {
     type: "event",
@@ -1408,6 +4996,7 @@ export const iSettlementAbi = [
     inputs: [{ name: "sigVerifier", internalType: "address", type: "address", indexed: false }],
     name: "SetSigVerifier",
   },
+  { type: "error", inputs: [], name: "NetworkManager_InvalidNetwork" },
   { type: "error", inputs: [], name: "Settlement_DuplicateExtraDataKey" },
   { type: "error", inputs: [], name: "Settlement_InvalidCaptureTimestamp" },
   { type: "error", inputs: [], name: "Settlement_InvalidEpoch" },
@@ -1426,8 +5015,347 @@ export const iSettlementAbi = [
 export const iSharedVaultsAbi = [
   {
     type: "function",
+    inputs: [],
+    name: "OPERATOR_REGISTRY",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "VAULT_FACTORY",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "getOperatorStakes",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorStakesAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "getOperatorVaults",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorVaultsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "extraData", internalType: "bytes", type: "bytes" },
+    ],
+    name: "getOperatorVotingPowers",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "extraData", internalType: "bytes", type: "bytes" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getOperatorVotingPowersAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.VaultValue[]",
+        type: "tuple[]",
+        components: [
+          { name: "vault", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getOperators",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getOperatorsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getSharedVaults",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getSharedVaultsAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getSlashingData",
+    outputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool" },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+      { name: "hint", internalType: "bytes", type: "bytes" },
+    ],
+    name: "getSlashingDataAt",
+    outputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool" },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getTokens",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getTokensAt",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "extraData", internalType: "bytes[]", type: "bytes[]" }],
+    name: "getVotingPowers",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.OperatorVotingPower[]",
+        type: "tuple[]",
+        components: [
+          { name: "operator", internalType: "address", type: "address" },
+          {
+            name: "vaults",
+            internalType: "struct IVotingPowerProvider.VaultValue[]",
+            type: "tuple[]",
+            components: [
+              { name: "vault", internalType: "address", type: "address" },
+              { name: "value", internalType: "uint256", type: "uint256" },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "extraData", internalType: "bytes[]", type: "bytes[]" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "getVotingPowersAt",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct IVotingPowerProvider.OperatorVotingPower[]",
+        type: "tuple[]",
+        components: [
+          { name: "operator", internalType: "address", type: "address" },
+          {
+            name: "vaults",
+            internalType: "struct IVotingPowerProvider.VaultValue[]",
+            type: "tuple[]",
+            components: [
+              { name: "vault", internalType: "address", type: "address" },
+              { name: "value", internalType: "uint256", type: "uint256" },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  { type: "function", inputs: [], name: "invalidateOldSignatures", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "isOperatorRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "vault", internalType: "address", type: "address" }],
+    name: "isOperatorVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "vault", internalType: "address", type: "address" },
+    ],
+    name: "isOperatorVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isOperatorVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "vault", internalType: "address", type: "address" }],
+    name: "isSharedVaultRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isSharedVaultRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "isTokenRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "token", internalType: "address", type: "address" },
+      { name: "timestamp", internalType: "uint48", type: "uint48" },
+    ],
+    name: "isTokenRegisteredAt",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  { type: "function", inputs: [], name: "registerOperator", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "signature", internalType: "bytes", type: "bytes" },
+    ],
+    name: "registerOperatorWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [{ name: "sharedVault", internalType: "address", type: "address" }],
     name: "registerSharedVault",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  { type: "function", inputs: [], name: "unregisterOperator", outputs: [], stateMutability: "nonpayable" },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "signature", internalType: "bytes", type: "bytes" },
+    ],
+    name: "unregisterOperatorWithSignature",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -1438,6 +5366,83 @@ export const iSharedVaultsAbi = [
     outputs: [],
     stateMutability: "nonpayable",
   },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "operator", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterOperator",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "operator", internalType: "address", type: "address", indexed: true },
+      { name: "vault", internalType: "address", type: "address", indexed: true },
+    ],
+    name: "RegisterOperatorVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "vault", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterSharedVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "token", internalType: "address", type: "address", indexed: true }],
+    name: "RegisterToken",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "requireSlasher", internalType: "bool", type: "bool", indexed: false },
+      { name: "minVaultEpochDuration", internalType: "uint48", type: "uint48", indexed: false },
+    ],
+    name: "SetSlashingData",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "operator", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterOperator",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "operator", internalType: "address", type: "address", indexed: true },
+      { name: "vault", internalType: "address", type: "address", indexed: true },
+    ],
+    name: "UnregisterOperatorVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "vault", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterSharedVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "token", internalType: "address", type: "address", indexed: true }],
+    name: "UnregisterToken",
+  },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidOperator" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidOperatorVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidSharedVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidSignature" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidToken" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_InvalidVault" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorAlreadyRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorVaultAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_OperatorVaultNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_SharedVaultAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_SharedVaultNotRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_TokenAlreadyIsRegistered" },
+  { type: "error", inputs: [], name: "VotingPowerProvider_TokenNotRegistered" },
 ] as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1599,6 +5604,27 @@ export const iValSetDriverAbi = [
     inputs: [],
     name: "MAX_QUORUM_THRESHOLD",
     outputs: [{ name: "", internalType: "uint248", type: "uint248" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "NETWORK",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "SUBNETWORK",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "SUBNETWORK_IDENTIFIER",
+    outputs: [{ name: "", internalType: "uint96", type: "uint96" }],
     stateMutability: "view",
   },
   {
@@ -1789,6 +5815,48 @@ export const iValSetDriverAbi = [
   {
     type: "function",
     inputs: [],
+    name: "getCurrentEpoch",
+    outputs: [{ name: "", internalType: "uint48", type: "uint48" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getCurrentEpochDuration",
+    outputs: [{ name: "", internalType: "uint48", type: "uint48" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getCurrentEpochStart",
+    outputs: [{ name: "", internalType: "uint48", type: "uint48" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "epoch", internalType: "uint48", type: "uint48" }],
+    name: "getEpochDuration",
+    outputs: [{ name: "", internalType: "uint48", type: "uint48" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
+    name: "getEpochIndex",
+    outputs: [{ name: "", internalType: "uint48", type: "uint48" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "epoch", internalType: "uint48", type: "uint48" }],
+    name: "getEpochStart",
+    outputs: [{ name: "", internalType: "uint48", type: "uint48" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "getKeysProvider",
     outputs: [
       {
@@ -1860,6 +5928,27 @@ export const iValSetDriverAbi = [
     inputs: [{ name: "timestamp", internalType: "uint48", type: "uint48" }],
     name: "getMinInclusionVotingPowerAt",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getNextEpoch",
+    outputs: [{ name: "", internalType: "uint48", type: "uint48" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getNextEpochDuration",
+    outputs: [{ name: "", internalType: "uint48", type: "uint48" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getNextEpochStart",
+    outputs: [{ name: "", internalType: "uint48", type: "uint48" }],
     stateMutability: "view",
   },
   {
@@ -2199,6 +6288,13 @@ export const iValSetDriverAbi = [
   },
   {
     type: "function",
+    inputs: [{ name: "epochDuration", internalType: "uint48", type: "uint48" }],
+    name: "setEpochDuration",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [
       {
         name: "keysProvider",
@@ -2271,6 +6367,16 @@ export const iValSetDriverAbi = [
     stateMutability: "nonpayable",
   },
   {
+    type: "function",
+    inputs: [
+      { name: "target", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "staticDelegateCall",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
     type: "event",
     anonymous: false,
     inputs: [
@@ -2320,6 +6426,24 @@ export const iValSetDriverAbi = [
       },
     ],
     name: "AddVotingPowerProvider",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "epochDuration", internalType: "uint48", type: "uint48", indexed: false },
+      { name: "epochDurationTimestamp", internalType: "uint48", type: "uint48", indexed: false },
+    ],
+    name: "InitEpochDuration",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "network", internalType: "address", type: "address", indexed: false },
+      { name: "subnetworkId", internalType: "uint96", type: "uint96", indexed: false },
+    ],
+    name: "InitSubnetwork",
   },
   {
     type: "event",
@@ -2377,6 +6501,12 @@ export const iValSetDriverAbi = [
     anonymous: false,
     inputs: [{ name: "committerSlotDuration", internalType: "uint48", type: "uint48", indexed: false }],
     name: "SetCommitterSlotDuration",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "epochDuration", internalType: "uint48", type: "uint48", indexed: false }],
+    name: "SetEpochDuration",
   },
   {
     type: "event",
@@ -2443,6 +6573,10 @@ export const iValSetDriverAbi = [
     inputs: [{ name: "verificationType", internalType: "uint32", type: "uint32", indexed: false }],
     name: "SetVerificationType",
   },
+  { type: "error", inputs: [], name: "EpochManager_InvalidEpochDuration" },
+  { type: "error", inputs: [], name: "EpochManager_InvalidEpochDurationTimestamp" },
+  { type: "error", inputs: [], name: "EpochManager_TooOldTimestamp" },
+  { type: "error", inputs: [], name: "NetworkManager_InvalidNetwork" },
   { type: "error", inputs: [], name: "ValSetDriver_ChainAlreadyAdded" },
   { type: "error", inputs: [], name: "ValSetDriver_InvalidCrossChainAddress" },
   { type: "error", inputs: [], name: "ValSetDriver_InvalidMaxValidatorsCount" },

@@ -1,5 +1,5 @@
 # SigBlsBn254
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/35b4e6e0fb5f7d02cf4e232e387f5f2293cd8da7/src/libraries/sigs/SigBlsBn254.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1eb6435a6ea47694d41a093f5c846d932f6a2f2b/src/libraries/sigs/SigBlsBn254.sol)
 
 Library for verifying BLS signatures on the BN254 curve.
 

@@ -43,10 +43,8 @@ library KeyBlsBls12381 {
             return zeroKey();
         }
         if (
-            uint256(keyRaw.x_a) > BLS12381.P_A
-                || (uint256(keyRaw.x_a) == BLS12381.P_A && uint256(keyRaw.x_b) > BLS12381.P_B)
-                || uint256(keyRaw.y_a) > BLS12381.P_A
-                || (uint256(keyRaw.y_a) == BLS12381.P_A && uint256(keyRaw.y_b) > BLS12381.P_B)
+            keyRaw.x_a > BLS12381.P_A || (keyRaw.x_a == BLS12381.P_A && keyRaw.x_b > BLS12381.P_B)
+                || keyRaw.y_a > BLS12381.P_A || (keyRaw.y_a == BLS12381.P_A && keyRaw.y_b > BLS12381.P_B)
         ) {
             revert KeyBlsBls12381_InvalidKey();
         }
@@ -78,13 +76,9 @@ library KeyBlsBls12381 {
         if (key.value.x_a == 0 && key.value.x_b == 0 && key.value.y_a == 0 && key.value.y_b == 0) {
             return abi.encode([0, 0]);
         }
-        (uint256 derivedY_a, uint256 derivedY_b) = BLS12381.findYFromX(uint256(key.value.x_a), uint256(key.value.x_b));
+        (uint256 derivedY_a, uint256 derivedY_b) = BLS12381.findYFromX(key.value.x_a, key.value.x_b);
         keySerialized = abi.encode(
-            [
-                (uint256(key.value.x_a) << 1)
-                    | (derivedY_a == uint256(key.value.y_a) && derivedY_b == uint256(key.value.y_b) ? 0 : 1),
-                uint256(key.value.x_b)
-            ]
+            [(key.value.x_a << 1) | (derivedY_a == key.value.y_a && derivedY_b == key.value.y_b ? 0 : 1), key.value.x_b]
         );
     }
 
@@ -99,10 +93,8 @@ library KeyBlsBls12381 {
             return KEY_BLS_BLS12381(BLS12381.G1Point({x_a: 0, x_b: 0, y_a: 0, y_b: 0}));
         }
         uint256 x_a = compressedKey[0] >> 1;
-        (uint256 derivedY_a, uint256 derivedY_b) = BLS12381.findYFromX(uint256(x_a), uint256(compressedKey[1]));
-        key.value = BLS12381.G1Point({
-            x_a: bytes32(x_a), x_b: bytes32(compressedKey[1]), y_a: bytes32(derivedY_a), y_b: bytes32(derivedY_b)
-        });
+        (uint256 derivedY_a, uint256 derivedY_b) = BLS12381.findYFromX(x_a, compressedKey[1]);
+        key.value = BLS12381.G1Point({x_a: x_a, x_b: compressedKey[1], y_a: derivedY_a, y_b: derivedY_b});
         if (compressedKey[0] & 1 > 0) {
             key.value = BLS12381.negate(key.value);
         }

@@ -46,6 +46,39 @@ namespace Symbiotic.Relay.ISettlement.abi
         {
         }
 
+        public Task<string> NetworkQueryAsync(NetworkFunction networkFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<NetworkFunction, string>(networkFunction, blockParameter);
+        }
+
+        
+        public virtual Task<string> NetworkQueryAsync(BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<NetworkFunction, string>(null, blockParameter);
+        }
+
+        public Task<byte[]> SubnetworkQueryAsync(SubnetworkFunction subnetworkFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<SubnetworkFunction, byte[]>(subnetworkFunction, blockParameter);
+        }
+
+        
+        public virtual Task<byte[]> SubnetworkQueryAsync(BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<SubnetworkFunction, byte[]>(null, blockParameter);
+        }
+
+        public Task<BigInteger> SubnetworkIdentifierQueryAsync(SubnetworkIdentifierFunction subnetworkIdentifierFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<SubnetworkIdentifierFunction, BigInteger>(subnetworkIdentifierFunction, blockParameter);
+        }
+
+        
+        public virtual Task<BigInteger> SubnetworkIdentifierQueryAsync(BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<SubnetworkIdentifierFunction, BigInteger>(null, blockParameter);
+        }
+
         public Task<byte> ValidatorSetVersionQueryAsync(ValidatorSetVersionFunction validatorSetVersionFunction, BlockParameter blockParameter = null)
         {
             return ContractHandler.QueryAsync<ValidatorSetVersionFunction, byte>(validatorSetVersionFunction, blockParameter);
@@ -85,6 +118,16 @@ namespace Symbiotic.Relay.ISettlement.abi
                 commitValSetHeaderFunction.Proof = proof;
             
              return ContractHandler.SendRequestAndWaitForReceiptAsync(commitValSetHeaderFunction, cancellationToken);
+        }
+
+        public virtual Task<Eip712DomainOutputDTO> Eip712DomainQueryAsync(Eip712DomainFunction eip712DomainFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryDeserializingToObjectAsync<Eip712DomainFunction, Eip712DomainOutputDTO>(eip712DomainFunction, blockParameter);
+        }
+
+        public virtual Task<Eip712DomainOutputDTO> Eip712DomainQueryAsync(BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryDeserializingToObjectAsync<Eip712DomainFunction, Eip712DomainOutputDTO>(null, blockParameter);
         }
 
         public Task<ulong> GetCaptureTimestampFromValSetHeaderQueryAsync(GetCaptureTimestampFromValSetHeaderFunction getCaptureTimestampFromValSetHeaderFunction, BlockParameter blockParameter = null)
@@ -351,6 +394,34 @@ namespace Symbiotic.Relay.ISettlement.abi
             return ContractHandler.QueryAsync<GetVersionFromValSetHeaderAtFunction, byte>(getVersionFromValSetHeaderAtFunction, blockParameter);
         }
 
+        public Task<byte[]> HashTypedDataV4QueryAsync(HashTypedDataV4Function hashTypedDataV4Function, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<HashTypedDataV4Function, byte[]>(hashTypedDataV4Function, blockParameter);
+        }
+
+        
+        public virtual Task<byte[]> HashTypedDataV4QueryAsync(byte[] structHash, BlockParameter blockParameter = null)
+        {
+            var hashTypedDataV4Function = new HashTypedDataV4Function();
+                hashTypedDataV4Function.StructHash = structHash;
+            
+            return ContractHandler.QueryAsync<HashTypedDataV4Function, byte[]>(hashTypedDataV4Function, blockParameter);
+        }
+
+        public Task<byte[]> HashTypedDataV4CrossChainQueryAsync(HashTypedDataV4CrossChainFunction hashTypedDataV4CrossChainFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<HashTypedDataV4CrossChainFunction, byte[]>(hashTypedDataV4CrossChainFunction, blockParameter);
+        }
+
+        
+        public virtual Task<byte[]> HashTypedDataV4CrossChainQueryAsync(byte[] structHash, BlockParameter blockParameter = null)
+        {
+            var hashTypedDataV4CrossChainFunction = new HashTypedDataV4CrossChainFunction();
+                hashTypedDataV4CrossChainFunction.StructHash = structHash;
+            
+            return ContractHandler.QueryAsync<HashTypedDataV4CrossChainFunction, byte[]>(hashTypedDataV4CrossChainFunction, blockParameter);
+        }
+
         public Task<bool> IsValSetHeaderCommittedAtQueryAsync(IsValSetHeaderCommittedAtFunction isValSetHeaderCommittedAtFunction, BlockParameter blockParameter = null)
         {
             return ContractHandler.QueryAsync<IsValSetHeaderCommittedAtFunction, bool>(isValSetHeaderCommittedAtFunction, blockParameter);
@@ -419,6 +490,34 @@ namespace Symbiotic.Relay.ISettlement.abi
              return ContractHandler.SendRequestAndWaitForReceiptAsync(setSigVerifierFunction, cancellationToken);
         }
 
+        public virtual Task<string> StaticDelegateCallRequestAsync(StaticDelegateCallFunction staticDelegateCallFunction)
+        {
+             return ContractHandler.SendRequestAsync(staticDelegateCallFunction);
+        }
+
+        public virtual Task<TransactionReceipt> StaticDelegateCallRequestAndWaitForReceiptAsync(StaticDelegateCallFunction staticDelegateCallFunction, CancellationTokenSource cancellationToken = null)
+        {
+             return ContractHandler.SendRequestAndWaitForReceiptAsync(staticDelegateCallFunction, cancellationToken);
+        }
+
+        public virtual Task<string> StaticDelegateCallRequestAsync(string target, byte[] data)
+        {
+            var staticDelegateCallFunction = new StaticDelegateCallFunction();
+                staticDelegateCallFunction.Target = target;
+                staticDelegateCallFunction.Data = data;
+            
+             return ContractHandler.SendRequestAsync(staticDelegateCallFunction);
+        }
+
+        public virtual Task<TransactionReceipt> StaticDelegateCallRequestAndWaitForReceiptAsync(string target, byte[] data, CancellationTokenSource cancellationToken = null)
+        {
+            var staticDelegateCallFunction = new StaticDelegateCallFunction();
+                staticDelegateCallFunction.Target = target;
+                staticDelegateCallFunction.Data = data;
+            
+             return ContractHandler.SendRequestAndWaitForReceiptAsync(staticDelegateCallFunction, cancellationToken);
+        }
+
         public Task<bool> VerifyQuorumSigQueryAsync(VerifyQuorumSigFunction verifyQuorumSigFunction, BlockParameter blockParameter = null)
         {
             return ContractHandler.QueryAsync<VerifyQuorumSigFunction, bool>(verifyQuorumSigFunction, blockParameter);
@@ -459,8 +558,12 @@ namespace Symbiotic.Relay.ISettlement.abi
         {
             return new List<Type>
             {
+                typeof(NetworkFunction),
+                typeof(SubnetworkFunction),
+                typeof(SubnetworkIdentifierFunction),
                 typeof(ValidatorSetVersionFunction),
                 typeof(CommitValSetHeaderFunction),
+                typeof(Eip712DomainFunction),
                 typeof(GetCaptureTimestampFromValSetHeaderFunction),
                 typeof(GetCaptureTimestampFromValSetHeaderAtFunction),
                 typeof(GetExtraDataFunction),
@@ -482,9 +585,12 @@ namespace Symbiotic.Relay.ISettlement.abi
                 typeof(GetValidatorsSszMRootFromValSetHeaderAtFunction),
                 typeof(GetVersionFromValSetHeaderFunction),
                 typeof(GetVersionFromValSetHeaderAtFunction),
+                typeof(HashTypedDataV4Function),
+                typeof(HashTypedDataV4CrossChainFunction),
                 typeof(IsValSetHeaderCommittedAtFunction),
                 typeof(SetGenesisFunction),
                 typeof(SetSigVerifierFunction),
+                typeof(StaticDelegateCallFunction),
                 typeof(VerifyQuorumSigFunction),
                 typeof(VerifyQuorumSigAtFunction)
             };
@@ -495,7 +601,10 @@ namespace Symbiotic.Relay.ISettlement.abi
             return new List<Type>
             {
                 typeof(CommitValSetHeaderEventDTO),
+                typeof(EIP712DomainChangedEventDTO),
+                typeof(InitEIP712EventDTO),
                 typeof(InitSigVerifierEventDTO),
+                typeof(InitSubnetworkEventDTO),
                 typeof(SetGenesisEventDTO),
                 typeof(SetSigVerifierEventDTO)
             };
@@ -505,6 +614,7 @@ namespace Symbiotic.Relay.ISettlement.abi
         {
             return new List<Type>
             {
+                typeof(NetworkmanagerInvalidnetworkError),
                 typeof(SettlementDuplicateextradatakeyError),
                 typeof(SettlementInvalidcapturetimestampError),
                 typeof(SettlementInvalidepochError),

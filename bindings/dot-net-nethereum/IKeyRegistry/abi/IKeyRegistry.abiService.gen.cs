@@ -46,6 +46,16 @@ namespace Symbiotic.Relay.IKeyRegistry.abi
         {
         }
 
+        public virtual Task<Eip712DomainOutputDTO> Eip712DomainQueryAsync(Eip712DomainFunction eip712DomainFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryDeserializingToObjectAsync<Eip712DomainFunction, Eip712DomainOutputDTO>(eip712DomainFunction, blockParameter);
+        }
+
+        public virtual Task<Eip712DomainOutputDTO> Eip712DomainQueryAsync(BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryDeserializingToObjectAsync<Eip712DomainFunction, Eip712DomainOutputDTO>(null, blockParameter);
+        }
+
         public Task<byte[]> GetKeyQueryAsync(GetKeyFunction getKeyFunction, BlockParameter blockParameter = null)
         {
             return ContractHandler.QueryAsync<GetKeyFunction, byte[]>(getKeyFunction, blockParameter);
@@ -177,6 +187,34 @@ namespace Symbiotic.Relay.IKeyRegistry.abi
             return ContractHandler.QueryAsync<GetOperatorFunction, string>(getOperatorFunction, blockParameter);
         }
 
+        public Task<byte[]> HashTypedDataV4QueryAsync(HashTypedDataV4Function hashTypedDataV4Function, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<HashTypedDataV4Function, byte[]>(hashTypedDataV4Function, blockParameter);
+        }
+
+        
+        public virtual Task<byte[]> HashTypedDataV4QueryAsync(byte[] structHash, BlockParameter blockParameter = null)
+        {
+            var hashTypedDataV4Function = new HashTypedDataV4Function();
+                hashTypedDataV4Function.StructHash = structHash;
+            
+            return ContractHandler.QueryAsync<HashTypedDataV4Function, byte[]>(hashTypedDataV4Function, blockParameter);
+        }
+
+        public Task<byte[]> HashTypedDataV4CrossChainQueryAsync(HashTypedDataV4CrossChainFunction hashTypedDataV4CrossChainFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<HashTypedDataV4CrossChainFunction, byte[]>(hashTypedDataV4CrossChainFunction, blockParameter);
+        }
+
+        
+        public virtual Task<byte[]> HashTypedDataV4CrossChainQueryAsync(byte[] structHash, BlockParameter blockParameter = null)
+        {
+            var hashTypedDataV4CrossChainFunction = new HashTypedDataV4CrossChainFunction();
+                hashTypedDataV4CrossChainFunction.StructHash = structHash;
+            
+            return ContractHandler.QueryAsync<HashTypedDataV4CrossChainFunction, byte[]>(hashTypedDataV4CrossChainFunction, blockParameter);
+        }
+
         public virtual Task<string> SetKeyRequestAsync(SetKeyFunction setKeyFunction)
         {
              return ContractHandler.SendRequestAsync(setKeyFunction);
@@ -213,6 +251,7 @@ namespace Symbiotic.Relay.IKeyRegistry.abi
         {
             return new List<Type>
             {
+                typeof(Eip712DomainFunction),
                 typeof(GetKeyFunction),
                 typeof(GetKeyAtFunction),
                 typeof(GetKeysFunction),
@@ -223,6 +262,8 @@ namespace Symbiotic.Relay.IKeyRegistry.abi
                 typeof(GetKeysOperatorsAtFunction),
                 typeof(GetKeysOperatorsLengthFunction),
                 typeof(GetOperatorFunction),
+                typeof(HashTypedDataV4Function),
+                typeof(HashTypedDataV4CrossChainFunction),
                 typeof(SetKeyFunction)
             };
         }
@@ -231,6 +272,8 @@ namespace Symbiotic.Relay.IKeyRegistry.abi
         {
             return new List<Type>
             {
+                typeof(EIP712DomainChangedEventDTO),
+                typeof(InitEIP712EventDTO),
                 typeof(SetKeyEventDTO)
             };
         }

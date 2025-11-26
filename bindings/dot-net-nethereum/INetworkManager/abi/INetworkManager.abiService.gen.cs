@@ -79,13 +79,42 @@ namespace Symbiotic.Relay.INetworkManager.abi
             return ContractHandler.QueryAsync<SubnetworkIdentifierFunction, BigInteger>(null, blockParameter);
         }
 
+        public virtual Task<string> StaticDelegateCallRequestAsync(StaticDelegateCallFunction staticDelegateCallFunction)
+        {
+             return ContractHandler.SendRequestAsync(staticDelegateCallFunction);
+        }
+
+        public virtual Task<TransactionReceipt> StaticDelegateCallRequestAndWaitForReceiptAsync(StaticDelegateCallFunction staticDelegateCallFunction, CancellationTokenSource cancellationToken = null)
+        {
+             return ContractHandler.SendRequestAndWaitForReceiptAsync(staticDelegateCallFunction, cancellationToken);
+        }
+
+        public virtual Task<string> StaticDelegateCallRequestAsync(string target, byte[] data)
+        {
+            var staticDelegateCallFunction = new StaticDelegateCallFunction();
+                staticDelegateCallFunction.Target = target;
+                staticDelegateCallFunction.Data = data;
+            
+             return ContractHandler.SendRequestAsync(staticDelegateCallFunction);
+        }
+
+        public virtual Task<TransactionReceipt> StaticDelegateCallRequestAndWaitForReceiptAsync(string target, byte[] data, CancellationTokenSource cancellationToken = null)
+        {
+            var staticDelegateCallFunction = new StaticDelegateCallFunction();
+                staticDelegateCallFunction.Target = target;
+                staticDelegateCallFunction.Data = data;
+            
+             return ContractHandler.SendRequestAndWaitForReceiptAsync(staticDelegateCallFunction, cancellationToken);
+        }
+
         public override List<Type> GetAllFunctionTypes()
         {
             return new List<Type>
             {
                 typeof(NetworkFunction),
                 typeof(SubnetworkFunction),
-                typeof(SubnetworkIdentifierFunction)
+                typeof(SubnetworkIdentifierFunction),
+                typeof(StaticDelegateCallFunction)
             };
         }
 

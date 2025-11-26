@@ -17,6 +17,9 @@ import org.web3j.abi.datatypes.DynamicStruct;
 import org.web3j.abi.datatypes.Event;
 import org.web3j.abi.datatypes.Function;
 import org.web3j.abi.datatypes.Type;
+import org.web3j.abi.datatypes.Utf8String;
+import org.web3j.abi.datatypes.generated.Bytes1;
+import org.web3j.abi.datatypes.generated.Bytes32;
 import org.web3j.abi.datatypes.generated.Uint256;
 import org.web3j.abi.datatypes.generated.Uint8;
 import org.web3j.abi.datatypes.reflection.Parameterized;
@@ -28,6 +31,7 @@ import org.web3j.protocol.core.methods.request.EthFilter;
 import org.web3j.protocol.core.methods.response.BaseEventResponse;
 import org.web3j.protocol.core.methods.response.Log;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.tuples.generated.Tuple7;
 import org.web3j.tx.Contract;
 import org.web3j.tx.TransactionManager;
 import org.web3j.tx.gas.ContractGasProvider;
@@ -45,6 +49,8 @@ import org.web3j.tx.gas.ContractGasProvider;
 public class IKeyRegistry.abi extends Contract {
     public static final String BINARY = "Bin file was not provided";
 
+    public static final String FUNC_EIP712DOMAIN = "eip712Domain";
+
     public static final String FUNC_GETKEY = "getKey";
 
     public static final String FUNC_GETKEYAT = "getKeyAt";
@@ -61,7 +67,19 @@ public class IKeyRegistry.abi extends Contract {
 
     public static final String FUNC_GETOPERATOR = "getOperator";
 
+    public static final String FUNC_HASHTYPEDDATAV4 = "hashTypedDataV4";
+
+    public static final String FUNC_HASHTYPEDDATAV4CROSSCHAIN = "hashTypedDataV4CrossChain";
+
     public static final String FUNC_SETKEY = "setKey";
+
+    public static final Event EIP712DOMAINCHANGED_EVENT = new Event("EIP712DomainChanged", 
+            Arrays.<TypeReference<?>>asList());
+    ;
+
+    public static final Event INITEIP712_EVENT = new Event("InitEIP712", 
+            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}));
+    ;
 
     public static final Event SETKEY_EVENT = new Event("SetKey", 
             Arrays.<TypeReference<?>>asList(new TypeReference<Address>(true) {}, new TypeReference<Uint8>(true) {}, new TypeReference<DynamicBytes>(true) {}, new TypeReference<DynamicBytes>() {}));
@@ -99,6 +117,29 @@ public class IKeyRegistry.abi extends Contract {
     protected IKeyRegistry.abi(String contractAddress, Web3j web3j,
             TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
         super(BINARY, contractAddress, web3j, transactionManager, contractGasProvider);
+    }
+
+    public RemoteFunctionCall<Tuple7<byte[], String, String, BigInteger, String, byte[], List<BigInteger>>> eip712Domain(
+            ) {
+        final Function function = new Function(FUNC_EIP712DOMAIN, 
+                Arrays.<Type>asList(), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Bytes1>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Uint256>() {}, new TypeReference<Address>() {}, new TypeReference<Bytes32>() {}, new TypeReference<DynamicArray<Uint256>>() {}));
+        return new RemoteFunctionCall<Tuple7<byte[], String, String, BigInteger, String, byte[], List<BigInteger>>>(function,
+                new Callable<Tuple7<byte[], String, String, BigInteger, String, byte[], List<BigInteger>>>() {
+                    @Override
+                    public Tuple7<byte[], String, String, BigInteger, String, byte[], List<BigInteger>> call(
+                            ) throws Exception {
+                        List<Type> results = executeCallMultipleValueReturn(function);
+                        return new Tuple7<byte[], String, String, BigInteger, String, byte[], List<BigInteger>>(
+                                (byte[]) results.get(0).getValue(), 
+                                (String) results.get(1).getValue(), 
+                                (String) results.get(2).getValue(), 
+                                (BigInteger) results.get(3).getValue(), 
+                                (String) results.get(4).getValue(), 
+                                (byte[]) results.get(5).getValue(), 
+                                convertToNative((List<Uint256>) results.get(6).getValue()));
+                    }
+                });
     }
 
     public RemoteFunctionCall<byte[]> getKey(String operator, BigInteger tag) {
@@ -224,6 +265,20 @@ public class IKeyRegistry.abi extends Contract {
         return executeRemoteCallSingleValueReturn(function, String.class);
     }
 
+    public RemoteFunctionCall<byte[]> hashTypedDataV4(byte[] structHash) {
+        final Function function = new Function(FUNC_HASHTYPEDDATAV4, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Bytes32(structHash)), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Bytes32>() {}));
+        return executeRemoteCallSingleValueReturn(function, byte[].class);
+    }
+
+    public RemoteFunctionCall<byte[]> hashTypedDataV4CrossChain(byte[] structHash) {
+        final Function function = new Function(FUNC_HASHTYPEDDATAV4CROSSCHAIN, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Bytes32(structHash)), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Bytes32>() {}));
+        return executeRemoteCallSingleValueReturn(function, byte[].class);
+    }
+
     public RemoteFunctionCall<TransactionReceipt> setKey(BigInteger tag, byte[] key,
             byte[] signature, byte[] extraData) {
         final Function function = new Function(
@@ -234,6 +289,71 @@ public class IKeyRegistry.abi extends Contract {
                 new org.web3j.abi.datatypes.DynamicBytes(extraData)), 
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
+    }
+
+    public static List<EIP712DomainChangedEventResponse> getEIP712DomainChangedEvents(
+            TransactionReceipt transactionReceipt) {
+        List<Contract.EventValuesWithLog> valueList = staticExtractEventParametersWithLog(EIP712DOMAINCHANGED_EVENT, transactionReceipt);
+        ArrayList<EIP712DomainChangedEventResponse> responses = new ArrayList<EIP712DomainChangedEventResponse>(valueList.size());
+        for (Contract.EventValuesWithLog eventValues : valueList) {
+            EIP712DomainChangedEventResponse typedResponse = new EIP712DomainChangedEventResponse();
+            typedResponse.log = eventValues.getLog();
+            responses.add(typedResponse);
+        }
+        return responses;
+    }
+
+    public static EIP712DomainChangedEventResponse getEIP712DomainChangedEventFromLog(Log log) {
+        Contract.EventValuesWithLog eventValues = staticExtractEventParametersWithLog(EIP712DOMAINCHANGED_EVENT, log);
+        EIP712DomainChangedEventResponse typedResponse = new EIP712DomainChangedEventResponse();
+        typedResponse.log = log;
+        return typedResponse;
+    }
+
+    public Flowable<EIP712DomainChangedEventResponse> eIP712DomainChangedEventFlowable(
+            EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getEIP712DomainChangedEventFromLog(log));
+    }
+
+    public Flowable<EIP712DomainChangedEventResponse> eIP712DomainChangedEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(EIP712DOMAINCHANGED_EVENT));
+        return eIP712DomainChangedEventFlowable(filter);
+    }
+
+    public static List<InitEIP712EventResponse> getInitEIP712Events(
+            TransactionReceipt transactionReceipt) {
+        List<Contract.EventValuesWithLog> valueList = staticExtractEventParametersWithLog(INITEIP712_EVENT, transactionReceipt);
+        ArrayList<InitEIP712EventResponse> responses = new ArrayList<InitEIP712EventResponse>(valueList.size());
+        for (Contract.EventValuesWithLog eventValues : valueList) {
+            InitEIP712EventResponse typedResponse = new InitEIP712EventResponse();
+            typedResponse.log = eventValues.getLog();
+            typedResponse.name = (String) eventValues.getNonIndexedValues().get(0).getValue();
+            typedResponse.version = (String) eventValues.getNonIndexedValues().get(1).getValue();
+            responses.add(typedResponse);
+        }
+        return responses;
+    }
+
+    public static InitEIP712EventResponse getInitEIP712EventFromLog(Log log) {
+        Contract.EventValuesWithLog eventValues = staticExtractEventParametersWithLog(INITEIP712_EVENT, log);
+        InitEIP712EventResponse typedResponse = new InitEIP712EventResponse();
+        typedResponse.log = log;
+        typedResponse.name = (String) eventValues.getNonIndexedValues().get(0).getValue();
+        typedResponse.version = (String) eventValues.getNonIndexedValues().get(1).getValue();
+        return typedResponse;
+    }
+
+    public Flowable<InitEIP712EventResponse> initEIP712EventFlowable(EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getInitEIP712EventFromLog(log));
+    }
+
+    public Flowable<InitEIP712EventResponse> initEIP712EventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(INITEIP712_EVENT));
+        return initEIP712EventFlowable(filter);
     }
 
     public static List<SetKeyEventResponse> getSetKeyEvents(TransactionReceipt transactionReceipt) {
@@ -332,6 +452,15 @@ public class IKeyRegistry.abi extends Contract {
             this.operator = operator.getValue();
             this.keys = keys.getValue();
         }
+    }
+
+    public static class EIP712DomainChangedEventResponse extends BaseEventResponse {
+    }
+
+    public static class InitEIP712EventResponse extends BaseEventResponse {
+        public String name;
+
+        public String version;
     }
 
     public static class SetKeyEventResponse extends BaseEventResponse {

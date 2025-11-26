@@ -31,7 +31,7 @@ var (
 
 // IOzAccessManagedMetaData contains all meta data concerning the IOzAccessManaged contract.
 var IOzAccessManagedMetaData = &bind.MetaData{
-	ABI: "[]",
+	ABI: "[{\"type\":\"function\",\"name\":\"authority\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"isConsumingScheduledOp\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"bytes4\",\"internalType\":\"bytes4\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"setAuthority\",\"inputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"event\",\"name\":\"AuthorityUpdated\",\"inputs\":[{\"name\":\"authority\",\"type\":\"address\",\"indexed\":false,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"error\",\"name\":\"AccessManagedInvalidAuthority\",\"inputs\":[{\"name\":\"authority\",\"type\":\"address\",\"internalType\":\"address\"}]},{\"type\":\"error\",\"name\":\"AccessManagedRequiredDelay\",\"inputs\":[{\"name\":\"caller\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"delay\",\"type\":\"uint32\",\"internalType\":\"uint32\"}]},{\"type\":\"error\",\"name\":\"AccessManagedUnauthorized\",\"inputs\":[{\"name\":\"caller\",\"type\":\"address\",\"internalType\":\"address\"}]}]",
 }
 
 // IOzAccessManagedABI is the input ABI used to generate the binding from.
@@ -178,4 +178,221 @@ func (_IOzAccessManaged *IOzAccessManagedTransactorRaw) Transfer(opts *bind.Tran
 // Transact invokes the (paid) contract method with params as input values.
 func (_IOzAccessManaged *IOzAccessManagedTransactorRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
 	return _IOzAccessManaged.Contract.contract.Transact(opts, method, params...)
+}
+
+// Authority is a free data retrieval call binding the contract method 0xbf7e214f.
+//
+// Solidity: function authority() view returns(address)
+func (_IOzAccessManaged *IOzAccessManagedCaller) Authority(opts *bind.CallOpts) (common.Address, error) {
+	var out []interface{}
+	err := _IOzAccessManaged.contract.Call(opts, &out, "authority")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
+}
+
+// Authority is a free data retrieval call binding the contract method 0xbf7e214f.
+//
+// Solidity: function authority() view returns(address)
+func (_IOzAccessManaged *IOzAccessManagedSession) Authority() (common.Address, error) {
+	return _IOzAccessManaged.Contract.Authority(&_IOzAccessManaged.CallOpts)
+}
+
+// Authority is a free data retrieval call binding the contract method 0xbf7e214f.
+//
+// Solidity: function authority() view returns(address)
+func (_IOzAccessManaged *IOzAccessManagedCallerSession) Authority() (common.Address, error) {
+	return _IOzAccessManaged.Contract.Authority(&_IOzAccessManaged.CallOpts)
+}
+
+// IsConsumingScheduledOp is a free data retrieval call binding the contract method 0x8fb36037.
+//
+// Solidity: function isConsumingScheduledOp() view returns(bytes4)
+func (_IOzAccessManaged *IOzAccessManagedCaller) IsConsumingScheduledOp(opts *bind.CallOpts) ([4]byte, error) {
+	var out []interface{}
+	err := _IOzAccessManaged.contract.Call(opts, &out, "isConsumingScheduledOp")
+
+	if err != nil {
+		return *new([4]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([4]byte)).(*[4]byte)
+
+	return out0, err
+
+}
+
+// IsConsumingScheduledOp is a free data retrieval call binding the contract method 0x8fb36037.
+//
+// Solidity: function isConsumingScheduledOp() view returns(bytes4)
+func (_IOzAccessManaged *IOzAccessManagedSession) IsConsumingScheduledOp() ([4]byte, error) {
+	return _IOzAccessManaged.Contract.IsConsumingScheduledOp(&_IOzAccessManaged.CallOpts)
+}
+
+// IsConsumingScheduledOp is a free data retrieval call binding the contract method 0x8fb36037.
+//
+// Solidity: function isConsumingScheduledOp() view returns(bytes4)
+func (_IOzAccessManaged *IOzAccessManagedCallerSession) IsConsumingScheduledOp() ([4]byte, error) {
+	return _IOzAccessManaged.Contract.IsConsumingScheduledOp(&_IOzAccessManaged.CallOpts)
+}
+
+// SetAuthority is a paid mutator transaction binding the contract method 0x7a9e5e4b.
+//
+// Solidity: function setAuthority(address ) returns()
+func (_IOzAccessManaged *IOzAccessManagedTransactor) SetAuthority(opts *bind.TransactOpts, arg0 common.Address) (*types.Transaction, error) {
+	return _IOzAccessManaged.contract.Transact(opts, "setAuthority", arg0)
+}
+
+// SetAuthority is a paid mutator transaction binding the contract method 0x7a9e5e4b.
+//
+// Solidity: function setAuthority(address ) returns()
+func (_IOzAccessManaged *IOzAccessManagedSession) SetAuthority(arg0 common.Address) (*types.Transaction, error) {
+	return _IOzAccessManaged.Contract.SetAuthority(&_IOzAccessManaged.TransactOpts, arg0)
+}
+
+// SetAuthority is a paid mutator transaction binding the contract method 0x7a9e5e4b.
+//
+// Solidity: function setAuthority(address ) returns()
+func (_IOzAccessManaged *IOzAccessManagedTransactorSession) SetAuthority(arg0 common.Address) (*types.Transaction, error) {
+	return _IOzAccessManaged.Contract.SetAuthority(&_IOzAccessManaged.TransactOpts, arg0)
+}
+
+// IOzAccessManagedAuthorityUpdatedIterator is returned from FilterAuthorityUpdated and is used to iterate over the raw logs and unpacked data for AuthorityUpdated events raised by the IOzAccessManaged contract.
+type IOzAccessManagedAuthorityUpdatedIterator struct {
+	Event *IOzAccessManagedAuthorityUpdated // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *IOzAccessManagedAuthorityUpdatedIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(IOzAccessManagedAuthorityUpdated)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(IOzAccessManagedAuthorityUpdated)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *IOzAccessManagedAuthorityUpdatedIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *IOzAccessManagedAuthorityUpdatedIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// IOzAccessManagedAuthorityUpdated represents a AuthorityUpdated event raised by the IOzAccessManaged contract.
+type IOzAccessManagedAuthorityUpdated struct {
+	Authority common.Address
+	Raw       types.Log // Blockchain specific contextual infos
+}
+
+// FilterAuthorityUpdated is a free log retrieval operation binding the contract event 0x2f658b440c35314f52658ea8a740e05b284cdc84dc9ae01e891f21b8933e7cad.
+//
+// Solidity: event AuthorityUpdated(address authority)
+func (_IOzAccessManaged *IOzAccessManagedFilterer) FilterAuthorityUpdated(opts *bind.FilterOpts) (*IOzAccessManagedAuthorityUpdatedIterator, error) {
+
+	logs, sub, err := _IOzAccessManaged.contract.FilterLogs(opts, "AuthorityUpdated")
+	if err != nil {
+		return nil, err
+	}
+	return &IOzAccessManagedAuthorityUpdatedIterator{contract: _IOzAccessManaged.contract, event: "AuthorityUpdated", logs: logs, sub: sub}, nil
+}
+
+// WatchAuthorityUpdated is a free log subscription operation binding the contract event 0x2f658b440c35314f52658ea8a740e05b284cdc84dc9ae01e891f21b8933e7cad.
+//
+// Solidity: event AuthorityUpdated(address authority)
+func (_IOzAccessManaged *IOzAccessManagedFilterer) WatchAuthorityUpdated(opts *bind.WatchOpts, sink chan<- *IOzAccessManagedAuthorityUpdated) (event.Subscription, error) {
+
+	logs, sub, err := _IOzAccessManaged.contract.WatchLogs(opts, "AuthorityUpdated")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(IOzAccessManagedAuthorityUpdated)
+				if err := _IOzAccessManaged.contract.UnpackLog(event, "AuthorityUpdated", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseAuthorityUpdated is a log parse operation binding the contract event 0x2f658b440c35314f52658ea8a740e05b284cdc84dc9ae01e891f21b8933e7cad.
+//
+// Solidity: event AuthorityUpdated(address authority)
+func (_IOzAccessManaged *IOzAccessManagedFilterer) ParseAuthorityUpdated(log types.Log) (*IOzAccessManagedAuthorityUpdated, error) {
+	event := new(IOzAccessManagedAuthorityUpdated)
+	if err := _IOzAccessManaged.contract.UnpackLog(event, "AuthorityUpdated", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
 }

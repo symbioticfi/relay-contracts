@@ -60,11 +60,129 @@ namespace Symbiotic.Relay.IOzAccessControl.abi
             return ContractHandler.QueryAsync<GetRoleFunction, byte[]>(getRoleFunction, blockParameter);
         }
 
+        public Task<byte[]> GetRoleAdminQueryAsync(GetRoleAdminFunction getRoleAdminFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<GetRoleAdminFunction, byte[]>(getRoleAdminFunction, blockParameter);
+        }
+
+        
+        public virtual Task<byte[]> GetRoleAdminQueryAsync(byte[] role, BlockParameter blockParameter = null)
+        {
+            var getRoleAdminFunction = new GetRoleAdminFunction();
+                getRoleAdminFunction.Role = role;
+            
+            return ContractHandler.QueryAsync<GetRoleAdminFunction, byte[]>(getRoleAdminFunction, blockParameter);
+        }
+
+        public virtual Task<string> GrantRoleRequestAsync(GrantRoleFunction grantRoleFunction)
+        {
+             return ContractHandler.SendRequestAsync(grantRoleFunction);
+        }
+
+        public virtual Task<TransactionReceipt> GrantRoleRequestAndWaitForReceiptAsync(GrantRoleFunction grantRoleFunction, CancellationTokenSource cancellationToken = null)
+        {
+             return ContractHandler.SendRequestAndWaitForReceiptAsync(grantRoleFunction, cancellationToken);
+        }
+
+        public virtual Task<string> GrantRoleRequestAsync(byte[] role, string account)
+        {
+            var grantRoleFunction = new GrantRoleFunction();
+                grantRoleFunction.Role = role;
+                grantRoleFunction.Account = account;
+            
+             return ContractHandler.SendRequestAsync(grantRoleFunction);
+        }
+
+        public virtual Task<TransactionReceipt> GrantRoleRequestAndWaitForReceiptAsync(byte[] role, string account, CancellationTokenSource cancellationToken = null)
+        {
+            var grantRoleFunction = new GrantRoleFunction();
+                grantRoleFunction.Role = role;
+                grantRoleFunction.Account = account;
+            
+             return ContractHandler.SendRequestAndWaitForReceiptAsync(grantRoleFunction, cancellationToken);
+        }
+
+        public Task<bool> HasRoleQueryAsync(HasRoleFunction hasRoleFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<HasRoleFunction, bool>(hasRoleFunction, blockParameter);
+        }
+
+        
+        public virtual Task<bool> HasRoleQueryAsync(byte[] role, string account, BlockParameter blockParameter = null)
+        {
+            var hasRoleFunction = new HasRoleFunction();
+                hasRoleFunction.Role = role;
+                hasRoleFunction.Account = account;
+            
+            return ContractHandler.QueryAsync<HasRoleFunction, bool>(hasRoleFunction, blockParameter);
+        }
+
+        public virtual Task<string> RenounceRoleRequestAsync(RenounceRoleFunction renounceRoleFunction)
+        {
+             return ContractHandler.SendRequestAsync(renounceRoleFunction);
+        }
+
+        public virtual Task<TransactionReceipt> RenounceRoleRequestAndWaitForReceiptAsync(RenounceRoleFunction renounceRoleFunction, CancellationTokenSource cancellationToken = null)
+        {
+             return ContractHandler.SendRequestAndWaitForReceiptAsync(renounceRoleFunction, cancellationToken);
+        }
+
+        public virtual Task<string> RenounceRoleRequestAsync(byte[] role, string callerConfirmation)
+        {
+            var renounceRoleFunction = new RenounceRoleFunction();
+                renounceRoleFunction.Role = role;
+                renounceRoleFunction.CallerConfirmation = callerConfirmation;
+            
+             return ContractHandler.SendRequestAsync(renounceRoleFunction);
+        }
+
+        public virtual Task<TransactionReceipt> RenounceRoleRequestAndWaitForReceiptAsync(byte[] role, string callerConfirmation, CancellationTokenSource cancellationToken = null)
+        {
+            var renounceRoleFunction = new RenounceRoleFunction();
+                renounceRoleFunction.Role = role;
+                renounceRoleFunction.CallerConfirmation = callerConfirmation;
+            
+             return ContractHandler.SendRequestAndWaitForReceiptAsync(renounceRoleFunction, cancellationToken);
+        }
+
+        public virtual Task<string> RevokeRoleRequestAsync(RevokeRoleFunction revokeRoleFunction)
+        {
+             return ContractHandler.SendRequestAsync(revokeRoleFunction);
+        }
+
+        public virtual Task<TransactionReceipt> RevokeRoleRequestAndWaitForReceiptAsync(RevokeRoleFunction revokeRoleFunction, CancellationTokenSource cancellationToken = null)
+        {
+             return ContractHandler.SendRequestAndWaitForReceiptAsync(revokeRoleFunction, cancellationToken);
+        }
+
+        public virtual Task<string> RevokeRoleRequestAsync(byte[] role, string account)
+        {
+            var revokeRoleFunction = new RevokeRoleFunction();
+                revokeRoleFunction.Role = role;
+                revokeRoleFunction.Account = account;
+            
+             return ContractHandler.SendRequestAsync(revokeRoleFunction);
+        }
+
+        public virtual Task<TransactionReceipt> RevokeRoleRequestAndWaitForReceiptAsync(byte[] role, string account, CancellationTokenSource cancellationToken = null)
+        {
+            var revokeRoleFunction = new RevokeRoleFunction();
+                revokeRoleFunction.Role = role;
+                revokeRoleFunction.Account = account;
+            
+             return ContractHandler.SendRequestAndWaitForReceiptAsync(revokeRoleFunction, cancellationToken);
+        }
+
         public override List<Type> GetAllFunctionTypes()
         {
             return new List<Type>
             {
-                typeof(GetRoleFunction)
+                typeof(GetRoleFunction),
+                typeof(GetRoleAdminFunction),
+                typeof(GrantRoleFunction),
+                typeof(HasRoleFunction),
+                typeof(RenounceRoleFunction),
+                typeof(RevokeRoleFunction)
             };
         }
 
@@ -72,6 +190,9 @@ namespace Symbiotic.Relay.IOzAccessControl.abi
         {
             return new List<Type>
             {
+                typeof(RoleAdminChangedEventDTO),
+                typeof(RoleGrantedEventDTO),
+                typeof(RoleRevokedEventDTO),
                 typeof(SetSelectorRoleEventDTO)
             };
         }
@@ -80,7 +201,8 @@ namespace Symbiotic.Relay.IOzAccessControl.abi
         {
             return new List<Type>
             {
-
+                typeof(AccessControlBadConfirmationError),
+                typeof(AccessControlUnauthorizedAccountError)
             };
         }
     }

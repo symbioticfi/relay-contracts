@@ -17,11 +17,12 @@ contract KeyBlsBls12381Test is Test {
     address private constant MODEXP = address(0x05);
     uint256 private constant P_A = 0x1a0111ea397fe69a4b1ba7b6434bacd7;
     uint256 private constant P_B = 0x64774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaaab;
-    uint256 private constant P_PLUS_ONE_SLASH_2_A = 0x0680447a8e5ff9a692c6e9ed90d2eb35;
-    uint256 private constant P_PLUS_ONE_SLASH_2_B = 0xd91dd2e13ce144afd9cc34a83dac3d8907aaffffac54ffffee7fbfffffffeaab;
+    uint256 private constant P_PLUS_ONE_OVER_FOUR_A = 0x0680447a8e5ff9a692c6e9ed90d2eb35;
+    uint256 private constant P_PLUS_ONE_OVER_FOUR_B =
+        0xd91dd2e13ce144afd9cc34a83dac3d8907aaffffac54ffffee7fbfffffffeaab;
     uint256 private constant PRE_BRANCH_LOW = type(uint256).max - 3;
     uint256 private constant POST_BRANCH_LOW = 0x9b88b47b0c7aed4098cf2d5f094f09dbe15400014eac00004601000000005556;
-    bytes32 private constant G1_SUBGROUP_ORDER = 0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000001;
+    uint256 private constant G1_SUBGROUP_ORDER = 0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000001;
     address private constant G1_MSM_PRECOMPILE = address(0x0c);
 
     function setUp() public {
@@ -40,10 +41,10 @@ contract KeyBlsBls12381Test is Test {
         BLS12381.G1Point memory identity = BLS12381.G1Point({x_a: 0, x_b: 0, y_a: 0, y_b: 0});
         KeyBlsBls12381.KEY_BLS_BLS12381 memory wrapped = KeyBlsBls12381.wrap(identity);
         BLS12381.G1Point memory unwrapped = wrapped.unwrap();
-        assertEq(unwrapped.x_a, bytes32(0));
-        assertEq(unwrapped.x_b, bytes32(0));
-        assertEq(unwrapped.y_a, bytes32(0));
-        assertEq(unwrapped.y_b, bytes32(0));
+        assertEq(unwrapped.x_a, 0);
+        assertEq(unwrapped.x_b, 0);
+        assertEq(unwrapped.y_a, 0);
+        assertEq(unwrapped.y_b, 0);
     }
 
     function test_WrapUnwrapGenerator() public {
@@ -62,10 +63,10 @@ contract KeyBlsBls12381Test is Test {
         bytes memory serialized = KeyBlsBls12381.serialize(wrapped);
         KeyBlsBls12381.KEY_BLS_BLS12381 memory deserialized = KeyBlsBls12381.deserialize(serialized);
         BLS12381.G1Point memory unwrapped = deserialized.unwrap();
-        assertEq(unwrapped.x_a, bytes32(0));
-        assertEq(unwrapped.x_b, bytes32(0));
-        assertEq(unwrapped.y_a, bytes32(0));
-        assertEq(unwrapped.y_b, bytes32(0));
+        assertEq(unwrapped.x_a, 0);
+        assertEq(unwrapped.x_b, 0);
+        assertEq(unwrapped.y_a, 0);
+        assertEq(unwrapped.y_b, 0);
     }
 
     function test_SerializeDeserializeGenerator() public {
@@ -98,10 +99,10 @@ contract KeyBlsBls12381Test is Test {
         bytes memory encoded = KeyBlsBls12381.toBytes(wrapped);
         KeyBlsBls12381.KEY_BLS_BLS12381 memory decoded = KeyBlsBls12381.fromBytes(encoded);
         BLS12381.G1Point memory unwrapped = decoded.unwrap();
-        assertEq(unwrapped.x_a, bytes32(0));
-        assertEq(unwrapped.x_b, bytes32(0));
-        assertEq(unwrapped.y_a, bytes32(0));
-        assertEq(unwrapped.y_b, bytes32(0));
+        assertEq(unwrapped.x_a, 0);
+        assertEq(unwrapped.x_b, 0);
+        assertEq(unwrapped.y_a, 0);
+        assertEq(unwrapped.y_b, 0);
     }
 
     function test_ToBytesFromBytesGenerator() public {
@@ -120,10 +121,10 @@ contract KeyBlsBls12381Test is Test {
         bytes memory empty = abi.encode([uint256(0), uint256(0)]);
         KeyBlsBls12381.KEY_BLS_BLS12381 memory deserialized = KeyBlsBls12381.deserialize(empty);
         BLS12381.G1Point memory unwrapped = deserialized.unwrap();
-        assertEq(unwrapped.x_a, bytes32(0));
-        assertEq(unwrapped.x_b, bytes32(0));
-        assertEq(unwrapped.y_a, bytes32(0));
-        assertEq(unwrapped.y_b, bytes32(0));
+        assertEq(unwrapped.x_a, 0);
+        assertEq(unwrapped.x_b, 0);
+        assertEq(unwrapped.y_a, 0);
+        assertEq(unwrapped.y_b, 0);
     }
 
     function test_DeserializeRevertsInvalidLength() public {
@@ -147,31 +148,30 @@ contract KeyBlsBls12381Test is Test {
 
     function test_FromBytesRevertsInvalidKey() public {
         BLS12381.G1Point memory invalid = _generator();
-        invalid.y_a = bytes32(uint256(invalid.y_a) + 1);
+        invalid.y_a += 1;
         vm.expectRevert(KeyBlsBls12381.KeyBlsBls12381_InvalidKey.selector);
         mock.fromBytes(abi.encode(invalid));
     }
 
     function test_WrapRevertsInvalidKey() public {
         BLS12381.G1Point memory pt = _generator();
-        pt.y_a = bytes32(uint256(pt.y_a) + 1);
+        pt.y_a += 1;
         vm.expectRevert(KeyBlsBls12381.KeyBlsBls12381_InvalidKey.selector);
         mock.wrap(pt);
     }
 
     function test_WrapRevertsNonSubgroupPoint() public {
-        BLS12381.G1Point memory smallOrder =
-            BLS12381.G1Point({x_a: bytes32(0), x_b: bytes32(0), y_a: bytes32(0), y_b: bytes32(uint256(2))});
+        BLS12381.G1Point memory smallOrder = BLS12381.G1Point({x_a: 0, x_b: 0, y_a: 0, y_b: 2});
         vm.expectRevert(BLS12381.G1MSMFailed.selector);
         mock.wrap(smallOrder);
     }
 
     function test_OutOfBounds() public {
         BLS12381.G1Point memory invalid;
-        invalid.x_a = bytes32(type(uint256).max);
-        invalid.x_b = bytes32(0);
-        invalid.y_a = bytes32(0);
-        invalid.y_b = bytes32(0);
+        invalid.x_a = type(uint256).max;
+        invalid.x_b = 0;
+        invalid.y_a = 0;
+        invalid.y_b = 0;
         vm.expectRevert(KeyBlsBls12381.KeyBlsBls12381_InvalidKey.selector);
         mock.wrap(invalid);
     }
@@ -179,10 +179,10 @@ contract KeyBlsBls12381Test is Test {
     function test_ZeroKey() public {
         KeyBlsBls12381.KEY_BLS_BLS12381 memory zero = mock.zeroKey();
         BLS12381.G1Point memory unwrapped = zero.unwrap();
-        assertEq(unwrapped.x_a, bytes32(0));
-        assertEq(unwrapped.x_b, bytes32(0));
-        assertEq(unwrapped.y_a, bytes32(0));
-        assertEq(unwrapped.y_b, bytes32(0));
+        assertEq(unwrapped.x_a, 0);
+        assertEq(unwrapped.x_b, 0);
+        assertEq(unwrapped.y_a, 0);
+        assertEq(unwrapped.y_b, 0);
     }
 
     function test_Equal() public {
@@ -235,10 +235,10 @@ contract KeyBlsBls12381Test is Test {
 
     function _nonSubgroupPoint() internal pure returns (BLS12381.G1Point memory) {
         return BLS12381.G1Point({
-            x_a: bytes32(0),
-            x_b: bytes32(uint256(4)),
-            y_a: bytes32(uint256(0x000000000000000000000000000000000a989badd40d6212b33cffc3f3763e9b)),
-            y_b: bytes32(uint256(0xc760f988c9926b26da9dd85e928483446346b8ed00e1de5d5ea93e354abe706c))
+            x_a: 0,
+            x_b: 4,
+            y_a: 0x000000000000000000000000000000000a989badd40d6212b33cffc3f3763e9b,
+            y_b: 0xc760f988c9926b26da9dd85e928483446346b8ed00e1de5d5ea93e354abe706c
         });
     }
 }

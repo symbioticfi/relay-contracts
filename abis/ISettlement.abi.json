@@ -1,6 +1,45 @@
 [
     {
         "type": "function",
+        "name": "NETWORK",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "SUBNETWORK",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32",
+                "internalType": "bytes32"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "SUBNETWORK_IDENTIFIER",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint96",
+                "internalType": "uint96"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
         "name": "VALIDATOR_SET_VERSION",
         "inputs": [],
         "outputs": [
@@ -83,6 +122,49 @@
         ],
         "outputs": [],
         "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "eip712Domain",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "fields",
+                "type": "bytes1",
+                "internalType": "bytes1"
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "internalType": "string"
+            },
+            {
+                "name": "version",
+                "type": "string",
+                "internalType": "string"
+            },
+            {
+                "name": "chainId",
+                "type": "uint256",
+                "internalType": "uint256"
+            },
+            {
+                "name": "verifyingContract",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "salt",
+                "type": "bytes32",
+                "internalType": "bytes32"
+            },
+            {
+                "name": "extensions",
+                "type": "uint256[]",
+                "internalType": "uint256[]"
+            }
+        ],
+        "stateMutability": "view"
     },
     {
         "type": "function",
@@ -509,6 +591,44 @@
     },
     {
         "type": "function",
+        "name": "hashTypedDataV4",
+        "inputs": [
+            {
+                "name": "structHash",
+                "type": "bytes32",
+                "internalType": "bytes32"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32",
+                "internalType": "bytes32"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "hashTypedDataV4CrossChain",
+        "inputs": [
+            {
+                "name": "structHash",
+                "type": "bytes32",
+                "internalType": "bytes32"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32",
+                "internalType": "bytes32"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
         "name": "isValSetHeaderCommittedAt",
         "inputs": [
             {
@@ -601,6 +721,24 @@
                 "name": "sigVerifier",
                 "type": "address",
                 "internalType": "address"
+            }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "staticDelegateCall",
+        "inputs": [
+            {
+                "name": "target",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "data",
+                "type": "bytes",
+                "internalType": "bytes"
             }
         ],
         "outputs": [],
@@ -754,6 +892,31 @@
     },
     {
         "type": "event",
+        "name": "EIP712DomainChanged",
+        "inputs": [],
+        "anonymous": false
+    },
+    {
+        "type": "event",
+        "name": "InitEIP712",
+        "inputs": [
+            {
+                "name": "name",
+                "type": "string",
+                "indexed": false,
+                "internalType": "string"
+            },
+            {
+                "name": "version",
+                "type": "string",
+                "indexed": false,
+                "internalType": "string"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "event",
         "name": "InitSigVerifier",
         "inputs": [
             {
@@ -761,6 +924,25 @@
                 "type": "address",
                 "indexed": false,
                 "internalType": "address"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "event",
+        "name": "InitSubnetwork",
+        "inputs": [
+            {
+                "name": "network",
+                "type": "address",
+                "indexed": false,
+                "internalType": "address"
+            },
+            {
+                "name": "subnetworkId",
+                "type": "uint96",
+                "indexed": false,
+                "internalType": "uint96"
             }
         ],
         "anonymous": false
@@ -845,6 +1027,11 @@
             }
         ],
         "anonymous": false
+    },
+    {
+        "type": "error",
+        "name": "NetworkManager_InvalidNetwork",
+        "inputs": []
     },
     {
         "type": "error",

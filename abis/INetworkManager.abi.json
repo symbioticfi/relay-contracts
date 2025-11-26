@@ -39,6 +39,24 @@
         "stateMutability": "view"
     },
     {
+        "type": "function",
+        "name": "staticDelegateCall",
+        "inputs": [
+            {
+                "name": "target",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "data",
+                "type": "bytes",
+                "internalType": "bytes"
+            }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
         "type": "event",
         "name": "InitSubnetwork",
         "inputs": [

@@ -20,6 +20,7 @@ import org.web3j.abi.datatypes.Event;
 import org.web3j.abi.datatypes.Function;
 import org.web3j.abi.datatypes.StaticStruct;
 import org.web3j.abi.datatypes.Type;
+import org.web3j.abi.datatypes.generated.Bytes32;
 import org.web3j.abi.datatypes.generated.Uint208;
 import org.web3j.abi.datatypes.generated.Uint248;
 import org.web3j.abi.datatypes.generated.Uint256;
@@ -27,6 +28,7 @@ import org.web3j.abi.datatypes.generated.Uint32;
 import org.web3j.abi.datatypes.generated.Uint48;
 import org.web3j.abi.datatypes.generated.Uint64;
 import org.web3j.abi.datatypes.generated.Uint8;
+import org.web3j.abi.datatypes.generated.Uint96;
 import org.web3j.abi.datatypes.reflection.Parameterized;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
@@ -55,6 +57,12 @@ public class IValSetDriver.abi extends Contract {
 
     public static final String FUNC_MAX_QUORUM_THRESHOLD = "MAX_QUORUM_THRESHOLD";
 
+    public static final String FUNC_NETWORK = "NETWORK";
+
+    public static final String FUNC_SUBNETWORK = "SUBNETWORK";
+
+    public static final String FUNC_SUBNETWORK_IDENTIFIER = "SUBNETWORK_IDENTIFIER";
+
     public static final String FUNC_ADDQUORUMTHRESHOLD = "addQuorumThreshold";
 
     public static final String FUNC_ADDSETTLEMENT = "addSettlement";
@@ -68,6 +76,18 @@ public class IValSetDriver.abi extends Contract {
     public static final String FUNC_GETCONFIG = "getConfig";
 
     public static final String FUNC_GETCONFIGAT = "getConfigAt";
+
+    public static final String FUNC_GETCURRENTEPOCH = "getCurrentEpoch";
+
+    public static final String FUNC_GETCURRENTEPOCHDURATION = "getCurrentEpochDuration";
+
+    public static final String FUNC_GETCURRENTEPOCHSTART = "getCurrentEpochStart";
+
+    public static final String FUNC_GETEPOCHDURATION = "getEpochDuration";
+
+    public static final String FUNC_GETEPOCHINDEX = "getEpochIndex";
+
+    public static final String FUNC_GETEPOCHSTART = "getEpochStart";
 
     public static final String FUNC_GETKEYSPROVIDER = "getKeysProvider";
 
@@ -84,6 +104,12 @@ public class IValSetDriver.abi extends Contract {
     public static final String FUNC_GETMININCLUSIONVOTINGPOWER = "getMinInclusionVotingPower";
 
     public static final String FUNC_GETMININCLUSIONVOTINGPOWERAT = "getMinInclusionVotingPowerAt";
+
+    public static final String FUNC_GETNEXTEPOCH = "getNextEpoch";
+
+    public static final String FUNC_GETNEXTEPOCHDURATION = "getNextEpochDuration";
+
+    public static final String FUNC_GETNEXTEPOCHSTART = "getNextEpochStart";
 
     public static final String FUNC_GETNUMAGGREGATORS = "getNumAggregators";
 
@@ -137,6 +163,8 @@ public class IValSetDriver.abi extends Contract {
 
     public static final String FUNC_SETCOMMITTERSLOTDURATION = "setCommitterSlotDuration";
 
+    public static final String FUNC_SETEPOCHDURATION = "setEpochDuration";
+
     public static final String FUNC_SETKEYSPROVIDER = "setKeysProvider";
 
     public static final String FUNC_SETMAXVALIDATORSCOUNT = "setMaxValidatorsCount";
@@ -155,6 +183,8 @@ public class IValSetDriver.abi extends Contract {
 
     public static final String FUNC_SETVERIFICATIONTYPE = "setVerificationType";
 
+    public static final String FUNC_STATICDELEGATECALL = "staticDelegateCall";
+
     public static final Event ADDQUORUMTHRESHOLD_EVENT = new Event("AddQuorumThreshold", 
             Arrays.<TypeReference<?>>asList(new TypeReference<QuorumThreshold>() {}));
     ;
@@ -165,6 +195,14 @@ public class IValSetDriver.abi extends Contract {
 
     public static final Event ADDVOTINGPOWERPROVIDER_EVENT = new Event("AddVotingPowerProvider", 
             Arrays.<TypeReference<?>>asList(new TypeReference<CrossChainAddress>() {}));
+    ;
+
+    public static final Event INITEPOCHDURATION_EVENT = new Event("InitEpochDuration", 
+            Arrays.<TypeReference<?>>asList(new TypeReference<Uint48>() {}, new TypeReference<Uint48>() {}));
+    ;
+
+    public static final Event INITSUBNETWORK_EVENT = new Event("InitSubnetwork", 
+            Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {}, new TypeReference<Uint96>() {}));
     ;
 
     public static final Event REMOVEQUORUMTHRESHOLD_EVENT = new Event("RemoveQuorumThreshold", 
@@ -180,6 +218,10 @@ public class IValSetDriver.abi extends Contract {
     ;
 
     public static final Event SETCOMMITTERSLOTDURATION_EVENT = new Event("SetCommitterSlotDuration", 
+            Arrays.<TypeReference<?>>asList(new TypeReference<Uint48>() {}));
+    ;
+
+    public static final Event SETEPOCHDURATION_EVENT = new Event("SetEpochDuration", 
             Arrays.<TypeReference<?>>asList(new TypeReference<Uint48>() {}));
     ;
 
@@ -217,6 +259,22 @@ public class IValSetDriver.abi extends Contract {
 
     public static final Event SETVERIFICATIONTYPE_EVENT = new Event("SetVerificationType", 
             Arrays.<TypeReference<?>>asList(new TypeReference<Uint32>() {}));
+    ;
+
+    public static final CustomError EPOCHMANAGER_INVALIDEPOCHDURATION_ERROR = new CustomError("EpochManager_InvalidEpochDuration", 
+            Arrays.<TypeReference<?>>asList());
+    ;
+
+    public static final CustomError EPOCHMANAGER_INVALIDEPOCHDURATIONTIMESTAMP_ERROR = new CustomError("EpochManager_InvalidEpochDurationTimestamp", 
+            Arrays.<TypeReference<?>>asList());
+    ;
+
+    public static final CustomError EPOCHMANAGER_TOOOLDTIMESTAMP_ERROR = new CustomError("EpochManager_TooOldTimestamp", 
+            Arrays.<TypeReference<?>>asList());
+    ;
+
+    public static final CustomError NETWORKMANAGER_INVALIDNETWORK_ERROR = new CustomError("NetworkManager_InvalidNetwork", 
+            Arrays.<TypeReference<?>>asList());
     ;
 
     public static final CustomError VALSETDRIVER_CHAINALREADYADDED_ERROR = new CustomError("ValSetDriver_ChainAlreadyAdded", 
@@ -284,6 +342,27 @@ public class IValSetDriver.abi extends Contract {
         return executeRemoteCallSingleValueReturn(function, BigInteger.class);
     }
 
+    public RemoteFunctionCall<String> NETWORK() {
+        final Function function = new Function(FUNC_NETWORK, 
+                Arrays.<Type>asList(), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {}));
+        return executeRemoteCallSingleValueReturn(function, String.class);
+    }
+
+    public RemoteFunctionCall<byte[]> SUBNETWORK() {
+        final Function function = new Function(FUNC_SUBNETWORK, 
+                Arrays.<Type>asList(), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Bytes32>() {}));
+        return executeRemoteCallSingleValueReturn(function, byte[].class);
+    }
+
+    public RemoteFunctionCall<BigInteger> SUBNETWORK_IDENTIFIER() {
+        final Function function = new Function(FUNC_SUBNETWORK_IDENTIFIER, 
+                Arrays.<Type>asList(), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Uint96>() {}));
+        return executeRemoteCallSingleValueReturn(function, BigInteger.class);
+    }
+
     public RemoteFunctionCall<TransactionReceipt> addQuorumThreshold(
             QuorumThreshold quorumThreshold) {
         final Function function = new Function(
@@ -336,6 +415,48 @@ public class IValSetDriver.abi extends Contract {
                 Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint48(timestamp)), 
                 Arrays.<TypeReference<?>>asList(new TypeReference<Config>() {}));
         return executeRemoteCallSingleValueReturn(function, Config.class);
+    }
+
+    public RemoteFunctionCall<BigInteger> getCurrentEpoch() {
+        final Function function = new Function(FUNC_GETCURRENTEPOCH, 
+                Arrays.<Type>asList(), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Uint48>() {}));
+        return executeRemoteCallSingleValueReturn(function, BigInteger.class);
+    }
+
+    public RemoteFunctionCall<BigInteger> getCurrentEpochDuration() {
+        final Function function = new Function(FUNC_GETCURRENTEPOCHDURATION, 
+                Arrays.<Type>asList(), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Uint48>() {}));
+        return executeRemoteCallSingleValueReturn(function, BigInteger.class);
+    }
+
+    public RemoteFunctionCall<BigInteger> getCurrentEpochStart() {
+        final Function function = new Function(FUNC_GETCURRENTEPOCHSTART, 
+                Arrays.<Type>asList(), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Uint48>() {}));
+        return executeRemoteCallSingleValueReturn(function, BigInteger.class);
+    }
+
+    public RemoteFunctionCall<BigInteger> getEpochDuration(BigInteger epoch) {
+        final Function function = new Function(FUNC_GETEPOCHDURATION, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint48(epoch)), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Uint48>() {}));
+        return executeRemoteCallSingleValueReturn(function, BigInteger.class);
+    }
+
+    public RemoteFunctionCall<BigInteger> getEpochIndex(BigInteger timestamp) {
+        final Function function = new Function(FUNC_GETEPOCHINDEX, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint48(timestamp)), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Uint48>() {}));
+        return executeRemoteCallSingleValueReturn(function, BigInteger.class);
+    }
+
+    public RemoteFunctionCall<BigInteger> getEpochStart(BigInteger epoch) {
+        final Function function = new Function(FUNC_GETEPOCHSTART, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint48(epoch)), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Uint48>() {}));
+        return executeRemoteCallSingleValueReturn(function, BigInteger.class);
     }
 
     public RemoteFunctionCall<CrossChainAddress> getKeysProvider() {
@@ -391,6 +512,27 @@ public class IValSetDriver.abi extends Contract {
         final Function function = new Function(FUNC_GETMININCLUSIONVOTINGPOWERAT, 
                 Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint48(timestamp)), 
                 Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));
+        return executeRemoteCallSingleValueReturn(function, BigInteger.class);
+    }
+
+    public RemoteFunctionCall<BigInteger> getNextEpoch() {
+        final Function function = new Function(FUNC_GETNEXTEPOCH, 
+                Arrays.<Type>asList(), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Uint48>() {}));
+        return executeRemoteCallSingleValueReturn(function, BigInteger.class);
+    }
+
+    public RemoteFunctionCall<BigInteger> getNextEpochDuration() {
+        final Function function = new Function(FUNC_GETNEXTEPOCHDURATION, 
+                Arrays.<Type>asList(), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Uint48>() {}));
+        return executeRemoteCallSingleValueReturn(function, BigInteger.class);
+    }
+
+    public RemoteFunctionCall<BigInteger> getNextEpochStart() {
+        final Function function = new Function(FUNC_GETNEXTEPOCHSTART, 
+                Arrays.<Type>asList(), 
+                Arrays.<TypeReference<?>>asList(new TypeReference<Uint48>() {}));
         return executeRemoteCallSingleValueReturn(function, BigInteger.class);
     }
 
@@ -655,6 +797,14 @@ public class IValSetDriver.abi extends Contract {
         return executeRemoteCallTransaction(function);
     }
 
+    public RemoteFunctionCall<TransactionReceipt> setEpochDuration(BigInteger epochDuration) {
+        final Function function = new Function(
+                FUNC_SETEPOCHDURATION, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint48(epochDuration)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
     public RemoteFunctionCall<TransactionReceipt> setKeysProvider(CrossChainAddress keysProvider) {
         final Function function = new Function(
                 FUNC_SETKEYSPROVIDER, 
@@ -729,6 +879,15 @@ public class IValSetDriver.abi extends Contract {
         final Function function = new Function(
                 FUNC_SETVERIFICATIONTYPE, 
                 Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint32(verificationType)), 
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> staticDelegateCall(String target, byte[] data) {
+        final Function function = new Function(
+                FUNC_STATICDELEGATECALL, 
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(160, target), 
+                new org.web3j.abi.datatypes.DynamicBytes(data)), 
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
@@ -830,6 +989,75 @@ public class IValSetDriver.abi extends Contract {
         EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
         filter.addSingleTopic(EventEncoder.encode(ADDVOTINGPOWERPROVIDER_EVENT));
         return addVotingPowerProviderEventFlowable(filter);
+    }
+
+    public static List<InitEpochDurationEventResponse> getInitEpochDurationEvents(
+            TransactionReceipt transactionReceipt) {
+        List<Contract.EventValuesWithLog> valueList = staticExtractEventParametersWithLog(INITEPOCHDURATION_EVENT, transactionReceipt);
+        ArrayList<InitEpochDurationEventResponse> responses = new ArrayList<InitEpochDurationEventResponse>(valueList.size());
+        for (Contract.EventValuesWithLog eventValues : valueList) {
+            InitEpochDurationEventResponse typedResponse = new InitEpochDurationEventResponse();
+            typedResponse.log = eventValues.getLog();
+            typedResponse.epochDuration = (BigInteger) eventValues.getNonIndexedValues().get(0).getValue();
+            typedResponse.epochDurationTimestamp = (BigInteger) eventValues.getNonIndexedValues().get(1).getValue();
+            responses.add(typedResponse);
+        }
+        return responses;
+    }
+
+    public static InitEpochDurationEventResponse getInitEpochDurationEventFromLog(Log log) {
+        Contract.EventValuesWithLog eventValues = staticExtractEventParametersWithLog(INITEPOCHDURATION_EVENT, log);
+        InitEpochDurationEventResponse typedResponse = new InitEpochDurationEventResponse();
+        typedResponse.log = log;
+        typedResponse.epochDuration = (BigInteger) eventValues.getNonIndexedValues().get(0).getValue();
+        typedResponse.epochDurationTimestamp = (BigInteger) eventValues.getNonIndexedValues().get(1).getValue();
+        return typedResponse;
+    }
+
+    public Flowable<InitEpochDurationEventResponse> initEpochDurationEventFlowable(
+            EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getInitEpochDurationEventFromLog(log));
+    }
+
+    public Flowable<InitEpochDurationEventResponse> initEpochDurationEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(INITEPOCHDURATION_EVENT));
+        return initEpochDurationEventFlowable(filter);
+    }
+
+    public static List<InitSubnetworkEventResponse> getInitSubnetworkEvents(
+            TransactionReceipt transactionReceipt) {
+        List<Contract.EventValuesWithLog> valueList = staticExtractEventParametersWithLog(INITSUBNETWORK_EVENT, transactionReceipt);
+        ArrayList<InitSubnetworkEventResponse> responses = new ArrayList<InitSubnetworkEventResponse>(valueList.size());
+        for (Contract.EventValuesWithLog eventValues : valueList) {
+            InitSubnetworkEventResponse typedResponse = new InitSubnetworkEventResponse();
+            typedResponse.log = eventValues.getLog();
+            typedResponse.network = (String) eventValues.getNonIndexedValues().get(0).getValue();
+            typedResponse.subnetworkId = (BigInteger) eventValues.getNonIndexedValues().get(1).getValue();
+            responses.add(typedResponse);
+        }
+        return responses;
+    }
+
+    public static InitSubnetworkEventResponse getInitSubnetworkEventFromLog(Log log) {
+        Contract.EventValuesWithLog eventValues = staticExtractEventParametersWithLog(INITSUBNETWORK_EVENT, log);
+        InitSubnetworkEventResponse typedResponse = new InitSubnetworkEventResponse();
+        typedResponse.log = log;
+        typedResponse.network = (String) eventValues.getNonIndexedValues().get(0).getValue();
+        typedResponse.subnetworkId = (BigInteger) eventValues.getNonIndexedValues().get(1).getValue();
+        return typedResponse;
+    }
+
+    public Flowable<InitSubnetworkEventResponse> initSubnetworkEventFlowable(EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getInitSubnetworkEventFromLog(log));
+    }
+
+    public Flowable<InitSubnetworkEventResponse> initSubnetworkEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(INITSUBNETWORK_EVENT));
+        return initSubnetworkEventFlowable(filter);
     }
 
     public static List<RemoveQuorumThresholdEventResponse> getRemoveQuorumThresholdEvents(
@@ -963,6 +1191,38 @@ public class IValSetDriver.abi extends Contract {
         EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
         filter.addSingleTopic(EventEncoder.encode(SETCOMMITTERSLOTDURATION_EVENT));
         return setCommitterSlotDurationEventFlowable(filter);
+    }
+
+    public static List<SetEpochDurationEventResponse> getSetEpochDurationEvents(
+            TransactionReceipt transactionReceipt) {
+        List<Contract.EventValuesWithLog> valueList = staticExtractEventParametersWithLog(SETEPOCHDURATION_EVENT, transactionReceipt);
+        ArrayList<SetEpochDurationEventResponse> responses = new ArrayList<SetEpochDurationEventResponse>(valueList.size());
+        for (Contract.EventValuesWithLog eventValues : valueList) {
+            SetEpochDurationEventResponse typedResponse = new SetEpochDurationEventResponse();
+            typedResponse.log = eventValues.getLog();
+            typedResponse.epochDuration = (BigInteger) eventValues.getNonIndexedValues().get(0).getValue();
+            responses.add(typedResponse);
+        }
+        return responses;
+    }
+
+    public static SetEpochDurationEventResponse getSetEpochDurationEventFromLog(Log log) {
+        Contract.EventValuesWithLog eventValues = staticExtractEventParametersWithLog(SETEPOCHDURATION_EVENT, log);
+        SetEpochDurationEventResponse typedResponse = new SetEpochDurationEventResponse();
+        typedResponse.log = log;
+        typedResponse.epochDuration = (BigInteger) eventValues.getNonIndexedValues().get(0).getValue();
+        return typedResponse;
+    }
+
+    public Flowable<SetEpochDurationEventResponse> setEpochDurationEventFlowable(EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getSetEpochDurationEventFromLog(log));
+    }
+
+    public Flowable<SetEpochDurationEventResponse> setEpochDurationEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(SETEPOCHDURATION_EVENT));
+        return setEpochDurationEventFlowable(filter);
     }
 
     public static List<SetKeysProviderEventResponse> getSetKeysProviderEvents(
@@ -1423,6 +1683,18 @@ public class IValSetDriver.abi extends Contract {
         public CrossChainAddress votingPowerProvider;
     }
 
+    public static class InitEpochDurationEventResponse extends BaseEventResponse {
+        public BigInteger epochDuration;
+
+        public BigInteger epochDurationTimestamp;
+    }
+
+    public static class InitSubnetworkEventResponse extends BaseEventResponse {
+        public String network;
+
+        public BigInteger subnetworkId;
+    }
+
     public static class RemoveQuorumThresholdEventResponse extends BaseEventResponse {
         public QuorumThreshold quorumThreshold;
     }
@@ -1437,6 +1709,10 @@ public class IValSetDriver.abi extends Contract {
 
     public static class SetCommitterSlotDurationEventResponse extends BaseEventResponse {
         public BigInteger committerSlotDuration;
+    }
+
+    public static class SetEpochDurationEventResponse extends BaseEventResponse {
+        public BigInteger epochDuration;
     }
 
     public static class SetKeysProviderEventResponse extends BaseEventResponse {

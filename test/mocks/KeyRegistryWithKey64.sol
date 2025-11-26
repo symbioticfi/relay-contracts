@@ -5,8 +5,6 @@ import {KeyRegistry} from "../../src/modules/key-registry/KeyRegistry.sol";
 
 import {IKeyRegistry} from "../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
 
-import {MulticallUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
-
 import {OzEIP712} from "../../src/modules/base/OzEIP712.sol";
 
 import {Checkpoints} from "../../src/libraries/structs/Checkpoints.sol";

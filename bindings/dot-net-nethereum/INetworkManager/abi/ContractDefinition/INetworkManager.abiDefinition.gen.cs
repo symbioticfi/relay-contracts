@@ -51,6 +51,17 @@ namespace Symbiotic.Relay.INetworkManager.abi.ContractDefinition
 
     }
 
+    public partial class StaticDelegateCallFunction : StaticDelegateCallFunctionBase { }
+
+    [Function("staticDelegateCall")]
+    public class StaticDelegateCallFunctionBase : FunctionMessage
+    {
+        [Parameter("address", "target", 1)]
+        public virtual string Target { get; set; }
+        [Parameter("bytes", "data", 2)]
+        public virtual byte[] Data { get; set; }
+    }
+
     public partial class InitSubnetworkEventDTO : InitSubnetworkEventDTOBase { }
 
     [Event("InitSubnetwork")]
@@ -94,4 +105,6 @@ namespace Symbiotic.Relay.INetworkManager.abi.ContractDefinition
         [Parameter("uint96", "", 1)]
         public virtual BigInteger ReturnValue1 { get; set; }
     }
+
+
 }

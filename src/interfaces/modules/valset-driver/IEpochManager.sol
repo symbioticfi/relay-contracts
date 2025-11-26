@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import {IPermissionManager} from "../base/IPermissionManager.sol";
+
 import {Checkpoints} from "../../../libraries/structs/Checkpoints.sol";
 
 /**
