@@ -1,5 +1,8 @@
 # PersistentSet
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/3555af95a3dd521f0c0f40867fec8f48136f728e/src/libraries/structs/PersistentSet.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1995c1a184b888d15ac64e40eea29de97ad1d11a/src/libraries/structs/PersistentSet.sol)
+
+**Title:**
+PersistentSet
 
 Library implementing a persistent set using Checkpoints.
 

@@ -1,8 +1,11 @@
 # IKeyRegistry
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/3555af95a3dd521f0c0f40867fec8f48136f728e/src/interfaces/modules/key-registry/IKeyRegistry.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1995c1a184b888d15ac64e40eea29de97ad1d11a/src/interfaces/modules/key-registry/IKeyRegistry.sol)
 
 **Inherits:**
-[IOzEIP712](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/base/IOzEIP712.sol/interface.IOzEIP712.md)
+[IOzEIP712](/src/interfaces/modules/base/IOzEIP712.sol/interface.IOzEIP712.md)
+
+**Title:**
+IKeyRegistry
 
 Interface for the KeyRegistry contract.
 

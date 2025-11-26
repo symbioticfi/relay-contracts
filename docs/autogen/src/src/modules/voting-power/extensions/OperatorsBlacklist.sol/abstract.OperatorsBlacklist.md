@@ -1,8 +1,11 @@
 # OperatorsBlacklist
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/3555af95a3dd521f0c0f40867fec8f48136f728e/src/modules/voting-power/extensions/OperatorsBlacklist.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1995c1a184b888d15ac64e40eea29de97ad1d11a/src/modules/voting-power/extensions/OperatorsBlacklist.sol)
 
 **Inherits:**
-[VotingPowerProvider](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/VotingPowerProvider.sol/abstract.VotingPowerProvider.md), [IOperatorsBlacklist](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/extensions/IOperatorsBlacklist.sol/interface.IOperatorsBlacklist.md)
+[VotingPowerProvider](/src/modules/voting-power/VotingPowerProvider.sol/abstract.VotingPowerProvider.md), [IOperatorsBlacklist](/src/interfaces/modules/voting-power/extensions/IOperatorsBlacklist.sol/interface.IOperatorsBlacklist.md)
+
+**Title:**
+OperatorsBlacklist
 
 Contract for blacklisting operators.
 

@@ -1,8 +1,11 @@
 # VotingPowerProvider
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/3555af95a3dd521f0c0f40867fec8f48136f728e/src/modules/voting-power/VotingPowerProvider.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1995c1a184b888d15ac64e40eea29de97ad1d11a/src/modules/voting-power/VotingPowerProvider.sol)
 
 **Inherits:**
-[NetworkManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/NetworkManager.sol/abstract.NetworkManager.md), [VotingPowerCalcManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/base/VotingPowerCalcManager.sol/abstract.VotingPowerCalcManager.md), [OzEIP712](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/OzEIP712.sol/abstract.OzEIP712.md), [PermissionManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), NoncesUpgradeable, MulticallUpgradeable, [IVotingPowerProvider](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/IVotingPowerProvider.sol/interface.IVotingPowerProvider.md)
+[NetworkManager](/src/modules/base/NetworkManager.sol/abstract.NetworkManager.md), [VotingPowerCalcManager](/src/modules/voting-power/base/VotingPowerCalcManager.sol/abstract.VotingPowerCalcManager.md), [OzEIP712](/src/modules/base/OzEIP712.sol/abstract.OzEIP712.md), [PermissionManager](/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), NoncesUpgradeable, MulticallUpgradeable, [IVotingPowerProvider](/src/interfaces/modules/voting-power/IVotingPowerProvider.sol/interface.IVotingPowerProvider.md)
+
+**Title:**
+VotingPowerProvider
 
 Contract for managing tokens, operators, vaults, and their voting powers.
 
@@ -380,7 +383,7 @@ function isOperatorVaultRegistered(address vault) public view virtual returns (b
 
 ### isOperatorVaultRegisteredAt
 
-Returns the status of the operator vault registration.
+Returns the status of the operator vault registration at a specific timestamp.
 
 
 ```solidity
@@ -394,9 +397,9 @@ function isOperatorVaultRegisteredAt(address operator, address vault, uint48 tim
 
 |Name|Type|Description|
 |----|----|-----------|
-|`operator`|`address`||
+|`operator`|`address`|The operator.|
 |`vault`|`address`|The operator vault.|
-|`timestamp`|`uint48`||
+|`timestamp`|`uint48`|The timestamp.|
 
 **Returns**
 
@@ -417,7 +420,7 @@ function isOperatorVaultRegistered(address operator, address vault) public view 
 
 |Name|Type|Description|
 |----|----|-----------|
-|`operator`|`address`||
+|`operator`|`address`|The operator.|
 |`vault`|`address`|The operator vault.|
 
 **Returns**

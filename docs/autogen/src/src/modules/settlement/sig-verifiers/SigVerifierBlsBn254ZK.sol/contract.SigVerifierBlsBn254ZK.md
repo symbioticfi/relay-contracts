@@ -1,8 +1,11 @@
 # SigVerifierBlsBn254ZK
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/3555af95a3dd521f0c0f40867fec8f48136f728e/src/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1995c1a184b888d15ac64e40eea29de97ad1d11a/src/modules/settlement/sig-verifiers/SigVerifierBlsBn254ZK.sol)
 
 **Inherits:**
-[ISigVerifierBlsBn254ZK](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254ZK.sol/interface.ISigVerifierBlsBn254ZK.md)
+[ISigVerifierBlsBn254ZK](/src/interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254ZK.sol/interface.ISigVerifierBlsBn254ZK.md)
+
+**Title:**
+SigVerifierBlsBn254ZK
 
 Contract for verifying validator's set attestations based on BLS signatures on the BN254 curve
 by decompressing the whole validator set using ZK.
@@ -37,8 +40,6 @@ bytes32 public constant VALIDATOR_SET_HASH_MIMC_HASH = keccak256("validatorSetHa
 
 
 ### verifiers
-Returns the verifier at the given index.
-
 
 ```solidity
 address[] public verifiers
@@ -46,8 +47,6 @@ address[] public verifiers
 
 
 ### maxValidators
-Returns the maximum supported number of validators for the verifier at the given index.
-
 
 ```solidity
 uint256[] public maxValidators

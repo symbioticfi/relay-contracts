@@ -1,8 +1,11 @@
 # OperatorVaults
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/3555af95a3dd521f0c0f40867fec8f48136f728e/src/modules/voting-power/extensions/OperatorVaults.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1995c1a184b888d15ac64e40eea29de97ad1d11a/src/modules/voting-power/extensions/OperatorVaults.sol)
 
 **Inherits:**
-[VotingPowerProvider](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/VotingPowerProvider.sol/abstract.VotingPowerProvider.md), [IOperatorVaults](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/extensions/IOperatorVaults.sol/interface.IOperatorVaults.md)
+[VotingPowerProvider](/src/modules/voting-power/VotingPowerProvider.sol/abstract.VotingPowerProvider.md), [IOperatorVaults](/src/interfaces/modules/voting-power/extensions/IOperatorVaults.sol/interface.IOperatorVaults.md)
+
+**Title:**
+OperatorVaults
 
 Contract for registering and unregistering operator vaults.
 
@@ -55,7 +58,7 @@ function unregisterOperatorVault(address operator, address vault) public virtual
 
 Unregisters the operator vault.
 
-The caller must have the needed permission.
+The caller must be the operator of the vault.
 
 
 ```solidity

@@ -1,8 +1,11 @@
 # Settlement
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/3555af95a3dd521f0c0f40867fec8f48136f728e/src/modules/settlement/Settlement.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1995c1a184b888d15ac64e40eea29de97ad1d11a/src/modules/settlement/Settlement.sol)
 
 **Inherits:**
-[NetworkManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/NetworkManager.sol/abstract.NetworkManager.md), [OzEIP712](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/OzEIP712.sol/abstract.OzEIP712.md), [PermissionManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), MulticallUpgradeable, [ISettlement](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/settlement/ISettlement.sol/interface.ISettlement.md)
+[NetworkManager](/src/modules/base/NetworkManager.sol/abstract.NetworkManager.md), [OzEIP712](/src/modules/base/OzEIP712.sol/abstract.OzEIP712.md), [PermissionManager](/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), MulticallUpgradeable, [ISettlement](/src/interfaces/modules/settlement/ISettlement.sol/interface.ISettlement.md)
+
+**Title:**
+Settlement
 
 Contract for processing the validator sets through epochs and allowing verifying their attestations on-chain.
 

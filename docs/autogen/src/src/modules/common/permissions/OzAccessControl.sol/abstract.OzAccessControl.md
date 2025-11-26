@@ -1,8 +1,11 @@
 # OzAccessControl
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/3555af95a3dd521f0c0f40867fec8f48136f728e/src/modules/common/permissions/OzAccessControl.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1995c1a184b888d15ac64e40eea29de97ad1d11a/src/modules/common/permissions/OzAccessControl.sol)
 
 **Inherits:**
-[PermissionManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), AccessControlUpgradeable, [IOzAccessControl](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/common/permissions/IOzAccessControl.sol/interface.IOzAccessControl.md)
+[PermissionManager](/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), AccessControlUpgradeable, [IOzAccessControl](/src/interfaces/modules/common/permissions/IOzAccessControl.sol/interface.IOzAccessControl.md)
+
+**Title:**
+OzAccessControl
 
 Contract for permission management based on OpenZeppelin's AccessControl.
 

@@ -1,8 +1,11 @@
 # WeightedVaultsVPCalc
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/3555af95a3dd521f0c0f40867fec8f48136f728e/src/modules/voting-power/common/voting-power-calc/WeightedVaultsVPCalc.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1995c1a184b888d15ac64e40eea29de97ad1d11a/src/modules/voting-power/common/voting-power-calc/WeightedVaultsVPCalc.sol)
 
 **Inherits:**
-[EqualStakeVPCalc](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol/abstract.EqualStakeVPCalc.md), [PermissionManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), [IWeightedVaultsVPCalc](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/common/voting-power-calc/IWeightedVaultsVPCalc.sol/interface.IWeightedVaultsVPCalc.md)
+[EqualStakeVPCalc](/src/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol/abstract.EqualStakeVPCalc.md), [PermissionManager](/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), [IWeightedVaultsVPCalc](/src/interfaces/modules/voting-power/common/voting-power-calc/IWeightedVaultsVPCalc.sol/interface.IWeightedVaultsVPCalc.md)
+
+**Title:**
+WeightedVaultsVPCalc
 
 Contract for calculating the voting power, weighting the vaults.
 

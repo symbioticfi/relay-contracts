@@ -4,29 +4,11 @@ pragma solidity ^0.8.25;
 import "./MasterSetup.sol";
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+import {stdJson} from "forge-std/StdJson.sol";
 
 contract MasterGenesisSetupTest is MasterSetupTest {
     using Math for uint256;
-
-    struct Genesis {
-        ExtraDataStruct[] extraData;
-        ValSetHeaderStruct header;
-    }
-
-    struct ExtraDataStruct {
-        bytes32 key;
-        bytes32 value;
-    }
-
-    struct ValSetHeaderStruct {
-        uint48 captureTimestamp;
-        uint48 epoch;
-        uint256 quorumThreshold;
-        uint8 requiredKeyTag;
-        uint256 totalVotingPower;
-        bytes32 validatorsSszMRoot;
-        uint8 version;
-    }
+    using stdJson for string;
 
     function setUp() public virtual override {
         MasterSetupTest.setUp();
@@ -67,28 +49,20 @@ contract MasterGenesisSetupTest is MasterSetupTest {
         public
         returns (ISettlement.ValSetHeader memory valSetHeader, ISettlement.ExtraData[] memory extraData)
     {
-        Genesis memory genesis;
-        {
-            string memory root = vm.projectRoot();
-            string memory path = string.concat(root, "/test/data/genesis_header.json");
-            string memory json = vm.readFile(path);
-            bytes memory data = vm.parseJson(json);
-            genesis = abi.decode(data, (Genesis));
-        }
+        string memory root = vm.projectRoot();
+        string memory path = string.concat(root, "/test/data/genesis_header.json");
+        string memory json = vm.readFile(path);
 
         valSetHeader = ISettlement.ValSetHeader({
-            version: genesis.header.version,
-            requiredKeyTag: genesis.header.requiredKeyTag,
-            epoch: genesis.header.epoch,
-            captureTimestamp: genesis.header.captureTimestamp,
-            quorumThreshold: genesis.header.quorumThreshold,
-            totalVotingPower: genesis.header.totalVotingPower,
-            validatorsSszMRoot: genesis.header.validatorsSszMRoot
+            version: uint8(json.readUint(".header.version")),
+            requiredKeyTag: uint8(json.readUint(".header.requiredKeyTag")),
+            epoch: uint48(json.readUint(".header.epoch")),
+            captureTimestamp: uint48(json.readUint(".header.captureTimestamp")),
+            quorumThreshold: json.readUint(".header.quorumThreshold"),
+            totalVotingPower: json.readUint(".header.totalVotingPower"),
+            validatorsSszMRoot: json.readBytes32(".header.validatorsSszMRoot")
         });
 
-        extraData = new ISettlement.ExtraData[](genesis.extraData.length);
-        for (uint256 i; i < genesis.extraData.length; ++i) {
-            extraData[i] = ISettlement.ExtraData({key: genesis.extraData[i].key, value: genesis.extraData[i].value});
-        }
+        extraData = abi.decode(json.parseRaw(".extraData"), (ISettlement.ExtraData[]));
     }
 }

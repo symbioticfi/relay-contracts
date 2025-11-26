@@ -1,5 +1,8 @@
 # Checkpoints
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/3555af95a3dd521f0c0f40867fec8f48136f728e/src/libraries/structs/Checkpoints.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1995c1a184b888d15ac64e40eea29de97ad1d11a/src/libraries/structs/Checkpoints.sol)
+
+**Title:**
+Checkpoints
 
 Library implementing a checkpointing mechanism for values as they change at different points in time.
 
@@ -32,7 +35,7 @@ function upperLookupRecent(Trace208 storage self, uint48 key) internal view retu
 
 Returns the value in the last (most recent) checkpoint with a key lower or equal than the search key, or zero
 if there is none.
-NOTE: This is a variant of [upperLookupRecent](//Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/libraries/structs/Checkpoints.sol/library.Checkpoints.md#upperlookuprecent) that can be optimized by getting the hint
+NOTE: This is a variant of [upperLookupRecent](/src/libraries/structs/Checkpoints.sol/library.Checkpoints.md#upperlookuprecent) that can be optimized by getting the hint
 (index of the checkpoint with a key lower or equal than the search key).
 
 
@@ -57,7 +60,7 @@ function upperLookupRecentCheckpoint(Trace208 storage self, uint48 key)
 
 Returns whether there is a checkpoint with a key lower or equal than the search key in the structure (i.e. it is not empty),
 and if so the key and value in the checkpoint, and its position in the trace.
-NOTE: This is a variant of [upperLookupRecentCheckpoint](//Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/libraries/structs/Checkpoints.sol/library.Checkpoints.md#upperlookuprecentcheckpoint) that can be optimized by getting the hint
+NOTE: This is a variant of [upperLookupRecentCheckpoint](/src/libraries/structs/Checkpoints.sol/library.Checkpoints.md#upperlookuprecentcheckpoint) that can be optimized by getting the hint
 (index of the checkpoint with a key lower or equal than the search key).
 
 
@@ -138,7 +141,7 @@ function upperLookupRecent(Trace256 storage self, uint48 key) internal view retu
 
 Returns the value in the last (most recent) checkpoint with a key lower or equal than the search key, or zero
 if there is none.
-NOTE: This is a variant of [upperLookupRecent](//Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/libraries/structs/Checkpoints.sol/library.Checkpoints.md#upperlookuprecent) that can be optimized by getting the hint
+NOTE: This is a variant of [upperLookupRecent](/src/libraries/structs/Checkpoints.sol/library.Checkpoints.md#upperlookuprecent) that can be optimized by getting the hint
 (index of the checkpoint with a key lower or equal than the search key).
 
 
@@ -163,7 +166,7 @@ function upperLookupRecentCheckpoint(Trace256 storage self, uint48 key)
 
 Returns whether there is a checkpoint with a key lower or equal than the search key in the structure (i.e. it is not empty),
 and if so the key and value in the checkpoint, and its position in the trace.
-NOTE: This is a variant of [upperLookupRecentCheckpoint](//Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/libraries/structs/Checkpoints.sol/library.Checkpoints.md#upperlookuprecentcheckpoint) that can be optimized by getting the hint
+NOTE: This is a variant of [upperLookupRecentCheckpoint](/src/libraries/structs/Checkpoints.sol/library.Checkpoints.md#upperlookuprecentcheckpoint) that can be optimized by getting the hint
 (index of the checkpoint with a key lower or equal than the search key).
 
 
@@ -246,7 +249,7 @@ function upperLookupRecent(Trace512 storage self, uint48 key) internal view retu
 
 Returns the value in the last (most recent) checkpoint with a key lower or equal than the search key, or zero
 if there is none.
-NOTE: This is a variant of [upperLookupRecent](//Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/libraries/structs/Checkpoints.sol/library.Checkpoints.md#upperlookuprecent) that can be optimized by getting the hint
+NOTE: This is a variant of [upperLookupRecent](/src/libraries/structs/Checkpoints.sol/library.Checkpoints.md#upperlookuprecent) that can be optimized by getting the hint
 (index of the checkpoint with a key lower or equal than the search key).
 
 
@@ -274,7 +277,7 @@ function upperLookupRecentCheckpoint(Trace512 storage self, uint48 key)
 
 Returns whether there is a checkpoint with a key lower or equal than the search key in the structure (i.e. it is not empty),
 and if so the key and value in the checkpoint, and its position in the trace.
-NOTE: This is a variant of [upperLookupRecentCheckpoint](//Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/libraries/structs/Checkpoints.sol/library.Checkpoints.md#upperlookuprecentcheckpoint) that can be optimized by getting the hint
+NOTE: This is a variant of [upperLookupRecentCheckpoint](/src/libraries/structs/Checkpoints.sol/library.Checkpoints.md#upperlookuprecentcheckpoint) that can be optimized by getting the hint
 (index of the checkpoint with a key lower or equal than the search key).
 
 

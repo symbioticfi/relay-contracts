@@ -1,8 +1,11 @@
 # VotingPowerCalcManager
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/3555af95a3dd521f0c0f40867fec8f48136f728e/src/modules/voting-power/base/VotingPowerCalcManager.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1995c1a184b888d15ac64e40eea29de97ad1d11a/src/modules/voting-power/base/VotingPowerCalcManager.sol)
 
 **Inherits:**
-Initializable, [IVotingPowerCalcManager](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/voting-power/base/IVotingPowerCalcManager.sol/interface.IVotingPowerCalcManager.md)
+Initializable, [IVotingPowerCalcManager](/src/interfaces/modules/voting-power/base/IVotingPowerCalcManager.sol/interface.IVotingPowerCalcManager.md)
+
+**Title:**
+VotingPowerCalcManager
 
 Base contract for voting power calculations.
 

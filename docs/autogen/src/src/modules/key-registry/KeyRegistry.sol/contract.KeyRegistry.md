@@ -1,8 +1,11 @@
 # KeyRegistry
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/3555af95a3dd521f0c0f40867fec8f48136f728e/src/modules/key-registry/KeyRegistry.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1995c1a184b888d15ac64e40eea29de97ad1d11a/src/modules/key-registry/KeyRegistry.sol)
 
 **Inherits:**
-[OzEIP712](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/modules/base/OzEIP712.sol/abstract.OzEIP712.md), MulticallUpgradeable, [IKeyRegistry](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/key-registry/IKeyRegistry.sol/interface.IKeyRegistry.md)
+[OzEIP712](/src/modules/base/OzEIP712.sol/abstract.OzEIP712.md), MulticallUpgradeable, [IKeyRegistry](/src/interfaces/modules/key-registry/IKeyRegistry.sol/interface.IKeyRegistry.md)
+
+**Title:**
+KeyRegistry
 
 Contract for operators' keys management.
 
@@ -156,7 +159,9 @@ function getKeys(address operator) public view virtual returns (Key[] memory key
 
 ### getKeysAt
 
-Returns the operator's keys at a specific timestamp.
+Returns the operators with their keys at a specific timestamp.
+
+Different operators may have different numbers of keys and their tags.
 
 
 ```solidity
@@ -172,12 +177,14 @@ function getKeysAt(uint48 timestamp) public view virtual returns (OperatorWithKe
 
 |Name|Type|Description|
 |----|----|-----------|
-|`operatorsKeys`|`OperatorWithKeys[]`|The operator's keys.|
+|`operatorsKeys`|`OperatorWithKeys[]`|The operators with their keys.|
 
 
 ### getKeys
 
-Returns the current operator's keys.
+Returns the current operators with their keys.
+
+Different operators may have different numbers of keys and their tags.
 
 
 ```solidity
@@ -187,7 +194,7 @@ function getKeys() public view virtual returns (OperatorWithKeys[] memory operat
 
 |Name|Type|Description|
 |----|----|-----------|
-|`operatorsKeys`|`OperatorWithKeys[]`|The operator's keys.|
+|`operatorsKeys`|`OperatorWithKeys[]`|The operators with their keys.|
 
 
 ### getKeysOperatorsLength

@@ -1,8 +1,11 @@
 # ISigVerifierBlsBn254ZK
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/3555af95a3dd521f0c0f40867fec8f48136f728e/src/interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254ZK.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1995c1a184b888d15ac64e40eea29de97ad1d11a/src/interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254ZK.sol)
 
 **Inherits:**
-[ISigVerifier](/Users/andreikorokhov/symbiotic/relay-contracts/docs/autogen/src/src/interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol/interface.ISigVerifier.md)
+[ISigVerifier](/src/interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol/interface.ISigVerifier.md)
+
+**Title:**
+ISigVerifierBlsBn254ZK
 
 Interface for the SigVerifierBlsBn254ZK contract.
 
