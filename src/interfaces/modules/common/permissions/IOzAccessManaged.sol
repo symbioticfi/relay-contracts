@@ -9,7 +9,7 @@ import {IAccessManaged} from "@openzeppelin/contracts/access/manager/IAccessMana
  * @title IOzAccessManaged
  * @notice Interface for the OzAccessManaged contract.
  */
-interface IOzAccessManaged {
+interface IOzAccessManaged is IPermissionManager, IAccessManaged {
     /**
      * @notice The parameters for the initialization of the OzAccessManaged contract.
      * @param authority The address of the authority that will check the access.

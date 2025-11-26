@@ -27,7 +27,7 @@ import {MulticallUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/Mu
 /// @dev It supports:
 /// - BLS public keys on BN254
 /// - ECDSA public keys on secp256k1
-contract KeyRegistry is MulticallUpgradeable, OzEIP712, IKeyRegistry {
+contract KeyRegistry is OzEIP712, MulticallUpgradeable, IKeyRegistry {
     using Checkpoints for Checkpoints.Trace208;
     using Checkpoints for Checkpoints.Trace256;
     using Checkpoints for Checkpoints.Trace512;

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import {IPermissionManager} from "../../modules/base/IPermissionManager.sol";
 import {INetworkManager} from "../../modules/base/INetworkManager.sol";
 import {IOzEIP712} from "../../modules/base/IOzEIP712.sol";
 
@@ -10,7 +11,7 @@ import {Checkpoints} from "../../../libraries/structs/Checkpoints.sol";
  * @title ISettlement
  * @notice Interface for the Settlement contract.
  */
-interface ISettlement is INetworkManager, IOzEIP712 {
+interface ISettlement is INetworkManager, IOzEIP712, IPermissionManager {
     /**
      * @notice Reverts when the extra data key is duplicated.
      */

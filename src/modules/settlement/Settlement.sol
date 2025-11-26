@@ -11,9 +11,11 @@ import {KeyTags} from "../../libraries/utils/KeyTags.sol";
 import {ISettlement} from "../../interfaces/modules/settlement/ISettlement.sol";
 import {ISigVerifier} from "../../interfaces/modules/settlement/sig-verifiers/ISigVerifier.sol";
 
+import {MulticallUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
+
 /// @title Settlement
 /// @notice Contract for processing the validator sets through epochs and allowing verifying their attestations on-chain.
-abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, ISettlement {
+abstract contract Settlement is NetworkManager, OzEIP712, PermissionManager, MulticallUpgradeable, ISettlement {
     using Checkpoints for Checkpoints.Trace208;
     using KeyTags for uint8;
 

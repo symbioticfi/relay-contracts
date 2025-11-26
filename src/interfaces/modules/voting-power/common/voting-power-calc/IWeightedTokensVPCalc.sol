@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import {INormalizedTokenDecimalsVPCalc} from "./INormalizedTokenDecimalsVPCalc.sol";
+import {IPermissionManager} from "../../../base/IPermissionManager.sol";
 import {Checkpoints} from "../../../../../libraries/structs/Checkpoints.sol";
 
 /**
  * @title IWeightedTokensVPCalc
  * @notice Interface for the WeightedTokensVPCalc contract.
  */
-interface IWeightedTokensVPCalc {
+interface IWeightedTokensVPCalc is INormalizedTokenDecimalsVPCalc, IPermissionManager {
     /**
      * @notice Reverts when the weight is too large.
      */

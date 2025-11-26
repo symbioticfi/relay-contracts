@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import {IPermissionManager} from "../base/IPermissionManager.sol";
 import {Checkpoints} from "../../../libraries/structs/Checkpoints.sol";
 
 /**
  * @title IEpochManager
  * @notice Interface for the EpochManager contract.
  */
-interface IEpochManager {
+interface IEpochManager is IPermissionManager {
     /**
      * @notice Reverts when the epoch duration is zero.
      */

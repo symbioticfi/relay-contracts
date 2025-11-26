@@ -7,7 +7,7 @@ import {IVotingPowerProvider} from "../IVotingPowerProvider.sol";
  * @title IMultiToken
  * @notice Interface for the MultiToken contract.
  */
-interface IMultiToken {
+interface IMultiToken is IVotingPowerProvider {
     /**
      * @notice Registers the token.
      * @param token The address of the token.

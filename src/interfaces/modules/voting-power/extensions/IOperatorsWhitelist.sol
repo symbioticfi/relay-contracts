@@ -7,7 +7,7 @@ import {IVotingPowerProvider} from "../IVotingPowerProvider.sol";
  * @title IOperatorsWhitelist
  * @notice Interface for the OperatorsWhitelist contract.
  */
-interface IOperatorsWhitelist {
+interface IOperatorsWhitelist is IVotingPowerProvider {
     /**
      * @notice Reverts when the whitelist status is already set.
      */

@@ -7,7 +7,7 @@ import {IVotingPowerProvider} from "../IVotingPowerProvider.sol";
  * @title IBaseSlashing
  * @notice Interface for the BaseSlashing contract.
  */
-interface IBaseSlashing {
+interface IBaseSlashing is IVotingPowerProvider {
     /**
      * @notice Reverts when the vault doesn't have a slasher.
      */

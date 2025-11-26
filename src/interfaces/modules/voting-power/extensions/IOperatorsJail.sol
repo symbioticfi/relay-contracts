@@ -7,7 +7,7 @@ import {IVotingPowerProvider} from "../IVotingPowerProvider.sol";
  * @title IOperatorsJail
  * @notice Interface for the OperatorsJail contract.
  */
-interface IOperatorsJail {
+interface IOperatorsJail is IVotingPowerProvider {
     /**
      * @notice Reverts when the operator is already jailed.
      */
