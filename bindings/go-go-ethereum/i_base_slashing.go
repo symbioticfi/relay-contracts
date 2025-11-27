@@ -29,17 +29,6 @@ var (
 	_ = abi.ConvertType
 )
 
-// IVotingPowerProviderOperatorVotingPower is an auto generated low-level Go binding around an user-defined struct.
-type IVotingPowerProviderOperatorVotingPower struct {
-	Operator common.Address
-	Vaults   []IVotingPowerProviderVaultValue
-}
-
-// IVotingPowerProviderVaultValue is an auto generated low-level Go binding around an user-defined struct.
-type IVotingPowerProviderVaultValue struct {
-	Vault common.Address
-	Value *big.Int
-}
 
 // IBaseSlashingMetaData contains all meta data concerning the IBaseSlashing contract.
 var IBaseSlashingMetaData = &bind.MetaData{

@@ -1,5 +1,5 @@
 # WeightedTokensVPCalc
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1995c1a184b888d15ac64e40eea29de97ad1d11a/src/modules/voting-power/common/voting-power-calc/WeightedTokensVPCalc.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/fe77da97c5078ce867ab7509d4925a7d24b41b38/src/modules/voting-power/common/voting-power-calc/WeightedTokensVPCalc.sol)
 
 **Inherits:**
 [NormalizedTokenDecimalsVPCalc](/src/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.sol/abstract.NormalizedTokenDecimalsVPCalc.md), [PermissionManager](/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), [IWeightedTokensVPCalc](/src/interfaces/modules/voting-power/common/voting-power-calc/IWeightedTokensVPCalc.sol/interface.IWeightedTokensVPCalc.md)

@@ -1,5 +1,5 @@
 # IOperatorsJail
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1995c1a184b888d15ac64e40eea29de97ad1d11a/src/interfaces/modules/voting-power/extensions/IOperatorsJail.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/fe77da97c5078ce867ab7509d4925a7d24b41b38/src/interfaces/modules/voting-power/extensions/IOperatorsJail.sol)
 
 **Inherits:**
 [IVotingPowerProvider](/src/interfaces/modules/voting-power/IVotingPowerProvider.sol/interface.IVotingPowerProvider.md)

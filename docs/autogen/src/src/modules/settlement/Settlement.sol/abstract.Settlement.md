@@ -1,5 +1,5 @@
 # Settlement
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1995c1a184b888d15ac64e40eea29de97ad1d11a/src/modules/settlement/Settlement.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/fe77da97c5078ce867ab7509d4925a7d24b41b38/src/modules/settlement/Settlement.sol)
 
 **Inherits:**
 [NetworkManager](/src/modules/base/NetworkManager.sol/abstract.NetworkManager.md), [OzEIP712](/src/modules/base/OzEIP712.sol/abstract.OzEIP712.md), [PermissionManager](/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), MulticallUpgradeable, [ISettlement](/src/interfaces/modules/settlement/ISettlement.sol/interface.ISettlement.md)

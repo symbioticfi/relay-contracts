@@ -1,5 +1,5 @@
 # OzAccessControl
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/1995c1a184b888d15ac64e40eea29de97ad1d11a/src/modules/common/permissions/OzAccessControl.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/fe77da97c5078ce867ab7509d4925a7d24b41b38/src/modules/common/permissions/OzAccessControl.sol)
 
 **Inherits:**
 [PermissionManager](/src/modules/base/PermissionManager.sol/abstract.PermissionManager.md), AccessControlUpgradeable, [IOzAccessControl](/src/interfaces/modules/common/permissions/IOzAccessControl.sol/interface.IOzAccessControl.md)

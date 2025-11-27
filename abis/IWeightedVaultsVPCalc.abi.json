@@ -1,87 +1,87 @@
 [
-    {
-        "type": "function",
-        "name": "getVaultWeight",
-        "inputs": [
-            {
-                "name": "vault",
-                "type": "address",
-                "internalType": "address"
-            }
-        ],
-        "outputs": [
-            {
-                "name": "",
-                "type": "uint208",
-                "internalType": "uint208"
-            }
-        ],
-        "stateMutability": "view"
-    },
-    {
-        "type": "function",
-        "name": "getVaultWeightAt",
-        "inputs": [
-            {
-                "name": "vault",
-                "type": "address",
-                "internalType": "address"
-            },
-            {
-                "name": "timestamp",
-                "type": "uint48",
-                "internalType": "uint48"
-            }
-        ],
-        "outputs": [
-            {
-                "name": "",
-                "type": "uint208",
-                "internalType": "uint208"
-            }
-        ],
-        "stateMutability": "view"
-    },
-    {
-        "type": "function",
-        "name": "setVaultWeight",
-        "inputs": [
-            {
-                "name": "vault",
-                "type": "address",
-                "internalType": "address"
-            },
-            {
-                "name": "weight",
-                "type": "uint208",
-                "internalType": "uint208"
-            }
-        ],
-        "outputs": [],
-        "stateMutability": "nonpayable"
-    },
-    {
-        "type": "event",
-        "name": "SetVaultWeight",
-        "inputs": [
-            {
-                "name": "vault",
-                "type": "address",
-                "indexed": true,
-                "internalType": "address"
-            },
-            {
-                "name": "weight",
-                "type": "uint208",
-                "indexed": false,
-                "internalType": "uint208"
-            }
-        ],
-        "anonymous": false
-    },
-    {
-        "type": "error",
-        "name": "WeightedVaultsVPCalc_TooLargeWeight",
-        "inputs": []
-    }
+  {
+    "type": "function",
+    "name": "getVaultWeight",
+    "inputs": [
+      {
+        "name": "vault",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint208",
+        "internalType": "uint208"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getVaultWeightAt",
+    "inputs": [
+      {
+        "name": "vault",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "timestamp",
+        "type": "uint48",
+        "internalType": "uint48"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint208",
+        "internalType": "uint208"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "setVaultWeight",
+    "inputs": [
+      {
+        "name": "vault",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "weight",
+        "type": "uint208",
+        "internalType": "uint208"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "event",
+    "name": "SetVaultWeight",
+    "inputs": [
+      {
+        "name": "vault",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "weight",
+        "type": "uint208",
+        "indexed": false,
+        "internalType": "uint208"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "error",
+    "name": "WeightedVaultsVPCalc_TooLargeWeight",
+    "inputs": []
+  }
 ]

@@ -1,59 +1,59 @@
 [
-    {
-        "type": "function",
-        "name": "VERIFICATION_TYPE",
-        "inputs": [],
-        "outputs": [
-            {
-                "name": "",
-                "type": "uint32",
-                "internalType": "uint32"
-            }
-        ],
-        "stateMutability": "view"
-    },
-    {
-        "type": "function",
-        "name": "verifyQuorumSig",
-        "inputs": [
-            {
-                "name": "settlement",
-                "type": "address",
-                "internalType": "address"
-            },
-            {
-                "name": "epoch",
-                "type": "uint48",
-                "internalType": "uint48"
-            },
-            {
-                "name": "message",
-                "type": "bytes",
-                "internalType": "bytes"
-            },
-            {
-                "name": "keyTag",
-                "type": "uint8",
-                "internalType": "uint8"
-            },
-            {
-                "name": "quorumThreshold",
-                "type": "uint256",
-                "internalType": "uint256"
-            },
-            {
-                "name": "proof",
-                "type": "bytes",
-                "internalType": "bytes"
-            }
-        ],
-        "outputs": [
-            {
-                "name": "",
-                "type": "bool",
-                "internalType": "bool"
-            }
-        ],
-        "stateMutability": "view"
-    }
+  {
+    "type": "function",
+    "name": "VERIFICATION_TYPE",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint32",
+        "internalType": "uint32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "verifyQuorumSig",
+    "inputs": [
+      {
+        "name": "settlement",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "epoch",
+        "type": "uint48",
+        "internalType": "uint48"
+      },
+      {
+        "name": "message",
+        "type": "bytes",
+        "internalType": "bytes"
+      },
+      {
+        "name": "keyTag",
+        "type": "uint8",
+        "internalType": "uint8"
+      },
+      {
+        "name": "quorumThreshold",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "proof",
+        "type": "bytes",
+        "internalType": "bytes"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  }
 ]
