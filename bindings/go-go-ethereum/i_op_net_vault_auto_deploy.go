@@ -38,6 +38,17 @@ type IOpNetVaultAutoDeployAutoDeployConfig struct {
 	IsBurnerHook  bool
 }
 
+// IVotingPowerProviderOperatorVotingPower is an auto generated low-level Go binding around an user-defined struct.
+type IVotingPowerProviderOperatorVotingPower struct {
+	Operator common.Address
+	Vaults   []IVotingPowerProviderVaultValue
+}
+
+// IVotingPowerProviderVaultValue is an auto generated low-level Go binding around an user-defined struct.
+type IVotingPowerProviderVaultValue struct {
+	Vault common.Address
+	Value *big.Int
+}
 
 // IOpNetVaultAutoDeployMetaData contains all meta data concerning the IOpNetVaultAutoDeploy contract.
 var IOpNetVaultAutoDeployMetaData = &bind.MetaData{
