@@ -333,7 +333,8 @@ library BLS12381 {
         if (domainLen > 0xff) {
             revert InvalidDSTLength();
         }
-        bytes memory b_0 = abi.encodePacked(new bytes(0x40), message, uint8(0x00), n_bytes, uint8(0x00), DST, uint8(domainLen));
+        bytes memory b_0 =
+            abi.encodePacked(new bytes(0x40), message, uint8(0x00), n_bytes, uint8(0x00), DST, uint8(domainLen));
         bytes32 b0 = sha256(b_0);
 
         bytes memory b_i = abi.encodePacked(b0, uint8(0x01), DST, uint8(domainLen));
@@ -392,6 +393,9 @@ library BLS12381 {
     function isOnCurve(G1Point memory point) internal view returns (bool) {
         uint256 y_a = point.y_a;
         uint256 y_b = point.y_b;
+        if (y_a == 0 && y_b == 0 && point.x_a == 0 && point.x_b == 0) {
+            return true;
+        }
         assembly ("memory-safe") {
             let m := mload(0x40)
             mstore(m, 0x40) // length of base

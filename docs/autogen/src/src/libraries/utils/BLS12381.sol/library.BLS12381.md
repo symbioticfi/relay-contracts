@@ -1,5 +1,5 @@
 # BLS12381
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/9b9397f972967c27019ba88b9cb96dce82bcc4be/src/libraries/utils/BLS12381.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/378b3fa543dbcf48fbf7694e797030129cda42ef/src/libraries/utils/BLS12381.sol)
 
 **Title:**
 BLS12381
@@ -295,7 +295,7 @@ Returns an expanded arbitrary message to n bytes, as described in rfc9380 sectio
 
 
 ```solidity
-function expandMsg(bytes memory DST, bytes memory message, uint8 n_bytes) internal pure returns (bytes memory);
+function expandMsg(bytes memory DST, bytes memory message, uint8 n_bytes) internal pure returns (bytes memory out);
 ```
 **Parameters**
 
@@ -309,7 +309,7 @@ function expandMsg(bytes memory DST, bytes memory message, uint8 n_bytes) intern
 
 |Name|Type|Description|
 |----|----|-----------|
-|`<none>`|`bytes`|Pseudo-random byte string of length n_bytes derived from the message and DST.|
+|`out`|`bytes`|Pseudo-random byte string of length n_bytes derived from the message and DST.|
 
 
 ### findYFromX
@@ -438,7 +438,7 @@ Reverts when the DST length is too long.
 
 
 ```solidity
-error InvalidDSTLength(bytes);
+error InvalidDSTLength();
 ```
 
 ## Structs

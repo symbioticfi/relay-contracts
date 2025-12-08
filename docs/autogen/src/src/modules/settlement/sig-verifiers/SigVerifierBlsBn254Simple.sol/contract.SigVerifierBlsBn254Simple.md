@@ -1,5 +1,5 @@
 # SigVerifierBlsBn254Simple
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/9b9397f972967c27019ba88b9cb96dce82bcc4be/src/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/378b3fa543dbcf48fbf7694e797030129cda42ef/src/modules/settlement/sig-verifiers/SigVerifierBlsBn254Simple.sol)
 
 **Inherits:**
 [ISigVerifierBlsBn254Simple](/src/interfaces/modules/settlement/sig-verifiers/ISigVerifierBlsBn254Simple.sol/interface.ISigVerifierBlsBn254Simple.md)

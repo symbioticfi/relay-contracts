@@ -1,5 +1,5 @@
 # OpNetVaultAutoDeployLogic
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/9b9397f972967c27019ba88b9cb96dce82bcc4be/src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/378b3fa543dbcf48fbf7694e797030129cda42ef/src/modules/voting-power/extensions/logic/OpNetVaultAutoDeployLogic.sol)
 
 **Title:**
 OpNetVaultAutoDeployLogic
