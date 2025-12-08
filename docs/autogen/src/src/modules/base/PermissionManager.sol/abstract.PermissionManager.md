@@ -1,5 +1,5 @@
 # PermissionManager
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/4bfd3b425b355bf68d0d4060c9b82af6e94e8c7e/src/modules/base/PermissionManager.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/9b9397f972967c27019ba88b9cb96dce82bcc4be/src/modules/base/PermissionManager.sol)
 
 **Inherits:**
 Initializable, [IPermissionManager](/src/interfaces/modules/base/IPermissionManager.sol/interface.IPermissionManager.md)

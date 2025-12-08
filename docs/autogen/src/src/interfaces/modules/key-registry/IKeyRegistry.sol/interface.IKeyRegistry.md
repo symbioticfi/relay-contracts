@@ -1,5 +1,5 @@
 # IKeyRegistry
-[Git Source](https://github.com/symbioticfi/relay-contracts/blob/4bfd3b425b355bf68d0d4060c9b82af6e94e8c7e/src/interfaces/modules/key-registry/IKeyRegistry.sol)
+[Git Source](https://github.com/symbioticfi/relay-contracts/blob/9b9397f972967c27019ba88b9cb96dce82bcc4be/src/interfaces/modules/key-registry/IKeyRegistry.sol)
 
 **Inherits:**
 [IOzEIP712](/src/interfaces/modules/base/IOzEIP712.sol/interface.IOzEIP712.md)

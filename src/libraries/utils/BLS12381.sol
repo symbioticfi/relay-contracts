@@ -36,7 +36,7 @@ library BLS12381 {
     /**
      * @notice Reverts when the DST length is too long.
      */
-    error InvalidDSTLength(bytes);
+    error InvalidDSTLength();
 
     /* STRUCTS */
 
@@ -326,20 +326,20 @@ library BLS12381 {
      * @param DST Domain separation tag.
      * @param message The message to expand.
      * @param n_bytes The number of bytes to extend to.
-     * @return Pseudo-random byte string of length n_bytes derived from the message and DST.
+     * @return out Pseudo-random byte string of length n_bytes derived from the message and DST.
      */
-    function expandMsg(bytes memory DST, bytes memory message, uint8 n_bytes) internal pure returns (bytes memory) {
+    function expandMsg(bytes memory DST, bytes memory message, uint8 n_bytes) internal pure returns (bytes memory out) {
         uint256 domainLen = DST.length;
         if (domainLen > 0xff) {
-            revert InvalidDSTLength(DST);
+            revert InvalidDSTLength();
         }
-        bytes memory zpad = new bytes(0x40);
-        bytes memory b_0 = abi.encodePacked(zpad, message, uint8(0x00), n_bytes, uint8(0x00), DST, uint8(domainLen));
+        bytes memory b_0 = abi.encodePacked(new bytes(0x40), message, uint8(0x00), n_bytes, uint8(0x00), DST, uint8(domainLen));
         bytes32 b0 = sha256(b_0);
 
         bytes memory b_i = abi.encodePacked(b0, uint8(0x01), DST, uint8(domainLen));
         bytes32 bi = sha256(b_i);
-        bytes memory out = new bytes(n_bytes);
+
+        out = new bytes(n_bytes);
         uint256 ell = (n_bytes + 0x1F) >> 5;
         for (uint256 i = 1; i < ell; ++i) {
             b_i = abi.encodePacked(b0 ^ bi, uint8(i + 1), DST, uint8(domainLen));
@@ -351,7 +351,6 @@ library BLS12381 {
         assembly ("memory-safe") {
             mstore(add(add(out, 0x20), mul(sub(ell, 1), 0x20)), bi)
         }
-        return out;
     }
 
     /**
@@ -367,12 +366,6 @@ library BLS12381 {
 
         // compute y = sqrt(x**3 + 4) mod p = (x**3 + 4)^(p+1)/4 mod p
         assembly ("memory-safe") {
-            function modfield(s_, b_) {
-                if iszero(and(eq(returndatasize(), 0x40), staticcall(gas(), EXP_MOD, s_, 0x120, b_, 0x40))) {
-                    revert(calldatasize(), 0x00)
-                }
-            }
-
             let m := mload(0x40)
             mstore(m, 0x40) // length of base
             mstore(add(m, 0x20), 0x40) // length of exponent
@@ -383,7 +376,9 @@ library BLS12381 {
             mstore(add(m, 0xc0), P_PLUS_ONE_OVER_FOUR_B)
             mstore(add(m, 0xe0), P_A)
             mstore(add(m, 0x100), P_B)
-            modfield(m, m)
+            if iszero(and(eq(returndatasize(), 0x40), staticcall(gas(), EXP_MOD, m, 0x120, m, 0x40))) {
+                revert(calldatasize(), 0x00)
+            }
             y_a := mload(m)
             y_b := mload(add(m, 0x20))
         }
@@ -398,12 +393,6 @@ library BLS12381 {
         uint256 y_a = point.y_a;
         uint256 y_b = point.y_b;
         assembly ("memory-safe") {
-            function modfield(s_, b_) {
-                if iszero(and(eq(returndatasize(), 0x40), staticcall(gas(), EXP_MOD, s_, 0xe1, b_, 0x40))) {
-                    revert(calldatasize(), 0x00)
-                }
-            }
-
             let m := mload(0x40)
             mstore(m, 0x40) // length of base
             mstore(add(m, 0x20), 0x01) // length of exponent 2
@@ -413,7 +402,9 @@ library BLS12381 {
             mstore8(add(m, 0xa0), 2) // exponent
             mstore(add(m, 0xa1), P_A)
             mstore(add(m, 0xc1), P_B)
-            modfield(m, m)
+            if iszero(and(eq(returndatasize(), 0x40), staticcall(gas(), EXP_MOD, m, 0xe1, m, 0x40))) {
+                revert(calldatasize(), 0x00)
+            }
             y_a := mload(m)
             y_b := mload(add(m, 0x20))
         }
@@ -440,12 +431,6 @@ library BLS12381 {
      */
     function _xCubePlus4(uint256 x_a, uint256 x_b) internal view returns (uint256, uint256) {
         assembly ("memory-safe") {
-            function modfield(s_, b_) {
-                if iszero(and(eq(returndatasize(), 0x40), staticcall(gas(), EXP_MOD, s_, 0xe1, b_, 0x40))) {
-                    revert(calldatasize(), 0x00)
-                }
-            }
-
             let m := mload(0x40)
             mstore(m, 0x40) // length of base
             mstore(add(m, 0x20), 0x01) // length of exponent 3
@@ -455,7 +440,9 @@ library BLS12381 {
             mstore8(add(m, 0xa0), 3) // exponent
             mstore(add(m, 0xa1), P_A)
             mstore(add(m, 0xc1), P_B)
-            modfield(m, m)
+            if iszero(and(eq(returndatasize(), 0x40), staticcall(gas(), EXP_MOD, m, 0xe1, m, 0x40))) {
+                revert(calldatasize(), 0x00)
+            }
             x_a := mload(m)
             x_b := mload(add(m, 0x20))
         }
