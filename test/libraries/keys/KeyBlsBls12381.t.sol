@@ -5,10 +5,11 @@ import {Test} from "forge-std/Test.sol";
 
 import {KeyBlsBls12381} from "../../../src/libraries/keys/KeyBlsBls12381.sol";
 import {BLS12381} from "../../../src/libraries/utils/BLS12381.sol";
+import {Bls12381GoHelper} from "../../helpers/Bls12381Go.sol";
 
 import {KeyBlsBls12381Mock} from "../../mocks/KeyBlsBls12381Mock.sol";
 
-contract KeyBlsBls12381Test is Test {
+contract KeyBlsBls12381Test is Bls12381GoHelper {
     using KeyBlsBls12381 for BLS12381.G1Point;
     using KeyBlsBls12381 for KeyBlsBls12381.KEY_BLS_BLS12381;
 
@@ -49,6 +50,16 @@ contract KeyBlsBls12381Test is Test {
 
     function test_WrapUnwrapGenerator() public {
         BLS12381.G1Point memory pt = _generator();
+        KeyBlsBls12381.KEY_BLS_BLS12381 memory wrapped = KeyBlsBls12381.wrap(pt);
+        BLS12381.G1Point memory unwrapped = wrapped.unwrap();
+        assertEq(unwrapped.x_a, pt.x_a);
+        assertEq(unwrapped.x_b, pt.x_b);
+        assertEq(unwrapped.y_a, pt.y_a);
+        assertEq(unwrapped.y_b, pt.y_b);
+    }
+
+    function test_WrapUnwrapGoKey() public {
+        BLS12381.G1Point memory pt = _goG1Mul(bytes32(uint256(42)));
         KeyBlsBls12381.KEY_BLS_BLS12381 memory wrapped = KeyBlsBls12381.wrap(pt);
         BLS12381.G1Point memory unwrapped = wrapped.unwrap();
         assertEq(unwrapped.x_a, pt.x_a);

@@ -4,6 +4,7 @@ pragma solidity ^0.8.25;
 import {Test} from "forge-std/Test.sol";
 
 import {BLS12381} from "../../../src/libraries/utils/BLS12381.sol";
+import {Bls12381GoHelper} from "../../helpers/Bls12381Go.sol";
 
 contract BLS12381Harness {
     function isInSubgroup(BLS12381.G1Point memory point) external view returns (bool) {
@@ -19,7 +20,7 @@ contract BLS12381Harness {
     }
 }
 
-contract BLS12381UtilsTest is Test {
+contract BLS12381UtilsTest is Bls12381GoHelper {
     BLS12381Harness private harness;
 
     address private constant MODEXP = address(0x05);
@@ -93,6 +94,30 @@ contract BLS12381UtilsTest is Test {
         assertFalse(hashed.x_a == 0 && hashed.x_b == 0 && hashed.y_a == 0 && hashed.y_b == 0);
     }
 
+    function test_GoGeneratorG1_MatchesSolidity() public {
+        BLS12381.G1Point memory expected = _goG1Mul(bytes32(uint256(1)));
+        _assertG1Eq(BLS12381.generatorG1(), expected);
+    }
+
+    function test_GoGeneratorG2_MatchesSolidity() public {
+        BLS12381.G2Point memory expected = _goG2Mul(bytes32(uint256(1)));
+        _assertG2Eq(BLS12381.generatorG2(), expected);
+    }
+
+    function test_GoHashToG1_MatchesSolidity() public {
+        bytes memory message = "relay-bls12381-hash";
+        BLS12381.G1Point memory expected = _goHashToG1(message);
+        BLS12381.G1Point memory hashed = BLS12381.hashToG1(message);
+        _assertG1Eq(hashed, expected);
+    }
+
+    function test_GoScalarMulG1_MatchesSolidity() public {
+        uint256 scalar = 0x12345;
+        BLS12381.G1Point memory expected = _goG1Mul(bytes32(scalar));
+        BLS12381.G1Point memory computed = BLS12381.scalar_mul(BLS12381.generatorG1(), scalar);
+        _assertG1Eq(computed, expected);
+    }
+
     function test_Negate_GeneratorMatchesKnownNegation() public {
         BLS12381.G1Point memory negated = BLS12381.negate(BLS12381.generatorG1());
         BLS12381.G1Point memory expected = BLS12381.negGeneratorG1();
@@ -100,6 +125,24 @@ contract BLS12381UtilsTest is Test {
         assertEq(negated.x_b, expected.x_b);
         assertEq(negated.y_a, expected.y_a);
         assertEq(negated.y_b, expected.y_b);
+    }
+
+    function _assertG1Eq(BLS12381.G1Point memory lhs, BLS12381.G1Point memory rhs) internal {
+        assertEq(lhs.x_a, rhs.x_a);
+        assertEq(lhs.x_b, rhs.x_b);
+        assertEq(lhs.y_a, rhs.y_a);
+        assertEq(lhs.y_b, rhs.y_b);
+    }
+
+    function _assertG2Eq(BLS12381.G2Point memory lhs, BLS12381.G2Point memory rhs) internal {
+        assertEq(lhs.x_c0_a, rhs.x_c0_a);
+        assertEq(lhs.x_c0_b, rhs.x_c0_b);
+        assertEq(lhs.x_c1_a, rhs.x_c1_a);
+        assertEq(lhs.x_c1_b, rhs.x_c1_b);
+        assertEq(lhs.y_c0_a, rhs.y_c0_a);
+        assertEq(lhs.y_c0_b, rhs.y_c0_b);
+        assertEq(lhs.y_c1_a, rhs.y_c1_a);
+        assertEq(lhs.y_c1_b, rhs.y_c1_b);
     }
 
     function _buildModexpCallData(uint256 x_a, uint256 x_b) internal pure returns (bytes memory callData) {

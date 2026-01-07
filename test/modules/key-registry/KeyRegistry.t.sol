@@ -13,6 +13,7 @@ import {KeyBlsBn254} from "../../../src/libraries/keys/KeyBlsBn254.sol";
 import {KeyEcdsaSecp256k1} from "../../../src/libraries/keys/KeyEcdsaSecp256k1.sol";
 import {BLS12381} from "../../../src/libraries/utils/BLS12381.sol";
 import {BN254} from "../../../src/libraries/utils/BN254.sol";
+import {Bls12381GoHelper} from "../../helpers/Bls12381Go.sol";
 import {BN254G2} from "../../helpers/BN254G2.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {
@@ -44,7 +45,7 @@ contract TestKeyRegistry is KeyRegistryWithKey64 {
     }
 }
 
-contract KeyRegistryTest is Test {
+contract KeyRegistryTest is Bls12381GoHelper {
     using KeyBlsBls12381 for KeyBlsBls12381.KEY_BLS_BLS12381;
     using KeyBlsBn254 for BN254.G1Point;
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
@@ -203,15 +204,17 @@ contract KeyRegistryTest is Test {
         address operator = address(0xBEEF);
         uint8 keyTag = KEY_TYPE_BLS_BLS12381.getKeyTag(3);
 
-        BLS12381.G1Point memory generator = _bls12381Generator();
-        BLS12381.G1Point memory keyG1 = _bls12381G1Mul(generator, bytes32(blsUserSk));
-        BLS12381.G2Point memory keyG2 = _bls12381G2Mul(BLS12381.generatorG2(), bytes32(blsUserSk));
+        BLS12381.G1Point memory keyG1 = _goG1Mul(bytes32(blsUserSk));
         bytes memory keyBytes = KeyBlsBls12381.wrap(keyG1).toBytes();
 
         bytes32 structHash = keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, operator, keccak256(keyBytes)));
         bytes32 digest = keyRegistry.hashTypedDataV4(structHash);
-        BLS12381.G1Point memory messageG1 = BLS12381.hashToG1(abi.encodePacked(digest));
-        BLS12381.G1Point memory signature = _bls12381G1Mul(messageG1, bytes32(blsUserSk));
+        (BLS12381.G1Point memory keyG1FromGo, BLS12381.G2Point memory keyG2, BLS12381.G1Point memory signature) =
+            _goSign(digest, bytes32(blsUserSk));
+        assertEq(keyG1FromGo.x_a, keyG1.x_a);
+        assertEq(keyG1FromGo.x_b, keyG1.x_b);
+        assertEq(keyG1FromGo.y_a, keyG1.y_a);
+        assertEq(keyG1FromGo.y_b, keyG1.y_b);
 
         vm.startPrank(operator);
         keyRegistry.setKey(keyTag, keyBytes, abi.encode(signature), abi.encode(keyG2));
@@ -238,15 +241,13 @@ contract KeyRegistryTest is Test {
         address operator = address(0xBEE1);
         uint8 keyTag = KEY_TYPE_BLS_BLS12381.getKeyTag(4);
 
-        BLS12381.G1Point memory generator = _bls12381Generator();
-        BLS12381.G1Point memory keyG1 = _bls12381G1Mul(generator, bytes32(blsUserSk));
-        BLS12381.G2Point memory keyG2 = _bls12381G2Mul(BLS12381.generatorG2(), bytes32(blsUserSk));
+        BLS12381.G1Point memory keyG1 = _goG1Mul(bytes32(blsUserSk));
         bytes memory keyBytes = KeyBlsBls12381.wrap(keyG1).toBytes();
 
         bytes32 structHash = keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, operator, keccak256(keyBytes)));
         bytes32 digest = keyRegistry.hashTypedDataV4(structHash);
-        BLS12381.G1Point memory messageG1 = BLS12381.hashToG1(abi.encodePacked(digest));
-        BLS12381.G1Point memory invalidSignature = _bls12381G1Mul(messageG1, bytes32(blsUserSk + 1));
+        (, BLS12381.G2Point memory keyG2,) = _goSign(digest, bytes32(blsUserSk));
+        (,, BLS12381.G1Point memory invalidSignature) = _goSign(digest, bytes32(blsUserSk + 1));
 
         vm.startPrank(operator);
         vm.expectRevert(IKeyRegistry.KeyRegistry_InvalidKeySignature.selector);

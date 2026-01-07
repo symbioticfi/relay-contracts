@@ -6,8 +6,9 @@ import {Test} from "forge-std/Test.sol";
 import {SigBlsBls12381} from "../../../src/libraries/sigs/SigBlsBls12381.sol";
 import {KeyBlsBls12381} from "../../../src/libraries/keys/KeyBlsBls12381.sol";
 import {BLS12381} from "../../../src/libraries/utils/BLS12381.sol";
+import {Bls12381GoHelper} from "../../helpers/Bls12381Go.sol";
 
-contract SigBlsBls12381Test is Test {
+contract SigBlsBls12381Test is Bls12381GoHelper {
     using KeyBlsBls12381 for KeyBlsBls12381.KEY_BLS_BLS12381;
 
     bytes internal constant DST_G1 = "BLS_SIG_BLS12381G1_XMD:SHA-256_SSWU_RO_NUL_";
@@ -24,6 +25,19 @@ contract SigBlsBls12381Test is Test {
         BLS12381.G2Point memory keyG2 = _g2Mul(BLS12381.generatorG2(), bytes32(privateKey));
         BLS12381.G1Point memory messageG1 = BLS12381.hashToG1(abi.encodePacked(messageHash));
         BLS12381.G1Point memory signature = _g1Mul(messageG1, bytes32(privateKey));
+
+        bytes memory keyBytes = KeyBlsBls12381.wrap(keyG1).toBytes();
+
+        assertTrue(SigBlsBls12381.verify(keyBytes, abi.encode(messageHash), abi.encode(signature), abi.encode(keyG2)));
+        assertTrue(SigBlsBls12381.verify(keyG1, messageHash, signature, keyG2));
+    }
+
+    function test_VerifyValidSignature_GoReference() public {
+        uint256 privateKey = 0x123456789abcdef;
+        bytes32 messageHash = keccak256("relay bls12381");
+
+        (BLS12381.G1Point memory keyG1, BLS12381.G2Point memory keyG2, BLS12381.G1Point memory signature) =
+            _goSign(messageHash, bytes32(privateKey));
 
         bytes memory keyBytes = KeyBlsBls12381.wrap(keyG1).toBytes();
 
