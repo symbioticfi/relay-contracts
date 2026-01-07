@@ -51,30 +51,6 @@ repos:
         language: system
         entry: python3 script/utils/generate_abis.py
         pass_filenames: false
-      - id: generate-bindings-rust-alloy
-        name: Generate Rust bindings (alloy)
-        description: Produce Rust alloy bindings from ABI files
-        language: system
-        entry: >
-          bash -lc '
-            set -euo pipefail
-            ABI_FILES=()
-            while IFS= read -r file; do
-              ABI_FILES+=("$file")
-            done < <(find abis -type f -name "*.abi.json" | sort)
-            rm -rf bindings/rust-alloy
-            mkdir -p bindings
-            crate_name=${CRATE_NAME:-symbiotic-relay-contracts}
-            crate_description=${CRATE_DESCRIPTION:-Alloy bindings for Symbiotic Relay contracts}
-            crate_version=${CRATE_VERSION:-1.0.0-rc.2}
-            forge_args=(forge bind --bindings-path bindings/rust-alloy --overwrite --skip-build --crate-name "$crate_name" --crate-description "$crate_description" --crate-license MIT --crate-version "$crate_version")
-            for abi in "${ABI_FILES[@]}"; do
-              name=$(basename "$abi" .abi.json)
-              forge_args+=(--select "$name")
-            done
-            "${forge_args[@]}"
-          '
-        pass_filenames: false
       - id: generate-bindings-ts-wagmi
         name: Generate TypeScript bindings (wagmi)
         description: Produce TypeScript wagmi bindings from ABI files
