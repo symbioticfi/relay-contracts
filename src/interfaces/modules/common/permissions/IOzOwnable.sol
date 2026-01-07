@@ -7,7 +7,7 @@ import {IPermissionManager} from "../../../modules/base/IPermissionManager.sol";
  * @title IOzOwnable
  * @notice Interface for the OzOwnable contract.
  */
-interface IOzOwnable {
+interface IOzOwnable is IPermissionManager {
     /**
      * @notice The parameters for the initialization of the OzOwnable contract.
      * @param owner The address of the owner.

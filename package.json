@@ -1,6 +1,6 @@
 {
     "name": "@symbioticfi/relay-contracts",
-    "version": "1.0.0-rc.2",
+    "version": "1.0.0-rc.3",
     "description": "Symbiotic Relay smart contracts allowing construction of validator set using various mechanics, verification and management of operators' keys of various types, aggregated signatures verification, and validator set's running.",
     "homepage": "https://symbiotic.fi/relay",
     "bugs": "https://github.com/symbioticfi/relay-contracts/issues",
@@ -10,7 +10,9 @@
         "examples/**/*",
         "src/**/*",
         "script/**/*",
-        "test/mocks/**/*"
+        "test/mocks/**/*",
+        "abis/**/*",
+        "bindings/ts-wagmi/**/*"
     ],
     "repository": {
         "type": "git",
@@ -24,16 +26,10 @@
         "security"
     ],
     "dependencies": {
-        "@noble/curves": "^1.3.0",
-        "dotenv": "^16.5.0",
-        "ethereum-cryptography": "^2.1.3",
-        "ethers": "^6.11.1",
-        "@openzeppelin/contracts": "5.2.0",
-        "@openzeppelin/contracts-upgradeable": "5.2.0",
+        "@openzeppelin/contracts": "5.4.0",
+        "@openzeppelin/contracts-upgradeable": "5.4.0",
         "@symbioticfi/core": "1.0.3",
+        "@symbioticfi/network": "1.0.0-rc.2",
         "@symbioticfi/rewards": "2.0.0"
-    },
-    "engines": {
-        "node": ">=18.0.0"
     }
 }

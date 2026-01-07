@@ -1,13 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import {INormalizedTokenDecimalsVPCalc} from "./INormalizedTokenDecimalsVPCalc.sol";
+import {IPermissionManager} from "../../../base/IPermissionManager.sol";
+
 import {Checkpoints} from "../../../../../libraries/structs/Checkpoints.sol";
 
 /**
  * @title IPricedTokensChainlinkVPCalc
  * @notice Interface for the PricedTokensChainlinkVPCalc contract.
  */
-interface IPricedTokensChainlinkVPCalc {
+interface IPricedTokensChainlinkVPCalc is INormalizedTokenDecimalsVPCalc, IPermissionManager {
     /**
      * @notice Reverts when the aggregator is zero address.
      */

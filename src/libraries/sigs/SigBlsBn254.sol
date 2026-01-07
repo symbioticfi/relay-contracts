@@ -64,14 +64,13 @@ library SigBlsBn254 {
             return false;
         }
         BN254.G1Point memory messageG1 = BN254.hashToG1(messageHash);
-        uint256 alpha =
-            uint256(
-                    keccak256(
-                        abi.encodePacked(
-                            signatureG1.X, signatureG1.Y, keyG1.X, keyG1.Y, keyG2.X, keyG2.Y, messageG1.X, messageG1.Y
-                        )
-                    )
-                ) % BN254.FR_MODULUS;
+        uint256 alpha = uint256(
+            keccak256(
+                abi.encodePacked(
+                    signatureG1.X, signatureG1.Y, keyG1.X, keyG1.Y, keyG2.X, keyG2.Y, messageG1.X, messageG1.Y
+                )
+            )
+        ) % BN254.FR_MODULUS;
         return BN254.pairing(
             signatureG1.plus(keyG1.scalar_mul(alpha)),
             BN254.negGeneratorG2(),

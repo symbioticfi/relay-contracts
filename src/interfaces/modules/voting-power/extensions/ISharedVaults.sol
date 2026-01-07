@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import {IVotingPowerProvider} from "../IVotingPowerProvider.sol";
+
 /**
  * @title ISharedVaults
  * @notice Interface for the SharedVaults contract.
  */
-interface ISharedVaults {
+interface ISharedVaults is IVotingPowerProvider {
     /**
      * @notice Registers the shared vault.
      * @param sharedVault The address of the shared vault.

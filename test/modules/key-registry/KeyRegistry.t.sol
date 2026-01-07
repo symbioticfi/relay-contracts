@@ -3,16 +3,22 @@ pragma solidity ^0.8.25;
 
 import "forge-std/Test.sol";
 
+import {console2} from "forge-std/console2.sol";
+
 import {KeyRegistry} from "../../../src/modules/key-registry/KeyRegistry.sol";
 import {IKeyRegistry} from "../../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
 
+import {KeyBlsBls12381} from "../../../src/libraries/keys/KeyBlsBls12381.sol";
 import {KeyBlsBn254} from "../../../src/libraries/keys/KeyBlsBn254.sol";
 import {KeyEcdsaSecp256k1} from "../../../src/libraries/keys/KeyEcdsaSecp256k1.sol";
+import {BLS12381} from "../../../src/libraries/utils/BLS12381.sol";
 import {BN254} from "../../../src/libraries/utils/BN254.sol";
+import {Bls12381GoHelper} from "../../helpers/Bls12381Go.sol";
 import {BN254G2} from "../../helpers/BN254G2.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {
     KEY_TYPE_BLS_BN254,
+    KEY_TYPE_BLS_BLS12381,
     KEY_TYPE_ECDSA_SECP256K1
 } from "../../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
 
@@ -39,7 +45,8 @@ contract TestKeyRegistry is KeyRegistryWithKey64 {
     }
 }
 
-contract KeyRegistryTest is Test {
+contract KeyRegistryTest is Bls12381GoHelper {
+    using KeyBlsBls12381 for KeyBlsBls12381.KEY_BLS_BLS12381;
     using KeyBlsBn254 for BN254.G1Point;
     using KeyBlsBn254 for KeyBlsBn254.KEY_BLS_BN254;
     using KeyBlsBn254 for bytes;
@@ -59,12 +66,40 @@ contract KeyRegistryTest is Test {
     address ecdsaUser = vm.createWallet(ecdsaUserPrivateKey).addr;
 
     uint256 blsUserSk = 0x12345;
+    bytes internal constant BLS12381_DST_G1 = "BLS_SIG_BLS12381G1_XMD:SHA-256_SSWU_RO_NUL_";
+
+    address internal constant BLS12_G2ADD = 0x000000000000000000000000000000000000000d;
+    address internal constant BLS12_G2MSM = 0x000000000000000000000000000000000000000E;
 
     function getG2Key(uint256 privateKey) internal view returns (BN254.G2Point memory) {
         BN254.G2Point memory G2 = BN254.generatorG2();
         (uint256 x1, uint256 x2, uint256 y1, uint256 y2) =
             BN254G2.ECTwistMul(privateKey, G2.X[1], G2.X[0], G2.Y[1], G2.Y[0]);
         return BN254.G2Point([x2, x1], [y2, y1]);
+    }
+
+    function _bls12381Generator() internal pure returns (BLS12381.G1Point memory) {
+        return BLS12381.negate(BLS12381.negGeneratorG1());
+    }
+
+    function _bls12381G1Mul(BLS12381.G1Point memory point, bytes32 scalar)
+        internal
+        view
+        returns (BLS12381.G1Point memory result)
+    {
+        result = BLS12381.scalar_mul(point, uint256(scalar));
+    }
+
+    function _bls12381G2Mul(BLS12381.G2Point memory point, bytes32 scalar)
+        internal
+        view
+        returns (BLS12381.G2Point memory result)
+    {
+        BLS12381.G2Point[] memory points = new BLS12381.G2Point[](1);
+        bytes32[] memory scalars = new bytes32[](1);
+        points[0] = point;
+        scalars[0] = scalar;
+        result = _g2Msm(points, scalars);
     }
 
     function setUp() public {
@@ -156,6 +191,68 @@ contract KeyRegistryTest is Test {
         uint8[] memory keyTagsAt = keyRegistry.getKeyTagsAt(ecdsaUser, uint48(vm.getBlockTimestamp()));
         assertEq(keyTagsAt.length, 1, "Should have 1 key tag");
         assertEq(keyTagsAt[0], KEY_TYPE_BLS_BN254.getKeyTag(15), "Key tag mismatch");
+    }
+
+    function test_SetBlsBls12381Key1() public {
+        bytes32[] memory bytes32Array = new bytes32[](2);
+        bytes32Array[0] = bytes32(uint256(123));
+        bytes32Array[1] = bytes32(uint256(123));
+        console2.logBytes32(bytes32Array[0]);
+        console2.logBytes(abi.encode(bytes32Array));
+        console2.logBytes(abi.encodePacked(bytes32Array));
+
+        address operator = address(0xBEEF);
+        uint8 keyTag = KEY_TYPE_BLS_BLS12381.getKeyTag(3);
+
+        BLS12381.G1Point memory keyG1 = _goG1Mul(bytes32(blsUserSk));
+        bytes memory keyBytes = KeyBlsBls12381.wrap(keyG1).toBytes();
+
+        bytes32 structHash = keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, operator, keccak256(keyBytes)));
+        bytes32 digest = keyRegistry.hashTypedDataV4(structHash);
+        (BLS12381.G1Point memory keyG1FromGo, BLS12381.G2Point memory keyG2, BLS12381.G1Point memory signature) =
+            _goSign(digest, bytes32(blsUserSk));
+        assertEq(keyG1FromGo.x_a, keyG1.x_a);
+        assertEq(keyG1FromGo.x_b, keyG1.x_b);
+        assertEq(keyG1FromGo.y_a, keyG1.y_a);
+        assertEq(keyG1FromGo.y_b, keyG1.y_b);
+
+        vm.startPrank(operator);
+        keyRegistry.setKey(keyTag, keyBytes, abi.encode(signature), abi.encode(keyG2));
+        vm.stopPrank();
+
+        assertEq(keyRegistry.getOperator(keyBytes), operator, "Operator mismatch for BLS12381 key");
+
+        bytes memory storedKey = keyRegistry.getKey(operator, keyTag);
+        assertEq(keccak256(storedKey), keccak256(keyBytes), "BLS12381 key mismatch");
+
+        bytes memory storedKeyAt = keyRegistry.getKeyAt(operator, keyTag, uint48(vm.getBlockTimestamp()));
+        assertEq(keccak256(storedKeyAt), keccak256(keyBytes), "BLS12381 key mismatch");
+
+        uint8[] memory keyTags = keyRegistry.getKeyTags(operator);
+        assertEq(keyTags.length, 1, "Should have 1 key tag");
+        assertEq(keyTags[0], keyTag, "Key tag mismatch");
+
+        uint8[] memory keyTagsAt = keyRegistry.getKeyTagsAt(operator, uint48(vm.getBlockTimestamp()));
+        assertEq(keyTagsAt.length, 1, "Should have 1 key tag");
+        assertEq(keyTagsAt[0], keyTag, "Key tag mismatch");
+    }
+
+    function test_SetBlsBls12381Key_RevertInvalidSignature() public {
+        address operator = address(0xBEE1);
+        uint8 keyTag = KEY_TYPE_BLS_BLS12381.getKeyTag(4);
+
+        BLS12381.G1Point memory keyG1 = _goG1Mul(bytes32(blsUserSk));
+        bytes memory keyBytes = KeyBlsBls12381.wrap(keyG1).toBytes();
+
+        bytes32 structHash = keccak256(abi.encode(KEY_OWNERSHIP_TYPEHASH, operator, keccak256(keyBytes)));
+        bytes32 digest = keyRegistry.hashTypedDataV4(structHash);
+        (, BLS12381.G2Point memory keyG2,) = _goSign(digest, bytes32(blsUserSk));
+        (,, BLS12381.G1Point memory invalidSignature) = _goSign(digest, bytes32(blsUserSk + 1));
+
+        vm.startPrank(operator);
+        vm.expectRevert(IKeyRegistry.KeyRegistry_InvalidKeySignature.selector);
+        keyRegistry.setKey(keyTag, keyBytes, abi.encode(invalidSignature), abi.encode(keyG2));
+        vm.stopPrank();
     }
 
     function test_SetKey_AlreadyUsedKeyDifferentOperator() public {
@@ -258,7 +355,7 @@ contract KeyRegistryTest is Test {
     }
 
     function test_SetKey_RevertOnInvalidKeyType() public {
-        uint8 invalidType = 3;
+        uint8 invalidType = 7;
         uint8 identifier = 0;
         uint8 invalidTag = KeyTags.getKeyTag(invalidType, identifier);
 
@@ -402,5 +499,48 @@ contract KeyRegistryTest is Test {
         bytes32 location =
             keccak256(abi.encode(uint256(keccak256("symbiotic.storage.KeyRegistry")) - 1)) & ~bytes32(uint256(0xff));
         assertEq(location, 0x79440bf5b0cb104c925971e1cca11d9e1557cbe9fa7533e7b0652d40728ecf00, "Location mismatch");
+    }
+
+    /// @dev Adds two G2 points. Returns a new G2 point.
+    function _g2Add(BLS12381.G2Point memory point0, BLS12381.G2Point memory point1)
+        internal
+        view
+        returns (BLS12381.G2Point memory result)
+    {
+        assembly ("memory-safe") {
+            mcopy(result, point0, 0x100)
+            mcopy(add(result, 0x100), point1, 0x100)
+            if iszero(and(eq(returndatasize(), 0x100), staticcall(gas(), BLS12_G2ADD, result, 0x200, result, 0x100))) {
+                mstore(0x00, 0xc55e5e33) // `G2AddFailed()`.
+                revert(0x1c, 0x04)
+            }
+        }
+    }
+
+    /// @dev Multi-scalar multiplication of G2 points with scalars. Returns a new G2 point.
+    function _g2Msm(BLS12381.G2Point[] memory points, bytes32[] memory scalars)
+        internal
+        view
+        returns (BLS12381.G2Point memory result)
+    {
+        assembly ("memory-safe") {
+            let k := mload(points)
+            let d := sub(scalars, points)
+            for { let i := 0 } iszero(eq(i, k)) { i := add(i, 1) } {
+                points := add(points, 0x20)
+                let o := add(result, mul(0x120, i))
+                mcopy(o, mload(points), 0x100)
+                mstore(add(o, 0x100), mload(add(d, points)))
+            }
+            if iszero(
+                and(
+                    and(eq(k, mload(scalars)), eq(returndatasize(), 0x100)),
+                    staticcall(gas(), BLS12_G2MSM, result, mul(0x120, k), result, 0x100)
+                )
+            ) {
+                mstore(0x00, 0xe3dc5425) // `G2MSMFailed()`.
+                revert(0x1c, 0x04)
+            }
+        }
     }
 }

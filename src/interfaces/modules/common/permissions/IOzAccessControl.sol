@@ -9,7 +9,7 @@ import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol"
  * @title IOzAccessControl
  * @notice Interface for the OzAccessControl contract.
  */
-interface IOzAccessControl {
+interface IOzAccessControl is IPermissionManager, IAccessControl {
     /**
      * @notice The storage of the OzAccessControl contract.
      * @param _selectorRoles The mapping from the function selector to the required role.

@@ -46,6 +46,7 @@ contract MyRelayDeploy is RelayDeploy {
     string public constant VALSET_DRIVER_NAME = "MyValSetDriver";
     string public constant VALSET_DRIVER_VERSION = "1";
     uint48 public constant EPOCH_DURATION = 86_400;
+    uint48 public constant COMMITTER_SLOT_DURATION = 21_600;
     uint208 public constant NUM_AGGREGATORS = 3;
     uint208 public constant NUM_COMMITTERS = 2;
     uint256 public constant MAX_VOTING_POWER = 1_000_000 * 10 ** 18;
@@ -141,6 +142,7 @@ contract MyRelayDeploy is RelayDeploy {
                     }),
                     numAggregators: NUM_AGGREGATORS,
                     numCommitters: NUM_COMMITTERS,
+                    committerSlotDuration: COMMITTER_SLOT_DURATION,
                     votingPowerProviders: getVotingPowerProviders(),
                     keysProvider: getKeyRegistry(),
                     settlements: getSettlements(),

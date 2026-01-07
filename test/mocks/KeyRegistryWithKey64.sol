@@ -5,8 +5,6 @@ import {KeyRegistry} from "../../src/modules/key-registry/KeyRegistry.sol";
 
 import {IKeyRegistry} from "../../src/interfaces/modules/key-registry/IKeyRegistry.sol";
 
-import {MulticallUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
-
 import {OzEIP712} from "../../src/modules/base/OzEIP712.sol";
 
 import {Checkpoints} from "../../src/libraries/structs/Checkpoints.sol";
@@ -20,7 +18,7 @@ import {KeyEcdsaSecp256k1} from "../../src/libraries/keys/KeyEcdsaSecp256k1.sol"
 import {SigBlsBn254} from "../../src/libraries/sigs/SigBlsBn254.sol";
 import {SigEcdsaSecp256k1} from "../../src/libraries/sigs/SigEcdsaSecp256k1.sol";
 
-uint8 constant KEY_TYPE_KEY64 = 2;
+uint8 constant KEY_TYPE_KEY64 = 3;
 
 contract KeyRegistryWithKey64 is KeyRegistry {
     using KeyTags for uint8;

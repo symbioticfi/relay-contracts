@@ -37,4 +37,4 @@ jobs:
       - name: Run pre-commit
         run: pre-commit run --all-files --color always --show-diff-on-failure
         env:
-          SKIP: forge-snapshots,doc
+          SKIP: forge-snapshots,generate-abis,generate-bindings-ts-wagmi,generate-bindings-go-go-ethereum,end-of-file-fixer,prettier

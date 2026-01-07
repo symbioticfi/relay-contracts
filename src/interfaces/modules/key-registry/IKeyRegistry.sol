@@ -8,12 +8,13 @@ import {PersistentSet} from "../../../libraries/structs/PersistentSet.sol";
 
 uint8 constant KEY_TYPE_BLS_BN254 = 0;
 uint8 constant KEY_TYPE_ECDSA_SECP256K1 = 1;
+uint8 constant KEY_TYPE_BLS_BLS12381 = 2;
 
 /**
  * @title IKeyRegistry
  * @notice Interface for the KeyRegistry contract.
  */
-interface IKeyRegistry {
+interface IKeyRegistry is IOzEIP712 {
     /**
      * @notice Reverts when the key is already used by another operator or with another tag.
      */

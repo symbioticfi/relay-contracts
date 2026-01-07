@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import {IStaticDelegateCallable} from "@symbioticfi/core/src/interfaces/common/IStaticDelegateCallable.sol";
+
 /**
  * @title INetworkManager
  * @notice Interface for the NetworkManager contract.
  */
-interface INetworkManager {
+interface INetworkManager is IStaticDelegateCallable {
     /**
      * @notice Reverts when the network is zero address.
      */

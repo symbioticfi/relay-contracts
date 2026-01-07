@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import {IVotingPowerProvider} from "../IVotingPowerProvider.sol";
+
 /**
  * @title IBaseRewards
  * @notice Interface for the BaseRewards contract.
  */
-interface IBaseRewards {
+interface IBaseRewards is IVotingPowerProvider {
     /**
      * @notice Reverts when the caller is not the rewarder.
      */

@@ -153,11 +153,12 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
         return _deserializeEpochDurationData(_getEpochManagerStorage()._epochDurationDataByTimestamp.at(0)._value);
     }
 
-    function _serializeEpochDurationData(
-        uint48 epochDuration,
-        uint48 epochDurationTimestamp,
-        uint48 epochDurationIndex
-    ) internal pure virtual returns (uint208) {
+    function _serializeEpochDurationData(uint48 epochDuration, uint48 epochDurationTimestamp, uint48 epochDurationIndex)
+        internal
+        pure
+        virtual
+        returns (uint208)
+    {
         return (uint208(epochDurationIndex) << 96) | (uint208(epochDurationTimestamp) << 48) | uint208(epochDuration);
     }
 

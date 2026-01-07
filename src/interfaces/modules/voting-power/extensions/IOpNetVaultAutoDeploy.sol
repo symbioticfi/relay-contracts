@@ -7,7 +7,7 @@ import {IVotingPowerProvider} from "../IVotingPowerProvider.sol";
  * @title IOpNetVaultAutoDeploy
  * @notice Interface for the OpNetVaultAutoDeploy contract.
  */
-interface IOpNetVaultAutoDeploy {
+interface IOpNetVaultAutoDeploy is IVotingPowerProvider {
     /**
      * @notice Reverts when the burner hook is enabled but the slasher is not.
      */

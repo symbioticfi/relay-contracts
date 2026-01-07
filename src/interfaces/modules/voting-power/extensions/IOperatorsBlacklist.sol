@@ -7,7 +7,7 @@ import {IVotingPowerProvider} from "../IVotingPowerProvider.sol";
  * @title IOperatorsBlacklist
  * @notice Interface for the OperatorsBlacklist contract.
  */
-interface IOperatorsBlacklist {
+interface IOperatorsBlacklist is IVotingPowerProvider {
     /**
      * @notice Reverts when the operator is not blacklisted.
      */

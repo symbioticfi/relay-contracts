@@ -1,3 +1,10 @@
+# Prerequisites:
+# - Foundry
+# - Python 3
+# - Node.js
+# - Go
+# - abigen
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
@@ -38,11 +45,52 @@ repos:
         files: '\.sol$'
         exclude: "^lib/"
         pass_filenames: true
-      - id: doc
-        name: Generate documentation
-        description: Generate docs with `forge doc`
+      - id: generate-abis
+        name: Generate ABI artifacts
+        description: Compile contracts and sync their ABIs into ./abis
         language: system
-        entry: bash -lc 'forge build; rm -rf docs/autogen; forge doc -b -o docs/autogen'
+        entry: python3 script/utils/generate_abis.py
+        pass_filenames: false
+      - id: generate-bindings-ts-wagmi
+        name: Generate TypeScript bindings (wagmi)
+        description: Produce TypeScript wagmi bindings from ABI files
+        language: system
+        entry: >
+          bash -lc '
+            set -euo pipefail
+            exec > /dev/null
+            ABI_FILES=()
+            while IFS= read -r file; do
+              ABI_FILES+=("$file")
+            done < <(find abis -type f -name "*.abi.json" | sort)
+            mkdir -p bindings/ts-wagmi
+            rm -f bindings/ts-wagmi/generated.ts
+            (
+              cd bindings/ts-wagmi
+              npx --yes @wagmi/cli@latest generate --config wagmi.config.ts
+            )
+          '
+        pass_filenames: false
+      - id: generate-bindings-go-go-ethereum
+        name: Generate Go bindings (go-ethereum)
+        description: Produce Go bindings with abigen from ABI files
+        language: system
+        entry: >
+          bash -lc '
+            set -euo pipefail
+            ABI_FILES=()
+            while IFS= read -r file; do
+              ABI_FILES+=("$file")
+            done < <(find abis -type f -name "*.abi.json" | sort)
+            rm -rf bindings/go-go-ethereum
+            mkdir -p bindings/go-go-ethereum
+            pkg=${ABIGEN_PACKAGE:-relaycontracts}
+            for abi in "${ABI_FILES[@]}"; do
+              name=$(basename "$abi" .abi.json)
+              go_file=$(python3 -c "import re, sys; name = sys.argv[1]; s1 = re.sub(r\"(.)([A-Z][a-z]+)\", r\"\\1_\\2\", name); snake = re.sub(r\"([a-z0-9])([A-Z])\", r\"\\1_\\2\", s1).lower(); snake = re.sub(r\"[^0-9a-z_]\", \"_\", snake); print(snake)" "$name")
+              abigen --abi "$abi" --pkg "$pkg" --type "$name" --out "bindings/go-go-ethereum/${go_file}.go"
+            done
+          '
         pass_filenames: false
       - id: forge-snapshots
         name: Update forge snapshots
@@ -55,3 +103,4 @@ repos:
       - id: prettier
         name: Format non-solidity files with prettier
         exclude: "^(docs/autogen|snapshots/)"
+        language_version: system
