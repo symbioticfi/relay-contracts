@@ -1,4 +1,3 @@
-import { defineConfig } from "@wagmi/cli";
 import { readFileSync, readdirSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -6,7 +5,7 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..", "..");
 const ABIS_DIR = join(ROOT, "abis");
-const OUTPUT_FILE = join(ROOT, "bindings/ts-viem/generated.ts");
+const OUTPUT_FILE = join(ROOT, "bindings/ts-wagmi/generated.ts");
 
 const collectContracts = () => {
   const contracts = [];
@@ -45,7 +44,7 @@ const collectContracts = () => {
   return contracts;
 };
 
-export default defineConfig({
+export default {
   out: OUTPUT_FILE,
   contracts: collectContracts(),
-});
+};

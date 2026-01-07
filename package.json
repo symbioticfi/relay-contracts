@@ -12,7 +12,7 @@
         "script/**/*",
         "test/mocks/**/*",
         "abis/**/*",
-        "bindings/ts-viem/**/*"
+        "bindings/ts-wagmi/**/*"
     ],
     "repository": {
         "type": "git",
@@ -29,7 +29,7 @@
         "@openzeppelin/contracts": "5.4.0",
         "@openzeppelin/contracts-upgradeable": "5.4.0",
         "@symbioticfi/core": "1.0.3",
-        "@symbioticfi/rewards": "2.0.0",
-        "@symbioticfi/network": "1.0.0-rc.2"
+        "@symbioticfi/network": "1.0.0-rc.2",
+        "@symbioticfi/rewards": "2.0.0"
     }
 }

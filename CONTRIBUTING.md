@@ -43,7 +43,6 @@ This repo includes the following pre-commit hooks that are defined in the `.pre-
 - `sort-imports`: Normalises and sorts imports according to the rules mentioned in the [Code Style](#code-style) below.
 - `sort-errors`: Sorts errors according to the rules mentioned in the [Code Style](#code-style) below.
 - `format`: This hook uses `forge fmt` to format all Solidity files.
-- `doc`: This hook uses `forge doc` to generate the Solidity documentation. Commit the generated files whenever the documentation changes.
 - `prettier`: All remaining files are formatted using prettier.
 
 ## Requirements for merge

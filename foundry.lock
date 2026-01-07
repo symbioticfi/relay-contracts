@@ -1,15 +1,9 @@
 {
-  "lib/chainlink-evm": {
-    "rev": "448d48945910a0e1fcab5abff555c0f8f3d87070"
-  },
   "lib/core": {
     "tag": {
       "name": "v1.0.3",
       "rev": "74c0c6fbd5531a6065cdafdab07840b04a0d2039"
     }
-  },
-  "lib/crypto-lib": {
-    "rev": "f2c00ecced1df96fe81894d19a6b8ec754beedb9"
   },
   "lib/forge-std": {
     "tag": {
