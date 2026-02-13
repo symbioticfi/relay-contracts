@@ -1,6 +1,3 @@
-> [!WARNING]
-> The SDK is a work in progress and is currently under audits. Breaking changes may occur in SDK updates as well as backward compatibility is not guaranteed. Use with caution.
-
 # Symbiotic Relay Smart Contracts
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/symbioticfi/relay-contracts)
@@ -13,7 +10,6 @@ Symbiotic Relay is a peer-to-peer side-network designed to collect and aggregate
 To achieve that, Symbiotic provides a set of predefined smart contracts, in general, representing the following modules:
 
 - [VotingPowerProvider](./src/modules/voting-power/) - provides the basic data regarding operators, vaults and their voting power, it allows constructing various onboarding schemes such as:
-
   - [OperatorsWhitelist](./src/modules/voting-power/extensions/OperatorsWhitelist.sol) - only whitelisted operators can register
   - [OperatorsBlacklist](./src/modules/voting-power/extensions/OperatorsBlacklist.sol) - blacklisted operators are unregistered and are forbidden to return back
   - [OperatorsJail](./src/modules/voting-power/extensions/OperatorsJail.sol) - operators can be jailed for some amount of time and register back after that
@@ -22,7 +18,6 @@ To achieve that, Symbiotic provides a set of predefined smart contracts, in gene
   - [MultiToken](./src/modules/voting-power/extensions/MultiToken.sol) - possible to add new supported tokens on the go
   - [OpNetVaultAutoDeploy](./src/modules/voting-power/extensions/OpNetVaultAutoDeploy.sol) - enable auto-creation of the configured by you vault on each operator registration
   - [VotingPowerCalculators](./src/modules/voting-power/common/voting-power-calc/) - there are several stake-to-votingPower conversion mechanisms you can use separately or combine:
-
     - [EqualStakeVPCalc](./src/modules/voting-power/common/voting-power-calc/EqualStakeVPCalc.sol) - voting power is equal to stake
     - [NormalizedTokenDecimalsVPCalc](./src/modules/voting-power/common/voting-power-calc/NormalizedTokenDecimalsVPCalc.sol) - all tokens' decimals are normalized to 18
     - [PricedTokensChainlinkVPCalc](./src/modules/voting-power/common/voting-power-calc/PricedTokensChainlinkVPCalc.sol) - voting power is calculated using Chainlink price feeds
@@ -74,13 +69,11 @@ The script deploys Relay modules under [OZ's TransparentUpgradeableProxy](https:
 #### Deployment
 
 1. Implement your `MyRelayDeploy.sol` ([see example](./script/examples/MyRelayDeploy.sol)) - this Foundry script should include the deployment configuration of your Relay modules
-
    - you need to implement all virtual functions of `RelayDeploy.sol`
    - in constructor, need to input the path of the `toml` file
    - you are provided with additional helpers such as `getCore()`, `getKeyRegistry()`, `getVotingPowerProvider()`, etc. (see full list in [`RelayDeploy.sol`](./script/RelayDeploy.sol))
 
 2. Implement your `my-relay-deploy.toml` ([see example](./script/examples/my-relay-deploy.toml)) - this configuration file should include RPC URLs that will be needed for the deployment, and which modules should be deployed on which chains
-
    - **do not replace [1234567890] placeholder with endpoint_url = ""**
    - the contracts are deployed in such order:
      1. KeyRegistry
