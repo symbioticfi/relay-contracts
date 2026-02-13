@@ -353,7 +353,7 @@ library Checkpoints {
     }
 
     /**
-     * @dev Pushes a (`key`, `value`) pair into a Trace256 so that it is stored as the checkpoint.
+     * @dev Pushes a (`key`, `value`) pair into a Trace512 so that it is stored as the checkpoint.
      *
      * Returns previous value and new value.
      */
