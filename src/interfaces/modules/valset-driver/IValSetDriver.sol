@@ -54,11 +54,6 @@ interface IValSetDriver is IEpochManager, INetworkManager {
     error ValSetDriver_ZeroNumAggregators();
 
     /**
-     * @notice Reverts when the number of committers is zero.
-     */
-    error ValSetDriver_ZeroNumCommitters();
-
-    /**
      * @notice The storage of the ValSetDriver contract.
      * @param _numAggregators The checkpoint of the number of aggregators.
      * @param _numCommitters The checkpoint of the number of committers.
@@ -545,7 +540,7 @@ interface IValSetDriver is IEpochManager, INetworkManager {
     /**
      * @notice Sets the number of committers (those who commit some data (e.g., ValSetHeader)
      *         to on-chain).
-     * @param numCommitters The number of committers.
+     * @param numCommitters The number of committers. Can be zero.
      * @dev The caller must have the needed permission.
      */
     function setNumCommitters(uint208 numCommitters) external;

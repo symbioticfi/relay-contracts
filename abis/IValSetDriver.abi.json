@@ -1886,10 +1886,5 @@
         "type": "error",
         "name": "ValSetDriver_ZeroNumAggregators",
         "inputs": []
-    },
-    {
-        "type": "error",
-        "name": "ValSetDriver_ZeroNumCommitters",
-        "inputs": []
     }
 ]
