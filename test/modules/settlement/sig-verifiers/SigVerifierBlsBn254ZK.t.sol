@@ -494,9 +494,11 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetupTest {
             )
         );
 
-        stdstore.target(address(masterSetupParams.settlement)).sig("getExtraDataAt(uint48,bytes32)")
+        stdstore.target(address(masterSetupParams.settlement))
+            .sig("getExtraDataAt(uint48,bytes32)")
             .with_key(masterSetupParams.settlement.getLastCommittedHeaderEpoch())
-            .with_key(uint32(0).getKey(sigVerifier.TOTAL_ACTIVE_VALIDATORS_HASH())).checked_write(bytes32(uint256(0)));
+            .with_key(uint32(0).getKey(sigVerifier.TOTAL_ACTIVE_VALIDATORS_HASH()))
+            .checked_write(bytes32(uint256(0)));
 
         vm.startPrank(vars.deployer.addr);
         (bool success, bytes memory ret) = address(sigVerifier).call(data);
@@ -551,7 +553,8 @@ contract SigVerifierBlsBn254ZKTest is MasterGenesisSetupTest {
             sigVerifier = new SigVerifierBlsBn254ZK(verifiers, maxValidators);
         }
 
-        stdstore.target(address(masterSetupParams.settlement)).sig("getExtraDataAt(uint48,bytes32)")
+        stdstore.target(address(masterSetupParams.settlement))
+            .sig("getExtraDataAt(uint48,bytes32)")
             .with_key(masterSetupParams.settlement.getLastCommittedHeaderEpoch())
             .with_key(uint32(0).getKey(sigVerifier.TOTAL_ACTIVE_VALIDATORS_HASH()))
             .checked_write(bytes32(uint256(1001)));

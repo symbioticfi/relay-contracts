@@ -120,12 +120,14 @@ abstract contract EpochManager is PermissionManager, IEpochManager {
         if (epochDuration == 0) {
             revert EpochManager_InvalidEpochDuration();
         }
-        _getEpochManagerStorage()._epochDurationDataByTimestamp
+        _getEpochManagerStorage()
+            ._epochDurationDataByTimestamp
             .push(
                 epochDurationTimestamp,
                 _serializeEpochDurationData(epochDuration, epochDurationTimestamp, epochDurationIndex)
             );
-        _getEpochManagerStorage()._epochDurationDataByIndex
+        _getEpochManagerStorage()
+            ._epochDurationDataByIndex
             .push(
                 epochDurationIndex,
                 _serializeEpochDurationData(epochDuration, epochDurationTimestamp, epochDurationIndex)

@@ -1,13 +1,15 @@
 # Prerequisites:
 # - Foundry
-# - Python 3
-# - Node.js
-# - Go
-# - abigen
+# - Python 3.10+
+# - Node.js (see .nvmrc)
+# - pnpm 11.25.0
+# - Go 1.24+ (abigen is installed by pre-commit)
+
+minimum_pre_commit_version: "4.6.2"
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: mixed-line-ending
         args: ["--fix=lf"]
@@ -56,7 +58,7 @@ repos:
         description: Produce TypeScript wagmi bindings from ABI files
         language: system
         entry: >
-          bash -lc '
+          bash -c '
             set -euo pipefail
             exec > /dev/null
             ABI_FILES=()
@@ -67,16 +69,19 @@ repos:
             rm -f bindings/ts-wagmi/generated.ts
             (
               cd bindings/ts-wagmi
-              npx --yes @wagmi/cli@latest generate --config wagmi.config.ts
+              pnpm dlx @wagmi/cli@2.10.0 generate --config wagmi.config.ts
+              pnpm dlx prettier@3.9.6 --write generated.ts
             )
           '
         pass_filenames: false
       - id: generate-bindings-go-go-ethereum
         name: Generate Go bindings (go-ethereum)
         description: Produce Go bindings with abigen from ABI files
-        language: system
+        language: golang
+        language_version: system
+        additional_dependencies: ["github.com/ethereum/go-ethereum/cmd/abigen@v1.17.5"]
         entry: >
-          bash -lc '
+          bash -c '
             set -euo pipefail
             ABI_FILES=()
             while IFS= read -r file; do
@@ -97,10 +102,9 @@ repos:
         language: system
         entry: bash -lc 'mkdir -p snapshots; forge build; forge build --sizes | tee snapshots/sizes.txt >/dev/null; forge test --isolate --gas-report | tee snapshots/gas.txt >/dev/null'
         pass_filenames: false
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.1.0
-    hooks:
       - id: prettier
         name: Format non-solidity files with prettier
+        language: system
+        entry: pnpm dlx prettier@3.9.6 --write --list-different --ignore-unknown
+        types: [text]
         exclude: "^(docs/autogen|snapshots/)"
-        language_version: system

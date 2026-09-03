@@ -358,7 +358,8 @@ library VotingPowerProviderLogic {
     }
 
     function setSlashingData(bool requireSlasher, uint48 minVaultEpochDuration) public {
-        _getVotingPowerProviderStorage()._slashingData
+        _getVotingPowerProviderStorage()
+            ._slashingData
             .push(uint48(block.timestamp), serializeSlashingData(requireSlasher, minVaultEpochDuration));
 
         emit IVotingPowerProvider.SetSlashingData(requireSlasher, minVaultEpochDuration);

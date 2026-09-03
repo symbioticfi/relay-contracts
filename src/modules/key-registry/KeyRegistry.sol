@@ -227,7 +227,8 @@ contract KeyRegistry is OzEIP712, MulticallUpgradeable, IKeyRegistry {
     function _setKey64(address operator, uint8 tag, bytes memory key) internal {
         (bytes32 compressedKey1, bytes32 compressedKey2) = abi.decode(key, (bytes32, bytes32));
         _getKeyRegistryStorage()
-        ._keys64[operator][tag].push(uint48(block.timestamp), [uint256(compressedKey1), uint256(compressedKey2)]);
+            ._keys64[operator][tag]
+            .push(uint48(block.timestamp), [uint256(compressedKey1), uint256(compressedKey2)]);
     }
 
     function _verifyKey(
