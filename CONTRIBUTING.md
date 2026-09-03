@@ -26,7 +26,9 @@ Follow these steps to set up your local environment for development:
 
 - [Install Foundry](https://book.getfoundry.sh/getting-started/installation), then run `foundryup --install v1.8.1`
 - Install dependencies: `forge install`
-- [Install pre-commit](https://pre-commit.com/#installation)
+- Install Node.js with `nvm install` (using `.nvmrc`) and [pnpm 11.25.0](https://pnpm.io/installation).
+- Install [Go 1.24 or newer](https://go.dev/doc/install). Pre-commit installs abigen v1.17.5 in its own hook environment.
+- [Install pre-commit](https://pre-commit.com/#installation): `python3 -m pip install --upgrade pre-commit==4.6.2` (Python 3.10 or newer).
 - Install pre commit hooks: `pre-commit install`
 
 ## Pre-commit Hooks
@@ -43,7 +45,9 @@ This repo includes the following pre-commit hooks that are defined in the `.pre-
 - `sort-imports`: Normalises and sorts imports according to the rules mentioned in the [Code Style](#code-style) below.
 - `sort-errors`: Sorts errors according to the rules mentioned in the [Code Style](#code-style) below.
 - `format`: This hook uses `forge fmt` to format all Solidity files.
-- `prettier`: All remaining files are formatted using prettier.
+- `generate-bindings-ts-wagmi`: Generates TypeScript bindings with `@wagmi/cli` 2.10.0 through pnpm.
+- `generate-bindings-go-go-ethereum`: Generates Go bindings with abigen v1.17.5.
+- `prettier`: All remaining files are formatted using Prettier 3.9.6 through pnpm.
 
 ## Requirements for merge
 
