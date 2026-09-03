@@ -37,6 +37,10 @@ contract ValSetDriverTest is Test {
     }
 
     function setUp() public {
+        _initialize(1);
+    }
+
+    function _initialize(uint208 numCommitters) internal {
         testMCP = new TestValSetDriver();
 
         IValSetDriver.CrossChainAddress[] memory vpps = new IValSetDriver.CrossChainAddress[](2);
@@ -58,7 +62,7 @@ contract ValSetDriverTest is Test {
                 epochDuration: 100, epochDurationTimestamp: uint48(vm.getBlockTimestamp())
             }),
             numAggregators: 1,
-            numCommitters: 1,
+            numCommitters: numCommitters,
             committerSlotDuration: 200,
             votingPowerProviders: vpps,
             keysProvider: keysProv,
@@ -73,6 +77,15 @@ contract ValSetDriverTest is Test {
         });
 
         testMCP.initialize(initParams, owner);
+    }
+
+    function test_InitializeZeroNumCommitters() public {
+        _initialize(0);
+
+        assertEq(testMCP.getNumCommitters(), 0);
+        assertEq(testMCP.getNumCommittersAt(uint48(vm.getBlockTimestamp())), 0);
+        assertEq(testMCP.getConfig().numCommitters, 0);
+        assertEq(testMCP.getConfigAt(uint48(vm.getBlockTimestamp())).numCommitters, 0);
     }
 
     function test_InitialConfig() public {
@@ -373,19 +386,28 @@ contract ValSetDriverTest is Test {
         vm.expectRevert("Not authorized");
         testMCP.setNumCommitters(2);
 
+        vm.prank(nonOwner);
+        vm.expectRevert("Not authorized");
+        testMCP.setNumCommitters(0);
+
         vm.prank(owner);
         testMCP.setNumCommitters(2);
 
         assertEq(testMCP.getNumCommitters(), 2);
 
+        vm.warp(vm.getBlockTimestamp() + 100);
+
         vm.prank(owner);
-        vm.expectRevert(IValSetDriver.ValSetDriver_ZeroNumCommitters.selector);
+        vm.expectEmit(address(testMCP));
+        emit IValSetDriver.SetNumCommitters(0);
         testMCP.setNumCommitters(0);
 
-        vm.prank(owner);
-        testMCP.setNumCommitters(1);
-
-        assertEq(testMCP.getNumCommitters(), 1);
+        assertEq(testMCP.getNumCommitters(), 0);
+        assertEq(testMCP.getNumCommittersAt(uint48(vm.getBlockTimestamp())), 0);
+        assertEq(testMCP.getNumCommittersAt(uint48(vm.getBlockTimestamp() - 1)), 2);
+        assertEq(testMCP.getConfig().numCommitters, 0);
+        assertEq(testMCP.getConfigAt(uint48(vm.getBlockTimestamp())).numCommitters, 0);
+        assertEq(testMCP.getConfigAt(uint48(vm.getBlockTimestamp() - 1)).numCommitters, 2);
 
         vm.warp(vm.getBlockTimestamp() + 100);
 
@@ -394,11 +416,11 @@ contract ValSetDriverTest is Test {
 
         assertEq(testMCP.getNumCommittersAt(uint48(vm.getBlockTimestamp())), 2);
 
-        assertEq(testMCP.getNumCommittersAt(uint48(vm.getBlockTimestamp() - 1)), 1);
+        assertEq(testMCP.getNumCommittersAt(uint48(vm.getBlockTimestamp() - 1)), 0);
 
         assertEq(testMCP.getConfig().numCommitters, 2);
         assertEq(testMCP.getConfigAt(uint48(vm.getBlockTimestamp())).numCommitters, 2);
-        assertEq(testMCP.getConfigAt(uint48(vm.getBlockTimestamp() - 1)).numCommitters, 1);
+        assertEq(testMCP.getConfigAt(uint48(vm.getBlockTimestamp() - 1)).numCommitters, 0);
     }
 
     function test_SetCommitterSlotDuration() public {

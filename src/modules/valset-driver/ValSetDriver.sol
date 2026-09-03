@@ -410,9 +410,6 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
     }
 
     function _setNumCommitters(uint208 numCommitters) internal virtual {
-        if (numCommitters == 0) {
-            revert ValSetDriver_ZeroNumCommitters();
-        }
         _getValSetDriverStorage()._numCommitters.push(uint48(block.timestamp), numCommitters);
         emit SetNumCommitters(numCommitters);
     }

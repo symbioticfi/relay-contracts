@@ -6585,7 +6585,6 @@ export const iValSetDriverAbi = [
   { type: "error", inputs: [], name: "ValSetDriver_NotAdded" },
   { type: "error", inputs: [], name: "ValSetDriver_ZeroCommitterSlotDuration" },
   { type: "error", inputs: [], name: "ValSetDriver_ZeroNumAggregators" },
-  { type: "error", inputs: [], name: "ValSetDriver_ZeroNumCommitters" },
 ] as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
