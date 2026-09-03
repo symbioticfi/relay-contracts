@@ -24,7 +24,7 @@
 
 Follow these steps to set up your local environment for development:
 
-- [Install Foundry](https://book.getfoundry.sh/getting-started/installation), then run `foundryup --install v1.8.1`
+- [Install foundry](https://book.getfoundry.sh/getting-started/installation)
 - Install dependencies: `forge install`
 - Install Node.js with `nvm install` (using `.nvmrc`) and [pnpm 11.25.0](https://pnpm.io/installation).
 - Install [Go 1.24 or newer](https://go.dev/doc/install). Pre-commit installs abigen v1.17.5 in its own hook environment.
