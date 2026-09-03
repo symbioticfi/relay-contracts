@@ -4,3 +4,4 @@
 @symbioticfi/network/=lib/network
 @crypto-lib/=lib/crypto-lib/src/
 @symbioticfi/rewards/=lib/rewards/
+forge-std/=lib/forge-std/src/

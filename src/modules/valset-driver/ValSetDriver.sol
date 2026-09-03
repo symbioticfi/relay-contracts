@@ -140,7 +140,8 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         virtual
         returns (bool)
     {
-        return _getValSetDriverStorage()._votingPowerProviders
+        return _getValSetDriverStorage()
+            ._votingPowerProviders
             .containsAt(timestamp, _serializeCrossChainAddress(votingPowerProvider));
     }
 
@@ -151,7 +152,8 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         virtual
         returns (bool)
     {
-        return _getValSetDriverStorage()._votingPowerProviders
+        return _getValSetDriverStorage()
+            ._votingPowerProviders
             .contains(_serializeCrossChainAddress(votingPowerProvider));
     }
 
@@ -269,7 +271,8 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
         virtual
         returns (bool)
     {
-        return _getValSetDriverStorage()._quorumThresholds
+        return _getValSetDriverStorage()
+            ._quorumThresholds
             .containsAt(timestamp, _serializeQuorumThreshold(quorumThreshold));
     }
 
@@ -445,7 +448,8 @@ abstract contract ValSetDriver is EpochManager, NetworkManager, MulticallUpgrade
 
     function _setKeysProvider(CrossChainAddress memory keysProvider) internal virtual {
         _validateCrossChainAddress(keysProvider);
-        _getValSetDriverStorage()._keysProvider
+        _getValSetDriverStorage()
+            ._keysProvider
             .push(uint48(block.timestamp), uint256(_serializeCrossChainAddress(keysProvider)));
         emit SetKeysProvider(keysProvider);
     }
