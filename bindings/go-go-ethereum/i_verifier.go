@@ -35,7 +35,7 @@ var (
 
 // IVerifierMetaData contains all meta data concerning the IVerifier contract.
 var IVerifierMetaData = &bind.MetaData{
-	ABI: "[{\"type\":\"function\",\"name\":\"verifyProof\",\"inputs\":[{\"name\":\"proof\",\"type\":\"uint256[8]\",\"internalType\":\"uint256[8]\"},{\"name\":\"commitments\",\"type\":\"uint256[2]\",\"internalType\":\"uint256[2]\"},{\"name\":\"commitmentPok\",\"type\":\"uint256[2]\",\"internalType\":\"uint256[2]\"},{\"name\":\"input\",\"type\":\"uint256[1]\",\"internalType\":\"uint256[1]\"}],\"outputs\":[],\"stateMutability\":\"view\"}]",
+	ABI: "[{\"type\":\"function\",\"name\":\"verifyProof\",\"inputs\":[{\"name\":\"proof\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"input\",\"type\":\"uint256[1]\",\"internalType\":\"uint256[1]\"}],\"outputs\":[],\"stateMutability\":\"view\"}]",
 }
 
 // IVerifierABI is the input ABI used to generate the binding from.
@@ -184,12 +184,12 @@ func (_IVerifier *IVerifierTransactorRaw) Transact(opts *bind.TransactOpts, meth
 	return _IVerifier.Contract.contract.Transact(opts, method, params...)
 }
 
-// VerifyProof is a free data retrieval call binding the contract method 0x43db3c72.
+// VerifyProof is a free data retrieval call binding the contract method 0x8d8f8a5c.
 //
-// Solidity: function verifyProof(uint256[8] proof, uint256[2] commitments, uint256[2] commitmentPok, uint256[1] input) view returns()
-func (_IVerifier *IVerifierCaller) VerifyProof(opts *bind.CallOpts, proof [8]*big.Int, commitments [2]*big.Int, commitmentPok [2]*big.Int, input [1]*big.Int) error {
+// Solidity: function verifyProof(bytes proof, uint256[1] input) view returns()
+func (_IVerifier *IVerifierCaller) VerifyProof(opts *bind.CallOpts, proof []byte, input [1]*big.Int) error {
 	var out []interface{}
-	err := _IVerifier.contract.Call(opts, &out, "verifyProof", proof, commitments, commitmentPok, input)
+	err := _IVerifier.contract.Call(opts, &out, "verifyProof", proof, input)
 
 	if err != nil {
 		return err
@@ -199,16 +199,16 @@ func (_IVerifier *IVerifierCaller) VerifyProof(opts *bind.CallOpts, proof [8]*bi
 
 }
 
-// VerifyProof is a free data retrieval call binding the contract method 0x43db3c72.
+// VerifyProof is a free data retrieval call binding the contract method 0x8d8f8a5c.
 //
-// Solidity: function verifyProof(uint256[8] proof, uint256[2] commitments, uint256[2] commitmentPok, uint256[1] input) view returns()
-func (_IVerifier *IVerifierSession) VerifyProof(proof [8]*big.Int, commitments [2]*big.Int, commitmentPok [2]*big.Int, input [1]*big.Int) error {
-	return _IVerifier.Contract.VerifyProof(&_IVerifier.CallOpts, proof, commitments, commitmentPok, input)
+// Solidity: function verifyProof(bytes proof, uint256[1] input) view returns()
+func (_IVerifier *IVerifierSession) VerifyProof(proof []byte, input [1]*big.Int) error {
+	return _IVerifier.Contract.VerifyProof(&_IVerifier.CallOpts, proof, input)
 }
 
-// VerifyProof is a free data retrieval call binding the contract method 0x43db3c72.
+// VerifyProof is a free data retrieval call binding the contract method 0x8d8f8a5c.
 //
-// Solidity: function verifyProof(uint256[8] proof, uint256[2] commitments, uint256[2] commitmentPok, uint256[1] input) view returns()
-func (_IVerifier *IVerifierCallerSession) VerifyProof(proof [8]*big.Int, commitments [2]*big.Int, commitmentPok [2]*big.Int, input [1]*big.Int) error {
-	return _IVerifier.Contract.VerifyProof(&_IVerifier.CallOpts, proof, commitments, commitmentPok, input)
+// Solidity: function verifyProof(bytes proof, uint256[1] input) view returns()
+func (_IVerifier *IVerifierCallerSession) VerifyProof(proof []byte, input [1]*big.Int) error {
+	return _IVerifier.Contract.VerifyProof(&_IVerifier.CallOpts, proof, input)
 }

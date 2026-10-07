@@ -6595,9 +6595,7 @@ export const iVerifierAbi = [
   {
     type: "function",
     inputs: [
-      { name: "proof", internalType: "uint256[8]", type: "uint256[8]" },
-      { name: "commitments", internalType: "uint256[2]", type: "uint256[2]" },
-      { name: "commitmentPok", internalType: "uint256[2]", type: "uint256[2]" },
+      { name: "proof", internalType: "bytes", type: "bytes" },
       { name: "input", internalType: "uint256[1]", type: "uint256[1]" },
     ],
     name: "verifyProof",

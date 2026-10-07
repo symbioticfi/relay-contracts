@@ -106,15 +106,6 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
             return false;
         }
 
-        uint256[8] calldata zkProof;
-        uint256[2] calldata commitments;
-        uint256[2] calldata commitmentPok;
-        assembly {
-            zkProof := add(proof.offset, 0)
-            commitments := add(proof.offset, 256)
-            commitmentPok := add(proof.offset, 320)
-        }
-
         uint256 inputHash;
         {
             bytes32 validatorSetHash = ISettlement(settlement)
@@ -126,8 +117,7 @@ contract SigVerifierBlsBn254ZK is ISigVerifierBlsBn254ZK {
             inputHash &= 0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
         }
 
-        try IVerifier(_getVerifier(totalActiveValidators))
-            .verifyProof(zkProof, commitments, commitmentPok, [inputHash]) {
+        try IVerifier(_getVerifier(totalActiveValidators)).verifyProof(proof[:384], [inputHash]) {
             return true;
         } catch {
             return false;

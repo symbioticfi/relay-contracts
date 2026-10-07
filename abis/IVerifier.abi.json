@@ -5,18 +5,8 @@
         "inputs": [
             {
                 "name": "proof",
-                "type": "uint256[8]",
-                "internalType": "uint256[8]"
-            },
-            {
-                "name": "commitments",
-                "type": "uint256[2]",
-                "internalType": "uint256[2]"
-            },
-            {
-                "name": "commitmentPok",
-                "type": "uint256[2]",
-                "internalType": "uint256[2]"
+                "type": "bytes",
+                "internalType": "bytes"
             },
             {
                 "name": "input",
