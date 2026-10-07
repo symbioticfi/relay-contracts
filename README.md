@@ -111,3 +111,7 @@ ETHERSCAN_API_KEY=
 ## Security
 
 Security audits can be found [here](./audits).
+
+**Disclaimer:** Changes made after commit [9b9397f972967c27019ba88b9cb96dce82bcc4be](https://github.com/symbioticfi/relay-contracts/commit/9b9397f972967c27019ba88b9cb96dce82bcc4be) have not been audited. The [latest audit by Cyfrin](./audits/Cyfrin-RelayContracts-BLS12381.pdf) was limited to [`src/libraries/utils/BLS12381.sol`](./src/libraries/utils/BLS12381.sol) at that commit.
+
+The broader [Cyfrin](./audits/Cyfrin-RelayContracts&Network.pdf) and [Sigma Prime](./audits/SigmaPrime-RelayContracts&Network.pdf) audits assessed fixes at commit [9759b26a8364c2ef54b10e60fa1dfd8144ffd32f](https://github.com/symbioticfi/relay-contracts/commit/9759b26a8364c2ef54b10e60fa1dfd8144ffd32f). Changes outside the BLS12381 library made after that commit are not covered by those audits.
