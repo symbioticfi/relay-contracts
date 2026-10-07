@@ -1536,6 +1536,10 @@ func (_IOpNetVaultAutoDeploy *IOpNetVaultAutoDeployFilterer) WatchRegisterOperat
 				// New log arrived, parse the event and forward to the user
 				event := new(IOpNetVaultAutoDeployRegisterOperator)
 				if err := _IOpNetVaultAutoDeploy.contract.UnpackLog(event, "RegisterOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1689,6 +1693,10 @@ func (_IOpNetVaultAutoDeploy *IOpNetVaultAutoDeployFilterer) WatchRegisterOperat
 				// New log arrived, parse the event and forward to the user
 				event := new(IOpNetVaultAutoDeployRegisterOperatorVault)
 				if err := _IOpNetVaultAutoDeploy.contract.UnpackLog(event, "RegisterOperatorVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1833,6 +1841,10 @@ func (_IOpNetVaultAutoDeploy *IOpNetVaultAutoDeployFilterer) WatchRegisterShared
 				// New log arrived, parse the event and forward to the user
 				event := new(IOpNetVaultAutoDeployRegisterSharedVault)
 				if err := _IOpNetVaultAutoDeploy.contract.UnpackLog(event, "RegisterSharedVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1977,6 +1989,10 @@ func (_IOpNetVaultAutoDeploy *IOpNetVaultAutoDeployFilterer) WatchRegisterToken(
 				// New log arrived, parse the event and forward to the user
 				event := new(IOpNetVaultAutoDeployRegisterToken)
 				if err := _IOpNetVaultAutoDeploy.contract.UnpackLog(event, "RegisterToken", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2111,6 +2127,10 @@ func (_IOpNetVaultAutoDeploy *IOpNetVaultAutoDeployFilterer) WatchSetAutoDeployC
 				// New log arrived, parse the event and forward to the user
 				event := new(IOpNetVaultAutoDeploySetAutoDeployConfig)
 				if err := _IOpNetVaultAutoDeploy.contract.UnpackLog(event, "SetAutoDeployConfig", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2245,6 +2265,10 @@ func (_IOpNetVaultAutoDeploy *IOpNetVaultAutoDeployFilterer) WatchSetAutoDeployS
 				// New log arrived, parse the event and forward to the user
 				event := new(IOpNetVaultAutoDeploySetAutoDeployStatus)
 				if err := _IOpNetVaultAutoDeploy.contract.UnpackLog(event, "SetAutoDeployStatus", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2379,6 +2403,10 @@ func (_IOpNetVaultAutoDeploy *IOpNetVaultAutoDeployFilterer) WatchSetSetMaxNetwo
 				// New log arrived, parse the event and forward to the user
 				event := new(IOpNetVaultAutoDeploySetSetMaxNetworkLimitHookStatus)
 				if err := _IOpNetVaultAutoDeploy.contract.UnpackLog(event, "SetSetMaxNetworkLimitHookStatus", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2514,6 +2542,10 @@ func (_IOpNetVaultAutoDeploy *IOpNetVaultAutoDeployFilterer) WatchSetSlashingDat
 				// New log arrived, parse the event and forward to the user
 				event := new(IOpNetVaultAutoDeploySetSlashingData)
 				if err := _IOpNetVaultAutoDeploy.contract.UnpackLog(event, "SetSlashingData", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2658,6 +2690,10 @@ func (_IOpNetVaultAutoDeploy *IOpNetVaultAutoDeployFilterer) WatchUnregisterOper
 				// New log arrived, parse the event and forward to the user
 				event := new(IOpNetVaultAutoDeployUnregisterOperator)
 				if err := _IOpNetVaultAutoDeploy.contract.UnpackLog(event, "UnregisterOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2811,6 +2847,10 @@ func (_IOpNetVaultAutoDeploy *IOpNetVaultAutoDeployFilterer) WatchUnregisterOper
 				// New log arrived, parse the event and forward to the user
 				event := new(IOpNetVaultAutoDeployUnregisterOperatorVault)
 				if err := _IOpNetVaultAutoDeploy.contract.UnpackLog(event, "UnregisterOperatorVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2955,6 +2995,10 @@ func (_IOpNetVaultAutoDeploy *IOpNetVaultAutoDeployFilterer) WatchUnregisterShar
 				// New log arrived, parse the event and forward to the user
 				event := new(IOpNetVaultAutoDeployUnregisterSharedVault)
 				if err := _IOpNetVaultAutoDeploy.contract.UnpackLog(event, "UnregisterSharedVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -3099,6 +3143,10 @@ func (_IOpNetVaultAutoDeploy *IOpNetVaultAutoDeployFilterer) WatchUnregisterToke
 				// New log arrived, parse the event and forward to the user
 				event := new(IOpNetVaultAutoDeployUnregisterToken)
 				if err := _IOpNetVaultAutoDeploy.contract.UnpackLog(event, "UnregisterToken", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log

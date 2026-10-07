@@ -401,6 +401,10 @@ func (_INetworkManager *INetworkManagerFilterer) WatchInitSubnetwork(opts *bind.
 				// New log arrived, parse the event and forward to the user
 				event := new(INetworkManagerInitSubnetwork)
 				if err := _INetworkManager.contract.UnpackLog(event, "InitSubnetwork", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log

@@ -1309,6 +1309,10 @@ func (_IVotingPowerProvider *IVotingPowerProviderFilterer) WatchRegisterOperator
 				// New log arrived, parse the event and forward to the user
 				event := new(IVotingPowerProviderRegisterOperator)
 				if err := _IVotingPowerProvider.contract.UnpackLog(event, "RegisterOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1462,6 +1466,10 @@ func (_IVotingPowerProvider *IVotingPowerProviderFilterer) WatchRegisterOperator
 				// New log arrived, parse the event and forward to the user
 				event := new(IVotingPowerProviderRegisterOperatorVault)
 				if err := _IVotingPowerProvider.contract.UnpackLog(event, "RegisterOperatorVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1606,6 +1614,10 @@ func (_IVotingPowerProvider *IVotingPowerProviderFilterer) WatchRegisterSharedVa
 				// New log arrived, parse the event and forward to the user
 				event := new(IVotingPowerProviderRegisterSharedVault)
 				if err := _IVotingPowerProvider.contract.UnpackLog(event, "RegisterSharedVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1750,6 +1762,10 @@ func (_IVotingPowerProvider *IVotingPowerProviderFilterer) WatchRegisterToken(op
 				// New log arrived, parse the event and forward to the user
 				event := new(IVotingPowerProviderRegisterToken)
 				if err := _IVotingPowerProvider.contract.UnpackLog(event, "RegisterToken", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1885,6 +1901,10 @@ func (_IVotingPowerProvider *IVotingPowerProviderFilterer) WatchSetSlashingData(
 				// New log arrived, parse the event and forward to the user
 				event := new(IVotingPowerProviderSetSlashingData)
 				if err := _IVotingPowerProvider.contract.UnpackLog(event, "SetSlashingData", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2029,6 +2049,10 @@ func (_IVotingPowerProvider *IVotingPowerProviderFilterer) WatchUnregisterOperat
 				// New log arrived, parse the event and forward to the user
 				event := new(IVotingPowerProviderUnregisterOperator)
 				if err := _IVotingPowerProvider.contract.UnpackLog(event, "UnregisterOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2182,6 +2206,10 @@ func (_IVotingPowerProvider *IVotingPowerProviderFilterer) WatchUnregisterOperat
 				// New log arrived, parse the event and forward to the user
 				event := new(IVotingPowerProviderUnregisterOperatorVault)
 				if err := _IVotingPowerProvider.contract.UnpackLog(event, "UnregisterOperatorVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2326,6 +2354,10 @@ func (_IVotingPowerProvider *IVotingPowerProviderFilterer) WatchUnregisterShared
 				// New log arrived, parse the event and forward to the user
 				event := new(IVotingPowerProviderUnregisterSharedVault)
 				if err := _IVotingPowerProvider.contract.UnpackLog(event, "UnregisterSharedVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2470,6 +2502,10 @@ func (_IVotingPowerProvider *IVotingPowerProviderFilterer) WatchUnregisterToken(
 				// New log arrived, parse the event and forward to the user
 				event := new(IVotingPowerProviderUnregisterToken)
 				if err := _IVotingPowerProvider.contract.UnpackLog(event, "UnregisterToken", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log

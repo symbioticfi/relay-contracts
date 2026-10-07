@@ -448,6 +448,10 @@ func (_IPricedTokensChainlinkVPCalc *IPricedTokensChainlinkVPCalcFilterer) Watch
 				// New log arrived, parse the event and forward to the user
 				event := new(IPricedTokensChainlinkVPCalcSetTokenHops)
 				if err := _IPricedTokensChainlinkVPCalc.contract.UnpackLog(event, "SetTokenHops", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log

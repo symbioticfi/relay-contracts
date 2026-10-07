@@ -417,6 +417,10 @@ func (_IOzEIP712 *IOzEIP712Filterer) WatchEIP712DomainChanged(opts *bind.WatchOp
 				// New log arrived, parse the event and forward to the user
 				event := new(IOzEIP712EIP712DomainChanged)
 				if err := _IOzEIP712.contract.UnpackLog(event, "EIP712DomainChanged", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -552,6 +556,10 @@ func (_IOzEIP712 *IOzEIP712Filterer) WatchInitEIP712(opts *bind.WatchOpts, sink 
 				// New log arrived, parse the event and forward to the user
 				event := new(IOzEIP712InitEIP712)
 				if err := _IOzEIP712.contract.UnpackLog(event, "InitEIP712", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log

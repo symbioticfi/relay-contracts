@@ -1372,6 +1372,10 @@ func (_IOperatorVaults *IOperatorVaultsFilterer) WatchRegisterOperator(opts *bin
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorVaultsRegisterOperator)
 				if err := _IOperatorVaults.contract.UnpackLog(event, "RegisterOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1525,6 +1529,10 @@ func (_IOperatorVaults *IOperatorVaultsFilterer) WatchRegisterOperatorVault(opts
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorVaultsRegisterOperatorVault)
 				if err := _IOperatorVaults.contract.UnpackLog(event, "RegisterOperatorVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1669,6 +1677,10 @@ func (_IOperatorVaults *IOperatorVaultsFilterer) WatchRegisterSharedVault(opts *
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorVaultsRegisterSharedVault)
 				if err := _IOperatorVaults.contract.UnpackLog(event, "RegisterSharedVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1813,6 +1825,10 @@ func (_IOperatorVaults *IOperatorVaultsFilterer) WatchRegisterToken(opts *bind.W
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorVaultsRegisterToken)
 				if err := _IOperatorVaults.contract.UnpackLog(event, "RegisterToken", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1948,6 +1964,10 @@ func (_IOperatorVaults *IOperatorVaultsFilterer) WatchSetSlashingData(opts *bind
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorVaultsSetSlashingData)
 				if err := _IOperatorVaults.contract.UnpackLog(event, "SetSlashingData", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2092,6 +2112,10 @@ func (_IOperatorVaults *IOperatorVaultsFilterer) WatchUnregisterOperator(opts *b
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorVaultsUnregisterOperator)
 				if err := _IOperatorVaults.contract.UnpackLog(event, "UnregisterOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2245,6 +2269,10 @@ func (_IOperatorVaults *IOperatorVaultsFilterer) WatchUnregisterOperatorVault(op
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorVaultsUnregisterOperatorVault)
 				if err := _IOperatorVaults.contract.UnpackLog(event, "UnregisterOperatorVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2389,6 +2417,10 @@ func (_IOperatorVaults *IOperatorVaultsFilterer) WatchUnregisterSharedVault(opts
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorVaultsUnregisterSharedVault)
 				if err := _IOperatorVaults.contract.UnpackLog(event, "UnregisterSharedVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2533,6 +2565,10 @@ func (_IOperatorVaults *IOperatorVaultsFilterer) WatchUnregisterToken(opts *bind
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorVaultsUnregisterToken)
 				if err := _IOperatorVaults.contract.UnpackLog(event, "UnregisterToken", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log

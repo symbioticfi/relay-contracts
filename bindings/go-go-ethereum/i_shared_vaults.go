@@ -1351,6 +1351,10 @@ func (_ISharedVaults *ISharedVaultsFilterer) WatchRegisterOperator(opts *bind.Wa
 				// New log arrived, parse the event and forward to the user
 				event := new(ISharedVaultsRegisterOperator)
 				if err := _ISharedVaults.contract.UnpackLog(event, "RegisterOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1504,6 +1508,10 @@ func (_ISharedVaults *ISharedVaultsFilterer) WatchRegisterOperatorVault(opts *bi
 				// New log arrived, parse the event and forward to the user
 				event := new(ISharedVaultsRegisterOperatorVault)
 				if err := _ISharedVaults.contract.UnpackLog(event, "RegisterOperatorVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1648,6 +1656,10 @@ func (_ISharedVaults *ISharedVaultsFilterer) WatchRegisterSharedVault(opts *bind
 				// New log arrived, parse the event and forward to the user
 				event := new(ISharedVaultsRegisterSharedVault)
 				if err := _ISharedVaults.contract.UnpackLog(event, "RegisterSharedVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1792,6 +1804,10 @@ func (_ISharedVaults *ISharedVaultsFilterer) WatchRegisterToken(opts *bind.Watch
 				// New log arrived, parse the event and forward to the user
 				event := new(ISharedVaultsRegisterToken)
 				if err := _ISharedVaults.contract.UnpackLog(event, "RegisterToken", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1927,6 +1943,10 @@ func (_ISharedVaults *ISharedVaultsFilterer) WatchSetSlashingData(opts *bind.Wat
 				// New log arrived, parse the event and forward to the user
 				event := new(ISharedVaultsSetSlashingData)
 				if err := _ISharedVaults.contract.UnpackLog(event, "SetSlashingData", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2071,6 +2091,10 @@ func (_ISharedVaults *ISharedVaultsFilterer) WatchUnregisterOperator(opts *bind.
 				// New log arrived, parse the event and forward to the user
 				event := new(ISharedVaultsUnregisterOperator)
 				if err := _ISharedVaults.contract.UnpackLog(event, "UnregisterOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2224,6 +2248,10 @@ func (_ISharedVaults *ISharedVaultsFilterer) WatchUnregisterOperatorVault(opts *
 				// New log arrived, parse the event and forward to the user
 				event := new(ISharedVaultsUnregisterOperatorVault)
 				if err := _ISharedVaults.contract.UnpackLog(event, "UnregisterOperatorVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2368,6 +2396,10 @@ func (_ISharedVaults *ISharedVaultsFilterer) WatchUnregisterSharedVault(opts *bi
 				// New log arrived, parse the event and forward to the user
 				event := new(ISharedVaultsUnregisterSharedVault)
 				if err := _ISharedVaults.contract.UnpackLog(event, "UnregisterSharedVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2512,6 +2544,10 @@ func (_ISharedVaults *ISharedVaultsFilterer) WatchUnregisterToken(opts *bind.Wat
 				// New log arrived, parse the event and forward to the user
 				event := new(ISharedVaultsUnregisterToken)
 				if err := _ISharedVaults.contract.UnpackLog(event, "UnregisterToken", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log

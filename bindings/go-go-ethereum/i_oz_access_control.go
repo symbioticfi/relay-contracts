@@ -470,6 +470,10 @@ func (_IOzAccessControl *IOzAccessControlFilterer) WatchRoleAdminChanged(opts *b
 				// New log arrived, parse the event and forward to the user
 				event := new(IOzAccessControlRoleAdminChanged)
 				if err := _IOzAccessControl.contract.UnpackLog(event, "RoleAdminChanged", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -632,6 +636,10 @@ func (_IOzAccessControl *IOzAccessControlFilterer) WatchRoleGranted(opts *bind.W
 				// New log arrived, parse the event and forward to the user
 				event := new(IOzAccessControlRoleGranted)
 				if err := _IOzAccessControl.contract.UnpackLog(event, "RoleGranted", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -794,6 +802,10 @@ func (_IOzAccessControl *IOzAccessControlFilterer) WatchRoleRevoked(opts *bind.W
 				// New log arrived, parse the event and forward to the user
 				event := new(IOzAccessControlRoleRevoked)
 				if err := _IOzAccessControl.contract.UnpackLog(event, "RoleRevoked", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -947,6 +959,10 @@ func (_IOzAccessControl *IOzAccessControlFilterer) WatchSetSelectorRole(opts *bi
 				// New log arrived, parse the event and forward to the user
 				event := new(IOzAccessControlSetSelectorRole)
 				if err := _IOzAccessControl.contract.UnpackLog(event, "SetSelectorRole", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log

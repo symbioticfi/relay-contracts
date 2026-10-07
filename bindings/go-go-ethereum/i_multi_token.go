@@ -1351,6 +1351,10 @@ func (_IMultiToken *IMultiTokenFilterer) WatchRegisterOperator(opts *bind.WatchO
 				// New log arrived, parse the event and forward to the user
 				event := new(IMultiTokenRegisterOperator)
 				if err := _IMultiToken.contract.UnpackLog(event, "RegisterOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1504,6 +1508,10 @@ func (_IMultiToken *IMultiTokenFilterer) WatchRegisterOperatorVault(opts *bind.W
 				// New log arrived, parse the event and forward to the user
 				event := new(IMultiTokenRegisterOperatorVault)
 				if err := _IMultiToken.contract.UnpackLog(event, "RegisterOperatorVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1648,6 +1656,10 @@ func (_IMultiToken *IMultiTokenFilterer) WatchRegisterSharedVault(opts *bind.Wat
 				// New log arrived, parse the event and forward to the user
 				event := new(IMultiTokenRegisterSharedVault)
 				if err := _IMultiToken.contract.UnpackLog(event, "RegisterSharedVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1792,6 +1804,10 @@ func (_IMultiToken *IMultiTokenFilterer) WatchRegisterToken(opts *bind.WatchOpts
 				// New log arrived, parse the event and forward to the user
 				event := new(IMultiTokenRegisterToken)
 				if err := _IMultiToken.contract.UnpackLog(event, "RegisterToken", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1927,6 +1943,10 @@ func (_IMultiToken *IMultiTokenFilterer) WatchSetSlashingData(opts *bind.WatchOp
 				// New log arrived, parse the event and forward to the user
 				event := new(IMultiTokenSetSlashingData)
 				if err := _IMultiToken.contract.UnpackLog(event, "SetSlashingData", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2071,6 +2091,10 @@ func (_IMultiToken *IMultiTokenFilterer) WatchUnregisterOperator(opts *bind.Watc
 				// New log arrived, parse the event and forward to the user
 				event := new(IMultiTokenUnregisterOperator)
 				if err := _IMultiToken.contract.UnpackLog(event, "UnregisterOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2224,6 +2248,10 @@ func (_IMultiToken *IMultiTokenFilterer) WatchUnregisterOperatorVault(opts *bind
 				// New log arrived, parse the event and forward to the user
 				event := new(IMultiTokenUnregisterOperatorVault)
 				if err := _IMultiToken.contract.UnpackLog(event, "UnregisterOperatorVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2368,6 +2396,10 @@ func (_IMultiToken *IMultiTokenFilterer) WatchUnregisterSharedVault(opts *bind.W
 				// New log arrived, parse the event and forward to the user
 				event := new(IMultiTokenUnregisterSharedVault)
 				if err := _IMultiToken.contract.UnpackLog(event, "UnregisterSharedVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2512,6 +2544,10 @@ func (_IMultiToken *IMultiTokenFilterer) WatchUnregisterToken(opts *bind.WatchOp
 				// New log arrived, parse the event and forward to the user
 				event := new(IMultiTokenUnregisterToken)
 				if err := _IMultiToken.contract.UnpackLog(event, "UnregisterToken", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log

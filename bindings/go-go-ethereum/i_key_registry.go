@@ -760,6 +760,10 @@ func (_IKeyRegistry *IKeyRegistryFilterer) WatchEIP712DomainChanged(opts *bind.W
 				// New log arrived, parse the event and forward to the user
 				event := new(IKeyRegistryEIP712DomainChanged)
 				if err := _IKeyRegistry.contract.UnpackLog(event, "EIP712DomainChanged", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -895,6 +899,10 @@ func (_IKeyRegistry *IKeyRegistryFilterer) WatchInitEIP712(opts *bind.WatchOpts,
 				// New log arrived, parse the event and forward to the user
 				event := new(IKeyRegistryInitEIP712)
 				if err := _IKeyRegistry.contract.UnpackLog(event, "InitEIP712", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1058,6 +1066,10 @@ func (_IKeyRegistry *IKeyRegistryFilterer) WatchSetKey(opts *bind.WatchOpts, sin
 				// New log arrived, parse the event and forward to the user
 				event := new(IKeyRegistrySetKey)
 				if err := _IKeyRegistry.contract.UnpackLog(event, "SetKey", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log

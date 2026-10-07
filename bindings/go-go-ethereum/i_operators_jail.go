@@ -1413,6 +1413,10 @@ func (_IOperatorsJail *IOperatorsJailFilterer) WatchJailOperator(opts *bind.Watc
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsJailJailOperator)
 				if err := _IOperatorsJail.contract.UnpackLog(event, "JailOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1557,6 +1561,10 @@ func (_IOperatorsJail *IOperatorsJailFilterer) WatchRegisterOperator(opts *bind.
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsJailRegisterOperator)
 				if err := _IOperatorsJail.contract.UnpackLog(event, "RegisterOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1710,6 +1718,10 @@ func (_IOperatorsJail *IOperatorsJailFilterer) WatchRegisterOperatorVault(opts *
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsJailRegisterOperatorVault)
 				if err := _IOperatorsJail.contract.UnpackLog(event, "RegisterOperatorVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1854,6 +1866,10 @@ func (_IOperatorsJail *IOperatorsJailFilterer) WatchRegisterSharedVault(opts *bi
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsJailRegisterSharedVault)
 				if err := _IOperatorsJail.contract.UnpackLog(event, "RegisterSharedVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1998,6 +2014,10 @@ func (_IOperatorsJail *IOperatorsJailFilterer) WatchRegisterToken(opts *bind.Wat
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsJailRegisterToken)
 				if err := _IOperatorsJail.contract.UnpackLog(event, "RegisterToken", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2133,6 +2153,10 @@ func (_IOperatorsJail *IOperatorsJailFilterer) WatchSetSlashingData(opts *bind.W
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsJailSetSlashingData)
 				if err := _IOperatorsJail.contract.UnpackLog(event, "SetSlashingData", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2277,6 +2301,10 @@ func (_IOperatorsJail *IOperatorsJailFilterer) WatchUnjailOperator(opts *bind.Wa
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsJailUnjailOperator)
 				if err := _IOperatorsJail.contract.UnpackLog(event, "UnjailOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2421,6 +2449,10 @@ func (_IOperatorsJail *IOperatorsJailFilterer) WatchUnregisterOperator(opts *bin
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsJailUnregisterOperator)
 				if err := _IOperatorsJail.contract.UnpackLog(event, "UnregisterOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2574,6 +2606,10 @@ func (_IOperatorsJail *IOperatorsJailFilterer) WatchUnregisterOperatorVault(opts
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsJailUnregisterOperatorVault)
 				if err := _IOperatorsJail.contract.UnpackLog(event, "UnregisterOperatorVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2718,6 +2754,10 @@ func (_IOperatorsJail *IOperatorsJailFilterer) WatchUnregisterSharedVault(opts *
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsJailUnregisterSharedVault)
 				if err := _IOperatorsJail.contract.UnpackLog(event, "UnregisterSharedVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2862,6 +2902,10 @@ func (_IOperatorsJail *IOperatorsJailFilterer) WatchUnregisterToken(opts *bind.W
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsJailUnregisterToken)
 				if err := _IOperatorsJail.contract.UnpackLog(event, "UnregisterToken", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log

@@ -1414,6 +1414,10 @@ func (_IBaseRewards *IBaseRewardsFilterer) WatchDistributeOperatorRewards(opts *
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseRewardsDistributeOperatorRewards)
 				if err := _IBaseRewards.contract.UnpackLog(event, "DistributeOperatorRewards", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1569,6 +1573,10 @@ func (_IBaseRewards *IBaseRewardsFilterer) WatchDistributeStakerRewards(opts *bi
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseRewardsDistributeStakerRewards)
 				if err := _IBaseRewards.contract.UnpackLog(event, "DistributeStakerRewards", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1713,6 +1721,10 @@ func (_IBaseRewards *IBaseRewardsFilterer) WatchRegisterOperator(opts *bind.Watc
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseRewardsRegisterOperator)
 				if err := _IBaseRewards.contract.UnpackLog(event, "RegisterOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1866,6 +1878,10 @@ func (_IBaseRewards *IBaseRewardsFilterer) WatchRegisterOperatorVault(opts *bind
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseRewardsRegisterOperatorVault)
 				if err := _IBaseRewards.contract.UnpackLog(event, "RegisterOperatorVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2010,6 +2026,10 @@ func (_IBaseRewards *IBaseRewardsFilterer) WatchRegisterSharedVault(opts *bind.W
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseRewardsRegisterSharedVault)
 				if err := _IBaseRewards.contract.UnpackLog(event, "RegisterSharedVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2154,6 +2174,10 @@ func (_IBaseRewards *IBaseRewardsFilterer) WatchRegisterToken(opts *bind.WatchOp
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseRewardsRegisterToken)
 				if err := _IBaseRewards.contract.UnpackLog(event, "RegisterToken", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2288,6 +2312,10 @@ func (_IBaseRewards *IBaseRewardsFilterer) WatchSetRewarder(opts *bind.WatchOpts
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseRewardsSetRewarder)
 				if err := _IBaseRewards.contract.UnpackLog(event, "SetRewarder", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2423,6 +2451,10 @@ func (_IBaseRewards *IBaseRewardsFilterer) WatchSetSlashingData(opts *bind.Watch
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseRewardsSetSlashingData)
 				if err := _IBaseRewards.contract.UnpackLog(event, "SetSlashingData", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2567,6 +2599,10 @@ func (_IBaseRewards *IBaseRewardsFilterer) WatchUnregisterOperator(opts *bind.Wa
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseRewardsUnregisterOperator)
 				if err := _IBaseRewards.contract.UnpackLog(event, "UnregisterOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2720,6 +2756,10 @@ func (_IBaseRewards *IBaseRewardsFilterer) WatchUnregisterOperatorVault(opts *bi
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseRewardsUnregisterOperatorVault)
 				if err := _IBaseRewards.contract.UnpackLog(event, "UnregisterOperatorVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2864,6 +2904,10 @@ func (_IBaseRewards *IBaseRewardsFilterer) WatchUnregisterSharedVault(opts *bind
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseRewardsUnregisterSharedVault)
 				if err := _IBaseRewards.contract.UnpackLog(event, "UnregisterSharedVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -3008,6 +3052,10 @@ func (_IBaseRewards *IBaseRewardsFilterer) WatchUnregisterToken(opts *bind.Watch
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseRewardsUnregisterToken)
 				if err := _IBaseRewards.contract.UnpackLog(event, "UnregisterToken", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log

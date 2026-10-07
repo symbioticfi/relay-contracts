@@ -1388,6 +1388,10 @@ func (_ISettlement *ISettlementFilterer) WatchCommitValSetHeader(opts *bind.Watc
 				// New log arrived, parse the event and forward to the user
 				event := new(ISettlementCommitValSetHeader)
 				if err := _ISettlement.contract.UnpackLog(event, "CommitValSetHeader", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1521,6 +1525,10 @@ func (_ISettlement *ISettlementFilterer) WatchEIP712DomainChanged(opts *bind.Wat
 				// New log arrived, parse the event and forward to the user
 				event := new(ISettlementEIP712DomainChanged)
 				if err := _ISettlement.contract.UnpackLog(event, "EIP712DomainChanged", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1656,6 +1664,10 @@ func (_ISettlement *ISettlementFilterer) WatchInitEIP712(opts *bind.WatchOpts, s
 				// New log arrived, parse the event and forward to the user
 				event := new(ISettlementInitEIP712)
 				if err := _ISettlement.contract.UnpackLog(event, "InitEIP712", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1790,6 +1802,10 @@ func (_ISettlement *ISettlementFilterer) WatchInitSigVerifier(opts *bind.WatchOp
 				// New log arrived, parse the event and forward to the user
 				event := new(ISettlementInitSigVerifier)
 				if err := _ISettlement.contract.UnpackLog(event, "InitSigVerifier", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1925,6 +1941,10 @@ func (_ISettlement *ISettlementFilterer) WatchInitSubnetwork(opts *bind.WatchOpt
 				// New log arrived, parse the event and forward to the user
 				event := new(ISettlementInitSubnetwork)
 				if err := _ISettlement.contract.UnpackLog(event, "InitSubnetwork", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2060,6 +2080,10 @@ func (_ISettlement *ISettlementFilterer) WatchSetGenesis(opts *bind.WatchOpts, s
 				// New log arrived, parse the event and forward to the user
 				event := new(ISettlementSetGenesis)
 				if err := _ISettlement.contract.UnpackLog(event, "SetGenesis", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2194,6 +2218,10 @@ func (_ISettlement *ISettlementFilterer) WatchSetSigVerifier(opts *bind.WatchOpt
 				// New log arrived, parse the event and forward to the user
 				event := new(ISettlementSetSigVerifier)
 				if err := _ISettlement.contract.UnpackLog(event, "SetSigVerifier", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log

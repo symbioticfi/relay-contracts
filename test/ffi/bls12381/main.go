@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/sha256"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -9,14 +8,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/crypto/bls12381"
+	bls12381 "github.com/consensys/gnark-crypto/ecc/bls12-381"
+	"github.com/consensys/gnark-crypto/ecc/bls12-381/fp"
 )
 
 const dstG1 = "BLS_SIG_BLS12381G1_XMD:SHA-256_SSWU_RO_NUL_"
-
-var fieldModulus = mustBigFromHex(
-	"1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaaab",
-)
 
 func main() {
 	if len(os.Args) < 3 {
@@ -28,9 +24,9 @@ func main() {
 	case "hash-to-g1":
 		message, err := decodeHexArg(os.Args[2])
 		exitOnError(err)
-		point, err := hashToG1(message)
+		point, err := bls12381.HashToG1(message, []byte(dstG1))
 		exitOnError(err)
-		writeOutput(bls12381.NewG1().EncodePoint(point))
+		writeOutput(encodeG1(&point))
 	case "g1-mul":
 		scalar, err := parseScalar(os.Args[2])
 		exitOnError(err)
@@ -127,134 +123,57 @@ func decodeHexArg(arg string) ([]byte, error) {
 }
 
 func g1Mul(scalar *big.Int) []byte {
-	g1 := bls12381.NewG1()
-	out := g1.New()
-	g1.MulScalar(out, g1.One(), scalar)
-	return g1.EncodePoint(out)
+	var point bls12381.G1Affine
+	point.ScalarMultiplicationBase(scalar)
+	return encodeG1(&point)
 }
 
 func g2Mul(scalar *big.Int) []byte {
-	g2 := bls12381.NewG2()
-	out := g2.New()
-	g2.MulScalar(out, g2.One(), scalar)
-	return g2.EncodePoint(out)
+	var point bls12381.G2Affine
+	point.ScalarMultiplicationBase(scalar)
+	return encodeG2(&point)
 }
 
 func sign(message []byte, scalar *big.Int) ([]byte, error) {
-	g1 := bls12381.NewG1()
-	g2 := bls12381.NewG2()
+	var keyG1 bls12381.G1Affine
+	keyG1.ScalarMultiplicationBase(scalar)
+	var keyG2 bls12381.G2Affine
+	keyG2.ScalarMultiplicationBase(scalar)
 
-	keyG1 := g1.New()
-	g1.MulScalar(keyG1, g1.One(), scalar)
-
-	keyG2 := g2.New()
-	g2.MulScalar(keyG2, g2.One(), scalar)
-
-	messageG1, err := hashToG1(message)
+	messageG1, err := bls12381.HashToG1(message, []byte(dstG1))
 	if err != nil {
 		return nil, err
 	}
-
-	signature := g1.New()
-	g1.MulScalar(signature, messageG1, scalar)
+	var signature bls12381.G1Affine
+	signature.ScalarMultiplication(&messageG1, scalar)
 
 	out := make([]byte, 0, 512)
-	out = append(out, g1.EncodePoint(keyG1)...)
-	out = append(out, g2.EncodePoint(keyG2)...)
-	out = append(out, g1.EncodePoint(signature)...)
+	out = append(out, encodeG1(&keyG1)...)
+	out = append(out, encodeG2(&keyG2)...)
+	out = append(out, encodeG1(&signature)...)
 	return out, nil
 }
 
-func hashToG1(message []byte) (*bls12381.PointG1, error) {
-	uniformBytes, err := expandMsgXMD(message, []byte(dstG1), 128)
-	if err != nil {
-		return nil, err
-	}
-	g1 := bls12381.NewG1()
-
-	p0, err := mapUniformToG1(g1, uniformBytes[:64])
-	if err != nil {
-		return nil, err
-	}
-
-	p1, err := mapUniformToG1(g1, uniformBytes[64:])
-	if err != nil {
-		return nil, err
-	}
-
-	sum := g1.New()
-	g1.Add(sum, p0, p1)
-	g1.Affine(sum)
-	return sum, nil
+// EIP-2537 encodes each base-field element as a zero-padded 64-byte value.
+func encodeField(out []byte, element *fp.Element) {
+	value := element.Bytes()
+	copy(out[16:64], value[:])
 }
 
-func mapUniformToG1(g1 *bls12381.G1, uniform []byte) (*bls12381.PointG1, error) {
-	fieldBytes, err := reduceToField(uniform)
-	if err != nil {
-		return nil, err
-	}
-	return g1.MapToCurve(fieldBytes)
+func encodeG1(point *bls12381.G1Affine) []byte {
+	out := make([]byte, 128)
+	encodeField(out[:64], &point.X)
+	encodeField(out[64:], &point.Y)
+	return out
 }
 
-func expandMsgXMD(message []byte, dst []byte, outLen int) ([]byte, error) {
-	if len(dst) > 255 {
-		return nil, errors.New("dst too long")
-	}
-
-	dstLen := byte(len(dst))
-	b0Input := make([]byte, 0, 64+len(message)+3+len(dst)+1)
-	b0Input = append(b0Input, make([]byte, 64)...)
-	b0Input = append(b0Input, message...)
-	b0Input = append(b0Input, 0x00, byte(outLen), 0x00)
-	b0Input = append(b0Input, dst...)
-	b0Input = append(b0Input, dstLen)
-	b0 := sha256.Sum256(b0Input)
-
-	b1Input := make([]byte, 0, 32+1+len(dst)+1)
-	b1Input = append(b1Input, b0[:]...)
-	b1Input = append(b1Input, 0x01)
-	b1Input = append(b1Input, dst...)
-	b1Input = append(b1Input, dstLen)
-	bi := sha256.Sum256(b1Input)
-
-	out := make([]byte, outLen)
-	ell := (outLen + 31) / 32
-
-	for i := 1; i < ell; i++ {
-		copy(out[(i-1)*32:], bi[:])
-
-		mixed := make([]byte, 32)
-		for j := 0; j < 32; j++ {
-			mixed[j] = b0[j] ^ bi[j]
-		}
-
-		nextInput := make([]byte, 0, 32+1+len(dst)+1)
-		nextInput = append(nextInput, mixed...)
-		nextInput = append(nextInput, byte(i+1))
-		nextInput = append(nextInput, dst...)
-		nextInput = append(nextInput, dstLen)
-		bi = sha256.Sum256(nextInput)
-	}
-
-	copy(out[(ell-1)*32:], bi[:])
-	return out, nil
-}
-
-func reduceToField(in []byte) ([]byte, error) {
-	if len(in) != 64 {
-		return nil, errors.New("uniform bytes must be 64 bytes")
-	}
-	value := new(big.Int).SetBytes(in)
-	value.Mod(value, fieldModulus)
-	return value.FillBytes(make([]byte, 48)), nil
-}
-
-func mustBigFromHex(hexValue string) *big.Int {
-	value, ok := new(big.Int).SetString(hexValue, 16)
-	if !ok {
-		panic("invalid modulus hex")
-	}
-	return value
+func encodeG2(point *bls12381.G2Affine) []byte {
+	out := make([]byte, 256)
+	encodeField(out[:64], &point.X.A0)
+	encodeField(out[64:128], &point.X.A1)
+	encodeField(out[128:192], &point.Y.A0)
+	encodeField(out[192:], &point.Y.A1)
+	return out
 }
 
 func hasHexLetters(value string) bool {
