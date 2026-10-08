@@ -2150,6 +2150,10 @@ func (_IValSetDriver *IValSetDriverFilterer) WatchAddQuorumThreshold(opts *bind.
 				// New log arrived, parse the event and forward to the user
 				event := new(IValSetDriverAddQuorumThreshold)
 				if err := _IValSetDriver.contract.UnpackLog(event, "AddQuorumThreshold", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2284,6 +2288,10 @@ func (_IValSetDriver *IValSetDriverFilterer) WatchAddSettlement(opts *bind.Watch
 				// New log arrived, parse the event and forward to the user
 				event := new(IValSetDriverAddSettlement)
 				if err := _IValSetDriver.contract.UnpackLog(event, "AddSettlement", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2418,6 +2426,10 @@ func (_IValSetDriver *IValSetDriverFilterer) WatchAddVotingPowerProvider(opts *b
 				// New log arrived, parse the event and forward to the user
 				event := new(IValSetDriverAddVotingPowerProvider)
 				if err := _IValSetDriver.contract.UnpackLog(event, "AddVotingPowerProvider", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2553,6 +2565,10 @@ func (_IValSetDriver *IValSetDriverFilterer) WatchInitEpochDuration(opts *bind.W
 				// New log arrived, parse the event and forward to the user
 				event := new(IValSetDriverInitEpochDuration)
 				if err := _IValSetDriver.contract.UnpackLog(event, "InitEpochDuration", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2688,6 +2704,10 @@ func (_IValSetDriver *IValSetDriverFilterer) WatchInitSubnetwork(opts *bind.Watc
 				// New log arrived, parse the event and forward to the user
 				event := new(IValSetDriverInitSubnetwork)
 				if err := _IValSetDriver.contract.UnpackLog(event, "InitSubnetwork", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2822,6 +2842,10 @@ func (_IValSetDriver *IValSetDriverFilterer) WatchRemoveQuorumThreshold(opts *bi
 				// New log arrived, parse the event and forward to the user
 				event := new(IValSetDriverRemoveQuorumThreshold)
 				if err := _IValSetDriver.contract.UnpackLog(event, "RemoveQuorumThreshold", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2956,6 +2980,10 @@ func (_IValSetDriver *IValSetDriverFilterer) WatchRemoveSettlement(opts *bind.Wa
 				// New log arrived, parse the event and forward to the user
 				event := new(IValSetDriverRemoveSettlement)
 				if err := _IValSetDriver.contract.UnpackLog(event, "RemoveSettlement", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -3090,6 +3118,10 @@ func (_IValSetDriver *IValSetDriverFilterer) WatchRemoveVotingPowerProvider(opts
 				// New log arrived, parse the event and forward to the user
 				event := new(IValSetDriverRemoveVotingPowerProvider)
 				if err := _IValSetDriver.contract.UnpackLog(event, "RemoveVotingPowerProvider", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -3224,6 +3256,10 @@ func (_IValSetDriver *IValSetDriverFilterer) WatchSetCommitterSlotDuration(opts 
 				// New log arrived, parse the event and forward to the user
 				event := new(IValSetDriverSetCommitterSlotDuration)
 				if err := _IValSetDriver.contract.UnpackLog(event, "SetCommitterSlotDuration", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -3358,6 +3394,10 @@ func (_IValSetDriver *IValSetDriverFilterer) WatchSetEpochDuration(opts *bind.Wa
 				// New log arrived, parse the event and forward to the user
 				event := new(IValSetDriverSetEpochDuration)
 				if err := _IValSetDriver.contract.UnpackLog(event, "SetEpochDuration", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -3492,6 +3532,10 @@ func (_IValSetDriver *IValSetDriverFilterer) WatchSetKeysProvider(opts *bind.Wat
 				// New log arrived, parse the event and forward to the user
 				event := new(IValSetDriverSetKeysProvider)
 				if err := _IValSetDriver.contract.UnpackLog(event, "SetKeysProvider", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -3626,6 +3670,10 @@ func (_IValSetDriver *IValSetDriverFilterer) WatchSetMaxValidatorsCount(opts *bi
 				// New log arrived, parse the event and forward to the user
 				event := new(IValSetDriverSetMaxValidatorsCount)
 				if err := _IValSetDriver.contract.UnpackLog(event, "SetMaxValidatorsCount", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -3760,6 +3808,10 @@ func (_IValSetDriver *IValSetDriverFilterer) WatchSetMaxVotingPower(opts *bind.W
 				// New log arrived, parse the event and forward to the user
 				event := new(IValSetDriverSetMaxVotingPower)
 				if err := _IValSetDriver.contract.UnpackLog(event, "SetMaxVotingPower", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -3894,6 +3946,10 @@ func (_IValSetDriver *IValSetDriverFilterer) WatchSetMinInclusionVotingPower(opt
 				// New log arrived, parse the event and forward to the user
 				event := new(IValSetDriverSetMinInclusionVotingPower)
 				if err := _IValSetDriver.contract.UnpackLog(event, "SetMinInclusionVotingPower", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -4028,6 +4084,10 @@ func (_IValSetDriver *IValSetDriverFilterer) WatchSetNumAggregators(opts *bind.W
 				// New log arrived, parse the event and forward to the user
 				event := new(IValSetDriverSetNumAggregators)
 				if err := _IValSetDriver.contract.UnpackLog(event, "SetNumAggregators", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -4162,6 +4222,10 @@ func (_IValSetDriver *IValSetDriverFilterer) WatchSetNumCommitters(opts *bind.Wa
 				// New log arrived, parse the event and forward to the user
 				event := new(IValSetDriverSetNumCommitters)
 				if err := _IValSetDriver.contract.UnpackLog(event, "SetNumCommitters", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -4296,6 +4360,10 @@ func (_IValSetDriver *IValSetDriverFilterer) WatchSetRequiredHeaderKeyTag(opts *
 				// New log arrived, parse the event and forward to the user
 				event := new(IValSetDriverSetRequiredHeaderKeyTag)
 				if err := _IValSetDriver.contract.UnpackLog(event, "SetRequiredHeaderKeyTag", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -4430,6 +4498,10 @@ func (_IValSetDriver *IValSetDriverFilterer) WatchSetRequiredKeyTags(opts *bind.
 				// New log arrived, parse the event and forward to the user
 				event := new(IValSetDriverSetRequiredKeyTags)
 				if err := _IValSetDriver.contract.UnpackLog(event, "SetRequiredKeyTags", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -4564,6 +4636,10 @@ func (_IValSetDriver *IValSetDriverFilterer) WatchSetVerificationType(opts *bind
 				// New log arrived, parse the event and forward to the user
 				event := new(IValSetDriverSetVerificationType)
 				if err := _IValSetDriver.contract.UnpackLog(event, "SetVerificationType", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log

@@ -587,6 +587,10 @@ func (_IEpochManager *IEpochManagerFilterer) WatchInitEpochDuration(opts *bind.W
 				// New log arrived, parse the event and forward to the user
 				event := new(IEpochManagerInitEpochDuration)
 				if err := _IEpochManager.contract.UnpackLog(event, "InitEpochDuration", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -721,6 +725,10 @@ func (_IEpochManager *IEpochManagerFilterer) WatchSetEpochDuration(opts *bind.Wa
 				// New log arrived, parse the event and forward to the user
 				event := new(IEpochManagerSetEpochDuration)
 				if err := _IEpochManager.contract.UnpackLog(event, "SetEpochDuration", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log

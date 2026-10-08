@@ -1422,6 +1422,10 @@ func (_IBaseSlashing *IBaseSlashingFilterer) WatchExecuteSlash(opts *bind.WatchO
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseSlashingExecuteSlash)
 				if err := _IBaseSlashing.contract.UnpackLog(event, "ExecuteSlash", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1585,6 +1589,10 @@ func (_IBaseSlashing *IBaseSlashingFilterer) WatchInstantSlash(opts *bind.WatchO
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseSlashingInstantSlash)
 				if err := _IBaseSlashing.contract.UnpackLog(event, "InstantSlash", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1729,6 +1737,10 @@ func (_IBaseSlashing *IBaseSlashingFilterer) WatchRegisterOperator(opts *bind.Wa
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseSlashingRegisterOperator)
 				if err := _IBaseSlashing.contract.UnpackLog(event, "RegisterOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1882,6 +1894,10 @@ func (_IBaseSlashing *IBaseSlashingFilterer) WatchRegisterOperatorVault(opts *bi
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseSlashingRegisterOperatorVault)
 				if err := _IBaseSlashing.contract.UnpackLog(event, "RegisterOperatorVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2026,6 +2042,10 @@ func (_IBaseSlashing *IBaseSlashingFilterer) WatchRegisterSharedVault(opts *bind
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseSlashingRegisterSharedVault)
 				if err := _IBaseSlashing.contract.UnpackLog(event, "RegisterSharedVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2170,6 +2190,10 @@ func (_IBaseSlashing *IBaseSlashingFilterer) WatchRegisterToken(opts *bind.Watch
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseSlashingRegisterToken)
 				if err := _IBaseSlashing.contract.UnpackLog(event, "RegisterToken", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2304,6 +2328,10 @@ func (_IBaseSlashing *IBaseSlashingFilterer) WatchSetSlasher(opts *bind.WatchOpt
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseSlashingSetSlasher)
 				if err := _IBaseSlashing.contract.UnpackLog(event, "SetSlasher", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2439,6 +2467,10 @@ func (_IBaseSlashing *IBaseSlashingFilterer) WatchSetSlashingData(opts *bind.Wat
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseSlashingSetSlashingData)
 				if err := _IBaseSlashing.contract.UnpackLog(event, "SetSlashingData", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2583,6 +2615,10 @@ func (_IBaseSlashing *IBaseSlashingFilterer) WatchUnregisterOperator(opts *bind.
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseSlashingUnregisterOperator)
 				if err := _IBaseSlashing.contract.UnpackLog(event, "UnregisterOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2736,6 +2772,10 @@ func (_IBaseSlashing *IBaseSlashingFilterer) WatchUnregisterOperatorVault(opts *
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseSlashingUnregisterOperatorVault)
 				if err := _IBaseSlashing.contract.UnpackLog(event, "UnregisterOperatorVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2880,6 +2920,10 @@ func (_IBaseSlashing *IBaseSlashingFilterer) WatchUnregisterSharedVault(opts *bi
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseSlashingUnregisterSharedVault)
 				if err := _IBaseSlashing.contract.UnpackLog(event, "UnregisterSharedVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -3024,6 +3068,10 @@ func (_IBaseSlashing *IBaseSlashingFilterer) WatchUnregisterToken(opts *bind.Wat
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseSlashingUnregisterToken)
 				if err := _IBaseSlashing.contract.UnpackLog(event, "UnregisterToken", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -3187,6 +3235,10 @@ func (_IBaseSlashing *IBaseSlashingFilterer) WatchVetoSlash(opts *bind.WatchOpts
 				// New log arrived, parse the event and forward to the user
 				event := new(IBaseSlashingVetoSlash)
 				if err := _IBaseSlashing.contract.UnpackLog(event, "VetoSlash", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log

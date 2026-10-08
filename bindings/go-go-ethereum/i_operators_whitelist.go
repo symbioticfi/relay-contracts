@@ -1434,6 +1434,10 @@ func (_IOperatorsWhitelist *IOperatorsWhitelistFilterer) WatchRegisterOperator(o
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsWhitelistRegisterOperator)
 				if err := _IOperatorsWhitelist.contract.UnpackLog(event, "RegisterOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1587,6 +1591,10 @@ func (_IOperatorsWhitelist *IOperatorsWhitelistFilterer) WatchRegisterOperatorVa
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsWhitelistRegisterOperatorVault)
 				if err := _IOperatorsWhitelist.contract.UnpackLog(event, "RegisterOperatorVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1731,6 +1739,10 @@ func (_IOperatorsWhitelist *IOperatorsWhitelistFilterer) WatchRegisterSharedVaul
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsWhitelistRegisterSharedVault)
 				if err := _IOperatorsWhitelist.contract.UnpackLog(event, "RegisterSharedVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1875,6 +1887,10 @@ func (_IOperatorsWhitelist *IOperatorsWhitelistFilterer) WatchRegisterToken(opts
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsWhitelistRegisterToken)
 				if err := _IOperatorsWhitelist.contract.UnpackLog(event, "RegisterToken", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2010,6 +2026,10 @@ func (_IOperatorsWhitelist *IOperatorsWhitelistFilterer) WatchSetSlashingData(op
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsWhitelistSetSlashingData)
 				if err := _IOperatorsWhitelist.contract.UnpackLog(event, "SetSlashingData", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2144,6 +2164,10 @@ func (_IOperatorsWhitelist *IOperatorsWhitelistFilterer) WatchSetWhitelistStatus
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsWhitelistSetWhitelistStatus)
 				if err := _IOperatorsWhitelist.contract.UnpackLog(event, "SetWhitelistStatus", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2288,6 +2312,10 @@ func (_IOperatorsWhitelist *IOperatorsWhitelistFilterer) WatchUnregisterOperator
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsWhitelistUnregisterOperator)
 				if err := _IOperatorsWhitelist.contract.UnpackLog(event, "UnregisterOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2441,6 +2469,10 @@ func (_IOperatorsWhitelist *IOperatorsWhitelistFilterer) WatchUnregisterOperator
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsWhitelistUnregisterOperatorVault)
 				if err := _IOperatorsWhitelist.contract.UnpackLog(event, "UnregisterOperatorVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2585,6 +2617,10 @@ func (_IOperatorsWhitelist *IOperatorsWhitelistFilterer) WatchUnregisterSharedVa
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsWhitelistUnregisterSharedVault)
 				if err := _IOperatorsWhitelist.contract.UnpackLog(event, "UnregisterSharedVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2729,6 +2765,10 @@ func (_IOperatorsWhitelist *IOperatorsWhitelistFilterer) WatchUnregisterToken(op
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsWhitelistUnregisterToken)
 				if err := _IOperatorsWhitelist.contract.UnpackLog(event, "UnregisterToken", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2873,6 +2913,10 @@ func (_IOperatorsWhitelist *IOperatorsWhitelistFilterer) WatchUnwhitelistOperato
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsWhitelistUnwhitelistOperator)
 				if err := _IOperatorsWhitelist.contract.UnpackLog(event, "UnwhitelistOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -3017,6 +3061,10 @@ func (_IOperatorsWhitelist *IOperatorsWhitelistFilterer) WatchWhitelistOperator(
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsWhitelistWhitelistOperator)
 				if err := _IOperatorsWhitelist.contract.UnpackLog(event, "WhitelistOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log

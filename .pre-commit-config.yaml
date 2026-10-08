@@ -2,8 +2,8 @@
 # - Foundry
 # - Python 3.10+
 # - Node.js (see .nvmrc)
-# - pnpm 11.25.0
-# - Go 1.24+ (abigen is installed by pre-commit)
+# - pnpm 12.10.1
+# - Go 1.27.1+ (abigen is installed by pre-commit)
 
 minimum_pre_commit_version: "4.6.2"
 
@@ -70,7 +70,7 @@ repos:
             (
               cd bindings/ts-wagmi
               pnpm dlx @wagmi/cli@2.10.0 generate --config wagmi.config.ts
-              pnpm dlx prettier@3.9.6 --write generated.ts
+              pnpm dlx prettier@3.9.9 --write generated.ts
             )
           '
         pass_filenames: false
@@ -79,7 +79,7 @@ repos:
         description: Produce Go bindings with abigen from ABI files
         language: golang
         language_version: system
-        additional_dependencies: ["github.com/ethereum/go-ethereum/cmd/abigen@v1.17.5"]
+        additional_dependencies: ["github.com/ethereum/go-ethereum/cmd/abigen@v1.17.7"]
         entry: >
           bash -c '
             set -euo pipefail
@@ -100,11 +100,11 @@ repos:
       - id: forge-snapshots
         name: Update forge snapshots
         language: system
-        entry: bash -lc 'mkdir -p snapshots; forge build; forge build --sizes | tee snapshots/sizes.txt >/dev/null; forge test --isolate --gas-report | tee snapshots/gas.txt >/dev/null'
+        entry: python3 script/utils/generate_snapshots.py
         pass_filenames: false
       - id: prettier
         name: Format non-solidity files with prettier
         language: system
-        entry: pnpm dlx prettier@3.9.6 --write --list-different --ignore-unknown
+        entry: pnpm dlx prettier@3.9.9 --write --list-different --ignore-unknown
         types: [text]
         exclude: "^(docs/autogen|snapshots/)"

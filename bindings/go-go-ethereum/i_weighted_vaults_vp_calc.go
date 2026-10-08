@@ -380,6 +380,10 @@ func (_IWeightedVaultsVPCalc *IWeightedVaultsVPCalcFilterer) WatchSetVaultWeight
 				// New log arrived, parse the event and forward to the user
 				event := new(IWeightedVaultsVPCalcSetVaultWeight)
 				if err := _IWeightedVaultsVPCalc.contract.UnpackLog(event, "SetVaultWeight", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log

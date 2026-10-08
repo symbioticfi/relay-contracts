@@ -380,6 +380,10 @@ func (_IWeightedTokensVPCalc *IWeightedTokensVPCalcFilterer) WatchSetTokenWeight
 				// New log arrived, parse the event and forward to the user
 				event := new(IWeightedTokensVPCalcSetTokenWeight)
 				if err := _IWeightedTokensVPCalc.contract.UnpackLog(event, "SetTokenWeight", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log

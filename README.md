@@ -111,3 +111,5 @@ ETHERSCAN_API_KEY=
 ## Security
 
 Security audits can be found [here](./audits).
+
+**Disclaimer:** Changes made after commit [9b9397f97296](https://github.com/symbioticfi/relay-contracts/commit/9b9397f972967c27019ba88b9cb96dce82bcc4be) have not been audited.

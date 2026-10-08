@@ -67,7 +67,7 @@ contract BLS12381UtilsTest is Bls12381GoHelper {
 
     function test_ExpandMsg_RevertsWhenDomainTooLong() public {
         bytes memory dst = new bytes(0x100);
-        vm.expectRevert(abi.encodeWithSelector(BLS12381.InvalidDSTLength.selector, dst));
+        vm.expectRevert(abi.encodeWithSelector(BLS12381.InvalidDSTLength.selector));
         harness.expandMsg(dst, bytes("dst-too-long"), 64);
     }
 

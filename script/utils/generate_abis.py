@@ -87,7 +87,8 @@ def main() -> None:
         if contract_name.endswith(".abi.json"):
             contract_name = contract_name[: -len(".abi.json")]
         dest_path = ABIS_DIR / f"{contract_name}.abi.json"
-        shutil.copy2(abi_file, dest_path)
+        abi = json.loads(abi_file.read_text())
+        dest_path.write_text(json.dumps(abi, indent=4) + "\n")
 
 
 if __name__ == "__main__":

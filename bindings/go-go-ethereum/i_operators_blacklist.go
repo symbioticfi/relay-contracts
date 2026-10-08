@@ -1382,6 +1382,10 @@ func (_IOperatorsBlacklist *IOperatorsBlacklistFilterer) WatchBlacklistOperator(
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsBlacklistBlacklistOperator)
 				if err := _IOperatorsBlacklist.contract.UnpackLog(event, "BlacklistOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1526,6 +1530,10 @@ func (_IOperatorsBlacklist *IOperatorsBlacklistFilterer) WatchRegisterOperator(o
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsBlacklistRegisterOperator)
 				if err := _IOperatorsBlacklist.contract.UnpackLog(event, "RegisterOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1679,6 +1687,10 @@ func (_IOperatorsBlacklist *IOperatorsBlacklistFilterer) WatchRegisterOperatorVa
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsBlacklistRegisterOperatorVault)
 				if err := _IOperatorsBlacklist.contract.UnpackLog(event, "RegisterOperatorVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1823,6 +1835,10 @@ func (_IOperatorsBlacklist *IOperatorsBlacklistFilterer) WatchRegisterSharedVaul
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsBlacklistRegisterSharedVault)
 				if err := _IOperatorsBlacklist.contract.UnpackLog(event, "RegisterSharedVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -1967,6 +1983,10 @@ func (_IOperatorsBlacklist *IOperatorsBlacklistFilterer) WatchRegisterToken(opts
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsBlacklistRegisterToken)
 				if err := _IOperatorsBlacklist.contract.UnpackLog(event, "RegisterToken", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2102,6 +2122,10 @@ func (_IOperatorsBlacklist *IOperatorsBlacklistFilterer) WatchSetSlashingData(op
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsBlacklistSetSlashingData)
 				if err := _IOperatorsBlacklist.contract.UnpackLog(event, "SetSlashingData", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2246,6 +2270,10 @@ func (_IOperatorsBlacklist *IOperatorsBlacklistFilterer) WatchUnblacklistOperato
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsBlacklistUnblacklistOperator)
 				if err := _IOperatorsBlacklist.contract.UnpackLog(event, "UnblacklistOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2390,6 +2418,10 @@ func (_IOperatorsBlacklist *IOperatorsBlacklistFilterer) WatchUnregisterOperator
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsBlacklistUnregisterOperator)
 				if err := _IOperatorsBlacklist.contract.UnpackLog(event, "UnregisterOperator", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2543,6 +2575,10 @@ func (_IOperatorsBlacklist *IOperatorsBlacklistFilterer) WatchUnregisterOperator
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsBlacklistUnregisterOperatorVault)
 				if err := _IOperatorsBlacklist.contract.UnpackLog(event, "UnregisterOperatorVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2687,6 +2723,10 @@ func (_IOperatorsBlacklist *IOperatorsBlacklistFilterer) WatchUnregisterSharedVa
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsBlacklistUnregisterSharedVault)
 				if err := _IOperatorsBlacklist.contract.UnpackLog(event, "UnregisterSharedVault", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
@@ -2831,6 +2871,10 @@ func (_IOperatorsBlacklist *IOperatorsBlacklistFilterer) WatchUnregisterToken(op
 				// New log arrived, parse the event and forward to the user
 				event := new(IOperatorsBlacklistUnregisterToken)
 				if err := _IOperatorsBlacklist.contract.UnpackLog(event, "UnregisterToken", log); err != nil {
+					// If the signature doesn't match, skip this log.
+					if errors.Is(err, bind.ErrEventSignatureMismatch) {
+						continue
+					}
 					return err
 				}
 				event.Raw = log
